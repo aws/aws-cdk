@@ -50,13 +50,22 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ec2.Vpc",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "vpcName": "*",
+                  "subnetConfiguration": []
+                }
+              ]
             }
           },
           "LatestNodeRuntimeMap": {
@@ -132,7 +141,12 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "vpc": "*"
+                }
+              ]
             }
           },
           "LT": {
@@ -220,7 +234,29 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "versionDescription": "*",
+                  "httpEndpoint": true,
+                  "httpProtocolIpv6": true,
+                  "httpPutResponseHopLimit": "*",
+                  "httpTokens": "required",
+                  "instanceMetadataTags": true,
+                  "securityGroup": "*",
+                  "blockDevices": [
+                    {
+                      "deviceName": "*",
+                      "volume": "*"
+                    }
+                  ]
+                },
+                {
+                  "addSecurityGroup": [
+                    "*"
+                  ]
+                }
+              ]
             }
           },
           "sg2": {
@@ -254,7 +290,12 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "vpc": "*"
+                }
+              ]
             }
           },
           "LTWithMachineImage": {
@@ -316,7 +357,12 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "machineImage": "*"
+                }
+              ]
             }
           },
           "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
@@ -332,7 +378,102 @@
             "path": "aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": []
+            }
+          },
+          "pg": {
+            "id": "pg",
+            "path": "aws-cdk-ec2-lt-metadata-1/pg",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-ec2-lt-metadata-1/pg/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::PlacementGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "strategy": "spread"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnPlacementGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.PlacementGroup",
+              "version": "0.0.0",
+              "metadata": [
+                {}
+              ]
+            }
+          },
+          "LTWithPlacementGroup": {
+            "id": "LTWithPlacementGroup",
+            "path": "aws-cdk-ec2-lt-metadata-1/LTWithPlacementGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-ec2-lt-metadata-1/LTWithPlacementGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                  "aws:cdk:cloudformation:props": {
+                    "launchTemplateData": {
+                      "tagSpecifications": [
+                        {
+                          "resourceType": "instance",
+                          "tags": [
+                            {
+                              "key": "Name",
+                              "value": "aws-cdk-ec2-lt-metadata-1/LTWithPlacementGroup"
+                            }
+                          ]
+                        },
+                        {
+                          "resourceType": "volume",
+                          "tags": [
+                            {
+                              "key": "Name",
+                              "value": "aws-cdk-ec2-lt-metadata-1/LTWithPlacementGroup"
+                            }
+                          ]
+                        }
+                      ],
+                      "placement": {
+                        "groupName": {
+                          "Fn::GetAtt": [
+                            "pg749EE6ED",
+                            "GroupName"
+                          ]
+                        }
+                      }
+                    },
+                    "tagSpecifications": [
+                      {
+                        "resourceType": "launch-template",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-ec2-lt-metadata-1/LTWithPlacementGroup"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
+              "version": "0.0.0",
+              "metadata": [
+                {}
+              ]
             }
           },
           "BootstrapVersion": {

@@ -4,6 +4,7 @@ import { CfnLaunchTemplate } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
+import { IPlacementGroup } from './placement-group';
 import { launchTemplateBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup } from './security-group';
 import { UserData } from './user-data';
@@ -441,6 +442,13 @@ export interface LaunchTemplateProps {
    * @default - No instance profile
    */
   readonly instanceProfile?: iam.IInstanceProfile;
+
+  /**
+   * The placement group that you want to launch the instance into.
+   *
+   * @default - no placement group will be used for this launch template.
+   */
+  readonly placementGroup?: IPlacementGroup;
 }
 
 /**
@@ -783,6 +791,9 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         userData: userDataToken,
         metadataOptions: this.renderMetadataOptions(props),
         networkInterfaces,
+        placement: props.placementGroup ? {
+          groupName: props.placementGroup.placementGroupName,
+        } : undefined,
 
         // Fields not yet implemented:
         // ==========================
@@ -811,7 +822,8 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         // Should be implemented via the Tagging aspect in CDK core. Complication will be that this tagging interface is very unique to LaunchTemplates.
         // tagSpecification: undefined
 
-        // CDK has no abstraction for Placement yet.
+        // CDK only has placement groups, not placement.
+        // Specifiying options other than placementGroup is not supported yet.
         // placement: undefined,
 
       },

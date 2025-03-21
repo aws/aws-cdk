@@ -28,6 +28,8 @@ import {
   LaunchTemplate,
   LaunchTemplateHttpTokens,
   OperatingSystemType,
+  PlacementGroup,
+  PlacementGroupStrategy,
   SecurityGroup,
   SpotInstanceInterruption,
   SpotRequestType,
@@ -886,6 +888,51 @@ describe('LaunchTemplate', () => {
             ],
           },
         ],
+      },
+    });
+  });
+
+  test('Given placementGroup', () => {
+    // GIVEN
+    const pg = new PlacementGroup(stack, 'PlacementGroup', {
+      strategy: PlacementGroupStrategy.CLUSTER,
+    });
+
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      placementGroup: pg,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        Placement: {
+          GroupName: {
+            'Fn::GetAtt': [
+              'PlacementGroup68E91A0F',
+              'GroupName',
+            ],
+          },
+        },
+      },
+    });
+  });
+
+  test('Given imported placementGroup', () => {
+    // GIVEN
+    const importedPg = PlacementGroup.fromPlacementGroupName(stack, 'ImportedPlacementGroup', 'my-placement-group');
+
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      placementGroup: importedPg,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        Placement: {
+          GroupName: 'my-placement-group',
+        },
       },
     });
   });
