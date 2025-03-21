@@ -32,13 +32,12 @@ export class Stage implements IStage {
    * Create a new Stage.
    */
   constructor(props: StageProps, pipeline: Pipeline) {
-    validation.validateName('Stage', props.stageName);
-
     this.stageName = props.stageName;
     this.transitionToEnabled = props.transitionToEnabled ?? true;
     this.transitionDisabledReason = props.transitionDisabledReason ?? 'Transition disabled';
     this._pipeline = pipeline;
     this.scope = new Construct(pipeline, this.stageName);
+    validation.validateName(this.scope, 'Stage', props.stageName);
 
     for (const action of props.actions || []) {
       this.addAction(action);
@@ -87,11 +86,11 @@ export class Stage implements IStage {
   public addAction(action: IAction): void {
     const actionName = action.actionProperties.actionName;
     // validate the name
-    validation.validateName('Action', actionName);
+    validation.validateName(this.scope, 'Action', actionName);
 
     // check for duplicate Actions and names
     if (this._actions.find(a => a.actionName === actionName)) {
-      throw new Error(`Stage ${this.stageName} already contains an action with name '${actionName}'`);
+      throw new cdk.ValidationError(`Stage ${this.stageName} already contains an action with name '${actionName}'`, this.scope);
     }
 
     this._actions.push(this.attachActionToPipeline(action));
