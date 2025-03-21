@@ -2020,7 +2020,7 @@ const cluster = new eks.Cluster(this, 'Cluster', {
 
 ## NodeGroup Repair Config
 
-You can enable Managed Node Group auto-repair config using `enableNodeAutoRepair`
+You can enable Managed Node Group [auto-repair config](https://docs.aws.amazon.com/eks/latest/userguide/node-health.html#node-auto-repair) using `enableNodeAutoRepair`
 property. For example:
 
 ```ts
