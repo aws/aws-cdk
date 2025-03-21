@@ -454,7 +454,7 @@ export class TableV2 extends TableBaseV2 {
 
         const resourceRegion = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).region;
         if (!resourceRegion) {
-          throw new Error('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>');
+          throw new ValidationError('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>', this);
         }
 
         this.region = resourceRegion;
@@ -472,7 +472,7 @@ export class TableV2 extends TableBaseV2 {
     const stack = Stack.of(scope);
     if (!attrs.tableArn) {
       if (!attrs.tableName) {
-        throw new Error('At least one of `tableArn` or `tableName` must be provided');
+        throw new ValidationError('At least one of `tableArn` or `tableName` must be provided', scope);
       }
 
       tableName = attrs.tableName;
@@ -483,13 +483,13 @@ export class TableV2 extends TableBaseV2 {
       });
     } else {
       if (attrs.tableName) {
-        throw new Error('Only one of `tableArn` or `tableName` can be provided, but not both');
+        throw new ValidationError('Only one of `tableArn` or `tableName` can be provided, but not both', scope);
       }
 
       tableArn = attrs.tableArn;
       const resourceName = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
       if (!resourceName) {
-        throw new Error('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>');
+        throw new ValidationError('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>', scope);
       }
       tableName = resourceName;
     }
@@ -691,11 +691,11 @@ export class TableV2 extends TableBaseV2 {
   @MethodMetadata()
   public replica(region: string): ITableV2 {
     if (Token.isUnresolved(this.stack.region)) {
-      throw new Error('Replica tables are not supported in a region agnostic stack');
+      throw new ValidationError('Replica tables are not supported in a region agnostic stack', this);
     }
 
     if (Token.isUnresolved(region)) {
-      throw new Error('Provided `region` cannot be a token');
+      throw new ValidationError('Provided `region` cannot be a token', this);
     }
 
     if (region === this.stack.region) {
@@ -703,7 +703,7 @@ export class TableV2 extends TableBaseV2 {
     }
 
     if (!this.replicaTables.has(region)) {
-      throw new Error(`No replica table exists in region ${region}`);
+      throw new ValidationError(`No replica table exists in region ${region}`, this);
     }
 
     const replicaTableArn = this.replicaTableArns.find(arn => arn.includes(region));
@@ -874,7 +874,7 @@ export class TableV2 extends TableBaseV2 {
 
     props.nonKeyAttributes?.forEach(attr => this.nonKeyAttributes.add(attr));
     if (this.nonKeyAttributes.size > MAX_NON_KEY_ATTRIBUTES) {
-      throw new Error(`The maximum number of 'nonKeyAttributes' across all secondary indexes is ${MAX_NON_KEY_ATTRIBUTES}`);
+      throw new ValidationError(`The maximum number of 'nonKeyAttributes' across all secondary indexes is ${MAX_NON_KEY_ATTRIBUTES}`, this);
     }
 
     return {
@@ -938,7 +938,7 @@ export class TableV2 extends TableBaseV2 {
 
     const existingAttributeDef = this.attributeDefinitions.find(def => def.attributeName === name);
     if (existingAttributeDef && existingAttributeDef.attributeType !== type) {
-      throw new Error(`Unable to specify ${name} as ${type} because it was already defined as ${existingAttributeDef.attributeType}`);
+      throw new ValidationError(`Unable to specify ${name} as ${type} because it was already defined as ${existingAttributeDef.attributeType}`, this);
     }
 
     if (!existingAttributeDef) {
@@ -952,29 +952,29 @@ export class TableV2 extends TableBaseV2 {
 
   private validateIndexName(indexName: string) {
     if (this.globalSecondaryIndexes.has(indexName) || this.localSecondaryIndexes.has(indexName)) {
-      throw new Error(`Duplicate secondary index name, ${indexName}, is not allowed`);
+      throw new ValidationError(`Duplicate secondary index name, ${indexName}, is not allowed`, this);
     }
   }
 
   private validateIndexProjection(props: SecondaryIndexProps) {
     if (props.projectionType === ProjectionType.INCLUDE && !props.nonKeyAttributes) {
-      throw new Error(`Non-key attributes should be specified when using ${ProjectionType.INCLUDE} projection type`);
+      throw new ValidationError(`Non-key attributes should be specified when using ${ProjectionType.INCLUDE} projection type`, this);
     }
 
     if (props.projectionType !== ProjectionType.INCLUDE && props.nonKeyAttributes) {
-      throw new Error(`Non-key attributes should not be specified when not using ${ProjectionType.INCLUDE} projection type`);
+      throw new ValidationError(`Non-key attributes should not be specified when not using ${ProjectionType.INCLUDE} projection type`, this);
     }
   }
 
   private validateReplicaIndexOptions(options: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions }) {
     for (const indexName of Object.keys(options)) {
       if (!this.globalSecondaryIndexes.has(indexName)) {
-        throw new Error(`Cannot configure replica global secondary index, ${indexName}, because it is not defined on the primary table`);
+        throw new ValidationError(`Cannot configure replica global secondary index, ${indexName}, because it is not defined on the primary table`, this);
       }
 
       const replicaGsiOptions = options[indexName];
       if (this.billingMode === BillingMode.PAY_PER_REQUEST && replicaGsiOptions.readCapacity) {
-        throw new Error(`Cannot configure 'readCapacity' for replica global secondary index, ${indexName}, because billing mode is ${BillingMode.PAY_PER_REQUEST}`);
+        throw new ValidationError(`Cannot configure 'readCapacity' for replica global secondary index, ${indexName}, because billing mode is ${BillingMode.PAY_PER_REQUEST}`, this);
       }
     }
   }
@@ -982,23 +982,23 @@ export class TableV2 extends TableBaseV2 {
   private validateReplica(props: ReplicaTableProps) {
     const stackRegion = this.stack.region;
     if (Token.isUnresolved(stackRegion)) {
-      throw new Error('Replica tables are not supported in a region agnostic stack');
+      throw new ValidationError('Replica tables are not supported in a region agnostic stack', this);
     }
 
     if (Token.isUnresolved(props.region)) {
-      throw new Error('Replica table region must not be a token');
+      throw new ValidationError('Replica table region must not be a token', this);
     }
 
     if (props.region === this.stack.region) {
-      throw new Error(`You cannot add a replica table in the same region as the primary table - the primary table region is ${this.region}`);
+      throw new ValidationError(`You cannot add a replica table in the same region as the primary table - the primary table region is ${this.region}`, this);
     }
 
     if (this.replicaTables.has(props.region)) {
-      throw new Error(`Duplicate replica table region, ${props.region}, is not allowed`);
+      throw new ValidationError(`Duplicate replica table region, ${props.region}, is not allowed`, this);
     }
 
     if (this.billingMode === BillingMode.PAY_PER_REQUEST && props.readCapacity) {
-      throw new Error(`You cannot provide 'readCapacity' on a replica table when the billing mode is ${BillingMode.PAY_PER_REQUEST}`);
+      throw new ValidationError(`You cannot provide 'readCapacity' on a replica table when the billing mode is ${BillingMode.PAY_PER_REQUEST}`, this);
     }
   }
 
@@ -1006,11 +1006,11 @@ export class TableV2 extends TableBaseV2 {
     this.validateIndexName(props.indexName);
 
     if (this.globalSecondaryIndexes.size === MAX_GSI_COUNT) {
-      throw new Error(`You may not provide more than ${MAX_GSI_COUNT} global secondary indexes`);
+      throw new ValidationError(`You may not provide more than ${MAX_GSI_COUNT} global secondary indexes`, this);
     }
 
     if (this.billingMode === BillingMode.PAY_PER_REQUEST && (props.readCapacity || props.writeCapacity)) {
-      throw new Error(`You cannot configure 'readCapacity' or 'writeCapacity' on a global secondary index when the billing mode is ${BillingMode.PAY_PER_REQUEST}`);
+      throw new ValidationError(`You cannot configure 'readCapacity' or 'writeCapacity' on a global secondary index when the billing mode is ${BillingMode.PAY_PER_REQUEST}`, this);
     }
   }
 
@@ -1018,11 +1018,11 @@ export class TableV2 extends TableBaseV2 {
     this.validateIndexName(props.indexName);
 
     if (!this.hasSortKey) {
-      throw new Error('The table must have a sort key in order to add a local secondary index');
+      throw new ValidationError('The table must have a sort key in order to add a local secondary index', this);
     }
 
     if (this.localSecondaryIndexes.size === MAX_LSI_COUNT) {
-      throw new Error(`You may not provide more than ${MAX_LSI_COUNT} local secondary indexes`);
+      throw new ValidationError(`You may not provide more than ${MAX_LSI_COUNT} local secondary indexes`, this);
     }
   }
 
