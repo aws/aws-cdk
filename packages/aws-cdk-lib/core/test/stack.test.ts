@@ -39,7 +39,34 @@ describe('stack', () => {
     }).toThrow(`Stack name must be <= 128 characters. Stack name: '${reallyLongStackName}'`);
   });
 
-  test('stack objects have some template-level propeties, such as Description, Version, Transform', () => {
+  test.each([
+    // ['Has:Colon', 'HasColon'],
+    // ['0startWithNumber', 'startWithNumber'],
+    ['Has-Dash', 'Has-Dash'],
+    [undefined, 'Default'],
+    // ['With_Underscore', 'With_Underscore'],
+    // ['with.dot', 'withdot'],
+    // ['with/slash', 'withslash'],
+    // ['with space', 'withspace'],
+    ['UPPERCASE', 'UPPERCASE'],
+    ['mixedCase123', 'mixedCase123'],
+    // ['!@#$%^', 'Default'],
+    // ['123456', 'Default'],
+    // ['a-b-c', 'a-b-c'],
+    // ['x_y_z', 'x_y_z'],
+    // ['abc.def.ghi', 'abcdefghi'],
+  ])('valid stack name is generated from valid construct id %s', (id, stackName) => {
+    // GIVEN
+    const app = new App({});
+
+    // WHEN
+    const stack = new Stack(app, id);
+
+    // THEN
+    expect(stack.stackName).toBe(stackName);
+  });
+
+  test('stack objects have some template-level properties, such as Description, Version, Transform', () => {
     const stack = new Stack();
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
     stack.templateOptions.description = 'This is my description';
