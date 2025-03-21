@@ -1,6 +1,5 @@
 import * as cdk from '../..';
 import { Match, Template } from '../../assertions';
-import { Parameter } from '../../aws-appconfig';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
