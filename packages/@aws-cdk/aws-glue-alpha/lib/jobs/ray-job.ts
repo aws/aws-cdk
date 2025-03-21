@@ -1,8 +1,6 @@
-import * as iam from 'aws-cdk-lib/aws-iam';
 import { Job, JobProps } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, WorkerType, Runtime } from '../constants';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties for creating a Ray Glue job
@@ -27,27 +25,15 @@ export interface RayJobProps extends JobProps {
 export class RayJob extends Job {
   public readonly jobArn: string;
   public readonly jobName: string;
-  public readonly role: iam.IRole;
-  public readonly grantPrincipal: iam.IPrincipal;
 
   /**
    * RayJob constructor
    */
   constructor(scope: Construct, id: string, props: RayJobProps) {
-    super(scope, id, {
-      physicalName: props.jobName,
-    });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
-
-    this.jobName = props.jobName ?? '';
-
-    // Set up role and permissions for principal
-    this.role = props.role;
-    this.grantPrincipal = this.role;
+    super(scope, id, props);
 
     // Enable CloudWatch metrics and continuous logging by default as a best practice
-    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
+    const continuousLoggingArgs = this.setupContinuousLogging(props.continuousLogging);
     const profilingMetricsArgs = { '--enable-metrics': '' };
     const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
 
@@ -63,8 +49,8 @@ export class RayJob extends Job {
       throw new Error('Ray jobs only support Z.2X worker type');
     }
 
-    const jobResource = RayJob.setupJobResource(this, props, {
-      role: this.role.roleArn,
+    const jobResource = Job.setupJobResource(this, props, {
+      role: this.role!.roleArn,
       command: {
         name: JobType.RAY,
         scriptLocation: this.codeS3ObjectUrl(props.script),
@@ -77,7 +63,7 @@ export class RayJob extends Job {
     });
 
     const resourceName = this.getResourceNameAttribute(jobResource.ref);
-    this.jobArn = this.buildJobArn(this, resourceName);
+    this.jobArn = Job.buildJobArn(this, resourceName);
     this.jobName = resourceName;
   }
 }

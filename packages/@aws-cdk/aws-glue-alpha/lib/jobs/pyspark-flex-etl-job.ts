@@ -3,6 +3,7 @@ import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType, Execution
 import { Code } from '../code';
 import { SparkJob, SparkJobProps } from './spark-job';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { Job } from './job';
 
 /**
  * Properties for PySparkFlexEtlJob
@@ -47,8 +48,8 @@ export class PySparkFlexEtlJob extends SparkJob {
       ...this.nonExecutableCommonArguments(props),
     };
 
-    const jobResource = PySparkFlexEtlJob.setupJobResource(this, props, {
-      role: this.role.roleArn,
+    const jobResource = Job.setupJobResource(this, props, {
+      role: this.role!.roleArn,
       command: {
         name: JobType.ETL,
         scriptLocation: this.codeS3ObjectUrl(props.script),
@@ -64,7 +65,7 @@ export class PySparkFlexEtlJob extends SparkJob {
     });
 
     const resourceName = this.getResourceNameAttribute(jobResource.ref);
-    this.jobArn = this.buildJobArn(this, resourceName);
+    this.jobArn = Job.buildJobArn(this, resourceName);
     this.jobName = resourceName;
   }
 

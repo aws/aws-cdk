@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
 import { Code } from '../code';
 import { SparkJob, SparkJobProps } from './spark-job';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { Job } from './job';
 
 /**
  * Properties for creating a Python Spark ETL job
@@ -38,8 +38,6 @@ export class PySparkStreamingJob extends SparkJob {
    */
   constructor(scope: Construct, id: string, props: PySparkStreamingJobProps) {
     super(scope, id, props);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     // Combine command line arguments into a single line item
     const defaultArguments = {
@@ -47,8 +45,8 @@ export class PySparkStreamingJob extends SparkJob {
       ...this.nonExecutableCommonArguments(props),
     };
 
-    const jobResource = PySparkStreamingJob.setupJobResource(this, props, {
-      role: this.role.roleArn,
+    const jobResource = Job.setupJobResource(this, props, {
+      role: this.role!.roleArn,
       command: {
         name: JobType.STREAMING,
         scriptLocation: this.codeS3ObjectUrl(props.script),
@@ -61,7 +59,7 @@ export class PySparkStreamingJob extends SparkJob {
     });
 
     const resourceName = this.getResourceNameAttribute(jobResource.ref);
-    this.jobArn = this.buildJobArn(this, resourceName);
+    this.jobArn = Job.buildJobArn(this, resourceName);
     this.jobName = resourceName;
   }
 

@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, WorkerType, ExecutionClass } from '../constants';
 import { SparkJob, SparkJobProps } from './spark-job';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { Job } from './job';
 
 /**
  * Flex Jobs class
@@ -46,8 +46,6 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
    */
   constructor(scope: Construct, id: string, props: ScalaSparkFlexEtlJobProps) {
     super(scope, id, props);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     // Combine command line arguments into a single line item
     const defaultArguments = {
@@ -55,8 +53,8 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
       ...this.nonExecutableCommonArguments(props),
     };
 
-    const jobResource = ScalaSparkFlexEtlJob.setupJobResource(this, props, {
-      role: this.role.roleArn,
+    const jobResource = Job.setupJobResource(this, props, {
+      role: this.role!.roleArn,
       command: {
         name: JobType.ETL,
         scriptLocation: this.codeS3ObjectUrl(props.script),
@@ -71,7 +69,7 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
     });
 
     const resourceName = this.getResourceNameAttribute(jobResource.ref);
-    this.jobArn = this.buildJobArn(this, resourceName);
+    this.jobArn = Job.buildJobArn(this, resourceName);
     this.jobName = resourceName;
   }
 

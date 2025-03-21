@@ -1,6 +1,4 @@
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import * as constructs from 'constructs';
 import { Code } from '../code';
 import { Job, JobProps } from './job';
@@ -132,9 +130,6 @@ export interface SparkJobProps extends JobProps {
  * Base class for different types of Spark Jobs.
  */
 export abstract class SparkJob extends Job {
-  public readonly role: iam.IRole;
-  public readonly grantPrincipal: iam.IPrincipal;
-
   /**
    * The Spark UI logs location if Spark UI monitoring and debugging is enabled.
    *
@@ -143,22 +138,15 @@ export abstract class SparkJob extends Job {
    */
   public readonly sparkUILoggingLocation?: SparkUILoggingLocation;
 
-  constructor(scope: constructs.Construct, id: string, props: SparkJobProps) {
-    super(scope, id, {
-      physicalName: props.jobName,
-    });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
-
-    this.role = props.role;
-    this.grantPrincipal = this.role;
+  protected constructor(scope: constructs.Construct, id: string, props: SparkJobProps) {
+    super(scope, id, props);
 
     this.sparkUILoggingLocation = props.sparkUI ? this.setupSparkUILoggingLocation(props.sparkUI) : undefined;
   }
 
   protected nonExecutableCommonArguments(props: SparkJobProps): {[key: string]: string} {
     // Enable CloudWatch metrics and continuous logging by default as a best practice
-    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
+    const continuousLoggingArgs = this.setupContinuousLogging(props.continuousLogging);
     const profilingMetricsArgs = { '--enable-metrics': '' };
     const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
 

@@ -9,6 +9,7 @@ import { MetricType, JobState, WorkerType, GlueVersion } from '../constants';
 import { IConnection } from '../connection';
 import { ISecurityConfiguration } from '../security-configuration';
 import { CfnJob, CfnJobProps } from 'aws-cdk-lib/aws-glue';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Interface representing a new or an imported Glue Job
@@ -25,6 +26,11 @@ export interface IJob extends cdk.IResource, iam.IGrantable {
    * @attribute
    */
   readonly jobArn: string;
+
+  /**
+   * The IAM role associated with this job.
+   */
+  readonly role?: iam.IRole;
 
   /**
    * Defines a CloudWatch event rule triggered when something happens with this job.
@@ -132,8 +138,20 @@ export interface ContinuousLoggingProps {
  * event-driven flow using the job.
  */
 export abstract class JobBase extends cdk.Resource implements IJob {
+  /**
+   * Returns the job arn
+   */
+  protected static buildJobArn(scope: constructs.Construct, jobName: string) : string {
+    return cdk.Stack.of(scope).formatArn({
+      service: 'glue',
+      resource: 'job',
+      resourceName: jobName,
+    });
+  }
+
   public abstract readonly jobArn: string;
   public abstract readonly jobName: string;
+  public abstract readonly role?: iam.IRole;
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
@@ -267,17 +285,6 @@ export abstract class JobBase extends cdk.Resource implements IJob {
    */
   private metricJobStateRule(id: string, jobState: JobState): events.Rule {
     return this.node.tryFindChild(id) as events.Rule ?? this.onStateChange(id, jobState);
-  }
-
-  /**
-   * Returns the job arn
-   */
-  protected buildJobArn(scope: constructs.Construct, jobName: string) : string {
-    return cdk.Stack.of(scope).formatArn({
-      service: 'glue',
-      resource: 'job',
-      resourceName: jobName,
-    });
   }
 }
 
@@ -487,7 +494,8 @@ export abstract class Job extends JobBase {
   public static fromJobAttributes(scope: constructs.Construct, id: string, attrs: JobAttributes): IJob {
     class Import extends JobBase {
       public readonly jobName = attrs.jobName;
-      public readonly jobArn = this.buildJobArn(scope, attrs.jobName);
+      public readonly jobArn = Job.buildJobArn(scope, attrs.jobName);
+      public readonly role = attrs.role;
       public readonly grantPrincipal = attrs.role ?? new iam.UnknownPrincipal({ resource: this });
     }
 
@@ -519,10 +527,19 @@ export abstract class Job extends JobBase {
     });
   }
 
-  /**
-   * The IAM role Glue assumes to run this job.
-   */
-  public readonly abstract role: iam.IRole;
+  public readonly role?: iam.IRole;
+  public readonly grantPrincipal: iam.IPrincipal;
+
+  protected constructor(scope: constructs.Construct, id: string, props: JobProps) {
+    super(scope, id, {
+      physicalName: props.jobName,
+    });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    this.role = props.role;
+    this.grantPrincipal = props.role;
+  }
 
   /**
    * Check no usage of reserved arguments.
@@ -543,11 +560,10 @@ export abstract class Job extends JobBase {
 
   /**
    * Setup Continuous Logging Properties
-   * @param role The IAM role to use for continuous logging
    * @param props The properties for continuous logging configuration
    * @returns String containing the args for the continuous logging command
    */
-  protected setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps | undefined) : any {
+  protected setupContinuousLogging(props: ContinuousLoggingProps | undefined) : any {
     // If the developer has explicitly disabled continuous logging return no args
     if (props && !props.enabled) {
       return {};
@@ -565,7 +581,7 @@ export abstract class Job extends JobBase {
     // If the developer provided a log group, add its name to the args and update the role.
     if (props?.logGroup) {
       args['--continuous-log-logGroup'] = props.logGroup.logGroupName;
-      props.logGroup.grantWrite(role);
+      props.logGroup.grantWrite(this);
     }
 
     if (props?.logStreamPrefix) {
@@ -580,7 +596,7 @@ export abstract class Job extends JobBase {
   }
 
   protected codeS3ObjectUrl(code: Code) {
-    const s3Location = code.bind(this, this.role).s3Location;
+    const s3Location = code.bind(this, this).s3Location;
     return `s3://${s3Location.bucketName}/${s3Location.objectKey}`;
   }
 }

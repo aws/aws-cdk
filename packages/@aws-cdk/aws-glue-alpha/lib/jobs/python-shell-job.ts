@@ -1,8 +1,6 @@
-import * as iam from 'aws-cdk-lib/aws-iam';
 import { Job, JobProps } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, PythonVersion, MaxCapacity, JobLanguage } from '../constants';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties for creating a Python Shell job
@@ -33,23 +31,15 @@ export interface PythonShellJobProps extends JobProps {
 export class PythonShellJob extends Job {
   public readonly jobArn: string;
   public readonly jobName: string;
-  public readonly role: iam.IRole;
-  public readonly grantPrincipal: iam.IPrincipal;
 
   /**
    * PythonShellJob constructor
    */
   constructor(scope: Construct, id: string, props: PythonShellJobProps) {
-    super(scope, id, { physicalName: props.jobName });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
-
-    // Set up role and permissions for principal
-    this.role = props.role;
-    this.grantPrincipal = this.role;
+    super(scope, id, props);
 
     // Enable CloudWatch metrics and continuous logging by default as a best practice
-    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
+    const continuousLoggingArgs = this.setupContinuousLogging(props.continuousLogging);
     const profilingMetricsArgs = { '--enable-metrics': '' };
     const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
 
@@ -65,8 +55,8 @@ export class PythonShellJob extends Job {
       ...this.checkNoReservedArgs(props.defaultArguments),
     };
 
-    const jobResource = PythonShellJob.setupJobResource(this, props, {
-      role: this.role.roleArn,
+    const jobResource = Job.setupJobResource(this, props, {
+      role: this.role!.roleArn,
       command: {
         name: JobType.PYTHON_SHELL,
         scriptLocation: this.codeS3ObjectUrl(props.script),
@@ -79,7 +69,7 @@ export class PythonShellJob extends Job {
     });
 
     const resourceName = this.getResourceNameAttribute(jobResource.ref);
-    this.jobArn = this.buildJobArn(this, resourceName);
+    this.jobArn = Job.buildJobArn(this, resourceName);
     this.jobName = resourceName;
   }
 
