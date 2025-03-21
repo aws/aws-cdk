@@ -41,44 +41,32 @@ describe('stack', () => {
 
   test.each([
     ['Has:Colon', 'HasColon'],
-    ['0startWithNumber', 'startWithNumber'],
+    ['0startWithNumber', '0startWithNumber'],
     ['Has-Dash', 'Has-Dash'],
     [undefined, 'Default'],
-    ['With_Underscore', 'WithUnderscore'],
-    ['with.dot', 'withdot'],
+    ['With_Underscore', 'With_Underscore'],
+    ['with.dot', 'with.dot'],
     ['with/slash', 'with--slash'],
     ['with space', 'withspace'],
     ['UPPERCASE', 'UPPERCASE'],
     ['mixedCase123', 'mixedCase123'],
-    ['!@#$%^', 'Default'],
-    ['123456', 'Default'],
+    ['!@#$%^', 'ValidStackName'],
+    ['123456', '123456'],
     ['a-b-c', 'a-b-c'],
-    ['x_y_z', 'xyz'],
-    ['abc.def.ghi', 'abcdefghi'],
-  ])('valid artifact id and stack name for construct id \'%s\'', (id, expected) => {
+    ['x_y_z', 'x_y_z'],
+    ['abc.def.ghi', 'abc.def.ghi'],
+  ])('valid stack artifact id for construct id \'%s\'', (id, expected) => {
     // GIVEN
     const app = new App({});
 
     // WHEN
-    const stack = new Stack(app, id);
-
-    // THEN
-    expect(stack.stackName).toBe(expected);
-    expect(stack.artifactId).toBe(expected);
-  });
-
-  test('valid artifact id when valid stack name is given, but construct id contains special chars', () => {
-    // GIVEN
-    const app = new App({});
-
-    // WHEN
-    const stack = new Stack(app, 'Has:Colon', {
+    const stack = new Stack(app, id, {
       stackName: 'ValidStackName',
     });
 
     // THEN
     expect(stack.stackName).toBe('ValidStackName');
-    expect(stack.artifactId).toBe('HasColon');
+    expect(stack.artifactId).toBe(expected);
   });
 
   test('stack objects have some template-level properties, such as Description, Version, Transform', () => {
