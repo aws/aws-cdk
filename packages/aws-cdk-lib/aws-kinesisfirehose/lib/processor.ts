@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
 import * as iam from '../../aws-iam';
-import { Duration, Size, UnscopedValidationError } from '../../core';
+import { Duration, Size } from '../../core';
 
 /**
  * Configure the LambdaFunctionProcessor.
@@ -97,99 +97,4 @@ export interface IDataProcessor {
    * necessary configuration to register as a processor.
    */
   bind(scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig;
-}
-
-/**
- * Compression format for DecompressionProcessor.
- */
-export enum DecompressionCompressionFormat {
-  /** GZIP compression */
-  GZIP = 'GZIP',
-}
-
-/**
- * Options for DecompressionProcessor.
- */
-export interface DecompressionProcessorOptions {
-  /**
-   * The input compression format
-   * @default DecompressionCompressionFormat.GZIP
-   */
-  readonly compressionFormat?: DecompressionCompressionFormat;
-}
-
-/**
- * The data processor to decompress CloudWatch Logs.
- *
- * @see https://docs.aws.amazon.com/firehose/latest/dev/writing-with-cloudwatch-logs-decompression.html
- */
-export class DecompressionProcessor implements IDataProcessor {
-  public readonly props: DataProcessorProps = {};
-
-  constructor(private readonly options: DecompressionProcessorOptions = {}) {}
-
-  bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
-    return {
-      processorType: 'Decompression',
-      processorIdentifier: { parameterName: '', parameterValue: '' },
-      parameters: [
-        { parameterName: 'CompressionFormat', parameterValue: this.options.compressionFormat ?? 'GZIP' },
-      ],
-    };
-  }
-}
-
-/**
- * Options for CloudWatchLogProcessingProcessor.
- */
-export interface CloudWatchLogProcessingProcessorOptions {
-  /**
-   * Extract message from CloudWatch logs.
-   * This must be true.
-   */
-  readonly dataMessageExtraction: boolean;
-}
-
-/**
- * The data processor to extract message after decompression of CloudWatch Logs.
- * This processor must used with `DecompressionProcessor`
- *
- * @see https://docs.aws.amazon.com/firehose/latest/dev/Message_extraction.html
- */
-export class CloudWatchLogProcessingProcessor implements IDataProcessor {
-  public readonly props: DataProcessorProps = {};
-
-  constructor(options: CloudWatchLogProcessingProcessorOptions) {
-    if (!options.dataMessageExtraction) {
-      throw new UnscopedValidationError('dataMessageExtraction must be true.');
-    }
-  }
-
-  bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
-    return {
-      processorType: 'CloudWatchLogProcessing',
-      processorIdentifier: { parameterName: '', parameterValue: '' },
-      parameters: [
-        { parameterName: 'DataMessageExtraction', parameterValue: 'true' },
-      ],
-    };
-  }
-}
-
-/**
- * The data processor to append new line delimiter to each record.
- *
- * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-s3bucketprefix.html#dynamic-partitioning-new-line-delimiter
- */
-export class AppendDelimiterToRecordProcessor implements IDataProcessor {
-  public readonly props: DataProcessorProps = {};
-
-  constructor() {}
-
-  bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
-    return {
-      processorType: 'AppendDelimiterToRecord',
-      processorIdentifier: { parameterName: '', parameterValue: '' },
-    };
-  }
 }

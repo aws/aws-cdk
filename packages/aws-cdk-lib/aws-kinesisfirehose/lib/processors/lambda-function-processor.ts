@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
-import { CfnDeliveryStream } from './kinesisfirehose.generated';
-import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from './processor';
-import * as lambda from '../../aws-lambda';
-import { Tokenization } from '../../core';
+import * as lambda from '../../../aws-lambda';
+import { Tokenization } from '../../../core';
+import { CfnDeliveryStream } from '../kinesisfirehose.generated';
+import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
 
 /**
  * Use an AWS Lambda function to transform records.
