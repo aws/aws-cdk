@@ -1,7 +1,6 @@
 import * as validation from './private/validation';
 import * as s3 from '../../aws-s3';
-import { Lazy, Token } from '../../core';
-import { UnscopedValidationError } from '../../core';
+import { Lazy, Token, UnscopedValidationError } from '../../core';
 
 /**
  * An output artifact of an action. Artifacts can be used as input by some actions.

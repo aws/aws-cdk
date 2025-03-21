@@ -1,6 +1,6 @@
-import { UnscopedValidationError } from '../../core';
 import { IAction } from './action';
 import { CfnPipeline } from './codepipeline.generated';
+import { UnscopedValidationError } from '../../core';
 
 /**
  * Git push filter for trigger.

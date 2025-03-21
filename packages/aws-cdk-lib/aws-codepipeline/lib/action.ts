@@ -1,10 +1,10 @@
 import { Construct } from 'constructs';
+import { Artifact } from './artifact';
 import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import { Duration, IResource, Lazy, UnscopedValidationError } from '../../core';
-import { Artifact } from './artifact';
 
 export enum ActionCategory {
   SOURCE = 'Source',

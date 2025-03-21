@@ -1,28 +1,4 @@
 import { Construct } from 'constructs';
-import * as notifications from '../../aws-codestarnotifications';
-import * as events from '../../aws-events';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as s3 from '../../aws-s3';
-import {
-  Annotations,
-  ArnFormat,
-  BootstraplessSynthesizer,
-  Stage as CdkStage,
-  DefaultStackSynthesizer,
-  FeatureFlags,
-  IStackSynthesizer,
-  Lazy,
-  Names,
-  PhysicalName,
-  RemovalPolicy,
-  Resource,
-  Stack,
-  Token,
-} from '../../core';
-import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import * as cxapi from '../../cx-api';
 import {
   ActionCategory,
   IAction,
@@ -39,6 +15,31 @@ import { Stage } from './private/stage';
 import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
 import { Trigger, TriggerProps } from './trigger';
 import { Variable } from './variable';
+import * as notifications from '../../aws-codestarnotifications';
+import * as events from '../../aws-events';
+import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import * as s3 from '../../aws-s3';
+import {
+  Annotations,
+  ArnFormat,
+  BootstraplessSynthesizer,
+  DefaultStackSynthesizer,
+  FeatureFlags,
+  IStackSynthesizer,
+  Lazy,
+  Names,
+  PhysicalName,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Stage as CdkStage,
+  Token,
+  ValidationError,
+  UnscopedValidationError,
+} from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import * as cxapi from '../../cx-api';
 
 /**
  * Allows you to control where to place a new Stage when it's added to the Pipeline.
@@ -828,7 +829,7 @@ export class Pipeline extends PipelineBase {
     const pipelineStack = Stack.of(this);
     const pipelineAccount = pipelineStack.account;
     if (Token.isUnresolved(pipelineAccount)) {
-      throw new UnscopedValidationError("You need to specify an explicit account when using CodePipeline's cross-region support");  
+      throw new UnscopedValidationError("You need to specify an explicit account when using CodePipeline's cross-region support");
     }
 
     const app = this.supportScope();
