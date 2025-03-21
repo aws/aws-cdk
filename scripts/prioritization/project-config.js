@@ -45,7 +45,7 @@ const NEEDS_ATTENTION_STATUS = {
 
 /**
  * Project configuration for GitHub project automation.
- * Note: For projectId, priorityFieldId, statusFieldId, and attentionFieldId,
+ * Note: For projectId, priorityFieldId, statusFieldId, attentionFieldId and addedOnFieldId,
  * refer to Setup section in README.md on how to retrieve these values using GraphQL query.
  * These IDs need to be updated only when project fields are modified.
  */
@@ -57,6 +57,7 @@ module.exports = {
   priorityFieldId: 'PVTSSF_lADOACIPmc4Av_32zgmVmPs',
   statusFieldId: 'PVTSSF_lADOACIPmc4Av_32zgmVmF8',
   attentionFieldId: 'PVTSSF_lADOACIPmc4Av_32zgmZDdo',
+  addedOnFieldId: 'PVTF_lADOACIPmc4Av_32zgqbglg',
   LABELS,
   PRIORITIES,
   STATUS,
