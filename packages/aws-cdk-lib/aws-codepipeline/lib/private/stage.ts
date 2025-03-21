@@ -3,7 +3,7 @@ import { FullActionDescriptor } from './full-action-descriptor';
 import * as validation from './validation';
 import * as events from '../../../aws-events';
 import * as cdk from '../../../core';
-import { Token } from '../../../core';
+import { Token, UnscopedValidationError } from '../../../core';
 import { IAction, IPipeline, IStage } from '../action';
 import { Artifact } from '../artifact';
 import { CfnPipeline } from '../codepipeline.generated';
@@ -91,7 +91,7 @@ export class Stage implements IStage {
 
     // check for duplicate Actions and names
     if (this._actions.find(a => a.actionName === actionName)) {
-      throw new Error(`Stage ${this.stageName} already contains an action with name '${actionName}'`);
+      throw new UnscopedValidationError(`Stage ${this.stageName} already contains an action with name '${actionName}'`);
     }
 
     this._actions.push(this.attachActionToPipeline(action));

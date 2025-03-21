@@ -1,4 +1,5 @@
 import * as cdk from '../../../core';
+import { UnscopedValidationError } from '../../../core';
 import { ActionCategory } from '../action';
 import { Artifact } from '../artifact';
 
@@ -69,6 +70,6 @@ function validateAgainstRegex(regex: RegExp, thing: string, name: string | undef
   }
 
   if (name !== undefined && !regex.test(name)) {
-    throw new Error(`${thing} name must match regular expression: ${regex.toString()}, got '${name}'`);
+    throw new UnscopedValidationError(`${thing} name must match regular expression: ${regex.toString()}, got '${name}'`);
   }
 }
