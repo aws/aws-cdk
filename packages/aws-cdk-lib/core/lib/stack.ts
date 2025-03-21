@@ -36,6 +36,9 @@ const TEMPLATE_BODY_MAXIMUM_SIZE = 1_000_000;
 
 const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
+// "Default" is a "hidden id" from a `node.uniqueId` perspective
+const DEFAULT_ID = 'Default';
+
 const MAX_RESOURCES = 500;
 
 export interface StackProps {
@@ -428,7 +431,7 @@ export class Stack extends Construct implements ITaggable {
     });
 
     // "Default" is a "hidden id" from a `node.uniqueId` perspective
-    id = id ?? 'Default';
+    id = id ?? DEFAULT_ID;
 
     super(scope, id);
 
@@ -1735,11 +1738,34 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
 function makeStackName(components: string[], prefix: string='') {
   if (components.length === 1) {
     const stack_name = prefix + components[0];
-    if (stack_name.length <= 128) {
+    // If we have a valid name already, let's go with it
+    if (stack_name.length <= 128 && VALID_STACK_NAME_REGEX.test(stack_name)) {
       return stack_name;
     }
   }
-  return makeUniqueResourceName(components, { maxLength: 128, prefix: prefix });
+
+  // makeUniqueResourceName doesn't guarantee that no numbers are at the start
+  const sanitizedComponents = prefix ? components : stackNameSafeComponents(components);
+  if (sanitizedComponents.length === 0) {
+    return DEFAULT_ID;
+  }
+  return makeUniqueResourceName(sanitizedComponents, { maxLength: 128, prefix: prefix });
+}
+
+function stackNameSafeComponents(components: string[]): string[] {
+  return components.reduce((acc, component) => {
+    if (acc.length) {
+      // we already have a safe component in the path
+      acc.push(component);
+    } else {
+      // make the component safe and push it, skip if the result is empty
+      const safe = component.replace(/^[^A-Za-z]+/g, '');
+      if (safe) {
+        acc.push(safe);
+      }
+    }
+    return acc;
+  }, [] as string[]);
 }
 
 function getCreateExportsScope(stack: Stack) {

@@ -40,22 +40,22 @@ describe('stack', () => {
   });
 
   test.each([
-    // ['Has:Colon', 'HasColon'],
-    // ['0startWithNumber', 'startWithNumber'],
+    ['Has:Colon', 'HasColon'],
+    ['0startWithNumber', 'startWithNumber'],
     ['Has-Dash', 'Has-Dash'],
     [undefined, 'Default'],
-    // ['With_Underscore', 'With_Underscore'],
-    // ['with.dot', 'withdot'],
-    // ['with/slash', 'withslash'],
-    // ['with space', 'withspace'],
+    ['With_Underscore', 'WithUnderscore'],
+    ['with.dot', 'withdot'],
+    ['with/slash', 'with--slash'],
+    ['with space', 'withspace'],
     ['UPPERCASE', 'UPPERCASE'],
     ['mixedCase123', 'mixedCase123'],
-    // ['!@#$%^', 'Default'],
-    // ['123456', 'Default'],
-    // ['a-b-c', 'a-b-c'],
-    // ['x_y_z', 'x_y_z'],
-    // ['abc.def.ghi', 'abcdefghi'],
-  ])('valid stack name is generated from valid construct id %s', (id, stackName) => {
+    ['!@#$%^', 'Default'],
+    ['123456', 'Default'],
+    ['a-b-c', 'a-b-c'],
+    ['x_y_z', 'xyz'],
+    ['abc.def.ghi', 'abcdefghi'],
+  ])('valid stack name for construct id \'%s\'', (id, stackName) => {
     // GIVEN
     const app = new App({});
 
