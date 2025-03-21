@@ -203,7 +203,7 @@ The input to the target data stream can be transformed:
 declare const sourceQueue: sqs.Queue;
 declare const targetDeliveryStream: firehose.DeliveryStream;
 
-const streamTarget = new targets.KinesisTarget(targetDeliveryStream, {
+const streamTarget = new targets.FirehoseTarget(targetDeliveryStream, {
   inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
 });
 
