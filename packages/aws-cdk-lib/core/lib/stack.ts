@@ -487,9 +487,11 @@ export class Stack extends Construct implements ITaggable {
     const featureFlags = FeatureFlags.of(this);
     const stackNameDupeContext = featureFlags.isEnabled(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT);
     const newStyleSynthesisContext = featureFlags.isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
-    this.artifactId = (stackNameDupeContext || newStyleSynthesisContext)
+    const artifactId = (stackNameDupeContext || newStyleSynthesisContext)
       ? this.generateStackArtifactId()
       : this.stackName;
+    // Sanitize artifact id, since it is used as part of a file name
+    this.artifactId = artifactId.replace(/[^A-Za-z0-9_\-\.]/g, '_');
 
     this.templateFile = `${this.artifactId}.template.json`;
 
