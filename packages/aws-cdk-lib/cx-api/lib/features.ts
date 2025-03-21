@@ -1431,6 +1431,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
 
+  //////////////////////////////////////////////////////////////////////
   [EVENTBUS_POLICY_SID_REQUIRED]: {
     type: FlagType.BugFix,
     summary: 'When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals.',
