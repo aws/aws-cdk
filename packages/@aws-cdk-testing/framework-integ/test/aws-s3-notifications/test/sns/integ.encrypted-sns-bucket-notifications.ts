@@ -5,10 +5,12 @@ import * as cdk from 'aws-cdk-lib';
 import * as s3n from 'aws-cdk-lib/aws-s3-notifications';
 import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class MyStack extends cdk.Stack {
   public readonly bucket: s3.IBucket;
+  public readonly queue: sqs.IQueue;
+
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
@@ -20,8 +22,8 @@ class MyStack extends cdk.Stack {
       masterKey: kmsKey,
     });
 
-    const queue = new sqs.Queue(this, 'Queue');
-    topic.addSubscription(new subscriptions.SqsSubscription(queue));
+    this.queue = new sqs.Queue(this, 'Queue');
+    topic.addSubscription(new subscriptions.SqsSubscription(this.queue));
 
     this.bucket = new s3.Bucket(this, 'MyBucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -36,10 +38,24 @@ const app = new cdk.App();
 
 const stack = new MyStack(app, 'SnsBucketNotificationsSseStack');
 
-new IntegTest(app, 'SnsBucketNotificationsSseInteg', {
+const integ = new IntegTest(app, 'SnsBucketNotificationsSseInteg', {
   testCases: [stack],
 });
 
-// integ.assertions.awsApiCall('S3', 'putObject', {
-//   Bucket: stack.bucket.bucketName,
-// });
+const putObject = integ.assertions.awsApiCall('S3', 'putObject', {
+  Bucket: stack.bucket.bucketName,
+  Key: 'testFile.json',
+  Body: JSON.stringify([
+    { objectId: 1 },
+    { objectId: 2 },
+  ]),
+});
+
+putObject.next(integ.assertions.awsApiCall('SQS', 'receiveMessage', {
+  QueueUrl: stack.queue.queueUrl,
+})).expect(ExpectedResult.objectLike({
+  Messages: [{}],
+})).waitForAssertions({
+  totalTimeout: cdk.Duration.minutes(1),
+  interval: cdk.Duration.seconds(15),
+});

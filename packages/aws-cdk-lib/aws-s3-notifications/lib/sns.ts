@@ -26,7 +26,7 @@ export class SnsDestination implements s3.IBucketNotificationDestination {
     if (addKeyPolicy && this.topic.masterKey) {
       const statement = new iam.PolicyStatement({
         principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
-        actions: ['kms:GenerateDataKey*', 'kms:Decrypt'],
+        actions: ['kms:GenerateDataKey', 'kms:Decrypt'],
         resources: ['*'],
       });
       const addResult = this.topic.masterKey.addToResourcePolicy(statement, true);
