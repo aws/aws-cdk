@@ -2,7 +2,8 @@ import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
-import { Annotations } from '../../core';
+import { Annotations, FeatureFlags } from '../../core';
+import * as cxapi from '../../cx-api';
 
 /**
  * Use an SNS topic as a bucket notification destination
@@ -11,7 +12,7 @@ export class SnsDestination implements s3.IBucketNotificationDestination {
   constructor(private readonly topic: sns.ITopic) {
   }
 
-  public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
+  public bind(scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
     this.topic.addToResourcePolicy(new iam.PolicyStatement({
       principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
       actions: ['sns:Publish'],
@@ -21,7 +22,8 @@ export class SnsDestination implements s3.IBucketNotificationDestination {
       },
     }));
 
-    if (this.topic.masterKey) {
+    const addKeyPolicy = FeatureFlags.of(scope).isEnabled(cxapi.S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS);
+    if (addKeyPolicy && this.topic.masterKey) {
       const statement = new iam.PolicyStatement({
         principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
         actions: ['kms:GenerateDataKey*', 'kms:Decrypt'],
