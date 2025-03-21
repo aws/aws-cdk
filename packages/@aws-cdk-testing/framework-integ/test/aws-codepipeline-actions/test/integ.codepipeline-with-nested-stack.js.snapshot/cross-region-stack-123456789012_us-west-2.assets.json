@@ -1,9 +1,9 @@
 {
-  "version": "38.0.1",
+  "version": "40.0.0",
   "files": {
     "6ead11ac2a258f5956aa4d821020d99d8460173de308c7fd28a388dc243e3f89": {
       "source": {
-        "path": "cross-region-stack-123456789012:us-west-2.template.json",
+        "path": "cross-region-stack-123456789012_us-west-2.template.json",
         "packaging": "file"
       },
       "destinations": {
