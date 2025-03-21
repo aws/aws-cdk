@@ -13,6 +13,7 @@ import { FullActionDescriptor } from './private/full-action-descriptor';
 import { RichAction } from './private/rich-action';
 import { Stage } from './private/stage';
 import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
+import { Rule } from './rule';
 import { Trigger, TriggerProps } from './trigger';
 import { Variable } from './variable';
 import * as notifications from '../../aws-codestarnotifications';
@@ -63,6 +64,57 @@ export interface StagePlacement {
 }
 
 /**
+ * The condition for the stage.
+ *
+ * A condition is made up of the rules and the result for the condition.
+ */
+export interface Condition {
+  /**
+   * The rules that make up the condition.
+   *
+   * @default - No rules are applied
+   */
+  readonly rules?: Rule[];
+
+  /**
+   * The action to be done when the condition is met.
+   *
+   * @default - No result action is taken
+   */
+  readonly result?: Result;
+}
+
+/**
+ * The conditions for making checks for the stage.
+ */
+export interface Conditions {
+  /**
+   * The conditions that are configured as entry conditions, making check to succeed the stage, or fail the stage.
+   *
+   * @default - No conditions are configured
+   */
+  readonly conditions?: Condition[];
+}
+
+/**
+ * The configuration that specifies the result, such as rollback, to occur upon stage failure.
+ */
+export interface FailureConditions extends Conditions {
+  /**
+   * The specified result for when the failure conditions are met, such as rolling back the stage.
+   *
+   * @default FAIL
+   */
+  readonly result?: Result;
+
+  /**
+   * The method that you want to configure for automatic stage retry on stage failure.
+   *
+   * @default ALL_ACTIONS
+   */
+  readonly retryMode?: RetryMode;
+}
+/**
  * Construction properties of a Pipeline Stage.
  */
 export interface StageProps {
@@ -91,10 +143,67 @@ export interface StageProps {
    * @default 'Transition disabled'
    */
   readonly transitionDisabledReason?: string;
+  /**
+   * The method to use when a stage allows entry.
+   *
+   * @default - No conditions are applied before stage entry
+   */
+  readonly beforeEntry?: Conditions;
+
+  /**
+   * The method to use when a stage has not completed successfully.
+   *
+   * @default - No failure conditions are applied
+   */
+  readonly onFailure?: FailureConditions;
+
+  /**
+   * The method to use when a stage has succeeded.
+   *
+   * @default - No success conditions are applied
+   */
+  readonly onSuccess?: Conditions;
+
 }
 
 export interface StageOptions extends StageProps {
   readonly placement?: StagePlacement;
+}
+
+/**
+ * The action to be done when the condition is met.
+ */
+export enum Result {
+  /**
+   * Rollback
+   */
+  ROLLBACK = 'ROLLBACK',
+  /**
+   * Failure
+   */
+  FAIL = 'FAIL',
+  /**
+   * Retry
+   */
+  RETRY = 'RETRY',
+  /**
+   * Skip
+   */
+  SKIP = 'SKIP',
+}
+/**
+ * The method that you want to configure for automatic stage retry on stage failure.
+ * You can specify to retry only failed action in the stage or all actions in the stage.
+ */
+export enum RetryMode {
+  /**
+   * Retry all actions under this stage
+   */
+  ALL_ACTIONS = 'ALL_ACTIONS',
+  /**
+   * Only retry failed actions
+   */
+  FAILED_ACTIONS = 'FAILED_ACTIONS',
 }
 
 /**

@@ -3,6 +3,7 @@ import { FakeSourceAction } from './fake-source-action';
 import { Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as codepipeline from '../lib';
+import { Result } from '../lib';
 import { Stage } from '../lib/private/stage';
 
 /* eslint-disable quote-props */
@@ -180,6 +181,130 @@ describe('stages', () => {
           {
             Reason: 'Transition disabled',
             StageName: 'SecondStage',
+          },
+        ],
+      });
+    });
+
+    test('can set up stage level conditions to a stage', () => {
+      const stack = new cdk.Stack();
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+      const beforeEntry = {
+        conditions: [{
+          rules: [new codepipeline.Rule({
+            name: 'LambdaCheck',
+            provider: 'LambdaInvoke',
+            version: '1',
+            configuration: {
+              FunctionName: 'functionName1',
+            },
+          })],
+          result: codepipeline.Result.FAIL,
+        }],
+      };
+      const onSuccess = {
+        conditions: [{
+          result: Result.FAIL,
+          rules: [new codepipeline.Rule({
+            name: 'CloudWatchCheck',
+            provider: 'LambdaInvoke',
+            version: '1',
+            configuration: {
+              AlarmName: 'AlarmName1',
+              WaitTime: '300', // 5 minutes
+              FunctionName: 'funcName2',
+            },
+          })],
+        }],
+      };
+      const onFailure = {
+        conditions: [{
+          result: Result.ROLLBACK,
+          rules: [new codepipeline.Rule({
+            name: 'RollBackOnFailure',
+            provider: 'LambdaInvoke',
+            version: '1',
+            configuration: {
+              AlarmName: 'AlarmName2',
+              WaitTime: '300', // 5 minutes
+              FunctionName: 'funcName1',
+            },
+          })],
+        }],
+      };
+      const firstStage = pipeline.addStage({ stageName: 'FirstStage' });
+      const secondStage = pipeline.addStage({ stageName: 'SecondStage', onFailure, onSuccess, beforeEntry });
+
+      // -- dummy actions here are needed to satisfy validation rules
+      const sourceArtifact = new codepipeline.Artifact();
+      firstStage.addAction(new FakeSourceAction({
+        actionName: 'dummyAction',
+        output: sourceArtifact,
+      }));
+      secondStage.addAction(new FakeBuildAction({
+        actionName: 'dummyAction',
+        input: sourceArtifact,
+      }));
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        Stages: [
+          { Name: 'FirstStage' },
+          {
+            Name: 'SecondStage',
+            BeforeEntry: {
+              Conditions: [
+                {
+                  Rules: [
+                    {
+                      Name: 'LambdaCheck',
+                      RuleTypeId: {
+                        Provider: 'LambdaInvoke',
+                        Version: '1',
+                        Category: 'Rule',
+                        Owner: 'AWS',
+                      },
+                    },
+                  ],
+                  Result: 'FAIL',
+                },
+              ],
+            },
+            OnSuccess: {
+              Conditions: [
+                {
+                  Rules: [
+                    {
+                      Name: 'CloudWatchCheck',
+                      RuleTypeId: {
+                        Provider: 'LambdaInvoke',
+                        Version: '1',
+                        Category: 'Rule',
+                        Owner: 'AWS',
+                      },
+                    },
+                  ],
+                  Result: 'FAIL',
+                },
+              ],
+            },
+            OnFailure: {
+              Conditions: [
+                {
+                  Rules: [
+                    {
+                      Name: 'RollBackOnFailure',
+                      RuleTypeId: {
+                        Provider: 'LambdaInvoke',
+                        Version: '1',
+                        Category: 'Rule',
+                        Owner: 'AWS',
+                      },
+                    },
+                  ],
+                  Result: 'ROLLBACK',
+                },
+              ],
+            },
           },
         ],
       });

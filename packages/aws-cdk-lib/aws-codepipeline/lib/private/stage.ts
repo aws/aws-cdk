@@ -7,7 +7,7 @@ import { Token } from '../../../core';
 import { IAction, IPipeline, IStage } from '../action';
 import { Artifact } from '../artifact';
 import { CfnPipeline } from '../codepipeline.generated';
-import { Pipeline, StageProps } from '../pipeline';
+import { Conditions, FailureConditions, Pipeline, StageProps } from '../pipeline';
 
 /**
  * A Stage in a Pipeline.
@@ -24,6 +24,9 @@ export class Stage implements IStage {
   public readonly stageName: string;
   public readonly transitionToEnabled: boolean;
   public readonly transitionDisabledReason: string;
+  private readonly beforeEntry?: Conditions;
+  private readonly onSuccess?: Conditions;
+  private readonly onFailure?: FailureConditions;
   private readonly scope: Construct;
   private readonly _pipeline: Pipeline;
   private readonly _actions = new Array<FullActionDescriptor>();
@@ -35,6 +38,9 @@ export class Stage implements IStage {
     this.stageName = props.stageName;
     this.transitionToEnabled = props.transitionToEnabled ?? true;
     this.transitionDisabledReason = props.transitionDisabledReason ?? 'Transition disabled';
+    this.beforeEntry = props.beforeEntry;
+    this.onSuccess = props.onSuccess;
+    this.onFailure = props.onFailure;
     this._pipeline = pipeline;
     this.scope = new Construct(pipeline, this.stageName);
     validation.validateName(this.scope, 'Stage', props.stageName);
@@ -80,6 +86,15 @@ export class Stage implements IStage {
     return {
       name: this.stageName,
       actions: this._actions.map(action => this.renderAction(action)),
+      ...(this.beforeEntry && {
+        beforeEntry: this.renderBeforeEntry(this.beforeEntry),
+      }),
+      ...(this.onSuccess && {
+        onSuccess: this.renderOnSuccess(this.onSuccess),
+      }),
+      ...(this.onFailure && {
+        onFailure: this.renderOnFailure(this.onFailure),
+      }),
     };
   }
 
@@ -186,6 +201,45 @@ export class Stage implements IStage {
     return artifacts
       .filter(a => a.artifactName)
       .map(a => ({ name: a.artifactName!, files: a.artifactFiles }));
+  }
+
+  private renderBeforeEntry(conditions: Conditions): CfnPipeline.BeforeEntryConditionsProperty {
+    return {
+      conditions: this.getConditions(conditions),
+    };
+  }
+
+  private renderOnSuccess(conditions: Conditions): CfnPipeline.SuccessConditionsProperty {
+    return {
+      conditions: this.getConditions(conditions),
+    };
+  }
+
+  private renderOnFailure(conditions: FailureConditions): CfnPipeline.FailureConditionsProperty {
+    return {
+      conditions: this.getConditions(conditions),
+      result: conditions.result ?? undefined,
+      retryConfiguration: conditions.retryMode ? {
+        retryMode: conditions.retryMode,
+      } : undefined,
+    };
+  }
+
+  private getConditions(conditions: Conditions): Array<CfnPipeline.ConditionProperty> | undefined {
+    // Early return for empty conditions
+    if (!conditions?.conditions?.length) {
+      return undefined;
+    }
+
+    return conditions.conditions.map(({ rules = [], result }) => ({
+      ...(rules.length && {
+        rules: rules.map(rule => ( rule._render()
+        )),
+      }),
+      ...(result && {
+        result: result ?? undefined,
+      }),
+    }));
   }
 }
 
