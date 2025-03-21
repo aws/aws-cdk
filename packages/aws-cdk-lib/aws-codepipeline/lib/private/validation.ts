@@ -63,6 +63,9 @@ export function validatePipelineVariableName(variableName: string | undefined): 
   validateAgainstRegex(undefined, /^[A-Za-z0-9@\-_]{1,128}$/, 'Variable', variableName);
 }
 
+export function validateRuleName(ruleName: string | undefined): void {
+  validateAgainstRegex(undefined, /^[A-Za-z0-9.@\-_]{1,100}$/, 'Rule', ruleName);
+}
 function validateAgainstRegex(scope: Construct | undefined, regex: RegExp, thing: string, name: string | undefined) {
   // name could be a Token - in that case, skip validation altogether
   if (cdk.Token.isUnresolved(name)) {
