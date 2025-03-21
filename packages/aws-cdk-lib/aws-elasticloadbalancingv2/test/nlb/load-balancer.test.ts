@@ -1,10 +1,10 @@
 import { Match, Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
+import { IpAddressType } from '../../../aws-opensearchservice/lib/domain';
 import * as route53 from '../../../aws-route53';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
-import { IpAddressType } from '../../../aws-opensearchservice/lib/domain';
 
 describe('tests', () => {
   describe('subnet mappings', () => {
