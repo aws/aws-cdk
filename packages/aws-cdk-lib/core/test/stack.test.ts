@@ -55,7 +55,7 @@ describe('stack', () => {
     ['a-b-c', 'a-b-c'],
     ['x_y_z', 'xyz'],
     ['abc.def.ghi', 'abcdefghi'],
-  ])('valid stack name for construct id \'%s\'', (id, stackName) => {
+  ])('valid artifact id and stack name for construct id \'%s\'', (id, expected) => {
     // GIVEN
     const app = new App({});
 
@@ -63,7 +63,22 @@ describe('stack', () => {
     const stack = new Stack(app, id);
 
     // THEN
-    expect(stack.stackName).toBe(stackName);
+    expect(stack.stackName).toBe(expected);
+    expect(stack.artifactId).toBe(expected);
+  });
+
+  test('valid artifact id when valid stack name is given, but construct id contains special chars', () => {
+    // GIVEN
+    const app = new App({});
+
+    // WHEN
+    const stack = new Stack(app, 'Has:Colon', {
+      stackName: 'ValidStackName',
+    });
+
+    // THEN
+    expect(stack.stackName).toBe('ValidStackName');
+    expect(stack.artifactId).toBe('HasColon');
   });
 
   test('stack objects have some template-level properties, such as Description, Version, Transform', () => {
