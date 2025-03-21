@@ -1,7 +1,6 @@
 import { Construct } from 'constructs';
-import { CfnDeliveryStream } from './kinesisfirehose.generated';
 import * as iam from '../../aws-iam';
-import { Duration, Size, ValidationError } from '../../core';
+import { Duration, Size } from '../../core';
 
 /**
  * Configure the data processor.
@@ -93,110 +92,4 @@ export interface IDataProcessor {
    * necessary configuration to register as a processor.
    */
   bind(scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig;
-}
-
-/**
- * Props for RecordDeAggregationProcessor
- */
-export interface RecordDeAggregationProcessorOptions {
-  /**
-   * FIXME: SubRecordType
-   */
-  readonly subRecordType: SubRecordType;
-  /**
-   * FIXME: Delimiter; required when subRecordType is DELIMITED
-   * @default - No delimiter
-   */
-  readonly delimiter?: string;
-}
-
-/**
- * FIXME: The sub record type
- */
-export enum SubRecordType {
-  /** JSON */
-  JSON = 'JSON',
-  /** DELIMITED */
-  DELIMITED = 'DELIMITED',
-}
-
-/**
- * Multi record deaggrecation processor
- * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-multirecord-deaggergation.html
- */
-export class RecordDeAggregationProcessor implements IDataProcessor {
-  readonly props: DataProcessorProps = {};
-
-  constructor(private readonly options: RecordDeAggregationProcessorOptions) {}
-
-  bind(scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
-    const parameters: CfnDeliveryStream.ProcessorParameterProperty[] = [
-      { parameterName: 'SubRecordType', parameterValue: this.options.subRecordType },
-    ];
-    if (this.options.subRecordType === SubRecordType.DELIMITED) {
-      if (!this.options.delimiter) {
-        throw new ValidationError('delimiter must be specified when subRecordType is DELIMITED.', scope);
-      }
-      parameters.push({
-        parameterName: 'Delimiter', parameterValue: Buffer.from(this.options.delimiter).toString('base64'),
-      });
-    }
-    return {
-      processorType: 'RecordDeAggregation',
-      processorIdentifier: { parameterName: '', parameterValue: '' },
-      parameters,
-    };
-  }
-}
-
-/**
- * Props for MetadataExtractionProcessor
- */
-export interface MetadataExtractionProcessorOptions {
-  /**
-   * Map parameter to JQ query
-   */
-  readonly metadataExtractionQuery: Record<string, string>;
-  /**
-   * JSON parsing engine
-   */
-  readonly jsonParsingEngine: JsonParsingEngine;
-}
-
-/**
- * The JSON parsing engine for MetadataExtractionProcessor
- */
-export enum JsonParsingEngine {
-  /** JQ 1.6 */
-  JQ_1_6 = 'JQ-1.6',
-}
-
-/**
- * Metadata extraction processor
- * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-partitioning-keys.html
- */
-export class MetadataExtractionProcessor implements IDataProcessor {
-  readonly props: DataProcessorProps = {};
-
-  constructor(private readonly options: MetadataExtractionProcessorOptions) {}
-
-  bind(scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
-    if (Object.keys(this.options.metadataExtractionQuery).length === 0) {
-      throw new ValidationError('metadataExtractionQuery is empty', scope);
-    }
-
-    const jqQuery = Object.entries(this.options.metadataExtractionQuery).map(([key, query]) => `${JSON.stringify(key)}:${query}`);
-    const metadataExtractionQuery = `{${jqQuery.join(',')}}`;
-
-    const parameters: CfnDeliveryStream.ProcessorParameterProperty[] = [
-      { parameterName: 'MetadataExtractionQuery', parameterValue: metadataExtractionQuery },
-      { parameterName: 'JsonParsingEngine', parameterValue: this.options.jsonParsingEngine },
-    ];
-
-    return {
-      processorType: 'MetadataExtraction',
-      processorIdentifier: { parameterName: '', parameterValue: '' },
-      parameters,
-    };
-  }
 }
