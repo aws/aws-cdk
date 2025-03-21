@@ -613,6 +613,10 @@ describe('S3 destination', () => {
           DynamicPartitioningConfiguration: {
             Enabled: true,
           },
+          BufferingHints: {
+            SizeInMBs: 64,
+            IntervalInSeconds: 300,
+          },
         },
       });
     });
@@ -633,6 +637,10 @@ describe('S3 destination', () => {
               DurationInSeconds: 300,
             },
           },
+          BufferingHints: {
+            SizeInMBs: 64,
+            IntervalInSeconds: 300,
+          },
         },
       });
     });
@@ -647,6 +655,32 @@ describe('S3 destination', () => {
           destination: destination,
         });
       }).toThrow('The maximum retry duration is 7200 seconds, got 10800 seconds.');
+    });
+
+    it('throws when buffering size is < 64 MiB', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true, retry: cdk.Duration.hours(3) },
+        bufferingSize: cdk.Size.mebibytes(32),
+      });
+
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow("'bufferingSize' must be at least 64 MiB when Dynamic Partitioning is enabled, got 32.");
+    });
+
+    it('throws when error output prefix is not specified', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        dataOutputPrefix: '!{partitionKeyFromQuery:foo}',
+      });
+
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow("'errorOutputPrefix' cannot be null or empty when 'dataOutputPrefix' contains expressions.");
     });
 
     it('configures multi record deaggregation with JSON', () => {

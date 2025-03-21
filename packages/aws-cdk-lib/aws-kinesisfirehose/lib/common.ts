@@ -96,7 +96,7 @@ export interface CommonDestinationS3Props {
    * Minimum: Size.mebibytes(1)
    * Maximum: Size.mebibytes(128)
    *
-   * @default Size.mebibytes(5)
+   * @default - Size.mebibytes(64) if dynamic partitioning is enabled, Size.mebibytes(5) otherwise
    */
   readonly bufferingSize?: cdk.Size;
 
@@ -125,7 +125,7 @@ export interface CommonDestinationS3Props {
    * This prefix appears immediately following the bucket name.
    * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html
    *
-   * @default "YYYY/MM/DD/HH"
+   * @default - "<specified-prefix>/<error-output-type>/YYYY/MM/DD/HH"
    */
   readonly errorOutputPrefix?: string;
 
