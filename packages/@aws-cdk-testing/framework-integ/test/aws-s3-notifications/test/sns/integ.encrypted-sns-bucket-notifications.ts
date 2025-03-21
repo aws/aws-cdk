@@ -34,11 +34,7 @@ class MyStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App({
-  postCliContext: {
-    '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions': false,
-  },
-});
+const app = new cdk.App();
 
 const stack = new MyStack(app, 'SnsBucketNotificationsStack');
 
@@ -58,6 +54,7 @@ const putObject = integ.assertions.awsApiCall('S3', 'putObject', {
 putObject.next(integ.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: stack.queue.queueUrl,
 })).expect(ExpectedResult.objectLike({
+  // Receive at least 1 message
   Messages: [{}],
 })).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(1),
