@@ -466,6 +466,7 @@ describe('Job', () => {
         },
         numberOfWorkers: 2,
         maxRetries: 2,
+        notifyDelayAfter: cdk.Duration.minutes(5),
       });
     });
 
@@ -563,6 +564,14 @@ describe('Job', () => {
           Name: glue.JobType.STREAMING,
           ScriptLocation: 's3://bucketname/script',
           PythonVersion: glue.PythonVersion.THREE,
+        },
+      });
+    });
+
+    test('Should set notify delay', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        NotificationProperty: {
+          NotifyDelayAfter: 5,
         },
       });
     });

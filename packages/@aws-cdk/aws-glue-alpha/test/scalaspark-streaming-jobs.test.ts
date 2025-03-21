@@ -276,6 +276,7 @@ describe('Job', () => {
         numberOfWorkers: 2,
         maxRetries: 2,
         jobRunQueuingEnabled: true,
+        notifyDelayAfter: cdk.Duration.minutes(5),
       });
     });
 
@@ -369,6 +370,14 @@ describe('Job', () => {
           FirstTagName: 'FirstTagValue',
           SecondTagName: 'SecondTagValue',
           XTagName: 'XTagValue',
+        },
+      });
+    });
+
+    test('Should set notify delay', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        NotificationProperty: {
+          NotifyDelayAfter: 5,
         },
       });
     });

@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "40.0.0",
   "files": {
     "432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "0222cd48958b3146476a2504ebb4e4e21ba80d0d900991f191243efc281b0da2": {
+    "fb32392cc12dc489bedf064fdbe024f89cad3dca60acce4a968ccbd4e4a86538": {
       "source": {
         "path": "aws-glue-job-python-shell.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0222cd48958b3146476a2504ebb4e4e21ba80d0d900991f191243efc281b0da2.json",
+          "objectKey": "fb32392cc12dc489bedf064fdbe024f89cad3dca60acce4a968ccbd4e4a86538.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
