@@ -40,17 +40,17 @@ describe('stack', () => {
   });
 
   test.each([
-    ['Has:Colon', 'HasColon'],
+    ['Has:Colon', 'Has_Colon'],
     ['0startWithNumber', '0startWithNumber'],
     ['Has-Dash', 'Has-Dash'],
     [undefined, 'Default'],
     ['With_Underscore', 'With_Underscore'],
     ['with.dot', 'with.dot'],
     ['with/slash', 'with--slash'],
-    ['with space', 'withspace'],
+    ['with space', 'with_space'],
     ['UPPERCASE', 'UPPERCASE'],
     ['mixedCase123', 'mixedCase123'],
-    ['!@#$%^', 'ValidStackName'],
+    ['!@#$%^', '______'],
     ['123456', '123456'],
     ['a-b-c', 'a-b-c'],
     ['x_y_z', 'x_y_z'],

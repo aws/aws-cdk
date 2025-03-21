@@ -491,7 +491,7 @@ export class Stack extends Construct implements ITaggable {
       ? this.generateStackArtifactId()
       : this.stackName;
     // Sanitize artifact id, since it is used as part of a file name
-    this.artifactId = artifactId.replace(/[^A-Za-z0-9_\-\.]/g, '') || this.stackName;
+    this.artifactId = artifactId.replace(/[^A-Za-z0-9_\-\.]/g, '_');
 
     this.templateFile = `${this.artifactId}.template.json`;
 
