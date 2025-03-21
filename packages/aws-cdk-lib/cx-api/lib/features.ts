@@ -127,6 +127,7 @@ export const LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY = '@aws-cdk/aws-lam
 export const SET_UNIQUE_REPLICATION_ROLE_NAME = '@aws-cdk/aws-s3:setUniqueReplicationRoleName';
 export const PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceStageRoleTrustScope';
 export const EVENTBUS_POLICY_SID_REQUIRED = '@aws-cdk/aws-events:requireEventBusPolicySid';
+export const S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE = '@aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1431,6 +1432,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
 
+  //////////////////////////////////////////////////////////////////////
   [EVENTBUS_POLICY_SID_REQUIRED]: {
     type: FlagType.BugFix,
     summary: 'When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals.',
@@ -1448,6 +1450,20 @@ export const FLAGS: Record<string, FlagInfo> = {
       - No permissions will be added
 
       This fixes the issue where permissions were silently not being added for service principals.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined.',
+    detailsMd: `
+      When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console. 
+      The previous behavior in cdk before this feature was; if only some of the BlockPublicAccessOptions were set (not all 4), then the ones undefined would default to false.
+      This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
+      The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
