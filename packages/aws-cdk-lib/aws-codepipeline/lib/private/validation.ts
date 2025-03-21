@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import * as cdk from '../../../core';
 import { ActionCategory } from '../action';
 import { Artifact } from '../artifact';
@@ -45,30 +46,35 @@ const VALID_IDENTIFIER_REGEX = /^[a-zA-Z0-9.@_-]{1,100}$/;
  * Validate the given name of a pipeline component. Pipeline component names all have the same restrictions.
  * This can be used to validate the name of all components of a pipeline.
  */
-export function validateName(thing: string, name: string | undefined): void {
-  validateAgainstRegex(VALID_IDENTIFIER_REGEX, thing, name);
+export function validateName(scope: Construct, thing: string, name: string | undefined): void {
+  validateAgainstRegex(scope, VALID_IDENTIFIER_REGEX, thing, name);
 }
 
 export function validateArtifactName(artifactName: string | undefined): void {
   // https://docs.aws.amazon.com/codepipeline/latest/APIReference/API_Artifact.html#CodePipeline-Type-Artifact-name
-  validateAgainstRegex(/^[a-zA-Z0-9_-]{1,100}$/, 'Artifact', artifactName);
+  validateAgainstRegex(undefined, /^[a-zA-Z0-9_-]{1,100}$/, 'Artifact', artifactName);
 }
 
-export function validateNamespaceName(namespaceName: string | undefined): void {
-  validateAgainstRegex(/^[A-Za-z0-9@_-]{1,100}$/, 'Namespace', namespaceName);
+export function validateNamespaceName(scope: Construct, namespaceName: string | undefined): void {
+  validateAgainstRegex(scope, /^[A-Za-z0-9@_-]{1,100}$/, 'Namespace', namespaceName);
 }
 
 export function validatePipelineVariableName(variableName: string | undefined): void {
-  validateAgainstRegex(/^[A-Za-z0-9@\-_]{1,128}$/, 'Variable', variableName);
+  validateAgainstRegex(undefined, /^[A-Za-z0-9@\-_]{1,128}$/, 'Variable', variableName);
 }
 
-function validateAgainstRegex(regex: RegExp, thing: string, name: string | undefined) {
+function validateAgainstRegex(scope: Construct | undefined, regex: RegExp, thing: string, name: string | undefined) {
   // name could be a Token - in that case, skip validation altogether
   if (cdk.Token.isUnresolved(name)) {
     return;
   }
 
   if (name !== undefined && !regex.test(name)) {
-    throw new Error(`${thing} name must match regular expression: ${regex.toString()}, got '${name}'`);
+    const msg = `${thing} name must match regular expression: ${regex.toString()}, got '${name}'`;
+    if (scope) {
+      throw new cdk.ValidationError(msg, scope);
+    } else {
+      throw new cdk.UnscopedValidationError(msg);
+    }
   }
 }

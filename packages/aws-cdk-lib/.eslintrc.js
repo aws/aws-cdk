@@ -43,6 +43,8 @@ const enableNoThrowDefaultErrorIn = [
   'aws-codebuild',
   'aws-codecommit',
   'aws-codedeploy',
+  'aws-codepipeline',
+  'aws-codepipeline-actions',
   'aws-cognito',
   'aws-ecr',
   'aws-elasticloadbalancing',

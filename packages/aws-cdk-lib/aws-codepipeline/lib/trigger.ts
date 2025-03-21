@@ -1,5 +1,6 @@
 import { IAction } from './action';
 import { CfnPipeline } from './codepipeline.generated';
+import { UnscopedValidationError } from '../../core';
 
 /**
  * Git push filter for trigger.
@@ -203,46 +204,46 @@ export class Trigger {
       const { sourceAction, pushFilter, pullRequestFilter } = this.props.gitConfiguration;
 
       if (sourceAction.actionProperties.provider !== 'CodeStarSourceConnection') {
-        throw new Error(`provider for actionProperties in sourceAction with name '${sourceAction.actionProperties.actionName}' must be 'CodeStarSourceConnection', got '${sourceAction.actionProperties.provider}'`);
+        throw new UnscopedValidationError(`provider for actionProperties in sourceAction with name '${sourceAction.actionProperties.actionName}' must be 'CodeStarSourceConnection', got '${sourceAction.actionProperties.provider}'`);
       }
 
       if (pushFilter?.length && pullRequestFilter?.length) {
-        throw new Error(`cannot specify both pushFilter and pullRequestFilter for the trigger with sourceAction with name '${sourceAction.actionProperties.actionName}'`);
+        throw new UnscopedValidationError(`cannot specify both pushFilter and pullRequestFilter for the trigger with sourceAction with name '${sourceAction.actionProperties.actionName}'`);
       }
       if (!pushFilter?.length && !pullRequestFilter?.length) {
-        throw new Error(`must specify either pushFilter or pullRequestFilter for the trigger with sourceAction with name '${sourceAction.actionProperties.actionName}'`);
+        throw new UnscopedValidationError(`must specify either pushFilter or pullRequestFilter for the trigger with sourceAction with name '${sourceAction.actionProperties.actionName}'`);
       }
 
       if (pushFilter !== undefined && pushFilter.length > 3) {
-        throw new Error(`length of pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' must be less than or equal to 3, got ${pushFilter.length}`);
+        throw new UnscopedValidationError(`length of pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' must be less than or equal to 3, got ${pushFilter.length}`);
       }
       pushFilter?.forEach(filter => {
         if (filter.tagsExcludes && filter.tagsExcludes.length > 8) {
-          throw new Error(`maximum length of tagsExcludes in pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.tagsExcludes.length}`);
+          throw new UnscopedValidationError(`maximum length of tagsExcludes in pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.tagsExcludes.length}`);
         }
         if (filter.tagsIncludes && filter.tagsIncludes.length > 8) {
-          throw new Error(`maximum length of tagsIncludes in pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.tagsIncludes.length}`);
+          throw new UnscopedValidationError(`maximum length of tagsIncludes in pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.tagsIncludes.length}`);
         }
       });
 
       if (pullRequestFilter !== undefined && pullRequestFilter.length > 3) {
-        throw new Error(`length of pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' must be less than or equal to 3, got ${pullRequestFilter.length}`);
+        throw new UnscopedValidationError(`length of pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' must be less than or equal to 3, got ${pullRequestFilter.length}`);
       }
       pullRequestFilter?.forEach(filter => {
         if (!filter.branchesExcludes && !filter.branchesIncludes) {
-          throw new Error(`must specify branches in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}'`);
+          throw new UnscopedValidationError(`must specify branches in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}'`);
         }
         if (filter.branchesExcludes && filter.branchesExcludes.length > 8) {
-          throw new Error(`maximum length of branchesExcludes in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.branchesExcludes.length}`);
+          throw new UnscopedValidationError(`maximum length of branchesExcludes in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.branchesExcludes.length}`);
         }
         if (filter.branchesIncludes && filter.branchesIncludes.length > 8) {
-          throw new Error(`maximum length of branchesIncludes in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.branchesIncludes.length}`);
+          throw new UnscopedValidationError(`maximum length of branchesIncludes in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.branchesIncludes.length}`);
         }
         if (filter.filePathsExcludes && filter.filePathsExcludes.length > 8) {
-          throw new Error(`maximum length of filePathsExcludes in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.filePathsExcludes.length}`);
+          throw new UnscopedValidationError(`maximum length of filePathsExcludes in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.filePathsExcludes.length}`);
         }
         if (filter.filePathsIncludes && filter.filePathsIncludes.length > 8) {
-          throw new Error(`maximum length of filePathsIncludes in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.filePathsIncludes.length}`);
+          throw new UnscopedValidationError(`maximum length of filePathsIncludes in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.filePathsIncludes.length}`);
         }
       });
     }
