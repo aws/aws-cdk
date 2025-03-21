@@ -138,6 +138,15 @@ export interface CommonDestinationS3Props {
    * @default "YYYY/MM/DD/HH"
    */
   readonly dataOutputPrefix?: string;
+
+  /**
+   * The time zone you prefer.
+   *
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html#timestamp-namespace
+   *
+   * @default - UTC
+   */
+  readonly timeZone?: cdk.TimeZone;
 }
 
 /**
