@@ -1432,6 +1432,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
 
+  //////////////////////////////////////////////////////////////////////
   [EVENTBUS_POLICY_SID_REQUIRED]: {
     type: FlagType.BugFix,
     summary: 'When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals.',
@@ -1453,6 +1454,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
+
   //////////////////////////////////////////////////////////////////////
   [S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE]: {
     type: FlagType.BugFix,
