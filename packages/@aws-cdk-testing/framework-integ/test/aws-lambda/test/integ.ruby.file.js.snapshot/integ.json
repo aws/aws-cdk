@@ -4,7 +4,8 @@
     "RubyRuntimeTest/DefaultTest": {
       "stacks": [
         "lambda-test-assets-file-for-ruby32",
-        "lambda-test-assets-file-for-ruby33"
+        "lambda-test-assets-file-for-ruby33",
+        "lambda-test-assets-file-for-ruby34"
       ],
       "assertionStack": "RubyRuntimeTest/DefaultTest/DeployAssert",
       "assertionStackName": "RubyRuntimeTestDefaultTestDeployAssert42E8EBE5"
