@@ -153,7 +153,8 @@ export interface StackProps {
   /**
    * Whether to enable termination protection for this stack.
    *
-   * @default false
+   * @default - The termination protection of the containing
+   * `Stage` if available, otherwise `false`.
    */
   readonly terminationProtection?: boolean;
 
@@ -447,7 +448,9 @@ export class Stack extends Construct implements ITaggable {
     this.account = account;
     this.region = region;
     this.environment = environment;
-    this._terminationProtection = props.terminationProtection ?? false;
+
+    const parentStage = Stage.of(this);
+    this._terminationProtection = props.terminationProtection ?? parentStage?.terminationProtection ?? false;
 
     if (props.description !== undefined) {
       // Max length 1024 bytes
