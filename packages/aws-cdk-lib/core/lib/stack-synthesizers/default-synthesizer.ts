@@ -440,6 +440,8 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
         assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
         assumeRoleAdditionalOptions: this.props.fileAssetPublishingRoleAdditionalOptions,
       } : undefined,
+    }, {
+      displayName: asset.displayName,
     });
     return this.cloudFormationLocationFromFileAsset(location);
   }
@@ -455,6 +457,8 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
         assumeRoleExternalId: this.props.imageAssetPublishingExternalId,
         assumeRoleAdditionalOptions: this.props.imageAssetPublishingRoleAdditionalOptions,
       } : undefined,
+    }, {
+      displayName: asset.displayName,
     });
     return this.cloudFormationLocationFromDockerImageAsset(location);
   }

@@ -6,19 +6,22 @@ import { UnscopedValidationError } from '../../../core';
 import { addAll, extract, flatMap, isDefined } from '../private/javascript';
 
 export interface GraphNodeProps<A> {
+  readonly displayName?: string;
   readonly data?: A;
 }
 
 export class GraphNode<A> {
-  public static of<A>(id: string, data: A) {
-    return new GraphNode(id, { data });
+  public static of<A>(id: string, data: A, displayName?: string) {
+    return new GraphNode(id, { data, displayName });
   }
 
   public readonly dependencies: GraphNode<A>[] = [];
   public readonly data?: A;
+  public readonly displayName?: string;
   private _parentGraph?: Graph<A>;
 
   constructor(public readonly id: string, props: GraphNodeProps<A> = {}) {
+    this.displayName = props.displayName;
     this.data = props.data;
   }
 
@@ -209,8 +212,14 @@ export interface GraphProps<A> extends GraphNodeProps<A> {
 }
 
 export class Graph<A> extends GraphNode<A> {
-  public static override of<A, B>(id: string, data: A, nodes?: GraphNode<B>[]) {
-    return new Graph<A | B>(id, { data, nodes });
+  /**
+   * The 3rd parameter looks weird because it has to be structurally compatible with `GraphNode.of()`,
+   * but we want to add `displayName` at the end, really.
+   */
+  public static override of<A, B>(id: string, data: A, displayNameOrNodes?: string | GraphNode<B>[], displayName?: string) {
+    const nodes = Array.isArray(displayNameOrNodes) ? displayNameOrNodes : undefined;
+    const displayName_ = Array.isArray(displayNameOrNodes) ? displayName : displayNameOrNodes;
+    return new Graph<A | B>(id, { data, nodes, displayName: displayName_ });
   }
 
   private readonly children = new Map<string, GraphNode<A>>();
@@ -241,10 +250,10 @@ export class Graph<A> extends GraphNode<A> {
 
   public add(...nodes: Array<GraphNode<A>>) {
     for (const node of nodes) {
-      node._setParentGraph(this);
       if (this.children.has(node.id)) {
         throw new UnscopedValidationError(`Node with duplicate id: ${node.id}`);
       }
+      node._setParentGraph(this);
       this.children.set(node.id, node);
     }
   }

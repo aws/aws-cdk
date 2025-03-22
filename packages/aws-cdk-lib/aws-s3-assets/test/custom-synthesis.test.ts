@@ -63,6 +63,31 @@ test('use custom synthesizer', () => {
   }));
 });
 
+test.each([
+  [undefined, 'MyAsset'],
+  ['Some name', 'Some name'],
+])('when input display name is %p, passes display name %p to synthesizer', (given, expected) => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack', {
+    synthesizer: new CustomSynthesizer(),
+  });
+  const addFileAsset = jest.spyOn(CustomSynthesizer.prototype, 'addFileAsset');
+
+  // WHEN
+  new Asset(stack, 'MyAsset', {
+    path: path.join(__dirname, 'file-asset.txt'),
+    displayName: given,
+  });
+
+  // THEN
+  expect(addFileAsset).toHaveBeenCalledWith(expect.objectContaining({
+    displayName: expected,
+  }));
+
+  addFileAsset.mockRestore();
+});
+
 class CustomSynthesizer extends StackSynthesizer {
   private readonly manifest = new AssetManifestBuilder();
   private parameter?: CfnParameter;

@@ -159,6 +159,8 @@ export class CliCredentialsStackSynthesizer extends StackSynthesizer implements 
     const location = this.assetManifest.defaultAddFileAsset(this.boundStack, asset, {
       bucketName: this.bucketName,
       bucketPrefix: this.bucketPrefix,
+    }, {
+      displayName: asset.displayName,
     });
     return this.cloudFormationLocationFromFileAsset(location);
   }
@@ -169,6 +171,8 @@ export class CliCredentialsStackSynthesizer extends StackSynthesizer implements 
     const location = this.assetManifest.defaultAddDockerImageAsset(this.boundStack, asset, {
       repositoryName: this.repositoryName,
       dockerTagPrefix: this.dockerTagPrefix,
+    }, {
+      displayName: asset.displayName,
     });
     return this.cloudFormationLocationFromDockerImageAsset(location);
   }
