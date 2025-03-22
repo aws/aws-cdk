@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "pipeline-events": {
         "id": "pipeline-events",
         "path": "pipeline-events",
@@ -30,14 +22,19 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-codecommit.CfnRepository",
+                  "fqn": "aws-cdk-lib.aws_codecommit.CfnRepository",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-codecommit.Repository",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.aws_codecommit.Repository",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "repositoryName": "*"
+                }
+              ]
             }
           },
           "pipelinePipeline22F2A91D": {
@@ -85,14 +82,20 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-kms.CfnKey",
+                      "fqn": "aws-cdk-lib.aws_kms.CfnKey",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-kms.Key",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_kms.Key",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "removalPolicy": "destroy",
+                      "enableKeyRotation": "*"
+                    }
+                  ]
                 }
               },
               "ArtifactsBucketEncryptionKeyAlias": {
@@ -115,14 +118,21 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-kms.CfnAlias",
+                      "fqn": "aws-cdk-lib.aws_kms.CfnAlias",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-kms.Alias",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_kms.Alias",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "aliasName": "*",
+                      "targetKey": "*",
+                      "removalPolicy": "destroy"
+                    }
+                  ]
                 }
               },
               "ArtifactsBucket": {
@@ -159,7 +169,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
                       "version": "0.0.0"
                     }
                   },
@@ -218,26 +228,52 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
+                          "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketPolicy",
-                      "version": "0.0.0"
+                      "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "bucket": "*"
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.Bucket",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "bucketName": "*",
+                      "encryptionKey": "*",
+                      "encryption": "KMS",
+                      "enforceSSL": true,
+                      "blockPublicAccess": "*",
+                      "removalPolicy": "retain"
+                    }
+                  ]
                 }
               },
               "Role": {
                 "id": "Role",
                 "path": "pipeline-events/pipelinePipeline22F2A91D/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "pipeline-events/pipelinePipeline22F2A91D/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "pipeline-events/pipelinePipeline22F2A91D/Role/Resource",
@@ -259,7 +295,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -358,20 +394,91 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
-                      "version": "0.0.0"
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      }
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -380,6 +487,21 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CodePipeline::Pipeline",
                   "aws:cdk:cloudformation:props": {
+                    "artifactStore": {
+                      "type": "S3",
+                      "location": {
+                        "Ref": "pipelinePipeline22F2A91DArtifactsBucketC1799DCD"
+                      },
+                      "encryptionKey": {
+                        "type": "KMS",
+                        "id": {
+                          "Fn::GetAtt": [
+                            "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
                     "roleArn": {
                       "Fn::GetAtt": [
                         "pipelinePipeline22F2A91DRole58B7B05E",
@@ -443,26 +565,11 @@
                           }
                         ]
                       }
-                    ],
-                    "artifactStore": {
-                      "type": "S3",
-                      "location": {
-                        "Ref": "pipelinePipeline22F2A91DArtifactsBucketC1799DCD"
-                      },
-                      "encryptionKey": {
-                        "type": "KMS",
-                        "id": {
-                          "Fn::GetAtt": [
-                            "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2",
-                            "Arn"
-                          ]
-                        }
-                      }
-                    }
+                    ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-codepipeline.CfnPipeline",
+                  "fqn": "aws-cdk-lib.aws_codepipeline.CfnPipeline",
                   "version": "0.0.0"
                 }
               },
@@ -478,6 +585,17 @@
                         "id": "CodePipelineActionRole",
                         "path": "pipeline-events/pipelinePipeline22F2A91D/Source/CodeCommit/CodePipelineActionRole",
                         "children": {
+                          "ImportCodePipelineActionRole": {
+                            "id": "ImportCodePipelineActionRole",
+                            "path": "pipeline-events/pipelinePipeline22F2A91D/Source/CodeCommit/CodePipelineActionRole/ImportCodePipelineActionRole",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*"
+                              ]
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "pipeline-events/pipelinePipeline22F2A91D/Source/CodeCommit/CodePipelineActionRole/Resource",
@@ -491,19 +609,9 @@
                                       "Effect": "Allow",
                                       "Principal": {
                                         "AWS": {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "arn:",
-                                              {
-                                                "Ref": "AWS::Partition"
-                                              },
-                                              ":iam::",
-                                              {
-                                                "Ref": "AWS::AccountId"
-                                              },
-                                              ":root"
-                                            ]
+                                          "Fn::GetAtt": [
+                                            "pipelinePipeline22F2A91DRole58B7B05E",
+                                            "Arn"
                                           ]
                                         }
                                       }
@@ -514,26 +622,45 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnRole",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Role",
-                          "version": "0.0.0"
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "assumedBy": {
+                                "principalAccount": "*",
+                                "assumeRoleAction": "*"
+                              }
+                            },
+                            {
+                              "grantAssumeRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "grant": [
+                                "*",
+                                "*"
+                              ]
+                            }
+                          ]
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.4.2"
                 }
               },
               "Build": {
@@ -548,6 +675,17 @@
                         "id": "CodePipelineActionRole",
                         "path": "pipeline-events/pipelinePipeline22F2A91D/Build/Hello/CodePipelineActionRole",
                         "children": {
+                          "ImportCodePipelineActionRole": {
+                            "id": "ImportCodePipelineActionRole",
+                            "path": "pipeline-events/pipelinePipeline22F2A91D/Build/Hello/CodePipelineActionRole/ImportCodePipelineActionRole",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*"
+                              ]
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "pipeline-events/pipelinePipeline22F2A91D/Build/Hello/CodePipelineActionRole/Resource",
@@ -561,19 +699,9 @@
                                       "Effect": "Allow",
                                       "Principal": {
                                         "AWS": {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "arn:",
-                                              {
-                                                "Ref": "AWS::Partition"
-                                              },
-                                              ":iam::",
-                                              {
-                                                "Ref": "AWS::AccountId"
-                                              },
-                                              ":root"
-                                            ]
+                                          "Fn::GetAtt": [
+                                            "pipelinePipeline22F2A91DRole58B7B05E",
+                                            "Arn"
                                           ]
                                         }
                                       }
@@ -584,32 +712,62 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnRole",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Role",
-                          "version": "0.0.0"
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "assumedBy": {
+                                "principalAccount": "*",
+                                "assumeRoleAction": "*"
+                              }
+                            },
+                            {
+                              "grantAssumeRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "grant": [
+                                "*",
+                                "*"
+                              ]
+                            }
+                          ]
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.4.2"
                 }
               },
               "EventsRole": {
                 "id": "EventsRole",
                 "path": "pipeline-events/pipelinePipeline22F2A91D/EventsRole",
                 "children": {
+                  "ImportEventsRole": {
+                    "id": "ImportEventsRole",
+                    "path": "pipeline-events/pipelinePipeline22F2A91D/EventsRole/ImportEventsRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "pipeline-events/pipelinePipeline22F2A91D/EventsRole/Resource",
@@ -631,7 +789,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -686,26 +844,87 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
-                      "version": "0.0.0"
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "roleName": "*",
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      }
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-codepipeline.Pipeline",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.aws_codepipeline.Pipeline",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "crossAccountKeys": true
+                },
+                {
+                  "addStage": [
+                    {
+                      "stageName": "*"
+                    }
+                  ]
+                },
+                {
+                  "addStage": [
+                    {
+                      "stageName": "*"
+                    }
+                  ]
+                }
+              ]
             }
           },
           "dlq": {
@@ -720,14 +939,17 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sqs.CfnQueue",
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-sqs.Queue",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "rule": {
@@ -791,26 +1013,66 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-events.CfnRule",
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-events.Rule",
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "schedule": "*",
+                  "targets": "*"
+                },
+                {
+                  "addEventPattern": [
+                    "*"
+                  ]
+                },
+                {
+                  "addTarget": [
+                    {}
+                  ]
+                }
+              ]
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "pipeline-events/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "pipeline-events/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

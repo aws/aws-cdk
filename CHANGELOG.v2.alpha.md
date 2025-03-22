@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.185.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.184.1-alpha.0...v2.185.0-alpha.0) (2025-03-19)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **scheduler-targets-alpha:** The class `KinesisDataFirehosePutRecord` has been renamed to `FirehosePutRecord`.
+
+### Bug Fixes
+
+* **scheduler-targets-alpha:** rename `KinesisDataFirehosePutRecord` to `FirehosePutRecord` ([#33758](https://github.com/aws/aws-cdk/issues/33758)) ([e6f5bc8](https://github.com/aws/aws-cdk/commit/e6f5bc8915081a74a83e4055ccbaa11987ba943c)), closes [#33757](https://github.com/aws/aws-cdk/issues/33757) [#33798](https://github.com/aws/aws-cdk/issues/33798)
+
+## [2.184.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.184.0-alpha.0...v2.184.1-alpha.0) (2025-03-14)
+
+## [2.184.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.183.0-alpha.0...v2.184.0-alpha.0) (2025-03-13)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **glue-alpha:** Updated casing of `workflow.addconditionalTrigger` to `workflow.addConditionalTrigger`.
+
+### Bug Fixes
+
+* **glue-alpha:** inconsistent workflow addconditionalTrigger casing ([#33752](https://github.com/aws/aws-cdk/issues/33752)) ([4886a3e](https://github.com/aws/aws-cdk/commit/4886a3e503b22f3dfadca908501a2cb208c2ebee)), closes [#33751](https://github.com/aws/aws-cdk/issues/33751) [#33751](https://github.com/aws/aws-cdk/issues/33751)
+
 ## [2.183.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.182.0-alpha.0...v2.183.0-alpha.0) (2025-03-11)
 
 

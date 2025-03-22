@@ -2202,7 +2202,7 @@ new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
 });
 ```
 
-*Kinesis Data Firehose*
+*Amazon Data Firehose*
 
 ```ts
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';

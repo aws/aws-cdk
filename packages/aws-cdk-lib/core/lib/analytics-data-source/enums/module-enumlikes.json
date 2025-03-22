@@ -203,7 +203,11 @@
       "FLINK_1_15",
       "FLINK_1_18",
       "FLINK_1_19",
-      "FLINK_1_20"
+      "FLINK_1_20",
+      "ZEPPELIN_FLINK_3_0",
+      "ZEPPELIN_FLINK_2_0",
+      "ZEPPELIN_FLINK_1_0",
+      "SQL_1_0"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-kinesisfirehose-destinations-alpha/lib/common.ts": {
@@ -211,7 +215,8 @@
       "GZIP",
       "HADOOP_SNAPPY",
       "SNAPPY",
-      "ZIP"
+      "ZIP",
+      "UNCOMPRESSED"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-msk-alpha/lib/cluster-version.ts": {
@@ -619,6 +624,7 @@
       "COHERE_EMBED_ENGLISH_V3_0_512",
       "COHERE_EMBED_MULTILINGUAL_V3",
       "COHERE_EMBED_MULTILINGUAL_V3_0_512",
+      "DEEP_SEEK_R1_V1_0",
       "LUMA_RAY_V2_0",
       "META_LLAMA_2_13B_V1",
       "META_LLAMA_2_13B_V1_0_4K",
@@ -1539,6 +1545,7 @@
       "EMR_EKS",
       "EMR_SERVERLESS",
       "EMR_SERVERLESS_LIVY",
+      "EMR_SERVERLESS_DASHBOARD",
       "EMR_WAL",
       "END_USER_MESSAGING_SOCIAL",
       "ENTITY_RESOLUTION",
@@ -1615,6 +1622,12 @@
       "LICENSE_MANAGER_LINUX_SUBSCRIPTIONS",
       "LICENSE_MANAGER_LINUX_SUBSCRIPTIONS_FIPS",
       "LICENSE_MANAGER_USER_SUBSCRIPTIONS",
+      "LOCATION_SERVICE_GEOFENCING",
+      "LOCATION_SERVICE_MAPS",
+      "LOCATION_SERVICE_METADATA",
+      "LOCATION_SERVICE_PLACES",
+      "LOCATION_SERVICE_ROUTE",
+      "LOCATION_SERVICE_TRACKING",
       "LOOKOUT_EQUIPMENT",
       "LOOKOUT_METRICS",
       "LOOKOUT_VISION",
@@ -1720,6 +1733,8 @@
       "SAGEMAKER_STUDIO",
       "SECRETS_MANAGER",
       "SECURITYHUB",
+      "SECURITYLAKE",
+      "SECURITYLAKE_FIPS",
       "SERVICE_CATALOG",
       "SERVICE_CATALOG_APPREGISTRY",
       "SERVER_MIGRATION_SERVICE",
@@ -1756,6 +1771,8 @@
       "TRANSFER_SERVER",
       "TRANSLATE",
       "TRUSTED_ADVISOR",
+      "WAFV2",
+      "WAFV2_FIPS",
       "WELL_ARCHITECTED_TOOL",
       "WORKMAIL",
       "WORKSPACES",
@@ -2027,7 +2044,8 @@
       "SASL_SCRAM_256_AUTH",
       "SASL_SCRAM_512_AUTH",
       "CLIENT_CERTIFICATE_TLS_AUTH",
-      "SERVER_ROOT_CA_CERTIFICATE"
+      "SERVER_ROOT_CA_CERTIFICATE",
+      "VIRTUAL_HOST"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/lambda-insights.ts": {
@@ -2548,6 +2566,7 @@
       "VER_10_5_25",
       "VER_10_5_26",
       "VER_10_5_27",
+      "VER_10_5_28",
       "VER_10_6",
       "VER_10_6_5",
       "VER_10_6_7",
@@ -2563,6 +2582,7 @@
       "VER_10_6_18",
       "VER_10_6_19",
       "VER_10_6_20",
+      "VER_10_6_21",
       "VER_10_11",
       "VER_10_11_4",
       "VER_10_11_5",
@@ -2571,8 +2591,10 @@
       "VER_10_11_8",
       "VER_10_11_9",
       "VER_10_11_10",
+      "VER_10_11_11",
       "VER_11_4_3",
-      "VER_11_4_4"
+      "VER_11_4_4",
+      "VER_11_4_5"
     ],
     "MysqlEngineVersion": [
       "VER_5_5",
@@ -2623,6 +2645,8 @@
       "VER_5_7_44_RDS_20240408",
       "VER_5_7_44_RDS_20240529",
       "VER_5_7_44_RDS_20240808",
+      "VER_5_7_44_RDS_20250103",
+      "VER_5_7_44_RDS_20250213",
       "VER_8_0",
       "VER_8_0_11",
       "VER_8_0_13",
@@ -2648,7 +2672,9 @@
       "VER_8_0_37",
       "VER_8_0_39",
       "VER_8_0_40",
-      "VER_8_4_3"
+      "VER_8_0_41",
+      "VER_8_4_3",
+      "VER_8_4_4"
     ],
     "PostgresEngineVersion": [
       "VER_9_5",

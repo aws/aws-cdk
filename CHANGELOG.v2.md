@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.185.0](https://github.com/aws/aws-cdk/compare/v2.184.1...v2.185.0) (2025-03-19)
+
+
+### Features
+
+* **s3-deployment:** backfill missing enums for s3-deployment ([#33819](https://github.com/aws/aws-cdk/issues/33819)) ([2623e00](https://github.com/aws/aws-cdk/commit/2623e00546721f43a180871e2f8fb72712a9ffa1)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-serversideencryptionbydefault.html#aws-properties-s3](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-serversideencryptionbydefault.html/issues/aws-properties-s3)
+* update L1 CloudFormation resource definitions ([#33800](https://github.com/aws/aws-cdk/issues/33800)) ([fada917](https://github.com/aws/aws-cdk/commit/fada917f8197527cd90622614fe1b6769c6cab1a))
+* **ecs:** add validation checks to memory cpu combinations of FARGATE compatible task definitions ([#33608](https://github.com/aws/aws-cdk/issues/33608)) ([734ca66](https://github.com/aws/aws-cdk/commit/734ca662c82cbedf06393d223a870381ad55520c)), closes [#22216](https://github.com/aws/aws-cdk/issues/22216) [/github.com/aws/aws-cdk/issues/31106#issuecomment-2289166090](https://github.com/aws//github.com/aws/aws-cdk/issues/31106/issues/issuecomment-2289166090)
+* **ecs:** backfill missing enums for ecs ([#33644](https://github.com/aws/aws-cdk/issues/33644)) ([28c6a22](https://github.com/aws/aws-cdk/commit/28c6a22f14ea10c76c1aee87b57d3931809daba8))
+* **eks:** backfill missing enums for eks ([#33646](https://github.com/aws/aws-cdk/issues/33646)) ([f67a88b](https://github.com/aws/aws-cdk/commit/f67a88bf77db6b100fff07aab1a161167ba319e6))
+* **logs:** throw `ValidationError` instead of untyped Errors ([#33753](https://github.com/aws/aws-cdk/issues/33753)) ([1fea9f1](https://github.com/aws/aws-cdk/commit/1fea9f167a0521b49b5d0738b27f07fcfa3b36ad))
+
+
+### Bug Fixes
+
+* **core:** remove whitespaces in tree.json ([#33784](https://github.com/aws/aws-cdk/issues/33784)) ([73b9138](https://github.com/aws/aws-cdk/commit/73b91382c6f681e91b662dc0599cc19ba91c8a5a)), closes [#27261](https://github.com/aws/aws-cdk/issues/27261) [#27261](https://github.com/aws/aws-cdk/issues/27261)
+* **s3:** add validation for lifecycle rule transitions ([#33731](https://github.com/aws/aws-cdk/issues/33731)) ([4128ff4](https://github.com/aws/aws-cdk/commit/4128ff44bf5f1112467851ce61c1826107e3a07d)), closes [#22103](https://github.com/aws/aws-cdk/issues/22103) [#22103](https://github.com/aws/aws-cdk/issues/22103)
+* **s3-deployment:** handle properly quoted strings in JSON files ([#33698](https://github.com/aws/aws-cdk/issues/33698)) ([bff85e8](https://github.com/aws/aws-cdk/commit/bff85e88fbe0ddb10bdcde8039af1736afa77cc2)), closes [#22661](https://github.com/aws/aws-cdk/issues/22661) [#22661](https://github.com/aws/aws-cdk/issues/22661)
+* **stepfunctions-tasks:** jobQueueArn support JsonPath or JSONata ([#33670](https://github.com/aws/aws-cdk/issues/33670)) ([1c09c8b](https://github.com/aws/aws-cdk/commit/1c09c8bb404b03929f245f7a888dfd84ac7cab32)), closes [#33580](https://github.com/aws/aws-cdk/issues/33580)
+
+## [2.184.1](https://github.com/aws/aws-cdk/compare/v2.184.0...v2.184.1) (2025-03-14)
+
+
+### Reverts
+
+* **iam:** fix(iam): adding organization id pattern verification ([#33773](https://github.com/aws/aws-cdk/pull/33773)) ([f7ed316](https://github.com/aws/aws-cdk/commit/f7ed3165056c385249735ebb17a53d0fedd69c54)), closes [aws/aws-cdk#33768](https://github.com/aws/aws-cdk/issues/33768)
+
+## [2.184.0](https://github.com/aws/aws-cdk/compare/v2.183.0...v2.184.0) (2025-03-13)
+
+
+### Features
+
+* **ecr:** throw ValidationError instead of untyped Errors ([#33750](https://github.com/aws/aws-cdk/issues/33750)) ([242690f](https://github.com/aws/aws-cdk/commit/242690f9aa897b11e1b1a73036a9927ed3473eb2))
+* **lambda:** support s3 OFD for Kinesis/DynamoDB ([#33739](https://github.com/aws/aws-cdk/issues/33739)) ([3f1fecf](https://github.com/aws/aws-cdk/commit/3f1fecfecb871d3912a74471a555b223a6dcaa20))
+* **rds:** allow to specify availability zone for Aurora instances ([#33515](https://github.com/aws/aws-cdk/issues/33515)) ([583d5f2](https://github.com/aws/aws-cdk/commit/583d5f24f03d3b2f8b072d0a41d41b75f8814f8c)), closes [#33503](https://github.com/aws/aws-cdk/issues/33503) [#30618](https://github.com/aws/aws-cdk/issues/30618)
+
+
+### Bug Fixes
+
+* **codepipeline:** replace account root principal with current pipeline role in the trust policy under ff: @aws-cdk/pipelines:reduceStageRoleTrustScope  ([#33742](https://github.com/aws/aws-cdk/issues/33742)) ([a64b01c](https://github.com/aws/aws-cdk/commit/a64b01cc2969822bb92d7bd72152ecb2ccf1c1cf)), closes [#33709](https://github.com/aws/aws-cdk/issues/33709)
+* **core:** message including tokens from annotations cannot output correctly ([#33706](https://github.com/aws/aws-cdk/issues/33706)) ([55a3c4c](https://github.com/aws/aws-cdk/commit/55a3c4caefdb283280d6c16d3719f3e311e31ec9)), closes [40aws-cdk/toolkit-lib/lib/toolkit/toolkit.ts#L771](https://github.com/40aws-cdk/toolkit-lib/lib/toolkit/toolkit.ts/issues/L771) [/github.com/aws/aws-cdk-cli/pull/101#discussion_r1977310824](https://github.com/aws//github.com/aws/aws-cdk-cli/pull/101/issues/discussion_r1977310824) [/github.com/aws/aws-cdk/issues/33707#issuecomment-2705936933](https://github.com/aws//github.com/aws/aws-cdk/issues/33707/issues/issuecomment-2705936933) [/github.com/aws/aws-cdk-cli/pull/101#discussion_r1969298218](https://github.com/aws//github.com/aws/aws-cdk-cli/pull/101/issues/discussion_r1969298218)
+* **events-targets:** add LogGroupTargetInput.fromObjectV2() method ([#33720](https://github.com/aws/aws-cdk/issues/33720)) ([584a58c](https://github.com/aws/aws-cdk/commit/584a58c2dcd43d9ebd2533186a2f5f9a083bb478))
+
 ## [2.183.0](https://github.com/aws/aws-cdk/compare/v2.182.0...v2.183.0) (2025-03-11)
 
 
