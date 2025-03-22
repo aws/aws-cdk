@@ -387,6 +387,23 @@ describe('Product', () => {
     expect(product.productArn).toEqual('arn:aws:catalog:region:account-id:product/prod-djh8932wr');
   }),
 
+  test('configure the type of product', () => {
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        {
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
+        },
+      ],
+      productType: servicecatalog.ProductType.CLOUD_FORMATION_TEMPLATE,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalog::CloudFormationProduct', {
+      ProductType: 'CLOUD_FORMATION_TEMPLATE',
+    });
+  });
+
   test('fails product from attributes without resource name in arn', () => {
     expect(() => {
       servicecatalog.Product.fromProductArn(stack, 'MyProduct', 'arn:aws:catalog:region:account-id:product');

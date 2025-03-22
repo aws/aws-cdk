@@ -140,6 +140,7 @@ const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'development-environment.template.json')),
     },
   ],
+  productType: servicecatalog.ProductType.CLOUD_FORMATION_TEMPLATE,
 });
 ```
 
