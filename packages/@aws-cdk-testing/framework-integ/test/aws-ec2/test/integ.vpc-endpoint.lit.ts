@@ -48,6 +48,13 @@ class VpcEndpointStack extends cdk.Stack {
       service: ec2.InterfaceVpcEndpointAwsService.DYNAMODB,
       privateDnsEnabled: false,
     });
+
+    // Add an interface endpoint with ipAddressType and dnsRecordIpType
+    vpc.addInterfaceEndpoint('S3ServiceEndpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.S3,
+      ipAddressType: ec2.VpcEndpointIpAddressType.DUALSTACK,
+      dnsRecordIpType: ec2.VpcEndpointDnsRecordIpType.DUALSTACK,
+    });
   }
 }
 
