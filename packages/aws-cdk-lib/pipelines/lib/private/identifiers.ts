@@ -43,7 +43,7 @@ export function stackVariableNamespace(stack: StackDeployment) {
 }
 
 function sanitizeName(x: string): string {
-  return x.replace(/[^A-Za-z0-9.@\-_]/g, '_');
+  return x.replace(/[^A-Za-z0-9.@\-_]+/g, '_');
 }
 
 /**

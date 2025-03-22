@@ -412,6 +412,32 @@ describe('deployment of stack', () => {
   });
 });
 
+test('display name can contain illegal characters which are sanitized for the pipeline', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    crossAccountKeys: true,
+    useChangeSets: false,
+  });
+  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {
+    displayName: 'asdf & also qwerty!',
+  }));
+
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+
+  // We expect `asdf` and `asdf2` Actions in the pipeline
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'Assets',
+      Actions: Match.arrayWith([
+        Match.objectLike({
+          Name: 'asdf_also_qwerty_',
+        }),
+      ]),
+    }]),
+  });
+});
+
 test('two assets can have same display name, which are reflected in the pipeline', () => {
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
@@ -429,6 +455,7 @@ test('two assets can have same display name, which are reflected in the pipeline
   // We expect `asdf` and `asdf2` Actions in the pipeline
   template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
     Stages: Match.arrayWith([{
+      Name: 'Assets',
       Actions: Match.arrayWith([
         Match.objectLike({
           Name: 'asdf',
@@ -437,7 +464,6 @@ test('two assets can have same display name, which are reflected in the pipeline
           Name: 'asdf2',
         }),
       ]),
-      Name: 'Assets',
     }]),
   });
 });
