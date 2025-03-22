@@ -1,0 +1,266 @@
+{
+  "version": "40.0.0",
+  "artifacts": {
+    "aws-cdk-ec2-alpha-shared-route-table.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-ec2-alpha-shared-route-table.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-ec2-alpha-shared-route-table": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-ec2-alpha-shared-route-table.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/768e26d5686a468e64b03888f8408eda91965bad7b1adfae4479b2d67ee87c9d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-ec2-alpha-shared-route-table.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-ec2-alpha-shared-route-table.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-ec2-alpha-shared-route-table/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/VPC/AmazonProvided": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/VPC/AmazonProvided/AmazonProvided": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCAmazonProvided4AD17A46"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/VPC/InternetGateway": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/VPC/InternetGateway/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCInternetGatewayIGW3C1F5485"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/VPC/InternetGateway/GWAttachment": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCInternetGatewayGWAttachment9C225BF5"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/VPC/PublicSubnet1-DefaultRoute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/VPC/PublicSubnet1-DefaultRoute/Route": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRouteBCD13929"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/SharedRouteTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/SharedRouteTable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SharedRouteTable7A86E44F"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicSubnet1Subnet03067927"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicSubnet1RouteTableAssociation0E73B917"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicSubnet2Subnet78B4B4BD"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicSubnet2RouteTableAssociation1339F17B"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/Exports/Output{\"Fn::GetAtt\":[\"VPCInternetGatewayIGW3C1F5485\",\"InternetGatewayId\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttVPCInternetGatewayIGW3C1F5485InternetGatewayId25C881CB"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/Exports/Output{\"Fn::GetAtt\":[\"SharedRouteTable7A86E44F\",\"RouteTableId\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttSharedRouteTable7A86E44FRouteTableId53F8A4E1"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-ec2-alpha-shared-route-table"
+    },
+    "VpcSharedRouteTableIntegDefaultTestDeployAssert4BB1B1C8.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "VpcSharedRouteTableIntegDefaultTestDeployAssert4BB1B1C8.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "VpcSharedRouteTableIntegDefaultTestDeployAssert4BB1B1C8": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "VpcSharedRouteTableIntegDefaultTestDeployAssert4BB1B1C8.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/68c9704be75c8305cf3e98c33ba0010345e8403adc04a1fd88038943957bec4e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "VpcSharedRouteTableIntegDefaultTestDeployAssert4BB1B1C8.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-ec2-alpha-shared-route-table",
+        "VpcSharedRouteTableIntegDefaultTestDeployAssert4BB1B1C8.assets"
+      ],
+      "metadata": {
+        "/VpcSharedRouteTableInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommandecd0f2bd146488c1ec3b2207efafa743/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/VpcSharedRouteTableInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommandecd0f2bd146488c1ec3b2207efafa743/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallec2DescribeRouteTablesCommandecd0f2bd146488c1ec3b2207efafa743"
+          }
+        ],
+        "/VpcSharedRouteTableInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommandecd0f2bd146488c1ec3b2207efafa743/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallec2DescribeRouteTablesCommandecd0f2bd146488c1ec3b2207efafa743"
+          }
+        ],
+        "/VpcSharedRouteTableInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/VpcSharedRouteTableInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/VpcSharedRouteTableInteg/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/VpcSharedRouteTableInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/VpcSharedRouteTableInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "VpcSharedRouteTableInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
