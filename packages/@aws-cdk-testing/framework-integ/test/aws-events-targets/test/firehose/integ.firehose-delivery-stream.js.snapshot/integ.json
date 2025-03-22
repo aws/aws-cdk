@@ -1,0 +1,12 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "firehose-event-target-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-firehose-event-target"
+      ],
+      "assertionStack": "firehose-event-target-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "firehoseeventtargetintegDefaultTestDeployAssert453EDADE"
+    }
+  }
+}
