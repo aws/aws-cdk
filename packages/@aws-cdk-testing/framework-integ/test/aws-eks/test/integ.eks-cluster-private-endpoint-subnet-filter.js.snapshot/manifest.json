@@ -1,79 +1,54 @@
 {
   "version": "40.0.0",
   "artifacts": {
-    "aws-cdk-eks-cluster-private-endpoint-test.assets": {
+    "StackWithVpc.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-eks-cluster-private-endpoint-test.assets.json",
+        "file": "StackWithVpc.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-eks-cluster-private-endpoint-test": {
+    "StackWithVpc": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
+      "environment": "aws://123456/eu-west-1",
       "properties": {
-        "templateFile": "aws-cdk-eks-cluster-private-endpoint-test.template.json",
+        "templateFile": "StackWithVpc.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3c77fb52a31cc7e4d562ec48c4acac677fa27e713002370f6df3b7582ae94799.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::123456:role/cdk-hnb659fds-deploy-role-123456-eu-west-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::123456:role/cdk-hnb659fds-cfn-exec-role-123456-eu-west-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456-eu-west-1/de0548330ea8b5aa90eb23cf59581eb6c060e45af089abbbe324c97431d2df31.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-eks-cluster-private-endpoint-test.assets"
+          "StackWithVpc.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "arn": "arn:${AWS::Partition}:iam::123456:role/cdk-hnb659fds-lookup-role-123456-eu-west-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
       },
       "dependencies": [
-        "aws-cdk-eks-cluster-private-endpoint-test.assets"
+        "StackWithVpc.assets"
       ],
       "metadata": {
-        "/aws-cdk-eks-cluster-private-endpoint-test/AdminRole": [
+        "/StackWithVpc/MyVpc": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
+              "vpcName": "*"
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/AdminRole/ImportAdminRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/AdminRole/Resource": [
+        "/StackWithVpc/MyVpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AdminRole38563C57"
+            "data": "MyVpcF9F0CA6F"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "maxAzs": "*",
-              "natGateways": "*",
-              "restrictDefaultSecurityGroup": false
-            }
-          }
-        ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Vpc8378EB38"
-          }
-        ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet1": [
+        "/StackWithVpc/MyVpc/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -109,43 +84,43 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet1/Subnet": [
+        "/StackWithVpc/MyVpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+            "data": "MyVpcPublicSubnet1SubnetF6608456"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet1/RouteTable": [
+        "/StackWithVpc/MyVpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+            "data": "MyVpcPublicSubnet1RouteTableC46AB2F4"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet1/RouteTableAssociation": [
+        "/StackWithVpc/MyVpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+            "data": "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet1/DefaultRoute": [
+        "/StackWithVpc/MyVpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+            "data": "MyVpcPublicSubnet1DefaultRoute95FDF9EB"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet1/EIP": [
+        "/StackWithVpc/MyVpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1EIPD7E02669"
+            "data": "MyVpcPublicSubnet1EIP096967CB"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet1/NATGateway": [
+        "/StackWithVpc/MyVpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+            "data": "MyVpcPublicSubnet1NATGatewayAD3400C1"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet2": [
+        "/StackWithVpc/MyVpc/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -171,33 +146,125 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet2/Subnet": [
+        "/StackWithVpc/MyVpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2Subnet691E08A3"
+            "data": "MyVpcPublicSubnet2Subnet492B6BFB"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet2/RouteTable": [
+        "/StackWithVpc/MyVpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTable94F7E489"
+            "data": "MyVpcPublicSubnet2RouteTable1DF17386"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet2/RouteTableAssociation": [
+        "/StackWithVpc/MyVpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+            "data": "MyVpcPublicSubnet2RouteTableAssociation227DE78D"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet2/DefaultRoute": [
+        "/StackWithVpc/MyVpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+            "data": "MyVpcPublicSubnet2DefaultRoute052936F6"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PrivateSubnet1": [
+        "/StackWithVpc/MyVpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2EIP8CCBA239"
+          }
+        ],
+        "/StackWithVpc/MyVpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2NATGateway91BFBEC9"
+          }
+        ],
+        "/StackWithVpc/MyVpc/PublicSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/StackWithVpc/MyVpc/PublicSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet3Subnet57EEE236"
+          }
+        ],
+        "/StackWithVpc/MyVpc/PublicSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet3RouteTable15028F08"
+          }
+        ],
+        "/StackWithVpc/MyVpc/PublicSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet3RouteTableAssociation5C27DDA4"
+          }
+        ],
+        "/StackWithVpc/MyVpc/PublicSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet3DefaultRoute3A83AB36"
+          }
+        ],
+        "/StackWithVpc/MyVpc/PublicSubnet3/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet3EIPC5ACADAB"
+          }
+        ],
+        "/StackWithVpc/MyVpc/PublicSubnet3/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet3NATGatewayD4B50EBE"
+          }
+        ],
+        "/StackWithVpc/MyVpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -225,31 +292,31 @@
             "data": {}
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PrivateSubnet1/Subnet": [
+        "/StackWithVpc/MyVpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1Subnet536B997A"
+            "data": "MyVpcPrivateSubnet1Subnet5057CF7E"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PrivateSubnet1/RouteTable": [
+        "/StackWithVpc/MyVpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+            "data": "MyVpcPrivateSubnet1RouteTable8819E6E2"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/StackWithVpc/MyVpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+            "data": "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PrivateSubnet1/DefaultRoute": [
+        "/StackWithVpc/MyVpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+            "data": "MyVpcPrivateSubnet1DefaultRouteA8CDE2FA"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PrivateSubnet2": [
+        "/StackWithVpc/MyVpc/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -277,66 +344,272 @@
             "data": {}
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PrivateSubnet2/Subnet": [
+        "/StackWithVpc/MyVpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+            "data": "MyVpcPrivateSubnet2Subnet0040C983"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PrivateSubnet2/RouteTable": [
+        "/StackWithVpc/MyVpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableA678073B"
+            "data": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PrivateSubnet2/RouteTableAssociation": [
+        "/StackWithVpc/MyVpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+            "data": "MyVpcPrivateSubnet2RouteTableAssociation86A610DA"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/PrivateSubnet2/DefaultRoute": [
+        "/StackWithVpc/MyVpc/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+            "data": "MyVpcPrivateSubnet2DefaultRoute9CE96294"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/IGW": [
+        "/StackWithVpc/MyVpc/PrivateSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/StackWithVpc/MyVpc/PrivateSubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcIGWD7BA715C"
+            "data": "MyVpcPrivateSubnet3Subnet772D6AD7"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Vpc/VPCGW": [
+        "/StackWithVpc/MyVpc/PrivateSubnet3/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcVPCGWBF912B6E"
+            "data": "MyVpcPrivateSubnet3RouteTableB790927C"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/KubectlLayer": [
+        "/StackWithVpc/MyVpc/PrivateSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet3RouteTableAssociationD951741C"
+          }
+        ],
+        "/StackWithVpc/MyVpc/PrivateSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet3DefaultRouteEC11C0C5"
+          }
+        ],
+        "/StackWithVpc/MyVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcIGW5C4A4F63"
+          }
+        ],
+        "/StackWithVpc/MyVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcVPCGW488ACE0D"
+          }
+        ],
+        "/StackWithVpc/AdminRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/StackWithVpc/AdminRole/ImportAdminRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/KubectlLayer/Resource": [
+        "/StackWithVpc/AdminRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminRole38563C57"
+          }
+        ],
+        "/StackWithVpc/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZones": "*",
+              "vpcCidrBlock": "*",
+              "isolatedSubnetIds": "*",
+              "isolatedSubnetNames": "*",
+              "isolatedSubnetRouteTableIds": "*",
+              "privateSubnetIds": "*",
+              "privateSubnetNames": "*",
+              "privateSubnetRouteTableIds": "*",
+              "publicSubnetIds": "*",
+              "publicSubnetNames": "*",
+              "publicSubnetRouteTableIds": "*",
+              "subnetGroups": [
+                {
+                  "name": "*",
+                  "type": "Public",
+                  "subnets": [
+                    {
+                      "availabilityZone": "*",
+                      "subnetId": "*",
+                      "routeTableId": "*",
+                      "cidr": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "subnetId": "*",
+                      "routeTableId": "*",
+                      "cidr": "*"
+                    }
+                  ]
+                },
+                {
+                  "name": "*",
+                  "type": "Private",
+                  "subnets": [
+                    {
+                      "availabilityZone": "*",
+                      "subnetId": "*",
+                      "routeTableId": "*",
+                      "cidr": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "subnetId": "*",
+                      "routeTableId": "*",
+                      "cidr": "*"
+                    }
+                  ]
+                },
+                {
+                  "name": "*",
+                  "type": "Isolated",
+                  "subnets": [
+                    {
+                      "availabilityZone": "*",
+                      "subnetId": "*",
+                      "routeTableId": "*",
+                      "cidr": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "subnetId": "*",
+                      "routeTableId": "*",
+                      "cidr": "*"
+                    }
+                  ]
+                }
+              ],
+              "vpcId": "*"
+            }
+          }
+        ],
+        "/StackWithVpc/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/StackWithVpc/Vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/StackWithVpc/Vpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/StackWithVpc/Vpc/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/StackWithVpc/Vpc/IsolatedSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/StackWithVpc/Vpc/IsolatedSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/StackWithVpc/KubectlLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/StackWithVpc/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "KubectlLayer600207B5"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster": [
+        "/StackWithVpc/Cluster": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "vpc": "*",
               "mastersRole": "*",
-              "defaultCapacity": "*",
               "version": "*",
               "kubectlLayer": "*",
               "endpointAccess": "*",
+              "vpcSubnets": [
+                {
+                  "subnetFilters": "*"
+                }
+              ],
               "prune": false
             }
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Could not auto-tag private subnet p-12345 with \"kubernetes.io/role/internal-elb=1\", please remember to do this manually [ack: @aws-cdk/aws-eks:clusterMustManuallyTagSubnet]"
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Could not auto-tag private subnet p-67890 with \"kubernetes.io/role/internal-elb=1\", please remember to do this manually [ack: @aws-cdk/aws-eks:clusterMustManuallyTagSubnet]"
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Could not auto-tag public subnet s-12345 with \"kubernetes.io/role/elb=1\", please remember to do this manually [ack: @aws-cdk/aws-eks:clusterMustManuallyTagSubnet]"
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Could not auto-tag public subnet s-67890 with \"kubernetes.io/role/elb=1\", please remember to do this manually [ack: @aws-cdk/aws-eks:clusterMustManuallyTagSubnet]"
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -350,7 +623,7 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/KubectlHandlerRole": [
+        "/StackWithVpc/Cluster/KubectlHandlerRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -403,16 +676,6 @@
             "type": "aws:cdk:analytics:method",
             "data": {
               "addManagedPolicy": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addManagedPolicy": [
                 "*"
               ]
             }
@@ -426,19 +689,19 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/KubectlHandlerRole/ImportKubectlHandlerRole": [
+        "/StackWithVpc/Cluster/KubectlHandlerRole/ImportKubectlHandlerRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/KubectlHandlerRole/Resource": [
+        "/StackWithVpc/Cluster/KubectlHandlerRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterKubectlHandlerRole94549F93"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/KubectlHandlerRole/DefaultPolicy": [
+        "/StackWithVpc/Cluster/KubectlHandlerRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -476,13 +739,13 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/KubectlHandlerRole/DefaultPolicy/Resource": [
+        "/StackWithVpc/Cluster/KubectlHandlerRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterKubectlHandlerRoleDefaultPolicyE44083DD"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/Role": [
+        "/StackWithVpc/Cluster/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -498,19 +761,19 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/Role/ImportRole": [
+        "/StackWithVpc/Cluster/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/Role/Resource": [
+        "/StackWithVpc/Cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterRoleFA261979"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/ControlPlaneSecurityGroup": [
+        "/StackWithVpc/Cluster/ControlPlaneSecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -519,13 +782,13 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/ControlPlaneSecurityGroup/Resource": [
+        "/StackWithVpc/Cluster/ControlPlaneSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterControlPlaneSecurityGroupD274242C"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/Resource/CreationRole": [
+        "/StackWithVpc/Cluster/Resource/CreationRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -657,19 +920,19 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/Resource/CreationRole/ImportCreationRole": [
+        "/StackWithVpc/Cluster/Resource/CreationRole/ImportCreationRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/Resource/CreationRole/Resource": [
+        "/StackWithVpc/Cluster/Resource/CreationRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterCreationRole360249B6"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/Resource/CreationRole/DefaultPolicy": [
+        "/StackWithVpc/Cluster/Resource/CreationRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -739,13 +1002,13 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/Resource/CreationRole/DefaultPolicy/Resource": [
+        "/StackWithVpc/Cluster/Resource/CreationRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterCreationRoleDefaultPolicyE8BDFC7B"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/Resource/Resource": [
+        "/StackWithVpc/Cluster/Resource/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -779,37 +1042,37 @@
             "data": "*"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/Resource/Resource/Default": [
+        "/StackWithVpc/Cluster/Resource/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Cluster9EE0221C"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/KubectlReadyBarrier": [
+        "/StackWithVpc/Cluster/KubectlReadyBarrier": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterKubectlReadyBarrier200052AF"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/HasEcrPublic": [
+        "/StackWithVpc/Cluster/HasEcrPublic": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterHasEcrPublic8EE1114E"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/AwsAuth/manifest/Resource": [
+        "/StackWithVpc/Cluster/AwsAuth/manifest/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/AwsAuth/manifest/Resource/Default": [
+        "/StackWithVpc/Cluster/AwsAuth/manifest/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterAwsAuthmanifestFE51F8AE"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/NodegroupDefaultCapacity": [
+        "/StackWithVpc/Cluster/NodegroupDefaultCapacity": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -819,7 +1082,7 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole": [
+        "/StackWithVpc/Cluster/NodegroupDefaultCapacity/NodeGroupRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -860,67 +1123,49 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole": [
+        "/StackWithVpc/Cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
+        "/StackWithVpc/Cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/NodegroupDefaultCapacity/Resource": [
+        "/StackWithVpc/Cluster/NodegroupDefaultCapacity/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterNodegroupDefaultCapacityDA0920A3"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/ConfigCommand": [
+        "/StackWithVpc/Cluster/ConfigCommand": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterConfigCommand43AAE40F"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/GetTokenCommand": [
+        "/StackWithVpc/Cluster/GetTokenCommand": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterGetTokenCommand06AE992E"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/manifest-config-map/Resource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/manifest-config-map/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Clustermanifestconfigmap3F180550"
-          }
-        ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {}
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "NodeProxyAgentLayer924C1971"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -960,7 +1205,7 @@
             "data": 0
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -976,25 +1221,25 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/ImportServiceRole": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "OnEventHandlerServiceRole15A26729"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "OnEventHandler42BEBAE0"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1034,7 +1279,7 @@
             "data": 0
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1050,25 +1295,25 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/ImportServiceRole": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IsCompleteHandlerServiceRole5810CC58"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IsCompleteHandler7073F4DA"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1114,7 +1359,7 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1186,19 +1431,19 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEventServiceRole9FF04296"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1260,19 +1505,19 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEvent83C1D0A7"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1309,7 +1554,7 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1373,19 +1618,19 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkisCompleteServiceRoleB1087139"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1439,19 +1684,19 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkisCompleteServiceRoleDefaultPolicy2E7140AC"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkisComplete26D7B0CB"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1488,7 +1733,7 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1552,19 +1797,19 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonTimeoutServiceRole28643D26"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1618,19 +1863,19 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonTimeoutServiceRoleDefaultPolicy2688969F"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonTimeout0B47CA38"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1681,19 +1926,19 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/ImportRole": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderwaiterstatemachineRole0C7159F9"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1739,13 +1984,13 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderwaiterstatemachineRoleDefaultPolicyD3C3DA1A"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/LogGroup": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1753,43 +1998,43 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/LogGroup/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderwaiterstatemachineLogGroupDD693A98"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Providerwaiterstatemachine5D4A9DF0"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterprivateendpointtestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole4392FD6EArn": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/StackWithVpcawscdkawseksClusterResourceProviderOnEventHandlerServiceRole2C2C2EAAArn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "awscdkeksclusterprivateendpointtestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole4392FD6EArn"
+            "data": "StackWithVpcawscdkawseksClusterResourceProviderOnEventHandlerServiceRole2C2C2EAAArn"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterprivateendpointtestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole956A78E2Arn": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/StackWithVpcawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole7AA42F62Arn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "awscdkeksclusterprivateendpointtestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole956A78E2Arn"
+            "data": "StackWithVpcawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole7AA42F62Arn"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterprivateendpointtestawscdkawseksClusterResourceProviderframeworkonEvent080B290CArn": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider/StackWithVpcawscdkawseksClusterResourceProviderframeworkonEvent5D5BC046Arn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "awscdkeksclusterprivateendpointtestawscdkawseksClusterResourceProviderframeworkonEvent080B290CArn"
+            "data": "StackWithVpcawscdkawseksClusterResourceProviderframeworkonEvent5D5BC046Arn"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/Handler": [
+        "/StackWithVpc/@aws-cdk--aws-eks.KubectlProvider/Handler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1799,15 +2044,8 @@
               "environment": "*",
               "role": "*",
               "vpc": "*",
-              "securityGroups": [
-                "*"
-              ],
-              "vpcSubnets": {
-                "subnets": [
-                  "*",
-                  "*"
-                ]
-              },
+              "securityGroups": "*",
+              "vpcSubnets": "*",
               "code": "*",
               "handler": "*",
               "runtime": "*"
@@ -1843,25 +2081,25 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Handler886CB40B"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer": [
+        "/StackWithVpc/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {}
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsCliLayerF44AAF94"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent": [
+        "/StackWithVpc/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1872,15 +2110,8 @@
               "timeout": "*",
               "logGroup": "*",
               "vpc": "*",
-              "vpcSubnets": {
-                "subnets": [
-                  "*",
-                  "*"
-                ]
-              },
-              "securityGroups": [
-                "*"
-              ],
+              "vpcSubnets": "*",
+              "securityGroups": "*",
               "role": "*",
               "functionName": "*",
               "environmentEncryption": "*"
@@ -1896,7 +2127,7 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole": [
+        "/StackWithVpc/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1905,9 +2136,6 @@
                 "assumeRoleAction": "*"
               },
               "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                },
                 {
                   "managedPolicyArn": "*"
                 }
@@ -1947,19 +2175,19 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
+        "/StackWithVpc/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEventServiceRole9FF04296"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+        "/StackWithVpc/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1997,94 +2225,70 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Resource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEvent83C1D0A7"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap": [
+        "/StackWithVpc/@aws-cdk--aws-eks.KubectlProvider/StackWithVpcawscdkawseksKubectlProviderframeworkonEvent883E2AFBArn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
+            "data": "StackWithVpcawscdkawseksKubectlProviderframeworkonEvent883E2AFBArn"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/awscdkeksclusterprivateendpointtestawscdkawseksKubectlProviderframeworkonEventC2C76E2FArn": [
+        "/StackWithVpc/@aws-cdk--aws-eks.KubectlProvider/reference-to-StackWithVpcKubectlLayer8B0FF754Ref": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "awscdkeksclusterprivateendpointtestawscdkawseksKubectlProviderframeworkonEventC2C76E2FArn"
+            "data": "referencetoStackWithVpcKubectlLayer8B0FF754Ref"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterprivateendpointtestKubectlLayer9A0EA6BCRef": [
+        "/StackWithVpc/@aws-cdk--aws-eks.KubectlProvider/reference-to-StackWithVpcClusterKubectlHandlerRole05F67B71Arn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksclusterprivateendpointtestKubectlLayer9A0EA6BCRef"
+            "data": "referencetoStackWithVpcClusterKubectlHandlerRole05F67B71Arn"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterprivateendpointtestClusterKubectlHandlerRole67774AF8Arn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksclusterprivateendpointtestClusterKubectlHandlerRole67774AF8Arn"
-          }
-        ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterprivateendpointtestVpcPrivateSubnet1Subnet94DAD769Ref": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksclusterprivateendpointtestVpcPrivateSubnet1Subnet94DAD769Ref"
-          }
-        ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterprivateendpointtestVpcPrivateSubnet2Subnet04963C08Ref": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksclusterprivateendpointtestVpcPrivateSubnet2Subnet04963C08Ref"
-          }
-        ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterprivateendpointtestClusterF4CF4FE8ClusterSecurityGroupId": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksclusterprivateendpointtestClusterF4CF4FE8ClusterSecurityGroupId"
-          }
-        ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider.NestedStack/@aws-cdk--aws-eks.KubectlProvider.NestedStackResource": [
+        "/StackWithVpc/@aws-cdk--aws-eks.KubectlProvider.NestedStack/@aws-cdk--aws-eks.KubectlProvider.NestedStackResource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/BootstrapVersion": [
+        "/StackWithVpc/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/CheckBootstrapVersion": [
+        "/StackWithVpc/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-eks-cluster-private-endpoint-test"
+      "displayName": "StackWithVpc"
     },
-    "awscdkeksclusterprivateendpointDefaultTestDeployAssert3C16DBEA.assets": {
+    "awscdkeksclusterprivateendpointsubnetfilterDefaultTestDeployAssert9E98D051.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "awscdkeksclusterprivateendpointDefaultTestDeployAssert3C16DBEA.assets.json",
+        "file": "awscdkeksclusterprivateendpointsubnetfilterDefaultTestDeployAssert9E98D051.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "awscdkeksclusterprivateendpointDefaultTestDeployAssert3C16DBEA": {
+    "awscdkeksclusterprivateendpointsubnetfilterDefaultTestDeployAssert9E98D051": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "awscdkeksclusterprivateendpointDefaultTestDeployAssert3C16DBEA.template.json",
+        "templateFile": "awscdkeksclusterprivateendpointsubnetfilterDefaultTestDeployAssert9E98D051.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -2093,7 +2297,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "awscdkeksclusterprivateendpointDefaultTestDeployAssert3C16DBEA.assets"
+          "awscdkeksclusterprivateendpointsubnetfilterDefaultTestDeployAssert9E98D051.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -2102,23 +2306,23 @@
         }
       },
       "dependencies": [
-        "awscdkeksclusterprivateendpointDefaultTestDeployAssert3C16DBEA.assets"
+        "awscdkeksclusterprivateendpointsubnetfilterDefaultTestDeployAssert9E98D051.assets"
       ],
       "metadata": {
-        "/aws-cdk-eks-cluster-private-endpoint/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/aws-cdk-eks-cluster-private-endpoint-subnet-filter/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/aws-cdk-eks-cluster-private-endpoint-subnet-filter/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-eks-cluster-private-endpoint/DefaultTest/DeployAssert"
+      "displayName": "aws-cdk-eks-cluster-private-endpoint-subnet-filter/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -2126,5 +2330,34 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "missing": [
+    {
+      "key": "availability-zones:account=123456:region=eu-west-1",
+      "provider": "availability-zones",
+      "props": {
+        "dummyValue": [
+          "dummy1a",
+          "dummy1b",
+          "dummy1c"
+        ],
+        "account": "123456",
+        "region": "eu-west-1",
+        "lookupRoleArn": "arn:${AWS::Partition}:iam::123456:role/cdk-hnb659fds-lookup-role-123456-eu-west-1"
+      }
+    },
+    {
+      "key": "vpc-provider:account=123456:filter.tag:Name=my-vpc-name:region=eu-west-1:returnAsymmetricSubnets=true",
+      "provider": "vpc-provider",
+      "props": {
+        "account": "123456",
+        "region": "eu-west-1",
+        "filter": {
+          "tag:Name": "my-vpc-name"
+        },
+        "returnAsymmetricSubnets": true,
+        "lookupRoleArn": "arn:${AWS::Partition}:iam::123456:role/cdk-hnb659fds-lookup-role-123456-eu-west-1"
+      }
+    }
+  ]
 }
