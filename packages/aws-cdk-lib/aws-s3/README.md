@@ -852,9 +852,9 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
         {
           storageClass: s3.StorageClass.GLACIER,
 
-          // the properties below are optional
+          // exactly one of transitionAfter or transitionDate must be specified
           transitionAfter: Duration.days(30),
-          transitionDate: new Date(),
+          // transitionDate: new Date(), // cannot specify both
         },
       ],
     },

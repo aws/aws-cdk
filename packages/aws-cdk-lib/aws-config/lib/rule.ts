@@ -449,6 +449,7 @@ export class CustomRule extends RuleNew {
     }
     const hash = createHash('sha256')
       .update(JSON.stringify({
+        /* eslint-disable-next-line @typescript-eslint/unbound-method *//* REMOVEME: this is a latent bug */
         fnName: props.lambdaFunction.functionName.toString,
         accountId: Stack.of(this).resolve(this.env.account),
         region: Stack.of(this).resolve(this.env.region),
@@ -2753,7 +2754,7 @@ export class ResourceType {
   public static readonly IAM_SAML_PROVIDER = new ResourceType('AWS::IAM::SAMLProvider');
   /** AWS IAM ServerCertificate */
   public static readonly IAM_SERVER_CERTIFICATE = new ResourceType('AWS::IAM::ServerCertificate');
-  /** Amazon Kinesis Firehose DeliveryStream */
+  /** Amazon Data Firehose DeliveryStream */
   public static readonly KINESIS_FIREHOSE_DELIVERY_STREAM = new ResourceType('AWS::KinesisFirehose::DeliveryStream');
   /** Amazon Pinpoint Campaign */
   public static readonly PINPOINT_CAMPAIGN = new ResourceType('AWS::Pinpoint::Campaign');

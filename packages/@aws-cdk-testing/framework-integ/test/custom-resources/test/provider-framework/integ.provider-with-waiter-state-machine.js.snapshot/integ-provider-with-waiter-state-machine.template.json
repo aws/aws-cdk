@@ -740,24 +740,6 @@
        ]
       },
       {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsComplete544AE5AD",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "OnEvent74718524",
-          "Arn"
-         ]
-        }
-       ]
-      },
-      {
        "Action": "states:StartExecution",
        "Effect": "Allow",
        "Resource": {
@@ -849,6 +831,70 @@
    "DependsOn": [
     "MyProviderframeworkonEventServiceRoleDefaultPolicyD3892FD3",
     "MyProviderframeworkonEventServiceRole8761E48D",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderframeworkonEventinlinePolicyAddedToExecutionRole01895580B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OnEvent74718524",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProviderframeworkonEventinlinePolicyAddedToExecutionRole01895580B",
+    "Roles": [
+     {
+      "Ref": "MyProviderframeworkonEventServiceRole8761E48D"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderframeworkonEventinlinePolicyAddedToExecutionRole1B6EE7537": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "IsComplete544AE5AD",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProviderframeworkonEventinlinePolicyAddedToExecutionRole1B6EE7537",
+    "Roles": [
+     {
+      "Ref": "MyProviderframeworkonEventServiceRole8761E48D"
+     }
+    ]
+   },
+   "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
     "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
     "VpcPrivateSubnet2DefaultRoute060D2087",
@@ -954,24 +1000,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsComplete544AE5AD",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "OnEvent74718524",
-          "Arn"
-         ]
-        }
-       ]
       }
      ],
      "Version": "2012-10-17"
@@ -1055,6 +1083,70 @@
    "DependsOn": [
     "MyProviderframeworkisCompleteServiceRoleDefaultPolicy8C6F72E8",
     "MyProviderframeworkisCompleteServiceRoleD0A6BA11",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderframeworkisCompleteinlinePolicyAddedToExecutionRole02B272400": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OnEvent74718524",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProviderframeworkisCompleteinlinePolicyAddedToExecutionRole02B272400",
+    "Roles": [
+     {
+      "Ref": "MyProviderframeworkisCompleteServiceRoleD0A6BA11"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderframeworkisCompleteinlinePolicyAddedToExecutionRole13AD2CC44": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "IsComplete544AE5AD",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProviderframeworkisCompleteinlinePolicyAddedToExecutionRole13AD2CC44",
+    "Roles": [
+     {
+      "Ref": "MyProviderframeworkisCompleteServiceRoleD0A6BA11"
+     }
+    ]
+   },
+   "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
     "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
     "VpcPrivateSubnet2DefaultRoute060D2087",
@@ -1160,24 +1252,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsComplete544AE5AD",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "OnEvent74718524",
-          "Arn"
-         ]
-        }
-       ]
       }
      ],
      "Version": "2012-10-17"
@@ -1261,6 +1335,70 @@
    "DependsOn": [
     "MyProviderframeworkonTimeoutServiceRoleDefaultPolicyEAB381BF",
     "MyProviderframeworkonTimeoutServiceRole1A667BCA",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole07080B90B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OnEvent74718524",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole07080B90B",
+    "Roles": [
+     {
+      "Ref": "MyProviderframeworkonTimeoutServiceRole1A667BCA"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole1F978A754": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "IsComplete544AE5AD",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole1F978A754",
+    "Roles": [
+     {
+      "Ref": "MyProviderframeworkonTimeoutServiceRole1A667BCA"
+     }
+    ]
+   },
+   "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
     "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
     "VpcPrivateSubnet2DefaultRoute060D2087",
@@ -1516,24 +1654,6 @@
        ]
       },
       {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsComplete544AE5AD",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "OnEvent74718524",
-          "Arn"
-         ]
-        }
-       ]
-      },
-      {
        "Action": "states:StartExecution",
        "Effect": "Allow",
        "Resource": {
@@ -1625,6 +1745,70 @@
    "DependsOn": [
     "MyProviderWithoutLogOptionsframeworkonEventServiceRoleDefaultPolicy03CDAD2E",
     "MyProviderWithoutLogOptionsframeworkonEventServiceRole42DA2E00",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderWithoutLogOptionsframeworkonEventinlinePolicyAddedToExecutionRole023A88689": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OnEvent74718524",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProviderWithoutLogOptionsframeworkonEventinlinePolicyAddedToExecutionRole023A88689",
+    "Roles": [
+     {
+      "Ref": "MyProviderWithoutLogOptionsframeworkonEventServiceRole42DA2E00"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderWithoutLogOptionsframeworkonEventinlinePolicyAddedToExecutionRole197B8A054": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "IsComplete544AE5AD",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProviderWithoutLogOptionsframeworkonEventinlinePolicyAddedToExecutionRole197B8A054",
+    "Roles": [
+     {
+      "Ref": "MyProviderWithoutLogOptionsframeworkonEventServiceRole42DA2E00"
+     }
+    ]
+   },
+   "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
     "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
     "VpcPrivateSubnet2DefaultRoute060D2087",
@@ -1730,24 +1914,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsComplete544AE5AD",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "OnEvent74718524",
-          "Arn"
-         ]
-        }
-       ]
       }
      ],
      "Version": "2012-10-17"
@@ -1831,6 +1997,70 @@
    "DependsOn": [
     "MyProviderWithoutLogOptionsframeworkisCompleteServiceRoleDefaultPolicy51B53947",
     "MyProviderWithoutLogOptionsframeworkisCompleteServiceRole731825B1",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderWithoutLogOptionsframeworkisCompleteinlinePolicyAddedToExecutionRole0144D0073": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OnEvent74718524",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProviderWithoutLogOptionsframeworkisCompleteinlinePolicyAddedToExecutionRole0144D0073",
+    "Roles": [
+     {
+      "Ref": "MyProviderWithoutLogOptionsframeworkisCompleteServiceRole731825B1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderWithoutLogOptionsframeworkisCompleteinlinePolicyAddedToExecutionRole14BEEF1C9": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "IsComplete544AE5AD",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProviderWithoutLogOptionsframeworkisCompleteinlinePolicyAddedToExecutionRole14BEEF1C9",
+    "Roles": [
+     {
+      "Ref": "MyProviderWithoutLogOptionsframeworkisCompleteServiceRole731825B1"
+     }
+    ]
+   },
+   "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
     "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
     "VpcPrivateSubnet2DefaultRoute060D2087",
@@ -1936,24 +2166,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsComplete544AE5AD",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "OnEvent74718524",
-          "Arn"
-         ]
-        }
-       ]
       }
      ],
      "Version": "2012-10-17"
@@ -2037,6 +2249,70 @@
    "DependsOn": [
     "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleDefaultPolicy891DADC3",
     "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleC30A6329",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderWithoutLogOptionsframeworkonTimeoutinlinePolicyAddedToExecutionRole0F8CB55CF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OnEvent74718524",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProviderWithoutLogOptionsframeworkonTimeoutinlinePolicyAddedToExecutionRole0F8CB55CF",
+    "Roles": [
+     {
+      "Ref": "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleC30A6329"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderWithoutLogOptionsframeworkonTimeoutinlinePolicyAddedToExecutionRole12CB775D8": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "IsComplete544AE5AD",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProviderWithoutLogOptionsframeworkonTimeoutinlinePolicyAddedToExecutionRole12CB775D8",
+    "Roles": [
+     {
+      "Ref": "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleC30A6329"
+     }
+    ]
+   },
+   "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
     "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
     "VpcPrivateSubnet2DefaultRoute060D2087",

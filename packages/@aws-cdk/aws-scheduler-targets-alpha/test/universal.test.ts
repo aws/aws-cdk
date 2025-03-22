@@ -1,5 +1,5 @@
 import * as scheduler from '@aws-cdk/aws-scheduler-alpha';
-import { Group } from '@aws-cdk/aws-scheduler-alpha';
+import { ScheduleGroup } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Annotations, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -256,8 +256,8 @@ describe('Universal schedule target', () => {
         QueueName: 'my-queue',
       }),
     });
-    const group = new Group(stack, 'Group', {
-      groupName: 'mygroup',
+    const scheduleGroup = new ScheduleGroup(stack, 'ScheduleGroup', {
+      scheduleGroupName: 'mygroup',
     });
 
     new scheduler.Schedule(stack, 'Schedule1', {
@@ -268,7 +268,7 @@ describe('Universal schedule target', () => {
     new scheduler.Schedule(stack, 'Schedule2', {
       schedule: scheduleExpression,
       target,
-      group,
+      scheduleGroup,
     });
 
     const template = Template.fromStack(stack);
@@ -312,7 +312,7 @@ describe('Universal schedule target', () => {
                 'aws:SourceAccount': '123456789012',
                 'aws:SourceArn': {
                   'Fn::GetAtt': [
-                    'GroupC77FDACD',
+                    'ScheduleGroup4D377372',
                     'Arn',
                   ],
                 },

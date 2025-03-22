@@ -137,7 +137,7 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
       ...options,
       workflowName: this.workflowName,
       type: 'ON_DEMAND',
-      actions: options.actions?.map(this.renderAction),
+      actions: options.actions?.map(this.renderAction.bind(this)),
       description: options.description || undefined,
     });
 
@@ -162,7 +162,7 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
       ...options,
       workflowName: this.workflowName,
       type: 'SCHEDULED',
-      actions: options.actions?.map(this.renderAction),
+      actions: options.actions?.map(this.renderAction.bind(this)),
       schedule: dailySchedule.expressionString,
       startOnCreation: options.startOnCreation ?? false,
     });
@@ -189,7 +189,7 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
       ...options,
       workflowName: this.workflowName,
       type: 'SCHEDULED',
-      actions: options.actions?.map(this.renderAction),
+      actions: options.actions?.map(this.renderAction.bind(this)),
       schedule: weeklySchedule.expressionString,
       startOnCreation: options.startOnCreation ?? false,
     });
@@ -210,7 +210,7 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
       ...options,
       workflowName: this.workflowName,
       type: 'SCHEDULED',
-      actions: options.actions?.map(this.renderAction),
+      actions: options.actions?.map(this.renderAction.bind(this)),
       schedule: options.schedule.expressionString,
       startOnCreation: options.startOnCreation ?? false,
     });
@@ -231,7 +231,7 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
       ...options,
       workflowName: this.workflowName,
       type: 'EVENT',
-      actions: options.actions?.map(this.renderAction),
+      actions: options.actions?.map(this.renderAction.bind(this)),
       eventBatchingCondition: this.renderEventBatchingCondition(options),
       description: options.description ?? undefined,
     });
@@ -248,12 +248,12 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
    * @throws If a job is provided without a job state, or if a crawler is provided without a crawler state for any condition.
    * @returns The created CfnTrigger resource.
    */
-  public addconditionalTrigger(id: string, options: ConditionalTriggerOptions): CfnTrigger {
+  public addConditionalTrigger(id: string, options: ConditionalTriggerOptions): CfnTrigger {
     const trigger = new CfnTrigger(this, id, {
       ...options,
       workflowName: this.workflowName,
       type: 'CONDITIONAL',
-      actions: options.actions?.map(this.renderAction),
+      actions: options.actions?.map(this.renderAction.bind(this)),
       predicate: this.renderPredicate(options),
       eventBatchingCondition: this.renderEventBatchingCondition(options),
       description: options.description ?? undefined,

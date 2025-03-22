@@ -199,9 +199,10 @@ export abstract class OriginBase implements IOrigin {
   public bind(scope: Construct, options: OriginBindOptions): OriginBindConfig {
     const s3OriginConfig = this.renderS3OriginConfig();
     const customOriginConfig = this.renderCustomOriginConfig();
+    const vpcOriginConfig = this.renderVpcOriginConfig();
 
-    if (!s3OriginConfig && !customOriginConfig) {
-      throw new ValidationError('Subclass must override and provide either s3OriginConfig or customOriginConfig', scope);
+    if (!s3OriginConfig && !customOriginConfig && !vpcOriginConfig) {
+      throw new ValidationError('Subclass must override and provide either s3OriginConfig, customOriginConfig or vpcOriginConfig', scope);
     }
 
     return {
@@ -214,6 +215,7 @@ export abstract class OriginBase implements IOrigin {
         originCustomHeaders: this.renderCustomHeaders(),
         s3OriginConfig,
         customOriginConfig,
+        vpcOriginConfig,
         originShield: this.renderOriginShield(this.originShieldEnabled, this.originShieldRegion),
         originAccessControlId: this.originAccessControlId,
       },
@@ -227,6 +229,11 @@ export abstract class OriginBase implements IOrigin {
 
   // Overridden by sub-classes to provide custom origin config.
   protected renderCustomOriginConfig(): CfnDistribution.CustomOriginConfigProperty | undefined {
+    return undefined;
+  }
+
+  // Overridden by sub-classes to provide VPC origin config.
+  protected renderVpcOriginConfig(): CfnDistribution.VpcOriginConfigProperty | undefined {
     return undefined;
   }
 

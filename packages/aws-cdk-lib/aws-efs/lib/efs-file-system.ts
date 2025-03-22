@@ -123,7 +123,7 @@ export enum ThroughputMode {
 /**
  * The status of the file system's replication overwrite protection.
  *
- * @see https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-properties-efs-filesystem-filesystemprotection.html
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-efs-filesystem-filesystemprotection.html
  */
 export enum ReplicationOverwriteProtection {
   /**

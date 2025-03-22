@@ -211,7 +211,9 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    */
   public grant(grantee: IGrantable, resources: AppSyncEventResource, ...actions: string[]): Grant {
     if (!this.authProviderTypes.includes(AppSyncAuthorizationType.IAM)) {
-      throw new ValidationError('IAM Authorization mode is not configured on this API.', this);
+      throw new ValidationError('Cannot use grant method because IAM Authorization mode is missing in the auth providers on this API.',
+        this,
+      );
     }
     return Grant.addToPrincipal({
       grantee,

@@ -111,16 +111,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "myhandler42A6C3AB",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -175,6 +165,32 @@
     "myproviderframeworkonEventServiceRoleDefaultPolicy5C6BFF87",
     "myproviderframeworkonEventServiceRole793AEC4D"
    ]
+  },
+  "myproviderframeworkonEventinlinePolicyAddedToExecutionRole04C8892C5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "myhandler42A6C3AB",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "myproviderframeworkonEventinlinePolicyAddedToExecutionRole04C8892C5",
+    "Roles": [
+     {
+      "Ref": "myproviderframeworkonEventServiceRole793AEC4D"
+     }
+    ]
+   }
   },
   "myproviderframeworkonEventLogRetentionA3431778": {
    "Type": "Custom::LogRetention",

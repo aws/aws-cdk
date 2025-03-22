@@ -6,13 +6,76 @@ import * as lambda from '../../aws-lambda';
 import { Bucket } from '../../aws-s3';
 import { Secret } from '../../aws-secretsmanager';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import * as sources from '../lib';
 
 describe('KafkaEventSource', () => {
   describe('msk', () => {
-    test('default', () => {
+    test('default @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App({
+        context: {
+          [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+        },
+      });
+      const stack = new cdk.Stack(app);
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'kafka:DescribeCluster',
+                'kafka:GetBootstrapBrokers',
+                'kafka:ListScramSecrets',
+              ],
+              Effect: 'Allow',
+              Resource: clusterArn,
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'FninlinePolicyAddedToExecutionRole00AF5C038',
+        Roles: [
+          {
+            Ref: 'FnServiceRoleB9001A96',
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        EventSourceArn: clusterArn,
+        FunctionName: {
+          Ref: 'Fn9270CBC0',
+        },
+        BatchSize: 100,
+        StartingPosition: 'TRIM_HORIZON',
+        Topics: [
+          kafkaTopic,
+        ],
+      });
+    });
+
+    test('default @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+      // GIVEN
+      const app = new cdk.App({
+        context: {
+          [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+        },
+      });
+      const stack = new cdk.Stack(app);
       const fn = new TestFunction(stack, 'Fn');
       const clusterArn = 'some-arn';
       const kafkaTopic = 'some-topic';
@@ -61,9 +124,115 @@ describe('KafkaEventSource', () => {
         ],
       });
     });
-    test('with secret', () => {
+
+    test('with secret @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App({
+        context: {
+          [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+        },
+      });
+      const stack = new cdk.Stack(app);
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          secret: secret,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'secretsmanager:GetSecretValue',
+                'secretsmanager:DescribeSecret',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'SecretA720EF05',
+              },
+            },
+            // {
+            //   Action: [
+            //     'kafka:DescribeCluster',
+            //     'kafka:GetBootstrapBrokers',
+            //     'kafka:ListScramSecrets',
+            //   ],
+            //   Effect: 'Allow',
+            //   Resource: clusterArn,
+            // },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'FnServiceRoleDefaultPolicyC6A839BF',
+        Roles: [
+          {
+            Ref: 'FnServiceRoleB9001A96',
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: [
+                'kafka:DescribeCluster',
+                'kafka:GetBootstrapBrokers',
+                'kafka:ListScramSecrets',
+              ],
+              Resource: clusterArn,
+            },
+          ],
+        },
+        PolicyName: 'FninlinePolicyAddedToExecutionRole00AF5C038',
+        Roles: [
+          {
+            Ref: 'FnServiceRoleB9001A96',
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        EventSourceArn: clusterArn,
+        FunctionName: {
+          Ref: 'Fn9270CBC0',
+        },
+        BatchSize: 100,
+        StartingPosition: 'TRIM_HORIZON',
+        Topics: [
+          kafkaTopic,
+        ],
+        SourceAccessConfigurations: [
+          {
+            Type: 'SASL_SCRAM_512_AUTH',
+            URI: {
+              Ref: 'SecretA720EF05',
+            },
+          },
+        ],
+      });
+    });
+
+    test('with secret @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+      // GIVEN
+      const app = new cdk.App({
+        context: {
+          [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+        },
+      });
+      const stack = new cdk.Stack(app);
       const fn = new TestFunction(stack, 'Fn');
       const clusterArn = 'some-arn';
       const kafkaTopic = 'some-topic';
@@ -93,16 +262,15 @@ describe('KafkaEventSource', () => {
               },
             },
             {
+              Effect: 'Allow',
               Action: [
                 'kafka:DescribeCluster',
                 'kafka:GetBootstrapBrokers',
                 'kafka:ListScramSecrets',
               ],
-              Effect: 'Allow',
               Resource: clusterArn,
             },
           ],
-          Version: '2012-10-17',
         },
         PolicyName: 'FnServiceRoleDefaultPolicyC6A839BF',
         Roles: [

@@ -100,6 +100,122 @@ new eks.Cluster(this, 'hello-eks', {
 });
 ```
 
+## EKS Auto Mode
+
+[Amazon EKS Auto Mode](https://aws.amazon.com/eks/auto-mode/) extends AWS management of Kubernetes clusters beyond the cluster itself, allowing AWS to set up and manage the infrastructure that enables the smooth operation of your workloads.
+
+### Using Auto Mode
+
+While `aws-eks` uses `DefaultCapacityType.NODEGROUP` by default, `aws-eks-v2` uses `DefaultCapacityType.AUTOMODE` as the default capacity type.
+
+Auto Mode is enabled by default when creating a new cluster without specifying any capacity-related properties:
+
+```ts
+// Create EKS cluster with Auto Mode implicitly enabled
+const cluster = new eks.Cluster(this, 'EksAutoCluster', {
+  version: eks.KubernetesVersion.V1_32,
+});
+```
+
+You can also explicitly enable Auto Mode using `defaultCapacityType`:
+
+```ts
+// Create EKS cluster with Auto Mode explicitly enabled
+const cluster = new eks.Cluster(this, 'EksAutoCluster', {
+  version: eks.KubernetesVersion.V1_32,
+  defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
+});
+```
+
+### Node Pools
+
+When Auto Mode is enabled, the cluster comes with two default node pools:
+
+- `system`: For running system components and add-ons
+- `general-purpose`: For running your application workloads
+
+These node pools are managed automatically by EKS. You can configure which node pools to enable through the `compute` property:
+
+```ts
+const cluster = new eks.Cluster(this, 'EksAutoCluster', {
+  version: eks.KubernetesVersion.V1_32,
+  defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
+  compute: {
+    nodePools: ['system', 'general-purpose'],
+  },
+});
+```
+
+For more information, see [Create a Node Pool for EKS Auto Mode](https://docs.aws.amazon.com/eks/latest/userguide/create-node-pool.html).
+
+### Node Groups as the default capacity type
+
+If you prefer to manage your own node groups instead of using Auto Mode, you can use the traditional node group approach by specifying `defaultCapacityType` as `NODEGROUP`:
+
+```ts
+// Create EKS cluster with traditional managed node group
+const cluster = new eks.Cluster(this, 'EksCluster', {
+  version: eks.KubernetesVersion.V1_32,
+  defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+  defaultCapacity: 3, // Number of instances
+  defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
+});
+```
+
+You can also create a cluster with no initial capacity and add node groups later:
+
+```ts
+const cluster = new eks.Cluster(this, 'EksCluster', {
+  version: eks.KubernetesVersion.V1_32,
+  defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+  defaultCapacity: 0,
+});
+
+// Add node groups as needed
+cluster.addNodegroupCapacity('custom-node-group', {
+  minSize: 1,
+  maxSize: 3,
+  instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE)],
+});
+```
+
+Read [Managed node groups](#managed-node-groups) for more information on how to add node groups to the cluster.
+
+### Mixed with Auto Mode and Node Groups
+
+You can combine Auto Mode with traditional node groups for specific workload requirements:
+
+```ts
+const cluster = new eks.Cluster(this, 'Cluster', {
+  version: eks.KubernetesVersion.V1_32,
+  defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
+  compute: {
+    nodePools: ['system', 'general-purpose'],
+  },
+});
+
+// Add specialized node group for specific workloads
+cluster.addNodegroupCapacity('specialized-workload', {
+  minSize: 1,
+  maxSize: 3,
+  instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.XLARGE)],
+  labels: {
+    workload: 'specialized',
+  },
+});
+```
+
+### Important Notes
+
+1. Auto Mode and traditional capacity management are mutually exclusive at the default capacity level. You cannot opt in to Auto Mode and specify `defaultCapacity` or `defaultCapacityInstance`.
+
+2. When Auto Mode is enabled:
+   - The cluster will automatically manage compute resources
+   - Node pools cannot be modified, only enabled or disabled
+   - EKS will handle scaling and management of the node pools
+
+3. Auto Mode requires specific IAM permissions. The construct will automatically attach the required managed policies.
+
 ### Managed node groups
 
 Amazon EKS managed node groups automate the provisioning and lifecycle management of nodes (Amazon EC2 instances) for Amazon EKS Kubernetes clusters.
@@ -107,15 +223,21 @@ With Amazon EKS managed node groups, you don't need to separately provision or r
 
 > For more details visit [Amazon EKS Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html).
 
-**Managed Node Groups are the recommended way to allocate cluster capacity.**
+By default, when using `DefaultCapacityType.NODEGROUP`, this library will allocate a managed node group with 2 *m5.large* instances (this instance type suits most common use-cases, and is good value for money).
 
-By default, this library will allocate a managed node group with 2 *m5.large* instances (this instance type suits most common use-cases, and is good value for money).
+```ts
+new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_32,
+  defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+});
+```
 
 At cluster instantiation time, you can customize the number of instances and their type:
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_32,
+  defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
   defaultCapacity: 5,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.SMALL),
 });
@@ -128,6 +250,7 @@ Additional customizations are available post instantiation. To apply them, set t
 ```ts
 const cluster = new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_32,
+  defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
   defaultCapacity: 0,
 });
 

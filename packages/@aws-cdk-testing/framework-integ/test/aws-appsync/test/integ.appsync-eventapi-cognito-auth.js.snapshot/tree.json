@@ -31,8 +31,11 @@
                       ]
                     },
                     "adminCreateUserConfig": {
-                      "allowAdminCreateUserOnly": true
+                      "allowAdminCreateUserOnly": false
                     },
+                    "autoVerifiedAttributes": [
+                      "email"
+                    ],
                     "emailVerificationMessage": "The verification code to your new account is {####}",
                     "emailVerificationSubject": "Verify your new account",
                     "smsVerificationMessage": "The verification code to your new account is {####}",
@@ -49,11 +52,79 @@
                   "fqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
                   "version": "0.0.0"
                 }
+              },
+              "lambda-app-client": {
+                "id": "lambda-app-client",
+                "path": "EventApiCognitoAuthStack/Pool/lambda-app-client",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "EventApiCognitoAuthStack/Pool/lambda-app-client/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
+                      "aws:cdk:cloudformation:props": {
+                        "allowedOAuthFlows": [
+                          "implicit",
+                          "code"
+                        ],
+                        "allowedOAuthFlowsUserPoolClient": true,
+                        "allowedOAuthScopes": [
+                          "profile",
+                          "phone",
+                          "email",
+                          "openid",
+                          "aws.cognito.signin.user.admin"
+                        ],
+                        "callbackUrLs": [
+                          "https://example.com"
+                        ],
+                        "explicitAuthFlows": [
+                          "ALLOW_ADMIN_USER_PASSWORD_AUTH",
+                          "ALLOW_REFRESH_TOKEN_AUTH"
+                        ],
+                        "preventUserExistenceErrors": "ENABLED",
+                        "supportedIdentityProviders": [
+                          "COGNITO"
+                        ],
+                        "userPoolId": {
+                          "Ref": "PoolD3F588B8"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolClient",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cognito.UserPoolClient",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "userPool": "*",
+                      "preventUserExistenceErrors": true,
+                      "authFlows": {
+                        "adminUserPassword": true
+                      }
+                    }
+                  ]
+                }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "userPoolName": "*",
+                  "selfSignUpEnabled": true,
+                  "autoVerify": {
+                    "email": true
+                  },
+                  "removalPolicy": "destroy"
+                }
+              ]
             }
           },
           "EventApiCognitoAuth": {
@@ -109,13 +180,352 @@
                 "path": "EventApiCognitoAuthStack/EventApiCognitoAuth/LogGroup",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
+                }
+              },
+              "default": {
+                "id": "default",
+                "path": "EventApiCognitoAuthStack/EventApiCognitoAuth/default",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "EventApiCognitoAuthStack/EventApiCognitoAuth/default/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::ChannelNamespace",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "EventApiCognitoAuthF58AE1C3",
+                            "ApiId"
+                          ]
+                        },
+                        "name": "default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appsync.CfnChannelNamespace",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.ChannelNamespace",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "api": "*",
+                      "channelNamespaceName": "*"
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_appsync.EventApi",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "apiName": "*",
+                  "authorizationConfig": {
+                    "authProviders": [
+                      {
+                        "authorizationType": "AMAZON_COGNITO_USER_POOLS",
+                        "cognitoConfig": {
+                          "userPool": "*"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "CognitoConfigTestFunction": {
+            "id": "CognitoConfigTestFunction",
+            "path": "EventApiCognitoAuthStack/CognitoConfigTestFunction",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "EventApiCognitoAuthStack/CognitoConfigTestFunction/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "EventApiCognitoAuthStack/CognitoConfigTestFunction/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "EventApiCognitoAuthStack/CognitoConfigTestFunction/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "EventApiCognitoAuthStack/CognitoConfigTestFunction/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "EventApiCognitoAuthStack/CognitoConfigTestFunction/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "cognito-idp:AdminConfirmSignUp",
+                                    "cognito-idp:AdminDeleteUser",
+                                    "cognito-idp:AdminInitiateAuth",
+                                    "cognito-idp:SignUp"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "PoolD3F588B8",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "CognitoConfigTestFunctionServiceRoleDefaultPolicyAC30C486",
+                            "roles": [
+                              {
+                                "Ref": "CognitoConfigTestFunctionServiceRole6CA5BEBE"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "EventApiCognitoAuthStack/CognitoConfigTestFunction/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "EventApiCognitoAuthStack/CognitoConfigTestFunction/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "EventApiCognitoAuthStack/CognitoConfigTestFunction/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0",
+                      "metadata": []
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "EventApiCognitoAuthStack/CognitoConfigTestFunction/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "86c1f810188044ee5131336e9c4bd0c97bf5110181d112dfa5de98163adc8a8d.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "EVENT_API_REALTIME_URL": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "wss://",
+                              {
+                                "Fn::GetAtt": [
+                                  "EventApiCognitoAuthF58AE1C3",
+                                  "Dns.Realtime"
+                                ]
+                              },
+                              "/event/realtime"
+                            ]
+                          ]
+                        },
+                        "EVENT_API_HTTP_URL": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "https://",
+                              {
+                                "Fn::GetAtt": [
+                                  "EventApiCognitoAuthF58AE1C3",
+                                  "Dns.Http"
+                                ]
+                              },
+                              "/event"
+                            ]
+                          ]
+                        },
+                        "USER_POOL_ID": {
+                          "Ref": "PoolD3F588B8"
+                        },
+                        "CLIENT_ID": {
+                          "Ref": "Poollambdaappclient42C69D5A"
+                        }
+                      }
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "CognitoConfigTestFunctionServiceRole6CA5BEBE",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs22.x",
+                    "timeout": 15
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "runtime": "*",
+                  "environment": "*",
+                  "bundling": {
+                    "bundleAwsSDK": true
+                  },
+                  "entry": "*",
+                  "handler": "*",
+                  "timeout": "*",
+                  "code": "*"
+                },
+                {},
+                {},
+                {},
+                {},
+                {
+                  "runtime": "*",
+                  "environment": "*",
+                  "bundling": {
+                    "bundleAwsSDK": true
+                  },
+                  "entry": "*",
+                  "handler": "*",
+                  "timeout": "*"
+                }
+              ]
             }
           },
           "AWS AppSync Events HTTP endpoint": {
@@ -132,6 +542,24 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "EventApiCognitoAuthStack/Exports",
+            "children": {
+              "Output{\"Ref\":\"CognitoConfigTestFunction3BE86CF1\"}": {
+                "id": "Output{\"Ref\":\"CognitoConfigTestFunction3BE86CF1\"}",
+                "path": "EventApiCognitoAuthStack/Exports/Output{\"Ref\":\"CognitoConfigTestFunction3BE86CF1\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
@@ -176,6 +604,182 @@
                 "id": "DeployAssert",
                 "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert",
                 "children": {
+                  "LambdaInvokebf5141fc88f7c179d94a3e7c6df61400": {
+                    "id": "LambdaInvokebf5141fc88f7c179d94a3e7c6df61400",
+                    "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokebf5141fc88f7c179d94a3e7c6df61400",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokebf5141fc88f7c179d94a3e7c6df61400/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokebf5141fc88f7c179d94a3e7c6df61400/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokebf5141fc88f7c179d94a3e7c6df61400/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokebf5141fc88f7c179d94a3e7c6df61400/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokebf5141fc88f7c179d94a3e7c6df61400/Invoke",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokebf5141fc88f7c179d94a3e7c6df61400/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c": {
+                    "id": "LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c",
+                    "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c/Invoke",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
                     "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/BootstrapVersion",
