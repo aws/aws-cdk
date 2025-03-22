@@ -62,6 +62,80 @@ describe('triggers', () => {
     });
   });
 
+  test('can specify triggers with branches in pushFilter', () => {
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      pipelineType: codepipeline.PipelineType.V2,
+      triggers: [{
+        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+        gitConfiguration: {
+          sourceAction,
+          pushFilter: [{
+            branchesExcludes: ['exclude1', 'exclude2'],
+            branchesIncludes: ['include1', 'include2'],
+          }],
+        },
+      }],
+    });
+
+    testPipelineSetup(pipeline, [sourceAction], [buildAction]);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      PipelineType: 'V2',
+      Triggers: [{
+        GitConfiguration: {
+          SourceActionName: 'CodeStarConnectionsSourceAction',
+          Push: [{
+            Branches: {
+              Excludes: ['exclude1', 'exclude2'],
+              Includes: ['include1', 'include2'],
+            },
+          }],
+        },
+        ProviderType: 'CodeStarSourceConnection',
+      }],
+    });
+  });
+
+  test('can specify triggers with branches and file paths in pushFilter', () => {
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      pipelineType: codepipeline.PipelineType.V2,
+      triggers: [{
+        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+        gitConfiguration: {
+          sourceAction,
+          pushFilter: [{
+            branchesExcludes: ['exclude1', 'exclude2'],
+            branchesIncludes: ['include1', 'include2'],
+            filePathsExcludes: ['exclude1', 'exclude2'],
+            filePathsIncludes: ['include1', 'include2'],
+          }],
+        },
+      }],
+    });
+
+    testPipelineSetup(pipeline, [sourceAction], [buildAction]);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      PipelineType: 'V2',
+      Triggers: [{
+        GitConfiguration: {
+          SourceActionName: 'CodeStarConnectionsSourceAction',
+          Push: [{
+            Branches: {
+              Excludes: ['exclude1', 'exclude2'],
+              Includes: ['include1', 'include2'],
+            },
+            FilePaths: {
+              Excludes: ['exclude1', 'exclude2'],
+              Includes: ['include1', 'include2'],
+            },
+          }],
+        },
+        ProviderType: 'CodeStarSourceConnection',
+      }],
+    });
+  });
+
   test('can specify triggers with branches in pullRequestFilter', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
@@ -278,7 +352,7 @@ describe('triggers', () => {
     });
   });
 
-  test('empty tagsExcludes in pushFilter for trigger is set to undefined', () => {
+  test('empty tagsExcludes in GitPushFilter for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -312,7 +386,7 @@ describe('triggers', () => {
     });
   });
 
-  test('empty tagsIncludes in pushFilter for trigger is set to undefined', () => {
+  test('empty tagsIncludes in GitPushFilter for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -346,7 +420,7 @@ describe('triggers', () => {
     });
   });
 
-  test('empty branchesExcludes in pullRequestFilter for trigger is set to undefined', () => {
+  test('empty branchesExcludes in GitPullRequestFilter for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -380,7 +454,7 @@ describe('triggers', () => {
     });
   });
 
-  test('empty branchesIncludes in pullRequestFilter for trigger is set to undefined', () => {
+  test('empty branchesIncludes in GitPullRequestFilter for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -414,7 +488,7 @@ describe('triggers', () => {
     });
   });
 
-  test('empty filePathsExcludes in pullRequestFilter for trigger is set to undefined', () => {
+  test('empty filePathsExcludes in GitPullRequestFilter for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -454,7 +528,7 @@ describe('triggers', () => {
     });
   });
 
-  test('empty filePathsIncludes in pullRequestFilter for trigger is set to undefined', () => {
+  test('empty filePathsIncludes in GitPullRequestFilter for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -494,7 +568,7 @@ describe('triggers', () => {
     });
   });
 
-  test('undefined events in pullRequestFilter for trigger is set to all events', () => {
+  test('undefined events in GitPullRequestFilter for trigger is set to all events', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -529,7 +603,7 @@ describe('triggers', () => {
     });
   });
 
-  test('empty events in pullRequestFilter for trigger is set to all events', () => {
+  test('empty events in GitPullRequestFilter for trigger is set to all events', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -565,7 +639,7 @@ describe('triggers', () => {
     });
   });
 
-  test('throw if length of tagsExcludes in pushFilter is greater than 8', () => {
+  test('throw if length of tagsExcludes in GitPushFilter is greater than 8', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -580,10 +654,10 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/maximum length of tagsExcludes in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+    }).toThrow(/maximum length of tagsExcludes in GitPushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
-  test('throw if length of tagsIncludes in pushFilter is greater than 8', () => {
+  test('throw if length of tagsIncludes in GitPushFilter is greater than 8', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -598,10 +672,86 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/maximum length of tagsIncludes in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+    }).toThrow(/maximum length of tagsIncludes in GitPushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
-  test('throw if length of branchesExcludes in pullRequestFilter is greater than 8', () => {
+  test('throw if length of branchesExcludes in GitPushFilter is greater than 8', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              branchesExcludes: ['exclude1', 'exclude2', 'exclude3', 'exclude4', 'exclude5', 'exclude6', 'exclude7', 'exclude8', 'exclude9'],
+              branchesIncludes: ['include1', 'include2'],
+            }],
+          },
+        }],
+      });
+    }).toThrow(/maximum length of branchesExcludes in GitPushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+  });
+
+  test('throw if length of branchesIncludes in GitPushFilter is greater than 8', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              branchesExcludes: ['exclude1', 'exclude2'],
+              branchesIncludes: ['include1', 'include2', 'include3', 'include4', 'include5', 'include6', 'include7', 'include8', 'include9'],
+            }],
+          },
+        }],
+      });
+    }).toThrow(/maximum length of branchesIncludes in GitPushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+  });
+
+  test('throw if length of filePathsExcludes in GitPushFilter is greater than 8', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              branchesExcludes: ['exclude1', 'exclude2'],
+              branchesIncludes: ['include1', 'include2'],
+              filePathsExcludes: ['exclude1', 'exclude2', 'exclude3', 'exclude4', 'exclude5', 'exclude6', 'exclude7', 'exclude8', 'exclude9'],
+              filePathsIncludes: ['include1', 'include2'],
+            }],
+          },
+        }],
+      });
+    }).toThrow(/maximum length of filePathsExcludes in GitPushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+  });
+
+  test('throw if length of filePathsIncludes in GitPushFilter is greater than 8', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              branchesExcludes: ['exclude1', 'exclude2'],
+              branchesIncludes: ['include1', 'include2'],
+              filePathsExcludes: ['exclude1', 'exclude2'],
+              filePathsIncludes: ['include1', 'include2', 'include3', 'include4', 'include5', 'include6', 'include7', 'include8', 'include9'],
+            }],
+          },
+        }],
+      });
+    }).toThrow(/maximum length of filePathsIncludes in GitPushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+  });
+
+  test('throw if length of branchesExcludes in GitPullRequestFilter is greater than 8', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -616,10 +766,10 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/maximum length of branchesExcludes in pullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+    }).toThrow(/maximum length of branchesExcludes in GitPullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
-  test('throw if length of branchesIncludes in pullRequestFilter is greater than 8', () => {
+  test('throw if length of branchesIncludes in GitPullRequestFilter is greater than 8', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -634,10 +784,10 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/maximum length of branchesIncludes in pullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+    }).toThrow(/maximum length of branchesIncludes in GitPullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
-  test('throw if length of filePathsExcludes in pullRequestFilter is greater than 8', () => {
+  test('throw if length of filePathsExcludes in GitPullRequestFilter is greater than 8', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -654,10 +804,10 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/maximum length of filePathsExcludes in pullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+    }).toThrow(/maximum length of filePathsExcludes in GitPullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
-  test('throw if length of filePathsIncludes in pullRequestFilter is greater than 8', () => {
+  test('throw if length of filePathsIncludes in GitPullRequestFilter is greater than 8', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -674,10 +824,10 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/maximum length of filePathsIncludes in pullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+    }).toThrow(/maximum length of filePathsIncludes in GitPullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
-  test('throw if branches is not specified in pullRequestFilter', () => {
+  test('throw if branches is not specified in GitPullRequestFilter', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -689,10 +839,10 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/must specify branches in pullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction'/);
+    }).toThrow(/must specify branches in GitPullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction'/);
   });
 
-  test('can eliminate duplicates events in pullRequestFilter', () => {
+  test('can eliminate duplicates events in GitPullRequestFilter', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -732,7 +882,7 @@ describe('triggers', () => {
     });
   });
 
-  test('empty pushFilter for trigger is set to undefined', () => {
+  test('empty GitPushFilter for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -763,7 +913,7 @@ describe('triggers', () => {
     });
   });
 
-  test('empty pullRequestFilter for trigger is set to undefined', () => {
+  test('empty GitPullRequestFilter for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -794,7 +944,7 @@ describe('triggers', () => {
     });
   });
 
-  test('throw if length of pushFilter is greater than 3', () => {
+  test('throw if length of GitPushFilter is greater than 3', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -823,10 +973,10 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/length of pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' must be less than or equal to 3, got 4/);
+    }).toThrow(/length of GitPushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' must be less than or equal to 3, got 4/);
   });
 
-  test('throw if length of pullRequestFilter is greater than 3', () => {
+  test('throw if length of GitPullRequestFilter is greater than 3', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -855,10 +1005,10 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/length of pullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction' must be less than or equal to 3, got 4/);
+    }).toThrow(/length of GitPullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction' must be less than or equal to 3, got 4/);
   });
 
-  test('throw if both pushFilter and pullRequestFilter are specified', () => {
+  test('throw if both GitPushFilter and GitPullRequestFilter are specified', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -881,10 +1031,10 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/cannot specify both pushFilter and pullRequestFilter for the trigger with sourceAction with name 'CodeStarConnectionsSourceAction'/);
+    }).toThrow(/cannot specify both GitPushFilter and GitPullRequestFilter for the trigger with sourceAction with name 'CodeStarConnectionsSourceAction'/);
   });
 
-  test('throw if neither pushFilter nor pullRequestFilter are specified', () => {
+  test('throw if neither GitPushFilter nor GitPullRequestFilter are specified', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -895,10 +1045,10 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/must specify either pushFilter or pullRequestFilter for the trigger with sourceAction with name 'CodeStarConnectionsSourceAction'/);
+    }).toThrow(/must specify either GitPushFilter or GitPullRequestFilter for the trigger with sourceAction with name 'CodeStarConnectionsSourceAction'/);
   });
 
-  test('throw if both pushFilter and pullRequestFilter are empty arrays', () => {
+  test('throw if both GitPushFilter and GitPullRequestFilter are empty arrays', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -911,7 +1061,7 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/must specify either pushFilter or pullRequestFilter for the trigger with sourceAction with name 'CodeStarConnectionsSourceAction'/);
+    }).toThrow(/must specify either GitPushFilter or GitPullRequestFilter for the trigger with sourceAction with name 'CodeStarConnectionsSourceAction'/);
   });
 
   test('throw if provider of sourceAction is not \'CodeStarSourceConnection\'', () => {
