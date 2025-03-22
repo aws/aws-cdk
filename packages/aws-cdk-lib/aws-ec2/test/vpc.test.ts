@@ -39,6 +39,7 @@ import {
   InstanceSize,
   KeyPair,
   UserData,
+  OutpostDefaultRoute,
 } from '../lib';
 
 describe('vpc', () => {
@@ -406,33 +407,43 @@ describe('vpc', () => {
 
     test('with no public subnets and natGateways > 0, should throw an error', () => {
       const stack = getTestStack();
-      expect(() => new Vpc(stack, 'TheVPC', {
-        subnetConfiguration: [
-          {
-            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-            name: 'egress',
-          },
-        ],
-        natGateways: 1,
-      })).toThrow(/If you configure PRIVATE subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into \(got \[{"subnetType":"Private","name":"egress"}\]./);
+      expect(
+        () =>
+          new Vpc(stack, 'TheVPC', {
+            subnetConfiguration: [
+              {
+                subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+                name: 'egress',
+              },
+            ],
+            natGateways: 1,
+          }),
+      ).toThrow(
+        /If you configure PRIVATE or PRIVATE_OUTPOST_WITH_EGRESS subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into \(got \[{"subnetType":"Private","name":"egress"}\]./,
+      );
     });
 
     test('with only reserved subnets as public subnets and natGateways > 0, should throw an error', () => {
       const stack = getTestStack();
-      expect(() => new Vpc(stack, 'TheVPC', {
-        subnetConfiguration: [
-          {
-            subnetType: SubnetType.PUBLIC,
-            name: 'public',
-            reserved: true,
-          },
-          {
-            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-            name: 'egress',
-          },
-        ],
-        natGateways: 1,
-      })).toThrow(/If you configure PRIVATE subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into \(got \[{"subnetType":"Public","name":"public","reserved":true},{"subnetType":"Private","name":"egress"}\]./);
+      expect(
+        () =>
+          new Vpc(stack, 'TheVPC', {
+            subnetConfiguration: [
+              {
+                subnetType: SubnetType.PUBLIC,
+                name: 'public',
+                reserved: true,
+              },
+              {
+                subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+                name: 'egress',
+              },
+            ],
+            natGateways: 1,
+          }),
+      ).toThrow(
+        /If you configure PRIVATE or PRIVATE_OUTPOST_WITH_EGRESS subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into \(got \[{"subnetType":"Public","name":"public","reserved":true},{"subnetType":"Private","name":"egress"}\]./,
+      );
     });
 
     test('with subnets and reserved subnets defined, VPC subnet count should not contain reserved subnets ', () => {
@@ -677,6 +688,678 @@ describe('vpc', () => {
             {
               name: 'private',
               subnetType: SubnetType.PRIVATE_ISOLATED,
+              mapPublicIpOnLaunch: true,
+            },
+          ],
+        });
+      }).toThrow(/subnet cannot include mapPublicIpOnLaunch parameter/);
+    });
+
+    test('with subnets with PUBLIC_OUTPOST type subnet has the outpostArn set', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        localGatewayRouteTableIds: ['lgw-rt-1'],
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'public-outpost',
+            subnetType: SubnetType.PUBLIC_OUTPOST,
+            outpostArn: 'test-outpost-arn',
+            outpostAvailabilityZone: 'us-east-1a',
+          },
+          {
+            name: 'private',
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+          },
+        ],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Subnet', 3);
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+        OutpostArn: 'test-outpost-arn',
+      });
+    });
+
+    test('with subnets with PUBLIC_OUTPOST type associates the Local Gateway Route Table with the VPC', (() => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        localGatewayRouteTableIds: ['lgw-rt-1'],
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'public-outpost',
+            subnetType: SubnetType.PUBLIC_OUTPOST,
+            outpostArn: 'test-outpost-arn',
+            outpostAvailabilityZone: 'dummy1a',
+          },
+        ],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Subnet', 2);
+      const foo = Template.fromStack(stack).findResources('AWS::EC2::LocalGatewayRouteTableAssociation');
+      Template.fromStack(stack).resourceCountIs(
+        'AWS::EC2::LocalGatewayRouteTableVPCAssociation',
+        1,
+      );
+    }));
+
+    test('with subnets with PRIVATE_OUTPOST_WITH_EGRESS type associates the Local Gateway Route Table with the VPC', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        localGatewayRouteTableIds: ['lgw-rt-1'],
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'public-outpost',
+            subnetType: SubnetType.PRIVATE_OUTPOST_WITH_EGRESS,
+            outpostArn: 'test-outpost-arn',
+            outpostAvailabilityZone: 'dummy1a',
+          },
+        ],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Subnet', 2);
+      Template.fromStack(stack).resourceCountIs(
+        'AWS::EC2::LocalGatewayRouteTableVPCAssociation',
+        1,
+      );
+    });
+
+    test('with subnets with PRIVATE_OUTPOST_ISOLATED type associates the Local Gateway Route Table with the VPC', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        localGatewayRouteTableIds: ['lgw-rt-1'],
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'public-outpost',
+            subnetType: SubnetType.PRIVATE_OUTPOST_ISOLATED,
+            outpostArn: 'test-outpost-arn',
+            outpostAvailabilityZone: 'dummy1a',
+          },
+        ],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Subnet', 2);
+      Template.fromStack(stack).resourceCountIs(
+        'AWS::EC2::LocalGatewayRouteTableVPCAssociation',
+        1,
+      );
+    });
+
+    test('with subnets with PUBLIC and PUBLIC_OUTPOST creates a PUBLIC per AZ and PUBLIC_OUTPOST only in the specified AZ', (() => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 2,
+        localGatewayRouteTableIds: ['lgw-rt-1'],
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'public-outpost',
+            subnetType: SubnetType.PUBLIC_OUTPOST,
+            outpostArn: 'test-outpost-arn',
+            outpostAvailabilityZone: 'dummy1a',
+          },
+        ],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Subnet', 3);
+      Template.fromStack(stack).resourcePropertiesCountIs('AWS::EC2::Subnet', {
+        AvailabilityZone: 'dummy1a',
+      }, 2);
+      Template.fromStack(stack).resourcePropertiesCountIs(
+        'AWS::EC2::Subnet',
+        {
+          AvailabilityZone: 'dummy1b',
+        },
+        1,
+      );
+    }));
+
+    test('with PUBLIC_OUTPOST subnets have mapPublicIpOnLaunch set to true', (() => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        localGatewayRouteTableIds: ['lgw-rt-1'],
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'public-outpost',
+            subnetType: SubnetType.PUBLIC_OUTPOST,
+            outpostArn: 'test-outpost-arn',
+            outpostAvailabilityZone: 'dummy1a',
+          },
+        ],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Subnet', 2);
+      Template.fromStack(stack).resourcePropertiesCountIs(
+        'AWS::EC2::Subnet',
+        {
+          MapPublicIpOnLaunch: true,
+        },
+        2,
+      );
+    }));
+
+    test('with PUBLIC_OUTPOST subnets, associates the VPC with the Outposts Local Gateway Route Table', (() => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        localGatewayRouteTableIds: ['lgw-rt-1'],
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'public-outpost',
+            subnetType: SubnetType.PUBLIC_OUTPOST,
+            outpostArn: 'test-outpost-arn',
+            outpostAvailabilityZone: 'dummy1a',
+          },
+        ],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::LocalGatewayRouteTableVPCAssociation', 1);
+    }));
+    test(
+      'with PRIVATE_OUTPOST_WITH_EGRESS subnets, associates the VPC with the Outposts Local Gateway Route Table', (() => {
+        const stack = getTestStack();
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          localGatewayRouteTableIds: ['lgw-rt-1'],
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+            {
+              name: 'public-outpost',
+              subnetType: SubnetType.PUBLIC_OUTPOST,
+              outpostArn: 'test-outpost-arn',
+              outpostAvailabilityZone: 'dummy1a',
+            },
+          ],
+        });
+        Template.fromStack(stack).resourceCountIs('AWS::EC2::LocalGatewayRouteTableVPCAssociation', 1);
+      }),
+    );
+
+    test('with PRIVATE_OUTPOST_ISOLATED subnets, associates the VPC with the Outposts Local Gateway Route Table', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        localGatewayRouteTableIds: ['lgw-rt-1'],
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'public-outpost',
+            subnetType: SubnetType.PUBLIC_OUTPOST,
+            outpostArn: 'test-outpost-arn',
+            outpostAvailabilityZone: 'dummy1a',
+          },
+        ],
+      });
+      Template.fromStack(stack).resourceCountIs(
+        'AWS::EC2::LocalGatewayRouteTableVPCAssociation',
+        1,
+      );
+    });
+
+    test('with PUBLIC_OUTPOST subnets with no OutpostDefaultRoute sets the PUBLIC_OUTPOST subnet default route to the internet gateway', (() => {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        localGatewayRouteTableIds: ['lgw-rt-1'],
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'public-outpost',
+            subnetType: SubnetType.PUBLIC_OUTPOST,
+            outpostArn: 'test-outpost-arn',
+            outpostAvailabilityZone: 'us-east-1a',
+          },
+        ],
+      });
+      const subnet = vpc.publicOutpostSubnets[0];
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        DestinationCidrBlock: '0.0.0.0/0',
+        RouteTableId: stack.resolve(subnet.routeTable.routeTableId),
+        GatewayId: stack.resolve(vpc.internetGatewayId),
+      });
+    }));
+
+    test('with PUBLIC_OUTPOST subnets and IpProtocol.DUAL_STACK sets the PUBLIC_OUTPOST subnet default route to include an IPv6 route', () => {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        ipProtocol: IpProtocol.DUAL_STACK,
+        localGatewayRouteTableIds: ['lgw-rt-1'],
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'public-outpost',
+            subnetType: SubnetType.PUBLIC_OUTPOST,
+            outpostArn: 'test-outpost-arn',
+            outpostAvailabilityZone: 'us-east-1a',
+          },
+        ],
+      });
+      const subnet = vpc.publicOutpostSubnets[0];
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        DestinationIpv6CidrBlock: '::/0',
+        RouteTableId: stack.resolve(subnet.routeTable.routeTableId),
+        GatewayId: stack.resolve(vpc.internetGatewayId),
+      });
+    });
+
+    test('with PUBLIC_OUTPOST subnets with OutpostDefaultRoute to REGION sets the PUBLIC_OUTPOST subnet default route to the internet gateway', (() => {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        localGatewayRouteTableIds: ['lgw-rt-1'],
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'public-outpost',
+            subnetType: SubnetType.PUBLIC_OUTPOST,
+            outpostArn: 'test-outpost-arn',
+            outpostAvailabilityZone: 'us-east-1a',
+            outpostDefaultRoute: OutpostDefaultRoute.REGION,
+          },
+        ],
+      });
+      const subnet = vpc.publicOutpostSubnets[0];
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        DestinationCidrBlock: '0.0.0.0/0',
+        RouteTableId: stack.resolve(subnet.routeTable.routeTableId),
+        GatewayId: stack.resolve(vpc.internetGatewayId),
+      });
+    }));
+
+    test(
+      'with PRIVATE_OUTPOST_WITH_EGRESS subnets with OutpostDefaultRoute to REGION sets the PRIVATE_OUTPOST_WITH_EGRESS subnet default route to a NAT gateway', (() => {
+        const stack = getTestStack();
+        const vpc = new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          localGatewayRouteTableIds: ['lgw-rt-1'],
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+            {
+              name: 'private-outpost',
+              subnetType: SubnetType.PRIVATE_OUTPOST_WITH_EGRESS,
+              outpostArn: 'test-outpost-arn',
+              outpostAvailabilityZone: 'us-east-1a',
+              outpostDefaultRoute: OutpostDefaultRoute.REGION,
+            },
+          ],
+        });
+        const subnet = vpc.privateOutpostSubnets[0];
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+          DestinationCidrBlock: '0.0.0.0/0',
+          RouteTableId: stack.resolve(subnet.routeTable.routeTableId),
+          NatGatewayId: {},
+        });
+      }));
+
+    test('with PUBLIC_OUTPOST subnets with OutpostDefaultRoute to ON_PREMISE sets the PUBLIC_OUTPOST subnet default route to the local gateway', () => {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        localGatewayRouteTableIds: ['lgw-rt-1'],
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'public-outpost',
+            subnetType: SubnetType.PUBLIC_OUTPOST,
+            outpostArn: 'test-outpost-arn',
+            outpostAvailabilityZone: 'dummy1a',
+            outpostDefaultRoute: OutpostDefaultRoute.ON_PREMISE,
+            localGatewayId: 'lgw-1',
+          },
+        ],
+      });
+      const subnet = vpc.publicOutpostSubnets[0];
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        DestinationCidrBlock: '0.0.0.0/0',
+        RouteTableId: stack.resolve(subnet.routeTable.routeTableId),
+        LocalGatewayId: 'lgw-1',
+      });
+    });
+
+    test(
+      'with PRIVATE_OUTPOST_WITH_EGRESS subnets with OutpostDefaultRoute to ON_PREMISE sets the PRIVATE_OUTPOST_WITH_EGRESS subnet default route to the local gateway', () => {
+        const stack = getTestStack();
+        const vpc = new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          localGatewayRouteTableIds: ['lgw-rt-1'],
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+            {
+              name: 'private-outpost',
+              subnetType: SubnetType.PRIVATE_OUTPOST_WITH_EGRESS,
+              outpostArn: 'test-outpost-arn',
+              outpostAvailabilityZone: 'dummy1a',
+              outpostDefaultRoute: OutpostDefaultRoute.ON_PREMISE,
+              localGatewayId: 'lgw-1',
+            },
+          ],
+        });
+        const subnet = vpc.privateOutpostSubnets[0];
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+          DestinationCidrBlock: '0.0.0.0/0',
+          RouteTableId: stack.resolve(subnet.routeTable.routeTableId),
+          LocalGatewayId: 'lgw-1',
+        });
+      });
+
+    test('with PRIVATE_OUTPOST_ISOLATED subnets throws an error if localGatewayId is set', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          localGatewayRouteTableIds: ['lgw-rt-1'],
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+            {
+              name: 'private-outpost',
+              subnetType: SubnetType.PRIVATE_OUTPOST_ISOLATED,
+              outpostArn: 'test-outpost-arn',
+              outpostAvailabilityZone: 'dummy1a',
+              localGatewayId: 'lgw-1',
+            },
+          ],
+        });
+      }).toThrow(
+        /OutpostDefaultRoute and localGatewayId should not be set when subnetType is PRIVATE_ISOLATED/,
+      );
+    });
+
+    test('with PRIVATE_OUTPOST_ISOLATED subnets throws an error if outpostDefaultRoute is set', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          localGatewayRouteTableIds: ['lgw-rt-1'],
+          subnetConfiguration: [
+            {
+              name: 'private-outpost',
+              subnetType: SubnetType.PRIVATE_OUTPOST_ISOLATED,
+              outpostArn: 'test-outpost-arn',
+              outpostAvailabilityZone: 'dummy1a',
+              outpostDefaultRoute: OutpostDefaultRoute.ON_PREMISE,
+            },
+          ],
+        });
+      }).toThrow(/localGatewayId must be defined when OutpostDefaultRoute is ON_PREMISE/);
+    });
+
+    test('with subnets with PUBLIC_OUTPOST type but no outpostArn throws an exception', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+            {
+              name: 'public-outpost',
+              subnetType: SubnetType.PUBLIC_OUTPOST,
+              outpostAvailabilityZone: 'us-east-1a',
+            },
+            {
+              name: 'private',
+              subnetType: SubnetType.PRIVATE_ISOLATED,
+            },
+          ],
+        });
+      }).toThrow(
+        /outpostArn must be defined when an OUTPOST subnet type is configured/,
+      );
+    });
+
+    test('with subnets with PUBLIC_OUTPOST type but no outpostAvailabilityZone throws an exception', (() => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+            {
+              name: 'public-outpost',
+              subnetType: SubnetType.PUBLIC_OUTPOST,
+              outpostArn: 'test-outpost-arn',
+            },
+            {
+              name: 'private',
+              subnetType: SubnetType.PRIVATE_ISOLATED,
+            },
+          ],
+        });
+      }).toThrow(
+        /outpostAvailabilityZone must be defined when an OUTPOST subnet type is configured/,
+      );
+    }));
+
+    test('with PRIVATE_OUTPOST_WITH_EGRESS throws error if no PUBLIC subnet is defined', (() => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          subnetConfiguration: [
+            {
+              name: 'private',
+              subnetType: SubnetType.PRIVATE_OUTPOST_WITH_EGRESS,
+              outpostArn: 'test-outpost-arn',
+              outpostAvailabilityZone: 'us-east-1a',
+            },
+            {
+              name: 'public-outpost',
+              subnetType: SubnetType.PUBLIC_OUTPOST,
+              outpostArn: 'test-outpost-arn',
+              outpostAvailabilityZone: 'us-east-1a',
+            },
+          ],
+        });
+      }).toThrow(
+        /If you configure PRIVATE or PRIVATE_OUTPOST_WITH_EGRESS subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into \(got \[{\"name\":\"private\",\"subnetType\":\"Private_Outpost\",\"outpostArn\":\"test-outpost-arn\",\"outpostAvailabilityZone\":\"us-east-1a\"},{\"name\":\"public-outpost\",\"subnetType\":\"Public_Outpost\",\"outpostArn\":\"test-outpost-arn\",\"outpostAvailabilityZone\":\"us-east-1a\"}\]./,
+      );
+    }));
+
+    test('with PUBLIC_OUTPOST subnet type throws an error if localGatewayRouteTableIds is not defined', (() => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          subnetConfiguration: [
+            {
+              name: 'private',
+              subnetType: SubnetType.PUBLIC_OUTPOST,
+              outpostArn: 'test-outpost-arn',
+              outpostAvailabilityZone: 'us-east-1a',
+            },
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+          ],
+        });
+      }).toThrow(
+        /A VPC with PUBLIC_OUTPOST, PRIVATE_OUTPOST_WITH_EGRESS, or PRIVATE_OUTPOST_ISOLATED must include one or more Local Gateway Route Table IDs/,
+      );
+    }));
+
+    test('with PRIVATE_OUTPOST_WITH_EGRESS subnet type throws an error if localGatewayRouteTableIds is not defined', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          subnetConfiguration: [
+            {
+              name: 'private',
+              subnetType: SubnetType.PRIVATE_OUTPOST_WITH_EGRESS,
+              outpostArn: 'test-outpost-arn',
+              outpostAvailabilityZone: 'us-east-1a',
+            },
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+          ],
+        });
+      }).toThrow(
+        /A VPC with PUBLIC_OUTPOST, PRIVATE_OUTPOST_WITH_EGRESS, or PRIVATE_OUTPOST_ISOLATED must include one or more Local Gateway Route Table IDs/,
+      );
+    });
+
+    test('with PRIVATE_OUTPOST_ISOLATED subnet type throws an error if localGatewayRouteTableIds is not defined', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          subnetConfiguration: [
+            {
+              name: 'private',
+              subnetType: SubnetType.PRIVATE_OUTPOST_ISOLATED,
+              outpostArn: 'test-outpost-arn',
+              outpostAvailabilityZone: 'us-east-1a',
+            },
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+          ],
+        });
+      }).toThrow(
+        /A VPC with PUBLIC_OUTPOST, PRIVATE_OUTPOST_WITH_EGRESS, or PRIVATE_OUTPOST_ISOLATED must include one or more Local Gateway Route Table IDs/,
+      );
+    });
+
+    test('with in region subnet type throw an error if outpostArn is defined', (() => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+              outpostArn: 'test-outpost-arn',
+            },
+            {
+              name: 'private',
+              subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+            },
+          ],
+        });
+      }).toThrow(
+        'outpost* properties should only be set when type is one of PUBLIC_OUTPOST, PRIVATE_OUTPOST_WITH_EGRESS, or PRIVATE_OUTPOST_ISOLATED',
+      );
+    }));
+
+    test('with in region subnet type throw an error if outpostAvailabilityZone is defined', (() => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+              outpostArn: 'test-outpost-arn',
+            },
+            {
+              name: 'private',
+              subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+            },
+          ],
+        });
+      }).toThrow(
+        'outpost* properties should only be set when type is one of PUBLIC_OUTPOST, PRIVATE_OUTPOST_WITH_EGRESS, or PRIVATE_OUTPOST_ISOLATED',
+      );
+    }));
+    test('with in region subnet type throw an error if outpostDefaultRoute is defined', (() => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+              outpostDefaultRoute: OutpostDefaultRoute.ON_PREMISE,
+            },
+            {
+              name: 'private',
+              subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+            },
+          ],
+        });
+      }).toThrow(
+        'outpost* properties should only be set when type is one of PUBLIC_OUTPOST, PRIVATE_OUTPOST_WITH_EGRESS, or PRIVATE_OUTPOST_ISOLATED',
+      );
+    }));
+
+    test('with isolated subnets throw exception if parameter mapPublicIpOnLaunch is defined', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+            {
+              name: 'private',
+              subnetType: SubnetType.PRIVATE_OUTPOST_ISOLATED,
+              outpostArn: 'test-outpost-arn',
+              outpostAvailabilityZone: 'us-east-1a',
               mapPublicIpOnLaunch: true,
             },
           ],
@@ -2055,6 +2738,52 @@ describe('vpc', () => {
       const tag = { Key: 'Late', Value: 'Adder' };
       Tags.of(vpc).add(tag.Key, tag.Value);
       Template.fromStack(stack).hasResource('AWS::EC2::VPC', hasTags([tag]));
+    });
+  });
+
+  describe('When creating a subnet with an Outpost ARN', () => {
+    test('specifying an outpostArn value creates a subnet with that association', () => {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', { ipAddresses: IpAddresses.cidr('192.168.0.0/16') });
+
+      // arn:aws([a-z-]+)?:outposts:[a-z\d-]+:\d{12}:outpost/op-[a-f0-9]{17}
+      const outpostValue = 'arn:aws:outposts::012345678901:outpost/op-0123456789abcdef0';
+
+      // WHEN
+      const outpostSubnet = new Subnet(stack, 'OutpostSubnet', {
+        availabilityZone: 'us-east-1a',
+        vpcId: vpc.vpcId,
+        cidrBlock: '192.168.0.0/18',
+        outpost: outpostValue,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+        OutpostArn: outpostValue,
+      });
+    });
+
+    test('specifying an outpostArn value creates a private subnet with that association', () => {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', { ipAddresses: IpAddresses.cidr('192.168.0.0/16') });
+
+      // arn:aws([a-z-]+)?:outposts:[a-z\d-]+:\d{12}:outpost/op-[a-f0-9]{17}
+      const outpostValue = 'arn:aws:outposts::012345678901:outpost/op-0123456789abcdef0';
+
+      // WHEN
+      const outpostSubnet = new PrivateSubnet(stack, 'OutpostSubnet', {
+        availabilityZone: 'us-east-1a',
+        vpcId: vpc.vpcId,
+        cidrBlock: '192.168.0.0/18',
+        outpost: outpostValue,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+        OutpostArn: outpostValue,
+      });
     });
   });
 
