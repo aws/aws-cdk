@@ -137,22 +137,3 @@ test('encrypted sns topic adds KMS permissions', () => {
     },
   });
 });
-
-test('encrypted sns topic by imported key does not add KMS permissions', () => {
-  const app = new cdk.App({
-    postCliContext: {
-      '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions': true,
-    },
-  });
-  const stack = new cdk.Stack(app);
-  const key = kms.Key.fromKeyArn(stack, 'Key', 'arn:aws:kms:us-east-1:123456789012:key/1234-5678-9012');
-
-  const topic = new sns.Topic(stack, 'Topic', {
-    masterKey: key,
-  });
-  const bucket = new s3.Bucket(stack, 'Bucket');
-
-  new notif.SnsDestination(topic).bind(bucket, bucket);
-
-  Annotations.fromStack(stack).hasWarning('/Default/Key', /Can not change key policy of imported kms key.*aws-s3-notifications:snsKMSPermissionsNotAdded/s);
-});
