@@ -1,6 +1,6 @@
 import { ApiGatewayProps } from './api-gateway';
 import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole } from './util';
-import * as api from '../../aws-apigatewayv2';
+import * as apigwv2 from '../../aws-apigatewayv2';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 
@@ -8,20 +8,20 @@ import * as iam from '../../aws-iam';
  * Use an API Gateway V2 HTTP APIs as a target for Amazon EventBridge rules.
  */
 export class ApiGatewayV2 implements events.IRuleTarget {
-  private readonly _httpApi: api.IHttpApi;
+  private readonly _httpApi: apigwv2.IHttpApi;
 
   /**
    * @param httpApi - IHttpApi implementation to use as event target
    * @param props - Properties to configure the APIGateway target
    */
-  constructor(httpApi: api.IHttpApi, private readonly props?: ApiGatewayProps) {
+  constructor(httpApi: apigwv2.IHttpApi, private readonly props?: ApiGatewayProps) {
     this._httpApi = httpApi;
   }
 
   /**
    * Returns the target IHttpApi
    */
-  public get iHttpApi(): api.IHttpApi {
+  public get iHttpApi(): apigwv2.IHttpApi {
     return this._httpApi;
   }
 

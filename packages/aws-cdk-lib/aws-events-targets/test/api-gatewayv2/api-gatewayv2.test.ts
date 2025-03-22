@@ -1,5 +1,5 @@
 import { Template } from '../../../assertions';
-import * as api from '../../../aws-apigatewayv2';
+import * as apigwv2 from '../../../aws-apigatewayv2';
 import * as events from '../../../aws-events';
 import * as iam from '../../../aws-iam';
 import * as sqs from '../../../aws-sqs';
@@ -7,12 +7,12 @@ import * as cdk from '../../../core';
 import * as targets from '../../lib';
 
 let stack: cdk.Stack;
-let httpApi: api.HttpApi;
+let httpApi: apigwv2.HttpApi;
 let rule: events.Rule;
 
 beforeEach(() => {
   stack = new cdk.Stack();
-  httpApi = new api.HttpApi(stack, 'api');
+  httpApi = new apigwv2.HttpApi(stack, 'api');
   rule = new events.Rule(stack, 'Rule', {
     schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
   });
