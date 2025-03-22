@@ -636,18 +636,18 @@ export class Repository extends RepositoryBase {
    */
   public static fromLookup(scope: Construct, id: string, options: RepositoryLookupOptions): IRepository {
     if (Token.isUnresolved(options.repositoryName) || Token.isUnresolved(options.repositoryArn)) {
-      throw new Error('Cannot look up a repository with a tokenized name or ARN.');
+      throw new UnscopedValidationError('Cannot look up a repository with a tokenized name or ARN.');
     }
 
     if (!options.repositoryArn && !options.repositoryName) {
-      throw new Error('At least one of `repositoryName` or `repositoryArn` must be provided.');
+      throw new UnscopedValidationError('At least one of `repositoryName` or `repositoryArn` must be provided.');
     }
 
     const identifier = options.repositoryName ??
       (options.repositoryArn ? Arn.split(options.repositoryArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName : undefined);
 
     if (!identifier) {
-      throw new Error('Could not determine repository identifier from provided options.');
+      throw new UnscopedValidationError('Could not determine repository identifier from provided options.');
     }
 
     const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
@@ -674,7 +674,7 @@ export class Repository extends RepositoryBase {
     const lookupRepoName = Arn.split(repository.Arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!lookupRepoName) {
-      throw new Error(`Unable to look up repository with name: ${options.repositoryArn} in account ${Aws.ACCOUNT_ID}`);
+      throw new UnscopedValidationError(`Unable to look up repository with name: ${options.repositoryArn} in account ${Aws.ACCOUNT_ID}`);
     }
 
     return this.fromRepositoryName(scope, id, lookupRepoName);
