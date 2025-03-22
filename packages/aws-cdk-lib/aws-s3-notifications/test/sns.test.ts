@@ -1,4 +1,5 @@
-import { Template } from '../../assertions';
+import { Annotations, Template } from '../../assertions';
+import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
@@ -80,4 +81,78 @@ test('asBucketNotificationDestination adds bucket permissions only once for each
       },
     },
   });
+});
+
+test('encrypted sns topic adds KMS permissions', () => {
+  const app = new cdk.App({
+    postCliContext: {
+      '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions': true,
+    },
+  });
+  const stack = new cdk.Stack(app);
+
+  const topic = new sns.Topic(stack, 'Topic', {
+    masterKey: new kms.Key(stack, 'Key'),
+  });
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  new notif.SnsDestination(topic).bind(bucket, bucket);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    KeyPolicy: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: 'kms:*',
+          Effect: 'Allow',
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
+              ],
+            },
+          },
+          Resource: '*',
+        },
+        {
+          Action: ['kms:GenerateDataKey', 'kms:Decrypt'],
+          Effect: 'Allow',
+          Principal: {
+            Service: 's3.amazonaws.com',
+          },
+          Resource: '*',
+        },
+      ],
+    },
+  });
+});
+
+test('encrypted sns topic by imported key does not add KMS permissions', () => {
+  const app = new cdk.App({
+    postCliContext: {
+      '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions': true,
+    },
+  });
+  const stack = new cdk.Stack(app);
+  const key = kms.Key.fromKeyArn(stack, 'Key', 'arn:aws:kms:us-east-1:123456789012:key/1234-5678-9012');
+
+  const topic = new sns.Topic(stack, 'Topic', {
+    masterKey: key,
+  });
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  new notif.SnsDestination(topic).bind(bucket, bucket);
+
+  Annotations.fromStack(stack).hasWarning('/Default/Key', /Can not change key policy of imported kms key.*aws-s3-notifications:snsKMSPermissionsNotAdded/s);
 });
