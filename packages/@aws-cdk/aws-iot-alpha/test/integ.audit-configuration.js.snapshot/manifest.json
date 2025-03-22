@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "40.0.0",
   "artifacts": {
     "IotAuditConfigurationTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "IotAuditConfigurationTestStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c093a5b4a568daafc27fab102fea007eaf70c883b8e02171441d44e702e0cebc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/77535bf7edb380d8bb5a9fbc765b1670aea66dc74869bb92ed8009d578125ece.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -35,16 +34,52 @@
         "IotAuditConfigurationTestStack.assets"
       ],
       "metadata": {
+        "/IotAuditConfigurationTestStack/Topic": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/IotAuditConfigurationTestStack/Topic/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TopicBFC7AF6E"
           }
         ],
+        "/IotAuditConfigurationTestStack/AuditConfiguration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/IotAuditConfigurationTestStack/AuditConfiguration/AuditRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/IotAuditConfigurationTestStack/AuditConfiguration/AuditRole/ImportAuditRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/IotAuditConfigurationTestStack/AuditConfiguration/AuditRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AuditConfigurationAuditRole0FFA1461"
+          }
+        ],
+        "/IotAuditConfigurationTestStack/AuditConfiguration/NotificationRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/IotAuditConfigurationTestStack/AuditConfiguration/NotificationRole/ImportNotificationRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/IotAuditConfigurationTestStack/AuditConfiguration/NotificationRole/Resource": [
@@ -59,16 +94,34 @@
             "data": "AuditConfiguration8C793652"
           }
         ],
+        "/IotAuditConfigurationTestStack/DailyAudit": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/IotAuditConfigurationTestStack/DailyAudit/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DailyAudit1160906D"
           }
         ],
+        "/IotAuditConfigurationTestStack/WeeklyAudit": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/IotAuditConfigurationTestStack/WeeklyAudit/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "WeeklyAudit5489D5FF"
+          }
+        ],
+        "/IotAuditConfigurationTestStack/MonthlyAudit": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/IotAuditConfigurationTestStack/MonthlyAudit/Resource": [
@@ -107,7 +160,6 @@
         "templateFile": "IotAuditConfigurationTestDefaultTestDeployAssert6A603D00.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
