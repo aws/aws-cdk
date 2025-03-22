@@ -1748,8 +1748,8 @@ When this feature flag is disabled, it will keep the root account principal in t
 
 *When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals.* (fix)
 
-Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails 
-because service principals require resource policies with Statement IDs. 
+Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails
+because service principals require resource policies with Statement IDs.
 
 When this flag is enabled:
 - Resource policies will be created with Statement IDs for service principals
@@ -1773,7 +1773,7 @@ This fixes the issue where permissions were silently not being added for service
 
 *Add an S3 trust policy to a KMS key resource policy for SNS subscriptions.* (fix)
 
-When this feature flag is enabled, a trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
+When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions. This is required for S3 to be able to decrypt the message.
 
 
 | Since | Default | Recommended |

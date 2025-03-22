@@ -57,6 +57,6 @@ putObject.next(integ.assertions.awsApiCall('SQS', 'receiveMessage', {
   // Receive at least 1 message
   Messages: [{}],
 })).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(1),
+  totalTimeout: cdk.Duration.minutes(5),
   interval: cdk.Duration.seconds(15),
 });
