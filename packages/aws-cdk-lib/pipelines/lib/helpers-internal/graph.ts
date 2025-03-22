@@ -214,7 +214,7 @@ export interface GraphProps<A> extends GraphNodeProps<A> {
 export class Graph<A> extends GraphNode<A> {
   /**
    * The 3rd parameter looks weird because it has to be structurally compatible with `GraphNode.of()`,
-   * but we wnat to add `displayName` at the end, really.
+   * but we want to add `displayName` at the end, really.
    */
   public static override of<A, B>(id: string, data: A, displayNameOrNodes?: string | GraphNode<B>[], displayName?: string) {
     const nodes = Array.isArray(displayNameOrNodes) ? displayNameOrNodes : undefined;
