@@ -235,12 +235,19 @@ export class DistributedMap extends MapBase implements INextable {
       }
     }
 
+    // Empty object in ResultWriter is allowed to be saved currently in Step Functions but it fails during execution.
+    // This validation prevents the state machine from failing during execution.
+    // https://docs.aws.amazon.com/step-functions/latest/dg/input-output-resultwriter.html#input-output-resultwriter-field-contents
+    if (this.resultWriter && !this.resultWriter.bucket && !this.resultWriter.writerConfig) {
+      errors.push('resultWriter should specify atleast the writerConfig or the bucket and prefix');
+    }
+
     return errors;
   }
 
   protected whenBoundToGraph(graph: StateGraph) {
     super.whenBoundToGraph(graph);
-    if (this.resultWriter) {
+    if (this.resultWriter && this.resultWriter.bucket) {
       this.resultWriter.providePolicyStatements().forEach(policyStatement => {
         graph.registerPolicyStatement(policyStatement);
       });
