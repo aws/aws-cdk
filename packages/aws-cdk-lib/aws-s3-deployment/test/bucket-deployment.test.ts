@@ -1361,6 +1361,7 @@ test('"SourceMarkers" is not included if none of the sources have markers', () =
     'DestinationBucketName',
     'Prune',
     'OutputObjectKeys',
+    'SyncWithSizeOnly',
   ]);
 });
 
@@ -1719,5 +1720,36 @@ test('outputObjectKeys default value is true', () => {
 
   Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     OutputObjectKeys: true,
+  });
+});
+
+test('syncWithSizeOnly can be used to enable synchronization based only on size changes', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    syncWithSizeOnly: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SyncWithSizeOnly: true,
+  });
+});
+
+test('syncWithSizeOnly default value is false', () => {
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SyncWithSizeOnly: false,
   });
 });
