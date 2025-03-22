@@ -1773,12 +1773,13 @@ This fixes the issue where permissions were silently not being added for service
 
 *Add an S3 trust policy to a KMS key resource policy for SNS subscriptions.* (fix)
 
-When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions. This is required for S3 to be able to decrypt the message.
+When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
 
 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `true` | `true` |
+| V2NEXT | `false` | `true` |
+
 
 <!-- END details -->

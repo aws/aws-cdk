@@ -34,7 +34,11 @@ class MyStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions': true,
+  },
+});
 
 const stack = new MyStack(app, 'SnsBucketNotificationsStack');
 
