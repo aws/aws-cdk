@@ -526,9 +526,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "25c16d2ab30e35800b3ea63c44c93deb85584076eb09a2db9f971803252b22dc.zip"
+     "S3Key": "737d25a30d9f795cb0e9b1e4b28259ffb509944c4918bdd11c2d9bcee3fba68a.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.32.0; /opt/helm/helm 3.17.0",
+    "Description": "/opt/kubectl/kubectl 1.32.0; /opt/helm/helm 3.17.1",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -773,7 +773,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
+     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
     },
     "Description": "/opt/awscli/aws"
    }

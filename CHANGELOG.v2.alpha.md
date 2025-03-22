@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.185.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.184.1-alpha.0...v2.185.0-alpha.0) (2025-03-19)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **scheduler-targets-alpha:** The class `KinesisDataFirehosePutRecord` has been renamed to `FirehosePutRecord`.
+
+### Bug Fixes
+
+* **scheduler-targets-alpha:** rename `KinesisDataFirehosePutRecord` to `FirehosePutRecord` ([#33758](https://github.com/aws/aws-cdk/issues/33758)) ([e6f5bc8](https://github.com/aws/aws-cdk/commit/e6f5bc8915081a74a83e4055ccbaa11987ba943c)), closes [#33757](https://github.com/aws/aws-cdk/issues/33757) [#33798](https://github.com/aws/aws-cdk/issues/33798)
+
+## [2.184.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.184.0-alpha.0...v2.184.1-alpha.0) (2025-03-14)
+
+## [2.184.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.183.0-alpha.0...v2.184.0-alpha.0) (2025-03-13)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **glue-alpha:** Updated casing of `workflow.addconditionalTrigger` to `workflow.addConditionalTrigger`.
+
+### Bug Fixes
+
+* **glue-alpha:** inconsistent workflow addconditionalTrigger casing ([#33752](https://github.com/aws/aws-cdk/issues/33752)) ([4886a3e](https://github.com/aws/aws-cdk/commit/4886a3e503b22f3dfadca908501a2cb208c2ebee)), closes [#33751](https://github.com/aws/aws-cdk/issues/33751) [#33751](https://github.com/aws/aws-cdk/issues/33751)
+
+## [2.183.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.182.0-alpha.0...v2.183.0-alpha.0) (2025-03-11)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **scheduler-targets-alpha:** The `InspectorStartAssessmentRun` target's constructor now accepts `IAssessmentTemplate` instead of `CfnAssessmentTemplate` as its parameter type. To migrate existing code, use the `AssessmentTemplate.fromCfnAssessmentTemplate()` method to convert your `CfnAssessmentTemplate` instances to `IAssessmentTemplate`.
+
+### Features
+
+* **kinesisanalytics-flink-alpha** backfill missing enums for kinesisanalytics-flink-alpha ([#33632](https://github.com/aws/aws-cdk/pull/33632)) ([b55199a](https://github.com/aws/aws-cdk/pull/33740/commits/b55199a782582348408fb75123c533977b38326d))
+* **kinesisfirehose-destinations-alpha** backfill missing enums for kinesisfirehose-destinations-alpha ([#33633](https://github.com/aws/aws-cdk/pull/33633)) ([6ed7a45](https://github.com/aws/aws-cdk/pull/33740/commits/6ed7a452e261b0033b44d0b2b61b18466d6e6b48))
+
+
+### Bug Fixes
+
+* **scheduler-alpha:** deprecate `Group` in favour of `ScheduleGroup` ([#33678](https://github.com/aws/aws-cdk/issues/33678)) ([4d8eae9](https://github.com/aws/aws-cdk/commit/4d8eae9da577a94114602df261c98b65aa616956))
+* **scheduler-targets-alpha:** update inspector target to use IAssessmentTemplate instead of CfnAssessmentTemplate ([#33682](https://github.com/aws/aws-cdk/issues/33682)) ([50ba3ef](https://github.com/aws/aws-cdk/commit/50ba3efabca81a3c57ce34654f8ec1002deace6f))
+
 ## [2.182.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.181.1-alpha.0...v2.182.0-alpha.0) (2025-03-04)
 
 

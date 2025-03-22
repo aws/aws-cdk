@@ -2754,7 +2754,7 @@ export class ResourceType {
   public static readonly IAM_SAML_PROVIDER = new ResourceType('AWS::IAM::SAMLProvider');
   /** AWS IAM ServerCertificate */
   public static readonly IAM_SERVER_CERTIFICATE = new ResourceType('AWS::IAM::ServerCertificate');
-  /** Amazon Kinesis Firehose DeliveryStream */
+  /** Amazon Data Firehose DeliveryStream */
   public static readonly KINESIS_FIREHOSE_DELIVERY_STREAM = new ResourceType('AWS::KinesisFirehose::DeliveryStream');
   /** Amazon Pinpoint Campaign */
   public static readonly PINPOINT_CAMPAIGN = new ResourceType('AWS::Pinpoint::Campaign');

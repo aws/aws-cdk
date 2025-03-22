@@ -75,6 +75,25 @@ export enum VpcEndpointType {
    * your route table, used for traffic destined to a supported AWS service.
    */
   GATEWAY = 'Gateway',
+
+  /**
+   * A Gateway Load Balancer (GWLB) endpoint is an entry/exit point in your VPC that allows traffic
+   * to flow between your VPC and Gateway Load Balancer appliances (like firewalls, intrusion detection systems,
+   * or other security appliances) deployed in a separate VPC.
+   */
+  GATEWAYLOADBALANCER = 'GatewayLoadBalancer',
+
+  /**
+   * A ServiceNetwork VPC endpoint is a feature to connect your VPC to an AWS Cloud WAN (Wide Area Network)
+   * or Amazon VPC Lattice service.
+   */
+  SERVICENETWORK = 'ServiceNetwork',
+
+  /**
+   * A Resource VPC endpoint in AWS is specifically designed to connect to AWS Resource Access Manager (RAM) service
+   * privately within your VPC, without requiring access through the public internet.
+   */
+  RESOURCE = 'Resource',
 }
 
 /**
@@ -413,6 +432,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly EMR_EKS = new InterfaceVpcEndpointAwsService('emr-containers');
   public static readonly EMR_SERVERLESS = new InterfaceVpcEndpointAwsService('emr-serverless');
   public static readonly EMR_SERVERLESS_LIVY = new InterfaceVpcEndpointAwsService('emr-serverless-services.livy');
+  public static readonly EMR_SERVERLESS_DASHBOARD = new InterfaceVpcEndpointAwsService('emr-serverless.dashboard');
   public static readonly EMR_WAL = new InterfaceVpcEndpointAwsService('emrwal.prod');
   public static readonly END_USER_MESSAGING_SOCIAL = new InterfaceVpcEndpointAwsService('social-messaging');
   public static readonly ENTITY_RESOLUTION = new InterfaceVpcEndpointAwsService('entityresolution');
@@ -602,6 +622,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly SAGEMAKER_STUDIO = new InterfaceVpcEndpointAwsService('studio', 'aws.sagemaker');
   public static readonly SECRETS_MANAGER = new InterfaceVpcEndpointAwsService('secretsmanager');
   public static readonly SECURITYHUB = new InterfaceVpcEndpointAwsService('securityhub');
+  public static readonly SECURITYLAKE = new InterfaceVpcEndpointAwsService('securitylake');
+  public static readonly SECURITYLAKE_FIPS = new InterfaceVpcEndpointAwsService('securitylake-fips');
   public static readonly SERVICE_CATALOG = new InterfaceVpcEndpointAwsService('servicecatalog');
   public static readonly SERVICE_CATALOG_APPREGISTRY = new InterfaceVpcEndpointAwsService('servicecatalog-appregistry');
   public static readonly SERVER_MIGRATION_SERVICE = new InterfaceVpcEndpointAwsService('sms');
@@ -639,6 +661,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly TRANSFER_SERVER = new InterfaceVpcEndpointAwsService('transfer.server');
   public static readonly TRANSLATE = new InterfaceVpcEndpointAwsService('translate');
   public static readonly TRUSTED_ADVISOR = new InterfaceVpcEndpointAwsService('trustedadvisor');
+  public static readonly WAFV2 = new InterfaceVpcEndpointAwsService('wafv2');
+  public static readonly WAFV2_FIPS = new InterfaceVpcEndpointAwsService('wafv2-fips');
   public static readonly WELL_ARCHITECTED_TOOL = new InterfaceVpcEndpointAwsService('wellarchitected');
   public static readonly WORKMAIL = new InterfaceVpcEndpointAwsService('workmail');
   public static readonly WORKSPACES = new InterfaceVpcEndpointAwsService('workspaces');

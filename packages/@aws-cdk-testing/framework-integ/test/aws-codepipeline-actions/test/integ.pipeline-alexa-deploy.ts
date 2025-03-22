@@ -6,6 +6,7 @@ import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 const app = new App({
   postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+    '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,
   },
 });
 const stack = new Stack(app, 'aws-cdk-codepipeline-alexa-deploy');
