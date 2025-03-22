@@ -5,9 +5,9 @@ import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
-import { CloudAssembly } from 'aws-cdk-lib/cx-api';
+import * as cxapi from 'aws-cdk-lib/cx-api';
 import { evaluateCFN } from './evaluate-cfn';
-import { APP_ID, CFN_CONTEXT, isAssetManifest, last } from './util';
+import { APP_ID, CFN_CONTEXT, getAssetManifest, isAssetManifest, last, readAssetManifest } from './util';
 import { AppStagingSynthesizer, DEPLOY_TIME_PREFIX } from '../lib';
 
 describe(AppStagingSynthesizer, () => {
@@ -599,6 +599,35 @@ describe(AppStagingSynthesizer, () => {
     expect(() => app.synth()).toThrow(/Staging resource template cannot be greater than 51200 bytes/);
   });
 
+  test('displayName is reflected in stack manifest', () => {
+    // GIVEN
+    stack.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'fileHash',
+      displayName: 'Some file asset',
+    });
+
+    stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'dockerHash',
+      displayName: 'Some docker image asset',
+    });
+
+    // THEN
+    const asm = app.synth();
+    const assetManifest = getAssetManifest(asm);
+    const assetManifestJSON = readAssetManifest(assetManifest);
+
+    // Validates that the image and file asset session tags were set in the asset manifest:
+    expect(assetManifestJSON.dockerImages?.dockerHash).toMatchObject({
+      displayName: 'Some docker image asset',
+    });
+    expect(assetManifestJSON.files?.fileHash).toMatchObject({
+      displayName: 'Some file asset',
+    });
+  });
+
   /**
    * Evaluate a possibly string-containing value the same way CFN would do
    *
@@ -611,7 +640,7 @@ describe(AppStagingSynthesizer, () => {
   /**
    * Return the staging resource stack that is generated as part of the assembly
    */
-  function getStagingResourceStack(asm: CloudAssembly, prefix?: string) {
+  function getStagingResourceStack(asm: cxapi.CloudAssembly, prefix?: string) {
     return asm.getStackArtifact(`${prefix ?? 'StagingStack'}-${APP_ID}-000000000000-us-east-1`);
   }
 });
