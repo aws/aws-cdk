@@ -20,6 +20,7 @@
     "tools/@aws-cdk/yarn-cling",
     "tools/@aws-cdk/lazify",
     "tools/@aws-cdk/lambda-integration-test-updater",
+    "tools/@aws-cdk/construct-metadata-updater",
     "scripts/@aws-cdk/script-tests"
   ],
   "rejectCycles": true,

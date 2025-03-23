@@ -6,15 +6,15 @@ export interface IMappingValue {
    * Represents a Mapping Value.
    */
   readonly value: string;
-};
+}
 
 /**
  * Represents a Mapping Value.
  */
 export class MappingValue implements IMappingValue {
   /**
-  * Creates an empty mapping value.
-  */
+   * Creates an empty mapping value.
+   */
   public static readonly NONE = new MappingValue('');
 
   /**
@@ -83,8 +83,8 @@ export class ParameterMapping {
   }
 
   /**
-  * Represents all created parameter mappings.
-  */
+   * Represents all created parameter mappings.
+   */
   public readonly mappings: { [key: string]: string };
   constructor() {
     this.mappings = {};

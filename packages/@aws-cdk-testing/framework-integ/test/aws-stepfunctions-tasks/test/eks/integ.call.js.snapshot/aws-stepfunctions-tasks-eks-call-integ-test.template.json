@@ -1,5 +1,18 @@
 {
  "Resources": {
+  "KubectlLayer600207B5": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "a5110b475e7a506b8a1282cdfb3c2f7ae59bcf00ba96273a702339b8819dd17f.zip"
+    },
+    "Description": "/opt/kubectl/kubectl 1.31.0; /opt/helm/helm 3.17.1",
+    "LicenseInfo": "Apache-2.0"
+   }
+  },
   "EksClusterDefaultVpcB24550B2": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
@@ -863,7 +876,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 3
+    "AttributesRevision": 4
    },
    "DependsOn": [
     "EksClusterDefaultVpcIGWCA6A3220",
@@ -1069,7 +1082,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/54d4c3da84c08840b84d9e8d688a0f2b6d2111917cb8174fc1ad6c23f8fc982e.json"
+       "/84eb391ca16e2a392dc55a6b1dd6cc1cfab4f18a20553a49cc54931dfd777207.json"
       ]
      ]
     }
@@ -1081,6 +1094,9 @@
    "Type": "AWS::CloudFormation::Stack",
    "Properties": {
     "Parameters": {
+     "referencetoawsstepfunctionstasksekscallintegtestKubectlLayer0B270356Ref": {
+      "Ref": "KubectlLayer600207B5"
+     },
      "referencetoawsstepfunctionstasksekscallintegtestEksClusterKubectlHandlerRole61616EA6Arn": {
       "Fn::GetAtt": [
        "EksClusterKubectlHandlerRole4A986A70",
@@ -1116,7 +1132,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/184a9c68ee721d6c9db1df8ed8e0a518d936a26962b17fa713ff91af50f71387.json"
+       "/9be8b08e9fa9ae6c893b4a846afac1567f3d4e5cf8f24bc2d0ea6b9d05de48ce.json"
       ]
      ]
     }

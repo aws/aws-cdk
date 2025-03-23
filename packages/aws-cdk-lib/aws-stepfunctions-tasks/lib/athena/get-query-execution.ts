@@ -3,10 +3,7 @@ import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for getting a Query Execution
- */
-export interface AthenaGetQueryExecutionProps extends sfn.TaskStateBaseProps {
+interface AthenaGetQueryExecutionOptions {
   /**
    * Query that will be retrieved
    *
@@ -16,11 +13,46 @@ export interface AthenaGetQueryExecutionProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for getting a Query Execution using JSONPath
+ */
+export interface AthenaGetQueryExecutionJsonPathProps extends sfn.TaskStateJsonPathBaseProps, AthenaGetQueryExecutionOptions { }
+
+/**
+ * Properties for getting a Query Execution using JSONata
+ */
+export interface AthenaGetQueryExecutionJsonataProps extends sfn.TaskStateJsonataBaseProps, AthenaGetQueryExecutionOptions { }
+
+/**
+ * Properties for getting a Query Execution
+ */
+export interface AthenaGetQueryExecutionProps extends sfn.TaskStateBaseProps, AthenaGetQueryExecutionOptions { }
+
+/**
  * Get an Athena Query Execution as a Task
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html
  */
 export class AthenaGetQueryExecution extends sfn.TaskStateBase {
+  /**
+   * Get an Athena Query Execution as a Task that using JSONPath
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html
+   */
+  public static jsonPath(scope: Construct, id: string, props: AthenaGetQueryExecutionJsonPathProps) {
+    return new AthenaGetQueryExecution(scope, id, props);
+  }
+  /**
+   * Get an Athena Query Execution as a Task that using JSONata
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html
+   */
+  public static jsonata(scope: Construct, id: string, props: AthenaGetQueryExecutionJsonataProps) {
+    return new AthenaGetQueryExecution(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
+
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
@@ -48,12 +80,13 @@ export class AthenaGetQueryExecution extends sfn.TaskStateBase {
    * Provides the Athena get query execution service integration task configuration
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('athena', 'getQueryExecution', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         QueryExecutionId: this.props.queryExecutionId,
-      }),
+      }, queryLanguage),
     };
   }
 }

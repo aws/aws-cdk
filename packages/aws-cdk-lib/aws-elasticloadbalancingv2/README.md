@@ -315,6 +315,21 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
 });
 ```
 
+### Defining a reserved Application Load Balancer Capacity Unit (LCU)
+
+You can define a [reserved LCU for your Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/capacity-unit-reservation.html).
+To reserve an LCU, you must specify a `minimumCapacityUnit`.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  // Valid value is between 100 and 1500.
+  minimumCapacityUnit: 100,
+});
+```
+
 ## Defining a Network Load Balancer
 
 Network Load Balancers are defined in a similar way to Application Load
@@ -463,6 +478,25 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 lb.addSecurityGroup(sg2);
 lb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
 ```
+
+### Defining a reserved Network Load Balancer Capacity Unit (LCU)
+
+You can define a [reserved LCU for your Network Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/capacity-unit-reservation.html).
+
+When requesting a LCU reservation, convert your capacity needs from Mbps to LCUs using the conversion rate of 1 LCU to 2.2 Mbps.
+
+To reserve an LCU, you must specify a `minimumCapacityUnit`.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  minimumCapacityUnit: 5500,
+});
+```
+
+**Note**: The `minimumCapacityUnit` value is evenly distributed across all active Availability Zones (AZs) for the network load balancer. The distributed value per AZ must be between 2,750 and 45,000 units.
 
 ## Targets and Target Groups
 
@@ -987,6 +1021,7 @@ lb.addListener('Listener', {
   certificates: [certificate],
   // mTLS settings
   mutualAuthentication: {
+    advertiseTrustStoreCaNames: true,
     ignoreClientCertificateExpiry: false,
     mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
     trustStore,

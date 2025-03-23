@@ -114,9 +114,8 @@ export class Default {
         // Services with a universal principal across all regions/partitions (the default case)
         default:
           return universal;
-
       }
-    };
+    }
 
     const configuration = determineConfiguration(serviceName);
     return configuration(serviceName, region, urlSuffix);

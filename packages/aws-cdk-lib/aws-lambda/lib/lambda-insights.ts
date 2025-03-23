@@ -149,7 +149,6 @@ export abstract class LambdaInsightsVersion {
  * This function is run on CDK synthesis.
  */
 function getVersionArn(scope: IConstruct, insightsVersion: string, architecture?: string): string {
-
   const scopeStack = Stack.of(scope);
   const region = scopeStack.region;
   const arch = architecture ?? Architecture.X86_64.name;

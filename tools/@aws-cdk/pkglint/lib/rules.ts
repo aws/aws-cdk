@@ -993,7 +993,9 @@ export class MustUseCDKBuild extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!shouldUseCDKBuildTools(pkg)) { return; }
 
-    expectJSON(this.name, pkg, 'scripts.build', 'cdk-build');
+    if (pkg.packageName !== '@aws-cdk/custom-resource-handlers') {
+      expectJSON(this.name, pkg, 'scripts.build', 'cdk-build');
+    }
 
     // cdk-build will write a hash file that we have to ignore.
     const merkleMarker = '.LAST_BUILD';
@@ -1174,7 +1176,9 @@ export class MustUseCDKTest extends ValidationRule {
     if (!shouldUseCDKBuildTools(pkg)) { return; }
     if (!hasTestDirectory(pkg)) { return; }
 
-    expectJSON(this.name, pkg, 'scripts.test', 'cdk-test');
+    if (pkg.packageName !== '@aws-cdk/custom-resource-handlers') {
+      expectJSON(this.name, pkg, 'scripts.test', 'cdk-test');
+    }
 
     // 'cdk-test' will calculate coverage, so have the appropriate
     // files in .gitignore.
@@ -1218,7 +1222,7 @@ export class MustHaveIntegCommand extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       '@aws-cdk/integ-runner',
-      `${PKGLINT_VERSION}`); // eslint-disable-line @typescript-eslint/no-require-imports
+      '*'); // eslint-disable-line @typescript-eslint/no-require-imports
   }
 }
 

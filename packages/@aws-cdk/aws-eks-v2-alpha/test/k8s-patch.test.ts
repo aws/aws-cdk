@@ -1,15 +1,21 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import { Names, Stack } from 'aws-cdk-lib/core';
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import * as eks from '../lib';
 import { KubernetesPatch, PatchType } from '../lib/k8s-patch';
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_31;
 
 describe('k8s patch', () => {
   test('applies a patch to k8s', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     // WHEN
     const patch = new KubernetesPatch(stack, 'MyPatch', {
@@ -23,7 +29,7 @@ describe('k8s patch', () => {
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
       ServiceToken: {
         'Fn::GetAtt': [
-          'awscdkawseksKubectlProviderframeworkonEvent0A650005',
+          'MyClusterKubectlProviderframeworkonEvent7B04B277',
           'Arn',
         ],
       },
@@ -34,12 +40,6 @@ describe('k8s patch', () => {
       ClusterName: {
         Ref: 'MyCluster4C1BA579',
       },
-      RoleArn: {
-        'Fn::GetAtt': [
-          'MyClusterkubectlRole29979636',
-          'Arn',
-        ],
-      },
     });
 
     // also make sure a dependency on the barrier is added to the patch construct.
@@ -49,7 +49,12 @@ describe('k8s patch', () => {
   test('defaults to "strategic" patch type if no patchType is specified', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     // WHEN
     new KubernetesPatch(stack, 'MyPatch', {
@@ -66,7 +71,12 @@ describe('k8s patch', () => {
   test('uses specified to patch type if specified', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     // WHEN
     new KubernetesPatch(stack, 'jsonPatch', {

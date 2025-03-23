@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { UserPoolIdentityProviderProps } from './base';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { SecretValue } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 
 /**
@@ -43,13 +45,15 @@ export class UserPoolIdentityProviderGoogle extends UserPoolIdentityProviderBase
 
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderGoogleProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const scopes = props.scopes ?? ['profile'];
 
-    //at least one of the properties must be configured
+    // at least one of the properties must be configured
     if ((!props.clientSecret && !props.clientSecretValue) ||
       (props.clientSecret && props.clientSecretValue)) {
-      throw new Error('Exactly one of "clientSecret" or "clientSecretValue" must be configured.');
+      throw new ValidationError('Exactly one of "clientSecret" or "clientSecretValue" must be configured.', this);
     }
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {

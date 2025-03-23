@@ -41,7 +41,6 @@ export const response = (ctx) => ctx.args.message
       }),
       deadLetterQueue: queue,
     }));
-
   }
 }
 

@@ -31,6 +31,7 @@ statedir="${scriptdir}"
 statefile="${statedir}/.foreach.state"
 commandfile="${statedir}/.foreach.command"
 base=$PWD
+root=$(cd $scriptdir/.. && pwd)
 
 function heading {
   printf "\e[38;5;81m$@\e[0m\n"
@@ -123,7 +124,7 @@ if [ ! -f "${statefile}" ] && [ ! -f "${commandfile}" ]; then
   if [ ! -z "${command_arg}" ]; then
     command="${command_arg}"
     success "starting new session ${direction_desc}"
-    ${scriptdir}/../node_modules/.bin/lerna ls --all ${direction} --toposort -p > ${statefile}
+    (cd $root && ${scriptdir}/../node_modules/.bin/lerna ls --all ${direction} --toposort -p) > ${statefile}
     echo "${command}" > ${commandfile}
   else
     error "no active session, use \"$(basename $0) COMMAND\" to start a new session"

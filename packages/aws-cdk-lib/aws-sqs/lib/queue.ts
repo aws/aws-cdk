@@ -1,11 +1,12 @@
 import { Construct } from 'constructs';
 import { IQueue, QueueAttributes, QueueBase, QueueEncryption } from './queue-base';
 import { CfnQueue } from './sqs.generated';
-import { validateProps } from './validate-props';
+import { validateQueueProps, validateRedriveAllowPolicy } from './validate-queue-props';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Duration, RemovalPolicy, Stack, Token, ArnFormat, Annotations } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for creating a new Queue
@@ -382,21 +383,13 @@ export class Queue extends QueueBase {
     super(scope, id, {
       physicalName: props.queueName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
-    validateProps(this, props);
+    validateQueueProps(this, props);
 
     if (props.redriveAllowPolicy) {
-      const { redrivePermission, sourceQueues } = props.redriveAllowPolicy;
-      if (redrivePermission === RedrivePermission.BY_QUEUE) {
-        if (!sourceQueues || sourceQueues.length === 0) {
-          throw new ValidationError('At least one source queue must be specified when RedrivePermission is set to \'byQueue\'', this);
-        }
-        if (sourceQueues && sourceQueues.length > 10) {
-          throw new ValidationError('Up to 10 sourceQueues can be specified. Set RedrivePermission to \'allowAll\' to specify more', this);
-        }
-      } else if (redrivePermission && sourceQueues) {
-        throw new ValidationError('sourceQueues cannot be configured when RedrivePermission is set to \'allowAll\' or \'denyAll\'', this);
-      }
+      validateRedriveAllowPolicy(this, props.redriveAllowPolicy);
     }
 
     const redrivePolicy = props.deadLetterQueue

@@ -21,9 +21,9 @@ const myVpc = new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
   secondaryAddressBlocks: [
     vpc_v2.IpAddresses.ipv6ByoipPool({
-      ipv6PoolId: 'ipv6pool-ec2-0a95217e154b65493', //To Be Replaced
+      ipv6PoolId: 'ipv6pool-ec2-0a95217e154b65493', // To Be Replaced
       cidrBlockName: 'MyByoipIpv6Block',
-      ipv6CidrBlock: '2600:f0f0:8::/56', //To Be Replaced
+      ipv6CidrBlock: '2600:f0f0:8::/56', // To Be Replaced
     }),
   ],
   enableDnsHostnames: true,
@@ -33,7 +33,7 @@ const myVpc = new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
 new SubnetV2(stack, 'Subnet-integ-test-1', {
   vpc: myVpc,
   ipv4CidrBlock: new IpCidr('10.1.1.0/24'),
-  ipv6CidrBlock: new IpCidr('2600:f0f0:8:1::/64'), //To Be Replaced
+  ipv6CidrBlock: new IpCidr('2600:f0f0:8:1::/64'), // To Be Replaced
   availabilityZone: 'us-west-2a',
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
@@ -44,7 +44,7 @@ new SubnetV2(stack, 'Subnet-integ-test-1', {
 new SubnetV2(stack, 'Subnet-integ-test-2', {
   vpc: myVpc,
   ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
-  ipv6CidrBlock: new IpCidr('2600:f0f0:8:0::/64'), //To Be Replaced
+  ipv6CidrBlock: new IpCidr('2600:f0f0:8:0::/64'), // To Be Replaced
   availabilityZone: 'us-west-2a',
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });

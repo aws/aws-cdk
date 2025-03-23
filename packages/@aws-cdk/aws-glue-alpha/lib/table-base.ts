@@ -226,7 +226,7 @@ export abstract class TableBase extends Resource implements ITable {
   /**
    * The tables' properties associated with the table.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-parameters
-  */
+   */
   protected readonly parameters: { [key: string]: string };
 
   /**

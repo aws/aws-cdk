@@ -38,7 +38,6 @@ export function setupS3ImportExport(
   scope: Construct,
   props: DatabaseS3ImportExportProps,
   combineRoles: boolean): { s3ImportRole?: iam.IRole; s3ExportRole?: iam.IRole } {
-
   let s3ImportRole = props.s3ImportRole;
   let s3ExportRole = props.s3ExportRole;
 

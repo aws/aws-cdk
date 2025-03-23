@@ -35,7 +35,7 @@ new glue.PySparkFlexEtlJob(stack, 'BasicPySparkFlexEtlJob', {
   role: iam_role,
 });
 
-/*new glue.PySparkFlexEtlJob(stack, 'BasicPySparkFlexEtlJobv3', {
+/* new glue.PySparkFlexEtlJob(stack, 'BasicPySparkFlexEtlJobv3', {
   script: script,
   role: iam_role,
   glueVersion: glue.GlueVersion.V3_0,

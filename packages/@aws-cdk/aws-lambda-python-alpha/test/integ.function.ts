@@ -55,7 +55,6 @@ class TestStack extends Stack {
     new CfnOutput(this, 'functionWithCustomPypi', {
       value: functionWithCustomPypi.functionArn,
     });
-
   }
 }
 

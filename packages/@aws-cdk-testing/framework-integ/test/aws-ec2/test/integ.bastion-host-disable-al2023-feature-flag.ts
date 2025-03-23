@@ -14,7 +14,7 @@ const app = new cdk.App();
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-    this.node.setContext(BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT, false); //disable feature flag
+    this.node.setContext(BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT, false); // disable feature flag
 
     const vpc = new ec2.Vpc(this, 'VPC');
 

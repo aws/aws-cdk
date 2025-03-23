@@ -3,6 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { Stack, Tags } from 'aws-cdk-lib/core';
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import * as eks from '../lib';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_25;
@@ -11,7 +12,12 @@ describe('fargate', () => {
   test('can be added to a cluster', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     // WHEN
     cluster.addFargateProfile('MyProfile', {
@@ -29,7 +35,12 @@ describe('fargate', () => {
   test('supports specifying a profile name', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     // WHEN
     cluster.addFargateProfile('MyProfile', {
@@ -49,7 +60,12 @@ describe('fargate', () => {
   test('supports custom execution role', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
     const myRole = new iam.Role(stack, 'MyRole', { assumedBy: new iam.AnyPrincipal() });
 
     // WHEN
@@ -69,7 +85,12 @@ describe('fargate', () => {
   test('supports tags through aspects', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     // WHEN
     cluster.addFargateProfile('MyProfile', {
@@ -100,7 +121,12 @@ describe('fargate', () => {
   test('supports specifying vpc', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
     const vpc = ec2.Vpc.fromVpcAttributes(stack, 'MyVpc', {
       vpcId: 'vpc123',
       availabilityZones: ['az1'],
@@ -125,7 +151,12 @@ describe('fargate', () => {
   test('fails if there are no selectors or if there are more than 5', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     // THEN
     expect(() => cluster.addFargateProfile('MyProfile', { selectors: [] }));
@@ -146,7 +177,12 @@ describe('fargate', () => {
     const stack = new Stack();
 
     // WHEN
-    new eks.FargateCluster(stack, 'FargateCluster', { version: CLUSTER_VERSION });
+    new eks.FargateCluster(stack, 'FargateCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
@@ -186,6 +222,9 @@ describe('fargate', () => {
         fargateProfileName: 'my-app', selectors: [{ namespace: 'foo' }, { namespace: 'bar' }],
       },
       version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
     });
 
     // THEN
@@ -217,6 +256,9 @@ describe('fargate', () => {
         selectors: [{ namespace: 'foo' }, { namespace: 'bar' }],
       },
       version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
     });
 
     // THEN
@@ -240,7 +282,12 @@ describe('fargate', () => {
   test('multiple Fargate profiles added to a cluster are processed sequentially', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     // WHEN
     cluster.addFargateProfile('MyProfile1', {
@@ -269,32 +316,6 @@ describe('fargate', () => {
     });
   });
 
-  test('allow cluster creation role to iam:PassRole on fargate pod execution role', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new eks.FargateCluster(stack, 'FargateCluster', { version: CLUSTER_VERSION });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'iam:PassRole',
-            Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                'FargateClusterfargateprofiledefaultPodExecutionRole66F2610E',
-                'Arn',
-              ],
-            },
-          },
-        ],
-      },
-    });
-  });
-
   test('supports passing secretsEncryptionKey with FargateCluster', () => {
     // GIVEN
     const stack = new Stack();
@@ -304,6 +325,9 @@ describe('fargate', () => {
     new eks.FargateCluster(stack, 'FargateCluster', {
       version: CLUSTER_VERSION,
       secretsEncryptionKey: new kms.Key(stack, 'Key'),
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
     });
 
     // THEN
@@ -335,9 +359,12 @@ describe('fargate', () => {
         eks.ClusterLoggingTypes.AUTHENTICATOR,
         eks.ClusterLoggingTypes.SCHEDULER,
       ],
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
     });
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
       Logging: {
         ClusterLogging: {

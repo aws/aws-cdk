@@ -1,3 +1,4 @@
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { testFixtureNoVpc } from './util';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
@@ -15,7 +16,10 @@ describe('aws auth', () => {
     const clusterStack = new cdk.Stack(app, 'ClusterStack');
     const roleStack = new cdk.Stack(app, 'RoleStack');
     const awsAuth = new AwsAuth(clusterStack, 'Auth', {
-      cluster: new Cluster(clusterStack, 'Cluster', { version: KubernetesVersion.V1_17 }),
+      cluster: new Cluster(clusterStack, 'Cluster', {
+        version: KubernetesVersion.V1_17,
+        kubectlLayer: new KubectlV31Layer(clusterStack, 'KubectlLayer'),
+      }),
     });
     const role = new iam.Role(roleStack, 'Role', { assumedBy: new iam.AnyPrincipal() });
 
@@ -31,7 +35,10 @@ describe('aws auth', () => {
     const clusterStack = new cdk.Stack(app, 'ClusterStack');
     const userStack = new cdk.Stack(app, 'UserStack');
     const awsAuth = new AwsAuth(clusterStack, 'Auth', {
-      cluster: new Cluster(clusterStack, 'Cluster', { version: KubernetesVersion.V1_17 }),
+      cluster: new Cluster(clusterStack, 'Cluster', {
+        version: KubernetesVersion.V1_17,
+        kubectlLayer: new KubectlV31Layer(clusterStack, 'KubectlLayer'),
+      }),
     });
     const user = new iam.User(userStack, 'User');
 
@@ -45,7 +52,11 @@ describe('aws auth', () => {
   test('empty aws-auth', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
-    const cluster = new Cluster(stack, 'cluster', { version: CLUSTER_VERSION, prune: false });
+    const cluster = new Cluster(stack, 'cluster', {
+      version: CLUSTER_VERSION,
+      prune: false,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
 
     // WHEN
     new AwsAuth(stack, 'AwsAuth', { cluster });
@@ -64,7 +75,11 @@ describe('aws auth', () => {
   test('addRoleMapping and addUserMapping can be used to define the aws-auth ConfigMap', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
-    const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION, prune: false });
+    const cluster = new Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      prune: false,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
     const role = new iam.Role(stack, 'role', { assumedBy: new iam.AnyPrincipal() });
     const user = new iam.User(stack, 'user');
 
@@ -142,7 +157,10 @@ describe('aws auth', () => {
   test('imported users and roles can be also be used', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
-    const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
+    const cluster = new Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
     const role = iam.Role.fromRoleArn(stack, 'imported-role', 'arn:aws:iam::123456789012:role/S3Access');
     const user = iam.User.fromUserName(stack, 'import-user', 'MyUserName');
 
@@ -189,7 +207,11 @@ describe('aws auth', () => {
   test('addMastersRole after addNodegroup correctly', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
-    const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION, prune: false });
+    const cluster = new Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      prune: false,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
     cluster.addNodegroupCapacity('NG');
     const role = iam.Role.fromRoleArn(stack, 'imported-role', 'arn:aws:iam::123456789012:role/S3Access');
 
@@ -238,6 +260,7 @@ describe('aws auth', () => {
     const cluster = new Cluster(clusterStack, 'Cluster', {
       version: KubernetesVersion.V1_29,
       authenticationMode: AuthenticationMode.API,
+      kubectlLayer: new KubectlV31Layer(clusterStack, 'KubectlLayer'),
     });
 
     // THEN
@@ -252,6 +275,7 @@ describe('aws auth', () => {
     const cluster = new Cluster(clusterStack, 'Cluster', {
       version: CLUSTER_VERSION,
       authenticationMode: AuthenticationMode.API_AND_CONFIG_MAP,
+      kubectlLayer: new KubectlV31Layer(clusterStack, 'KubectlLayer'),
     });
 
     // THEN
@@ -266,6 +290,7 @@ describe('aws auth', () => {
     const cluster = new Cluster(clusterStack, 'Cluster', {
       version: CLUSTER_VERSION,
       authenticationMode: AuthenticationMode.CONFIG_MAP,
+      kubectlLayer: new KubectlV31Layer(clusterStack, 'KubectlLayer'),
     });
 
     // THEN
@@ -279,6 +304,7 @@ describe('aws auth', () => {
     const clusterStack = new cdk.Stack(app, 'test-stack');
     const cluster = new Cluster(clusterStack, 'Cluster', {
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(clusterStack, 'KubectlLayer'),
     });
 
     // THEN

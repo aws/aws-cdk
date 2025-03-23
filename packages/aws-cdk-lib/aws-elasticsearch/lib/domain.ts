@@ -14,6 +14,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Elasticsearch version
@@ -1465,6 +1466,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     super(scope, id, {
       physicalName: props.domainName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const defaultInstanceType = 'r5.large.elasticsearch';
     const warmDefaultInstanceType = 'ultrawarm1.medium.elasticsearch';
@@ -1591,15 +1594,15 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     function isInstanceType(t: string): Boolean {
       return dedicatedMasterType.startsWith(t) || instanceType.startsWith(t);
-    };
+    }
 
     function isSomeInstanceType(...instanceTypes: string[]): Boolean {
       return instanceTypes.some(isInstanceType);
-    };
+    }
 
     function isEveryDatanodeInstanceType(...instanceTypes: string[]): Boolean {
       return instanceTypes.some(t => instanceType.startsWith(t));
-    };
+    }
 
     // Validate feature support for the given Elasticsearch version, per
     // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-features-by-version.html
@@ -1706,7 +1709,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         });
 
       logGroups.push(this.slowSearchLogGroup);
-    };
+    }
 
     if (props.logging?.slowIndexLogEnabled) {
       this.slowIndexLogGroup = props.logging.slowIndexLogGroup ??
@@ -1715,7 +1718,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         });
 
       logGroups.push(this.slowIndexLogGroup);
-    };
+    }
 
     if (props.logging?.appLogEnabled) {
       this.appLogGroup = props.logging.appLogGroup ??
@@ -1724,7 +1727,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         });
 
       logGroups.push(this.appLogGroup);
-    };
+    }
 
     if (props.logging?.auditLogEnabled) {
       this.auditLogGroup = props.logging.auditLogGroup ??
@@ -1733,7 +1736,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         });
 
       logGroups.push(this.auditLogGroup);
-    };
+    }
 
     let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
     if (logGroups.length > 0) {
@@ -1941,6 +1944,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    *
    * @deprecated use opensearchservice module instead
    */
+  @MethodMetadata()
   public addAccessPolicies(...accessPolicyStatements: iam.PolicyStatement[]) {
     if (accessPolicyStatements.length > 0) {
       if (!this.accessPolicy) {

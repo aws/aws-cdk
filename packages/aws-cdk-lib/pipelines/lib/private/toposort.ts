@@ -1,3 +1,5 @@
+import { UnscopedValidationError } from '../../../core';
+
 export type KeyFunc<T> = (x: T) => string;
 export type DepFunc<T> = (x: T) => string[];
 
@@ -27,7 +29,7 @@ export function topologicalSort<T>(xs: Iterable<T>, keyFn: KeyFunc<T>, depFn: De
 
     // If we didn't make any progress, we got stuck
     if (selectable.length === 0) {
-      throw new Error(`Could not determine ordering between: ${Array.from(remaining.keys()).join(', ')}`);
+      throw new UnscopedValidationError(`Could not determine ordering between: ${Array.from(remaining.keys()).join(', ')}`);
     }
 
     ret.push(selectable.map(s => s.element));

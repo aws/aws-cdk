@@ -3,3 +3,4 @@ export * from './input';
 export * from './schedule';
 export * from './group';
 export * from './target';
+export * from './schedule-group';

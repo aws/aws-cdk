@@ -3,6 +3,7 @@ import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { BaseServiceProps, Service } from './service';
 import { CfnHttpNamespace } from './servicediscovery.generated';
 import { Resource } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 export interface HttpNamespaceProps extends BaseNamespaceProps {}
 export interface IHttpNamespace extends INamespace { }
@@ -59,6 +60,8 @@ export class HttpNamespace extends Resource implements IHttpNamespace {
 
   constructor(scope: Construct, id: string, props: HttpNamespaceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const ns = new CfnHttpNamespace(this, 'Resource', {
       name: props.name,
@@ -83,6 +86,7 @@ export class HttpNamespace extends Resource implements IHttpNamespace {
   /**
    * Creates a service within the namespace
    */
+  @MethodMetadata()
   public createService(id: string, props?: BaseServiceProps): Service {
     return new Service(this, id, {
       namespace: this,

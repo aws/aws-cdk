@@ -5,6 +5,8 @@ import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, In
 import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IResource, Resource, Annotations, withResolved, FeatureFlags } from 'aws-cdk-lib/core';
 import * as cxapi from 'aws-cdk-lib/cx-api';
+import { isGpuInstanceType } from './private/nodegroup';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * NodeGroup interface
@@ -101,6 +103,10 @@ export enum CapacityType {
    * on-demand instances
    */
   ON_DEMAND = 'ON_DEMAND',
+  /**
+   * capacity block instances
+   */
+  CAPACITY_BLOCK = 'CAPACITY_BLOCK',
 }
 
 /**
@@ -390,6 +396,8 @@ export class Nodegroup extends Resource implements INodegroup {
     super(scope, id, {
       physicalName: props.nodegroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.cluster = props.cluster;
 
@@ -442,7 +450,7 @@ export class Nodegroup extends Resource implements INodegroup {
         throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`);
       }
 
-      //if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
+      // if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
       if (props.amiType && windowsAmiTypes.includes(props.amiType) &&
       instanceTypes.filter(isWindowsSupportedInstanceType).length < instanceTypes.length) {
         throw new Error('The specified instanceType does not support Windows workloads. '
@@ -471,7 +479,7 @@ export class Nodegroup extends Resource implements INodegroup {
             'ec2:UnassignIpv6Addresses',
           ],
         }));
-      };
+      }
       this.role = ngRole;
     } else {
       this.role = props.nodeRole;
@@ -596,25 +604,13 @@ const gpuAmiTypes: NodegroupAmiType[] = [
 ];
 
 /**
- * This function check if the instanceType is GPU instance.
- * @param instanceType The EC2 instance type
- */
-function isGpuInstanceType(instanceType: InstanceType): boolean {
-  //compare instanceType to known GPU InstanceTypes
-  const knownGpuInstanceTypes = [InstanceClass.P2, InstanceClass.P3, InstanceClass.P3DN, InstanceClass.P4DE, InstanceClass.P4D,
-    InstanceClass.G3S, InstanceClass.G3, InstanceClass.G4DN, InstanceClass.G4AD, InstanceClass.G5, InstanceClass.G5G,
-    InstanceClass.INF1, InstanceClass.INF2];
-  return knownGpuInstanceTypes.some((c) => instanceType.sameInstanceClassAs(InstanceType.of(c, InstanceSize.LARGE)));
-}
-
-/**
  * This function check if the instanceType is supported by Windows AMI.
  * https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html
  * @param instanceType The EC2 instance type
  */
 function isWindowsSupportedInstanceType(instanceType: InstanceType): boolean {
-  //compare instanceType to forbidden InstanceTypes for Windows. Add exception for m6a.16xlarge.
-  //NOTE: i2 instance class is not present in the InstanceClass enum.
+  // compare instanceType to forbidden InstanceTypes for Windows. Add exception for m6a.16xlarge.
+  // NOTE: i2 instance class is not present in the InstanceClass enum.
   const forbiddenInstanceClasses: InstanceClass[] = [InstanceClass.C3, InstanceClass.C4, InstanceClass.D2, InstanceClass.M4,
     InstanceClass.M6A, InstanceClass.R3];
   return instanceType.toString() === InstanceType.of(InstanceClass.M4, InstanceSize.XLARGE16).toString() ||
@@ -641,7 +637,7 @@ function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] 
   const architectures: Set<AmiArchitecture> = new Set(instanceTypes.map(typeToArch));
 
   if (architectures.size === 0) { // protective code, the current implementation will never result in this.
-    throw new Error(`Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString).join(', ')}`);
+    throw new Error(`Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString()).join(', ')}`);
   }
 
   if (architectures.size > 1) {

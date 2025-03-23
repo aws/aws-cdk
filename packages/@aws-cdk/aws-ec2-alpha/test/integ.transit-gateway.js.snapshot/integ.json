@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "integtest-model/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings"
+      ],
+      "assertionStack": "integtest-model/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestmodelDefaultTestDeployAssertCF40BD53"
+    }
+  }
+}

@@ -73,7 +73,6 @@ describe('DynamoEventSource', () => {
       'BatchSize': 100,
       'StartingPosition': 'TRIM_HORIZON',
     });
-
   });
 
   test('specific tumblingWindow', () => {
@@ -99,7 +98,6 @@ describe('DynamoEventSource', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       TumblingWindowInSeconds: 60,
     });
-
   });
 
   test('specific batch size', () => {
@@ -134,7 +132,6 @@ describe('DynamoEventSource', () => {
       'BatchSize': 5000,
       'StartingPosition': 'LATEST',
     });
-
   });
 
   test('pass validation if batchsize is token', () => {
@@ -176,7 +173,6 @@ describe('DynamoEventSource', () => {
       },
       'StartingPosition': 'LATEST',
     });
-
   });
 
   test('fails if streaming not enabled on table', () => {
@@ -195,7 +191,6 @@ describe('DynamoEventSource', () => {
       batchSize: 50,
       startingPosition: lambda.StartingPosition.LATEST,
     }))).toThrow(/DynamoDB Streams must be enabled on the table Default\/T/);
-
   });
 
   test('fails if batch size < 1', () => {
@@ -215,7 +210,6 @@ describe('DynamoEventSource', () => {
       batchSize: 0,
       startingPosition: lambda.StartingPosition.LATEST,
     }))).toThrow(/Maximum batch size must be between 1 and 10000 inclusive \(given 0\)/);
-
   });
 
   test('fails if batch size > 10000', () => {
@@ -235,7 +229,6 @@ describe('DynamoEventSource', () => {
       batchSize: 10001,
       startingPosition: lambda.StartingPosition.LATEST,
     }))).toThrow(/Maximum batch size must be between 1 and 10000 inclusive \(given 10001\)/);
-
   });
 
   test('adding filter criteria', () => {
@@ -443,7 +436,6 @@ describe('DynamoEventSource', () => {
       'MaximumBatchingWindowInSeconds': 120,
       'StartingPosition': 'LATEST',
     });
-
   });
 
   test('throws if maxBatchingWindow > 300 seconds', () => {
@@ -464,7 +456,6 @@ describe('DynamoEventSource', () => {
         maxBatchingWindow: cdk.Duration.seconds(301),
         startingPosition: lambda.StartingPosition.LATEST,
       }))).toThrow(/maxBatchingWindow cannot be over 300 seconds/);
-
   });
 
   test('contains eventSourceMappingId after lambda binding', () => {
@@ -487,7 +478,6 @@ describe('DynamoEventSource', () => {
 
     // THEN
     expect(eventSource.eventSourceMappingId).toBeDefined();
-
   });
 
   test('contains eventSourceMappingArn after lambda binding', () => {
@@ -510,7 +500,6 @@ describe('DynamoEventSource', () => {
 
     // THEN
     expect(eventSource.eventSourceMappingArn).toBeDefined();
-
   });
 
   test('eventSourceMappingId throws error before binding to lambda', () => {
@@ -529,7 +518,6 @@ describe('DynamoEventSource', () => {
 
     // WHEN/THEN
     expect(() => eventSource.eventSourceMappingId).toThrow(/DynamoEventSource is not yet bound to an event source mapping/);
-
   });
 
   test('eventSourceMappingArn throws error before binding to lambda', () => {
@@ -548,7 +536,6 @@ describe('DynamoEventSource', () => {
 
     // WHEN/THEN
     expect(() => eventSource.eventSourceMappingArn).toThrow(/DynamoEventSource is not yet bound to an event source mapping/);
-
   });
 
   test('specific retryAttempts', () => {
@@ -583,7 +570,6 @@ describe('DynamoEventSource', () => {
       'MaximumRetryAttempts': 10,
       'StartingPosition': 'LATEST',
     });
-
   });
 
   test('fails if retryAttempts < 0', () => {
@@ -604,7 +590,6 @@ describe('DynamoEventSource', () => {
         retryAttempts: -1,
         startingPosition: lambda.StartingPosition.LATEST,
       }))).toThrow(/retryAttempts must be between 0 and 10000 inclusive, got -1/);
-
   });
 
   test('fails if retryAttempts > 10000', () => {
@@ -625,7 +610,6 @@ describe('DynamoEventSource', () => {
         retryAttempts: 10001,
         startingPosition: lambda.StartingPosition.LATEST,
       }))).toThrow(/retryAttempts must be between 0 and 10000 inclusive, got 10001/);
-
   });
 
   test('specific bisectBatchOnFunctionError', () => {
@@ -660,7 +644,6 @@ describe('DynamoEventSource', () => {
       'BisectBatchOnFunctionError': true,
       'StartingPosition': 'LATEST',
     });
-
   });
 
   test('specific parallelizationFactor', () => {
@@ -695,7 +678,6 @@ describe('DynamoEventSource', () => {
       'ParallelizationFactor': 5,
       'StartingPosition': 'LATEST',
     });
-
   });
 
   test('fails if parallelizationFactor < 1', () => {
@@ -716,7 +698,6 @@ describe('DynamoEventSource', () => {
         parallelizationFactor: 0,
         startingPosition: lambda.StartingPosition.LATEST,
       }))).toThrow(/parallelizationFactor must be between 1 and 10 inclusive, got 0/);
-
   });
 
   test('fails if parallelizationFactor > 10', () => {
@@ -737,7 +718,6 @@ describe('DynamoEventSource', () => {
         parallelizationFactor: 11,
         startingPosition: lambda.StartingPosition.LATEST,
       }))).toThrow(/parallelizationFactor must be between 1 and 10 inclusive, got 11/);
-
   });
 
   test('specific maxRecordAge', () => {
@@ -772,7 +752,6 @@ describe('DynamoEventSource', () => {
       'MaximumRecordAgeInSeconds': 100,
       'StartingPosition': 'LATEST',
     });
-
   });
 
   test('fails if maxRecordAge < 60 seconds', () => {
@@ -793,7 +772,6 @@ describe('DynamoEventSource', () => {
         maxRecordAge: cdk.Duration.seconds(59),
         startingPosition: lambda.StartingPosition.LATEST,
       }))).toThrow(/maxRecordAge must be between 60 seconds and 7 days inclusive/);
-
   });
 
   test('fails if maxRecordAge > 7 days', () => {
@@ -814,7 +792,6 @@ describe('DynamoEventSource', () => {
         maxRecordAge: cdk.Duration.seconds(604801),
         startingPosition: lambda.StartingPosition.LATEST,
       }))).toThrow(/maxRecordAge must be between 60 seconds and 7 days inclusive/);
-
   });
 
   test('specific destinationConfig', () => {
@@ -860,7 +837,6 @@ describe('DynamoEventSource', () => {
       },
       'StartingPosition': 'LATEST',
     });
-
   });
 
   test('specific functionResponseTypes', () => {
@@ -895,7 +871,6 @@ describe('DynamoEventSource', () => {
       'StartingPosition': 'LATEST',
       'FunctionResponseTypes': ['ReportBatchItemFailures'],
     });
-
   });
 
   test('event source disabled', () => {
@@ -916,14 +891,13 @@ describe('DynamoEventSource', () => {
       enabled: false,
     }));
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'Enabled': false,
     });
-
   });
 
-  test('S3 onFailure Destination raise unsupport error', () => {
+  test('S3 onFailure Destination supported', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const testLambdaFunction = new TestFunction(stack, 'Fn');
@@ -939,15 +913,20 @@ describe('DynamoEventSource', () => {
     const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
     const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
 
-    expect(() => {
-      // WHEN
-      testLambdaFunction.addEventSource(new sources.DynamoEventSource(table, {
-        startingPosition: lambda.StartingPosition.LATEST,
-        onFailure: s3OnFailureDestination,
-      }));
-    //THEN
-    }).toThrow('S3 onFailure Destination is not supported for this event source');
+    testLambdaFunction.addEventSource(new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      onFailure: s3OnFailureDestination,
+    }));
 
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'DestinationConfig': {
+        'OnFailure': {
+          'Destination': {
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']],
+          },
+        },
+      },
+    });
   });
 
   test('filter on boolean', () => {
@@ -1020,7 +999,7 @@ describe('DynamoEventSource', () => {
       },
     }));
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'Enabled': false,
       MetricsConfig: {
@@ -1050,7 +1029,7 @@ describe('DynamoEventSource', () => {
       },
     }));
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'Enabled': false,
       MetricsConfig: {

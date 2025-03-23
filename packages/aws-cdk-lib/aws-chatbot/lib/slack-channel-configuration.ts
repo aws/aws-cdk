@@ -6,6 +6,7 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a new Slack channel configuration
@@ -167,7 +168,6 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
 
   /**
    * Adds extra permission to iam-role of Slack channel configuration
-   * @param statement
    */
   public addToRolePolicy(statement: iam.PolicyStatement): void {
     if (!this.role) {
@@ -219,7 +219,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
     const resourceName = cdk.Arn.extractResourceName(slackChannelConfigurationArn, 'chat-configuration');
 
     if (!cdk.Token.isUnresolved(slackChannelConfigurationArn) && !re.test(resourceName)) {
-      throw new Error('The ARN of a Slack integration must be in the form: arn:<partition>:chatbot:<region>:<account>:chat-configuration/slack-channel/<slackChannelName>');
+      throw new cdk.ValidationError('The ARN of a Slack integration must be in the form: arn:<partition>:chatbot:<region>:<account>:chat-configuration/slack-channel/<slackChannelName>', scope);
     }
 
     class Import extends SlackChannelConfigurationBase {
@@ -288,6 +288,8 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
     super(scope, id, {
       physicalName: props.slackChannelConfigurationName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.role = props.role || new iam.Role(this, 'ConfigurationRole', {
       assumedBy: new iam.ServicePrincipal('chatbot.amazonaws.com'),
@@ -326,8 +328,8 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
   /**
    * Adds a SNS topic that deliver notifications to AWS Chatbot.
-   * @param notificationTopic
    */
+  @MethodMetadata()
   public addNotificationTopic(notificationTopic: sns.ITopic): void {
     this.notificationTopics.push(notificationTopic);
   }

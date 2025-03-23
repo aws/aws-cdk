@@ -3,7 +3,9 @@ const LABELS = {
   MAINTAINER_REVIEW: 'pr/needs-maintainer-review',
   COMMUNITY_REVIEW: 'pr/needs-community-review',
   CLARIFICATION_REQUESTED: 'pr/reviewer-clarification-requested',
-  EXEMPTION_REQUESTED: 'pr-linter/exemption-requested'
+  EXEMPTION_REQUESTED: 'pr-linter/exemption-requested',
+  P1: 'p1',
+  BUG: 'bug'
 };
 
 const PRIORITIES = {
@@ -11,7 +13,8 @@ const PRIORITIES = {
   R2: '🔥 R2',
   R3: '🎯 R3',
   R4: '💭 R4',
-  R5: '📆 R5'
+  R5: '📆 R5',
+  R6: '🐛 R6'
 };
 
 const STATUS = {
@@ -25,21 +28,18 @@ const STATUS = {
 // Time threshold for R5
 const DAYS_THRESHOLD = 21;
 
-const ATTENTION_STATUS = {
+const NEEDS_ATTENTION_STATUS = {
   STALLED: {
     name: '🚨 Stalled',
-    threshold: 21,
-    description: 'Critical attention required'
+    threshold: 21
   },
   AGING: {
     name: '⚠️ Aging',
-    threshold: 14,
-    description: 'Requires immediate attention'
+    threshold: 14
   },
   EXTENDED: {
     name: '🕒 Extended',
-    threshold: 7,
-    description: 'Taking longer than expected'
+    threshold: 7
   }
 };
 
@@ -60,6 +60,6 @@ module.exports = {
   LABELS,
   PRIORITIES,
   STATUS,
-  ATTENTION_STATUS,
+  NEEDS_ATTENTION_STATUS,
   DAYS_THRESHOLD
 };

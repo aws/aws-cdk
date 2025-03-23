@@ -163,7 +163,7 @@ and add it to your Lambda function. The following parameters will impact Amazon 
 * __reportBatchItemFailures__: Allow functions to return partially successful responses for a batch of records.
 * __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of delayed processing.
 * __maxRecordAge__: The maximum age of a record that will be sent to the function for processing. Records that exceed the max age will be treated as failures.
-* __onFailure__: In the event a record fails after all retries or if the record age has exceeded the configured value, the record will be sent to SQS queue or SNS topic that is specified here
+* __onFailure__: In the event a record fails after all retries or if the record age has exceeded the configured value, the record will be sent to S3 bucket, SQS queue or SNS topic that is specified here
 * __parallelizationFactor__: The number of batches to concurrently process on each shard.
 * __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all records that arrived prior to attaching the event source.
@@ -229,13 +229,13 @@ behavior:
 * __reportBatchItemFailures__: Allow functions to return partially successful responses for a batch of records.
 * __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of possibly delaying processing.
 * __maxRecordAge__: The maximum age of a record that will be sent to the function for processing. Records that exceed the max age will be treated as failures.
-* __onFailure__: In the event a record fails and consumes all retries, the record will be sent to SQS queue or SNS topic that is specified here
+* __onFailure__: In the event a record fails and consumes all retries, the record will be sent to S3 bucket, SQS queue or SNS topic that is specified here
 * __parallelizationFactor__: The number of batches to concurrently process on each shard.
 * __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
 * __startingPosition__: Will determine where to begin consumption. 'LATEST' will start at the most recent record and ignore all records that arrived prior to attaching the event source, 'TRIM_HORIZON' will start at the oldest record and ensure you process all available data, while 'AT_TIMESTAMP' will start reading records from a specified time stamp.
 * __startingPositionTimestamp__: The time stamp from which to start reading. Used in conjunction with __startingPosition__ when set to 'AT_TIMESTAMP'.
 * __tumblingWindow__: The duration in seconds of a processing window when using streams.
-* __enabled__: If the DynamoDB Streams event source mapping should be enabled. The default is true.
+* __enabled__: If the event source mapping should be enabled. The default is true.
 
 ```ts
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
@@ -245,6 +245,25 @@ const stream = new kinesis.Stream(this, 'MyStream');
 
 declare const myFunction: lambda.Function;
 myFunction.addEventSource(new KinesisEventSource(stream, {
+  batchSize: 100, // default
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+}));
+```
+
+To use a dedicated-throughput consumer with enhanced fan-out
+
+```ts
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+import { KinesisConsumerEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+const stream = new kinesis.Stream(this, 'MyStream');
+const streamConsumer = new kinesis.StreamConsumer(this, 'MyStreamConsumer', {
+  stream,
+  streamConsumerName: 'MyStreamConsumer',
+});
+
+declare const myFunction: lambda.Function;
+myFunction.addEventSource(new KinesisConsumerEventSource(streamConsumer, {
   batchSize: 100, // default
   startingPosition: lambda.StartingPosition.TRIM_HORIZON,
 }));

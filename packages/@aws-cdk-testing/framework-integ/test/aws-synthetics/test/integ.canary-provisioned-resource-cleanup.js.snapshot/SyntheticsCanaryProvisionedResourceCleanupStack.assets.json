@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "fc4f1aa1010bfd77022720bba260394f6c178efb6d150d3fe09b0213ca5253d8": {
+      "source": {
+        "path": "SyntheticsCanaryProvisionedResourceCleanupStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fc4f1aa1010bfd77022720bba260394f6c178efb6d150d3fe09b0213ca5253d8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

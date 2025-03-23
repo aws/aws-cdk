@@ -52,7 +52,6 @@ export class HttpLambdaIntegration extends HttpRouteIntegration {
     id: string,
     private readonly handler: IFunction,
     private readonly props: HttpLambdaIntegrationProps = {}) {
-
     super(id);
     this._id = id;
   }

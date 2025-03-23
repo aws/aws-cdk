@@ -465,7 +465,7 @@ declare const api: apigateway.RestApi;
 
 const key = new apigateway.RateLimitedApiKey(this, 'rate-limited-api-key', {
   customerId: 'hello-customer',
-  stages: [api.deploymentStage],
+  apiStages: [{ stage: api.deploymentStage }],
   quota: {
     limit: 10000,
     period: apigateway.Period.MONTH
@@ -1400,7 +1400,7 @@ const api = new apigateway.RestApi(this, 'books', {
 
 **Note:** The delivery stream name must start with `amazon-apigateway-`.
 
-> Visit [Logging API calls to Kinesis Data Firehose](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-logging-to-kinesis.html) for more details.
+> Visit [Logging API calls to Amazon Data Firehose](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-logging-to-kinesis.html) for more details.
 
 ## Cross Origin Resource Sharing (CORS)
 
@@ -1494,6 +1494,20 @@ By performing this association, we can invoke the API gateway using the followin
 
 ```plaintext
 https://{rest-api-id}-{vpce-id}.execute-api.{region}.amazonaws.com/{stage}
+```
+
+To restrict access to the API Gateway to only the VPC endpoint, you can use the `grantInvokeFromVpcEndpointsOnly` method to [add resource policies](https://docs.aws.amazon.com/apigateway/latest/developerguide/private-api-tutorial.html#private-api-tutorial-attach-resource-policy) to the API Gateway:
+
+```ts
+declare const apiGwVpcEndpoint: ec2.IVpcEndpoint;
+
+const api = new apigateway.RestApi(this, 'PrivateApi', {
+  endpointConfiguration: {
+    types: [ apigateway.EndpointType.PRIVATE ],
+    vpcEndpoints: [ apiGwVpcEndpoint ]
+  }
+});
+api.grantInvokeFromVpcEndpointsOnly([apiGwVpcEndpoint]);
 ```
 
 ## Private Integrations

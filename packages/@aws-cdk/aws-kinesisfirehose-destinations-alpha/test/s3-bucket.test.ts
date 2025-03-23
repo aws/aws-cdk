@@ -40,7 +40,6 @@ describe('S3 destination', () => {
   });
 
   it('creates a role when none is provided', () => {
-
     new firehose.DeliveryStream(stack, 'DeliveryStream', {
       destination: new firehosedestinations.S3Bucket(bucket),
     });

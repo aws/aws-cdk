@@ -1193,3 +1193,128 @@ test('Imported task definition with revision uses original arn for policy resour
   const template = Template.fromStack(stack);
   template.hasResource('AWS::IAM::Policy', { Properties: policyMatch });
 });
+
+test.each([
+  [10, 'less than minimum'],
+  [201, 'greater than maximum'],
+])('throws an error when ephemeral storage size is %s 20 GiB (%s)', (sizeInGiB: number) => {
+  // GIVEN
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+  const target = new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    ephemeralStorage: {
+      sizeInGiB,
+    },
+  });
+
+  // WHEN
+  // THEN
+  expect(() => {
+    rule.addTarget(target);
+  }).toThrow(/Ephemeral storage size must be between 20 GiB and 200 GiB/);
+});
+
+test('it can override all possible ecs task properties via the input property', () => {
+  const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+    memoryLimitMiB: 256,
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+
+    // All possible overrides
+    // see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_TaskOverride.html
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+    cpu: '1024',
+    ephemeralStorage: {
+      sizeInGiB: 100,
+    },
+    executionRole: new iam.Role(stack, 'ExecutionRoleOverride', {
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+    }),
+    inferenceAcceleratorOverrides: [{
+      deviceName: 'device-name',
+      deviceType: 'device-type',
+    }],
+    memory: '2048',
+    taskRole: new iam.Role(stack, 'TaskRoleOverride', {
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+    }),
+  }));
+
+  // THEN
+  const template = Template.fromStack(stack);
+  debugger;
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'EcsCluster97242B84',
+            'Arn',
+          ],
+        },
+        EcsParameters: {
+          TaskCount: 1,
+          TaskDefinitionArn: {
+            Ref: 'TaskDef54694570',
+          },
+        },
+        Id: 'Target0',
+        InputTransformer: {
+          InputPathsMap: {
+            'detail-event': '$.detail.event',
+          },
+          InputTemplate: {
+            'Fn::Join': [
+              '',
+              [
+                '{"containerOverrides":[{"name":"TheContainer","command":["echo",<detail-event>]}],"cpu":"1024","ephemeralStorage":{"sizeInGiB":100},"executionRole":"',
+                {
+                  'Fn::GetAtt': [
+                    'ExecutionRoleOverrideE576BCB8',
+                    'Arn',
+                  ],
+                },
+                '","inferenceAcceleratorOverrides":[{"deviceName":"device-name","deviceType":"device-type"}],"memory":"2048","taskRole":"',
+                {
+                  'Fn::GetAtt': [
+                    'TaskRoleOverride9910DE20',
+                    'Arn',
+                  ],
+                },
+                '"}',
+              ],
+            ],
+          },
+        },
+        RoleArn: {
+          'Fn::GetAtt': [
+            'TaskDefEventsRoleFB3B67B8',
+            'Arn',
+          ],
+        },
+      },
+    ],
+  });
+});

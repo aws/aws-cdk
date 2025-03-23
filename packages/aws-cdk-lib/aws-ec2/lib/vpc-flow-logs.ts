@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, Tags, CfnResource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
 
 /**
@@ -59,7 +60,7 @@ export enum FlowLogDestinationType {
   S3 = 's3',
 
   /**
-   * Send flow logs to Kinesis Data Firehose
+   * Send flow logs to Amazon Data Firehose
    */
   KINESIS_DATA_FIREHOSE = 'kinesis-data-firehose',
 }
@@ -106,7 +107,7 @@ export abstract class FlowLogResourceType {
       resourceType: 'TransitGateway',
       resourceId: id,
     };
-  };
+  }
 
   /**
    * The Transit Gateway Attachment to attach the Flow Log to
@@ -116,7 +117,7 @@ export abstract class FlowLogResourceType {
       resourceType: 'TransitGatewayAttachment',
       resourceId: id,
     };
-  };
+  }
 
   /**
    * The type of resource to attach a flow log to.
@@ -214,9 +215,9 @@ export abstract class FlowLogDestination {
   }
 
   /**
-   * Use Kinesis Data Firehose as the destination
+   * Use Amazon Data Firehose as the destination
    *
-   * @param deliveryStreamArn the ARN of Kinesis Data Firehose delivery stream to publish logs to
+   * @param deliveryStreamArn the ARN of Amazon Data Firehose delivery stream to publish logs to
    */
   public static toKinesisDataFirehoseDestination(deliveryStreamArn: string): FlowLogDestination {
     return new KinesisDataFirehoseDestination({
@@ -271,7 +272,7 @@ export interface FlowLogDestinationConfig {
   readonly keyPrefix?: string;
 
   /**
-   * The ARN of Kinesis Data Firehose delivery stream to publish the flow logs to
+   * The ARN of Amazon Data Firehose delivery stream to publish the flow logs to
    *
    * @default - undefined
    */
@@ -848,12 +849,14 @@ export class FlowLog extends FlowLogBase {
   public readonly logGroup?: logs.ILogGroup;
 
   /**
-   * The ARN of the Kinesis Data Firehose delivery stream to publish flow logs to
+   * The ARN of the Amazon Data Firehose delivery stream to publish flow logs to
    */
   public readonly deliveryStreamArn?: string;
 
   constructor(scope: Construct, id: string, props: FlowLogProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const destination = props.destination || FlowLogDestination.toCloudWatchLogs();
 

@@ -3,7 +3,7 @@ import * as iam from '../../../aws-iam';
 import * as sns from '../../../aws-sns';
 import * as sfn from '../../../aws-stepfunctions';
 import { Token } from '../../../core';
-import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
+import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
 /**
  * The data type set for the SNS message attributes
@@ -58,11 +58,7 @@ export interface MessageAttribute {
   readonly dataType?: MessageAttributeDataType;
 }
 
-/**
- * Properties for publishing a message to an SNS topic
- */
-export interface SnsPublishProps extends sfn.TaskStateBaseProps {
-
+interface SnsPublishOptions {
   /**
    * The SNS topic that the task will publish to.
    */
@@ -141,10 +137,41 @@ export interface SnsPublishProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for publishing a message to an SNS topic using JSONPath
+ */
+export interface SnsPublishJsonPathProps extends sfn.TaskStateJsonPathBaseProps, SnsPublishOptions { }
+
+/**
+ * Properties for publishing a message to an SNS topic using JSONata
+ */
+export interface SnsPublishJsonataProps extends sfn.TaskStateJsonataBaseProps, SnsPublishOptions { }
+
+/**
+ * Properties for publishing a message to an SNS topic
+ */
+export interface SnsPublishProps extends sfn.TaskStateBaseProps, SnsPublishOptions { }
+
+/**
  * A Step Functions Task to publish messages to SNS topic.
- *
  */
 export class SnsPublish extends sfn.TaskStateBase {
+  /**
+   * A Step Functions Task to publish messages to SNS topic using JSONPath.
+   */
+  public static jsonPath(scope: Construct, id: string, props: SnsPublishJsonPathProps) {
+    return new SnsPublish(scope, id, props);
+  }
+
+  /**
+   * A Step Functions Task to publish messages to SNS topic using JSONata.
+   */
+  public static jsonata(scope: Construct, id: string, props: SnsPublishJsonataProps) {
+    return new SnsPublish(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
+
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
@@ -191,15 +218,13 @@ export class SnsPublish extends sfn.TaskStateBase {
   }
 
   /**
-   * Provides the SNS Publish service integration task configuration
-   */
-  /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('sns', 'publish', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         TopicArn: this.props.topic.topicArn,
         Message: this.props.message.value,
         MessageDeduplicationId: this.props.messageDeduplicationId,
@@ -207,7 +232,7 @@ export class SnsPublish extends sfn.TaskStateBase {
         MessageStructure: this.props.messagePerSubscriptionType ? 'json' : undefined,
         MessageAttributes: renderMessageAttributes(this.props.messageAttributes),
         Subject: this.props.subject,
-      }),
+      }, queryLanguage),
     };
   }
 }
@@ -279,7 +304,7 @@ function validateMessageAttribute(attribute: MessageAttribute): void {
   switch (typeof value) {
     case 'string':
       // trust the user or will default to string
-      if (sfn.JsonPath.isEncodedJsonPath(attribute.value)) {
+      if (isJsonPathOrJsonataExpression(attribute.value)) {
         return;
       }
       if (dataType === MessageAttributeDataType.STRING ||

@@ -5,12 +5,12 @@ import * as kms from '../../../aws-kms';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import { LogLevel } from '../../../aws-stepfunctions';
-import { Duration, Stack } from '../../../core';
+import { App, Duration, Stack } from '../../../core';
+import * as cxapi from '../../../cx-api';
 import * as cr from '../../lib';
 import * as util from '../../lib/provider-framework/util';
 
 test('security groups are applied to all framework functions', () => {
-
   // GIVEN
   const stack = new Stack();
 
@@ -75,11 +75,9 @@ test('security groups are applied to all framework functions', () => {
       ],
     },
   });
-
 });
 
 test('vpc is applied to all framework functions', () => {
-
   // GIVEN
   const stack = new Stack();
 
@@ -130,7 +128,6 @@ test('vpc is applied to all framework functions', () => {
       ],
     },
   });
-
 });
 
 test('minimal setup', () => {
@@ -460,9 +457,98 @@ it('can specify log group', () => {
 });
 
 describe('role', () => {
-  it('uses custom role when present', () => {
+  it('uses custom role when present @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
     // GIVEN
-    const stack = new Stack();
+    const app = new App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+      },
+    });
+    const stack = new Stack(app);
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'MyHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      role: new iam.Role(stack, 'MyRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+      }),
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Role: {
+        'Fn::GetAtt': [
+          'MyRoleF48FFE04',
+          'Arn',
+        ],
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'MyHandler6B74D312',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'MyHandler6B74D312',
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:GetFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'MyHandler6B74D312',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('uses custom role when present @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+      },
+    });
+    const stack = new Stack(app);
 
     // WHEN
     new cr.Provider(stack, 'MyProvider', {
@@ -532,9 +618,94 @@ describe('role', () => {
     });
   });
 
-  it('uses default role otherwise', () => {
+  it('uses default role otherwise @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
     // GIVEN
-    const stack = new Stack();
+    const app = new App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+      },
+    });
+    const stack = new Stack(app);
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'MyHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Role: {
+        'Fn::GetAtt': [
+          'MyProviderframeworkonEventServiceRole8761E48D',
+          'Arn',
+        ],
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'MyHandler6B74D312',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'MyHandler6B74D312',
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:GetFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'MyHandler6B74D312',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('uses default role otherwise @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+      },
+    });
+    const stack = new Stack(app);
 
     // WHEN
     new cr.Provider(stack, 'MyProvider', {
@@ -590,6 +761,256 @@ describe('role', () => {
             Resource: {
               'Fn::GetAtt': [
                 'MyHandler6B74D312',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  it('cannot specify both role and framework onEvent roles', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'OnEventHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      isCompleteHandler: new lambda.Function(stack, 'IsCompleteHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      role: new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+      frameworkOnEventRole: new iam.Role(stack, 'MyRole2', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+    })).toThrow('Cannot specify both "role" and any of "frameworkOnEventRole" or "frameworkCompleteAndTimeoutRole"');
+  });
+
+  it('cannot specify both role and framework complete/timeout roles', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'OnEventHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      isCompleteHandler: new lambda.Function(stack, 'IsCompleteHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      role: new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+      frameworkCompleteAndTimeoutRole: new iam.Role(stack, 'MyRole2', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+    })).toThrow('Cannot specify both "role" and any of "frameworkOnEventRole" or "frameworkCompleteAndTimeoutRole"');
+  });
+
+  it('Cannot specify "frameworkCompleteAndTimeoutRole" when "isCompleteHandler" is not specified.', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'OnEventHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      frameworkCompleteAndTimeoutRole: new iam.Role(stack, 'MyRole2', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+    })).toThrow('Cannot specify "frameworkCompleteAndTimeoutRole" when "isCompleteHandler" is not specified.');
+  });
+
+  it('No circular dependency thrown.', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+      },
+    });
+    const stack = new Stack(app);
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'OnEventHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      isCompleteHandler: new lambda.Function(stack, 'IsCompleteHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.isComplete',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      frameworkOnEventRole: new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+      frameworkCompleteAndTimeoutRole: new iam.Role(stack, 'MyRole2', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'OnEventHandler42BEBAE0',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'OnEventHandler42BEBAE0',
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: 'lambda:GetFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'OnEventHandler42BEBAE0',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'IsCompleteHandler7073F4DA',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'IsCompleteHandler7073F4DA',
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: 'lambda:GetFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'IsCompleteHandler7073F4DA',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: 'states:StartExecution',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'MyProviderwaiterstatemachineC1FBB9F9',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'OnEventHandler42BEBAE0',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'OnEventHandler42BEBAE0',
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: 'lambda:GetFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'OnEventHandler42BEBAE0',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'IsCompleteHandler7073F4DA',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'IsCompleteHandler7073F4DA',
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: 'lambda:GetFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'IsCompleteHandler7073F4DA',
                 'Arn',
               ],
             },

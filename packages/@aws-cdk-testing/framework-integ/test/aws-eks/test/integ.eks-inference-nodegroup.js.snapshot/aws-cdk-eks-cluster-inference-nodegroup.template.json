@@ -767,7 +767,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 3
+    "AttributesRevision": 4
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
@@ -1196,7 +1196,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/de3e026f98e3fba82f483168c0ae9a754def60eb00b86dce9c69a63a035c828e.json"
+       "/992424b9308f24d93d6399d40fbbb3ae4c0375633a0e85592f395abd6613cbd0.json"
       ]
      ]
     }
@@ -1246,7 +1246,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/7068b03f1ebcfbeb89683009838f64abfe021023200d4fc4c7c3dfab7ee5f8cc.json"
+       "/d6591a64e6007bfbd4723cf2c74b9486c070ae53665990fa27a20cc803afbfad.json"
       ]
      ]
     }
@@ -2010,10 +2010,10 @@
     "value": "nodejs20.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "eu-central-1": {
     "value": "nodejs20.x"
@@ -2064,10 +2064,10 @@
     "value": "nodejs20.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"

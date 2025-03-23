@@ -917,7 +917,6 @@ describe('from string list parameter', () => {
       },
     });
   });
-
 });
 
 describe('valueForStringParameter', () => {

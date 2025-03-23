@@ -1,14 +1,12 @@
 {
-  "version": "36.0.24",
+  "version": "39.0.0",
   "testCases": {
-    "integ.identitypool": {
+    "integ-identitypool/DefaultTest": {
       "stacks": [
-        "integ-identitypool"
+        "integ-idp"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "integ-identitypool/DefaultTest/DeployAssert",
+      "assertionStackName": "integidentitypoolDefaultTestDeployAssert8F0BD226"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

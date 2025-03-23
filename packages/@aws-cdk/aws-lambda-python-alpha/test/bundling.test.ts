@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import * as fs from 'fs';
 import * as path from 'path';
 import { Architecture, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -280,7 +281,6 @@ test('Bundling a function with poetry and assetExcludes', () => {
       ],
     }),
   }));
-
 });
 
 test('Bundling a function with poetry and no assetExcludes', () => {

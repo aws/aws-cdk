@@ -20,7 +20,6 @@ function defaultLogger(fmt: string, ...args: any[]) {
  * Downloads the CA thumbprint from the issuer URL
  */
 async function downloadThumbprint(issuerUrl: string, rejectUnauthorized: boolean) {
-
   return new Promise<string>((ok, ko) => {
     const purl = url.parse(issuerUrl);
     const port = purl.port ? parseInt(purl.port, 10) : 443;

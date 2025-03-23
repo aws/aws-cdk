@@ -23,6 +23,7 @@ export class AssetImage extends ContainerImage {
   }
 
   public bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+    containerDefinition._defaultDisableVersionConsistency?.();
     const asset = new DockerImageAsset(scope, 'AssetImage', {
       directory: this.directory,
       ...this.props,

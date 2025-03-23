@@ -2,7 +2,8 @@ import { Construct } from 'constructs';
 import { ILogGroup, MetricFilterOptions } from './log-group';
 import { CfnMetricFilter } from './logs.generated';
 import { Metric, MetricOptions } from '../../aws-cloudwatch';
-import { Resource } from '../../core';
+import { Resource, ValidationError } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a MetricFilter
@@ -25,13 +26,15 @@ export class MetricFilter extends Resource {
     super(scope, id, {
       physicalName: props.filterName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.metricName = props.metricName;
     this.metricNamespace = props.metricNamespace;
 
     const numberOfDimensions = Object.keys(props.dimensions ?? {}).length;
     if (numberOfDimensions > 3) {
-      throw new Error(`MetricFilter only supports a maximum of 3 dimensions but received ${numberOfDimensions}.`);
+      throw new ValidationError(`MetricFilter only supports a maximum of 3 dimensions but received ${numberOfDimensions}.`, this);
     }
 
     // It looks odd to map this object to a singleton list, but that's how
@@ -62,6 +65,7 @@ export class MetricFilter extends Resource {
    *
    * @default avg over 5 minutes
    */
+  @MethodMetadata()
   public metric(props?: MetricOptions): Metric {
     return new Metric({
       metricName: this.metricName,

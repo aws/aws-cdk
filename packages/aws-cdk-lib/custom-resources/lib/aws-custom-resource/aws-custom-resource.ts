@@ -368,7 +368,7 @@ export interface AwsCustomResourceProps {
   readonly logGroup?: logs.ILogGroup;
 
   /**
-   * Whether to install the latest AWS SDK v2.
+   * Whether to install the latest AWS SDK v3.
    *
    * If not specified, this uses whatever JavaScript SDK version is the default in
    * AWS Lambda at the time of execution.
@@ -446,13 +446,11 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
   public static readonly PROVIDER_FUNCTION_UUID = '679f53fa-c002-430c-b0da-5b7982bd2287';
 
   private static breakIgnoreErrorsCircuit(sdkCalls: Array<AwsSdkCall | undefined>, caller: string) {
-
     for (const call of sdkCalls) {
       if (call?.ignoreErrorCodesMatching) {
         throw new Error(`\`${caller}\`` + ' cannot be called along with `ignoreErrorCodesMatching`.');
       }
     }
-
   }
 
   public readonly grantPrincipal: iam.IPrincipal;

@@ -23,7 +23,6 @@ describe('Job', () => {
   });
 
   describe('Create new Scala Spark ETL Flex Job with default parameters', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkFlexEtlJob(stack, 'ImportedJob', { role, script, className });
     });
@@ -80,7 +79,6 @@ describe('Job', () => {
   });
 
   describe('Create new ScalaSpark ETL Job with log override parameters', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkFlexEtlJob(stack, 'ScalaSparkFlexETLJob', {
         jobName: 'ScalaSparkFlexETLJob',
@@ -115,11 +113,9 @@ describe('Job', () => {
         }),
       });
     });
-
   });
 
   describe('Create new ScalaSpark ETL Flex Job with logging explicitly disabled', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkFlexEtlJob(stack, 'ScalaSparkFlexETLJob', {
         jobName: 'ScalaSparkFlexETLJob',
@@ -144,7 +140,6 @@ describe('Job', () => {
   });
 
   describe('Create ScalaSpark Flex ETL Job with optional properties', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkFlexEtlJob(stack, 'ScalaSparkFlexEtlJob', {
         jobName: 'ScalaSparkFlexEtlJob',
@@ -185,13 +180,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden Glue Version should be 3.0', () => {
+    test('Overridden Glue Version should be 3.0', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         GlueVersion: '3.0',
       });
     });
 
-    test('Verify Default Arguemnts', () => {
+    test('Verify Default Arguments', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
           '--enable-metrics': '',
@@ -201,25 +196,25 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden numberOfWorkers should be 2', () => {
+    test('Overridden numberOfWorkers should be 2', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         NumberOfWorkers: 2,
       });
     });
 
-    test('Overriden WorkerType should be G.2X', () => {
+    test('Overridden WorkerType should be G.2X', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         WorkerType: glue.WorkerType.G_2X,
       });
     });
 
-    test('Overriden max retries should be 2', () => {
+    test('Overridden max retries should be 2', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         MaxRetries: 2,
       });
     });
 
-    test('Overriden max concurrent runs should be 100', () => {
+    test('Overridden max concurrent runs should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         ExecutionProperty: {
           MaxConcurrentRuns: 100,
@@ -227,13 +222,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden timeout should be 2 hours', () => {
+    test('Overridden timeout should be 2 hours', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Timeout: 120,
       });
     });
 
-    test('Overriden connections should be 100', () => {
+    test('Overridden connections should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Connections: {
           Connections: ['connectionName'],
@@ -241,7 +236,7 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden security configuration should be set', () => {
+    test('Overridden security configuration should be set', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         SecurityConfiguration: 'securityConfigName',
       });
@@ -258,24 +253,24 @@ describe('Job', () => {
     });
   });
 
-  describe('Create ScalaSpark Flex ETL Job with extraJars and extraFiles', () => {
-
+  describe('Create ScalaSpark Flex ETL Job with extraFiles, extraJars and extraJarsFirst', () => {
     beforeEach(() => {
       job = new glue.ScalaSparkFlexEtlJob(stack, 'ScalaSparkFlexEtlJob', {
         role,
         script,
         jobName: 'ScalaSparkFlexEtlJob',
         className,
-        extraJars: [
-          glue.Code.fromBucket(
-            s3.Bucket.fromBucketName(stack, 'extraJarsBucket', 'extra-jars-bucket'),
-            'prefix/file.jar'),
-        ],
         extraFiles: [
           glue.Code.fromBucket(
             s3.Bucket.fromBucketName(stack, 'extraFilesBucket', 'extra-files-bucket'),
             'prefix/file.txt'),
         ],
+        extraJars: [
+          glue.Code.fromBucket(
+            s3.Bucket.fromBucketName(stack, 'extraJarsBucket', 'extra-jars-bucket'),
+            'prefix/file.jar'),
+        ],
+        extraJarsFirst: true,
       });
     });
 
@@ -294,7 +289,7 @@ describe('Job', () => {
       });
     });
 
-    test('Verify Default Arguemnts', () => {
+    test('Verify Default Arguments', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
           '--enable-metrics': '',
@@ -303,6 +298,7 @@ describe('Job', () => {
           '--enable-continuous-cloudwatch-log': 'true',
           '--extra-jars': 's3://extra-jars-bucket/prefix/file.jar',
           '--extra-files': 's3://extra-files-bucket/prefix/file.txt',
+          '--user-jars-first': 'true',
         }),
       });
     });
@@ -321,7 +317,6 @@ describe('Job', () => {
   });
 
   describe('Override SparkUI properties for ScalaSpark Flex ETL Job', () => {
-
     beforeEach(() => {
       sparkUIBucket = new s3.Bucket(stack, 'sparkUIbucket', { bucketName: 'bucket-name' });
       job = new glue.ScalaSparkFlexEtlJob(stack, 'ScalaSparkFlexEtlJob', {

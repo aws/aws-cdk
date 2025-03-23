@@ -4,6 +4,7 @@ import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
 import { CidrBlock, CidrBlockIpv6 } from './util';
 import { RouteTable } from './route';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Interface to define subnet CIDR
@@ -17,9 +18,9 @@ interface ICidr {
  */
 export class IpCidr implements ICidr {
   /**
- * IPv6 CIDR range for the subnet
- * Allowed only if IPv6 is enabled on VPc
- */
+   * IPv6 CIDR range for the subnet
+   * Allowed only if IPv6 is enabled on VPc
+   */
   public readonly cidr: string;
   constructor(props: string ) {
     this.cidr = props;
@@ -133,50 +134,50 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
    */
   public static fromSubnetV2Attributes(scope: Construct, id: string, attrs: SubnetV2Attributes) : ISubnetV2 {
     /**
-    * Class to define an import for an existing subnet
-    * @resource AWS::EC2::Subnet
-    */
+     * Class to define an import for an existing subnet
+     * @resource AWS::EC2::Subnet
+     */
     class ImportedSubnetV2 extends Resource implements ISubnetV2 {
       /**
-      * The IPv6 CIDR Block assigned to this subnet
-      */
+       * The IPv6 CIDR Block assigned to this subnet
+       */
       public readonly ipv6CidrBlock?: string = attrs.ipv6CidrBlock;
 
       /**
-      * The type of subnet (eg. public or private) that this subnet represents.
-      */
+       * The type of subnet (eg. public or private) that this subnet represents.
+       */
       public readonly subnetType?: SubnetType = attrs.subnetType;
 
       /**
-      * The Availability Zone in which subnet is located
-      */
+       * The Availability Zone in which subnet is located
+       */
       public readonly availabilityZone: string = attrs.availabilityZone;
 
       /**
-      * The subnetId for this particular subnet
-      * Refers to the physical ID created
-      */
+       * The subnetId for this particular subnet
+       * Refers to the physical ID created
+       */
       public readonly subnetId: string = attrs.subnetId;
 
       /**
-      * Dependable that can be depended upon to force internet connectivity established on the VPC
-      */
+       * Dependable that can be depended upon to force internet connectivity established on the VPC
+       */
       public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
 
       /**
-      * The IPv4 CIDR block assigned to this subnet
-      */
+       * The IPv4 CIDR block assigned to this subnet
+       */
       public readonly ipv4CidrBlock: string = attrs.ipv4CidrBlock;
 
       /**
-      *  Current route table associated with this subnet
-      */
+       *  Current route table associated with this subnet
+       */
       public readonly routeTable: IRouteTable = { routeTableId: attrs.routeTableId! };
 
       /**
-      * Associate a Network ACL with this subnet
-      * Required here since it is implemented in the ISubnetV2
-      */
+       * Associate a Network ACL with this subnet
+       * Required here since it is implemented in the ISubnetV2
+       */
       public associateNetworkAcl(aclId: string, networkAcl: INetworkAcl) {
         const aclScope = networkAcl instanceof Construct ? networkAcl : this;
         const other = networkAcl instanceof Construct ? this : networkAcl;
@@ -246,20 +247,22 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
         produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const ipv4CidrBlock = props.ipv4CidrBlock.cidr;
     const ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
 
     if (!checkCidrRanges(props.vpc, props.ipv4CidrBlock.cidr)) {
       throw new Error('CIDR block should be within the range of VPC');
-    };
+    }
 
     let overlap: boolean = false;
     let overlapIpv6: boolean = false;
 
     overlap = validateOverlappingCidrRanges(props.vpc, props.ipv4CidrBlock.cidr);
 
-    //check whether VPC supports ipv6
+    // check whether VPC supports ipv6
     if (props.ipv6CidrBlock?.cidr) {
       validateSupportIpv6(props.vpc);
       overlapIpv6 = validateOverlappingCidrRangesipv6(props.vpc, props.ipv6CidrBlock?.cidr);
@@ -327,6 +330,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
    * @param networkAcl The Network ACL to associate with this subnet.
    * This allows controlling inbound and outbound traffic for instances in this subnet.
    */
+  @MethodMetadata()
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
     this._networkAcl = networkAcl;
 
@@ -509,7 +513,6 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
  */
 
 function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): boolean {
-
   let allSubnets: ISubnetV2[];
   try {
     allSubnets = vpc.selectSubnets().subnets;
@@ -548,7 +551,6 @@ function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): bool
  * @internal
  */
 function validateOverlappingCidrRangesipv6(vpc: IVpcV2, ipv6CidrBlock: string): boolean {
-
   let allSubnets: ISubnetV2[];
   try {
     allSubnets = vpc.selectSubnets().subnets;

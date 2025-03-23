@@ -37,12 +37,12 @@ new SubnetV2(stack, 'testSubnet1', {
   vpc,
   availabilityZone: 'us-west-2a',
   ipv4CidrBlock: new IpCidr('10.1.0.0/20'),
-  //defined on the basis of allocation done in IPAM console
-  //ipv6CidrBlock: new Ipv6Cidr('2a05:d02c:25:4000::/60'),
+  // defined on the basis of allocation done in IPAM console
+  // ipv6CidrBlock: new Ipv6Cidr('2a05:d02c:25:4000::/60'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 
-/**Test compatibility with existing construct */
+/** Test compatibility with existing construct */
 new ec2.Instance(stack, 'Instance', {
   vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),

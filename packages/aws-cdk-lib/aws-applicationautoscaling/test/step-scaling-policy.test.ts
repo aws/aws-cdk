@@ -22,7 +22,6 @@ describe('step scaling policy', () => {
           upperThreshold);
       },
     ));
-
   });
 
   test('generated step intervals are valid intervals', () => {
@@ -37,7 +36,6 @@ describe('step scaling policy', () => {
         }), steps, 'template', JSON.stringify(template, undefined, 2));
       },
     ));
-
   });
 
   test('generated step intervals are nonoverlapping', () => {
@@ -57,7 +55,6 @@ describe('step scaling policy', () => {
         return true;
       },
     ), { verbose: true });
-
   });
 
   test('all template intervals occur in input array', () => {
@@ -78,7 +75,6 @@ describe('step scaling policy', () => {
         });
       },
     ));
-
   });
 
   test('lower alarm uses lower policy', () => {
@@ -92,7 +88,6 @@ describe('step scaling policy', () => {
         return reportFalse(alarm.Properties.AlarmActions[0].Ref === template.lowerPolicy, alarm);
       },
     ));
-
   });
 
   test('upper alarm uses upper policy', () => {
@@ -106,7 +101,6 @@ describe('step scaling policy', () => {
         return reportFalse(alarm.Properties.AlarmActions[0].Ref === template.upperPolicy, alarm);
       },
     ));
-
   });
 
   test('test step scaling on metric', () => {
@@ -142,7 +136,6 @@ describe('step scaling policy', () => {
       },
 
     });
-
   });
 
   test('step scaling from percentile metric', () => {
@@ -179,7 +172,6 @@ describe('step scaling policy', () => {
       Namespace: 'Test',
       Threshold: 100,
     });
-
   });
 
   test('step scaling with evaluation period configured', () => {
@@ -215,7 +207,6 @@ describe('step scaling policy', () => {
       Namespace: 'Test',
       Threshold: 100,
     });
-
   });
 
   test('step scaling with invalid evaluation period throws error', () => {

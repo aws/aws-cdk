@@ -105,6 +105,7 @@ interface MockKeyContextResponse {
 function mockKeyContextProviderWith(
   response: MockKeyContextResponse,
   paramValidator?: (options: cxschema.KeyContextQuery) => void) {
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const previous = ContextProvider.getValue;
   ContextProvider.getValue = (_scope: Construct, options: GetContextValueOptions) => {
     // do some basic sanity checks

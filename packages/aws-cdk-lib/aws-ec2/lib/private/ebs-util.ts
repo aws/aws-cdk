@@ -24,7 +24,6 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
     let finalEbs: CfnLaunchTemplate.EbsProperty | CfnInstance.EbsProperty | undefined;
 
     if (ebs) {
-
       const { iops, throughput, volumeType, kmsKey, ...rest } = ebs;
 
       if (throughput) {
@@ -69,7 +68,6 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
         volumeType,
         kmsKeyId: kmsKey?.keyArn,
       };
-
     } else {
       finalEbs = undefined;
     }

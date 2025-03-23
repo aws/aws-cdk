@@ -1,7 +1,7 @@
 name: PR Prioritization
 on:
   pull_request_target:
-    types: 
+    types:
       - labeled
       - opened
       - reopened
@@ -10,6 +10,7 @@ on:
 
 jobs:
   prioritize:
+    if: github.repository == 'aws/aws-cdk'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

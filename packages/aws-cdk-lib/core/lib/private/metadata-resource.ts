@@ -1,11 +1,13 @@
 import * as zlib from 'zlib';
 import { Construct } from 'constructs';
 import { ConstructInfo, constructInfoFromStack } from './runtime-info';
+import * as cxapi from '../../../cx-api';
 import { RegionInfo } from '../../../region-info';
 import { CfnCondition } from '../cfn-condition';
 import { Fn } from '../cfn-fn';
 import { Aws } from '../cfn-pseudo';
 import { CfnResource } from '../cfn-resource';
+import { FeatureFlags } from '../feature-flags';
 import { Lazy } from '../lazy';
 import { Stack } from '../stack';
 import { Token } from '../token';
@@ -17,11 +19,13 @@ export class MetadataResource extends Construct {
   constructor(scope: Stack, id: string) {
     super(scope, id);
     const metadataServiceExists = Token.isUnresolved(scope.region) || RegionInfo.get(scope.region).cdkMetadataResourceAvailable;
+    const enableAdditionalTelemtry = FeatureFlags.of(scope).isEnabled(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION) ?? false;
     if (metadataServiceExists) {
+      const constructInfo = constructInfoFromStack(scope);
       const resource = new CfnResource(this, 'Default', {
         type: 'AWS::CDK::Metadata',
         properties: {
-          Analytics: Lazy.string({ produce: () => formatAnalytics(constructInfoFromStack(scope)) }),
+          Analytics: Lazy.string({ produce: () => formatAnalytics(constructInfo, enableAdditionalTelemtry) }),
         },
       });
 
@@ -76,9 +80,16 @@ class Trie extends Map<string, Trie> { }
  *
  * Exported/visible for ease of testing.
  */
-export function formatAnalytics(infos: ConstructInfo[]) {
+export function formatAnalytics(infos: ConstructInfo[], enableAdditionalTelemtry: boolean = false) {
   const trie = new Trie();
-  infos.forEach(info => insertFqnInTrie(`${info.version}!${info.fqn}`, trie));
+
+  // only append additional telemetry information to prefix encoding and gzip compress
+  // if feature flag is enabled; otherwise keep the old behaviour.
+  if (enableAdditionalTelemtry) {
+    infos.forEach(info => insertFqnInTrie(`${info.version}!${info.fqn}`, trie, info.metadata));
+  } else {
+    infos.forEach(info => insertFqnInTrie(`${info.version}!${info.fqn}`, trie));
+  }
 
   const plaintextEncodedConstructs = prefixEncodeTrie(trie);
   const compressedConstructsBuffer = zlib.gzipSync(Buffer.from(plaintextEncodedConstructs));
@@ -103,11 +114,16 @@ export function formatAnalytics(infos: ConstructInfo[]) {
  * Splits after non-alphanumeric characters (e.g., '.', '/') in the FQN
  * and insert each piece of the FQN in nested map (i.e., simple trie).
  */
-function insertFqnInTrie(fqn: string, trie: Trie) {
+function insertFqnInTrie(fqn: string, trie: Trie, metadata?: Record<string, any>[]) {
   for (const fqnPart of fqn.replace(/[^a-z0-9]/gi, '$& ').split(' ')) {
     const nextLevelTreeRef = trie.get(fqnPart) ?? new Trie();
     trie.set(fqnPart, nextLevelTreeRef);
     trie = nextLevelTreeRef;
+  }
+
+  // if 'metadata' is defined, add it to end of Trie
+  if (metadata) {
+    trie.set(JSON.stringify(metadata), new Trie());
   }
   return trie;
 }

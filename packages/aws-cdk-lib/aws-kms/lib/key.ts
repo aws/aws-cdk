@@ -19,6 +19,7 @@ import {
   Stack,
   Token,
 } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -766,6 +767,8 @@ export class Key extends KeyBase {
 
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const denyLists = {
       [KeyUsage.ENCRYPT_DECRYPT]: [
@@ -896,6 +899,7 @@ export class Key extends KeyBase {
    * Key administrators have permissions to manage the key (e.g., change permissions, revoke), but do not have permissions
    * to use the key in cryptographic operations (e.g., encrypt, decrypt).
    */
+  @MethodMetadata()
   public grantAdmin(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...perms.ADMIN_ACTIONS);
   }

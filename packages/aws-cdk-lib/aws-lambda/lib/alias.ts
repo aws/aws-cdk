@@ -11,6 +11,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 export interface IAlias extends IFunction {
   /**
@@ -146,6 +147,8 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     super(scope, id, {
       physicalName: props.aliasName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.lambda = props.version.lambda;
     this.aliasName = this.physicalName;
@@ -202,6 +205,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     return this.version.role;
   }
 
+  @MethodMetadata()
   public metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
     // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differs from the base behavior.
     return super.metric(metricName, {
@@ -222,6 +226,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    *
    * @param options Autoscaling options
    */
+  @MethodMetadata()
   public addAutoScaling(options: AutoScalingOptions): IScalableFunctionAttribute {
     if (this.scalableAlias) {
       throw new ValidationError('AutoScaling already enabled for this alias', this);

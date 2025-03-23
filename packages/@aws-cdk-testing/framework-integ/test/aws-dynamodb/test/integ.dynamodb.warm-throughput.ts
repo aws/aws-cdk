@@ -29,7 +29,6 @@ export class TestStack extends Stack {
         writeUnitsPerSecond: 5000,
       },
     });
-
   }
 }
 

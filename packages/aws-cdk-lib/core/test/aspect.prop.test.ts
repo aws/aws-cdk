@@ -56,7 +56,6 @@ describe('every aspect gets invoked exactly once', () => {
     fc.assert(
       fc.property(appWithAspects(), (app) => {
         afterSynth((testApp) => {
-
           const allConstructsOnApp = testApp.cdkApp.node.findAll();
           const allAspectApplications = getAllAspectApplications(allConstructsOnApp);
           const visitsMap = getVisitsMap(testApp.actionLog);

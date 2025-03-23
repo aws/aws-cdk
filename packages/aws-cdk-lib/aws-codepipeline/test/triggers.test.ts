@@ -823,7 +823,7 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/length of pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' must be less than or equal to 3, got 4/);;
+    }).toThrow(/length of pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' must be less than or equal to 3, got 4/);
   });
 
   test('throw if length of pullRequestFilter is greater than 3', () => {
@@ -855,7 +855,7 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/length of pullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction' must be less than or equal to 3, got 4/);;
+    }).toThrow(/length of pullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction' must be less than or equal to 3, got 4/);
   });
 
   test('throw if both pushFilter and pullRequestFilter are specified', () => {
@@ -881,7 +881,7 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/cannot specify both pushFilter and pullRequestFilter for the trigger with sourceAction with name 'CodeStarConnectionsSourceAction'/);;
+    }).toThrow(/cannot specify both pushFilter and pullRequestFilter for the trigger with sourceAction with name 'CodeStarConnectionsSourceAction'/);
   });
 
   test('throw if neither pushFilter nor pullRequestFilter are specified', () => {
@@ -895,7 +895,7 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/must specify either pushFilter or pullRequestFilter for the trigger with sourceAction with name 'CodeStarConnectionsSourceAction'/);;
+    }).toThrow(/must specify either pushFilter or pullRequestFilter for the trigger with sourceAction with name 'CodeStarConnectionsSourceAction'/);
   });
 
   test('throw if both pushFilter and pullRequestFilter are empty arrays', () => {
@@ -911,7 +911,7 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/must specify either pushFilter or pullRequestFilter for the trigger with sourceAction with name 'CodeStarConnectionsSourceAction'/);;
+    }).toThrow(/must specify either pushFilter or pullRequestFilter for the trigger with sourceAction with name 'CodeStarConnectionsSourceAction'/);
   });
 
   test('throw if provider of sourceAction is not \'CodeStarSourceConnection\'', () => {

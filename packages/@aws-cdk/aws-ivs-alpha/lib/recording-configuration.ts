@@ -4,6 +4,7 @@ import { Duration, Fn, IResource, Resource, Stack, Token } from 'aws-cdk-lib/cor
 import { Construct } from 'constructs';
 import { RenditionConfiguration } from './rendition-configuration';
 import { ThumbnailConfiguration } from './thumbnail-configuration';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties of the IVS Recording configuration
@@ -79,7 +80,6 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
    */
   public static fromRecordingConfigurationId(scope: Construct, id: string,
     recordingConfigurationId: string): IRecordingConfiguration {
-
     class Import extends Resource implements IRecordingConfiguration {
       public readonly recordingConfigurationId = recordingConfigurationId;
       public readonly recordingConfigurationArn = Stack.of(this).formatArn({
@@ -130,6 +130,8 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
     super(scope, id, {
       physicalName: props.recordingConfigurationName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.props = props;
 
@@ -161,7 +163,7 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
       renditions: this.props.renditionConfiguration.renditions,
       renditionSelection: this.props.renditionConfiguration.renditionSelection,
     };
-  };
+  }
 
   private _renderThumbnailConfiguration(): CfnRecordingConfiguration.ThumbnailConfigurationProperty | undefined {
     if (!this.props.thumbnailConfiguration) {
@@ -174,7 +176,7 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
       storage: this.props.thumbnailConfiguration.storage,
       targetIntervalSeconds: this.props.thumbnailConfiguration.targetInterval?.toSeconds(),
     };
-  };
+  }
 
   private validateRecordingConfigurationName(): undefined {
     const recordingConfigurationName = this.props.recordingConfigurationName;
@@ -190,7 +192,7 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
     if (recordingConfigurationName.length > 128) {
       throw new Error(`\`recordingConfigurationName\` must be less than or equal to 128 characters, got: ${recordingConfigurationName.length} characters.`);
     }
-  };
+  }
 
   private validateRecordingReconnectWindowSeconds(): undefined {
     const recordingReconnectWindow = this.props.recordingReconnectWindow;
@@ -206,5 +208,5 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
     if (recordingReconnectWindow.toSeconds() > 300) {
       throw new Error(`\`recordingReconnectWindow\` must be between 0 and 300 seconds, got ${recordingReconnectWindow.toSeconds()} seconds.`);
     }
-  };
+  }
 }

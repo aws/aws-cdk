@@ -11,6 +11,7 @@ import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 import { BucketDeploymentSingletonFunction } from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
@@ -304,17 +305,17 @@ export class BucketDeployment extends Construct {
 
     if (props.distributionPaths) {
       if (!props.distribution) {
-        throw new Error('Distribution must be specified if distribution paths are specified');
+        throw new ValidationError('Distribution must be specified if distribution paths are specified', this);
       }
       if (!cdk.Token.isUnresolved(props.distributionPaths)) {
         if (!props.distributionPaths.every(distributionPath => cdk.Token.isUnresolved(distributionPath) || distributionPath.startsWith('/'))) {
-          throw new Error('Distribution paths must start with "/"');
+          throw new ValidationError('Distribution paths must start with "/"', this);
         }
       }
     }
 
     if (props.useEfs && !props.vpc) {
-      throw new Error('Vpc must be specified if useEfs is set');
+      throw new ValidationError('Vpc must be specified if useEfs is set', this);
     }
 
     this.destinationBucket = props.destinationBucket;
@@ -376,7 +377,7 @@ export class BucketDeployment extends Construct {
     });
 
     const handlerRole = handler.role;
-    if (!handlerRole) { throw new Error('lambda.SingletonFunction should have created a Role'); }
+    if (!handlerRole) { throw new ValidationError('lambda.SingletonFunction should have created a Role', this); }
     this.handlerRole = handlerRole;
 
     this.sources = props.sources.map((source: ISource) => source.bind(this, { handlerRole: this.handlerRole }));
@@ -455,7 +456,7 @@ export class BucketDeployment extends Construct {
     // '/this/is/a/random/key/prefix/that/is/a/lot/of/characters/do/we/think/that/it/will/ever/be/this/long?????'
     // better to throw an error here than wait for CloudFormation to fail
     if (!cdk.Token.isUnresolved(tagKey) && tagKey.length > 128) {
-      throw new Error('The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters.');
+      throw new ValidationError('The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters.', this);
     }
 
     /*
@@ -498,7 +499,6 @@ export class BucketDeployment extends Construct {
      * be set to true on the Bucket.
      */
     cdk.Tags.of(this.destinationBucket).add(tagKey, 'true');
-
   }
 
   /**
@@ -567,7 +567,7 @@ export class BucketDeployment extends Construct {
     // configurations since we have a singleton.
     if (memoryLimit) {
       if (cdk.Token.isUnresolved(memoryLimit)) {
-        throw new Error("Can't use tokens when specifying 'memoryLimit' since we use it to identify the singleton custom resource handler.");
+        throw new ValidationError("Can't use tokens when specifying 'memoryLimit' since we use it to identify the singleton custom resource handler.", this);
       }
 
       uuid += `-${memoryLimit.toString()}MiB`;
@@ -578,7 +578,7 @@ export class BucketDeployment extends Construct {
     // configurations since we have a singleton.
     if (ephemeralStorageSize) {
       if (ephemeralStorageSize.isUnresolved()) {
-        throw new Error("Can't use tokens when specifying 'ephemeralStorageSize' since we use it to identify the singleton custom resource handler.");
+        throw new ValidationError("Can't use tokens when specifying 'ephemeralStorageSize' since we use it to identify the singleton custom resource handler.", this);
       }
 
       uuid += `-${ephemeralStorageSize.toMebibytes().toString()}MiB`;
@@ -660,7 +660,7 @@ export class DeployTimeSubstitutedFile extends BucketDeployment {
 
   constructor(scope: Construct, id: string, props: DeployTimeSubstitutedFileProps) {
     if (!fs.existsSync(props.source)) {
-      throw new Error(`No file found at 'source' path ${props.source}`);
+      throw new ValidationError(`No file found at 'source' path ${props.source}`, scope);
     }
     // Makes substitutions on the file
     let fileData = fs.readFileSync(props.source, 'utf-8');
@@ -819,6 +819,11 @@ export enum ServerSideEncryption {
    * 'aws:kms'
    */
   AWS_KMS = 'aws:kms',
+
+  /**
+   * 'aws:kms:dsse'
+   */
+  AWS_KMS_DSSE = 'aws:kms:dsse',
 }
 
 /**

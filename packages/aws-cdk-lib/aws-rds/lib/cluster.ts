@@ -11,6 +11,7 @@ import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, R
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import { validateDatabaseClusterProps } from './validate-database-cluster-props';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -21,6 +22,7 @@ import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Annotations, ArnFormat, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -381,13 +383,13 @@ interface DatabaseClusterBaseProps {
   readonly networkType?: NetworkType;
 
   /**
-  * Directory ID for associating the DB cluster with a specific Active Directory.
-  *
-  * Necessary for enabling Kerberos authentication. If specified, the DB cluster joins the given Active Directory, enabling Kerberos authentication.
-  * If not specified, the DB cluster will not be associated with any Active Directory, and Kerberos authentication will not be enabled.
-  *
-  * @default - DB cluster is not associated with an Active Directory; Kerberos authentication is not enabled.
-  */
+   * Directory ID for associating the DB cluster with a specific Active Directory.
+   *
+   * Necessary for enabling Kerberos authentication. If specified, the DB cluster joins the given Active Directory, enabling Kerberos authentication.
+   * If not specified, the DB cluster will not be associated with any Active Directory, and Kerberos authentication will not be enabled.
+   *
+   * @default - DB cluster is not associated with an Active Directory; Kerberos authentication is not enabled.
+   */
   readonly domain?: string;
 
   /**
@@ -421,14 +423,17 @@ interface DatabaseClusterBaseProps {
   /**
    * Whether to enable Performance Insights for the DB cluster.
    *
-   * @default - false, unless `performanceInsightRetention` or `performanceInsightEncryptionKey` is set.
+   * @default - false, unless `performanceInsightRetention` or `performanceInsightEncryptionKey` is set,
+   * or `databaseInsightsMode` is set to `DatabaseInsightsMode.ADVANCED`.
    */
   readonly enablePerformanceInsights?: boolean;
 
   /**
    * The amount of time, in days, to retain Performance Insights data.
    *
-   * @default 7
+   * If you set `databaseInsightsMode` to `DatabaseInsightsMode.ADVANCED`, you must set this property to `PerformanceInsightRetention.MONTHS_15`.
+   *
+   * @default - 7
    */
   readonly performanceInsightRetention?: PerformanceInsightRetention;
 
@@ -438,6 +443,13 @@ interface DatabaseClusterBaseProps {
    * @default - default master key
    */
   readonly performanceInsightEncryptionKey?: kms.IKey;
+
+  /**
+   * The database insights mode.
+   *
+   * @default - DatabaseInsightsMode.STANDARD when performance insights are enabled and Amazon Aurora engine is used, otherwise not set.
+   */
+  readonly databaseInsightsMode?: DatabaseInsightsMode;
 
   /**
    * Specifies whether minor engine upgrades are applied automatically to the DB cluster during the maintenance window.
@@ -535,6 +547,21 @@ export enum ClusterScailabilityType {
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html
    */
   LIMITLESS = 'limitless',
+}
+
+/**
+ * The database insights mode of the Aurora DB cluster.
+ */
+export enum DatabaseInsightsMode {
+  /**
+   * Standard mode.
+   */
+  STANDARD = 'standard',
+
+  /**
+   * Advanced mode.
+   */
+  ADVANCED = 'advanced',
 }
 
 /**
@@ -718,6 +745,11 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   public readonly performanceInsightEncryptionKey?: kms.IKey;
 
   /**
+   * The database insights mode.
+   */
+  public readonly databaseInsightsMode?: DatabaseInsightsMode;
+
+  /**
    * The IAM role for the enhanced monitoring.
    */
   public readonly monitoringRole?: iam.IRole;
@@ -830,41 +862,18 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       });
     }
 
+    validateDatabaseClusterProps(this, props);
+
     const enablePerformanceInsights = props.enablePerformanceInsights
-      || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
-    if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
-      throw new ValidationError('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set', this);
-    }
-
-    if (props.clusterScalabilityType === ClusterScalabilityType.LIMITLESS || props.clusterScailabilityType === ClusterScailabilityType.LIMITLESS) {
-      if (!props.enablePerformanceInsights) {
-        throw new ValidationError('Performance Insights must be enabled for Aurora Limitless Database.', this);
-      }
-      if (!props.performanceInsightRetention || props.performanceInsightRetention < PerformanceInsightRetention.MONTHS_1) {
-        throw new ValidationError('Performance Insights retention period must be set at least 31 days for Aurora Limitless Database.', this);
-      }
-      if (!props.monitoringInterval || !props.enableClusterLevelEnhancedMonitoring) {
-        throw new ValidationError('Cluster level enhanced monitoring must be set for Aurora Limitless Database. Please set \'monitoringInterval\' and enable \'enableClusterLevelEnhancedMonitoring\'.', this);
-      }
-      if (props.writer || props.readers) {
-        throw new ValidationError('Aurora Limitless Database does not support readers or writer instances.', this);
-      }
-      if (!props.engine.engineVersion?.fullVersion?.endsWith('limitless')) {
-        throw new ValidationError(`Aurora Limitless Database requires an engine version that supports it, got ${props.engine.engineVersion?.fullVersion}`, this);
-      }
-      if (props.storageType !== DBClusterStorageType.AURORA_IOPT1) {
-        throw new ValidationError(`Aurora Limitless Database requires I/O optimized storage type, got: ${props.storageType}`, this);
-      }
-      if (props.cloudwatchLogsExports === undefined || props.cloudwatchLogsExports.length === 0) {
-        throw new ValidationError('Aurora Limitless Database requires CloudWatch Logs exports to be set.', this);
-      }
-    }
-
+      || props.performanceInsightRetention !== undefined
+      || props.performanceInsightEncryptionKey !== undefined
+      || props.databaseInsightsMode === DatabaseInsightsMode.ADVANCED;
     this.performanceInsightsEnabled = enablePerformanceInsights;
     this.performanceInsightRetention = enablePerformanceInsights
       ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
       : undefined;
     this.performanceInsightEncryptionKey = props.performanceInsightEncryptionKey;
+    this.databaseInsightsMode = props.databaseInsightsMode;
 
     // configure enhanced monitoring role for the cluster or instance
     this.monitoringRole = props.monitoringRole;
@@ -880,7 +889,10 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     if (props.enableClusterLevelEnhancedMonitoring && !props.monitoringInterval) {
       throw new ValidationError('`monitoringInterval` must be set when `enableClusterLevelEnhancedMonitoring` is true.', this);
     }
-    if (props.monitoringInterval && [0, 1, 5, 10, 15, 30, 60].indexOf(props.monitoringInterval.toSeconds()) === -1) {
+    if (
+      props.monitoringInterval && !props.monitoringInterval.isUnresolved() &&
+      [0, 1, 5, 10, 15, 30, 60].indexOf(props.monitoringInterval.toSeconds()) === -1
+    ) {
       throw new ValidationError(`'monitoringInterval' must be one of 0, 1, 5, 10, 15, 30, or 60 seconds, got: ${props.monitoringInterval.toSeconds()} seconds.`, this);
     }
 
@@ -929,6 +941,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       performanceInsightsEnabled: this.performanceInsightsEnabled || props.enablePerformanceInsights, // fall back to undefined if not set
       performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: this.performanceInsightRetention,
+      databaseInsightsMode: this.databaseInsightsMode,
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? props.monitoringInterval?.toSeconds() : undefined,
       monitoringRoleArn: props.enableClusterLevelEnhancedMonitoring ? this.monitoringRole?.roleArn : undefined,
@@ -1045,7 +1058,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
             'availability issues if a failover event occurs. It is recommended that at least one reader '+
             'has `scaleWithWriter` set to true',
           );
-
         }
       } else {
         if (serverlessInHighestTier && highestTier > 1) {
@@ -1124,7 +1136,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     if (!regexp.test(this.serverlessV2MaxCapacity.toString()) || !regexp.test(this.serverlessV2MinCapacity.toString())) {
       throw new ValidationError('serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments, received '+
       `min: ${this.serverlessV2MaxCapacity}, max: ${this.serverlessV2MaxCapacity}`, this);
-
     }
   }
 
@@ -1191,6 +1202,8 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
 
   constructor(scope: Construct, id: string, attrs: DatabaseClusterAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     this.clusterIdentifier = attrs.clusterIdentifier;
     this._clusterResourceIdentifier = attrs.clusterResourceIdentifier;
@@ -1259,6 +1272,14 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
    * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
    */
   readonly credentials?: Credentials;
+
+  /**
+   * The Amazon Resource Name (ARN) of the source DB instance or DB cluster if this DB cluster is created as a read replica.
+   * Cannot be used with credentials.
+   *
+   * @default - This DB Cluster is not a read replica
+   */
+  readonly replicationSourceIdentifier?: string;
 }
 
 /**
@@ -1289,15 +1310,20 @@ export class DatabaseCluster extends DatabaseClusterNew {
 
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const credentials = renderCredentials(this, props.engine, props.credentials);
     const secret = credentials.secret;
 
+    const canHaveCredentials = props.replicationSourceIdentifier == undefined;
+
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       // Admin
-      masterUsername: credentials.username,
-      masterUserPassword: credentials.password?.unsafeUnwrap(),
+      masterUsername: canHaveCredentials ? credentials.username : undefined,
+      masterUserPassword: canHaveCredentials ? credentials.password?.unsafeUnwrap() : undefined,
+      replicationSourceIdentifier: props.replicationSourceIdentifier,
     });
 
     this.clusterIdentifier = cluster.ref;
@@ -1376,7 +1402,6 @@ const INSTANCE_TYPE_XLARGE_MEMORY_MAPPING: { [instanceType: string]: number } = 
  * @returns true if the instance size is supported by serverless v2 instances
  */
 function instanceSizeSupportedByServerlessV2(instanceSize: string, serverlessV2MaxCapacity: number): boolean {
-
   const serverlessMaxMem = serverlessV2MaxCapacity*2;
   // i.e. r5.xlarge
   const sizeParts = instanceSize.split('.');
@@ -1472,6 +1497,8 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
 
   constructor(scope: Construct, id: string, props: DatabaseClusterFromSnapshotProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.credentials && !props.credentials.password && !props.credentials.secret) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-rds:useSnapshotCredentials', 'Use `snapshotCredentials` to modify password of a cluster created from a snapshot.');

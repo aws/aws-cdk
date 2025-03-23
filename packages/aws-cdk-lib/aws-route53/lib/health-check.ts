@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnHealthCheck } from './route53.generated';
 import { Duration, IResource, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Imported or created health check
@@ -260,6 +261,8 @@ export class HealthCheck extends Resource implements IHealthCheck {
    */
   constructor(scope: Construct, id: string, props: HealthCheckProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnHealthCheck(this, 'Resource', {
       healthCheckConfig: {

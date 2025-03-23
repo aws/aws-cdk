@@ -4,7 +4,9 @@ import { CfnEventBus, CfnEventBusPolicy } from './events.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
+import { Annotations, ArnFormat, FeatureFlags, IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import * as cxapi from '../../cx-api';
 
 /**
  * Interface which all EventBus based classes MUST implement
@@ -55,8 +57,10 @@ export interface IEventBus extends IResource {
    * so that they can be matched to rules.
    *
    * @param grantee The principal (no-op if undefined)
+   * @param sid The Statement ID used if we need to add a trust policy on the event bus.
+   *
    */
-  grantPutEventsTo(grantee: iam.IGrantable): iam.Grant;
+  grantPutEventsTo(grantee: iam.IGrantable, sid?: string): iam.Grant;
 }
 
 /**
@@ -102,10 +106,10 @@ export interface EventBusProps {
   readonly description?: string;
 
   /**
-  * The customer managed key that encrypt events on this event bus.
-  *
-  * @default - Use an AWS managed key
-  */
+   * The customer managed key that encrypt events on this event bus.
+   *
+   * @default - Use an AWS managed key
+   */
   readonly kmsKey?: kms.IKey;
 }
 
@@ -143,7 +147,7 @@ export interface EventBusAttributes {
   readonly eventSourceName?: string;
 }
 
-abstract class EventBusBase extends Resource implements IEventBus {
+abstract class EventBusBase extends Resource implements IEventBus, iam.IResourceWithPolicy {
   /**
    * The physical ID of this event bus resource
    */
@@ -175,13 +179,48 @@ abstract class EventBusBase extends Resource implements IEventBus {
     });
   }
 
-  public grantPutEventsTo(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
+  public grantPutEventsTo(grantee: iam.IGrantable, sid?: string): iam.Grant {
+    const actions = ['events:PutEvents'];
+    const resourceArns = [this.eventBusArn];
+    const options = {
       grantee,
-      actions: ['events:PutEvents'],
+      actions: actions,
       resourceArns: [this.eventBusArn],
-    });
+    };
+    const grantResult = iam.Grant.addToPrincipal(options);
+
+    if (grantResult.success) {
+      return grantResult;
+    }
+
+    const requireSid = FeatureFlags.of(this).isEnabled(cxapi.EVENTBUS_POLICY_SID_REQUIRED);
+    if (requireSid) {
+      const statement = new iam.PolicyStatement({
+        actions: actions,
+        resources: resourceArns,
+        principals: [grantee!.grantPrincipal],
+        sid: sid,
+      });
+
+      return iam.Grant.addStatementToResourcePolicy({ ...options, statement, resource: this });
+    } else {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-events:eventBusServicePrincipalGrant',
+        'Unable to grant PutEvents to service principal: Statement ID is required for EventBus resource policies. Either provide a \'sid\' parameter or enable the \'@aws-cdk/aws-events:requireEventBusPolicySid\' feature flag.',
+      );
+      return iam.Grant.drop(grantee, '');
+    }
   }
+
+  /**
+   * Adds a statement to the resource policy associated with this event bus.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported event buss.
+   *
+   * @param statement The policy statement to add
+   */
+  public abstract addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 }
 
 /**
@@ -344,6 +383,8 @@ export class EventBus extends EventBusBase {
     );
 
     super(scope, id, { physicalName: eventBusName });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props?.description && !Token.isUnresolved(props.description) && props.description.length > 512) {
       throw new Error(`description must be less than or equal to 512 characters, got ${props.description.length}`);
@@ -401,7 +442,9 @@ export class EventBus extends EventBusBase {
   /**
    * Adds a statement to the IAM resource policy associated with this event bus.
    */
+  @MethodMetadata()
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    // If no sid is provided, generate one based on the event bus id
     if (statement.sid == null) {
       throw new Error('Event Bus policy statements must have a sid');
     }
@@ -431,11 +474,22 @@ class ImportedEventBus extends EventBusBase {
       account: arnParts.account,
       region: arnParts.region,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     this.eventBusArn = attrs.eventBusArn;
     this.eventBusName = attrs.eventBusName;
     this.eventBusPolicy = attrs.eventBusPolicy;
     this.eventSourceName = attrs.eventSourceName;
+  }
+
+  public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    // Warn the user
+    Annotations.of(this).addWarningV2(
+      '@aws-cdk/aws-events:eventBusAddToResourcePolicy',
+      `Unable to add necessary permissions to imported target event bus: ${this.eventBusArn}`,
+    );
+    return { statementAdded: false };
   }
 }
 
@@ -477,6 +531,8 @@ export interface EventBusPolicyProps {
 export class EventBusPolicy extends Resource {
   constructor(scope: Construct, id: string, props: EventBusPolicyProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     new CfnEventBusPolicy(this, 'Resource', {
       statementId: props.statementId!,

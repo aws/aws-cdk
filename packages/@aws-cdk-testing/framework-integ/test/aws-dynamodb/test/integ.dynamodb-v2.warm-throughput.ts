@@ -37,7 +37,6 @@ export class TestStack extends Stack {
       ],
       removalPolicy: RemovalPolicy.DESTROY,
     });
-
   }
 }
 

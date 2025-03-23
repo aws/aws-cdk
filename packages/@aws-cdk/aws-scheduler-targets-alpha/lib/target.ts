@@ -91,7 +91,6 @@ export abstract class ScheduleTargetBase {
 
   /**
    * Create a return a Schedule Target Configuration for the given schedule
-   * @param schedule
    * @returns a Schedule Target Configuration
    */
   bind(schedule: ISchedule): ScheduleTargetConfig {
@@ -115,12 +114,12 @@ export abstract class ScheduleTargetBase {
       conditions: {
         StringEquals: {
           'aws:SourceAccount': schedule.env.account,
-          'aws:SourceArn': schedule.group?.groupArn ?? Stack.of(schedule).formatArn({
+          'aws:SourceArn': schedule.scheduleGroup?.scheduleGroupArn ?? schedule.group?.groupArn ?? Stack.of(schedule).formatArn({
             service: 'scheduler',
             resource: 'schedule-group',
             region: schedule.env.region,
             account: schedule.env.account,
-            resourceName: schedule.group?.groupName ?? 'default',
+            resourceName: schedule.scheduleGroup?.scheduleGroupName ?? schedule.group?.groupName ?? 'default',
           }),
         },
       },
@@ -163,7 +162,7 @@ export abstract class ScheduleTargetBase {
       if (maxAge < minMaxAge) {
         throw new Error('Minimum event age is 1 minute');
       }
-    };
+    }
     let maxAttempts = 185;
     if (typeof maximumRetryAttempts != 'undefined') {
       if (maximumRetryAttempts < 0) {

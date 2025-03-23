@@ -21,7 +21,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "ReplicationStack:ExportsOutputRefSourceBucketDDD2130AFF6DDDA5"
+         "Fn::ImportValue": "BucketReplicationTestStack:ExportsOutputRefSourceBucketDDD2130AFF6DDDA5"
         },
         "\""
        ]
@@ -32,7 +32,7 @@
      "ContentType": "\"text/plain\""
     },
     "flattenResponse": "false",
-    "salt": "1733867743680"
+    "salt": "1739171765027"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -292,7 +292,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "14d52bdadae57c6ec2c7b715c5420ae5c3001a8252558f7219f6207e4f405a97.zip"
+     "S3Key": "2cebc099b57ce81e349dda7ce0ab053de0266711be9c4d6d3bde63ec753f7d3b.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -358,19 +358,19 @@
          ]
         },
         {
-         "Effect": "Allow",
          "Action": [
-          "kms:*"
+          "s3:GetObject"
          ],
+         "Effect": "Allow",
          "Resource": [
           "*"
          ]
         },
         {
-         "Action": [
-          "s3:GetObject"
-         ],
          "Effect": "Allow",
+         "Action": [
+          "s3:*"
+         ],
          "Resource": [
           "*"
          ]
@@ -415,7 +415,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "14d52bdadae57c6ec2c7b715c5420ae5c3001a8252558f7219f6207e4f405a97.zip"
+     "S3Key": "2cebc099b57ce81e349dda7ce0ab053de0266711be9c4d6d3bde63ec753f7d3b.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -465,7 +465,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "14d52bdadae57c6ec2c7b715c5420ae5c3001a8252558f7219f6207e4f405a97.zip"
+     "S3Key": "2cebc099b57ce81e349dda7ce0ab053de0266711be9c4d6d3bde63ec753f7d3b.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -498,7 +498,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "ReplicationStack:ExportsOutputRefSourceBucketDDD2130AFF6DDDA5"
+         "Fn::ImportValue": "BucketReplicationTestStack:ExportsOutputRefSourceBucketDDD2130AFF6DDDA5"
         },
         "\""
        ]
@@ -509,7 +509,7 @@
      "ContentType": "\"text/plain\""
     },
     "flattenResponse": "false",
-    "salt": "1733867743682"
+    "salt": "1739171765033"
    },
    "DependsOn": [
     "AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b",
@@ -685,7 +685,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "ReplicationStack:ExportsOutputRefDestinationBucket1590C2E3AE3A57174"
+         "Fn::ImportValue": "BucketReplicationTestStack:ExportsOutputRefDestinationBucket1590C2E3AE3A57174"
         },
         "\""
        ]
@@ -694,7 +694,7 @@
      "Key": "\"test-object\""
     },
     "flattenResponse": "false",
-    "salt": "1733867743683"
+    "salt": "1739171765035"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e",
@@ -815,7 +815,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":60,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":180,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
          "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
@@ -870,7 +870,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "ReplicationStack:ExportsOutputRefDestinationBucket1590C2E3AE3A57174"
+         "Fn::ImportValue": "BucketReplicationTestStack:ExportsOutputRefDestinationBucket1590C2E3AE3A57174"
         },
         "\""
        ]
@@ -879,7 +879,7 @@
      "Key": "\"prefix-test-object\""
     },
     "flattenResponse": "false",
-    "salt": "1733867743684"
+    "salt": "1739171765036"
    },
    "DependsOn": [
     "AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904",
@@ -1000,7 +1000,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":60,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":180,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
          "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
@@ -1055,7 +1055,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "ReplicationStack:ExportsOutputRefDestinationBucket217C2CCD298F62E2F"
+         "Fn::ImportValue": "BucketReplicationTestStack:ExportsOutputRefDestinationBucket217C2CCD298F62E2F"
         },
         "\""
        ]
@@ -1064,7 +1064,7 @@
      "Key": "\"prefix-test-object\""
     },
     "flattenResponse": "false",
-    "salt": "1733867743684"
+    "salt": "1739171765038"
    },
    "DependsOn": [
     "AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0ed",
@@ -1185,7 +1185,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":60,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":180,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
          "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
@@ -1268,10 +1268,10 @@
     "value": "nodejs20.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "eu-central-1": {
     "value": "nodejs20.x"
@@ -1322,10 +1322,10 @@
     "value": "nodejs20.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"

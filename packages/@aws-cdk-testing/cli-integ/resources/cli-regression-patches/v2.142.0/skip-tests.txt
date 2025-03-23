@@ -1,4 +1,0 @@
-# Skipping the test to fix issue https://github.com/aws/aws-cdk/issues/30241. 
-# cli-integ tests failing for the old tests with the new cli changes for diff stacks.
-
-cdk diff picks up changes that are only present in changeset

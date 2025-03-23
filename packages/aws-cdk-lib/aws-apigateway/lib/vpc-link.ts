@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnVpcLink } from './apigateway.generated';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { IResource, Lazy, Names, Resource } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an API Gateway VpcLink
@@ -68,6 +69,8 @@ export class VpcLink extends Resource implements IVpcLink {
       physicalName: props.vpcLinkName ||
         Lazy.string({ produce: () => Names.nodeUniqueId(this.node) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const cfnResource = new CfnVpcLink(this, 'Resource', {
       name: this.physicalName,
@@ -84,6 +87,7 @@ export class VpcLink extends Resource implements IVpcLink {
     this.node.addValidation({ validate: () => this.validateVpcLink() });
   }
 
+  @MethodMetadata()
   public addTargets(...targets: elbv2.INetworkLoadBalancer[]) {
     this._targets.push(...targets);
   }

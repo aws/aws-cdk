@@ -203,7 +203,7 @@ test('CodeBuild asset role has the right Principal with the feature enabled', ()
   stack.node.setContext(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, true);
   const pipelineStack = new cdk.Stack(stack, 'PipelineStack', { env: PIPELINE_ENV });
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
-  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));;
+  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));
   const template = Template.fromStack(pipelineStack);
   const assetRole = template.toJSON().Resources.CdkAssetsFileRole6BE17A07;
   const statementLength = assetRole.Properties.AssumeRolePolicyDocument.Statement;
@@ -225,7 +225,7 @@ test('CodeBuild asset role has the right Principal with the feature disabled', (
   stack.node.setContext(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, false);
   const pipelineStack = new cdk.Stack(stack, 'PipelineStack', { env: PIPELINE_ENV });
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
-  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));;
+  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));
   const template = Template.fromStack(pipelineStack);
   const assetRole = template.toJSON().Resources.CdkAssetsFileRole6BE17A07;
   const statementLength = assetRole.Properties.AssumeRolePolicyDocument.Statement;
@@ -524,7 +524,6 @@ test('artifactBucket can be overridden', () => {
 });
 
 test('throws when deploy role session tags are used', () => {
-
   const synthesizer = new cdk.DefaultStackSynthesizer({
     deployRoleAdditionalOptions: {
       Tags: [{ Key: 'Departement', Value: 'Enginerring' }],
@@ -541,7 +540,6 @@ test('throws when deploy role session tags are used', () => {
       },
     });
   }).toThrow('Deployment of stack SampleStage-123456789012-us-east-1-SampleStack requires assuming the role arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1 with session tags, but assuming roles with session tags is not supported by CodePipeline.');
-
 });
 
 interface ReuseCodePipelineStackProps extends cdk.StackProps {
@@ -585,7 +583,6 @@ class ReuseCodePipelineStack extends cdk.Stack {
       },
     );
     pipeline.addStage(stage);
-
   }
 }
 

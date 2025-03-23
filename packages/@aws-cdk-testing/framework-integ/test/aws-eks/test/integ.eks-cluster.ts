@@ -153,7 +153,6 @@ class EksClusterStack extends Stack {
   }
 
   private assertSimpleCdk8sChart() {
-
     class Chart extends cdk8s.Chart {
       constructor(scope: constructs.Construct, ns: string, cluster: eks.ICluster) {
         super(scope, ns);
@@ -163,7 +162,6 @@ class EksClusterStack extends Stack {
             clusterName: cluster.clusterName,
           },
         });
-
       }
     }
     const app = new cdk8s.App();
@@ -311,7 +309,6 @@ class EksClusterStack extends Stack {
       minCapacity: 2,
       machineImageType: eks.MachineImageType.BOTTLEROCKET,
     });
-
   }
   private assertCapacityX86() {
     // add some x86_64 capacity to the cluster. The IAM instance role will
@@ -336,7 +333,6 @@ class EksClusterStack extends Stack {
     this.cluster.addFargateProfile('default', {
       selectors: [{ namespace: 'default' }],
     });
-
   }
 }
 
@@ -351,6 +347,7 @@ const supportedRegions = [
 const app = new App({
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 
@@ -361,7 +358,6 @@ const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster', {
 });
 
 if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
-
   // only validate if we are about to actually deploy.
   // TODO: better way to determine this, right now the 'CDK_INTEG_ACCOUNT' seems like the only way.
 
@@ -372,7 +368,6 @@ if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
   if (!supportedRegions.includes(stack.region)) {
     throw new Error(`region (${stack.region}) must be configured to one of: ${supportedRegions}`);
   }
-
 }
 
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-integ', {

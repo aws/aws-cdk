@@ -20,7 +20,6 @@ describe('Job', () => {
   });
 
   describe('Create new Python Shell Job with default parameters', () => {
-
     beforeEach(() => {
       job = new glue.PythonShellJob(stack, 'ImportedJob', { role, script });
     });
@@ -79,11 +78,9 @@ describe('Job', () => {
         }),
       });
     });
-
   });
 
   describe('Create new Python Shell Job with log override parameters', () => {
-
     beforeEach(() => {
       job = new glue.PythonShellJob(stack, 'PythonShellJob', {
         jobName: 'PythonShellJob',
@@ -117,11 +114,9 @@ describe('Job', () => {
         }),
       });
     });
-
   });
 
   describe('Create new Python Shell Job with logging explicitly disabled', () => {
-
     beforeEach(() => {
       job = new glue.PythonShellJob(stack, 'PythonShellJob', {
         jobName: 'PythonShellJob',
@@ -142,11 +137,9 @@ describe('Job', () => {
         },
       });
     });
-
   });
 
   describe('Create Python Shell Job with overridden Python verion and max capacity', () => {
-
     beforeEach(() => {
       job = new glue.PythonShellJob(stack, 'PythonShellJob', {
         role,
@@ -181,11 +174,9 @@ describe('Job', () => {
         MaxCapacity: 1,
       });
     });
-
   });
 
   describe('Create Python Shell Job with optional properties', () => {
-
     beforeEach(() => {
       job = new glue.PythonShellJob(stack, 'PythonShellJob', {
         jobName: 'PythonShellJobCustomName',
@@ -227,7 +218,7 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden Glue Version should be 2.0', () => {
+    test('Overridden Glue Version should be 2.0', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         GlueVersion: '2.0',
       });
@@ -243,13 +234,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden max retries should be 2', () => {
+    test('Overridden max retries should be 2', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         MaxRetries: 2,
       });
     });
 
-    test('Overriden max concurrent runs should be 100', () => {
+    test('Overridden max concurrent runs should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         ExecutionProperty: {
           MaxConcurrentRuns: 100,
@@ -257,13 +248,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden timeout should be 2 hours', () => {
+    test('Overridden timeout should be 2 hours', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Timeout: 120,
       });
     });
 
-    test('Overriden connections should be 100', () => {
+    test('Overridden connections should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Connections: {
           Connections: ['connectionName'],
@@ -271,7 +262,7 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden security configuration should be set', () => {
+    test('Overridden security configuration should be set', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         SecurityConfiguration: 'securityConfigName',
       });
@@ -305,7 +296,6 @@ describe('Job', () => {
   });
 
   describe('Create Python Shell Job with job run queuing enabled', () => {
-
     beforeEach(() => {
       job = new glue.PythonShellJob(stack, 'PythonShellJob', {
         jobName: 'PythonShellJobCustomName',
@@ -348,7 +338,7 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden Glue Version should be 2.0', () => {
+    test('Overridden Glue Version should be 2.0', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         GlueVersion: '2.0',
       });
@@ -364,7 +354,7 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden job run queuing should be enabled', () => {
+    test('Overridden job run queuing should be enabled', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         JobRunQueuingEnabled: true,
       });
@@ -376,7 +366,7 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden max concurrent runs should be 100', () => {
+    test('Overridden max concurrent runs should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         ExecutionProperty: {
           MaxConcurrentRuns: 100,
@@ -384,13 +374,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden timeout should be 2 hours', () => {
+    test('Overridden timeout should be 2 hours', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Timeout: 120,
       });
     });
 
-    test('Overriden connections should be 100', () => {
+    test('Overridden connections should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Connections: {
           Connections: ['connectionName'],
@@ -398,7 +388,7 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden security configuration should be set', () => {
+    test('Overridden security configuration should be set', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         SecurityConfiguration: 'securityConfigName',
       });

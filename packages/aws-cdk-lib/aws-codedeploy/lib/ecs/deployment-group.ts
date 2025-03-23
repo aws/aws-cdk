@@ -6,6 +6,8 @@ import * as ecs from '../../../aws-ecs';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
+import { ValidationError } from '../../../core';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
@@ -66,7 +68,7 @@ export interface EcsBlueGreenDeploymentConfig {
    * The load balancer listener used to route test traffic to the 'green' ECS task set during a blue-green deployment.
    *
    * During a blue-green deployment, validation can occur after test traffic has been re-routed and before production
-   * traffic has been re-routed to the 'green' ECS task set.  You can specify one or more Lambda funtions in the
+   * traffic has been re-routed to the 'green' ECS task set.  You can specify one or more Lambda functions in the
    * deployment's AppSpec file that run during the AfterAllowTestTraffic hook. The functions can run validation tests.
    * If a validation test fails, a deployment rollback is triggered. If the validation tests succeed, the next hook in
    * the deployment lifecycle, BeforeAllowTraffic, is triggered.
@@ -203,7 +205,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
    * @returns a Construct representing a reference to an existing Deployment Group
    */
   public static fromEcsDeploymentGroupAttributes(
-    scope:Construct,
+    scope: Construct,
     id: string,
     attrs: EcsDeploymentGroupAttributes): IEcsDeploymentGroup {
     return new ImportedEcsDeploymentGroup(scope, id, attrs);
@@ -224,6 +226,8 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
       role: props.role,
       roleConstructId: 'ServiceRole',
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.role = this._role;
 
     this.application = props.application || new EcsApplication(this, 'Application');
@@ -236,15 +240,11 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
       const cfnSvc = (props.service as ecs.BaseService).node.defaultChild as ecs.CfnService;
       if (cfnSvc.deploymentController === undefined ||
         (cfnSvc.deploymentController! as ecs.CfnService.DeploymentControllerProperty).type !== ecs.DeploymentControllerType.CODE_DEPLOY) {
-        throw new Error(
-          'The ECS service associated with the deployment group must use the CODE_DEPLOY deployment controller type',
-        );
+        throw new ValidationError('The ECS service associated with the deployment group must use the CODE_DEPLOY deployment controller type', this);
       }
 
       if (cfnSvc.taskDefinition !== (props.service as ecs.BaseService).taskDefinition.family) {
-        throw new Error(
-          'The ECS service associated with the deployment group must specify the task definition using the task definition family name only. Otherwise, the task definition cannot be updated in the stack',
-        );
+        throw new ValidationError('The ECS service associated with the deployment group must specify the task definition using the task definition family name only. Otherwise, the task definition cannot be updated in the stack', this);
       }
     }
 
@@ -275,7 +275,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
           ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
         }),
       }),
-      autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
+      autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this, this.alarms, props.autoRollback) }),
     });
 
     this._setNameAndArn(resource, this.application);
@@ -292,6 +292,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
    *
    * @param alarm the alarm to associate with this Deployment Group
    */
+  @MethodMetadata()
   public addAlarm(alarm: cloudwatch.IAlarm): void {
     this.alarms.push(alarm);
   }
@@ -373,6 +374,8 @@ class ImportedEcsDeploymentGroup extends ImportedDeploymentGroupBase implements 
       application: props.application,
       deploymentGroupName: props.deploymentGroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.application = props.application;
     this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE);

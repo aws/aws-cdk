@@ -594,3 +594,88 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/core:enableAdditionalMetadataCollection`
+
+When this feature flag is enabled, CDK expands the scope of usage data collection to include the:
+
+* L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
+* L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted.
+* L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:enableAdditionalMetadataCollection": true
+  }
+}
+```
+
+* `@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy`
+
+When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
+This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true
+  }
+}
+```
+
+* `@aws-cdk/aws-s3:setUniqueReplicationRoleName`
+
+When this feature flag is enabled, a unique role name is specified only when performing cross-account replication.
+When disabled, 'CDKReplicationRole' is always specified.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true
+  }
+}
+```
+
+* `@aws-cdk/pipelines:reduceStageRoleTrustScope`
+
+When this feature flag is enabled, the root account principal will not be added to the trust policy of stage role.
+When this feature flag is disabled, it will keep the root account principal in the trust policy.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/pipelines:reduceStageRoleTrustScope": true
+  }
+}
+```
+
+* `@aws-cdk/aws-events:requireEventBusPolicySid`
+
+When this flag is enabled:
+- Resource policies will be created with Statement IDs for service principals
+- The operation will succeed as expected
+
+When this flag is disabled:
+- A warning will be emitted
+- The grant operation will be dropped
+- No permissions will be added
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-events:requireEventBusPolicySid": true
+  }
+}
+```

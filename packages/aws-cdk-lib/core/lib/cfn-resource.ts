@@ -36,7 +36,7 @@ export class CfnResource extends CfnRefElement {
   /**
    * Check whether the given object is a CfnResource
    */
-  public static isCfnResource(x: any): x is CfnResource {
+  public static isCfnResource(this: void, x: any): x is CfnResource {
     return x !== null && typeof(x) === 'object' && x.cfnResourceType !== undefined;
   }
 
