@@ -1251,7 +1251,7 @@ describe('KafkaEventSource', () => {
       });
     });
 
-    test('startingPositionTimestamp missing throws error', () => {
+    test('missing startingPositionTimestamp with startingPosition set to AT_TIMESTAMP throws error', () => {
       const stack = new cdk.Stack();
       const bootstrapServers = ['kafka-broker:9092'];
       const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
