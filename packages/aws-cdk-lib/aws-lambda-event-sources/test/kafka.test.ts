@@ -407,7 +407,7 @@ describe('KafkaEventSource', () => {
           },
         }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
     });
-    test('AT_TIMESTAMP starting position', () => {
+    test('Setting startingPositionTimestamp for kafka event source ', () => {
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
       const clusterArn = 'some-arn';
