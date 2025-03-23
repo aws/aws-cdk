@@ -438,7 +438,7 @@ describe('KafkaEventSource', () => {
       })).toThrow(/startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP/);
     });
 
-    test('startingPositionTimestamp without AT_TIMESTAMP throws error', () => {
+    test('setting timestamp without setting startingPosition to AT_TIMESTAMP throws error', () => {
       const clusterArn = 'some-arn';
       const kafkaTopic = 'some-topic';
 
