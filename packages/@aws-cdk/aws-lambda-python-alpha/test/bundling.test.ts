@@ -582,3 +582,29 @@ test('with command hooks', () => {
     }),
   }));
 });
+
+test('Bundling a function with uv dependencies', () => {
+  const entry = path.join(__dirname, 'lambda-handler-uv');
+
+  const assetCode = Bundling.bundle({
+    entry: path.join(entry, '.'),
+    runtime: Runtime.PYTHON_3_13,
+    outputPathSuffix: 'python',
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        "rsync -rLv --exclude='.python-version' /asset-input/ /asset-output/python && cd /asset-output/python && uv sync --frozen --no-managed-python --no-python-downloads && uv pip freeze > requirements.txt && rm -rf .venv && uv pip sync --target /asset-output/python requirements.txt",
+      ],
+    }),
+  }));
+
+  const files = fs.readdirSync(assetCode.path);
+  expect(files).toContain('index.py');
+  expect(files).toContain('pyproject.toml');
+  expect(files).toContain('uv.lock');
+  // Contains hidden files.
+  expect(files).toContain('.ignorefile');
+});

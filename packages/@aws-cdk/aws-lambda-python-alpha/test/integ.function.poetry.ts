@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import { App, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
@@ -15,19 +15,19 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const pythonFunction37 = new lambda.PythonFunction(this, 'my_handler_inline_python_37', {
+    const pythonFunction312 = new lambda.PythonFunction(this, 'my_handler_inline_python_312', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
       index: 'basic.py',
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_12,
     });
-    this.functionNames.push(pythonFunction37.functionName);
+    this.functionNames.push(pythonFunction312.functionName);
 
-    const pythonFunction38 = new lambda.PythonFunction(this, 'my_handler_inline_python_38', {
+    const pythonFunction313 = new lambda.PythonFunction(this, 'my_handler_inline_python_313', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
       index: 'basic.py',
-      runtime: Runtime.PYTHON_3_8,
+      runtime: Runtime.PYTHON_3_13,
     });
-    this.functionNames.push(pythonFunction38.functionName);
+    this.functionNames.push(pythonFunction313.functionName);
 
     const pythonFunction39 = new lambda.PythonFunction(this, 'my_handler_inline_python_39', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
@@ -47,25 +47,25 @@ class TestStack extends Stack {
     });
     this.functionNames.push(pythonFunction311.functionName);
 
-    const pythonFunction37WithHashes = new lambda.PythonFunction(this, 'my_handler_inline_with_hashes_python_37', {
+    const pythonFunction312WithHashes = new lambda.PythonFunction(this, 'my_handler_inline_with_hashes_python_312', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
       index: 'basic.py',
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_12,
       bundling: {
         poetryIncludeHashes: true,
       },
     });
-    this.functionNames.push(pythonFunction37WithHashes.functionName);
+    this.functionNames.push(pythonFunction312WithHashes.functionName);
 
-    const pythonFunction38WithHashes = new lambda.PythonFunction(this, 'my_handler_inline_with_hashes_python_38', {
+    const pythonFunction313WithHashes = new lambda.PythonFunction(this, 'my_handler_inline_with_hashes_python_313', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
       index: 'basic.py',
-      runtime: Runtime.PYTHON_3_8,
+      runtime: Runtime.PYTHON_3_13,
       bundling: {
         poetryIncludeHashes: true,
       },
     });
-    this.functionNames.push(pythonFunction38WithHashes.functionName);
+    this.functionNames.push(pythonFunction313WithHashes.functionName);
 
     const pythonFunction39WithHashes = new lambda.PythonFunction(this, 'my_handler_inline_with_hashes_python_39', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
@@ -94,25 +94,25 @@ class TestStack extends Stack {
     });
     this.functionNames.push(pythonFunction311WithHashes.functionName);
 
-    const pythonFunction37Excludes = new lambda.PythonFunction(this, 'my_handler_inline_excludes_python_37', {
+    const pythonFunction312Excludes = new lambda.PythonFunction(this, 'my_handler_inline_excludes_python_312', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
       index: 'basic.py',
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_12,
       bundling: {
         assetExcludes: ['.ignorefile'],
       },
     });
-    this.functionNames.push(pythonFunction37Excludes.functionName);
+    this.functionNames.push(pythonFunction312Excludes.functionName);
 
-    const pythonFunction38Excludes = new lambda.PythonFunction(this, 'my_handler_inline_excludes_python_38', {
+    const pythonFunction313Excludes = new lambda.PythonFunction(this, 'my_handler_inline_excludes_python_313', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
       index: 'basic.py',
-      runtime: Runtime.PYTHON_3_8,
+      runtime: Runtime.PYTHON_3_13,
       bundling: {
         assetExcludes: ['.ignorefile'],
       },
     });
-    this.functionNames.push(pythonFunction38Excludes.functionName);
+    this.functionNames.push(pythonFunction313Excludes.functionName);
 
     const pythonFunction39Excludes = new lambda.PythonFunction(this, 'my_handler_inline_excludes_python_39', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
@@ -141,27 +141,27 @@ class TestStack extends Stack {
     });
     this.functionNames.push(pythonFunction311Excludes.functionName);
 
-    const pythonFunction37WithHashesExcludes = new lambda.PythonFunction(this, 'my_handler_with_hashes_excludes_python_37', {
+    const pythonFunction312WithHashesExcludes = new lambda.PythonFunction(this, 'my_handler_with_hashes_excludes_python_312', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
       index: 'basic.py',
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_12,
       bundling: {
         poetryIncludeHashes: true,
         assetExcludes: ['.ignorefile'],
       },
     });
-    this.functionNames.push(pythonFunction37WithHashesExcludes.functionName);
+    this.functionNames.push(pythonFunction312WithHashesExcludes.functionName);
 
-    const pythonFunction38WithHashesExcludes = new lambda.PythonFunction(this, 'my_handler_with_hashes_excludes_python_38', {
+    const pythonFunction313WithHashesExcludes = new lambda.PythonFunction(this, 'my_handler_with_hashes_excludes_python_313', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
       index: 'basic.py',
-      runtime: Runtime.PYTHON_3_8,
+      runtime: Runtime.PYTHON_3_13,
       bundling: {
         poetryIncludeHashes: true,
         assetExcludes: ['.ignorefile'],
       },
     });
-    this.functionNames.push(pythonFunction38WithHashesExcludes.functionName);
+    this.functionNames.push(pythonFunction313WithHashesExcludes.functionName);
 
     const pythonFunction39WithHashesExcludes = new lambda.PythonFunction(this, 'my_handler_with_hashes_excludes_python_39', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
@@ -193,25 +193,25 @@ class TestStack extends Stack {
     });
     this.functionNames.push(pythonFunction311WithHashesExcludes.functionName);
 
-    const pythonFunction37WithoutUrls = new lambda.PythonFunction(this, 'my_handler_inline_without_urls_python_37', {
+    const pythonFunction312WithoutUrls = new lambda.PythonFunction(this, 'my_handler_inline_without_urls_python_312', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
       index: 'basic.py',
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_12,
       bundling: {
         poetryWithoutUrls: true,
       },
     });
-    this.functionNames.push(pythonFunction37WithoutUrls.functionName);
+    this.functionNames.push(pythonFunction312WithoutUrls.functionName);
 
-    const pythonFunction38WithoutUrls = new lambda.PythonFunction(this, 'my_handler_inline_without_urls_python_38', {
+    const pythonFunction313WithoutUrls = new lambda.PythonFunction(this, 'my_handler_inline_without_urls_python_313', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
       index: 'basic.py',
-      runtime: Runtime.PYTHON_3_8,
+      runtime: Runtime.PYTHON_3_13,
       bundling: {
         poetryWithoutUrls: true,
       },
     });
-    this.functionNames.push(pythonFunction38WithoutUrls.functionName);
+    this.functionNames.push(pythonFunction313WithoutUrls.functionName);
 
     const pythonFunction39WithoutUrls = new lambda.PythonFunction(this, 'my_handler_inline_without_urls_python_39', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
@@ -259,7 +259,8 @@ testCase.functionNames.forEach(functionName => {
 
   invoke.expect(ExpectedResult.objectLike({
     Payload: '200',
-  }));
+  })).waitForAssertions({
+    interval: Duration.seconds(30),
+    totalTimeout: Duration.minutes(5),
+  });
 });
-
-app.synth();

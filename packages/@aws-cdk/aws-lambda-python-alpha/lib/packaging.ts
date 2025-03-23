@@ -5,6 +5,7 @@ export enum DependenciesFile {
   PIP = 'requirements.txt',
   POETRY = 'poetry.lock',
   PIPENV = 'Pipfile.lock',
+  UV = 'uv.lock',
   NONE = '',
 }
 
@@ -80,6 +81,18 @@ export class Packaging {
   }
 
   /**
+   * Packaging with `uv`.
+   */
+  public static withUv() {
+    return new Packaging({
+      dependenciesFile: DependenciesFile.UV,
+      // By default, uv creates a virtualenv in `/.venv`
+      // At the end, we remove the virtualenv to avoid creating a duplicate copy in the Lambda package.
+      exportCommand: `uv sync --frozen --no-managed-python --no-python-downloads && uv pip freeze > ${DependenciesFile.PIP} && rm -rf .venv`,
+    });
+  }
+
+  /**
    * No dependencies or packaging.
    */
   public static withNoPackaging(): Packaging {
@@ -93,6 +106,8 @@ export class Packaging {
       return this.withPoetry({ poetryIncludeHashes, poetryWithoutUrls });
     } else if (fs.existsSync(path.join(entry, DependenciesFile.PIP))) {
       return this.withPip();
+    } else if (fs.existsSync(path.join(entry, DependenciesFile.UV))) {
+      return this.withUv();
     } else {
       return this.withNoPackaging();
     }
