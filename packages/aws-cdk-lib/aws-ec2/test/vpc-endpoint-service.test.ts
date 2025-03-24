@@ -4,7 +4,7 @@ import { ArnPrincipal } from '../../aws-iam';
 import { Stack } from '../../core';
 
 // eslint-disable-next-line max-len
-import { IVpcEndpointServiceLoadBalancer, Vpc, VpcEndpointService } from '../lib';
+import { IpAddressType, IVpcEndpointServiceLoadBalancer, Vpc, VpcEndpointService } from '../lib';
 
 /**
  * A load balancer that can host a VPC Endpoint Service
@@ -143,6 +143,90 @@ describe('vpc endpoint service', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
         ContributorInsightsEnabled: true,
+      });
+    });
+
+    test('without specifying supported IP address types', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const lb = new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
+      new VpcEndpointService(stack, 'EndpointService', {
+        vpcEndpointServiceLoadBalancers: [lb],
+        acceptanceRequired: false,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
+        NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
+        AcceptanceRequired: false,
+      });
+
+      // Verify SupportedIpAddressTypes is not present when not specified
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::EC2::VPCEndpointService');
+      const resourceKey = Object.keys(resources)[0];
+      expect(resources[resourceKey].Properties.SupportedIpAddressTypes).toBeUndefined();
+    });
+
+    test('with IPv4 supported IP address type', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const lb = new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
+      new VpcEndpointService(stack, 'EndpointService', {
+        vpcEndpointServiceLoadBalancers: [lb],
+        acceptanceRequired: false,
+        supportedIpAddressTypes: [IpAddressType.IPV4],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
+        NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
+        AcceptanceRequired: false,
+        SupportedIpAddressTypes: ['ipv4'],
+      });
+    });
+
+    test('with IPv6 supported IP address type', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const lb = new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
+      new VpcEndpointService(stack, 'EndpointService', {
+        vpcEndpointServiceLoadBalancers: [lb],
+        acceptanceRequired: false,
+        supportedIpAddressTypes: [IpAddressType.IPV6],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
+        NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
+        AcceptanceRequired: false,
+        SupportedIpAddressTypes: ['ipv6'],
+      });
+    });
+
+    test('with both IPv4 and IPv6 supported IP address types', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const lb = new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
+      new VpcEndpointService(stack, 'EndpointService', {
+        vpcEndpointServiceLoadBalancers: [lb],
+        acceptanceRequired: false,
+        supportedIpAddressTypes: [IpAddressType.IPV4, IpAddressType.IPV6],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
+        NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
+        AcceptanceRequired: false,
+        SupportedIpAddressTypes: ['ipv4', 'ipv6'],
       });
     });
   });
