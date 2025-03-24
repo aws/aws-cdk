@@ -42,6 +42,34 @@ export interface SamlProviderProps {
    * organization's IdP.
    */
   readonly metadataDocument: SamlMetadataDocument;
+
+  /**
+   * The private key from your external identity provider
+   *
+   * @default - No private key added
+   */
+  readonly privateKey?: string;
+
+  /**
+   * The encryption setting for the SAML provider
+   *
+   * @default - No encryption mode specified
+   */
+  readonly encryptionMode?: SamlAssertionEncryptionMode;
+
+  /**
+   * List of existing private keys for the SAML provider
+   *
+   * @default - No private keys
+   */
+  readonly existingPrivateKeys?: SamlPrivateKey[];
+
+  /**
+   * The Key ID of the private key to remove
+   *
+   * @default - No private key removed
+   */
+  readonly removePrivateKeyId?: string;
 }
 
 /**
@@ -66,6 +94,36 @@ export abstract class SamlMetadataDocument {
    * The XML content of the metadata document
    */
   public abstract readonly xml: string;
+}
+
+/**
+ * Encryption mode for SAML assertions
+ */
+export enum SamlAssertionEncryptionMode {
+  /**
+   * Encryption is allowed but not required
+   */
+  ALLOWED = 'Allowed',
+
+  /**
+   * Encryption is required
+   */
+  REQUIRED = 'Required',
+}
+
+/**
+ * Properties for a SAML private key
+ */
+export interface SamlPrivateKey {
+  /**
+   * The unique identifier for the SAML private key.
+   */
+  readonly keyId: string;
+
+  /**
+   * The date and time, in ISO 8601 date-time format, when the private key was uploaded.
+   */
+  readonly timestamp: string;
 }
 
 /**
@@ -96,6 +154,13 @@ export class SamlProvider extends Resource implements ISamlProvider {
     const samlProvider = new CfnSAMLProvider(this, 'Resource', {
       name: props.name,
       samlMetadataDocument: props.metadataDocument.xml,
+      addPrivateKey: props.privateKey,
+      assertionEncryptionMode: props.encryptionMode,
+      privateKeyList: props.existingPrivateKeys?.map(key => ({
+        keyId: key.keyId,
+        timestamp: key.timestamp,
+      })),
+      removePrivateKey: props.removePrivateKeyId,
     });
 
     this.samlProviderArn = samlProvider.ref;

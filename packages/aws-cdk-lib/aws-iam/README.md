@@ -758,6 +758,41 @@ new iam.SamlProvider(this, 'Provider', {
 });
 ```
 
+### SAML Provider with Encryption
+
+You can configure SAML assertion encryption for your provider to enhance security. The provider can be configured to allow or require encrypted SAML assertions:
+
+```ts
+new iam.SamlProvider(this, 'EncryptedProvider', {
+  metadataDocument: iam.SamlMetadataDocument.fromFile('/path/to/saml-metadata-document.xml'),
+  encryptionMode: iam.SamlAssertionEncryptionMode.REQUIRED,
+  privateKey: '-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANB...\n-----END PRIVATE KEY-----',
+});
+```
+
+### Managing SAML Provider Private Keys
+
+When working with encrypted SAML assertions, you can manage the private keys used for decryption:
+
+```ts
+// Creating a provider with existing private keys
+new iam.SamlProvider(this, 'ProviderWithExistingKeys', {
+  metadataDocument: iam.SamlMetadataDocument.fromFile('/path/to/saml-metadata-document.xml'),
+  existingPrivateKeys: [
+    {
+      keyId: 'key-12345',
+      timestamp: '2023-01-15T00:00:00Z',
+    },
+  ],
+});
+
+// Creating a provider and removing a specific private key
+new iam.SamlProvider(this, 'ProviderRemovingKey', {
+  metadataDocument: iam.SamlMetadataDocument.fromFile('/path/to/saml-metadata-document.xml'),
+  removePrivateKeyId: 'key-12345',
+});
+```
+
 The `SamlPrincipal` class can be used as a principal with a `SamlProvider`:
 
 ```ts
