@@ -4,7 +4,7 @@ import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token } from '../../core';
+import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
@@ -735,21 +735,21 @@ export class FileSystem extends FileSystemBase {
     this.props = props;
 
     if (props.performanceMode === PerformanceMode.MAX_IO && props.oneZone) {
-      throw new Error('performanceMode MAX_IO is not supported for One Zone file systems.');
+      throw new ValidationError('performanceMode MAX_IO is not supported for One Zone file systems.', this);
     }
 
     if (props.oneZone) { this.oneZoneValidation(); }
 
     if (props.throughputMode === ThroughputMode.PROVISIONED && props.provisionedThroughputPerSecond === undefined) {
-      throw new Error('Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED');
+      throw new ValidationError('Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED', this);
     }
 
     if (props.throughputMode === ThroughputMode.ELASTIC && props.performanceMode === PerformanceMode.MAX_IO) {
-      throw new Error('ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO');
+      throw new ValidationError('ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO', this);
     }
 
     if (props.replicationConfiguration && props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
-      throw new Error('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
+      throw new ValidationError('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'', this);
     }
 
     // we explicitly use 'undefined' to represent 'false' to maintain backwards compatibility since
@@ -891,13 +891,13 @@ export class FileSystem extends FileSystemBase {
   private oneZoneValidation() {
     // validate when props.oneZone is enabled
     if (this.props.vpcSubnets && !this.props.vpcSubnets.availabilityZones) {
-      throw new Error('When oneZone is enabled and vpcSubnets defined, vpcSubnets.availabilityZones can not be undefined.');
+      throw new ValidationError('When oneZone is enabled and vpcSubnets defined, vpcSubnets.availabilityZones can not be undefined.', this);
     }
     // when vpcSubnets.availabilityZones is defined
     if (this.props.vpcSubnets && this.props.vpcSubnets.availabilityZones) {
       // it has to be only one az
       if (this.props.vpcSubnets.availabilityZones?.length !== 1) {
-        throw new Error('When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone.');
+        throw new ValidationError('When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone.', this);
       }
       // it has to be in availabilityZones
       // but we only check this when vpc.availabilityZones are valid(not dummy values nore unresolved tokens)
@@ -906,7 +906,7 @@ export class FileSystem extends FileSystemBase {
       if (this.props.vpc.availabilityZones.every(isNotUnresolvedToken) &&
       this.props.vpc.availabilityZones.every(isNotDummy) &&
       !this.props.vpc.availabilityZones.includes(this.props.vpcSubnets.availabilityZones[0])) {
-        throw new Error('vpcSubnets.availabilityZones specified is not in vpc.availabilityZones.');
+        throw new ValidationError('vpcSubnets.availabilityZones specified is not in vpc.availabilityZones.', this);
       }
     }
   }
@@ -950,7 +950,7 @@ class ImportedFileSystem extends FileSystemBase {
     addConstructMetadata(this, attrs);
 
     if (!!attrs.fileSystemId === !!attrs.fileSystemArn) {
-      throw new Error('One of fileSystemId or fileSystemArn, but not both, must be provided.');
+      throw new ValidationError('One of fileSystemId or fileSystemArn, but not both, must be provided.', this);
     }
 
     this.fileSystemArn = attrs.fileSystemArn ?? Stack.of(scope).formatArn({
@@ -962,7 +962,7 @@ class ImportedFileSystem extends FileSystemBase {
     const parsedArn = Stack.of(scope).splitArn(this.fileSystemArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new Error(`Invalid FileSystem Arn ${this.fileSystemArn}`);
+      throw new ValidationError(`Invalid FileSystem Arn ${this.fileSystemArn}`, this);
     }
 
     this.fileSystemId = attrs.fileSystemId ?? parsedArn.resourceName;
