@@ -44,10 +44,10 @@ export interface GetContextValueOptions extends GetContextKeyOptions {
    * exception would error out the synthesis operation and prevent the lookup
    * and the second, real, synthesis from happening.
    *
-   * ## Link to ignoreErrorOnMissingContext
+   * ## Link to ignoreFailedLookup
    *
    * `dummyValue` is also used as the official value to return if the lookup has
-   * failed and `ignoreErrorOnMissingContext` is set.
+   * failed and `ignoreFailedLookup` is set.
    */
   readonly dummyValue: any;
 
