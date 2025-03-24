@@ -5,7 +5,7 @@ import * as iam from '../../aws-iam';
 import * as firehose from '../../aws-kinesisfirehose';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
-import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, Tags, CfnResource } from '../../core';
+import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, Tags, CfnResource, Token, TokenComparison, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
 
@@ -240,7 +240,7 @@ export abstract class FlowLogDestination {
   public static toFirehose(deliveryStream: firehose.IDeliveryStream, iamRole?: iam.IRole): FlowLogDestination {
     return new FirehoseDestination({
       logDestinationType: FlowLogDestinationType.KINESIS_DATA_FIREHOSE,
-      deliveryStreamArn: deliveryStream.deliveryStreamArn,
+      deliveryStream,
       iamRole,
     });
   }
@@ -295,9 +295,17 @@ export interface FlowLogDestinationConfig {
   /**
    * The ARN of Amazon Data Firehose delivery stream to publish the flow logs to
    *
+   * @deprecated use deliveryStream
    * @default - undefined
    */
   readonly deliveryStreamArn?: string;
+
+  /**
+   * The Amazon Data Firehose delivery stream to publish the flow logs to
+   *
+   * @default - undefined
+   */
+  readonly deliveryStream?: firehose.IDeliveryStream;
 
   /**
    * Options for writing flow logs to a supported destination
@@ -459,15 +467,24 @@ class FirehoseDestination extends FlowLogDestination {
     super();
   }
 
-  public bind(_scope: Construct, _flowLog: FlowLog): FlowLogDestinationConfig {
-    if (this.props.deliveryStreamArn === undefined) {
-      throw new Error('deliveryStreamArn is required');
+  public bind(scope: Construct, flowLog: FlowLog): FlowLogDestinationConfig {
+    if (this.props.deliveryStreamArn && this.props.deliveryStream) {
+      throw new ValidationError('Neither deliveryStream nor deliveryStreamArn is specified.', scope);
     }
-    const deliveryStreamArn = this.props.deliveryStreamArn;
+    if (!this.props.deliveryStreamArn && !this.props.deliveryStream) {
+      throw new ValidationError('Specify eather deliveryStream or deliveryStreamArn, but not both.', scope);
+    }
+    if (this.props.deliveryStream) {
+      const compareAccount = Token.compareStrings(this.props.deliveryStream.env.account, flowLog.env.account);
+      if (compareAccount === TokenComparison.DIFFERENT && !this.props.iamRole) {
+        throw new ValidationError('The iamRole is required for cross-account log delivery.', scope);
+      }
+    }
 
     return {
       logDestinationType: FlowLogDestinationType.KINESIS_DATA_FIREHOSE,
-      deliveryStreamArn,
+      deliveryStreamArn: this.props.deliveryStreamArn,
+      deliveryStream: this.props.deliveryStream,
       iamRole: this.props.iamRole,
     };
   }
@@ -872,8 +889,14 @@ export class FlowLog extends FlowLogBase {
 
   /**
    * The ARN of the Amazon Data Firehose delivery stream to publish flow logs to
+   * @deprecated Use deliveryStream
    */
   public readonly deliveryStreamArn?: string;
+
+  /**
+   * The Amazon Data Firehose delivery stream to publish flow logs to
+   */
+  public readonly deliveryStream?: firehose.IDeliveryStream;
 
   constructor(scope: Construct, id: string, props: FlowLogProps) {
     super(scope, id);
@@ -887,7 +910,8 @@ export class FlowLog extends FlowLogBase {
     this.bucket = destinationConfig.s3Bucket;
     this.iamRole = destinationConfig.iamRole;
     this.keyPrefix = destinationConfig.keyPrefix;
-    this.deliveryStreamArn = destinationConfig.deliveryStreamArn;
+    this.deliveryStreamArn = destinationConfig.deliveryStream?.deliveryStreamArn ?? destinationConfig.deliveryStreamArn;
+    this.deliveryStream = destinationConfig.deliveryStream;
 
     Tags.of(this).add(NAME_TAG, props.flowLogName || this.node.path);
 

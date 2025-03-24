@@ -150,6 +150,27 @@ describe('vpc flow logs', () => {
     });
   });
 
+  test('toFirehose() throws when cross-account delivery and iamRole is missing', () => {
+    const stack = getTestStack();
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    const corssAccountStack = new Stack(undefined, 'CrossAccountStack', {
+      env: { account: '234567890123', region: 'us-east-1' },
+    });
+    const deliveryStream = new firehose.DeliveryStream(corssAccountStack, 'DeliveryStream', {
+      destination: new firehose.S3Bucket(bucket, {
+        loggingConfig: new firehose.DisableLogging(),
+      }),
+    });
+
+    expect(() => {
+      new FlowLog(stack, 'FlowLogs', {
+        resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
+        destination: FlowLogDestination.toFirehose(deliveryStream),
+      });
+    }).toThrow('The iamRole is required for cross-account log delivery.');
+  });
+
   test('with flowLogName, adds Name tag with the name', () => {
     const stack = getTestStack();
 
