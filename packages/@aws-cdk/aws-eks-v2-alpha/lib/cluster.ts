@@ -580,7 +580,7 @@ export interface ClusterProps extends ClusterCommonOptions {
   /**
    * The default capacity type for the cluster.
    *
-   * @default NODEGROUP
+   * @default AUTOMODE
    */
   readonly defaultCapacityType?: DefaultCapacityType;
 
