@@ -4,7 +4,7 @@ import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDat
 /**
  * Compression format for DecompressionProcessor.
  */
-export enum DecompressionCompressionFormat {
+export enum DecompressionProcessorCompressionFormat {
   /** GZIP compression */
   GZIP = 'GZIP',
 }
@@ -15,9 +15,9 @@ export enum DecompressionCompressionFormat {
 export interface DecompressionProcessorOptions {
   /**
    * The input compression format
-   * @default DecompressionCompressionFormat.GZIP
+   * @default DecompressionProcessorCompressionFormat.GZIP
    */
-  readonly compressionFormat?: DecompressionCompressionFormat;
+  readonly compressionFormat?: DecompressionProcessorCompressionFormat;
 }
 
 /**
