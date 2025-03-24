@@ -741,7 +741,7 @@ export class Key extends KeyBase {
       dummyValue: {
         keyId: Key.DEFAULT_DUMMY_KEY_ID,
       },
-      mustExist: options.returnDummyKeyOnMissing === undefined,
+      mustExist: !options.returnDummyKeyOnMissing,
     }).value;
 
     return new Import(attributes.keyId,
