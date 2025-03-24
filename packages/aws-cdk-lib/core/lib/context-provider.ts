@@ -24,6 +24,13 @@ export interface GetContextKeyOptions {
    * @default true
    */
   readonly includeEnvironment?: boolean;
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -74,9 +81,11 @@ export class ContextProvider {
   public static getKey(scope: Construct, options: GetContextKeyOptions): GetContextKeyResult {
     const stack = Stack.of(scope);
 
-    const props = options.includeEnvironment ?? true
-      ? { account: stack.account, region: stack.region, ...options.props }
-      : (options.props ?? {});
+    const props = {
+      ...(options.includeEnvironment ?? true ? { account: stack.account, region: stack.region } : {}),
+      ...(options.additionalCacheKey ? { additionalCacheKey: options.additionalCacheKey } : {}),
+      ...options.props,
+    };
 
     if (Object.values(props).find(x => Token.isUnresolved(x))) {
       throw new Error(
@@ -108,10 +117,11 @@ export class ContextProvider {
     // if context is missing or an error occurred during context retrieval,
     // report and return a dummy value.
     if (value === undefined || providerError !== undefined) {
-      // build a version of the props which includes the dummyValue and ignoreError flag
+      // build a version of the props which includes any additional props extensions
       const extendedProps: { [p: string]: any } = {
         dummyValue: options.dummyValue,
         ignoreErrorOnMissingContext: options.ignoreErrorOnMissingContext,
+        ...(options.additionalCacheKey ? { additionalCacheKey: options.additionalCacheKey } : {}),
         ...props,
       };
 
