@@ -669,6 +669,19 @@ describe('S3 destination', () => {
       }).toThrow("'bufferingSize' must be at least 64 MiB when Dynamic Partitioning is enabled, got 63.");
     });
 
+    it('throws when buffering interval is < 60 seconds', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        bufferingInterval: cdk.Duration.seconds(30),
+      });
+
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow("'bufferingInterval' must be at least 60 seconds when Dynamic Partitioning is enabled, got 30 seconds.");
+    });
+
     it('throws when error output prefix is not specified', () => {
       const destination = new firehose.S3Bucket(bucket, {
         dynamicPartitioning: { enabled: true },

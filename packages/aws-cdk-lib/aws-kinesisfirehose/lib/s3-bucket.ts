@@ -74,6 +74,12 @@ export class S3Bucket implements IDestination {
       } else if (!bufferingSize.isUnresolved() && bufferingSize.toMebibytes() < 64) {
         throw new ValidationError(`'bufferingSize' must be at least 64 MiB when Dynamic Partitioning is enabled, got ${bufferingSize?.toMebibytes()}.`, scope);
       }
+
+      // From testing, CFN deployment will fail if `BufferingHints.IntervalInSeconds` is less than 60.
+      // The message is: "BufferingHints.IntervalInSeconds must be at least 60 seconds when Dynamic Partitioning is enabled."
+      if (this.props.bufferingInterval && !this.props.bufferingInterval.isUnresolved() && this.props.bufferingInterval.toSeconds() < 60) {
+        throw new ValidationError(`'bufferingInterval' must be at least 60 seconds when Dynamic Partitioning is enabled, got ${this.props.bufferingInterval.toSeconds()} seconds.`, scope);
+      }
     }
 
     // Validations about prefixes:
