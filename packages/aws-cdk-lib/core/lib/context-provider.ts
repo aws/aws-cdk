@@ -44,17 +44,20 @@ export interface GetContextValueOptions extends GetContextKeyOptions {
    * exception would error out the synthesis operation and prevent the lookup
    * and the second, real, synthesis from happening.
    *
-   * ## Link to ignoreFailedLookup
+   * ## Link to mustExist
    *
    * `dummyValue` is also used as the official value to return if the lookup has
-   * failed and `ignoreFailedLookup` is set.
+   * failed and `mustExist == false`.
    */
   readonly dummyValue: any;
 
   /**
-   * Ignore a lookup failure and return the `dummyValue` instead
+   * Whether the resource must exist
    *
-   * If this is `true` and the value we tried to look up could not be found, the
+   * If this is set (the default), the query fails if the value or resource we
+   * tried to look up doesn't exist.
+   *
+   * If this is `false` and the value we tried to look up could not be found, the
    * failure is suppressed and `dummyValue` is officially returned instead.
    *
    * When this happens, `dummyValue` is encoded into cached context and it will
@@ -79,17 +82,18 @@ export interface GetContextValueOptions extends GetContextKeyOptions {
    * not lead to the dummy value being returned. Only the case of "no such
    * resource" should.
    *
-   * @default false
+   * @default true
    */
-  readonly ignoreFailedLookup?: boolean;
+  readonly mustExist?: boolean;
 
   /**
    * Ignore a lookup failure and return the `dummyValue` instead
    *
-   * Deprecated alias for `ignoredFailedLookup`.
+   * `mustExist` is the recommended alias for this deprecated
+   * property (note that its value is reversed).
    *
    * @default false
-   * @deprecated Use ignoreFailedLookup instead
+   * @deprecated Use mustExist instead
    */
   readonly ignoreErrorOnMissingContext?: boolean;
 }
@@ -142,8 +146,8 @@ export class ContextProvider {
   }
 
   public static getValue(scope: Construct, options: GetContextValueOptions): GetContextValueResult {
-    if ((options.ignoreFailedLookup !== undefined) && (options.ignoreErrorOnMissingContext !== undefined)) {
-      throw new Error('Only supply one of \'ignoreFailedLookup\' and \'ignoreErrorOnMissingContext\'');
+    if ((options.mustExist !== undefined) && (options.ignoreErrorOnMissingContext !== undefined)) {
+      throw new Error('Only supply one of \'mustExist\' and \'ignoreErrorOnMissingContext\'');
     }
 
     const stack = Stack.of(scope);
@@ -162,14 +166,17 @@ export class ContextProvider {
     // if context is missing or an error occurred during context retrieval,
     // report and return a dummy value.
     if (value === undefined || providerError !== undefined) {
+      const ignoreErrorOnMissingContext = options.mustExist !== undefined ? !options.mustExist : options.ignoreErrorOnMissingContext;
+
       // build a version of the props which includes the dummyValue and ignoreError flag
       const extendedProps: { [p: string]: any } = {
         dummyValue: options.dummyValue,
 
         // Even though we renamed the user-facing property, the field in the
         // cloud assembly still has the original name, which is somewhat wrong
-        // because it's not about missing context.
-        ignoreErrorOnMissingContext: options.ignoreFailedLookup ?? options.ignoreErrorOnMissingContext,
+        // because it's not about missing context. Only render 'true' or don't
+        // render at all.
+        ignoreErrorOnMissingContext: ignoreErrorOnMissingContext ? true : undefined,
         ...props,
       };
 
