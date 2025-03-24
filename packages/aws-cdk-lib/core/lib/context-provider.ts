@@ -44,7 +44,7 @@ export interface GetContextValueOptions extends GetContextKeyOptions {
    * exception would error out the synthesis operation and prevent the lookup
    * and the second, real, synthesis from happening.
    *
-   * ## Link to mustExist
+   * ## Relationship to mustExist
    *
    * `dummyValue` is also used as the official value to return if the lookup has
    * failed and `mustExist == false`.
