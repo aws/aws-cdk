@@ -34,7 +34,8 @@ The following targets are supported:
 9. `targets.FirehosePutRecord`: [Put a record to an Amazon Data Firehose](#put-a-record-to-an-amazon-data-firehose)
 10. `targets.CodePipelineStartPipelineExecution`: [Start a CodePipeline execution](#start-a-codepipeline-execution)
 11. `targets.SageMakerStartPipelineExecution`: [Start a SageMaker pipeline execution](#start-a-sagemaker-pipeline-execution)
-12. `targets.Universal`: [Invoke a wider set of AWS API](#invoke-a-wider-set-of-aws-api)
+12. `targets.EcsRunTask`: [Start a new ECS task](#schedule-an-ecs-task-run)
+13. `targets.Universal`: [Invoke a wider set of AWS API](#invoke-a-wider-set-of-aws-api)
 
 ## Invoke a Lambda function
 
@@ -312,6 +313,42 @@ new Schedule(this, 'Schedule', {
       name: 'parameter-name',
       value: 'parameter-value',
     }],
+  }),
+});
+```
+
+## Schedule an ECS task run
+
+Use the `EcsRunTask` target to schedule an ECS task run for a cluster.
+
+The code snippet below creates an event rule with a Fargate task definition and cluster as the target which is called every hour by EventBridge Scheduler.
+
+```ts
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+
+declare const cluster: ecs.ICluster;
+declare const taskDefinition: ecs.FargateTaskDefinition;
+
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(cdk.Duration.minutes(60)),
+  target: new targets.EcsRunFargateTask(cluster, {
+    taskDefinition,
+  }),
+});
+```
+
+The code snippet below creates an event rule with a EC2 task definition and cluster as the target which is called every hour by EventBridge Scheduler.
+
+```ts
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+
+declare const cluster: ecs.ICluster;
+declare const taskDefinition: ecs.Ec2TaskDefinition;
+
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(cdk.Duration.minutes(60)),
+  target: new targets.EcsRunEc2Task(cluster, {
+    taskDefinition,
   }),
 });
 ```
