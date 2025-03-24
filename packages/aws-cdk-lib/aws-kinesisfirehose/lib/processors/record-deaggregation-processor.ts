@@ -8,31 +8,47 @@ import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDat
  */
 export interface RecordDeAggregationProcessorOptions {
   /**
-   * FIXME: SubRecordType
+   * The sub-record type to deaggregate input records.
    */
   readonly subRecordType: SubRecordType;
   /**
-   * FIXME: Delimiter; required when subRecordType is DELIMITED
+   * The custom delimiter when subRecordType is DELIMITED. Must be specified in the base64-encoded format.
    * @default - No delimiter
    */
   readonly delimiter?: string;
 }
 
 /**
- * FIXME: The sub record type
+ * The sub-record type to deaggregate input records.
  */
 export enum SubRecordType {
-  /** JSON */
+  /** The records are JSON objects on a single line with no delimiter or newline-delimited (JSONL). */
   JSON = 'JSON',
-  /** DELIMITED */
+  /** The records are delimited by a custom delimiter. */
   DELIMITED = 'DELIMITED',
 }
 
 /**
- * Multi record deaggrecation processor
+ * The data processor for multi record deaggrecation
  * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-multirecord-deaggergation.html
  */
 export class RecordDeAggregationProcessor implements IDataProcessor {
+  /**
+   * Perform deaggregation from JSON objects on a single line with no delimiter or newline-delimited (JSONL).
+   */
+  public static json(): RecordDeAggregationProcessor {
+    return new RecordDeAggregationProcessor({ subRecordType: SubRecordType.JSON });
+  }
+
+  /**
+   * Perform deaggregation based on a specified custom delimiter.
+   *
+   * @param delimiter The custom delimiter.
+   */
+  public static delimited(delimiter: string): RecordDeAggregationProcessor {
+    return new RecordDeAggregationProcessor({ subRecordType: SubRecordType.DELIMITED, delimiter: Buffer.from(delimiter).toString('base64') });
+  }
+
   readonly props: DataProcessorProps = {};
 
   constructor(private readonly options: RecordDeAggregationProcessorOptions) {}
@@ -43,10 +59,10 @@ export class RecordDeAggregationProcessor implements IDataProcessor {
     ];
     if (this.options.subRecordType === SubRecordType.DELIMITED) {
       if (!this.options.delimiter) {
-        throw new ValidationError('delimiter must be specified when subRecordType is DELIMITED.', scope);
+        throw new ValidationError('The delimiter must be specified when subRecordType is DELIMITED.', scope);
       }
       parameters.push({
-        parameterName: 'Delimiter', parameterValue: Buffer.from(this.options.delimiter).toString('base64'),
+        parameterName: 'Delimiter', parameterValue: this.options.delimiter,
       });
     }
     return {

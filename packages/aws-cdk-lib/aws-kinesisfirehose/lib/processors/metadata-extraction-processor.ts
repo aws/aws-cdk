@@ -10,7 +10,7 @@ export interface MetadataExtractionProcessorOptions {
   /**
    * Map parameter to JQ query
    */
-  readonly metadataExtractionQuery: Record<string, string>;
+  readonly metadataExtractionQuery: string;
   /**
    * JSON parsing engine
    */
@@ -21,15 +21,36 @@ export interface MetadataExtractionProcessorOptions {
  * The JSON parsing engine for MetadataExtractionProcessor
  */
 export enum JsonParsingEngine {
-  /** JQ 1.6 */
+  /** The JQ 1.6 parsing engine */
   JQ_1_6 = 'JQ-1.6',
 }
 
 /**
- * Metadata extraction processor
+ * The data processor for dynamic partitioning with inline parsing.
+ *
  * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-partitioning-keys.html
  */
 export class MetadataExtractionProcessor implements IDataProcessor {
+  /**
+   * Creates the inline parsing configuration with JQ 1.6 engine.
+   *
+   * @param query A map of partition key to jq expression.
+   */
+  public static jq16(query: Record<string, string>): MetadataExtractionProcessor {
+    // Extraction query for JQ 1.6 is not a JSON.
+    // For example:
+    // {
+    //    "customer_id": .customer_id,
+    //    "device": .type.device,
+    //    "year": .event_timestamp|strftime("%Y")
+    // }
+    const jqQuery = Object.entries(query).map(([key, expression]) => `${JSON.stringify(key)}:${expression}`);
+    return new this({
+      jsonParsingEngine: JsonParsingEngine.JQ_1_6,
+      metadataExtractionQuery: `{${jqQuery.join(',')}}`,
+    });
+  }
+
   readonly props: DataProcessorProps = {};
 
   constructor(private readonly options: MetadataExtractionProcessorOptions) {}
@@ -39,11 +60,8 @@ export class MetadataExtractionProcessor implements IDataProcessor {
       throw new ValidationError('metadataExtractionQuery is empty', scope);
     }
 
-    const jqQuery = Object.entries(this.options.metadataExtractionQuery).map(([key, query]) => `${JSON.stringify(key)}:${query}`);
-    const metadataExtractionQuery = `{${jqQuery.join(',')}}`;
-
     const parameters: CfnDeliveryStream.ProcessorParameterProperty[] = [
-      { parameterName: 'MetadataExtractionQuery', parameterValue: metadataExtractionQuery },
+      { parameterName: 'MetadataExtractionQuery', parameterValue: this.options.metadataExtractionQuery },
       { parameterName: 'JsonParsingEngine', parameterValue: this.options.jsonParsingEngine },
     ];
 
