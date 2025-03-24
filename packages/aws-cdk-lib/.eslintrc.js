@@ -48,6 +48,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-cognito',
   'aws-config',
   'aws-docdb',
+  'aws-dynamodb',
   'aws-ecr',
   'aws-efs',
   'aws-elasticloadbalancing',
