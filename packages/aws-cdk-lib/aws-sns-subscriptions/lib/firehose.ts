@@ -3,7 +3,8 @@ import { SubscriptionProps } from './subscription';
 import * as iam from '../../aws-iam';
 import * as firehose from '../../aws-kinesisfirehose';
 import * as sns from '../../aws-sns';
-import { ArnFormat, Names, Stack, Token } from '../../core';
+import { Names } from '../../core';
+import { regionFromArn } from './private/util';
 
 /**
  * Properties for an Amazon Data Firehose subscription
@@ -74,25 +75,9 @@ export class FirehoseSubscription implements sns.ITopicSubscription {
       filterPolicy: this.props.filterPolicy,
       filterPolicyWithMessageBody: this.props.filterPolicyWithMessageBody,
       rawMessageDelivery: this.props.rawMessageDelivery,
-      region: this.regionFromArn(topic),
+      region: regionFromArn(topic, this.stream),
       deadLetterQueue: this.props.deadLetterQueue,
       subscriptionRoleArn: role.roleArn,
     };
-  }
-
-  private regionFromArn(topic: sns.ITopic): string | undefined {
-    // no need to specify `region` for topics defined within the same stack.
-    if (topic instanceof sns.Topic) {
-      if (topic.stack !== this.stream.stack) {
-        // only if we know the region, will not work for
-        // env agnostic stacks
-        if (!Token.isUnresolved(topic.env.region) &&
-          (topic.env.region !== this.stream.env.region)) {
-          return topic.env.region;
-        }
-      }
-      return undefined;
-    }
-    return Stack.of(topic).splitArn(topic.topicArn, ArnFormat.SLASH_RESOURCE_NAME).region;
   }
 }
