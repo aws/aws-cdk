@@ -4,7 +4,7 @@ import { Operation, SystemErrorsForOperationsMetricOptions, OperationsMetricOpti
 import { IMetric, MathExpression, Metric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
 import { AddToResourcePolicyResult, Grant, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
-import { Resource, ValidationError, ValidationError } from '../../core';
+import { Resource, ValidationError } from '../../core';
 
 /**
  * Represents an instance of a DynamoDB table.
