@@ -231,12 +231,17 @@ export abstract class FlowLogDestination {
   /**
    * Use Amazon Data Firehose as the destination
    *
+   * If the delivery stream and the VPC are in different account, you must specify `iamRole`.
+   *
    * @param deliveryStream the Amazon Data Firehose delivery stream to publish logs to
+   * @param iamRole the IAM Role for cross account log delivery
+   * @see https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-firehose.html
    */
-  public static toFirehose(deliveryStream: firehose.IDeliveryStream): FlowLogDestination {
+  public static toFirehose(deliveryStream: firehose.IDeliveryStream, iamRole?: iam.IRole): FlowLogDestination {
     return new FirehoseDestination({
       logDestinationType: FlowLogDestinationType.KINESIS_DATA_FIREHOSE,
       deliveryStreamArn: deliveryStream.deliveryStreamArn,
+      iamRole,
     });
   }
 
@@ -258,9 +263,11 @@ export interface FlowLogDestinationConfig {
   readonly logDestinationType: FlowLogDestinationType;
 
   /**
-   * The IAM Role that has access to publish to CloudWatch logs
+   * The IAM role that allows Amazon EC2 to publish flow logs to the log destination.
    *
-   * @default - default IAM role is created for you
+   * Required if the destination type is CloudWatch logs, or if the destination type is Amazon Data Firehose delivery stream and the delivery stream and the VPC are in different accounts.
+   *
+   * @default - default IAM role is created for you if the destination type is CloudWatch logs
    */
   readonly iamRole?: iam.IRole;
 
@@ -461,6 +468,7 @@ class FirehoseDestination extends FlowLogDestination {
     return {
       logDestinationType: FlowLogDestinationType.KINESIS_DATA_FIREHOSE,
       deliveryStreamArn,
+      iamRole: this.props.iamRole,
     };
   }
 }
