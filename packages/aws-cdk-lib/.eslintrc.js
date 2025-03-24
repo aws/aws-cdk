@@ -49,6 +49,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-config',
   'aws-docdb',
   'aws-ecr',
+  'aws-efs',
   'aws-elasticloadbalancing',
   'aws-elasticloadbalancingv2',
   'aws-elasticloadbalancingv2-actions',
