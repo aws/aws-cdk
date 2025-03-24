@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnFlowLog } from './ec2.generated';
 import { ISubnet, IVpc } from './vpc';
 import * as iam from '../../aws-iam';
+import * as firehose from '../../aws-kinesisfirehose';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, Tags, CfnResource } from '../../core';
@@ -218,11 +219,24 @@ export abstract class FlowLogDestination {
    * Use Amazon Data Firehose as the destination
    *
    * @param deliveryStreamArn the ARN of Amazon Data Firehose delivery stream to publish logs to
+   * @deprecated use `toFirehose`
    */
   public static toKinesisDataFirehoseDestination(deliveryStreamArn: string): FlowLogDestination {
-    return new KinesisDataFirehoseDestination({
+    return new FirehoseDestination({
       logDestinationType: FlowLogDestinationType.KINESIS_DATA_FIREHOSE,
       deliveryStreamArn,
+    });
+  }
+
+  /**
+   * Use Amazon Data Firehose as the destination
+   *
+   * @param deliveryStream the Amazon Data Firehose delivery stream to publish logs to
+   */
+  public static toFirehose(deliveryStream: firehose.IDeliveryStream): FlowLogDestination {
+    return new FirehoseDestination({
+      logDestinationType: FlowLogDestinationType.KINESIS_DATA_FIREHOSE,
+      deliveryStreamArn: deliveryStream.deliveryStreamArn,
     });
   }
 
@@ -431,9 +445,9 @@ class CloudWatchLogsDestination extends FlowLogDestination {
 }
 
 /**
- *
+ * The Amazon Data Firehose flow log destination
  */
-class KinesisDataFirehoseDestination extends FlowLogDestination {
+class FirehoseDestination extends FlowLogDestination {
   constructor(private readonly props: FlowLogDestinationConfig) {
     super();
   }

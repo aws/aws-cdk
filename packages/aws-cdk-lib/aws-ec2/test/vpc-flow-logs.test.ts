@@ -1,5 +1,6 @@
 import { Template, Match } from '../../assertions';
 import * as iam from '../../aws-iam';
+import * as firehose from '../../aws-kinesisfirehose';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import { RemovalPolicy, Stack } from '../../core';
@@ -74,7 +75,8 @@ describe('vpc flow logs', () => {
       BucketName: 'testbucket',
     });
   });
-  test('with kinesis data firehose as the destination, allows use of existing resources', () => {
+
+  test('with Amazon Data Firehose deliveryStreamArn as the destination, allows use of existing resources', () => {
     const stack = getTestStack();
 
     const deliveryStreamArn = Stack.of(stack).formatArn({
@@ -93,12 +95,34 @@ describe('vpc flow logs', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
       DestinationOptions: Match.absent(),
-    });
-    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
       LogDestinationType: 'kinesis-data-firehose',
+      LogDestination: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':firehose:::deliverystream/testdeliverystream']] },
     });
     Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
     Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 0);
+  });
+
+  test('with Amazon Data Firehose delivery stream as the destination, allows use of existing resources', () => {
+    const stack = getTestStack();
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
+      destination: new firehose.S3Bucket(bucket, {
+        loggingConfig: new firehose.DisableLogging(),
+      }),
+    });
+    new FlowLog(stack, 'FlowLogs', {
+      resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
+      destination: FlowLogDestination.toFirehose(deliveryStream),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      DestinationOptions: Match.absent(),
+      LogDestinationType: 'kinesis-data-firehose',
+      LogDestination: { 'Fn::GetAtt': ['DeliveryStream58CF96DB', 'Arn'] },
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
   });
 
   test('with flowLogName, adds Name tag with the name', () => {
@@ -808,4 +832,3 @@ test('with custom log format set custom, it not creates with cloudwatch log dest
     },
   });
 });
-
