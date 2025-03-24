@@ -39,7 +39,7 @@ export function testWithXRepos(x: number): boolean {
 }
 
 export function getAssetManifest(asm: cxapi.CloudAssembly): cxapi.AssetManifestArtifact {
-  const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
+  const manifestArtifact = asm.artifacts.find(isAssetManifest);
   if (!manifestArtifact) { throw new Error('no asset manifest in assembly'); }
   return manifestArtifact;
 }
