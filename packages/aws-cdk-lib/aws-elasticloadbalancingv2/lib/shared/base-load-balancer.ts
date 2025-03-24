@@ -76,6 +76,17 @@ export interface BaseLoadBalancerProps {
    * @see https://exampleloadbalancer.com/ondemand_capacity_reservation_calculator.html
    */
   readonly minimumCapacityUnit?: number;
+
+  /**
+   * The IPAM pool to use for allocating IPv4 addresses.
+   *
+   * AWS IPAM (IP Address Manager) helps you plan, track, and monitor IP addresses for your AWS workloads.
+   * When specified, the load balancer's IP addresses will be allocated from the given IPAM pool.
+   *
+   * @see https://docs.aws.amazon.com/vpc/latest/ipam/what-is-ipam.html
+   * @default - No IPAM pool is used
+   */
+  readonly ipv4IpamPool?: ec2.IIpamPool;
 }
 
 export interface ILoadBalancerV2 extends IResource {
@@ -259,6 +270,7 @@ export abstract class BaseLoadBalancer extends Resource {
       minimumLoadBalancerCapacity: baseProps.minimumCapacityUnit ? {
         capacityUnits: baseProps.minimumCapacityUnit,
       } : undefined,
+      ipv4IpamPoolId: baseProps.ipv4IpamPool?.poolId,
       ...additionalProps,
     });
     if (internetFacing) {

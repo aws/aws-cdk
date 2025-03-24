@@ -1519,4 +1519,46 @@ describe('tests', () => {
       }).toThrow('dual-stack without public IPv4 address can only be used with internet-facing scheme.');
     });
   });
+
+  describe('ipamPoolForIpv4', () => {
+    test('Can specify IPAM pool for IPv4 address allocation', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        ipamPoolForIpv4: 'ipam-pool-12345',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Type: 'application',
+        Ipv4IpamPoolId: 'ipam-pool-12345',
+      });
+    });
+
+    test('IPAM pool for IPv4 is not set by default', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Type: 'application',
+      });
+
+      Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Properties: Match.not(Match.objectLike({
+          Ipv4IpamPoolId: Match.anyValue(),
+        })),
+      });
+    });
+  });
 });

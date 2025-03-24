@@ -216,6 +216,9 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
 
   // The idle timeout value, in seconds
   idleTimeout: Duration.seconds(1000),
+  
+  // The ID of the IPAM pool to use for allocating IPv4 addresses
+  ipamPoolForIpv4: 'ipam-pool-0123456789abcdef0',
 
   // Whether HTTP headers with header fields that are not valid
   // are removed by the load balancer (true), or routed to targets
@@ -312,6 +315,19 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   vpc,
   internetFacing: true,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+});
+```
+
+### Using an IPAM pool for IPv4 address allocation
+
+You can use an [AWS VPC IP Address Manager (IPAM)](https://docs.aws.amazon.com/vpc/latest/ipam/what-it-is-ipam.html) pool to allocate IPv4 addresses for your load balancer by specifying the `ipamPoolForIpv4` property. This property is available for both Application and Network Load Balancers.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  ipamPoolForIpv4: 'ipam-pool-0123456789abcdef0',
 });
 ```
 
@@ -432,6 +448,9 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 
   // Whether cross-zone load balancing is enabled.
   crossZoneEnabled: true,
+  
+  // The ID of the IPAM pool to use for allocating IPv4 addresses
+  ipamPoolForIpv4: 'ipam-pool-0123456789abcdef0',
 
   // Whether the load balancer blocks traffic through the Internet Gateway (IGW).
   denyAllIgwTraffic: false,
