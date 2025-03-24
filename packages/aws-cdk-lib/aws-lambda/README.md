@@ -869,7 +869,7 @@ fn.addEventSource(new eventsources.DynamoEventSource(table, {
 
 ### Observability
 
-Customers can now opt-in to get enhanced metrics for their event source mapping that capture each stage of processing using the `MetrcisConfig` property.
+Customers can now opt-in to get enhanced metrics for their event source mapping that capture each stage of processing using the `MetricsConfig` property.
 
 The following code shows how to opt in for the enhanced metrics. 
 
