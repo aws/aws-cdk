@@ -70,12 +70,5 @@ describe('TableBucketPolicy', () => {
         },
       });
     });
-
-    test('calling applyRemovalPolicy applies the new policy', () => {
-      tableBucketPolicy.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT);
-      Template.fromStack(stack).hasResource(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
-        'DeletionPolicy': 'Snapshot',
-      });
-    });
   });
 });

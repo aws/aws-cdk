@@ -56,15 +56,7 @@ export class TableBucketPolicy extends Resource {
     });
 
     if (props.removalPolicy) {
-      this.applyRemovalPolicy(props.removalPolicy);
+      this._resource.applyRemovalPolicy(props.removalPolicy);
     }
-  }
-
-  /**
-   * Sets the removal policy for the BucketPolicy.
-   * @param removalPolicy the RemovalPolicy to set.
-   */
-  public applyRemovalPolicy(removalPolicy: RemovalPolicy) {
-    this._resource.applyRemovalPolicy(removalPolicy);
   }
 }

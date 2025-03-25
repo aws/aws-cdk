@@ -90,15 +90,6 @@ export interface ITableBucket extends IResource {
    * @param tableId Restrict the permission to a single table by its unique ID (default '*' for all tables).
    */
   grantReadWrite(identity: iam.IGrantable, tableId?: string): iam.Grant;
-
-  /**
-   * Grant full permissions for this table bucket and its tables
-   * to an IAM principal (Role/Group/User).
-   *
-   * @param identity The principal to allow full permissions to
-   * @param tableId Restrict the permission to a single table by its unique ID (default '*' for all tables).
-   */
-  grantFullAccess(identity: iam.IGrantable, tableId?: string): iam.Grant;
 }
 
 /**
@@ -197,25 +188,19 @@ abstract class TableBucketBase extends Resource implements ITableBucket {
   public grantRead(identity: iam.IGrantable, tableId: string = '*') {
     return this.grant(identity, perms.TABLE_BUCKET_READ_ACCESS,
       this.tableBucketArn,
-      `${this.tableBucketArn}/${tableId}`);
+      `${this.tableBucketArn}/table/${tableId}`);
   }
 
   public grantWrite(identity: iam.IGrantable, tableId: string = '*') {
     return this.grant(identity, perms.TABLE_BUCKET_WRITE_ACCESS,
       this.tableBucketArn,
-      `${this.tableBucketArn}/${tableId}`);
+      `${this.tableBucketArn}/table/${tableId}`);
   }
 
   public grantReadWrite(identity: iam.IGrantable, tableId: string = '*') {
     return this.grant(identity, perms.TABLE_BUCKET_READ_WRITE_ACCESS,
       this.tableBucketArn,
-      `${this.tableBucketArn}/${tableId}`);
-  }
-
-  public grantFullAccess(identity: iam.IGrantable, tableId: string = '*') {
-    return this.grant(identity, [perms.TABLE_BUCKET_FULL_ACCESS],
-      this.tableBucketArn,
-      `${this.tableBucketArn}/${tableId}`);
+      `${this.tableBucketArn}/table/${tableId}`);
   }
 
   /**
@@ -224,13 +209,13 @@ abstract class TableBucketBase extends Resource implements ITableBucket {
    */
   private grant(
     grantee: iam.IGrantable,
-    bucketActions: string[],
+    tableBucketActions: string[],
     resourceArn: string,
     ...otherResourceArns: string[]) {
     const resources = [resourceArn, ...otherResourceArns];
     return iam.Grant.addToPrincipalOrResource({
       grantee,
-      actions: bucketActions,
+      actions: tableBucketActions,
       resourceArns: resources,
       resource: this,
     });

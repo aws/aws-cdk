@@ -280,7 +280,7 @@ describe('TableBucket', () => {
                 },
                 'Resource': [
                   TABLE_BUCKET_ARN_SUB,
-                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, '/*']] },
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, '/table/*']] },
                 ],
               },
             ],
@@ -302,7 +302,7 @@ describe('TableBucket', () => {
                 },
                 'Resource': [
                   TABLE_BUCKET_ARN_SUB,
-                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/${TABLE_UUID}`]] },
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/table/${TABLE_UUID}`]] },
                 ],
               },
             ],
@@ -325,7 +325,7 @@ describe('TableBucket', () => {
                 },
                 'Resource': [
                   TABLE_BUCKET_ARN_SUB,
-                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, '/*']] },
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, '/table/*']] },
                 ],
               },
             ],
@@ -347,7 +347,7 @@ describe('TableBucket', () => {
                 },
                 'Resource': [
                   TABLE_BUCKET_ARN_SUB,
-                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/${TABLE_UUID}`]] },
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/table/${TABLE_UUID}`]] },
                 ],
               },
             ],
@@ -370,7 +370,7 @@ describe('TableBucket', () => {
                 },
                 'Resource': [
                   TABLE_BUCKET_ARN_SUB,
-                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, '/*']] },
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, '/table/*']] },
                 ],
               },
             ],
@@ -392,52 +392,7 @@ describe('TableBucket', () => {
                 },
                 'Resource': [
                   TABLE_BUCKET_ARN_SUB,
-                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/${TABLE_UUID}`]] },
-                ],
-              },
-            ],
-          },
-        });
-      });
-    });
-
-    describe('grantFullAccess', () => {
-      it('provides full permissions for all tables', () => {
-        tableBucket.grantFullAccess(new iam.ServicePrincipal(PRINCIPAL));
-        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
-          'ResourcePolicy': {
-            'Statement': [
-              {
-                'Action': perms.TABLE_BUCKET_FULL_ACCESS,
-                'Effect': 'Allow',
-                'Principal': {
-                  'Service': PRINCIPAL,
-                },
-                'Resource': [
-                  TABLE_BUCKET_ARN_SUB,
-                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, '/*']] },
-                ],
-              },
-            ],
-          },
-        });
-      });
-
-      it('provides full permissions for a specific table', () => {
-        const TABLE_UUID = 'example-table-uuid';
-        tableBucket.grantFullAccess(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
-        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
-          'ResourcePolicy': {
-            'Statement': [
-              {
-                'Action': perms.TABLE_BUCKET_FULL_ACCESS,
-                'Effect': 'Allow',
-                'Principal': {
-                  'Service': PRINCIPAL,
-                },
-                'Resource': [
-                  TABLE_BUCKET_ARN_SUB,
-                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/${TABLE_UUID}`]] },
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/table/${TABLE_UUID}`]] },
                 ],
               },
             ],

@@ -29,13 +29,31 @@ const tableBucket = new TableBucket(scope, 'ExampleTableBucket', {
     tableBucketName: 'example-bucket-1',
     // optional fields:
     unreferencedFileRemoval: {
-        noncurrentDays: 123,
-        status: 'Enabled',
-        unreferencedDays: 123,
-    },
+        status: UnreferencedFileRemovalStatus.ENABLED,
+        noncurrentDays: 20,
+        unreferencedDays: 20,
+    }
 });
+```
 
-  // Add resource policy statements
+Learn more about table buckets maintenance operations and default behavior from the [S3 Tables User Guide](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-table-buckets-maintenance.html)
+
+### Controlling Table Bucket Permissions
+
+```ts
+// Grant read permissions to the bucket and all tables within
+const accountId = '123456789012'
+tableBucket.grantRead(new iam.AccountPrincipal(accountId));
+// Grant write permissions to the bucket and all tables within
+tableBucket.grantWrite(new iam.AccountPrincipal(accountId));
+// Grant read and write permissions to the bucket and all tables within
+tableBucket.grantReadWrite(new iam.AccountPrincipal(accountId));
+
+// Grant permissions to the bucket and a particular table within it
+const tableId = '6ba046b2-26de-44cf-9144-0c7862593a7b'
+tableBucket.grantReadWrite(new iam.AccountPrincipal(accountId), tableId);
+
+// Add custom resource policy statements
 const permissions = new iam.PolicyStatement({
     effect: Effect.ALLOW,
     actions: ['s3tables:*'],
@@ -43,7 +61,7 @@ const permissions = new iam.PolicyStatement({
     resources: ['*']
 });
 
-tableBucket.addResourcePolicy(permissions);
+tableBucket.addToResourcePolicy(permissions);
 ```
 
 ## Coming Soon

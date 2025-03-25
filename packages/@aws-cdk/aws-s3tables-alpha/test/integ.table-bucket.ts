@@ -54,7 +54,6 @@ class OptionsTestStack extends core.Stack {
     this.tableBucket.grantRead(new iam.ServicePrincipal('s3.amazonaws.com'));
     this.tableBucket.grantWrite(new iam.ServicePrincipal('s3.amazonaws.com'));
     this.tableBucket.grantReadWrite(new iam.ServicePrincipal('s3.amazonaws.com'));
-    this.tableBucket.grantFullAccess(new iam.ServicePrincipal('s3.amazonaws.com'));
   }
 }
 

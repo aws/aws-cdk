@@ -103,29 +103,7 @@
                               "Principal": {
                                 "Service": "s3.amazonaws.com"
                               },
-                              "Resource": [
-                                "*",
-                                {
-                                  "Fn::GetAtt": [
-                                    "BucketWithOptions87848D2E",
-                                    "TableBucketARN"
-                                  ]
-                                },
-                                {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      {
-                                        "Fn::GetAtt": [
-                                          "BucketWithOptions87848D2E",
-                                          "TableBucketARN"
-                                        ]
-                                      },
-                                      "/*"
-                                    ]
-                                  ]
-                                }
-                              ]
+                              "Resource": "*"
                             },
                             {
                               "Action": [
@@ -156,7 +134,7 @@
                                           "TableBucketARN"
                                         ]
                                       },
-                                      "/*"
+                                      "/table/*"
                                     ]
                                   ]
                                 }
@@ -182,7 +160,9 @@
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-s3tables-alpha.TableBucketPolicy",
                   "version": "0.0.0",
-                  "metadata": []
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },

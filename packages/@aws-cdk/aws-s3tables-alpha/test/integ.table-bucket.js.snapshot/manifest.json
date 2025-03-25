@@ -78,7 +78,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6b71c30a40c8506d023879a2dd13ddb2ec8a72c58896ef4ab0ff802ccd557d7d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3e7927c5130afd58007b8524c81bc36c4edb5e73066f5fab542bb205749545fe.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -104,6 +104,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketWithOptions87848D2E"
+          }
+        ],
+        "/OptionsTestStack/BucketWithOptions/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/OptionsTestStack/BucketWithOptions/DefaultPolicy/DefaultPolicy": [
