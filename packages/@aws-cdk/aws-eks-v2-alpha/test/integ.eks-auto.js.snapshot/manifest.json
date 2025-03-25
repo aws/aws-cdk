@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/ac42fd9887db846a4fd780f455ecc56643727d8e76440586e25d14de7a3d9889.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/f584a5d2bb2847909c117344e59ed07d153df028d939b611127e97a4df734cc7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -341,22 +341,19 @@
             "data": "Role1ABCC5F0"
           }
         ],
-        "/eks-auto-mode-stack/kubectl": [
+        "/eks-auto-mode-stack/hello-eks/kubectl": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/eks-auto-mode-stack/kubectl/Resource": [
+        "/eks-auto-mode-stack/hello-eks/kubectl/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "kubectl290BBFC9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "helloekskubectl90D845D3"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks": [
+        "/eks-auto-mode-stack/hello-eks/cluster": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -370,7 +367,7 @@
             "data": "*"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/Role": [
+        "/eks-auto-mode-stack/hello-eks/cluster/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -426,19 +423,19 @@
             }
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/Role/ImportRole": [
+        "/eks-auto-mode-stack/hello-eks/cluster/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/Role/Resource": [
+        "/eks-auto-mode-stack/hello-eks/cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksRole59C1FE10"
+            "data": "helloeksclusterRoleBED770F6"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/ControlPlaneSecurityGroup": [
+        "/eks-auto-mode-stack/hello-eks/cluster/ControlPlaneSecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -447,13 +444,13 @@
             }
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/ControlPlaneSecurityGroup/Resource": [
+        "/eks-auto-mode-stack/hello-eks/cluster/ControlPlaneSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksControlPlaneSecurityGroup4C2AFE28"
+            "data": "helloeksclusterControlPlaneSecurityGroupEAAB451B"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/hello-eksnodePoolRole": [
+        "/eks-auto-mode-stack/hello-eks/cluster/clusternodePoolRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -472,31 +469,31 @@
             }
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/hello-eksnodePoolRole/Importhello-eksnodePoolRole": [
+        "/eks-auto-mode-stack/hello-eks/cluster/clusternodePoolRole/ImportclusternodePoolRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/hello-eksnodePoolRole/Resource": [
+        "/eks-auto-mode-stack/hello-eks/cluster/clusternodePoolRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloekshelloeksnodePoolRole81D93FFB"
+            "data": "helloeksclusterclusternodePoolRoleC0692507"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/Resource": [
+        "/eks-auto-mode-stack/hello-eks/cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksBE273F5A"
+            "data": "helloeksclusterA526EE63"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlReadyBarrier": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlReadyBarrier": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlReadyBarrierBFD90FAB"
+            "data": "helloeksclusterKubectlReadyBarrier5F5E8259"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Handler": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Handler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -546,7 +543,7 @@
             }
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Handler/ServiceRole": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Handler/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -617,19 +614,19 @@
             }
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Handler/ServiceRole/Resource": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Handler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlProviderHandlerServiceRoleFDA38030"
+            "data": "helloeksclusterKubectlProviderHandlerServiceRoleAA5EA2F4"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Handler/ServiceRole/DefaultPolicy": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Handler/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -659,37 +656,37 @@
             }
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlProviderHandlerServiceRoleDefaultPolicy05FAA1B4"
+            "data": "helloeksclusterKubectlProviderHandlerServiceRoleDefaultPolicyFE993B49"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Handler/Resource": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Handler/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlProviderHandler788A3C17"
+            "data": "helloeksclusterKubectlProviderHandler87F7258C"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Handler/HasEcrPublic": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Handler/HasEcrPublic": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlProviderHandlerHasEcrPublic7C030C34"
+            "data": "helloeksclusterKubectlProviderHandlerHasEcrPublic8E4E12CC"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/AwsCliLayer": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/AwsCliLayer": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {}
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/AwsCliLayer/Resource": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlProviderAwsCliLayer2A4F5F3D"
+            "data": "helloeksclusterKubectlProviderAwsCliLayer6B0085A5"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Provider/framework-onEvent": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -724,7 +721,7 @@
             }
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Provider/framework-onEvent/ServiceRole": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -783,19 +780,19 @@
             }
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlProviderframeworkonEventServiceRole68309EF1"
+            "data": "helloeksclusterKubectlProviderframeworkonEventServiceRole7DA17438"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -825,19 +822,19 @@
             }
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlProviderframeworkonEventServiceRoleDefaultPolicy62B3F050"
+            "data": "helloeksclusterKubectlProviderframeworkonEventServiceRoleDefaultPolicyF8C6BB77"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Provider/framework-onEvent/Resource": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlProviderframeworkonEvent1E7B4950"
+            "data": "helloeksclusterKubectlProviderframeworkonEvent0FAC0AEB"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -869,46 +866,46 @@
             }
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0883D9EBE"
+            "data": "helloeksclusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0C64804B1"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/ClusterAdminRoleAccess": [
+        "/eks-auto-mode-stack/hello-eks/cluster/ClusterAdminRoleAccess": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/ClusterAdminRoleAccess/Resource": [
+        "/eks-auto-mode-stack/hello-eks/cluster/ClusterAdminRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksClusterAdminRoleAccess3B9D74AE"
+            "data": "helloeksclusterClusterAdminRoleAccess1B0F32CB"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/mastersRoleAccess": [
+        "/eks-auto-mode-stack/hello-eks/cluster/mastersRoleAccess": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/mastersRoleAccess/Resource": [
+        "/eks-auto-mode-stack/hello-eks/cluster/mastersRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksmastersRoleAccessF848B5EF"
+            "data": "helloeksclustermastersRoleAccess58C59E45"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/ConfigCommand": [
+        "/eks-auto-mode-stack/hello-eks/cluster/ConfigCommand": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksConfigCommand9213DBDB"
+            "data": "helloeksclusterConfigCommand5E7007D6"
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/GetTokenCommand": [
+        "/eks-auto-mode-stack/hello-eks/cluster/GetTokenCommand": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksGetTokenCommandB7A8C164"
+            "data": "helloeksclusterGetTokenCommand86B51962"
           }
         ],
         "/eks-auto-mode-stack/BootstrapVersion": [
@@ -922,9 +919,1044 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "kubectl290BBFC9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "kubectl290BBFC9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "helloeksRole59C1FE10": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksRole59C1FE10",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "helloeksControlPlaneSecurityGroup4C2AFE28": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksControlPlaneSecurityGroup4C2AFE28",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "helloekshelloeksnodePoolRole81D93FFB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloekshelloeksnodePoolRole81D93FFB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "helloeksBE273F5A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksBE273F5A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "helloeksKubectlReadyBarrierBFD90FAB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksKubectlReadyBarrierBFD90FAB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "helloeksKubectlProviderHandlerServiceRoleFDA38030": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksKubectlProviderHandlerServiceRoleFDA38030",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "helloeksKubectlProviderHandlerServiceRoleDefaultPolicy05FAA1B4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksKubectlProviderHandlerServiceRoleDefaultPolicy05FAA1B4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "helloeksKubectlProviderHandler788A3C17": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksKubectlProviderHandler788A3C17",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "helloeksKubectlProviderAwsCliLayer2A4F5F3D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksKubectlProviderAwsCliLayer2A4F5F3D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "helloeksKubectlProviderframeworkonEventServiceRole68309EF1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksKubectlProviderframeworkonEventServiceRole68309EF1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "helloeksKubectlProviderframeworkonEventServiceRoleDefaultPolicy62B3F050": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksKubectlProviderframeworkonEventServiceRoleDefaultPolicy62B3F050",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "helloeksKubectlProviderframeworkonEvent1E7B4950": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksKubectlProviderframeworkonEvent1E7B4950",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "helloeksKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0883D9EBE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0883D9EBE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "helloeksClusterAdminRoleAccess3B9D74AE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksClusterAdminRoleAccess3B9D74AE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "helloeksmastersRoleAccessF848B5EF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksmastersRoleAccessF848B5EF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "eks-auto-mode-stack"
+    },
+    "eks-auto-mode-empty-nodepools-stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "eks-auto-mode-empty-nodepools-stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "eks-auto-mode-empty-nodepools-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "eks-auto-mode-empty-nodepools-stack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/3621204fd2aecd2d8ad52a90771712b44537e9e33a4aa888c48af0791d7b670b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "eks-auto-mode-empty-nodepools-stack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "eks-auto-mode-empty-nodepools-stack.assets"
+      ],
+      "metadata": {
+        "/eks-auto-mode-empty-nodepools-stack/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "natGateways": "*"
+            }
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Role1ABCC5F0"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/kubectl": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/kubectl/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloekskubectl90D845D3"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterRoleBED770F6"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/ControlPlaneSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*"
+            }
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/ControlPlaneSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterControlPlaneSecurityGroupEAAB451B"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterA526EE63"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlReadyBarrier": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterKubectlReadyBarrier5F5E8259"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Handler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "timeout": "*",
+              "description": "*",
+              "memorySize": "*",
+              "environment": "*",
+              "role": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*",
+              "vpc": "*",
+              "securityGroups": [
+                "*"
+              ],
+              "vpcSubnets": {
+                "subnets": [
+                  "*",
+                  "*"
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Handler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                },
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Handler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterKubectlProviderHandlerServiceRoleAA5EA2F4"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Handler/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterKubectlProviderHandlerServiceRoleDefaultPolicyFE993B49"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Handler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterKubectlProviderHandler87F7258C"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Handler/HasEcrPublic": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterKubectlProviderHandlerHasEcrPublic8E4E12CC"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/AwsCliLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterKubectlProviderAwsCliLayer6B0085A5"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "description": "*",
+              "runtime": "*",
+              "handler": "*",
+              "timeout": "*",
+              "logGroup": "*",
+              "vpc": "*",
+              "vpcSubnets": {
+                "subnets": [
+                  "*",
+                  "*"
+                ]
+              },
+              "securityGroups": [
+                "*"
+              ],
+              "role": "*",
+              "functionName": "*",
+              "environmentEncryption": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                },
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterKubectlProviderframeworkonEventServiceRole7DA17438"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterKubectlProviderframeworkonEventServiceRoleDefaultPolicyF8C6BB77"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterKubectlProviderframeworkonEvent0FAC0AEB"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0C64804B1"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/ClusterAdminRoleAccess": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/ClusterAdminRoleAccess/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterClusterAdminRoleAccess1B0F32CB"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/mastersRoleAccess": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/mastersRoleAccess/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclustermastersRoleAccess58C59E45"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/ConfigCommand": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterConfigCommand5E7007D6"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/GetTokenCommand": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterGetTokenCommand86B51962"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "eks-auto-mode-empty-nodepools-stack"
     },
     "awscdkeksclusterintegDefaultTestDeployAssertB6AAB3A3.assets": {
       "type": "cdk:asset-manifest",
