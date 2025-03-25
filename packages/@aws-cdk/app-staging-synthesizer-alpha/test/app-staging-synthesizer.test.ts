@@ -611,6 +611,7 @@ describe(AppStagingSynthesizer, () => {
     stack.synthesizer.addDockerImageAsset({
       directoryName: '.',
       sourceHash: 'dockerHash',
+      assetName: 'someName',
       displayName: 'Some docker image asset',
     });
 
@@ -620,7 +621,7 @@ describe(AppStagingSynthesizer, () => {
     const assetManifestJSON = readAssetManifest(assetManifest);
 
     // Validates that the image and file asset session tags were set in the asset manifest:
-    expect(assetManifestJSON.dockerImages?.dockerHash).toMatchObject({
+    expect(assetManifestJSON.dockerImages?.['someName-dockerHash']).toMatchObject({
       displayName: 'Some docker image asset',
     });
     expect(assetManifestJSON.files?.fileHash).toMatchObject({
