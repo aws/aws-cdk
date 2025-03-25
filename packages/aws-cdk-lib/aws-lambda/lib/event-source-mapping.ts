@@ -49,6 +49,11 @@ export class SourceAccessConfigurationType {
    */
   public static readonly SERVER_ROOT_CA_CERTIFICATE = new SourceAccessConfigurationType('SERVER_ROOT_CA_CERTIFICATE');
 
+  /**
+   * The name of the virtual host in your RabbitMQ broker. Lambda uses this RabbitMQ host as the event source.
+   */
+  public static readonly VIRTUAL_HOST = new SourceAccessConfigurationType('VIRTUAL_HOST');
+
   /** A custom source access configuration property */
   public static of(name: string): SourceAccessConfigurationType {
     return new SourceAccessConfigurationType(name);
@@ -129,7 +134,7 @@ export interface EventSourceMappingOptions {
   readonly bisectBatchOnError?: boolean;
 
   /**
-   * An Amazon SQS queue or Amazon SNS topic destination for discarded records.
+   * An Amazon S3, Amazon SQS queue or Amazon SNS topic destination for discarded records.
    *
    * @default discarded records are ignored
    */
@@ -283,8 +288,7 @@ export interface EventSourceMappingOptions {
   readonly filterEncryption?: IKey;
 
   /**
-   * Check if support S3 onfailure destination(ODF). Currently only MSK and self managed kafka event support S3 ODF
-   *
+   * Check if support S3 onfailure destination(OFD). Kinesis, DynamoDB, MSK and self managed kafka event support S3 OFD
    * @default false
    */
   readonly supportS3OnFailureDestination?: boolean;

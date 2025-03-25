@@ -218,6 +218,18 @@ export class ClusterResourceHandler extends ResourceHandler {
       }
 
       if (updates.updateAuthMode) {
+        // update-authmode will fail if we try to update to the same mode,
+        // so skip in this case.
+        try {
+          const cluster = (await this.eks.describeCluster({ name: this.clusterName })).cluster;
+          if (cluster?.accessConfig?.authenticationMode === this.newProps.accessConfig?.authenticationMode) {
+            console.log(`cluster already at ${cluster?.accessConfig?.authenticationMode}, skipping authMode update`);
+            return;
+          }
+        } catch (e: any) {
+          throw e;
+        }
+
         // the update path must be
         // `undefined or CONFIG_MAP` -> `API_AND_CONFIG_MAP` -> `API`
         // and it's one way path.
@@ -246,17 +258,6 @@ export class ClusterResourceHandler extends ResourceHandler {
         if (this.oldProps.accessConfig?.authenticationMode === 'CONFIG_MAP' &&
           this.newProps.accessConfig?.authenticationMode === 'API') {
           throw new Error('Cannot update from CONFIG_MAP to API');
-        }
-        // update-authmode will fail if we try to update to the same mode,
-        // so skip in this case.
-        try {
-          const cluster = (await this.eks.describeCluster({ name: this.clusterName })).cluster;
-          if (cluster?.accessConfig?.authenticationMode === this.newProps.accessConfig?.authenticationMode) {
-            console.log(`cluster already at ${cluster?.accessConfig?.authenticationMode}, skipping authMode update`);
-            return;
-          }
-        } catch (e: any) {
-          throw e;
         }
         config.accessConfig = this.newProps.accessConfig;
       }

@@ -16,3 +16,4 @@
 packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-big-response.js.snapshot/asset.3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip filter=lfs diff=lfs merge=lfs -text
 packages/@aws-cdk-testing/framework-integ/test/**/*.snapshot/**/asset*.zip filter=lfs diff=lfs merge=lfs -text
 packages/@aws-cdk/*-alpha/test/**/*.snapshot/**/asset*.zip filter=lfs diff=lfs merge=lfs -text
+packages/@aws-cdk/*-alpha/test/*.snapshot/asset.*/bootstrap filter=lfs diff=lfs merge=lfs -text

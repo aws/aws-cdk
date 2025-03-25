@@ -9,7 +9,7 @@ import { KinesisMetrics as CannedMetrics } from './kinesis-canned-metrics.genera
  * Stream Metrics reference: https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html
  */
 export class KinesisMetrics {
-  public static getRecordsBytesAverage(dimensions: { StreamName: string }) {
+  public static getRecordsBytesAverage(this: void, dimensions: { StreamName: string }) {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'GetRecords.Bytes',
@@ -17,7 +17,7 @@ export class KinesisMetrics {
       statistic: 'Average',
     };
   }
-  public static getRecordsSuccessAverage(dimensions: { StreamName: string }) {
+  public static getRecordsSuccessAverage(this: void, dimensions: { StreamName: string }) {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'GetRecords.Success',
@@ -25,7 +25,7 @@ export class KinesisMetrics {
       statistic: 'Average',
     };
   }
-  public static getRecordsRecordsAverage(dimensions: { StreamName: string }) {
+  public static getRecordsRecordsAverage(this: void, dimensions: { StreamName: string }) {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'GetRecords.Records',
@@ -33,7 +33,7 @@ export class KinesisMetrics {
       statistic: 'Average',
     };
   }
-  public static getRecordsLatencyAverage(dimensions: { StreamName: string }) {
+  public static getRecordsLatencyAverage(this: void, dimensions: { StreamName: string }) {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'GetRecords.Latency',
@@ -41,7 +41,7 @@ export class KinesisMetrics {
       statistic: 'Average',
     };
   }
-  public static putRecordBytesAverage(dimensions: { StreamName: string }) {
+  public static putRecordBytesAverage(this: void, dimensions: { StreamName: string }) {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecord.Bytes',
@@ -49,7 +49,7 @@ export class KinesisMetrics {
       statistic: 'Average',
     };
   }
-  public static putRecordLatencyAverage(dimensions: { StreamName: string }) {
+  public static putRecordLatencyAverage(this: void, dimensions: { StreamName: string }) {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecord.Latency',
@@ -57,22 +57,22 @@ export class KinesisMetrics {
       statistic: 'Average',
     };
   }
-  public static getRecordsIteratorAgeMillisecondsMaximum(dimensions: { StreamName: string }) {
+  public static getRecordsIteratorAgeMillisecondsMaximum(this: void, dimensions: { StreamName: string }) {
     return CannedMetrics.getRecordsIteratorAgeMillisecondsMaximum(dimensions);
   }
-  public static putRecordSuccessAverage(dimensions: { StreamName: string }) {
+  public static putRecordSuccessAverage(this: void, dimensions: { StreamName: string }) {
     return {
       ...CannedMetrics.putRecordSuccessSum(dimensions),
       statistic: 'Average',
     };
   }
-  public static putRecordsBytesAverage(dimensions: { StreamName: string }) {
+  public static putRecordsBytesAverage(this: void, dimensions: { StreamName: string }) {
     return {
       ...CannedMetrics.putRecordsBytesSum(dimensions),
       statistic: 'Average',
     };
   }
-  public static putRecordsLatencyAverage(dimensions: { StreamName: string }) {
+  public static putRecordsLatencyAverage(this: void, dimensions: { StreamName: string }) {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.Latency',
@@ -80,7 +80,7 @@ export class KinesisMetrics {
       statistic: 'Average',
     };
   }
-  public static putRecordsSuccessAverage(dimensions: { StreamName: string }) {
+  public static putRecordsSuccessAverage(this: void, dimensions: { StreamName: string }) {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.Success',
@@ -88,7 +88,7 @@ export class KinesisMetrics {
       statistic: 'Average',
     };
   }
-  public static putRecordsTotalRecordsAverage(dimensions: { StreamName: string }) {
+  public static putRecordsTotalRecordsAverage(this: void, dimensions: { StreamName: string }) {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.TotalRecords',
@@ -96,7 +96,7 @@ export class KinesisMetrics {
       statistic: 'Average',
     };
   }
-  public static putRecordsSuccessfulRecordsAverage(dimensions: { StreamName: string }) {
+  public static putRecordsSuccessfulRecordsAverage(this: void, dimensions: { StreamName: string }) {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.SuccessfulRecords',
@@ -104,7 +104,7 @@ export class KinesisMetrics {
       statistic: 'Average',
     };
   }
-  public static putRecordsFailedRecordsAverage(dimensions: { StreamName: string }) {
+  public static putRecordsFailedRecordsAverage(this: void, dimensions: { StreamName: string }) {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.FailedRecords',
@@ -112,7 +112,7 @@ export class KinesisMetrics {
       statistic: 'Average',
     };
   }
-  public static putRecordsThrottledRecordsAverage(dimensions: { StreamName: string }) {
+  public static putRecordsThrottledRecordsAverage(this: void, dimensions: { StreamName: string }) {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.ThrottledRecords',
@@ -120,25 +120,25 @@ export class KinesisMetrics {
       statistic: 'Average',
     };
   }
-  public static incomingBytesAverage(dimensions: { StreamName: string }) {
+  public static incomingBytesAverage(this: void, dimensions: { StreamName: string }) {
     return {
       ...CannedMetrics.incomingBytesSum(dimensions),
       statistic: 'Average',
     };
   }
-  public static incomingRecordsAverage(dimensions: { StreamName: string }) {
+  public static incomingRecordsAverage(this: void, dimensions: { StreamName: string }) {
     return {
       ...CannedMetrics.incomingRecordsSum(dimensions),
       statistic: 'Average',
     };
   }
-  public static readProvisionedThroughputExceededAverage(dimensions: { StreamName: string }) {
+  public static readProvisionedThroughputExceededAverage(this: void, dimensions: { StreamName: string }) {
     return {
       ...CannedMetrics.readProvisionedThroughputExceededSum(dimensions),
       statistic: 'Average',
     };
   }
-  public static writeProvisionedThroughputExceededAverage(dimensions: { StreamName: string }) {
+  public static writeProvisionedThroughputExceededAverage(this: void, dimensions: { StreamName: string }) {
     return {
       ...CannedMetrics.writeProvisionedThroughputExceededSum(dimensions),
       statistic: 'Average',
