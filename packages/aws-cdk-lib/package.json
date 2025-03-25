@@ -277,6 +277,7 @@
     "./aws-codestarconnections": "./aws-codestarconnections/index.js",
     "./aws-codestarnotifications": "./aws-codestarnotifications/index.js",
     "./aws-cognito": "./aws-cognito/index.js",
+    "./aws-cognito-identitypool": "./aws-cognito-identitypool/index.js",
     "./aws-comprehend": "./aws-comprehend/index.js",
     "./aws-config": "./aws-config/index.js",
     "./aws-connect": "./aws-connect/index.js",
