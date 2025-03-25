@@ -1,8 +1,7 @@
 import { Construct } from 'constructs';
-import { ValidationError } from 'jsonschema';
 import { CfnPrefixList } from './ec2.generated';
 import * as cxschema from '../../cloud-assembly-schema';
-import { IResource, Lazy, Resource, Names, ContextProvider, Token } from '../../core';
+import { IResource, Lazy, Resource, Names, ContextProvider, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
