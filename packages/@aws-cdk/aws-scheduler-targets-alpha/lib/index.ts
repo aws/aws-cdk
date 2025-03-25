@@ -1,6 +1,7 @@
 export * from './codebuild-start-build';
 export * from './codepipeline-start-pipeline-execution';
 export * from './event-bridge-put-events';
+export * from './ecs-run-task';
 export * from './inspector-start-assessment-run';
 export * from './firehose-put-record';
 export * from './kinesis-stream-put-record';
