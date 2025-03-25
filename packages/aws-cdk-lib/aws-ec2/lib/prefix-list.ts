@@ -135,7 +135,7 @@ export class PrefixList extends PrefixListBase {
    * Look up prefix list by id.
    */
   public static fromPrefixListId(scope: Construct, id: string, prefixListId: string): IPrefixList {
-    class Import extends PrefixListBase implements IPrefixList {
+    class Import extends PrefixListBase {
       public readonly prefixListId = prefixListId;
     }
     return new Import(scope, id);
