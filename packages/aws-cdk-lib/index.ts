@@ -241,6 +241,7 @@ export * as aws_s3tables from './aws-s3tables';
 export * as aws_sagemaker from './aws-sagemaker';
 export * as aws_sam from './aws-sam';
 export * as aws_scheduler from './aws-scheduler';
+export * as aws_scheduler_targets from './aws-scheduler-targets';
 export * as aws_sdb from './aws-sdb';
 export * as aws_secretsmanager from './aws-secretsmanager';
 export * as aws_securityhub from './aws-securityhub';

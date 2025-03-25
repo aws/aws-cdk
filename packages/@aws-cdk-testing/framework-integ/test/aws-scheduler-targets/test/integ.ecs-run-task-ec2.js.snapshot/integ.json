@@ -1,0 +1,13 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "integ-ecs-run-task-ec2/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ecs-run-task-ec2-schedule"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integ-ecs-run-task-ec2/DefaultTest/DeployAssert",
+      "assertionStackName": "integecsruntaskec2DefaultTestDeployAssert078FB53C"
+    }
+  }
+}
