@@ -1,9 +1,5 @@
 # Amazon Cognito Identity Pool Construct Library
 
-> **Identity Pools are in a separate module while the API is being stabilized. Once we stabilize the module, they will**
-**be included into the stable [aws-cognito](../aws-cognito) library. Please provide feedback on this experience by**
-**creating an [issue here](https://github.com/aws/aws-cdk/issues/new/choose)**
-
 [Amazon Cognito Identity Pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html) enable you to grant your users access to other AWS services.
 
 Identity Pools are one of the two main components of [Amazon Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html), which provides authentication, authorization, and

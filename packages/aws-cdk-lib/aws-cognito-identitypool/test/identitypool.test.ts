@@ -1,7 +1,7 @@
-import { Fn, Lazy, Stack } from '../..';
 import { Template } from '../../assertions';
 import { UserPool, UserPoolClient, UserPoolIdentityProvider } from '../../aws-cognito';
 import { Role, ServicePrincipal, AnyPrincipal, OpenIdConnectProvider, SamlProvider, SamlMetadataDocument, PolicyStatement, Effect, PolicyDocument, ArnPrincipal } from '../../aws-iam';
+import { Fn, Lazy, Stack } from '../../core';
 import { IdentityPool, IdentityPoolProviderUrl, RoleMappingMatchType } from '../lib/identitypool';
 import { UserPoolAuthenticationProvider } from '../lib/identitypool-user-pool-authentication-provider';
 
