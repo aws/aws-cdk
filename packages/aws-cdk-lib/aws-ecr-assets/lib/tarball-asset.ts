@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { IAsset } from '../../assets';
 import * as ecr from '../../aws-ecr';
-import { AssetStaging, Stack, Stage } from '../../core';
+import { AssetStaging, Stack, Stage, ValidationError } from '../../core';
 
 /**
  * Options for TarballImageAsset
@@ -60,7 +60,7 @@ export class TarballImageAsset extends Construct implements IAsset {
     super(scope, id);
 
     if (!fs.existsSync(props.tarballFile)) {
-      throw new Error(`Cannot find file at ${props.tarballFile}`);
+      throw new ValidationError(`Cannot find file at ${props.tarballFile}`, this);
     }
 
     const stagedTarball = new AssetStaging(this, 'Staging', { sourcePath: props.tarballFile });
