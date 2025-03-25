@@ -8,7 +8,7 @@ import { CfnApp } from '../../aws-pinpoint';
 import { IResource, Resource, Duration, Stack, SecretValue, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
+import { AwsCustomResource, AwsCustomResourcePolicy, Logging, PhysicalResourceId } from '../../custom-resources';
 
 /**
  * Types of authentication flow
@@ -561,6 +561,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
               ClientId: this.userPoolClientId,
             },
             physicalResourceId: PhysicalResourceId.of(this.userPoolClientId),
+            logging: Logging.withDataHidden(),
           },
           policy: AwsCustomResourcePolicy.fromSdkCalls({
             resources: [this.userPool.userPoolArn],
