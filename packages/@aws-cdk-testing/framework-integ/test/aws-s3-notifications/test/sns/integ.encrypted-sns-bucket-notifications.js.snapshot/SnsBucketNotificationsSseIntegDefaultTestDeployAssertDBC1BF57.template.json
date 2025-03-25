@@ -28,7 +28,7 @@
      "Body": "\"[{\\\"objectId\\\":1},{\\\"objectId\\\":2}]\""
     },
     "flattenResponse": "false",
-    "salt": "1742654285415"
+    "salt": "1742908722278"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -150,7 +150,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1742654285416"
+    "salt": "1742908722279"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectd7c40bfca4f362b2639aa553b509eb20"
