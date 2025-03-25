@@ -1335,6 +1335,54 @@ export interface Inventory {
   readonly optionalFields?: string[];
 }
 /**
+ * Destination for an S3 bucket metadata table.
+ */
+export interface MetadataTableDestination {
+  /**
+   * The bucket for the metadata table destination.
+   * The destination table bucket must be in the same Region and AWS account
+   * as the general purpose bucket.
+   */
+  readonly bucket: IBucket;
+
+  /**
+   * The name for the metadata table.
+   * The specified metadata table name must be unique within the `aws_s3_metadata`
+   * namespace in the destination table bucket.
+   */
+  readonly tableName: string;
+
+  /**
+   * The table bucket namespace for the metadata table.
+   * This value is always `aws_s3_metadata`.
+   *
+   * @default "aws_s3_metadata"
+   */
+  readonly tableNamespace?: string;
+
+  /**
+   * The ARN for the metadata table.
+   * The specified metadata table name must be unique within the `aws_s3_metadata`
+   * namespace in the destination table bucket.
+   *
+   * @default - No table ARN specified
+   */
+  readonly tableArn?: string;
+}
+
+/**
+ * Configuration for an S3 bucket metadata table.
+ */
+export interface MetadataTableConfiguration {
+  /**
+   * The destination information for the metadata table configuration.
+   * The destination table bucket must be in the same Region and AWS account
+   * as the general purpose bucket.
+   */
+  readonly destination: MetadataTableDestination;
+}
+
+/**
  * The ObjectOwnership of the bucket.
  *
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
@@ -1930,6 +1978,16 @@ export interface BucketProps {
    * @default - No replication
    */
   readonly replicationRules?: ReplicationRule[];
+
+  /**
+   * The metadata table configuration of an S3 general purpose bucket.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-overview.html
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-permissions.html
+   *
+   * @default - No metadata table configuration
+   */
+  readonly metadataTable?: MetadataTableConfiguration;
 }
 
 /**
@@ -2223,6 +2281,7 @@ export class Bucket extends BucketBase {
       objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
       objectLockConfiguration: objectLockConfiguration,
       replicationConfiguration,
+      metadataTableConfiguration: this.renderMetadataTableConfiguration(props),
     });
     this._resource = resource;
 
@@ -2776,6 +2835,21 @@ export class Bucket extends BucketBase {
       errorDocument: props.websiteErrorDocument,
       redirectAllRequestsTo: props.websiteRedirect,
       routingRules,
+    };
+  }
+
+  private renderMetadataTableConfiguration(props: BucketProps): CfnBucket.MetadataTableConfigurationProperty | undefined {
+    if (!props.metadataTable) {
+      return undefined;
+    }
+
+    return {
+      s3TablesDestination: {
+        tableBucketArn: props.metadataTable.destination.bucket.bucketArn,
+        tableName: props.metadataTable.destination.tableName,
+        tableNamespace: props.metadataTable.destination.tableNamespace ?? 'aws_s3_metadata',
+        tableArn: props.metadataTable.destination.tableArn,
+      },
     };
   }
 

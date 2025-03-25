@@ -651,6 +651,31 @@ However, if you use an imported bucket (i.e `Bucket.fromXXX()`), you'll have to 
 }
 ```
 
+## S3 Metadata Tables
+
+[Metadata tables](https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-overview.html) allow you to create a searchable table with metadata about objects in your bucket. This feature helps you gain insights into your data without the need to list or retrieve objects directly from the bucket.
+
+You can configure a metadata table for your bucket by specifying the destination bucket where the metadata table will be stored. The destination bucket must be in the same region and AWS account as the source bucket.
+
+```ts
+const metadataTableBucket = new s3.Bucket(this, 'MetadataTableBucket');
+
+const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
+  metadataTable: {
+    destination: {
+      bucket: metadataTableBucket,
+      tableName: 'my-metadata-table',
+      // The tableNamespace is always "aws_s3_metadata" and can be omitted
+      // tableNamespace: 'aws_s3_metadata',
+      // You can optionally specify the table ARN
+      // tableArn: 'arn:aws:s3-object-lambda:region:account-id:accesspoint/metadata-table-ap',
+    },
+  },
+});
+```
+
+For more information on permissions required for S3 metadata tables, see [S3 Metadata Tables Permissions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-permissions.html).
+
 ## Website redirection
 
 You can use the two following properties to specify the bucket [redirection policy]. Please note that these methods cannot both be applied to the same bucket.

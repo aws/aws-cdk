@@ -25,6 +25,78 @@ describe('rules', () => {
     });
   });
 
+  describe('metadataTable', () => {
+    test('Bucket with full metadata table configuration', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+            tableNamespace: 'custom-namespace',
+            tableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'custom-namespace',
+            TableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+    });
+
+    test('Bucket with minimal metadata table configuration uses default tableNamespace', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'aws_s3_metadata',
+          },
+        },
+      });
+    });
+
+    test('No metadata table configuration when not specified', () => {
+    // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new Bucket(stack, 'Bucket');
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::S3::Bucket', (resource) => {
+        return !('MetadataTableConfiguration' in resource.Properties);
+      });
+    });
+  });
+
   test('ExpiredObjectDeleteMarker cannot be specified with ExpirationInDays.', () => {
     const stack = new Stack();
     new Bucket(stack, 'Bucket', {
@@ -91,6 +163,78 @@ describe('rules', () => {
     });
   });
 
+  describe('metadataTable', () => {
+    test('Bucket with full metadata table configuration', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+            tableNamespace: 'custom-namespace',
+            tableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'custom-namespace',
+            TableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+    });
+
+    test('Bucket with minimal metadata table configuration uses default tableNamespace', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'aws_s3_metadata',
+          },
+        },
+      });
+    });
+
+    test('No metadata table configuration when not specified', () => {
+    // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new Bucket(stack, 'Bucket');
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::S3::Bucket', (resource) => {
+        return !('MetadataTableConfiguration' in resource.Properties);
+      });
+    });
+  });
+
   test('Bucket with expiration date', () => {
     // GIVEN
     const stack = new Stack();
@@ -110,6 +254,78 @@ describe('rules', () => {
           Status: 'Enabled',
         }],
       },
+    });
+  });
+
+  describe('metadataTable', () => {
+    test('Bucket with full metadata table configuration', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+            tableNamespace: 'custom-namespace',
+            tableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'custom-namespace',
+            TableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+    });
+
+    test('Bucket with minimal metadata table configuration uses default tableNamespace', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'aws_s3_metadata',
+          },
+        },
+      });
+    });
+
+    test('No metadata table configuration when not specified', () => {
+    // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new Bucket(stack, 'Bucket');
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::S3::Bucket', (resource) => {
+        return !('MetadataTableConfiguration' in resource.Properties);
+      });
     });
   });
 
@@ -141,6 +357,78 @@ describe('rules', () => {
     });
   });
 
+  describe('metadataTable', () => {
+    test('Bucket with full metadata table configuration', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+            tableNamespace: 'custom-namespace',
+            tableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'custom-namespace',
+            TableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+    });
+
+    test('Bucket with minimal metadata table configuration uses default tableNamespace', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'aws_s3_metadata',
+          },
+        },
+      });
+    });
+
+    test('No metadata table configuration when not specified', () => {
+    // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new Bucket(stack, 'Bucket');
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::S3::Bucket', (resource) => {
+        return !('MetadataTableConfiguration' in resource.Properties);
+      });
+    });
+  });
+
   test('Bucket with expiredObjectDeleteMarker', () => {
     // GIVEN
     const stack = new Stack();
@@ -160,6 +448,78 @@ describe('rules', () => {
           Status: 'Enabled',
         }],
       },
+    });
+  });
+
+  describe('metadataTable', () => {
+    test('Bucket with full metadata table configuration', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+            tableNamespace: 'custom-namespace',
+            tableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'custom-namespace',
+            TableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+    });
+
+    test('Bucket with minimal metadata table configuration uses default tableNamespace', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'aws_s3_metadata',
+          },
+        },
+      });
+    });
+
+    test('No metadata table configuration when not specified', () => {
+    // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new Bucket(stack, 'Bucket');
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::S3::Bucket', (resource) => {
+        return !('MetadataTableConfiguration' in resource.Properties);
+      });
     });
   });
 
@@ -201,6 +561,78 @@ describe('rules', () => {
     });
   });
 
+  describe('metadataTable', () => {
+    test('Bucket with full metadata table configuration', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+            tableNamespace: 'custom-namespace',
+            tableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'custom-namespace',
+            TableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+    });
+
+    test('Bucket with minimal metadata table configuration uses default tableNamespace', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'aws_s3_metadata',
+          },
+        },
+      });
+    });
+
+    test('No metadata table configuration when not specified', () => {
+    // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new Bucket(stack, 'Bucket');
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::S3::Bucket', (resource) => {
+        return !('MetadataTableConfiguration' in resource.Properties);
+      });
+    });
+  });
+
   test('Noncurrent transition rule without versions to retain', () => {
     // GIVEN
     const stack = new Stack();
@@ -234,6 +666,78 @@ describe('rules', () => {
           Status: 'Enabled',
         }],
       },
+    });
+  });
+
+  describe('metadataTable', () => {
+    test('Bucket with full metadata table configuration', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+            tableNamespace: 'custom-namespace',
+            tableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'custom-namespace',
+            TableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+    });
+
+    test('Bucket with minimal metadata table configuration uses default tableNamespace', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'aws_s3_metadata',
+          },
+        },
+      });
+    });
+
+    test('No metadata table configuration when not specified', () => {
+    // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new Bucket(stack, 'Bucket');
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::S3::Bucket', (resource) => {
+        return !('MetadataTableConfiguration' in resource.Properties);
+      });
     });
   });
 
@@ -275,6 +779,78 @@ describe('rules', () => {
     });
   });
 
+  describe('metadataTable', () => {
+    test('Bucket with full metadata table configuration', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+            tableNamespace: 'custom-namespace',
+            tableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'custom-namespace',
+            TableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+    });
+
+    test('Bucket with minimal metadata table configuration uses default tableNamespace', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'aws_s3_metadata',
+          },
+        },
+      });
+    });
+
+    test('No metadata table configuration when not specified', () => {
+    // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new Bucket(stack, 'Bucket');
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::S3::Bucket', (resource) => {
+        return !('MetadataTableConfiguration' in resource.Properties);
+      });
+    });
+  });
+
   test('Noncurrent expiration rule without versions to retain', () => {
     // GIVEN
     const stack = new Stack();
@@ -311,6 +887,78 @@ describe('rules', () => {
     });
   });
 
+  describe('metadataTable', () => {
+    test('Bucket with full metadata table configuration', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+            tableNamespace: 'custom-namespace',
+            tableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'custom-namespace',
+            TableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+    });
+
+    test('Bucket with minimal metadata table configuration uses default tableNamespace', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'aws_s3_metadata',
+          },
+        },
+      });
+    });
+
+    test('No metadata table configuration when not specified', () => {
+    // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new Bucket(stack, 'Bucket');
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::S3::Bucket', (resource) => {
+        return !('MetadataTableConfiguration' in resource.Properties);
+      });
+    });
+  });
+
   test('Bucket with object size rules', () => {
     // GIVEN
     const stack = new Stack();
@@ -334,6 +982,78 @@ describe('rules', () => {
           Status: 'Enabled',
         }],
       },
+    });
+  });
+
+  describe('metadataTable', () => {
+    test('Bucket with full metadata table configuration', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+            tableNamespace: 'custom-namespace',
+            tableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'custom-namespace',
+            TableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+    });
+
+    test('Bucket with minimal metadata table configuration uses default tableNamespace', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'aws_s3_metadata',
+          },
+        },
+      });
+    });
+
+    test('No metadata table configuration when not specified', () => {
+    // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new Bucket(stack, 'Bucket');
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::S3::Bucket', (resource) => {
+        return !('MetadataTableConfiguration' in resource.Properties);
+      });
     });
   });
 
@@ -530,6 +1250,78 @@ describe('rules', () => {
       expect(() => {
         Template.fromStack(stack);
       }).not.toThrow();
+    });
+  });
+
+  describe('metadataTable', () => {
+    test('Bucket with full metadata table configuration', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+            tableNamespace: 'custom-namespace',
+            tableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'custom-namespace',
+            TableArn: 'arn:aws:s3:us-west-2:123456789012:metadata-table/custom-namespace/my-metadata-table',
+          },
+        },
+      });
+    });
+
+    test('Bucket with minimal metadata table configuration uses default tableNamespace', () => {
+    // GIVEN
+      const stack = new Stack();
+      const metadataDestBucket = new Bucket(stack, 'DestinationBucket');
+
+      // WHEN
+      new Bucket(stack, 'Bucket', {
+        metadataTable: {
+          destination: {
+            bucket: metadataDestBucket,
+            tableName: 'my-metadata-table',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        MetadataTableConfiguration: {
+          S3TablesDestination: {
+            TableBucketArn: { 'Fn::GetAtt': ['DestinationBucket1ABCC5F0', 'Arn'] },
+            TableName: 'my-metadata-table',
+            TableNamespace: 'aws_s3_metadata',
+          },
+        },
+      });
+    });
+
+    test('No metadata table configuration when not specified', () => {
+    // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new Bucket(stack, 'Bucket');
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::S3::Bucket', (resource) => {
+        return !('MetadataTableConfiguration' in resource.Properties);
+      });
     });
   });
 });
