@@ -6,6 +6,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as route53 from '../../aws-route53';
 import { IResource, Token, Tags, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
 
 /**
  * Name tag constant
@@ -272,7 +273,13 @@ export class CertificateValidation {
 /**
  * A certificate managed by AWS Certificate Manager
  */
+@propertyInjectionDecorator
 export class Certificate extends CertificateBase implements ICertificate {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-certificatemanager.Certificate';
+
   /**
    * Import a certificate
    */

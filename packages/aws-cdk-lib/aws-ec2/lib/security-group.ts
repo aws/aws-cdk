@@ -7,6 +7,7 @@ import { IVpc } from './vpc';
 import * as cxschema from '../../cloud-assembly-schema';
 import { Annotations, ContextProvider, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
 import * as cxapi from '../../cx-api';
 
 const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
@@ -363,7 +364,13 @@ export interface SecurityGroupImportOptions {
  * });
  * ```
  */
+@propertyInjectionDecorator
 export class SecurityGroup extends SecurityGroupBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.SecurityGroup';
+
   /**
    * Look up a security group by id.
    *

@@ -22,6 +22,7 @@ import {
   UnscopedValidationError,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
@@ -609,7 +610,13 @@ export interface RepositoryAttributes {
 /**
  * Define an ECR repository
  */
+@propertyInjectionDecorator
 export class Repository extends RepositoryBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecr.Repository';
+
   /**
    * Import a repository
    */

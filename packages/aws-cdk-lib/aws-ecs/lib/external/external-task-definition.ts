@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectionDecorator } from '../../../core/lib/prop-injectors';
 import { ImportedTaskDefinition } from '../../lib/base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,
@@ -44,7 +45,13 @@ export interface ExternalTaskDefinitionAttributes extends CommonTaskDefinitionAt
  *
  * @resource AWS::ECS::TaskDefinition
  */
+@propertyInjectionDecorator
 export class ExternalTaskDefinition extends TaskDefinition implements IExternalTaskDefinition {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.ExternalTaskDefinition';
+
   /**
    * Imports a task definition from the specified task definition ARN.
    */
