@@ -50,10 +50,10 @@ class VpcEndpointStack extends cdk.Stack {
     });
 
     // Add an interface endpoint with ipAddressType and dnsRecordIpType
-    vpc.addInterfaceEndpoint('S3ServiceEndpoint', {
-      service: ec2.InterfaceVpcEndpointAwsService.S3,
-      ipAddressType: ec2.VpcEndpointIpAddressType.DUALSTACK,
-      dnsRecordIpType: ec2.VpcEndpointDnsRecordIpType.DUALSTACK,
+    vpc.addInterfaceEndpoint('CloudwatchLogsEndpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
+      ipAddressType: ec2.VpcEndpointIpAddressType.IPV4,
+      dnsRecordIpType: ec2.VpcEndpointDnsRecordIpType.IPV4,
     });
   }
 }

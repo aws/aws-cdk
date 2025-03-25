@@ -542,6 +542,7 @@
   "MyVpcEcrDockerEndpoint0385050C": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
+    "DnsOptions": {},
     "PrivateDnsEnabled": true,
     "SecurityGroupIds": [
      {
@@ -636,6 +637,7 @@
   "MyVpcDynamoDbInterfaceEndpointA97B3149": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
+    "DnsOptions": {},
     "PrivateDnsEnabled": false,
     "SecurityGroupIds": [
      {
@@ -654,6 +656,104 @@
         "Ref": "AWS::Region"
        },
        ".dynamodb"
+      ]
+     ]
+    },
+    "SubnetIds": [
+     {
+      "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
+     },
+     {
+      "Ref": "MyVpcPrivateSubnet2Subnet0040C983"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
+   }
+  },
+  "MyVpcCloudwatchLogsEndpointSecurityGroup4A3B5DFB": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-ec2-vpc-endpoint/MyVpc/CloudwatchLogsEndpoint/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Fn::GetAtt": [
+        "MyVpcF9F0CA6F",
+        "CidrBlock"
+       ]
+      },
+      "Description": {
+       "Fn::Join": [
+        "",
+        [
+         "from ",
+         {
+          "Fn::GetAtt": [
+           "MyVpcF9F0CA6F",
+           "CidrBlock"
+          ]
+         },
+         ":443"
+        ]
+       ]
+      },
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
+     }
+    ],
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
+   }
+  },
+  "MyVpcCloudwatchLogsEndpointB1C11ADC": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "DnsOptions": {
+     "DnsRecordIpType": "ipv4"
+    },
+    "IpAddressType": "ipv4",
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "MyVpcCloudwatchLogsEndpointSecurityGroup4A3B5DFB",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": {
+     "Fn::Join": [
+      "",
+      [
+       "com.amazonaws.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".logs"
       ]
      ]
     },
