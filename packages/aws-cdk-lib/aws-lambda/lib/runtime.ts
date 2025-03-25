@@ -312,8 +312,8 @@ export class Runtime {
   public static readonly RUBY_3_3 = new Runtime('ruby3.3', RuntimeFamily.RUBY);
 
   /**
-  * The Ruby 3.4 runtime (ruby3.4)
-  */
+   * The Ruby 3.4 runtime (ruby3.4)
+   */
   public static readonly RUBY_3_4 = new Runtime('ruby3.4', RuntimeFamily.RUBY);
 
   /**
