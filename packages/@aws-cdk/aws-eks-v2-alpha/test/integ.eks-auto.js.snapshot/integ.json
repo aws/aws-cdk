@@ -3,7 +3,8 @@
   "testCases": {
     "aws-cdk-eks-cluster-integ/DefaultTest": {
       "stacks": [
-        "eks-auto-mode-stack"
+        "eks-auto-mode-stack",
+        "eks-auto-mode-empty-nodepools-stack"
       ],
       "assertionStack": "aws-cdk-eks-cluster-integ/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksclusterintegDefaultTestDeployAssertB6AAB3A3"
