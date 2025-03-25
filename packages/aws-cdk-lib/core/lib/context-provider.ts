@@ -166,7 +166,10 @@ export class ContextProvider {
     // if context is missing or an error occurred during context retrieval,
     // report and return a dummy value.
     if (value === undefined || providerError !== undefined) {
-      const ignoreErrorOnMissingContext = options.mustExist !== undefined ? !options.mustExist : options.ignoreErrorOnMissingContext;
+      // Render 'ignoreErrorOnMissingContext' iff one of the parameters is supplied.
+      const ignoreErrorOnMissingContext = options.mustExist !== undefined || options.ignoreErrorOnMissingContext !== undefined
+        ? (options.mustExist !== undefined ? !options.mustExist : options.ignoreErrorOnMissingContext)
+        : undefined;
 
       // build a version of the props which includes the dummyValue and ignoreError flag
       const extendedProps: { [p: string]: any } = {
@@ -174,9 +177,8 @@ export class ContextProvider {
 
         // Even though we renamed the user-facing property, the field in the
         // cloud assembly still has the original name, which is somewhat wrong
-        // because it's not about missing context. Only render 'true' or don't
-        // render at all.
-        ignoreErrorOnMissingContext: ignoreErrorOnMissingContext ? true : undefined,
+        // because it's not about missing context.
+        ignoreErrorOnMissingContext,
         ...props,
       };
 
