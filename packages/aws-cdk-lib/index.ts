@@ -63,6 +63,7 @@ export * as aws_codestar from './aws-codestar';
 export * as aws_codestarconnections from './aws-codestarconnections';
 export * as aws_codestarnotifications from './aws-codestarnotifications';
 export * as aws_cognito from './aws-cognito';
+export * as aws_cognito_identitypool from './aws-cognito-identitypool';
 export * as aws_comprehend from './aws-comprehend';
 export * as aws_config from './aws-config';
 export * as aws_connect from './aws-connect';
