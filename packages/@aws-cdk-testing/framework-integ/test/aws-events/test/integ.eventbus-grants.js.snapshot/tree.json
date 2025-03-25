@@ -1,0 +1,1627 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "EventBusGrantsTestStackWithFlag": {
+        "id": "EventBusGrantsTestStackWithFlag",
+        "path": "EventBusGrantsTestStackWithFlag",
+        "children": {
+          "TestEventBus": {
+            "id": "TestEventBus",
+            "path": "EventBusGrantsTestStackWithFlag/TestEventBus",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "EventBusGrantsTestStackWithFlag/TestEventBus/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::EventBus",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "EventBusGrantsTestStackWithFlagTestEventBus09AD4D52"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnEventBus",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.EventBus",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "TestParameterWithFlag": {
+            "id": "TestParameterWithFlag",
+            "path": "EventBusGrantsTestStackWithFlag/TestParameterWithFlag",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "EventBusGrantsTestStackWithFlag/TestParameterWithFlag/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "EventBusGrantsTestWithFlag",
+                    "type": "String",
+                    "value": "initial"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ssm.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ssm.StringParameter",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "parameterName": "*",
+                  "stringValue": "*"
+                }
+              ]
+            }
+          },
+          "PublisherWithFlag": {
+            "id": "PublisherWithFlag",
+            "path": "EventBusGrantsTestStackWithFlag/PublisherWithFlag",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "EventBusGrantsTestStackWithFlag/PublisherWithFlag/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "EventBusGrantsTestStackWithFlag/PublisherWithFlag/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "EventBusGrantsTestStackWithFlag/PublisherWithFlag/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "EventBusGrantsTestStackWithFlag/PublisherWithFlag/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "EventBusGrantsTestStackWithFlag/PublisherWithFlag/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "events:PutEvents",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "TestEventBus12626D66",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "PublisherWithFlagServiceRoleDefaultPolicy1FEBC9A2",
+                            "roles": [
+                              {
+                                "Ref": "PublisherWithFlagServiceRole5A520D99"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "EventBusGrantsTestStackWithFlag/PublisherWithFlag/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "\n      // Simple function that just returns success\n      // We're only testing if the permissions are granted correctly\n      // The actual event publishing isn't critical for this test\n      exports.handler = async () => {\n        return { statusCode: 200, body: 'Success' };\n      };\n    "
+                    },
+                    "environment": {
+                      "variables": {
+                        "EVENT_BUS_NAME": {
+                          "Ref": "TestEventBus12626D66"
+                        }
+                      }
+                    },
+                    "functionName": "eventbus-grants-withflag-publisher",
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "PublisherWithFlagServiceRole5A520D99",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x",
+                    "timeout": 10
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "runtime": "*",
+                  "handler": "*",
+                  "functionName": "*",
+                  "code": "*",
+                  "environment": "*",
+                  "timeout": "*"
+                },
+                {
+                  "addEnvironment": [
+                    "*",
+                    "*"
+                  ]
+                }
+              ]
+            }
+          },
+          "PutEventsWithFlag": {
+            "id": "PutEventsWithFlag",
+            "path": "EventBusGrantsTestStackWithFlag/PutEventsWithFlag",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.EventBridgePutEvents",
+              "version": "0.0.0"
+            }
+          },
+          "UpdateParameterWithFlag": {
+            "id": "UpdateParameterWithFlag",
+            "path": "EventBusGrantsTestStackWithFlag/UpdateParameterWithFlag",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.CallAwsService",
+              "version": "0.0.0"
+            }
+          },
+          "TestStateMachineWithFlag": {
+            "id": "TestStateMachineWithFlag",
+            "path": "EventBusGrantsTestStackWithFlag/TestStateMachineWithFlag",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "EventBusGrantsTestStackWithFlag/TestStateMachineWithFlag/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "EventBusGrantsTestStackWithFlag/TestStateMachineWithFlag/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "EventBusGrantsTestStackWithFlag/TestStateMachineWithFlag/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "EventBusGrantsTestStackWithFlag/TestStateMachineWithFlag/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "EventBusGrantsTestStackWithFlag/TestStateMachineWithFlag/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "events:PutEvents",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "TestEventBus12626D66",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "ssm:putParameter",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "TestStateMachineWithFlagRoleDefaultPolicy17C6B7FC",
+                            "roles": [
+                              {
+                                "Ref": "TestStateMachineWithFlagRole78ED4BBC"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      }
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "EventBusGrantsTestStackWithFlag/TestStateMachineWithFlag/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "definitionString": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"StartAt\":\"PutEventsWithFlag\",\"States\":{\"PutEventsWithFlag\":{\"Next\":\"UpdateParameterWithFlag\",\"Type\":\"Task\",\"ResultPath\":\"$.eventResult\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::events:putEvents\",\"Parameters\":{\"Entries\":[{\"Detail\":{\"test\":\"event\"},\"DetailType\":\"Test Event\",\"EventBusName\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "TestEventBus12626D66",
+                              "Arn"
+                            ]
+                          },
+                          "\",\"Source\":\"test.source\"}]}},\"UpdateParameterWithFlag\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::aws-sdk:ssm:putParameter\",\"Parameters\":{\"Name\":\"",
+                          {
+                            "Ref": "TestParameterWithFlag030979F6"
+                          },
+                          "\",\"Value\":\"success\",\"Type\":\"String\",\"Overwrite\":true}}},\"TimeoutSeconds\":30}"
+                        ]
+                      ]
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "TestStateMachineWithFlagRole78ED4BBC",
+                        "Arn"
+                      ]
+                    },
+                    "stateMachineName": "eventbus-grants-withflag-statemachine"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "stateMachineName": "*",
+                  "definitionBody": "*",
+                  "timeout": "*"
+                },
+                {
+                  "addToRolePolicy": [
+                    {}
+                  ]
+                },
+                {
+                  "addToRolePolicy": [
+                    {}
+                  ]
+                }
+              ]
+            }
+          },
+          "PublisherFunctionName": {
+            "id": "PublisherFunctionName",
+            "path": "EventBusGrantsTestStackWithFlag/PublisherFunctionName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachineArn": {
+            "id": "StateMachineArn",
+            "path": "EventBusGrantsTestStackWithFlag/StateMachineArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ParameterName": {
+            "id": "ParameterName",
+            "path": "EventBusGrantsTestStackWithFlag/ParameterName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "EventBusGrantsTestStackWithFlag/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "EventBusGrantsTestStackWithFlag/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "EventBusGrantsTestStackWithoutFlag": {
+        "id": "EventBusGrantsTestStackWithoutFlag",
+        "path": "EventBusGrantsTestStackWithoutFlag",
+        "children": {
+          "TestEventBus": {
+            "id": "TestEventBus",
+            "path": "EventBusGrantsTestStackWithoutFlag/TestEventBus",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "EventBusGrantsTestStackWithoutFlag/TestEventBus/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::EventBus",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "EventBusGrantsTestStackWithoutFlagTestEventBusD065A76C"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnEventBus",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.EventBus",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "TestParameterWithoutFlag": {
+            "id": "TestParameterWithoutFlag",
+            "path": "EventBusGrantsTestStackWithoutFlag/TestParameterWithoutFlag",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "EventBusGrantsTestStackWithoutFlag/TestParameterWithoutFlag/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "EventBusGrantsTestWithoutFlag",
+                    "type": "String",
+                    "value": "initial"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ssm.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ssm.StringParameter",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "parameterName": "*",
+                  "stringValue": "*"
+                }
+              ]
+            }
+          },
+          "PublisherWithoutFlag": {
+            "id": "PublisherWithoutFlag",
+            "path": "EventBusGrantsTestStackWithoutFlag/PublisherWithoutFlag",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "EventBusGrantsTestStackWithoutFlag/PublisherWithoutFlag/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "EventBusGrantsTestStackWithoutFlag/PublisherWithoutFlag/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "EventBusGrantsTestStackWithoutFlag/PublisherWithoutFlag/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "EventBusGrantsTestStackWithoutFlag/PublisherWithoutFlag/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "EventBusGrantsTestStackWithoutFlag/PublisherWithoutFlag/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "events:PutEvents",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "TestEventBus12626D66",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "PublisherWithoutFlagServiceRoleDefaultPolicy826D0D89",
+                            "roles": [
+                              {
+                                "Ref": "PublisherWithoutFlagServiceRoleFB01FDFC"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "EventBusGrantsTestStackWithoutFlag/PublisherWithoutFlag/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "\n      // Simple function that just returns success\n      // We're only testing if the permissions are granted correctly\n      // The actual event publishing isn't critical for this test\n      exports.handler = async () => {\n        return { statusCode: 200, body: 'Success' };\n      };\n    "
+                    },
+                    "environment": {
+                      "variables": {
+                        "EVENT_BUS_NAME": {
+                          "Ref": "TestEventBus12626D66"
+                        }
+                      }
+                    },
+                    "functionName": "eventbus-grants-withoutflag-publisher",
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "PublisherWithoutFlagServiceRoleFB01FDFC",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x",
+                    "timeout": 10
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "runtime": "*",
+                  "handler": "*",
+                  "functionName": "*",
+                  "code": "*",
+                  "environment": "*",
+                  "timeout": "*"
+                },
+                {
+                  "addEnvironment": [
+                    "*",
+                    "*"
+                  ]
+                }
+              ]
+            }
+          },
+          "PutEventsWithoutFlag": {
+            "id": "PutEventsWithoutFlag",
+            "path": "EventBusGrantsTestStackWithoutFlag/PutEventsWithoutFlag",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.EventBridgePutEvents",
+              "version": "0.0.0"
+            }
+          },
+          "UpdateParameterWithoutFlag": {
+            "id": "UpdateParameterWithoutFlag",
+            "path": "EventBusGrantsTestStackWithoutFlag/UpdateParameterWithoutFlag",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.CallAwsService",
+              "version": "0.0.0"
+            }
+          },
+          "TestStateMachineWithoutFlag": {
+            "id": "TestStateMachineWithoutFlag",
+            "path": "EventBusGrantsTestStackWithoutFlag/TestStateMachineWithoutFlag",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "EventBusGrantsTestStackWithoutFlag/TestStateMachineWithoutFlag/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "EventBusGrantsTestStackWithoutFlag/TestStateMachineWithoutFlag/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "EventBusGrantsTestStackWithoutFlag/TestStateMachineWithoutFlag/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "EventBusGrantsTestStackWithoutFlag/TestStateMachineWithoutFlag/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "EventBusGrantsTestStackWithoutFlag/TestStateMachineWithoutFlag/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "events:PutEvents",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "TestEventBus12626D66",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "ssm:putParameter",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "TestStateMachineWithoutFlagRoleDefaultPolicyBB0F850F",
+                            "roles": [
+                              {
+                                "Ref": "TestStateMachineWithoutFlagRoleF13A1612"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      }
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "EventBusGrantsTestStackWithoutFlag/TestStateMachineWithoutFlag/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "definitionString": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"StartAt\":\"PutEventsWithoutFlag\",\"States\":{\"PutEventsWithoutFlag\":{\"Next\":\"UpdateParameterWithoutFlag\",\"Type\":\"Task\",\"ResultPath\":\"$.eventResult\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::events:putEvents\",\"Parameters\":{\"Entries\":[{\"Detail\":{\"test\":\"event\"},\"DetailType\":\"Test Event\",\"EventBusName\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "TestEventBus12626D66",
+                              "Arn"
+                            ]
+                          },
+                          "\",\"Source\":\"test.source\"}]}},\"UpdateParameterWithoutFlag\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::aws-sdk:ssm:putParameter\",\"Parameters\":{\"Name\":\"",
+                          {
+                            "Ref": "TestParameterWithoutFlagDBCEE077"
+                          },
+                          "\",\"Value\":\"success\",\"Type\":\"String\",\"Overwrite\":true}}},\"TimeoutSeconds\":30}"
+                        ]
+                      ]
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "TestStateMachineWithoutFlagRoleF13A1612",
+                        "Arn"
+                      ]
+                    },
+                    "stateMachineName": "eventbus-grants-withoutflag-statemachine"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "stateMachineName": "*",
+                  "definitionBody": "*",
+                  "timeout": "*"
+                },
+                {
+                  "addToRolePolicy": [
+                    {}
+                  ]
+                },
+                {
+                  "addToRolePolicy": [
+                    {}
+                  ]
+                }
+              ]
+            }
+          },
+          "PublisherFunctionName": {
+            "id": "PublisherFunctionName",
+            "path": "EventBusGrantsTestStackWithoutFlag/PublisherFunctionName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "EventBusGrantsTestStackWithoutFlag/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "EventBusGrantsTestStackWithoutFlag/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "EventBusGrantsIntegWithAndWithoutFeatureFlag": {
+        "id": "EventBusGrantsIntegWithAndWithoutFeatureFlag",
+        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert",
+                "children": {
+                  "LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f": {
+                    "id": "LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f",
+                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f/Invoke",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939": {
+                    "id": "AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939",
+                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc": {
+                    "id": "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc",
+                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
+                        }
+                      },
+                      "WaitFor": {
+                        "id": "WaitFor",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor",
+                        "children": {
+                          "IsCompleteProvider": {
+                            "id": "IsCompleteProvider",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/IsCompleteProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/IsCompleteProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "TimeoutProvider": {
+                            "id": "TimeoutProvider",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/TimeoutProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/TimeoutProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Role": {
+                            "id": "Role",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/Role",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/Resource",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.WaiterStateMachine",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction76b3e830a873425f8453eddd85c86925": {
+                    "id": "SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
+                    "id": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb": {
+                    "id": "LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb",
+                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb/Invoke",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -126,6 +126,7 @@ export const ENABLE_ADDITIONAL_METADATA_COLLECTION = '@aws-cdk/core:enableAdditi
 export const LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY = '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy';
 export const SET_UNIQUE_REPLICATION_ROLE_NAME = '@aws-cdk/aws-s3:setUniqueReplicationRoleName';
 export const PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceStageRoleTrustScope';
+export const EVENTBUS_POLICY_SID_REQUIRED = '@aws-cdk/aws-events:requireEventBusPolicySid';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1430,6 +1431,28 @@ export const FLAGS: Record<string, FlagInfo> = {
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
 
+  //////////////////////////////////////////////////////////////////////
+  [EVENTBUS_POLICY_SID_REQUIRED]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals.',
+    detailsMd: `
+      Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails 
+      because service principals require resource policies with Statement IDs. 
+
+      When this flag is enabled:
+      - Resource policies will be created with Statement IDs for service principals
+      - The operation will succeed as expected
+      
+      When this flag is disabled:
+      - A warning will be emitted
+      - The grant operation will be dropped
+      - No permissions will be added
+
+      This fixes the issue where permissions were silently not being added for service principals.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+  },
 };
 
 const CURRENT_MV = 'v2';

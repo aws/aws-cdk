@@ -57,6 +57,24 @@ export interface GrantWithResourceOptions extends CommonGrantOptions {
 }
 
 /**
+ * Options for a grant operation that directly adds a policy statement to a resource
+ *
+ * This differs from GrantWithResourceOptions in that it requires a pre-constructed
+ * PolicyStatement rather than constructing one from individual permissions.
+ * Use this when you need fine-grained control over the initial policy statement's contents.
+ */
+export interface GrantPolicyWithResourceOptions extends GrantWithResourceOptions {
+  /**
+   * The policy statement to add to the resource's policy
+   *
+   * This statement will be passed to the resource's addToResourcePolicy method.
+   * The actual handling of the statement depends on the specific IResourceWithPolicy
+   * implementation.
+   */
+  readonly statement: PolicyStatement;
+}
+
+/**
  * Options for a grant operation that only applies to principals
  *
  */
@@ -152,6 +170,63 @@ export class Grant implements IDependable {
 
     return new Grant({
       resourceStatement: statement,
+      options,
+      policyDependable: resourceResult.statementAdded ? resourceResult.policyDependable ?? options.resource : undefined,
+    });
+  }
+
+  /**
+   * Add a pre-constructed policy statement to the resource's policy
+   *
+   * This method provides direct, low-level control over the initial policy statement being added.
+   * It is useful when you need to:
+   * - Add complex policy statements that can't be expressed through other grant methods
+   * - Specify the initial structure of the policy statement
+   * - Add statements with custom conditions or other advanced IAM features
+   *
+   * Important differences from other grant methods:
+   * - Only modifies the resource policy, never modifies any principal's policy
+   * - Takes a complete PolicyStatement rather than constructing one from parameters
+   * - Always attempts to add the statement, regardless of principal type or account
+   * - Does not attempt any automatic principal/resource policy selection logic
+   *
+   * Note: The final form of the policy statement in the resource's policy may differ
+   * from the provided statement, depending on the resource's implementation of
+   * addToResourcePolicy.
+   *
+   * @param options Contains both the target resource and the policy statement to add
+   * @returns A Grant object representing the result of the operation
+   *
+   * @example
+   *
+   * declare const grantee: iam.IGrantable;
+   * declare const actions: string[];
+   * declare const resourceArns: string[];
+   * declare const bucket: s3.Bucket;
+   *
+   * const statement = new iam.PolicyStatement({
+   *   effect: iam.Effect.ALLOW,
+   *   actions: actions,
+   *   principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
+   *   conditions: {
+   *     StringEquals: {
+   *       'aws:SourceAccount': Stack.of(this).account,
+   *     },
+   *   },
+   * });
+   * iam.Grant.addStatementToResourcePolicy({
+   *     grantee: grantee,
+   *     actions: actions,
+   *     resourceArns: resourceArns,
+   *     resource: bucket,
+   *     statement: statement,
+   *  });
+   *
+   */
+  public static addStatementToResourcePolicy(options: GrantPolicyWithResourceOptions) {
+    const resourceResult = options.resource.addToResourcePolicy(options.statement);
+    return new Grant({
+      resourceStatement: options.statement,
       options,
       policyDependable: resourceResult.statementAdded ? resourceResult.policyDependable ?? options.resource : undefined,
     });
