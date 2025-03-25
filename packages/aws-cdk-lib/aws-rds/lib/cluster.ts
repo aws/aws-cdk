@@ -480,6 +480,9 @@ interface DatabaseClusterBaseProps {
   /**
    * The life cycle type for this DB cluster.
    *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/extended-support.html
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support.html
+   *
    * @default undefined - AWS RDS default id `EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT`
    */
   readonly engineLifecycleSupport?: EngineLifecycleSupport;
@@ -491,9 +494,6 @@ interface DatabaseClusterBaseProps {
 export enum EngineLifecycleSupport {
   /**
    * Using Amazon RDS extended support
-   *
-   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/extended-support.html
-   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support.html
    */
   OPEN_SOURCE_RDS_EXTENDED_SUPPORT = 'open-source-rds-extended-support',
 
