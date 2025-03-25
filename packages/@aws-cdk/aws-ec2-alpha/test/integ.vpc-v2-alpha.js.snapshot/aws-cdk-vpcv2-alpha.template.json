@@ -145,6 +145,7 @@
   "VPCintegtest1TestInterfaceEndpoint7B63C4C3": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
+    "DnsOptions": {},
     "PrivateDnsEnabled": true,
     "SecurityGroupIds": [
      {
