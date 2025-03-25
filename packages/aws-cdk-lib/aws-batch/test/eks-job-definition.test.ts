@@ -81,3 +81,102 @@ test('can be imported from ARN', () => {
   expect(importedJob.jobDefinitionArn).toEqual('arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
 });
 
+// Tests for EcsJobDefinition consumable resources property
+import { Match } from '../../assertions';
+import { Compatibility, EcsJobDefinition } from '../lib';
+
+test('EcsJobDefinition with consumableResources property', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new EcsJobDefinition(stack, 'EcsJobDefn', {
+    container: {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memory: 1024,
+      vcpus: 1,
+    },
+    consumableResources: {
+      resources: [
+        {
+          resource: 'arn:aws:license-manager:us-east-1:123456789012:license-configuration:lic-123456789012',
+          quantity: 1,
+        },
+      ],
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+    ConsumableResourceProperties: {
+      ConsumableResourceList: [
+        {
+          ConsumableResource: 'arn:aws:license-manager:us-east-1:123456789012:license-configuration:lic-123456789012',
+          Quantity: 1,
+        },
+      ],
+    },
+  });
+});
+
+test('EcsJobDefinition without consumableResources property', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new EcsJobDefinition(stack, 'EcsJobDefn', {
+    container: {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memory: 1024,
+      vcpus: 1,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+    ConsumableResourceProperties: Match.absent(),
+  });
+});
+
+test('EcsJobDefinition with multiple consumableResources', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new EcsJobDefinition(stack, 'EcsJobDefn', {
+    container: {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memory: 1024,
+      vcpus: 1,
+    },
+    consumableResources: {
+      resources: [
+        {
+          resource: 'arn:aws:license-manager:us-east-1:123456789012:license-configuration:lic-123456789012',
+          quantity: 1,
+        },
+        {
+          resource: 'arn:aws:license-manager:us-east-1:123456789012:license-configuration:lic-987654321098',
+          quantity: 2,
+        },
+      ],
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+    ConsumableResourceProperties: {
+      ConsumableResourceList: [
+        {
+          ConsumableResource: 'arn:aws:license-manager:us-east-1:123456789012:license-configuration:lic-123456789012',
+          Quantity: 1,
+        },
+        {
+          ConsumableResource: 'arn:aws:license-manager:us-east-1:123456789012:license-configuration:lic-987654321098',
+          Quantity: 2,
+        },
+      ],
+    },
+  });
+});
+

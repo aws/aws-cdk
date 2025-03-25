@@ -551,6 +551,36 @@ const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
 });
 ```
 
+### Consumable Resources
+
+You can specify consumable resources that your Batch job needs to access during execution. 
+Consumable resources are defined by their ARN and the quantity required by the job.
+This is useful for managing resources like license entitlements or other provisioned capacity.
+
+```ts
+const jobDefn = new batch.EcsJobDefinition(this, 'JobDefnWithConsumables', {
+  container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
+    image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
+  }),
+  consumableResources: {
+    resources: [
+      {
+        resource: 'arn:aws:license-manager:region:account:license-configuration:license-configuration-id',
+        quantity: 1,
+      },
+      {
+        resource: 'arn:aws:resource-groups:region:account:group/resource-group-id',
+        quantity: 5,
+      },
+    ],
+  },
+});
+```
+
+A job with consumable resources will only be scheduled when the specified quantities of all required resources are available.
+
 ### Running Kubernetes Workflows
 
 Batch also supports running workflows on EKS. The following example creates a `JobDefinition` that runs on EKS:

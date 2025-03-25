@@ -34,6 +34,31 @@ export enum Compatibility {
 }
 
 /**
+ * Defines a consumable resource requirement for a batch job.
+ */
+export interface ConsumableResource {
+  /**
+   * The ARN of the consumable resource the job definition should consume.
+   */
+  readonly resource: string;
+
+  /**
+   * The quantity of the consumable resource required.
+   */
+  readonly quantity: number;
+}
+
+/**
+ * Configuration for consumable resources.
+ */
+export interface ConsumableResourcesProps {
+  /**
+   * List of consumable resources required by the job.
+   */
+  readonly resources: ConsumableResource[];
+}
+
+/**
  * Props for EcsJobDefinition
  */
 export interface EcsJobDefinitionProps extends JobDefinitionProps {
@@ -49,6 +74,12 @@ export interface EcsJobDefinitionProps extends JobDefinitionProps {
    * @default false
    */
   readonly propagateTags?: boolean;
+
+  /**
+   * Configuration for consumable resources required by the job.
+   * @default - No consumable resources are specified
+   */
+  readonly consumableResources?: ConsumableResourcesProps;
 }
 
 /**
@@ -97,6 +128,12 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
       containerProperties: this.container?._renderContainerDefinition(),
       platformCapabilities: this.renderPlatformCapabilities(),
       propagateTags: this.propagateTags,
+      consumableResourceProperties: props.consumableResources && {
+        consumableResourceList: props.consumableResources.resources.map(resource => ({
+          consumableResource: resource.resource,
+          quantity: resource.quantity,
+        })),
+      },
     });
 
     this.jobDefinitionArn = this.getResourceArnAttribute(resource.ref, {
