@@ -66,12 +66,12 @@
     "@aws-cdk/service-spec-types" "^0.0.127"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/aws-service-spec@^0.1.62":
-  version "0.1.62"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.62.tgz#7cb5f186f9805206ac7718f75d4c537d7727dc0d"
-  integrity sha512-E6jCjAHagp0OfGfTfGae/kctceuzLyJ+DuWLrmh/dTGVobUVdtObFLCE5X5u7LK2xq0YI9RRsC9pEJtAmD9bmw==
+"@aws-cdk/aws-service-spec@^0.1.63":
+  version "0.1.63"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.63.tgz#52a86853fcb102edf042ab79de9be6bada6bc3f0"
+  integrity sha512-5OsuiiRu1hrc02juBAjMDE9oXfjKIuKJ4YCPXX27lFXjBAAvNXLvkjRCJCTmRwVv2/GO3oqouh/Ln3hsvvBDSA==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.128"
+    "@aws-cdk/service-spec-types" "^0.0.129"
     "@cdklabs/tskb" "^0.0.3"
 
 "@aws-cdk/cloud-assembly-schema@^40.7.0":
@@ -117,15 +117,15 @@
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v32/-/lambda-layer-kubectl-v32-2.0.3.tgz#b618fc5f5425b4c7ce2544c554d0620666028b49"
   integrity sha512-e6Xs7PuJKeQ7+GAOPQo6G28lw1U3gP4ky8RCOR5QScofutzMwR7FJpaXKPUzIrfJiFkZsfVnhcSI8166i/C2wQ==
 
-"@aws-cdk/service-spec-importers@^0.0.72":
-  version "0.0.72"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.72.tgz#7e184754c82a30d6e4f2fb33185956f024064649"
-  integrity sha512-kQnaQcPSZArGzpClbGglP5rlwNGvTTIIOvtEhzS5FrLhqyGWdvsh7rzP0B8y1UPd8imSTjODuh6pp3HAGyGW1w==
+"@aws-cdk/service-spec-importers@^0.0.73":
+  version "0.0.73"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.73.tgz#a66dcae3a887f79fca8f7ea3f504db58675278f4"
+  integrity sha512-gUmkWceGmXlZaLEGoJJNbliYzrbiiR9V35//LxuXHpCCadEa+8fLy2bbaYC2hNQdvQtUtvW5j1qlLvXrX0YfAw==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.128"
+    "@aws-cdk/service-spec-types" "^0.0.129"
     "@cdklabs/tskb" "^0.0.3"
     ajv "^6"
-    canonicalize "^2.0.0"
+    canonicalize "^2.1.0"
     chalk "^4"
     commander "^11.1.0"
     fast-json-patch "^3.1.1"
@@ -140,10 +140,10 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/service-spec-types@^0.0.128":
-  version "0.0.128"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.128.tgz#7f84406311664e08523501885b4e28d0e8e34f26"
-  integrity sha512-wAYyf6xiYXObUR/f83iSd8cQ4TgDuk7h909wgmTMIIWxId1NJGw8o0TvInYjHP0GtXIFGoHoeO2efKsp72YbBw==
+"@aws-cdk/service-spec-types@^0.0.129":
+  version "0.0.129"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.129.tgz#52d495a88a30c1a62b8280a2ebd3674d854be583"
+  integrity sha512-MUWSHlc4df5p34x1ztulhS/7pCUiy9pVjuS6/vWJFkbHDSG/01VqWnELUnPaaWng54tuiHsQUH/jEC3asVLu3g==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
@@ -5784,10 +5784,10 @@ caniuse-lite@^1.0.30001688:
   resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001703.tgz#977cb4920598c158f491ecf4f4f2cfed9e354718"
   integrity sha512-kRlAGTRWgPsOj7oARC9m1okJEXdL/8fekFVcxA8Hl7GH4r/sN4OJn/i6Flde373T50KS7Y37oFbMwlE8+F42kQ==
 
-canonicalize@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/canonicalize/-/canonicalize-2.0.0.tgz#32be2cef4446d67fd5348027a384cae28f17226a"
-  integrity sha512-ulDEYPv7asdKvqahuAY35c1selLdzDwHqugK92hfkzvlDCwXRRelDkR+Er33md/PtnpqHemgkuDPanZ4fiYZ8w==
+canonicalize@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/canonicalize/-/canonicalize-2.1.0.tgz#92a20ecfb94e96591badf4977dc2fb1bfbc31dc5"
+  integrity sha512-F705O3xrsUtgt98j7leetNhTWPe+5S72rlL5O4jA1pKqBVQ/dT1O1D6PFxmSXvc0SUOinWS57DKx0I3CHrXJHQ==
 
 capital-case@^1.0.4:
   version "1.0.4"
