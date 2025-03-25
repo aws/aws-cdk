@@ -50,6 +50,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-docdb',
   'aws-dynamodb',
   'aws-ecr',
+  'aws-ecr-assets',
   'aws-efs',
   'aws-elasticloadbalancing',
   'aws-elasticloadbalancingv2',
