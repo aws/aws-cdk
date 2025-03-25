@@ -4,7 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
-import { LambdaInvoke } from 'aws-cdk-lib/aws-scheduler-targets/lib/lambda-invoke';
+import { LambdaInvoke } from 'aws-cdk-lib/aws-scheduler-targets';
 
 const LAMBDA_TAGGING_PERMISSION = new iam.PolicyStatement(
   new iam.PolicyStatement({

@@ -4,7 +4,7 @@ import * as scheduler from 'aws-cdk-lib/aws-scheduler';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { SnsPublish } from 'aws-cdk-lib/aws-scheduler-targets/lib/sns-publish';
+import { SnsPublish } from 'aws-cdk-lib/aws-scheduler-targets';
 
 /**
  * Stack verification steps:

@@ -2,7 +2,7 @@ import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { AssessmentTemplate, CfnAssessmentTarget, CfnAssessmentTemplate } from 'aws-cdk-lib/aws-inspector';
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
-import { InspectorStartAssessmentRun } from 'aws-cdk-lib/aws-scheduler-targets/lib/inspector-start-assessment-run';
+import { InspectorStartAssessmentRun } from 'aws-cdk-lib/aws-scheduler-targets';
 
 /*
  * Pre-Stack Verification:

@@ -5,7 +5,7 @@ import { Bucket } from 'aws-cdk-lib/aws-s3';
 import * as sagemaker from 'aws-cdk-lib/aws-sagemaker';
 import { Construct } from 'constructs';
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
-import { SageMakerPipelineParameter, SageMakerStartPipelineExecution } from 'aws-cdk-lib/aws-scheduler-targets/lib/sage-maker-start-pipeline-execution';
+import { SageMakerPipelineParameter, SageMakerStartPipelineExecution } from 'aws-cdk-lib/aws-scheduler-targets';
 
 interface FakePipelineProps {
   readonly pipelineName: string;

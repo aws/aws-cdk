@@ -3,7 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { SqsSendMessage } from 'aws-cdk-lib/aws-scheduler-targets/lib/sqs-send-message';
+import { SqsSendMessage } from 'aws-cdk-lib/aws-scheduler-targets';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-schedule-dlq');

@@ -2,7 +2,7 @@ import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
-import { SqsSendMessage } from 'aws-cdk-lib/aws-scheduler-targets/lib/sqs-send-message';
+import { SqsSendMessage } from 'aws-cdk-lib/aws-scheduler-targets';
 
 /*
  * Stack verification steps:

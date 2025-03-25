@@ -3,7 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
-import { FirehosePutRecord } from 'aws-cdk-lib/aws-scheduler-targets/lib/firehose-put-record';
+import { FirehosePutRecord } from 'aws-cdk-lib/aws-scheduler-targets';
 
 /*
  * Stack verification steps:

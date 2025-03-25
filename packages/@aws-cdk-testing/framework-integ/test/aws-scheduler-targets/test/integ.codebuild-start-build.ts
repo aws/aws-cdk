@@ -6,7 +6,7 @@ import { CompositePrincipal, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam'
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
-import { CodeBuildStartBuild } from 'aws-cdk-lib/aws-scheduler-targets/lib/codebuild-start-build';
+import { CodeBuildStartBuild } from 'aws-cdk-lib/aws-scheduler-targets';
 
 /*
  * Stack verification steps:

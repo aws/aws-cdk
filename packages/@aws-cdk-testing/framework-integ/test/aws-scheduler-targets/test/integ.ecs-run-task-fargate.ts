@@ -3,7 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { FargateTaskDefinition, ContainerImage, Cluster } from 'aws-cdk-lib/aws-ecs';
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
-import { EcsRunFargateTask } from 'aws-cdk-lib/aws-scheduler-targets/lib/ecs-run-task';
+import { EcsRunFargateTask } from 'aws-cdk-lib/aws-scheduler-targets';
 
 /*
  * Stack verification steps:

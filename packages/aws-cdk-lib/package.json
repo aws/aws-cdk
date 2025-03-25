@@ -457,6 +457,7 @@
     "./aws-sagemaker": "./aws-sagemaker/index.js",
     "./aws-sam": "./aws-sam/index.js",
     "./aws-scheduler": "./aws-scheduler/index.js",
+    "./aws-scheduler-targets": "./aws-scheduler-targets/index.js",
     "./aws-sdb": "./aws-sdb/index.js",
     "./aws-secretsmanager": "./aws-secretsmanager/index.js",
     "./aws-securityhub": "./aws-securityhub/index.js",

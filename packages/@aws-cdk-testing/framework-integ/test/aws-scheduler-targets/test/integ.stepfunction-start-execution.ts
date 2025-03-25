@@ -4,7 +4,7 @@ import * as scheduler from 'aws-cdk-lib/aws-scheduler';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
-import { StepFunctionsStartExecution } from 'aws-cdk-lib/aws-scheduler-targets/lib/stepfunctions-start-execution';
+import { StepFunctionsStartExecution } from 'aws-cdk-lib/aws-scheduler-targets';
 
 /*
  * Stack verification steps:
