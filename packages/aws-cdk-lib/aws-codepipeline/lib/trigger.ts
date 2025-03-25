@@ -5,7 +5,7 @@ import { validateTriggers } from './private/validation';
 /**
  * Git push filter for trigger.
  */
-export interface GitPushFilter extends GitFilter{
+export interface GitPushFilter extends GitFilter {
   /**
    * The list of patterns of Git tags that, when pushed, are to be excluded from
    * starting the pipeline.
