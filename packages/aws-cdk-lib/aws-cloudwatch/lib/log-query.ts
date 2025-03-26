@@ -70,6 +70,15 @@ export interface LogQueryWidgetProps {
   readonly region?: string;
 
   /**
+   * The account ID the log groups of this widget belong to
+   *
+   * Cross-account CloudWatch Logs queries require appropriate permissions to be set up.
+   *
+   * @default Current account
+   */
+  readonly account?: string;
+
+  /**
    * The type of view to use
    *
    * @default LogQueryVisualizationType.TABLE
@@ -122,6 +131,11 @@ export class LogQueryWidget extends ConcreteWidget {
       region: this.props.region || cdk.Aws.REGION,
       query: `${sources} | ${query}`,
     };
+
+    // Add account ID if specified for cross-account log queries
+    if (this.props.account) {
+      properties.accountId = this.props.account;
+    }
 
     // adding stacked property in case of LINE or STACKEDAREA
     if (this.props.view === LogQueryVisualizationType.LINE || this.props.view === LogQueryVisualizationType.STACKEDAREA) {

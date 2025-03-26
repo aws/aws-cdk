@@ -3,6 +3,7 @@ import { App, Duration, Stack } from '../../core';
 import {
   Dashboard, DashboardVariable, DefaultValue,
   GraphWidget,
+  LogQueryWidget,
   MathExpression,
   PeriodOverride,
   TextWidget,
@@ -436,6 +437,75 @@ describe('Dashboard', () => {
         visible: true,
       })).toThrow(`Variable with inputType (${inputType}) requires values to be set`);
     });
+  });
+
+  test('log query widget supports cross-account queries', () => {
+    // GIVEN
+    const stack = new Stack();
+    const dashboard = new Dashboard(stack, 'Dash');
+
+    // WHEN
+    dashboard.addWidgets(new LogQueryWidget({
+      logGroupNames: ['my-log-group'],
+      queryString: 'fields @timestamp, @message | sort @timestamp desc | limit 20',
+      account: '123456789012',
+      width: 12,
+      height: 5,
+    }));
+
+    // THEN
+    const resources = Template.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
+    expect(Object.keys(resources).length).toEqual(1);
+    const key = Object.keys(resources)[0];
+    const dashboardBody = resources[key].Properties.DashboardBody['Fn::Join'][1].join('');
+    const parsedBody = JSON.parse(dashboardBody);
+    expect(parsedBody.widgets[0].properties.accountId).toEqual('123456789012');
+  });
+
+  test('log query widget without account specified does not include accountId', () => {
+    // GIVEN
+    const stack = new Stack();
+    const dashboard = new Dashboard(stack, 'Dash');
+
+    // WHEN
+    dashboard.addWidgets(new LogQueryWidget({
+      logGroupNames: ['my-log-group'],
+      queryString: 'fields @timestamp, @message | sort @timestamp desc | limit 20',
+      width: 12,
+      height: 5,
+    }));
+
+    // THEN
+    const resources = Template.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
+    expect(Object.keys(resources).length).toEqual(1);
+    const key = Object.keys(resources)[0];
+    const dashboardBody = resources[key].Properties.DashboardBody['Fn::Join'][1].join('');
+    const parsedBody = JSON.parse(dashboardBody);
+    expect(parsedBody.widgets[0].properties.accountId).toBeUndefined();
+  });
+
+  test('log query widget supports multiple log groups from different accounts', () => {
+    // GIVEN
+    const stack = new Stack();
+    const dashboard = new Dashboard(stack, 'Dash');
+
+    // WHEN
+    dashboard.addWidgets(new LogQueryWidget({
+      logGroupNames: ['my-log-group-1', 'my-log-group-2'],
+      queryString: 'fields @timestamp, @message | sort @timestamp desc | limit 20',
+      account: '123456789012',
+      width: 12,
+      height: 5,
+    }));
+
+    // THEN
+    const resources = Template.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
+    expect(Object.keys(resources).length).toEqual(1);
+    const key = Object.keys(resources)[0];
+    const dashboardBody = resources[key].Properties.DashboardBody['Fn::Join'][1].join('');
+    const parsedBody = JSON.parse(dashboardBody);
+    expect(parsedBody.widgets[0].properties.accountId).toEqual('123456789012');
+    expect(parsedBody.widgets[0].properties.query).toContain("SOURCE 'my-log-group-1' | SOURCE 'my-log-group-2'");
   });
 
   test('search values fail if empty dimensions', () => {
