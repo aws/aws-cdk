@@ -21,7 +21,7 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile && cd tools/@aws-cdk/enum-updater && yarn build
+        run:  cd tools/@aws-cdk/enum-updater && yarn install --frozen-lockfile && yarn build
 
       - name: Identify Missing Values and Apply Code Changes
         run: |
