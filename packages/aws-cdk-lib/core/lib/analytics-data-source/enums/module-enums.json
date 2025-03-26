@@ -780,24 +780,6 @@
       1
     ]
   },
-  "aws-cdk/packages/@aws-cdk/cdk-cli-wrapper/lib/commands/common.ts": {
-    "RequireApproval": [
-      "never",
-      "any-change",
-      "broadening"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/cdk-cli-wrapper/lib/commands/deploy.ts": {
-    "HotswapMode": [
-      "fall-back",
-      "hotswap-only",
-      "full-deployment"
-    ],
-    "StackActivityProgress": [
-      "bar",
-      "events"
-    ]
-  },
   "aws-cdk/packages/@aws-cdk/custom-resource-handlers/lib/core/cfn-utils-provider/index.ts": {
     "CfnUtilsResourceType": [
       "Custom::AWSCDKCfnJson",
@@ -816,18 +798,6 @@
       "SingletonFunction",
       "CustomResourceProvider",
       "NoOp"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/integ-runner/lib/workers/common.ts": {
-    "DiagnosticReason": [
-      "NO_SNAPSHOT",
-      "TEST_FAILED",
-      "TEST_ERROR",
-      "SNAPSHOT_FAILED",
-      "SNAPSHOT_ERROR",
-      "SNAPSHOT_SUCCESS",
-      "TEST_SUCCESS",
-      "ASSERTION_FAILED"
     ]
   },
   "aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/lambda-handler/types.ts": {
@@ -2100,6 +2070,16 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.ts": {
+    "Result": [
+      "ROLLBACK",
+      "FAIL",
+      "RETRY",
+      "SKIP"
+    ],
+    "RetryMode": [
+      "ALL_ACTIONS",
+      "FAILED_ACTIONS"
+    ],
     "PipelineType": [
       "V1",
       "V2"
@@ -2124,6 +2104,25 @@
     "DetailType": [
       "BASIC",
       "FULL"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-cognito-identitypool/lib/identitypool.ts": {
+    "IdentityPoolProviderType": [
+      "Facebook",
+      "Google",
+      "Amazon",
+      "Apple",
+      "Twitter",
+      "OpenId",
+      "Saml",
+      "UserPool",
+      "Custom"
+    ],
+    "RoleMappingMatchType": [
+      "Equals",
+      "Contains",
+      "StartsWith",
+      "NotEqual"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool-domain.ts": {
@@ -2914,10 +2913,19 @@
       "standard"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint-service.ts": {
+    "IpAddressType": [
+      "ipv4",
+      "ipv6"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.ts": {
     "VpcEndpointType": [
       "Interface",
-      "Gateway"
+      "Gateway",
+      "GatewayLoadBalancer",
+      "ServiceNetwork",
+      "Resource"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.ts": {
@@ -2955,7 +2963,8 @@
     ],
     "DefaultInstanceTenancy": [
       "default",
-      "dedicated"
+      "dedicated",
+      "host"
     ],
     "RouterType": [
       "CarrierGateway",

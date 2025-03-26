@@ -895,6 +895,15 @@
       "ALL_AT_ONCE"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-cognito-identitypool/lib/identitypool.ts": {
+    "IdentityPoolProviderUrl": [
+      "FACEBOOK",
+      "GOOGLE",
+      "AMAZON",
+      "APPLE",
+      "TWITTER"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool-client.ts": {
     "OAuthScope": [
       "PHONE",
@@ -2113,6 +2122,7 @@
       "RUBY_2_7",
       "RUBY_3_2",
       "RUBY_3_3",
+      "RUBY_3_4",
       "PROVIDED",
       "PROVIDED_AL2",
       "PROVIDED_AL2023",
