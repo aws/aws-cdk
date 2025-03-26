@@ -313,6 +313,15 @@
   dependencies:
     semver "^7.7.1"
 
+"@aws-cdk/enums-updater@file:/Users/xazhao/workspace/remote/aws-cdk/tools/@aws-cdk/enum-updater":
+  version "0.0.0"
+  resolved "file:tools/@aws-cdk/enum-updater"
+  dependencies:
+    axios "^1.8.3"
+    esbuild "^0.25.0"
+    extract-zip "^2.0.1"
+    ts-morph "~24.0.0"
+
 "@aws-cdk/example-construct-library@file:/Users/xazhao/workspace/remote/aws-cdk/packages/@aws-cdk/example-construct-library":
   version "0.0.0"
   resolved "file:packages/@aws-cdk/example-construct-library"
@@ -4681,6 +4690,13 @@
   resolved "https://registry.npmjs.org/@types/aws-lambda/-/aws-lambda-8.10.147.tgz"
   integrity sha512-nD0Z9fNIZcxYX5Mai2CTmFD7wX7UldCkW2ezCF8D1T5hdiLsnTWDGRpfRYntU6VjTdLQjOvyszru7I1c1oCQew==
 
+"@types/axios@^0.14.4":
+  version "0.14.4"
+  resolved "https://registry.npmjs.org/@types/axios/-/axios-0.14.4.tgz"
+  integrity sha512-9JgOaunvQdsQ/qW2OPmE5+hCeUB52lQSolecrFrthct55QekhmXEwT203s20RL+UHtCQc15y3VXpby9E7Kkh/g==
+  dependencies:
+    axios "*"
+
 "@types/babel__core@^7.1.14":
   version "7.20.5"
   resolved "https://registry.npmjs.org/@types/babel__core/-/babel__core-7.20.5.tgz"
@@ -4733,10 +4749,10 @@
   dependencies:
     "@types/ms" "*"
 
-"@types/extract-zip@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@types/extract-zip/-/extract-zip-2.0.0.tgz"
-  integrity sha512-kOyPt0JC0wl3VMH/jHmY4i70eWc1D/UwiZykjI33KuTsMnQzZYA8uEgIdxHfzQHW55ZmSEODsUlp5KnYkgPWrg==
+"@types/extract-zip@^2.0.0", "@types/extract-zip@^2.0.1":
+  version "2.0.3"
+  resolved "https://registry.npmjs.org/@types/extract-zip/-/extract-zip-2.0.3.tgz"
+  integrity sha512-yrO7h+0qOIGxHCmBeL5fKFzR+PBafh9LG6sOLBFFi2JuN+Hj663TAxfnqJh5vkQn963VimrhBF1GZzea3A+4Ig==
   dependencies:
     extract-zip "*"
 
@@ -5624,15 +5640,7 @@ awslint@0.0.0, "awslint@file:/Users/xazhao/workspace/remote/aws-cdk/packages/aws
     jsii-reflect "1.109.0"
     yargs "^16.2.0"
 
-axios@^0.27.2:
-  version "0.27.2"
-  resolved "https://registry.npmjs.org/axios/-/axios-0.27.2.tgz"
-  integrity sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==
-  dependencies:
-    follow-redirects "^1.14.9"
-    form-data "^4.0.0"
-
-axios@^1.7.4, axios@1.8.3:
+axios@*, axios@^1.7.4, axios@^1.8.3, axios@1.8.3:
   version "1.8.3"
   resolved "https://registry.npmjs.org/axios/-/axios-1.8.3.tgz"
   integrity sha512-iP4DebzoNlP/YN2dpwCgb8zoCmhtkajzS48JvwmkSkXvPI3DHc7m+XYL5tGnSlJtR6nImXZmdCuN5aP8dh1d8A==
@@ -5640,6 +5648,14 @@ axios@^1.7.4, axios@1.8.3:
     follow-redirects "^1.15.6"
     form-data "^4.0.0"
     proxy-from-env "^1.1.0"
+
+axios@^0.27.2:
+  version "0.27.2"
+  resolved "https://registry.npmjs.org/axios/-/axios-0.27.2.tgz"
+  integrity sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==
+  dependencies:
+    follow-redirects "^1.14.9"
+    form-data "^4.0.0"
 
 babel-core@^7.0.0-bridge.0:
   version "7.0.0-bridge.0"
@@ -7880,7 +7896,7 @@ external-editor@^3.0.3:
     iconv-lite "^0.4.24"
     tmp "^0.0.33"
 
-extract-zip@*:
+extract-zip@*, extract-zip@^2.0.1:
   version "2.0.1"
   resolved "https://registry.npmjs.org/extract-zip/-/extract-zip-2.0.1.tgz"
   integrity sha512-GDhU9ntwuKyGXdZBUgTIe+vXnWj0fppUEtMDL0+idd5Sta8TGpHssn/eusA9mrPr9qNDym6SxAYZjNvCn/9RBg==
