@@ -618,7 +618,7 @@
          "Value"
         ]
        },
-       "},\"physicalResourceId\":{\"id\":\"resourceid\"},\"logApiResponseData\":true}"
+       "},\"physicalResourceId\":{\"id\":\"resourceid\"}}"
       ]
      ]
     },
@@ -633,7 +633,7 @@
          "Value"
         ]
        },
-       "},\"physicalResourceId\":{\"id\":\"resourceid\"},\"logApiResponseData\":true}"
+       "},\"physicalResourceId\":{\"id\":\"resourceid\"}}"
       ]
      ]
     },
