@@ -1522,13 +1522,14 @@ You can lookup an existing DatabaseInstance by its instanceIdentifier using `Dat
 Here's how `DatabaseInstance.fromLookup()` can be used:
 
 ```ts
-const dbFromLookup = rds.DatabaseInstance.fromLookup(stack, 'dbFromLookup', {
-  instanceIdentifier: instanceId,
+declare const myUserRole: iam.Role;
+
+const dbFromLookup = rds.DatabaseInstance.fromLookup(this, 'dbFromLookup', {
+  instanceIdentifier: 'instanceId',
 });
 
 // Grant a connection
-dbFromLookup.grantConnect(myUserRole, myUserId);
-```
+dbFromLookup.grantConnect(myUserRole, 'my-user-id');
 
 ## Limitless Database Cluster
 
