@@ -1,0 +1,13 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "aws-cdk-eks-nodegroup-repair-config/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-nodegroup-repair-config-test"
+      ],
+      "diffAssets": false,
+      "assertionStack": "aws-cdk-eks-nodegroup-repair-config/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksnodegrouprepairconfigDefaultTestDeployAssert9E10A247"
+    }
+  }
+}
