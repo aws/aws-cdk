@@ -39,10 +39,6 @@ jobs:
       - name: Install Tools
         run: |-
           npm -g install lerna npm-check-updates
-      - name: Build Integ Runner
-        run: |
-          export NODE_OPTIONS="--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
-          npx lerna run build --scope @aws-cdk/integ-runner
       - name: List Mono-Repo Packages
         id: list-packages
         # These need to be ignored from the `ncu` runs!
