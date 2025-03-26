@@ -1,0 +1,13 @@
+{
+  "enableLookups": true,
+  "version": "40.0.0",
+  "testCases": {
+    "prefixlist-from-lookup-integ/DefaultTest": {
+      "stacks": [
+        "prefixlist-from-lookup"
+      ],
+      "assertionStack": "prefixlist-from-lookup-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "prefixlistfromlookupintegDefaultTestDeployAssertE62179E7"
+    }
+  }
+}
