@@ -1632,7 +1632,32 @@ export enum TransitionDefaultMinimumObjectSize {
   VARIES_BY_STORAGE_CLASS = 'varies_by_storage_class',
 }
 
+/**
+ * Configuration for S3 Metadata Table
+ */
+export interface BucketMetadataTableConfiguration {
+  /**
+   * The destination bucket for the metadata table.
+   * The destination table bucket must be in the same Region and AWS account as the general purpose bucket.
+   */
+  readonly destination: IBucket;
+
+  /**
+   * The name for the metadata table.
+   * The specified metadata table name must be unique within the aws_s3_metadata namespace in the destination bucket.
+   */
+  readonly tableName: string;
+}
+
 export interface BucketProps {
+  /**
+   * Configuration for S3 Metadata Table.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-overview.html
+   * @default - No metadata table configuration
+   */
+  readonly metadataTable?: BucketMetadataTableConfiguration;
+
   /**
    * The kind of server-side encryption to apply to this bucket.
    *
@@ -2223,6 +2248,12 @@ export class Bucket extends BucketBase {
       objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
       objectLockConfiguration: objectLockConfiguration,
       replicationConfiguration,
+      metadataTableConfiguration: props.metadataTable ? {
+        s3TablesDestination: {
+          tableBucketArn: props.metadataTable.destination.bucketArn,
+          tableName: props.metadataTable.tableName,
+        },
+      } : undefined,
     });
     this._resource = resource;
 

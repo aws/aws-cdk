@@ -711,6 +711,23 @@ bucket.virtualHostedUrlForObject('objectname'); // Virtual Hosted-Style URL
 bucket.virtualHostedUrlForObject('objectname', { regional: false }); // Virtual Hosted-Style URL but non-regional
 ```
 
+## Metadata Table Configuration
+
+You can configure a metadata table for your S3 bucket to accelerate data discovery:
+
+```ts
+const destinationBucket = new s3.Bucket(this, 'DestinationBucket');
+
+const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
+  metadataTable: {
+    destination: destinationBucket,
+    tableName: 'my-metadata-table',
+  },
+});
+```
+
+The metadata table configuration enables [S3 Metadata](https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-overview.html), which helps you discover and analyze your S3 data more efficiently. The destination bucket must be in the same region and AWS account as the source bucket.
+
 ## Object Ownership
 
 You can use one of following properties to specify the bucket [object Ownership].
