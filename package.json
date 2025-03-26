@@ -18,6 +18,7 @@
     "@nx/workspace": "^20",
     "@types/node": "18.11.19",
     "@types/prettier": "2.6.0",
+    "@types/tmp": "^0.2.6",
     "@yarnpkg/lockfile": "^1.1.0",
     "aws-sdk-js-codemod": "^0.28.2",
     "cdk-generate-synthetic-examples": "^0.2.22",
