@@ -369,6 +369,7 @@
   "Vpc1VpcEndpoint1A8BD3278": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
+    "DnsOptions": {},
     "PrivateDnsEnabled": true,
     "SecurityGroupIds": [
      {
@@ -779,6 +780,7 @@
   "Vpc2VpcEndpoint2898EEC0D": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
+    "DnsOptions": {},
     "PrivateDnsEnabled": true,
     "SecurityGroupIds": [
      {
