@@ -677,7 +677,10 @@ export class Repository extends RepositoryBase {
       throw new UnscopedValidationError(`Unable to look up repository with name: ${options.repositoryArn} in account ${Aws.ACCOUNT_ID}`);
     }
 
-    return this.fromRepositoryName(scope, id, lookupRepoName);
+    return this.fromRepositoryAttributes(scope, id, {
+      repositoryName: lookupRepoName,
+      repositoryArn: repository.Arn,
+    });
   }
 
   /**

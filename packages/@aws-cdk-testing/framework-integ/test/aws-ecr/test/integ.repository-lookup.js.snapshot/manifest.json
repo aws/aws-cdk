@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/4a11e4e3b3e92167c4c041810158f5c28c8e3b16c12750fcb9e25dc0d8c8113b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/694b1f59a97a2cabd43348095c6983d394ce506020298a3a62f3067ae6ce7e18.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -183,7 +183,7 @@
       "props": {
         "dummyValue": [
           {
-            "Arn": "arn:${Token[AWS.Partition.6]}:ecr:us-east-1:123456789012:repository/DUMMY_ARN"
+            "Arn": "arn:${Token[AWS.Partition.3]}:ecr:us-east-1:123456789012:repository/DUMMY_ARN"
           }
         ],
         "account": "12345678",

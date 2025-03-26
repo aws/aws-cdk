@@ -29,7 +29,12 @@ describe('repository', () => {
 
       // THEN
       expect(repo.repositoryName).toEqual('my-repo');
-      expect(repo.repositoryArn).toEqual(ecr.Repository.arnForLocalRepository('my-repo', stack));
+      expect(repo.repositoryArn).toEqual(cdk.Stack.of(repo).formatArn({
+        service: 'ecr',
+        partition: 'aws',
+        resource: 'repository',
+        resourceName: 'my-repo',
+      }));
       expect(mock).toHaveBeenCalledWith(stack, {
         provider: cxschema.ContextProvider.CC_API_PROVIDER,
         props: {
@@ -50,7 +55,7 @@ describe('repository', () => {
     });
 
     test('return correct repository info by arn', () => {
-      const repoArn = 'arn:aws:ecr::123456789012:repository/my-repo';
+      const repoArn = 'arn:aws:ecr:us-east-1:123456789012:repository/my-repo';
       // GIVEN
       const resultObjs = [
         {
@@ -70,7 +75,12 @@ describe('repository', () => {
 
       // THEN
       expect(repo.repositoryName).toEqual('my-repo');
-      expect(repo.repositoryArn).toEqual(ecr.Repository.arnForLocalRepository('my-repo', stack));
+      expect(repo.repositoryArn).toEqual(cdk.Stack.of(repo).formatArn({
+        service: 'ecr',
+        partition: 'aws',
+        resource: 'repository',
+        resourceName: 'my-repo',
+      }));
       expect(mock).toHaveBeenCalledWith(stack, {
         provider: cxschema.ContextProvider.CC_API_PROVIDER,
         props: {
@@ -92,7 +102,7 @@ describe('repository', () => {
 
     test.each([
       {
-        repositoryArn: 'arn:aws:ecr::123456789012:repository/does-not-exist-repo',
+        repositoryArn: 'arn:aws:ecr:us-east-1:123456789012:repository/does-not-exist-repo',
       },
       {
         repositoryName: 'does-not-exist-repo',

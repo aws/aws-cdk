@@ -50,7 +50,7 @@
           {
            "Ref": "AWS::Partition"
           },
-          ":ecr:test-region:12345678:repository/DUMMY_ARN"
+          ":ecr:us-east-1:123456789012:repository/DUMMY_ARN"
          ]
         ]
        }
@@ -93,7 +93,7 @@
     "Fn::Join": [
      "",
      [
-      "12345678.dkr.ecr.test-region.",
+      "123456789012.dkr.ecr.us-east-1.",
       {
        "Ref": "AWS::URLSuffix"
       },
