@@ -17,7 +17,6 @@
   },
   "devDependencies": {
     "@types/axios": "^0.14.4",
-    "@types/extract-zip": "^2.0.1",
     "@types/jest": "^29.5.14",
     "@types/node": "^16",
     "@types/tmp": "^0.2.6",

@@ -16,7 +16,6 @@
   },
   "devDependencies": {
     "@nx/workspace": "^20",
-    "@types/extract-zip": "^2.0.0",
     "@types/node": "18.11.19",
     "@types/prettier": "2.6.0",
     "@types/tmp": "^0.2.6",
@@ -24,7 +23,6 @@
     "aws-sdk-js-codemod": "^0.28.2",
     "cdk-generate-synthetic-examples": "^0.2.22",
     "conventional-changelog-cli": "^2.2.2",
-    "extract-zip": "^2.0.1",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.11",
     "jest-junit": "^13.2.0",
