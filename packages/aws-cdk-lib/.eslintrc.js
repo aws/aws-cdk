@@ -28,6 +28,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-applicationautoscaling',
   'aws-appsync',
   'aws-appmesh',
+  'aws-apprunner',
   'aws-autoscaling',
   'aws-autoscaling-common',
   'aws-backup',
