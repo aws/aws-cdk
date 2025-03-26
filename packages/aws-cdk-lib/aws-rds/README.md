@@ -1557,6 +1557,7 @@ const dbFromLookup = rds.DatabaseInstance.fromLookup(this, 'dbFromLookup', {
 
 // Grant a connection
 dbFromLookup.grantConnect(myUserRole, 'my-user-id');
+```
 
 ## Limitless Database Cluster
 
