@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "40.0.0",
   "artifacts": {
     "aws-cdk-ec2-vpc-endpoint.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/439d5705ac8beb9e682bb8e8ff6dd47f22d95f023124a424b7b8d93a4e0e1d0b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e5b1dd939b04027e7ad822a15de03c58c9b55cb2a458b5e00b7b2bfa5c4a7684.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,54 @@
         "aws-cdk-ec2-vpc-endpoint.assets"
       ],
       "metadata": {
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "gatewayEndpoints": "*"
+            }
+          }
+        ],
         "/aws-cdk-ec2-vpc-endpoint/MyVpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcF9F0CA6F"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-ec2-vpc-endpoint/MyVpc/PublicSubnet1/Subnet": [
@@ -76,6 +120,42 @@
             "data": "MyVpcPublicSubnet1NATGatewayAD3400C1"
           }
         ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/aws-cdk-ec2-vpc-endpoint/MyVpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -112,6 +192,34 @@
             "data": "MyVpcPublicSubnet2NATGateway91BFBEC9"
           }
         ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/aws-cdk-ec2-vpc-endpoint/MyVpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -134,6 +242,34 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPrivateSubnet1DefaultRouteA8CDE2FA"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/aws-cdk-ec2-vpc-endpoint/MyVpc/PrivateSubnet2/Subnet": [
@@ -172,16 +308,74 @@
             "data": "MyVpcVPCGW488ACE0D"
           }
         ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/S3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "service": {
+                "name": "*"
+              }
+            }
+          }
+        ],
         "/aws-cdk-ec2-vpc-endpoint/MyVpc/S3/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcS3FADC1889"
           }
         ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/DynamoDbEndpoint": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "service": {
+                "name": "*"
+              }
+            }
+          }
+        ],
         "/aws-cdk-ec2-vpc-endpoint/MyVpc/DynamoDbEndpoint/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcDynamoDbEndpointE6A39B0D"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/EcrDockerEndpoint": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "service": {
+                "privateDnsDefault": true,
+                "name": "*",
+                "port": "*"
+              }
+            }
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/EcrDockerEndpoint/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
           }
         ],
         "/aws-cdk-ec2-vpc-endpoint/MyVpc/EcrDockerEndpoint/SecurityGroup/Resource": [
@@ -196,6 +390,43 @@
             "data": "MyVpcEcrDockerEndpoint0385050C"
           }
         ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/DynamoDbInterfaceEndpoint": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "service": {
+                "privateDnsDefault": true,
+                "name": "*",
+                "port": "*"
+              },
+              "privateDnsEnabled": false
+            }
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/DynamoDbInterfaceEndpoint/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          }
+        ],
         "/aws-cdk-ec2-vpc-endpoint/MyVpc/DynamoDbInterfaceEndpoint/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -206,6 +437,54 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcDynamoDbInterfaceEndpointA97B3149"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/CloudwatchLogsEndpoint": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "service": {
+                "privateDnsDefault": true,
+                "name": "*",
+                "port": "*"
+              }
+            }
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/CloudwatchLogsEndpoint/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/CloudwatchLogsEndpoint/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcCloudwatchLogsEndpointSecurityGroup4A3B5DFB"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/CloudwatchLogsEndpoint/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcCloudwatchLogsEndpointB1C11ADC"
           }
         ],
         "/aws-cdk-ec2-vpc-endpoint/BootstrapVersion": [
