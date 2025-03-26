@@ -153,9 +153,12 @@ export class CodeBuildAction extends Action {
       const pipelineStack = cdk.Stack.of(scope);
       const projectStack = cdk.Stack.of(this.props.project);
       if (pipelineStack.account !== projectStack.account) {
-        throw new Error('A cross-account CodeBuild action cannot have outputs. ' +
+        throw new cdk.ValidationError(
+          'A cross-account CodeBuild action cannot have outputs. ' +
           'This is a known CodeBuild limitation. ' +
-          'See https://github.com/aws/aws-cdk/issues/4169 for details');
+          'See https://github.com/aws/aws-cdk/issues/4169 for details',
+          scope,
+        );
       }
     }
 

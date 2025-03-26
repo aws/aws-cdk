@@ -1,0 +1,681 @@
+{
+  "version": "40.0.0",
+  "artifacts": {
+    "aws-cdk-ecs-run-task-fargate-schedule.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-ecs-run-task-fargate-schedule.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-ecs-run-task-fargate-schedule": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-ecs-run-task-fargate-schedule.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/445055a099c4bf4df1c5b1f1308e6a0c08083d13e5bfcf3d646fb801bbacae8d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-ecs-run-task-fargate-schedule.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-ecs-run-task-fargate-schedule.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-ecs-run-task-fargate-schedule/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*",
+              "restrictDefaultSecurityGroup": false
+            }
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Vpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/FargateCluster": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "enableFargateCapacityProviders": true
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "enableFargateCapacityProviders": []
+            }
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/FargateCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateCluster7CCD5F93"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/FargateCluster/FargateCluster": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterFAF97480"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/FargateTaskDefinition": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/FargateTaskDefinition/TaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/FargateTaskDefinition/TaskRole/ImportTaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/FargateTaskDefinition/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTaskDefinitionTaskRoleE3C2BCAA"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/FargateTaskDefinition/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTaskDefinition8E3B365E"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Schedule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Schedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Schedule83A77FD1"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/SchedulerRoleForTarget-b7a5d8": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/SchedulerRoleForTarget-b7a5d8/ImportSchedulerRoleForTarget-b7a5d8": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/SchedulerRoleForTarget-b7a5d8/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchedulerRoleForTargetb7a5d868246013"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/SchedulerRoleForTarget-b7a5d8/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/SchedulerRoleForTarget-b7a5d8/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchedulerRoleForTargetb7a5d8DefaultPolicyCDC4B48D"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/Exports/Output{\"Fn::GetAtt\":[\"FargateCluster7CCD5F93\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttFargateCluster7CCD5F93Arn6DE36182"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-ecs-run-task-fargate-schedule"
+    },
+    "integecsruntaskfargateDefaultTestDeployAssertE2555144.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integecsruntaskfargateDefaultTestDeployAssertE2555144.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integecsruntaskfargateDefaultTestDeployAssertE2555144": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integecsruntaskfargateDefaultTestDeployAssertE2555144.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c5cefe2b8a14a4df89bbd65b0640a3e97ed35d3a39aae453d6db8d96811e838b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integecsruntaskfargateDefaultTestDeployAssertE2555144.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-ecs-run-task-fargate-schedule",
+        "integecsruntaskfargateDefaultTestDeployAssertE2555144.assets"
+      ],
+      "metadata": {
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384WaitForIsCompleteProviderInvoke7DE99A99"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384WaitForTimeoutProviderInvoke7C0F7F50"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384WaitForRole40DED3CF"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384WaitForD272E103"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/AwsApiCallECSstopTaskc169e760f032e46a1bfbd9b7d94e6b0e/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/AwsApiCallECSstopTaskc169e760f032e46a1bfbd9b7d94e6b0e/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallECSstopTaskc169e760f032e46a1bfbd9b7d94e6b0e"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662WaitForIsCompleteProviderInvoke09E38860"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662WaitForTimeoutProviderInvoke266C2E54"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662WaitForRole31142FEE"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662WaitFor98C31C04"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-ecs-run-task-fargate/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-ecs-run-task-fargate/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

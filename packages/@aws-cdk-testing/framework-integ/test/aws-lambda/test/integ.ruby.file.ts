@@ -34,15 +34,31 @@ class Ruby33Stack extends cdk.Stack {
   }
 }
 
+class Ruby34Stack extends cdk.Stack {
+  public readonly functionName: string;
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
+
+    const fn = new lambda.Function(this, 'MyRuby34Lambda', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'rubyhandler')),
+      handler: 'index.main',
+      runtime: lambda.Runtime.RUBY_3_4,
+    });
+
+    this.functionName = fn.functionName;
+  }
+}
+
 const app = new cdk.App();
 
 const ruby32Stack = new Ruby32Stack(app, 'lambda-test-assets-file-for-ruby32');
 const ruby33Stack = new Ruby33Stack(app, 'lambda-test-assets-file-for-ruby33');
+const ruby34Stack = new Ruby34Stack(app, 'lambda-test-assets-file-for-ruby34');
 
 const integ = new IntegTest(app, 'RubyRuntimeTest', {
-  testCases: [ruby32Stack, ruby33Stack],
+  testCases: [ruby32Stack, ruby33Stack, ruby34Stack],
 });
-for (const stack of [ruby32Stack, ruby33Stack]) {
+for (const stack of [ruby32Stack, ruby33Stack, ruby34Stack]) {
   const invoke = integ.assertions.invokeFunction({
     functionName: stack.functionName,
   });

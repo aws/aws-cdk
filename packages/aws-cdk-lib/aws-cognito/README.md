@@ -23,7 +23,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
       - [Code Verification](#code-verification)
       - [Link Verification](#link-verification)
     - [Sign In](#sign-in)
-      - [Choise-based authentication](#choice-based-authentication-passwordless-sign-in--passkey-sign-in)
+      - [Choice-based authentication](#choice-based-authentication-passwordless-sign-in--passkey-sign-in)
     - [Attributes](#attributes)
     - [Attribute verification](#attribute-verification)
     - [Security](#security)

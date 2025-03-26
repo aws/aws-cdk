@@ -49,25 +49,25 @@ new scheduler.Schedule(stack, 'ScheduleWithCMK', {
   key,
 });
 
-const namedGroup = new scheduler.Group(stack, 'NamedGroup', {
-  groupName: 'TestGroup',
+const namedGroup = new scheduler.ScheduleGroup(stack, 'NamedGroup', {
+  scheduleGroupName: 'TestGroup',
 });
 namedGroup.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
-const unnamedGroup = new scheduler.Group(stack, 'UnnamedGroup', {});
+const unnamedGroup = new scheduler.ScheduleGroup(stack, 'UnnamedGroup', {});
 unnamedGroup.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
 const randomTargetThatWontGetInvoked = new SomeSqsTarget(queue, role);
 new scheduler.Schedule(stack, 'ScheduleToTestWithNamedGroup', {
   schedule: scheduler.ScheduleExpression.at(new Date('2060-04-15T06:30:00.000Z')),
   target: randomTargetThatWontGetInvoked,
-  group: namedGroup,
+  scheduleGroup: namedGroup,
 });
 
 new scheduler.Schedule(stack, 'ScheduleToTestWithUnnamedGroup', {
   schedule: scheduler.ScheduleExpression.at(new Date('2060-04-15T06:30:00.000Z')),
   target: randomTargetThatWontGetInvoked,
-  group: unnamedGroup,
+  scheduleGroup: unnamedGroup,
 });
 
 new scheduler.Schedule(stack, 'TestDisabledSchedule', {

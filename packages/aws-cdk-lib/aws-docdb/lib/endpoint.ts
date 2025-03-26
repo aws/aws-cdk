@@ -1,4 +1,4 @@
-import { Token } from '../../core';
+import { Token, UnscopedValidationError } from '../../core';
 
 /**
  * Connection endpoint of a database cluster or instance
@@ -52,7 +52,7 @@ export class Endpoint {
    */
   constructor(address: string, port: number) {
     if (!Token.isUnresolved(port) && !Endpoint.isValidPort(port)) {
-      throw new Error(`Port must be an integer between [${Endpoint.MIN_PORT}, ${Endpoint.MAX_PORT}] but got: ${port}`);
+      throw new UnscopedValidationError(`Port must be an integer between [${Endpoint.MIN_PORT}, ${Endpoint.MAX_PORT}] but got: ${port}`);
     }
 
     this.hostname = address;

@@ -66,5 +66,6 @@
   "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
   "@aws-cdk/core:enableAdditionalMetadataCollection": true,
   "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true,
-  "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true
+  "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
+  "@aws-cdk/aws-events:requireEventBusPolicySid": true
 }

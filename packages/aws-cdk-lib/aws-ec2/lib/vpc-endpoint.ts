@@ -75,6 +75,25 @@ export enum VpcEndpointType {
    * your route table, used for traffic destined to a supported AWS service.
    */
   GATEWAY = 'Gateway',
+
+  /**
+   * A Gateway Load Balancer (GWLB) endpoint is an entry/exit point in your VPC that allows traffic
+   * to flow between your VPC and Gateway Load Balancer appliances (like firewalls, intrusion detection systems,
+   * or other security appliances) deployed in a separate VPC.
+   */
+  GATEWAYLOADBALANCER = 'GatewayLoadBalancer',
+
+  /**
+   * A ServiceNetwork VPC endpoint is a feature to connect your VPC to an AWS Cloud WAN (Wide Area Network)
+   * or Amazon VPC Lattice service.
+   */
+  SERVICENETWORK = 'ServiceNetwork',
+
+  /**
+   * A Resource VPC endpoint in AWS is specifically designed to connect to AWS Resource Access Manager (RAM) service
+   * privately within your VPC, without requiring access through the public internet.
+   */
+  RESOURCE = 'Resource',
 }
 
 /**

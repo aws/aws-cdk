@@ -105,7 +105,8 @@ export function fileShouldBeginWith(ruleName: string, pkg: PackageJson, fileName
  */
 export function expectDevDependency(ruleName: string, pkg: PackageJson, packageName: string, version: string) {
   const actualVersion = pkg.getDevDependency(packageName);
-  if (version !== actualVersion) {
+  const ok = (version === actualVersion) || (version === '*' && actualVersion !== undefined);
+  if (!ok) {
     pkg.report({
       ruleName,
       message: `Missing devDependency: ${packageName} @ ${version}`,

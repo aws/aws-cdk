@@ -349,7 +349,7 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
     if (this._deploymentRole) {
       return this._deploymentRole;
     } else {
-      throw new Error(`Cannot use the ${member} before the Action has been added to a Pipeline`);
+      throw new cdk.UnscopedValidationError(`Cannot use the ${member} before the Action has been added to a Pipeline`);
     }
   }
 }

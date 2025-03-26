@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Scheduler.Targets"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.scheduler.targets"
+    },
+    "python": {
+      "module": "aws_cdk.aws_scheduler_targets"
+    }
+  }
+}

@@ -5,7 +5,7 @@ import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, IResource, Lazy, Resource, Stack } from '../../core';
+import { ArnFormat, IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -605,7 +605,7 @@ export class Repository extends RepositoryBase {
     }
 
     if (this.triggers.find(prop => prop.name === name)) {
-      throw new Error(`Unable to set repository trigger named ${name} because trigger names must be unique`);
+      throw new ValidationError(`Unable to set repository trigger named ${name} because trigger names must be unique`, this);
     }
 
     this.triggers.push({
