@@ -82,10 +82,10 @@ export interface CommonDestinationS3Props {
    * The length of time that Firehose buffers incoming data before delivering
    * it to the S3 bucket.
    *
-   * Minimum: Duration.seconds(0)
-   * Maximum: Duration.seconds(900)
+   * Minimum: 60 seconds if dynamic partitioning is enabled, 0 seconds otherwise.
+   * Maximum: 900 seconds.
    *
-   * @default Duration.seconds(300)
+   * @default - 300 seconds
    */
   readonly bufferingInterval?: cdk.Duration;
 
@@ -93,10 +93,10 @@ export interface CommonDestinationS3Props {
    * The size of the buffer that Amazon Data Firehose uses for incoming data before
    * delivering it to the S3 bucket.
    *
-   * Minimum: Size.mebibytes(1)
-   * Maximum: Size.mebibytes(128)
+   * Minimum: 64 MiB if dynamic partitioning is enabled, 1 MiB otherwise.
+   * Maximum: 128 MiB.
    *
-   * @default - Size.mebibytes(64) if dynamic partitioning is enabled, Size.mebibytes(5) otherwise
+   * @default - 128 MiB if dynamic partitioning is enabled, 5 MiB otherwise
    */
   readonly bufferingSize?: cdk.Size;
 
@@ -125,7 +125,7 @@ export interface CommonDestinationS3Props {
    * This prefix appears immediately following the bucket name.
    * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html
    *
-   * @default - "<specified-prefix>/<error-output-type>/YYYY/MM/DD/HH"
+   * @default - See the documentation above
    */
   readonly errorOutputPrefix?: string;
 
@@ -135,7 +135,7 @@ export interface CommonDestinationS3Props {
    * This prefix appears immediately following the bucket name.
    * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html
    *
-   * @default "YYYY/MM/DD/HH"
+   * @default - "YYYY/MM/DD/HH/"
    */
   readonly dataOutputPrefix?: string;
 

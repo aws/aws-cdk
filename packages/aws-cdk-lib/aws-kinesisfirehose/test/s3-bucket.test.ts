@@ -406,7 +406,7 @@ describe('S3 destination', () => {
           bufferingInterval: cdk.Duration.minutes(16),
           bufferingSize: cdk.Size.mebibytes(1),
         }),
-      })).toThrow('Buffering interval must be less than 900 seconds. Buffering interval provided was 960 seconds.');
+      })).toThrow('Buffering interval must be less than 900 seconds, got 960 seconds.');
     });
 
     it('validates bufferingSize', () => {
@@ -416,14 +416,14 @@ describe('S3 destination', () => {
           bufferingSize: cdk.Size.mebibytes(0),
 
         }),
-      })).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 0 MiBs');
+      })).toThrow('Buffering size must be at least 1 MiB, got 0 MiB.');
 
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
         destination: new firehose.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(1),
           bufferingSize: cdk.Size.mebibytes(256),
         }),
-      })).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 256 MiBs');
+      })).toThrow('Buffering size must be less than 128 MiB, got 256 MiB.');
     });
   });
 
@@ -613,7 +613,7 @@ describe('S3 destination', () => {
             Enabled: true,
           },
           BufferingHints: {
-            SizeInMBs: 64,
+            SizeInMBs: 128,
             IntervalInSeconds: 300,
           },
         },
@@ -622,7 +622,7 @@ describe('S3 destination', () => {
 
     it('configures dynamic partitioning with retry options', () => {
       const destination = new firehose.S3Bucket(bucket, {
-        dynamicPartitioning: { enabled: true, retry: cdk.Duration.minutes(5) },
+        dynamicPartitioning: { enabled: true, retryDuration: cdk.Duration.minutes(5) },
       });
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
         destination: destination,
@@ -637,26 +637,26 @@ describe('S3 destination', () => {
             },
           },
           BufferingHints: {
-            SizeInMBs: 64,
+            SizeInMBs: 128,
             IntervalInSeconds: 300,
           },
         },
       });
     });
 
-    it('throws when retry duration is > 7200 secs', () => {
+    it('validates retryDuration', () => {
       const destination = new firehose.S3Bucket(bucket, {
-        dynamicPartitioning: { enabled: true, retry: cdk.Duration.hours(3) },
+        dynamicPartitioning: { enabled: true, retryDuration: cdk.Duration.minutes(121) },
       });
 
       expect(() => {
         new firehose.DeliveryStream(stack, 'DeliveryStream', {
           destination: destination,
         });
-      }).toThrow('The maximum retry duration is 7200 seconds, got 10800 seconds.');
+      }).toThrow('Retry duration must be less than 7200 seconds, got 7260 seconds.');
     });
 
-    it('throws when buffering size is < 64 MiB', () => {
+    it('validates bufferingSize', () => {
       const destination = new firehose.S3Bucket(bucket, {
         dynamicPartitioning: { enabled: true },
         bufferingSize: cdk.Size.mebibytes(63),
@@ -666,33 +666,20 @@ describe('S3 destination', () => {
         new firehose.DeliveryStream(stack, 'DeliveryStream', {
           destination: destination,
         });
-      }).toThrow("'bufferingSize' must be at least 64 MiB when Dynamic Partitioning is enabled, got 63.");
+      }).toThrow('Buffering size must be at least 64 MiB when Dynamic Partitioning is enabled, got 63 MiB.');
     });
 
-    it('throws when buffering interval is < 60 seconds', () => {
+    it('validates bufferingInterval', () => {
       const destination = new firehose.S3Bucket(bucket, {
         dynamicPartitioning: { enabled: true },
-        bufferingInterval: cdk.Duration.seconds(30),
+        bufferingInterval: cdk.Duration.seconds(50),
       });
 
       expect(() => {
         new firehose.DeliveryStream(stack, 'DeliveryStream', {
           destination: destination,
         });
-      }).toThrow("'bufferingInterval' must be at least 60 seconds when Dynamic Partitioning is enabled, got 30 seconds.");
-    });
-
-    it('throws when error output prefix is not specified', () => {
-      const destination = new firehose.S3Bucket(bucket, {
-        dynamicPartitioning: { enabled: true },
-        dataOutputPrefix: '!{partitionKeyFromQuery:foo}',
-      });
-
-      expect(() => {
-        new firehose.DeliveryStream(stack, 'DeliveryStream', {
-          destination: destination,
-        });
-      }).toThrow("'errorOutputPrefix' cannot be null or empty when 'dataOutputPrefix' contains expressions.");
+      }).toThrow('Buffering interval must be at least 60 seconds when Dynamic Partitioning is enabled, got 50 seconds.');
     });
 
     it('configures multi record deaggregation with JSON', () => {

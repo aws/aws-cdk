@@ -71,21 +71,42 @@ export function createLoggingOptions(scope: Construct, props: DestinationLogging
 }
 
 export function createBufferingHints(
+  scope: Construct,
   interval?: cdk.Duration,
   size?: cdk.Size,
+  dynamicPartitioningEnabled?: boolean,
 ): CfnDeliveryStream.BufferingHintsProperty | undefined {
-  if (!interval && !size) {
+  if (!interval && !size && !dynamicPartitioningEnabled) {
     return undefined;
   }
 
   const intervalInSeconds = interval?.toSeconds() ?? 300;
-  if (intervalInSeconds > 900) {
-    throw new Error(`Buffering interval must be less than 900 seconds. Buffering interval provided was ${intervalInSeconds} seconds.`);
-  }
-  const sizeInMBs = size?.toMebibytes() ?? 5;
-  if (sizeInMBs < 1 || sizeInMBs > 128) {
-    throw new Error(`Buffering size must be between 1 and 128 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`);
-  }
+  cdk.withResolved(intervalInSeconds, () => {
+    if (intervalInSeconds > 900) {
+      throw new cdk.ValidationError(`Buffering interval must be less than 900 seconds, got ${intervalInSeconds} seconds.`, scope);
+    }
+    if (dynamicPartitioningEnabled && intervalInSeconds < 60) {
+      // From testing, CFN deployment will fail if `BufferingHints.IntervalInSeconds` is less than 60.
+      // The message is: "BufferingHints.IntervalInSeconds must be at least 60 seconds when Dynamic Partitioning is enabled."
+      throw new cdk.ValidationError(`Buffering interval must be at least 60 seconds when Dynamic Partitioning is enabled, got ${intervalInSeconds} seconds.`, scope);
+    }
+  });
+
+  const sizeInMBs = size?.toMebibytes() ?? (dynamicPartitioningEnabled ? 128 : 5);
+  cdk.withResolved(sizeInMBs, () => {
+    if (sizeInMBs > 128) {
+      throw new cdk.ValidationError(`Buffering size must be less than 128 MiB, got ${sizeInMBs} MiB.`, scope);
+    }
+    if (dynamicPartitioningEnabled && sizeInMBs < 64) {
+      // From testing, CFN deployment will fail if `BufferingHints.SizeInMBs` is less than 64.
+      // The message is: "BufferingHints.SizeInMBs must be at least 64 when Dynamic Partitioning is enabled."
+      throw new cdk.ValidationError(`Buffering size must be at least 64 MiB when Dynamic Partitioning is enabled, got ${sizeInMBs} MiB.`, scope);
+    }
+    if (sizeInMBs < 1) {
+      throw new cdk.ValidationError(`Buffering size must be at least 1 MiB, got ${sizeInMBs} MiB.`, scope);
+    }
+  });
+
   return { intervalInSeconds, sizeInMBs };
 }
 
@@ -155,7 +176,7 @@ export function createBackupConfig(scope: Construct, role: iam.IRole, props?: De
       roleArn: role.roleArn,
       prefix: props.dataOutputPrefix,
       errorOutputPrefix: props.errorOutputPrefix,
-      bufferingHints: createBufferingHints(props.bufferingInterval, props.bufferingSize),
+      bufferingHints: createBufferingHints(scope, props.bufferingInterval, props.bufferingSize),
       compressionFormat: props.compression?.value,
       encryptionConfiguration: createEncryptionConfig(role, props.encryptionKey),
       cloudWatchLoggingOptions: loggingOptions,
@@ -170,14 +191,14 @@ export function createDynamicPartitioningConfiguration(
 ): CfnDeliveryStream.DynamicPartitioningConfigurationProperty | undefined {
   if (!props) return undefined;
 
-  if (props.retry && !props.retry.isUnresolved() && props.retry.toSeconds() > 7200) {
-    throw new cdk.ValidationError(`The maximum retry duration is 7200 seconds, got ${props.retry.toSeconds()} seconds.`, scope);
+  if (props.retryDuration && !props.retryDuration.isUnresolved() && props.retryDuration.toSeconds() > 7200) {
+    throw new cdk.ValidationError(`Retry duration must be less than 7200 seconds, got ${props.retryDuration.toSeconds()} seconds.`, scope);
   }
 
   return {
     enabled: props.enabled,
     retryOptions: undefinedIfAllValuesAreEmpty({
-      durationInSeconds: props.retry?.toSeconds(),
+      durationInSeconds: props.retryDuration?.toSeconds(),
     }),
   };
 }
