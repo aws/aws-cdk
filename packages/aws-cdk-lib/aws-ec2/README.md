@@ -1100,9 +1100,9 @@ IPv6 and Dualstack address types can be configured by using:
 
 ```ts fixture=with-vpc
 vpc.addInterfaceEndpoint('ExampleEndpoint', {
-  service: InterfaceVpcEndpointAwsService.ExampleEndpoint,
-  ipAddressType: VpcEndpointIpAddressType.IPV6,
-  dnsRecordIpType: VpcEndpointDnsRecordIpType.IPV6,
+  service: ec2.InterfaceVpcEndpointAwsService.ECR,
+  ipAddressType: ec2.VpcEndpointIpAddressType.IPV6,
+  dnsRecordIpType: ec2.VpcEndpointDnsRecordIpType.IPV6,
 });
 ```
 The possible values for `ipAddressType` are:
