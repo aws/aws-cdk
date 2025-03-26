@@ -177,7 +177,7 @@ const cluster = new msk.Cluster(this, 'Cluster', {
 ## Logging
 
 You can deliver Apache Kafka broker logs to one or more of the following destination types:
-Amazon CloudWatch Logs, Amazon S3, Amazon Kinesis Data Firehose.
+Amazon CloudWatch Logs, Amazon S3, Amazon Data Firehose.
 
 To configure logs to be sent to an S3 bucket, provide a bucket in the `logging` config.
 
