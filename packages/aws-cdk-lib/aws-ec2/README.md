@@ -449,17 +449,17 @@ constructs above to implement many other network configurations.
 The `Vpc` from the above configuration in a Region with three
 availability zones will be the following:
 
-Subnet Name       |Type      |IP Block      |AZ|Features
-------------------|----------|--------------|--|--------
-IngressSubnet1    |`PUBLIC`  |`10.0.0.0/24` |#1|NAT Gateway
-IngressSubnet2    |`PUBLIC`  |`10.0.1.0/24` |#2|NAT Gateway
-IngressSubnet3    |`PUBLIC`  |`10.0.2.0/24` |#3|NAT Gateway
-ApplicationSubnet1|`PRIVATE` |`10.0.3.0/24` |#1|Route to NAT in IngressSubnet1
-ApplicationSubnet2|`PRIVATE` |`10.0.4.0/24` |#2|Route to NAT in IngressSubnet2
-ApplicationSubnet3|`PRIVATE` |`10.0.5.0/24` |#3|Route to NAT in IngressSubnet3
-DatabaseSubnet1   |`ISOLATED`|`10.0.6.0/28` |#1|Only routes within the VPC
-DatabaseSubnet2   |`ISOLATED`|`10.0.6.16/28`|#2|Only routes within the VPC
-DatabaseSubnet3   |`ISOLATED`|`10.0.6.32/28`|#3|Only routes within the VPC
+| Subnet Name        | Type       | IP Block       | AZ  | Features                       |
+| ------------------ | ---------- | -------------- | --- | ------------------------------ |
+| IngressSubnet1     | `PUBLIC`   | `10.0.0.0/24`  | #1  | NAT Gateway                    |
+| IngressSubnet2     | `PUBLIC`   | `10.0.1.0/24`  | #2  | NAT Gateway                    |
+| IngressSubnet3     | `PUBLIC`   | `10.0.2.0/24`  | #3  | NAT Gateway                    |
+| ApplicationSubnet1 | `PRIVATE`  | `10.0.3.0/24`  | #1  | Route to NAT in IngressSubnet1 |
+| ApplicationSubnet2 | `PRIVATE`  | `10.0.4.0/24`  | #2  | Route to NAT in IngressSubnet2 |
+| ApplicationSubnet3 | `PRIVATE`  | `10.0.5.0/24`  | #3  | Route to NAT in IngressSubnet3 |
+| DatabaseSubnet1    | `ISOLATED` | `10.0.6.0/28`  | #1  | Only routes within the VPC     |
+| DatabaseSubnet2    | `ISOLATED` | `10.0.6.16/28` | #2  | Only routes within the VPC     |
+| DatabaseSubnet3    | `ISOLATED` | `10.0.6.32/28` | #3  | Only routes within the VPC     |
 
 #### Dual Stack Configurations
 
@@ -1098,7 +1098,7 @@ As IPv4 addresses are running out, many AWS services are adding support for IPv6
 
 IPv6 and Dualstack address types can be configured by using:
 
-```ts
+```ts fixture=with-vpc
 vpc.addInterfaceEndpoint('ExampleEndpoint', {
   service: InterfaceVpcEndpointAwsService.ExampleEndpoint,
   ipAddressType: VpcEndpointIpAddressType.IPV6,
