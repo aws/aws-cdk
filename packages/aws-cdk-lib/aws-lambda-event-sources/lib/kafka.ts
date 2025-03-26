@@ -155,19 +155,18 @@ export class ManagedKafkaEventSource extends StreamEventSource {
 
   constructor(props: ManagedKafkaEventSourceProps) {
     super(props);
-
-    if (props.startingPosition === lambda.StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
-      throw new Error('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
-    }
-
-    if (props.startingPosition !== lambda.StartingPosition.AT_TIMESTAMP && props.startingPositionTimestamp) {
-      throw new Error('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
-    }
-
     this.innerProps = props;
   }
 
   public bind(target: lambda.IFunction) {
+    if (this.innerProps.startingPosition === lambda.StartingPosition.AT_TIMESTAMP && !this.innerProps.startingPositionTimestamp) {
+      Annotations.of(target).addWarningV2('@aws-cdk/aws-lambda-event-source:needStartingPositionTimestamp', 'startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
+    }
+
+    if (this.innerProps.startingPosition !== lambda.StartingPosition.AT_TIMESTAMP && this.innerProps.startingPositionTimestamp) {
+      Annotations.of(target).addWarningV2('@aws-cdk/aws-lambda-event-source:invalidStartingPosition', 'startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+    }
+    
     const eventSourceMapping = target.addEventSourceMapping(
       `KafkaEventSource:${Names.nodeUniqueId(target.node)}${this.innerProps.topic}`,
       this.enrichMappingOptions({
