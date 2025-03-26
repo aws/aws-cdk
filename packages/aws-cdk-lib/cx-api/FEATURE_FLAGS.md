@@ -1786,7 +1786,7 @@ When enabled, table replica will be default to the removal policy of source tabl
 
 ### @aws-cdk/cognito:logUserPoolClientSecretValue
 
-*When enabled, the value of the user pool client secret will be logged in the custom resource lambda function logs.* (default)
+*When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.* (default)
 
 When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom 
 resource lambda function logs.

@@ -1471,7 +1471,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [LOG_USER_POOL_CLIENT_SECRET_VALUE]: {
     type: FlagType.ApiDefault,
-    summary: 'When enabled, the value of the user pool client secret will be logged in the custom resource lambda function logs.',
+    summary: 'When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.',
     detailsMd: `
       When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom 
       resource lambda function logs.
