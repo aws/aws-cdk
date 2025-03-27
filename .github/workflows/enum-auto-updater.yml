@@ -86,5 +86,4 @@ jobs:
               --base main \
               --head "$branchName" \
               --label "contribution/core,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test" \
-              --reviewer "aws-cdk-team"
           done
