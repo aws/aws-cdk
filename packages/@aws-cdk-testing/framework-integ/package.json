@@ -30,13 +30,13 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "2.184.1-alpha.0",
+    "@aws-cdk/integ-runner": "2.186.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-sdk/client-acm": "3.632.0",
     "@aws-sdk/client-rds": "3.632.0",
     "@aws-sdk/client-s3": "3.632.0",
     "@aws-sdk/client-cognito-identity-provider": "3.632.0",
-    "axios": "1.8.3",
+    "axios": "1.8.4",
     "delay": "5.0.0"
   },
   "dependencies": {
@@ -45,9 +45,9 @@
     "@aws-cdk/lambda-layer-kubectl-v29": "^2.1.1",
     "@aws-cdk/lambda-layer-kubectl-v30": "^2.0.4",
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.0.3",
-    "@aws-cdk/lambda-layer-kubectl-v32": "^2.0.3",
+    "@aws-cdk/lambda-layer-kubectl-v32": "^2.1.0",
     "aws-cdk-lib": "0.0.0",
-    "cdk8s": "2.69.50",
+    "cdk8s": "2.69.57",
     "cdk8s-plus-27": "2.9.5",
     "constructs": "^10.0.0"
   },
