@@ -82,7 +82,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "2.184.1-alpha.0",
+    "@aws-cdk/integ-runner": "2.186.0",
     "@aws-cdk/integ-tests-alpha": "^0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.14",
