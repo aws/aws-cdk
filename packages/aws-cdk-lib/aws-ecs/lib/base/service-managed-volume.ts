@@ -169,6 +169,10 @@ export enum FileSystemType {
    * ntfs type
    */
   NTFS = 'ntfs',
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  NTFS = 'ntfs',
 }
 
 /**
