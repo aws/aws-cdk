@@ -36,7 +36,7 @@ jobs:
           else
             echo "changes=false" >> $GITHUB_OUTPUT
           fi
-          
+
       # Authentication is required for gh cli
       - name: Setup GitHub CLI
         run: |
@@ -88,6 +88,3 @@ jobs:
               --label "contribution/core,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test" \
               --reviewer "aws-cdk-team"
           done
-        
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
