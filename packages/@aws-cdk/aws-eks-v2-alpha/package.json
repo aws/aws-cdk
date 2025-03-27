@@ -91,13 +91,13 @@
     "@aws-cdk/lambda-layer-kubectl-v29": "^2.1.1",
     "@aws-cdk/lambda-layer-kubectl-v30": "^2.0.4",
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.0.3",
-    "@aws-cdk/lambda-layer-kubectl-v32": "^2.0.3",
+    "@aws-cdk/lambda-layer-kubectl-v32": "^2.1.0",
     "@types/jest": "^29.5.14",
     "aws-sdk": "^2.1692.0",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
     "sinon": "^9.2.4",
-    "cdk8s": "2.69.50",
+    "cdk8s": "2.69.57",
     "cdk8s-plus-27": "2.9.5"
   },
   "dependencies": {
