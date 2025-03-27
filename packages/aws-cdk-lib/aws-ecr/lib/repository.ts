@@ -671,8 +671,12 @@ export class Repository extends RepositoryBase {
     }).value;
 
     const repository = response[0];
+    const repositoryName = Arn.extractResourceName(repository.Arn, 'repository');
 
-    return this.fromRepositoryArn(scope, id, repository.Arn);
+    return this.fromRepositoryAttributes(scope, id, {
+      repositoryName: repositoryName,
+      repositoryArn: repository.Arn,
+    });
   }
 
   /**
