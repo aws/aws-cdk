@@ -18,6 +18,11 @@ export class RuntimeManagementMode {
    */
   public static readonly FUNCTION_UPDATE = new RuntimeManagementMode('FunctionUpdate');
   /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  public static readonly MANUAL = new RuntimeManagementMode('Manual');
+
+  /**
    * You specify a runtime version in your function configuration.
    * The function uses this runtime version indefinitely.
    * In the rare case in which a new runtime version is incompatible with an existing function,
