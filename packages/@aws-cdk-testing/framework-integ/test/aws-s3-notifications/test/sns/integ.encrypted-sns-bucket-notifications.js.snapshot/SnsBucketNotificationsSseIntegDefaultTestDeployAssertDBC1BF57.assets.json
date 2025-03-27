@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "files": {
     "5b7ddd1e0b18514d45c25a44b162f82431b091da093fb35e4b814bbba093c506": {
       "source": {
@@ -14,7 +14,8 @@
         }
       }
     },
-    "1e17897f872a7cf612ccd88860b9b1e9a6f9aa1e0171fbf4d180163824982039": {
+    "d7a044441105a30f2337193882652a4193eb4d458273eb0c1bc7c56659c92d37": {
+      "displayName": "SnsBucketNotificationsSseIntegDefaultTestDeployAssertDBC1BF57 Template",
       "source": {
         "path": "SnsBucketNotificationsSseIntegDefaultTestDeployAssertDBC1BF57.template.json",
         "packaging": "file"
@@ -22,7 +23,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1e17897f872a7cf612ccd88860b9b1e9a6f9aa1e0171fbf4d180163824982039.json",
+          "objectKey": "d7a044441105a30f2337193882652a4193eb4d458273eb0c1bc7c56659c92d37.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
