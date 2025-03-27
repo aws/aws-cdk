@@ -21,7 +21,7 @@ export class AssetManifestBuilder {
    * Derive the region from the stack, use the asset hash as the key, copy the
    * file extension over, and set the prefix.
    */
-  public defaultAddFileAsset(stack: Stack, asset: FileAssetSource, target: AssetManifestFileDestination) {
+  public defaultAddFileAsset(stack: Stack, asset: FileAssetSource, target: AssetManifestFileDestination, options?: AddFileAssetOptions) {
     validateFileAssetSource(asset);
 
     const extension =
@@ -45,7 +45,7 @@ export class AssetManifestBuilder {
       assumeRoleArn: target.role?.assumeRoleArn,
       assumeRoleExternalId: target.role?.assumeRoleExternalId,
       assumeRoleAdditionalOptions: target.role?.assumeRoleAdditionalOptions,
-    });
+    }, options);
   }
 
   /**
@@ -57,6 +57,7 @@ export class AssetManifestBuilder {
     stack: Stack,
     asset: DockerImageAssetSource,
     target: AssetManifestDockerImageDestination,
+    options?: AddDockerImageAssetOptions,
   ) {
     validateDockerImageAssetSource(asset);
     const imageTag = `${target.dockerTagPrefix ?? ''}${asset.sourceHash}`;
@@ -84,7 +85,7 @@ export class AssetManifestBuilder {
       assumeRoleArn: target.role?.assumeRoleArn,
       assumeRoleExternalId: target.role?.assumeRoleExternalId,
       assumeRoleAdditionalOptions: target.role?.assumeRoleAdditionalOptions,
-    });
+    }, options);
   }
 
   /**
@@ -92,9 +93,10 @@ export class AssetManifestBuilder {
    *
    * sourceHash should be unique for every source.
    */
-  public addFileAsset(stack: Stack, sourceHash: string, source: cxschema.FileSource, dest: cxschema.FileDestination) {
+  public addFileAsset(stack: Stack, sourceHash: string, source: cxschema.FileSource, dest: cxschema.FileDestination, options?: AddFileAssetOptions) {
     if (!this.files[sourceHash]) {
       this.files[sourceHash] = {
+        displayName: options?.displayName,
         source,
         destinations: {},
       };
@@ -108,9 +110,16 @@ export class AssetManifestBuilder {
    *
    * sourceHash should be unique for every source.
    */
-  public addDockerImageAsset(stack: Stack, sourceHash: string, source: cxschema.DockerImageSource, dest: cxschema.DockerImageDestination) {
+  public addDockerImageAsset(
+    stack: Stack,
+    sourceHash: string,
+    source: cxschema.DockerImageSource,
+    dest: cxschema.DockerImageDestination,
+    options?: AddDockerImageAssetOptions,
+  ) {
     if (!this.dockerImages[sourceHash]) {
       this.dockerImages[sourceHash] = {
+        displayName: options?.displayName,
         source,
         destinations: {},
       };
@@ -168,6 +177,30 @@ export class AssetManifestBuilder {
       resolvedOr(stack.region, 'current_region'),
     ].join('-');
   }
+}
+
+/**
+ * Options for the addFileAsset operation
+ */
+export interface AddFileAssetOptions {
+  /**
+   * A display name to associate with the asset
+   *
+   * @default - No display name
+   */
+  readonly displayName?: string;
+}
+
+/**
+ * Options for the addDockerImageAsset operation
+ */
+export interface AddDockerImageAssetOptions {
+  /**
+   * A display name to associate with the asset
+   *
+   * @default - No display name
+   */
+  readonly displayName?: string;
 }
 
 /**
