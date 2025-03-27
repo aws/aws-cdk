@@ -2392,6 +2392,14 @@ export class HealthChecks {
 enum HealthCheckType {
   EC2 = 'EC2',
   ELB = 'ELB',
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  EBS = 'EBS',
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  VPC_LATTICE = 'VPC_LATTICE',
 }
 
 /**
@@ -2410,6 +2418,10 @@ export enum AdditionalHealthCheckType {
    * VPC LATTICE Health Check
    */
   VPC_LATTICE = 'VPC_LATTICE',
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  EC2 = 'EC2',
 }
 
 /**

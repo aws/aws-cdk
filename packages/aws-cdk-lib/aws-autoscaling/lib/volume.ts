@@ -210,4 +210,9 @@ export enum EbsDeviceVolumeType {
    * Cold HDD
    */
   SC1 = 'sc1',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  IO2 = 'io2',
 }
