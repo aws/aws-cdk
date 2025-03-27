@@ -154,7 +154,10 @@ export class ConnectionType {
    * Designates a connection to Zoho CRM.
    */
   public static readonly ZOHOCRM = new ConnectionType('ZOHOCRM');
-
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  public static readonly SFTP = new ConnectionType('SFTP');
   /**
    * The name of this ConnectionType, as expected by Connection resource.
    */
