@@ -389,7 +389,7 @@ export class DeliveryStream extends DeliveryStreamBase {
 function setConnections(scope: Construct) {
   const stack = cdk.Stack.of(scope);
 
-  const mappingId = 'aws-cdk-lib/aws-kinesisfirehose.CidrBlocks';
+  const mappingId = '@aws-cdk/aws-kinesisfirehose.CidrBlocks';
   let cfnMapping = Node.of(stack).tryFindChild(mappingId) as cdk.CfnMapping;
 
   if (!cfnMapping) {
