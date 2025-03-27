@@ -169,7 +169,7 @@ These credentials must have the ability to perform CloudFormation calls,
 lookup resources in your account, and perform CloudFormation deployment.
 For a full list of what is necessary, see `LookupRole`, `DeploymentActionRole`,
 and `CloudFormationExecutionRole` in the
-[bootstrap template](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml).
+[bootstrap template](https://github.com/aws/aws-cdk-cli/blob/main/packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml).
 
 ```ts
 import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
