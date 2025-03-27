@@ -247,6 +247,7 @@ export abstract class CustomResourceProviderBase extends Construct {
         fileName: assetFileName,
         sourceHash: staging.assetHash,
         packaging: FileAssetPackaging.ZIP_DIRECTORY,
+        displayName: `${this.node.path} Code`,
       });
 
       this._codeHash = staging.assetHash;

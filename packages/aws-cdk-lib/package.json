@@ -121,7 +121,7 @@
   "dependencies": {
     "@aws-cdk/asset-awscli-v1": "^2.2.229",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.0",
-    "@aws-cdk/cloud-assembly-schema": "^40.7.0",
+    "@aws-cdk/cloud-assembly-schema": "^41.0.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.3.0",
