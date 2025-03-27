@@ -83,12 +83,42 @@ export class Names {
   public static uniqueResourceName(construct: IConstruct, options: UniqueResourceNameOptions) {
     const node = Node.of(construct);
 
-    const componentsPath = node.scopes.slice(node.scopes.indexOf(node.scopes.reverse()
-      .find(component => (Stack.isStack(component) && !unresolved(component.stackName)))!,
-    )).map(component => Stack.isStack(component) && !unresolved(component.stackName) ? component.stackName : Node.of(component).id);
+    const scopes = node.scopes;
+    const isStack = scopes.map(isTopLevelStack);
+    const lastStackIndex = Math.max(findLastIndex(isStack, x => x), 0);
+
+    const componentsPath = node.scopes
+      .slice(lastStackIndex)
+      .map(component => isTopLevelStack(component) ? component.stackName : Node.of(component).id);
 
     return makeUniqueResourceName(componentsPath, options);
   }
 
+  /**
+   * Return the construct path of the given construct, starting at the nearest enclosing Stack
+   *
+   * Skips over Nested Stacks, in other words Nested Stacks are included in the construct
+   * paths.
+   */
+  public static stackRelativeConstructPath(construct: IConstruct): string {
+    const scopes = construct.node.scopes;
+    const isStack = scopes.map(isTopLevelStack);
+    const lastStackIndex = findLastIndex(isStack, x => x);
+    return scopes.slice(lastStackIndex + 1).map(x => x.node.id).join('/');
+  }
+
   private constructor() {}
+}
+
+function isTopLevelStack(x: IConstruct): x is Stack {
+  return Stack.isStack(x) && !unresolved(x.stackName);
+}
+
+function findLastIndex<A>(xs: A[], pred: (x: A) => boolean): number {
+  for (let i = xs.length - 1; i >= 0; i--) {
+    if (pred(xs[i])) {
+      return i;
+    }
+  }
+  return -1;
 }

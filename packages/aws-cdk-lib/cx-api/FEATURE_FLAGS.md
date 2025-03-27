@@ -92,7 +92,7 @@ Flags come in three types:
 | [@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy](#aws-cdkaws-lambdacreatenewpolicieswithaddtorolepolicy) | When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement | 2.180.0 | (fix) |
 | [@aws-cdk/aws-s3:setUniqueReplicationRoleName](#aws-cdkaws-s3setuniquereplicationrolename) | When enabled, CDK will automatically generate a unique role name that is used for s3 object replication. | 2.182.0 | (fix) |
 | [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | 2.184.0 | (default) |
-| [@aws-cdk/aws-events:requireEventBusPolicySid](#aws-cdkaws-eventsrequireeventbuspolicysid) | When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals. | V2NEXT | (fix) |
+| [@aws-cdk/aws-events:requireEventBusPolicySid](#aws-cdkaws-eventsrequireeventbuspolicysid) | When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals. | 2.186.0 | (fix) |
 
 <!-- END table -->
 
@@ -1764,7 +1764,7 @@ This fixes the issue where permissions were silently not being added for service
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.186.0 | `false` | `true` |
 
 
 <!-- END details -->

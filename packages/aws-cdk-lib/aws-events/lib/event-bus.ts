@@ -483,6 +483,7 @@ class ImportedEventBus extends EventBusBase {
     this.eventSourceName = attrs.eventSourceName;
   }
 
+  @MethodMetadata()
   public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     // Warn the user
     Annotations.of(this).addWarningV2(

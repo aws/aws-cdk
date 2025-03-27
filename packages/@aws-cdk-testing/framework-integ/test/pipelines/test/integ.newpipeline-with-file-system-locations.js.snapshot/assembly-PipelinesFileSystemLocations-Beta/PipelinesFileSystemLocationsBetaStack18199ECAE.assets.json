@@ -1,7 +1,8 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "files": {
     "8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5": {
+      "displayName": "Asset",
       "source": {
         "path": "../asset.8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5.txt",
         "packaging": "file"
@@ -15,6 +16,7 @@
       }
     },
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+      "displayName": "Beta-Stack1 Template",
       "source": {
         "path": "PipelinesFileSystemLocationsBetaStack18199ECAE.template.json",
         "packaging": "file"

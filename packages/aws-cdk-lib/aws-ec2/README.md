@@ -1119,6 +1119,21 @@ new ec2.VpcEndpointService(this, 'EndpointService', {
 });
 ```
 
+You can specify which IP address types (IPv4, IPv6, or both) are supported for your VPC endpoint service:
+
+```ts
+declare const networkLoadBalancer: elbv2.NetworkLoadBalancer;
+
+new ec2.VpcEndpointService(this, 'EndpointService', {
+  vpcEndpointServiceLoadBalancers: [networkLoadBalancer],
+  // Support both IPv4 and IPv6 connections to the endpoint service
+  supportedIpAddressTypes: [
+    ec2.IpAddressType.IPV4,
+    ec2.IpAddressType.IPV6,
+  ],
+});
+```
+
 Endpoint services support private DNS, which makes it easier for clients to connect to your service by automatically setting up DNS in their VPC.
 You can enable private DNS on an endpoint service like so:
 

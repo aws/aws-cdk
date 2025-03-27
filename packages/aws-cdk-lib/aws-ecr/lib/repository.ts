@@ -5,6 +5,7 @@ import { LifecycleRule, TagStatus } from './lifecycle';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import * as cxschema from '../../cloud-assembly-schema';
 import {
   Annotations,
   ArnFormat,
@@ -18,6 +19,8 @@ import {
   TokenComparison,
   CustomResource,
   Aws,
+  ContextProvider,
+  Arn,
   ValidationError,
   UnscopedValidationError,
 } from '../../core';
@@ -601,6 +604,24 @@ export interface RepositoryProps {
   readonly emptyOnDelete?: boolean;
 }
 
+/**
+ * Properties for looking up an existing Repository.
+ */
+export interface RepositoryLookupOptions {
+  /**
+   * The name of the repository.
+   *
+   * @default - Do not filter on repository name
+   */
+  readonly repositoryName?: string;
+  /**
+   * The ARN of the repository.
+   *
+   * @default - Do not filter on repository ARN
+   */
+  readonly repositoryArn?: string;
+}
+
 export interface RepositoryAttributes {
   readonly repositoryName: string;
   readonly repositoryArn: string;
@@ -610,6 +631,54 @@ export interface RepositoryAttributes {
  * Define an ECR repository
  */
 export class Repository extends RepositoryBase {
+  /**
+   * Lookup an existing repository
+   */
+  public static fromLookup(scope: Construct, id: string, options: RepositoryLookupOptions): IRepository {
+    if (Token.isUnresolved(options.repositoryName) || Token.isUnresolved(options.repositoryArn)) {
+      throw new UnscopedValidationError('Cannot look up a repository with a tokenized name or ARN.');
+    }
+
+    if (!options.repositoryArn && !options.repositoryName) {
+      throw new UnscopedValidationError('At least one of `repositoryName` or `repositoryArn` must be provided.');
+    }
+
+    const identifier = options.repositoryName ??
+      (options.repositoryArn ? Arn.split(options.repositoryArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName : undefined);
+
+    if (!identifier) {
+      throw new UnscopedValidationError('Could not determine repository identifier from provided options.');
+    }
+
+    const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.CC_API_PROVIDER,
+      props: {
+        typeName: 'AWS::ECR::Repository',
+        exactIdentifier: identifier,
+        propertiesToReturn: ['Arn'],
+      } as cxschema.CcApiContextQuery,
+      dummyValue: [
+        {
+          Arn: Stack.of(scope).formatArn({
+            service: 'ecr',
+            region: 'us-east-1',
+            account: '123456789012',
+            resource: 'repository',
+            resourceName: 'DUMMY_ARN',
+          }),
+        },
+      ],
+    }).value;
+
+    const repository = response[0];
+    const repositoryName = Arn.extractResourceName(repository.Arn, 'repository');
+
+    return this.fromRepositoryAttributes(scope, id, {
+      repositoryName: repositoryName,
+      repositoryArn: repository.Arn,
+    });
+  }
+
   /**
    * Import a repository
    */

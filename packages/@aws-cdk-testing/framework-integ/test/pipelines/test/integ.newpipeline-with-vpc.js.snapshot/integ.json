@@ -1,5 +1,5 @@
 {
-  "version": "36.0.24",
+  "version": "42.0.0",
   "testCases": {
     "integ.newpipeline-with-vpc": {
       "stacks": [
@@ -12,5 +12,6 @@
   "synthContext": {
     "@aws-cdk/core:newStyleStackSynthesis": "true"
   },
-  "enableLookups": false
+  "enableLookups": false,
+  "minimumCliVersion": "2.1006.0"
 }

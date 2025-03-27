@@ -286,7 +286,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       buildSpecString: actualBuildSpec.toBuildSpec(),
     }));
 
-    const actionName = options.actionName ?? this.stepId;
+    const actionName = options.actionName;
 
     let projectScope = scope;
     if (this.props.additionalConstructLevel ?? true) {

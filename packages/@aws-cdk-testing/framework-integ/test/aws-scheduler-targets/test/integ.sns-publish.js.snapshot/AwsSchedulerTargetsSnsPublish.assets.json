@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "056aa7ef17a6f75dc1e35485436b6c37a66d83b04825da388ad71d44719d2e06": {
+      "source": {
+        "path": "AwsSchedulerTargetsSnsPublish.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "056aa7ef17a6f75dc1e35485436b6c37a66d83b04825da388ad71d44719d2e06.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

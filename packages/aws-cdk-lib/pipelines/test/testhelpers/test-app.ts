@@ -170,25 +170,37 @@ export class StageWithStackOutput extends Stage {
   }
 }
 
+export interface FileAssetAppProps extends StageProps {
+  readonly displayName?: string;
+}
+
 export class FileAssetApp extends Stage {
-  constructor(scope: Construct, id: string, props?: StageProps) {
+  constructor(scope: Construct, id: string, props?: FileAssetAppProps) {
     super(scope, id, props);
     const stack = new Stack(this, 'Stack');
     new s3_assets.Asset(stack, 'Asset', {
       path: path.join(__dirname, 'assets', 'test-file-asset.txt'),
+      displayName: props?.displayName,
     });
   }
 }
 
+export interface TwoFileAssetsAppProps extends StageProps {
+  readonly displayName1?: string;
+  readonly displayName2?: string;
+}
+
 export class TwoFileAssetsApp extends Stage {
-  constructor(scope: Construct, id: string, props?: StageProps) {
+  constructor(scope: Construct, id: string, props?: TwoFileAssetsAppProps) {
     super(scope, id, props);
     const stack = new Stack(this, 'Stack');
     new s3_assets.Asset(stack, 'Asset1', {
       path: path.join(__dirname, 'assets', 'test-file-asset.txt'),
+      displayName: props?.displayName1,
     });
     new s3_assets.Asset(stack, 'Asset2', {
       path: path.join(__dirname, 'assets', 'test-file-asset-two.txt'),
+      displayName: props?.displayName2,
     });
   }
 }
