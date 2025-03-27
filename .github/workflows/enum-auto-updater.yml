@@ -36,6 +36,11 @@ jobs:
           else
             echo "changes=false" >> $GITHUB_OUTPUT
           fi
+          
+      # Authentication is required for gh cli
+      - name: Setup GitHub CLI
+        run: |
+          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
   
       - name: Commit & Push changes
         if: steps.git-check.outputs.changes == 'true'
