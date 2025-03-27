@@ -94,6 +94,21 @@ export enum VpcEndpointType {
    * privately within your VPC, without requiring access through the public internet.
    */
   RESOURCE = 'Resource',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  GATEWAYLOADBALANCER = 'GatewayLoadBalancer',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  SERVICENETWORK = 'ServiceNetwork',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  RESOURCE = 'Resource',
 }
 
 /**

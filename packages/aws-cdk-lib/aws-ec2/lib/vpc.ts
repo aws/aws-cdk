@@ -1156,6 +1156,11 @@ export enum DefaultInstanceTenancy {
    * and control over instance placement at the physical host level.
    */
   HOST = 'host',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  HOST = 'host',
 }
 
 /**
