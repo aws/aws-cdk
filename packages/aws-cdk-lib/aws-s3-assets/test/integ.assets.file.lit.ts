@@ -10,6 +10,9 @@ class TestStack extends cdk.Stack {
     /// !show
     const asset = new assets.Asset(this, 'SampleAsset', {
       path: path.join(__dirname, 'file-asset.txt'),
+
+      // Optional: describe the purpose of the asset with a human-readable string
+      displayName: 'My file',
     });
     /// !hide
 

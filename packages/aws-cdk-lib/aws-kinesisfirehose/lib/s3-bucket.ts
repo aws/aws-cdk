@@ -4,7 +4,7 @@ import { DestinationBindOptions, DestinationConfig, IDestination } from './desti
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import { createBackupConfig, createBufferingHints, createDynamicPartitioningConfiguration, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
-import { Duration, ValidationError } from '../../core';
+import { Duration, UnscopedValidationError } from '../../core';
 
 /**
  * Props for defining an S3 destination of an Amazon Data Firehose delivery stream.
@@ -50,7 +50,7 @@ export interface DynamicPartitioningProps {
 export class S3Bucket implements IDestination {
   constructor(private readonly bucket: s3.IBucket, private readonly props: S3BucketProps = {}) {
     if (this.props.s3Backup?.mode === BackupMode.FAILED) {
-      throw new Error('S3 destinations do not support BackupMode.FAILED');
+      throw new UnscopedValidationError('S3 destinations do not support BackupMode.FAILED');
     }
   }
 
