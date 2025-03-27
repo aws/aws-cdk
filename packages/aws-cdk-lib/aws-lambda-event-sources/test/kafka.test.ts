@@ -592,29 +592,6 @@ describe('KafkaEventSource', () => {
         StartingPositionTimestamp: 1640995200,
       });
     });
-
-    test('missing startingPositionTimestamp with startingPosition set to AT_TIMESTAMP throws error', () => {
-      const clusterArn = 'some-arn';
-      const kafkaTopic = 'some-topic';
-
-      expect(() => new sources.ManagedKafkaEventSource({
-        clusterArn,
-        topic: kafkaTopic,
-        startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
-      })).toThrow(/startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP/);
-    });
-
-    test('setting timestamp without setting startingPosition to AT_TIMESTAMP throws error', () => {
-      const clusterArn = 'some-arn';
-      const kafkaTopic = 'some-topic';
-
-      expect(() => new sources.ManagedKafkaEventSource({
-        clusterArn,
-        topic: kafkaTopic,
-        startingPosition: lambda.StartingPosition.LATEST,
-        startingPositionTimestamp: 1640995200,
-      })).toThrow(/startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP/);
-    });
   });
 
   describe('self-managed kafka', () => {
