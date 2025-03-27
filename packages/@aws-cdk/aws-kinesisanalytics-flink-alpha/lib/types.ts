@@ -86,6 +86,22 @@ export class Runtime {
 
   /** SQL Version 1.0 */
   public static readonly SQL_1_0 = Runtime.of('SQL-1_0');
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  public static readonly ZEPPELIN_FLINK_3_0 = Runtime.of('ZEPPELIN-FLINK-3_0');
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  public static readonly ZEPPELIN_FLINK_2_0 = Runtime.of('ZEPPELIN-FLINK-2_0');
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  public static readonly ZEPPELIN_FLINK_1_0 = Runtime.of('ZEPPELIN-FLINK-1_0');
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  public static readonly SQL_1_0 = Runtime.of('SQL-1_0');
 
   /** Create a new Runtime with with an arbitrary Flink version string */
   public static of(value: string) {
