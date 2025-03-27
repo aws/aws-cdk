@@ -1,7 +1,7 @@
 import { UserPool, UserPoolIdentityProviderGoogle, UserPoolIdentityProviderAmazon, ProviderAttribute, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { App, SecretValue, Stack } from 'aws-cdk-lib';
-import { IdentityPool, IdentityPoolProviderUrl } from '../lib/identitypool';
+import { IdentityPool, IdentityPoolProviderUrl, RoleMappingMatchType } from '../lib/identitypool';
 import { UserPoolAuthenticationProvider } from '../lib/identitypool-user-pool-authentication-provider';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
@@ -63,6 +63,18 @@ const idPool = new IdentityPool(stack, 'identitypool', {
   ],
   allowClassicFlow: true,
   identityPoolName: 'my-id-pool',
+});
+idPool.addRoleMappings({
+  mappingKey: 'googleProvider',
+  providerUrl: IdentityPoolProviderUrl.GOOGLE,
+  rules: [
+    {
+      claim: 'sub',
+      mappedRole: idPool.authenticatedRole,
+      matchType: RoleMappingMatchType.EQUALS,
+      claimValue: 'someVal',
+    },
+  ],
 });
 idPool.authenticatedRole.addToPrincipalPolicy(new PolicyStatement({
   effect: Effect.ALLOW,
