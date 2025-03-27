@@ -145,6 +145,7 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
     },
     productStackHistory.currentVersion(),
   ],
+  productType: servicecatalog.ProductType.CLOUD_FORMATION_TEMPLATE,
 });
 
 new IntegTest(app, 'integ-product', {

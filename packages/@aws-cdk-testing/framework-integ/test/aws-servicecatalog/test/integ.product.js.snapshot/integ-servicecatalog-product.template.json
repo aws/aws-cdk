@@ -362,6 +362,7 @@
    "Properties": {
     "Name": "testProduct",
     "Owner": "testOwner",
+    "ProductType": "CLOUD_FORMATION_TEMPLATE",
     "ProvisioningArtifactParameters": [
      {
       "DisableTemplateValidation": true,
