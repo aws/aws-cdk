@@ -119,7 +119,7 @@
     "mime-types"
   ],
   "dependencies": {
-    "@aws-cdk/asset-awscli-v1": "^2.2.227",
+    "@aws-cdk/asset-awscli-v1": "^2.2.229",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.0",
     "@aws-cdk/cloud-assembly-schema": "^40.7.0",
     "@balena/dockerignore": "^1.0.2",
@@ -161,7 +161,7 @@
     "@smithy/node-http-handler": "3.3.3",
     "@smithy/types": "3.7.2",
     "@smithy/util-stream": "3.3.4",
-    "@types/aws-lambda": "^8.10.147",
+    "@types/aws-lambda": "^8.10.148",
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.17.16",
     "@types/punycode": "^2.1.4",
@@ -169,7 +169,7 @@
     "@aws-cdk/lazify": "0.0.0",
     "aws-sdk-client-mock": "4.1.0",
     "aws-sdk-client-mock-jest": "4.1.0",
-    "cdk8s": "2.69.50",
+    "cdk8s": "2.69.57",
     "constructs": "^10.0.0",
     "delay": "5.0.0",
     "esbuild": "^0.25.1",
