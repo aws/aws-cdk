@@ -5,7 +5,7 @@ import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { Stack, Names } from '../../core';
+import { Stack, Names, Annotations } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 
 /**
