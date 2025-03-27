@@ -1,0 +1,13 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "IntegTestUniversal/DefaultTest": {
+      "stacks": [
+        "AwsSchedulerTargetsUniversal"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "IntegTestUniversal/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestUniversalDefaultTestDeployAssert42BBB3FD"
+    }
+  }
+}

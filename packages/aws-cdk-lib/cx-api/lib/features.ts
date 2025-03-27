@@ -1451,7 +1451,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       This fixes the issue where permissions were silently not being added for service principals.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.186.0' },
     recommendedValue: true,
   },
 
