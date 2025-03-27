@@ -671,16 +671,8 @@ export class Repository extends RepositoryBase {
     }).value;
 
     const repository = response[0];
-    const lookupRepoName = Arn.split(repository.Arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
-    if (!lookupRepoName) {
-      throw new UnscopedValidationError(`Unable to look up repository with name: ${options.repositoryArn} in account ${Aws.ACCOUNT_ID}`);
-    }
-
-    return this.fromRepositoryAttributes(scope, id, {
-      repositoryName: lookupRepoName,
-      repositoryArn: repository.Arn,
-    });
+    return this.fromRepositoryArn(scope, id, repository.Arn);
   }
 
   /**
