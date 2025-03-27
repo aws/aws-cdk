@@ -165,6 +165,11 @@ export enum DayOfWeek {
    * Saturday
    */
   SATURDAY = 'SAT',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  UNSET_VALUE = 'UNSET_VALUE',
 }
 
 /**
