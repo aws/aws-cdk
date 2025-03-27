@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-scheduler-targets-alpha",
   "version": "0.0.0",
-  "description": "The CDK Construct Library for Amazon Scheduler Targets",
+  "description": "This module is deprecated. All constructs are now available under aws-cdk-lib/aws-scheduler-targets.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -84,7 +84,7 @@
   "devDependencies": {
     "@aws-cdk/aws-scheduler-alpha": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-runner": "^2.186.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.14",
@@ -99,8 +99,8 @@
   "engines": {
     "node": ">= 14.15.0"
   },
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "deprecated",
+  "maturity": "deprecated",
   "awscdkio": {
     "announce": false
   },
