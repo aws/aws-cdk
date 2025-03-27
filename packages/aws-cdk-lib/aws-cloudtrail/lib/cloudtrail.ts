@@ -558,6 +558,41 @@ export enum DataResourceType {
    * Data resource type for S3 objects
    */
   S3_OBJECT = 'AWS::S3::Object',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  AWS_DYNAMODB_TABLE = 'AWS::DynamoDB::Table',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  AWS_S3OUTPOSTS_OBJECT = 'AWS::S3Outposts::Object',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  AWS_MANAGEDBLOCKCHAIN_NODE = 'AWS::ManagedBlockchain::Node',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  AWS_S3OBJECTLAMBDA_ACCESSPOINT = 'AWS::S3ObjectLambda::AccessPoint',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  AWS_EC2_SNAPSHOT = 'AWS::EC2::Snapshot',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  AWS_S3_ACCESSPOINT = 'AWS::S3::AccessPoint',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  AWS_DYNAMODB_STREAM = 'AWS::DynamoDB::Stream',
 }
 
 interface EventSelector {
