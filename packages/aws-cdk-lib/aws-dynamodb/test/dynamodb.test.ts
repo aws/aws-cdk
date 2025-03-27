@@ -445,6 +445,77 @@ testDeprecated('when specifying every property', () => {
   );
 });
 
+test('when replica removal policy is not specified', () => {
+  const stack = new Stack();
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    removalPolicy: RemovalPolicy.RETAIN,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': true,
+  });
+});
+
+test('when replica removal policy is not specified', () => {
+  const stack = new Stack();
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+  table.applyRemovalPolicy(RemovalPolicy.DESTROY);
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': false,
+  });
+});
+
+test('when replica and table removal policy is not specified', () => {
+  const stack = new Stack();
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': true,
+  });
+});
+
+test('when replica and table removal policy is not specified', () => {
+  const stack = new Stack();
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    removalPolicy: RemovalPolicy.DESTROY,
+    replicaRemovalPolicy: RemovalPolicy.RETAIN,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': true,
+  });
+});
+
+test('when replica and table removal policy is not specified', () => {
+  const stack = new Stack();
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    removalPolicy: RemovalPolicy.RETAIN,
+    replicaRemovalPolicy: RemovalPolicy.DESTROY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': false,
+  });
+});
+
 test('when specifying sse with customer managed CMK', () => {
   const stack = new Stack();
   const table = new Table(stack, CONSTRUCT_NAME, {

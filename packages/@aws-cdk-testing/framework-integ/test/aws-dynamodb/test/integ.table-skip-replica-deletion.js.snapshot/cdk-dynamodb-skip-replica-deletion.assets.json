@@ -1,0 +1,58 @@
+{
+  "version": "40.0.0",
+  "files": {
+    "b6529896e4495e2737f2221f4a6080bd2c5159352f9e2ed375a5715475f12d7c": {
+      "source": {
+        "path": "asset.b6529896e4495e2737f2221f4a6080bd2c5159352f9e2ed375a5715475f12d7c",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b6529896e4495e2737f2221f4a6080bd2c5159352f9e2ed375a5715475f12d7c.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6": {
+      "source": {
+        "path": "asset.39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "d9e31d4b3fa430d155f38b6f5625409d34d942abcbb70f689db7da89658255ae": {
+      "source": {
+        "path": "cdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProvider76996739.nested.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d9e31d4b3fa430d155f38b6f5625409d34d942abcbb70f689db7da89658255ae.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "afae18704b4e7bf7a02095210431d25ae35b5cf6b8d3d4b729a05a9b7536ae7c": {
+      "source": {
+        "path": "cdk-dynamodb-skip-replica-deletion.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "afae18704b4e7bf7a02095210431d25ae35b5cf6b8d3d4b729a05a9b7536ae7c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
