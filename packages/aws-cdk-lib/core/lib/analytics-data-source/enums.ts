@@ -879,7 +879,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   'DefaultInstanceTenancy': [
     'default',
-    'dedicated'
+    'dedicated',
+    'host'
   ],
   'DefaultResult': [
     'CONTINUE',
@@ -931,16 +932,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'read',
     'write',
     'mknod'
-  ],
-  'DiagnosticReason': [
-    'NO_SNAPSHOT',
-    'TEST_FAILED',
-    'TEST_ERROR',
-    'SNAPSHOT_FAILED',
-    'SNAPSHOT_ERROR',
-    'SNAPSHOT_SUCCESS',
-    'TEST_SUCCESS',
-    'ASSERTION_FAILED'
   ],
   'DiscoveryType': [
     'API',
@@ -1348,11 +1339,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'HTTP',
     'HTTPS',
     'TCP'
-  ],
-  'HotswapMode': [
-    'fall-back',
-    'hotswap-only',
-    'full-deployment'
   ],
   'HttpAuthorizerType': [
     'AWS_IAM',
@@ -2804,11 +2790,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
-  'RequireApproval': [
-    'never',
-    'any-change',
-    'broadening'
-  ],
   'Resolution': [
     'FULL_HD',
     'HD',
@@ -2824,6 +2805,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'pause-cluster',
     'resume-cluster',
     'failover-primary-compute'
+  ],
+  'Result': [
+    'ROLLBACK',
+    'FAIL',
+    'RETRY',
+    'SKIP'
   ],
   'RetentionDays': [
     1,
@@ -2849,6 +2836,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     3288,
     3653,
     9999
+  ],
+  'RetryMode': [
+    'ALL_ACTIONS',
+    'FAILED_ACTIONS'
   ],
   'RevocationType': [
     'CRL'
@@ -3077,10 +3068,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'ELBSecurityPolicy-TLS-1-2-Ext-2018-06',
     'ELBSecurityPolicy-TLS-1-1-2017-01',
     'ELBSecurityPolicy-TLS-1-0-2015-04'
-  ],
-  'StackActivityProgress': [
-    'bar',
-    'events'
   ],
   'StackSetOrganizationsAutoDeployment': [
     'Enabled',
@@ -3581,7 +3568,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   'VpcEndpointType': [
     'Interface',
-    'Gateway'
+    'Gateway',
+    'GatewayLoadBalancer',
+    'ServiceNetwork',
+    'Resource'
   ],
   'VpcSubnetGroupType': [
     'Public',
