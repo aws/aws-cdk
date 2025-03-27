@@ -1,7 +1,7 @@
 {
   "version": "40.0.0",
   "files": {
-    "768e26d5686a468e64b03888f8408eda91965bad7b1adfae4479b2d67ee87c9d": {
+    "e560b29933771e9cdf1141f2797d687b82a82b545c59c59c388bf283f8152f70": {
       "source": {
         "path": "aws-cdk-ec2-alpha-shared-route-table.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "768e26d5686a468e64b03888f8408eda91965bad7b1adfae4479b2d67ee87c9d.json",
+          "objectKey": "e560b29933771e9cdf1141f2797d687b82a82b545c59c59c388bf283f8152f70.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

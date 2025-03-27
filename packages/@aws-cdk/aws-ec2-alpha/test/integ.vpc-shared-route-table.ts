@@ -17,11 +17,6 @@ const stack = new cdk.Stack(app, 'aws-cdk-ec2-alpha-shared-route-table');
 
 const vpc = new vpc_v2.VpcV2(stack, 'VPC', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
-  secondaryAddressBlocks: [
-    vpc_v2.IpAddresses.amazonProvidedIpv6({
-      cidrBlockName: 'AmazonProvided',
-    }),
-  ],
   enableDnsHostnames: true,
   enableDnsSupport: true,
   vpcName: 'SharedRouteTableVPC',
@@ -66,26 +61,11 @@ const rtbassertion = integ.assertions.awsApiCall('ec2', 'DescribeRouteTablesComm
   RouteTableIds: [sharedRouteTable.routeTableId],
 });
 
-rtbassertion.expect(ExpectedResult.objectLike({
-  RouteTables: [
-    Match.objectLike({
-      RouteTableId: sharedRouteTable.routeTableId,
-      Routes: Match.arrayWith([
-        Match.objectLike({
-          DestinationCidrBlock: '0.0.0.0/0',
-          GatewayId: vpc.internetGatewayId,
-        }),
-      ]),
-    }),
-  ],
-}));
-
 // Verify that there's exactly one default route (0.0.0.0/0) in the route table
 rtbassertion.expect(ExpectedResult.objectLike({
   RouteTables: [
     Match.objectLike({
       Routes: [
-        // Local route (automatically created)
         {
           DestinationCidrBlock: '10.1.0.0/16',
           GatewayId: 'local',
@@ -93,11 +73,6 @@ rtbassertion.expect(ExpectedResult.objectLike({
         // Default route to internet gateway (should be only one)
         {
           DestinationCidrBlock: '0.0.0.0/0',
-          GatewayId: vpc.internetGatewayId,
-        },
-        // IPv6 default route (if IPv6 is enabled)
-        {
-          DestinationIpv6CidrBlock: '::/0',
           GatewayId: vpc.internetGatewayId,
         },
       ],

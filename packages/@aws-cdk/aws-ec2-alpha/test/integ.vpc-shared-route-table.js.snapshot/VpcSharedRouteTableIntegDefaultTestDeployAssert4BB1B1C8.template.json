@@ -19,10 +19,6 @@
        {
         "Fn::ImportValue": "aws-cdk-ec2-alpha-shared-route-table:ExportsOutputFnGetAttVPCInternetGatewayIGW3C1F5485InternetGatewayId25C881CB"
        },
-       "\"},{\"DestinationIpv6CidrBlock\":\"::/0\",\"GatewayId\":\"",
-       {
-        "Fn::ImportValue": "aws-cdk-ec2-alpha-shared-route-table:ExportsOutputFnGetAttVPCInternetGatewayIGW3C1F5485InternetGatewayId25C881CB"
-       },
        "\"}]}}]}}"
       ]
      ]
@@ -42,7 +38,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1742356834487"
+    "salt": "1743113940087"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

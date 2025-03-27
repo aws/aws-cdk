@@ -15,18 +15,6 @@
     ]
    }
   },
-  "VPCAmazonProvided4AD17A46": {
-   "Type": "AWS::EC2::VPCCidrBlock",
-   "Properties": {
-    "AmazonProvidedIpv6CidrBlock": true,
-    "VpcId": {
-     "Fn::GetAtt": [
-      "VPCB9E5F0B4",
-      "VpcId"
-     ]
-    }
-   }
-  },
   "VPCInternetGatewayIGW3C1F5485": {
    "Type": "AWS::EC2::InternetGateway",
    "Properties": {
@@ -116,10 +104,7 @@
       "VpcId"
      ]
     }
-   },
-   "DependsOn": [
-    "VPCAmazonProvided4AD17A46"
-   ]
+   }
   },
   "PublicSubnet1RouteTableAssociation0E73B917": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -133,10 +118,7 @@
     "SubnetId": {
      "Ref": "PublicSubnet1Subnet03067927"
     }
-   },
-   "DependsOn": [
-    "VPCAmazonProvided4AD17A46"
-   ]
+   }
   },
   "PublicSubnet2Subnet78B4B4BD": {
    "Type": "AWS::EC2::Subnet",
@@ -160,10 +142,7 @@
       "VpcId"
      ]
     }
-   },
-   "DependsOn": [
-    "VPCAmazonProvided4AD17A46"
-   ]
+   }
   },
   "PublicSubnet2RouteTableAssociation1339F17B": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -177,10 +156,7 @@
     "SubnetId": {
      "Ref": "PublicSubnet2Subnet78B4B4BD"
     }
-   },
-   "DependsOn": [
-    "VPCAmazonProvided4AD17A46"
-   ]
+   }
   }
  },
  "Outputs": {

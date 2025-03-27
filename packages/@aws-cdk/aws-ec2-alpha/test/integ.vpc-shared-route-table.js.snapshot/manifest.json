@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/768e26d5686a468e64b03888f8408eda91965bad7b1adfae4479b2d67ee87c9d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e560b29933771e9cdf1141f2797d687b82a82b545c59c59c388bf283f8152f70.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -44,18 +44,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
-          }
-        ],
-        "/aws-cdk-ec2-alpha-shared-route-table/VPC/AmazonProvided": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-ec2-alpha-shared-route-table/VPC/AmazonProvided/AmazonProvided": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCAmazonProvided4AD17A46"
           }
         ],
         "/aws-cdk-ec2-alpha-shared-route-table/VPC/InternetGateway": [
@@ -180,7 +168,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/68c9704be75c8305cf3e98c33ba0010345e8403adc04a1fd88038943957bec4e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/deda2e8419683a1655605921ffe99d3d546d8b744fdfef81853e02600722f2c2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

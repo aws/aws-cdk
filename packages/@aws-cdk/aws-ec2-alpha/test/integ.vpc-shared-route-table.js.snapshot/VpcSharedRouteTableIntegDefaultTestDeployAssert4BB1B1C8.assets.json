@@ -14,7 +14,7 @@
         }
       }
     },
-    "68c9704be75c8305cf3e98c33ba0010345e8403adc04a1fd88038943957bec4e": {
+    "deda2e8419683a1655605921ffe99d3d546d8b744fdfef81853e02600722f2c2": {
       "source": {
         "path": "VpcSharedRouteTableIntegDefaultTestDeployAssert4BB1B1C8.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "68c9704be75c8305cf3e98c33ba0010345e8403adc04a1fd88038943957bec4e.json",
+          "objectKey": "deda2e8419683a1655605921ffe99d3d546d8b744fdfef81853e02600722f2c2.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
