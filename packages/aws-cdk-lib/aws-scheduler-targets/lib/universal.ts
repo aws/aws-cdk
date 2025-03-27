@@ -95,7 +95,7 @@ export class Universal extends ScheduleTargetBase implements IScheduleTarget {
 
   protected addTargetActionToRole(role: IRole): void {
     if (!this.props.policyStatements?.length) {
-      Annotations.of(role).addWarningV2('@aws-cdk/aws-scheduler-alpha:defaultWildcardResourcePolicy',
+      Annotations.of(role).addWarningV2('@aws-cdk/aws-scheduler-targets:defaultWildcardResourcePolicy',
         'Default policy with * for resources is used. Use custom policy for better security posture.');
       role.addToPrincipalPolicy(new PolicyStatement({
         actions: [awsSdkToIamAction(this.props.service, this.props.action)],
