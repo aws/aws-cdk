@@ -6,7 +6,7 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 
 /**
- * Possible compression options Kinesis Data Firehose can use to compress data on delivery.
+ * Possible compression options Amazon Data Firehose can use to compress data on delivery.
  */
 export class Compression {
   /**
@@ -75,7 +75,7 @@ interface DestinationLoggingProps {
 }
 
 /**
- * Common properties for defining a backup, intermediary, or final S3 destination for a Kinesis Data Firehose delivery stream.
+ * Common properties for defining a backup, intermediary, or final S3 destination for a Amazon Data Firehose delivery stream.
  */
 export interface CommonDestinationS3Props {
   /**
@@ -90,7 +90,7 @@ export interface CommonDestinationS3Props {
   readonly bufferingInterval?: cdk.Duration;
 
   /**
-   * The size of the buffer that Kinesis Data Firehose uses for incoming data before
+   * The size of the buffer that Amazon Data Firehose uses for incoming data before
    * delivering it to the S3 bucket.
    *
    * Minimum: Size.mebibytes(1)
@@ -101,7 +101,7 @@ export interface CommonDestinationS3Props {
   readonly bufferingSize?: cdk.Size;
 
   /**
-   * The type of compression that Kinesis Data Firehose uses to compress the data
+   * The type of compression that Amazon Data Firehose uses to compress the data
    * that it delivers to the Amazon S3 bucket.
    *
    * The compression formats SNAPPY or ZIP cannot be specified for Amazon Redshift
@@ -120,7 +120,7 @@ export interface CommonDestinationS3Props {
   readonly encryptionKey?: kms.IKey;
 
   /**
-   * A prefix that Kinesis Data Firehose evaluates and adds to failed records before writing them to S3.
+   * A prefix that Amazon Data Firehose evaluates and adds to failed records before writing them to S3.
    *
    * This prefix appears immediately following the bucket name.
    * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html
@@ -130,7 +130,7 @@ export interface CommonDestinationS3Props {
   readonly errorOutputPrefix?: string;
 
   /**
-   * A prefix that Kinesis Data Firehose evaluates and adds to records before writing them to S3.
+   * A prefix that Amazon Data Firehose evaluates and adds to records before writing them to S3.
    *
    * This prefix appears immediately following the bucket name.
    * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html
@@ -171,7 +171,7 @@ export interface CommonDestinationProps extends DestinationLoggingProps {
   /**
    * The IAM role associated with this destination.
    *
-   * Assumed by Kinesis Data Firehose to invoke processors and write to destinations
+   * Assumed by Amazon Data Firehose to invoke processors and write to destinations
    *
    * @default - a role will be created with default permissions.
    */
