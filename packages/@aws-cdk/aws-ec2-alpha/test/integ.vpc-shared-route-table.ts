@@ -52,7 +52,7 @@ new SubnetV2(stack, 'PublicSubnet2', {
   routeTable: sharedRouteTable,
 });
 
-// Add internet gateway with explicit subnets
+// Add internet gateway to create route in public subnets
 vpc.addInternetGateway({
   internetGatewayName: 'SharedRouteTableIGW',
 });
