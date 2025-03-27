@@ -166,7 +166,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
     if (this.innerProps.startingPosition !== lambda.StartingPosition.AT_TIMESTAMP && this.innerProps.startingPositionTimestamp) {
       Annotations.of(target).addWarningV2('@aws-cdk/aws-lambda-event-source:invalidStartingPosition', 'startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
     }
-    
+
     const eventSourceMapping = target.addEventSourceMapping(
       `KafkaEventSource:${Names.nodeUniqueId(target.node)}${this.innerProps.topic}`,
       this.enrichMappingOptions({
