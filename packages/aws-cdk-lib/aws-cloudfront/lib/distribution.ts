@@ -905,6 +905,10 @@ export enum OriginProtocolPolicy {
 export enum SSLMethod {
   SNI = 'sni-only',
   VIP = 'vip',
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  STATIC_IP = 'static-ip',
 }
 
 /**

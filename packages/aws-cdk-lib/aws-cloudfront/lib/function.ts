@@ -247,6 +247,16 @@ export enum FunctionEventType {
    * The viewer-response specifies the outgoing response
    */
   VIEWER_RESPONSE = 'viewer-response',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  ORIGIN_REQUEST = 'origin-request',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  ORIGIN_RESPONSE = 'origin-response',
 }
 
 /**
