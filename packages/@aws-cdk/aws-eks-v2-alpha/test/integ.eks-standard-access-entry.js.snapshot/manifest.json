@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "EKSStandardAccessEntry.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0ed5915005ef3adc1013323d38229fd991757309960c09449aa0244f9798eca2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b1d6eeb4241e1a8725a347c087e781ecd599147dde64618f4fd435bd79acd99b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -299,10 +299,7 @@
         "/EKSStandardAccessEntry/kubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "kubectlLayer44321E08",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "kubectlLayer44321E08"
           }
         ],
         "/EKSStandardAccessEntry/Cluster": [
@@ -871,5 +868,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }
