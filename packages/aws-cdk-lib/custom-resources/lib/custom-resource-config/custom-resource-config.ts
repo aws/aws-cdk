@@ -2,7 +2,8 @@ import { IConstruct, MetadataEntry } from 'constructs';
 import * as cloudformation from '../../../aws-cloudformation';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
-import { AspectPriority, Aspects, IAspect, RemovalPolicy } from '../../../core/lib';
+import { AspectPriority, Aspects, FeatureFlags, IAspect, RemovalPolicy } from '../../../core/lib';
+import * as cxapi from '../../../cx-api';
 
 /* This is duplicated in @aws-cdk/custom-resource-handlers/lib/custom-resources-framework/config.ts */
 export const CUSTOM_RESOURCE_PROVIDER = 'aws:cdk:is-custom-resource-handler-customResourceProvider';
@@ -32,7 +33,9 @@ export class CustomResourceConfig {
    * This feature is currently experimental.
    */
   public addLogRetentionLifetime(rentention: logs.RetentionDays) {
-    Aspects.of(this.scope).add(new CustomResourceLogRetention(rentention), { priority: AspectPriority.MUTATING });
+    Aspects.of(this.scope).add(new CustomResourceLogRetention(rentention), {
+      priority: FeatureFlags.of(this.scope).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined,
+    });
   }
 
   /**

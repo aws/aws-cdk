@@ -68,6 +68,9 @@ export interface StageProps {
    * Options for applying a permissions boundary to all IAM Roles
    * and Users created within this Stage
    *
+   * This feature uses Aspects, and the Aspects are applied at the Stack level.
+   * This is relevant
+   *
    * @default - no permissions boundary is applied
    */
   readonly permissionsBoundary?: PermissionsBoundary;

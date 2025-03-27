@@ -584,7 +584,9 @@ export class Stack extends Construct implements ITaggable {
             node.addPropertyOverride('PermissionsBoundary', permissionsBoundaryArn);
           }
         },
-      }, { priority: AspectPriority.MUTATING });
+      }, {
+        priority: FeatureFlags.of(this).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined,
+      });
     }
   }
 

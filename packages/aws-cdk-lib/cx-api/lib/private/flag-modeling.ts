@@ -44,10 +44,10 @@ export interface FlagInfoBase {
 export type FlagInfo = FlagInfoBase & (
   | { readonly type: FlagType.ApiDefault;
 
-    /** Describe restoring old behavior or dealing with the change (Markdown) */
+    /** Describe how to use the API to achieve pre-flag behavior, if the flag is set (Markdown) */
     readonly compatibilityWithOldBehaviorMd: string; }
   | { readonly type: FlagType.BugFix;
-    /** Describe restoring old behavior or dealing with the change (Markdown) */
+    /** Describe how to deal with the change if the flag is set (Markdown) */
     readonly compatibilityWithOldBehaviorMd?: string; }
   | { readonly type: FlagType.VisibleContext }
   | { readonly type: FlagType.Temporary;

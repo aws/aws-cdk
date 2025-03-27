@@ -4,6 +4,7 @@ import {
   CloudFormationRuleConstraintOptions, CommonConstraintOptions,
   StackSetsConstraintOptions, TagUpdateConstraintOptions,
 } from './constraints';
+import * as cxapi from '../../cx-api';
 import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
@@ -369,7 +370,9 @@ export class Portfolio extends PortfolioBase {
           (c as Portfolio).addBucketPermissionsToSharedAccounts();
         }
       },
-    }, { priority: cdk.AspectPriority.MUTATING });
+    }, {
+      priority: cdk.FeatureFlags.of(this).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? cdk.AspectPriority.MUTATING : undefined,
+    });
   }
 
   protected generateUniqueHash(value: string): string {

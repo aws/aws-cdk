@@ -26,6 +26,7 @@ import {
   Tokenization, UnscopedValidationError, ValidationError, withResolved,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import * as cxapi from '../../cx-api';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 
 /**
@@ -1608,7 +1609,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.spotPrice = props.spotPrice;
 
     if (props.requireImdsv2) {
-      Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect(), { priority: AspectPriority.MUTATING });
+      Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect(), {
+        priority: FeatureFlags.of(this).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined,
+      });
     }
 
     this.node.addValidation({ validate: () => this.validateTargetGroup() });

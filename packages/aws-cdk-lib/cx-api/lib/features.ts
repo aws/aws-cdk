@@ -22,21 +22,25 @@ import { FlagInfo, FlagType } from './private/flag-modeling';
 //
 // There are three types of flags: ApiDefault, BugFix, and VisibleContext flags.
 //
-// - ApiDefault flags: change the behavior or defaults of the construct library. When
-//   set, the infrastructure that is generated may be different but there is
-//   a way to get the old infrastructure setup by using the API in a different way.
+// - ApiDefault flags: change the behavior or defaults of the construct library.
+//   It is still possible to achieve the old behavior via the official API
+//   but changes are necessary (e.g. passing a boolean flag).
 //
-// - BugFix flags: the old infra we used to generate is no longer recommended,
-//   and there is no way to achieve that result anymore except by making sure the
-//   flag is unset, or set to `false`. Mostly used for infra-impacting bugfixes or
-//   enhanced security defaults.
+//   Implications for future Major Version:
+//   - The recommended value will become the default value.
+//   - Flags of this type will be removed (code changes will become mandatory).
+//
+// - BugFix flags: the old infra we used to generate is no longer recommended.
+//   The old behavior cannot be achieved anymore using the official API (only
+//   by making sure the feature flag is unset). Mostly used for infra-impacting
+//   bugfixes or enhanced security defaults.
+//
+//   Implications for future Major Version:
+//   - The recommended value will become the default value.
+//   - Flag will never be removed (no other way to achieve legacy behavior).
 //
 // - VisibleContext flags: not really a feature flag, but configurable context which is
 //   advertised by putting the context in the `cdk.json` file of new projects.
-//
-// In future major versions, the "newProjectValues" will become the version
-// default for both DefaultBehavior and BugFix flags, and DefaultBehavior flags
-// will be removed (i.e., their new behavior will become the *only* behavior).
 //
 // See https://github.com/aws/aws-cdk-rfcs/blob/master/text/0055-feature-flags.md
 // --------------------------------------------------------------------------------
@@ -127,6 +131,7 @@ export const LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY = '@aws-cdk/aws-lam
 export const SET_UNIQUE_REPLICATION_ROLE_NAME = '@aws-cdk/aws-s3:setUniqueReplicationRoleName';
 export const PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceStageRoleTrustScope';
 export const EVENTBUS_POLICY_SID_REQUIRED = '@aws-cdk/aws-events:requireEventBusPolicySid';
+export const ASPECT_PRIORITIES_MUTATING = '@aws-cdk/core:aspectPrioritiesMutating';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1155,8 +1160,8 @@ export const FLAGS: Record<string, FlagInfo> = {
       '**Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**',
     detailsMd: `
     In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-    accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this 
-    feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot 
+    accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this
+    feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot
     guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
     It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
     `,
@@ -1174,9 +1179,9 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
     In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
     accessing IMDS. CDK cannot guarantee the correct execution of the feature in all platforms. Setting this feature flag
-    to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the 
+    to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the
     IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
-    
+
     It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
     `,
     introducedIn: { v2: '2.175.0' },
@@ -1369,7 +1374,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       When this feature flag is enabled, the default behaviour of OIDC Provider's custom resource handler will
       default to reject unauthorized connections when downloading CA Certificates.
-      
+
       When this feature flag is disabled, the behaviour will be the same as current and will allow downloading
       thumbprints from unsecure connections.`,
     introducedIn: { v2: '2.177.0' },
@@ -1384,7 +1389,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
     When this feature flag is enabled, CDK expands the scope of usage data collection to include the following:
       * L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
-      * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted. 
+      * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted.
       * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
     `,
     introducedIn: { v2: '2.178.0' },
@@ -1396,7 +1401,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement',
     detailsMd: `
-      When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+      When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy.
       The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
       This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
     `,
@@ -1436,13 +1441,13 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals.',
     detailsMd: `
-      Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails 
-      because service principals require resource policies with Statement IDs. 
+      Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails
+      because service principals require resource policies with Statement IDs.
 
       When this flag is enabled:
       - Resource policies will be created with Statement IDs for service principals
       - The operation will succeed as expected
-      
+
       When this flag is disabled:
       - A warning will be emitted
       - The grant operation will be dropped
@@ -1452,6 +1457,36 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.186.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ASPECT_PRIORITIES_MUTATING]: {
+    type: FlagType.ApiDefault,
+    summary: 'When set, Aspects added by the construct library on your behalf will be given a priority of MUTATING.',
+    detailsMd: `
+      Custom Aspets you add have a priority of DEFAULT (500) if not overridden,
+      which is higher than MUTATING (200). This is relevant if a custom Aspect
+      you add and an Aspect added by CDK try to configure the same value.
+
+      If this flag is not set (old behavior), the Aspects that is closest
+      to the target construct executes last (either yours or the Aspect added
+      by the CDK).
+
+      If this flag is set (recommended behavior), custom Aspects you add with
+      default priority will always execute last and "win" the write.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: `
+      To add mutating Aspects controlling construct values that can be overridden
+      by Aspects added by CDK, give them MUTATING priority:
+
+      \`\`\`
+      Aspects.of(stack).add(new MyCustomAspect(), {
+        priority: AspectPriority.MUTATING,
+      });
+      \`\`\`
+    `,
   },
 };
 

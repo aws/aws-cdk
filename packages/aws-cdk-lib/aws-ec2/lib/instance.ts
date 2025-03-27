@@ -671,7 +671,9 @@ export class Instance extends Resource implements IInstance {
     }));
 
     if (props.requireImdsv2) {
-      Aspects.of(this).add(new InstanceRequireImdsv2Aspect(), { priority: AspectPriority.MUTATING });
+      Aspects.of(this).add(new InstanceRequireImdsv2Aspect(), {
+        priority: FeatureFlags.of(this).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined,
+      });
     }
   }
 

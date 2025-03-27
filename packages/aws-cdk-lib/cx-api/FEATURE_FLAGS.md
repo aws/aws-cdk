@@ -93,6 +93,7 @@ Flags come in three types:
 | [@aws-cdk/aws-s3:setUniqueReplicationRoleName](#aws-cdkaws-s3setuniquereplicationrolename) | When enabled, CDK will automatically generate a unique role name that is used for s3 object replication. | 2.182.0 | (fix) |
 | [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | 2.184.0 | (default) |
 | [@aws-cdk/aws-events:requireEventBusPolicySid](#aws-cdkaws-eventsrequireeventbuspolicysid) | When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals. | 2.186.0 | (fix) |
+| [@aws-cdk/core:aspectPrioritiesMutating](#aws-cdkcoreaspectprioritiesmutating) | When set, Aspects added by the construct library on your behalf will be given a priority of MUTATING. | V2NEXT | (default) |
 
 <!-- END table -->
 
@@ -172,7 +173,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/core:enableAdditionalMetadataCollection": true,
     "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true,
     "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
-    "@aws-cdk/aws-events:requireEventBusPolicySid": true
+    "@aws-cdk/aws-events:requireEventBusPolicySid": true,
+    "@aws-cdk/core:aspectPrioritiesMutating": true
   }
 }
 ```
@@ -1609,7 +1611,7 @@ If the flag is set to false then a custom resource will be created when using `U
 
 In an ECS Cluster with `MachineImageType.AMAZON_LINUX_2`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
 accessing IMDS. CDK cannot guarantee the correct execution of the feature in all platforms. Setting this feature flag
-to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the 
+to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the
 IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
 
 It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
@@ -1628,8 +1630,8 @@ It is recommended to follow ECS documentation to block IMDS for your specific pl
 *When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)*** (temporary)
 
 In an ECS Cluster with `MachineImageType.AMAZON_LINUX_2`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this 
-feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot 
+accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this
+feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot
 guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
 It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
 
@@ -1686,7 +1688,7 @@ thumbprints from unsecure connections.
 
 When this feature flag is enabled, CDK expands the scope of usage data collection to include the following:
   * L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
-  * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted. 
+  * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted.
   * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
 
 
@@ -1700,7 +1702,7 @@ When this feature flag is enabled, CDK expands the scope of usage data collectio
 
 *When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement* (fix)
 
-When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy.
 The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
 This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
 
@@ -1746,8 +1748,8 @@ When this feature flag is disabled, it will keep the root account principal in t
 
 *When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals.* (fix)
 
-Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails 
-because service principals require resource policies with Statement IDs. 
+Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails
+because service principals require resource policies with Statement IDs.
 
 When this flag is enabled:
 - Resource policies will be created with Statement IDs for service principals
@@ -1765,6 +1767,39 @@ This fixes the issue where permissions were silently not being added for service
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.186.0 | `false` | `true` |
+
+
+### @aws-cdk/core:aspectPrioritiesMutating
+
+*When set, Aspects added by the construct library on your behalf will be given a priority of MUTATING.* (default)
+
+Custom Aspets you add have a priority of DEFAULT (500) if not overridden,
+which is higher than MUTATING (200). This is relevant if a custom Aspect
+you add and an Aspect added by CDK try to configure the same value.
+
+If this flag is not set (old behavior), the Aspects that is closest
+to the target construct executes last (either yours or the Aspect added
+by the CDK).
+
+If this flag is set (recommended behavior), custom Aspects you add with
+default priority will always execute last and "win" the write.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** 
+      To add mutating Aspects controlling construct values that can be overridden
+      by Aspects added by CDK, give them MUTATING priority:
+
+      ```
+      Aspects.of(stack).add(new MyCustomAspect(), {
+        priority: AspectPriority.MUTATING,
+      });
+      ```
+    
 
 
 <!-- END details -->
