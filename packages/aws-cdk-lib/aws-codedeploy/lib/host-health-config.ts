@@ -1,4 +1,5 @@
 import { CfnDeploymentConfig } from './codedeploy.generated';
+import { UnscopedValidationError } from '../../core';
 
 /**
  * Minimum number of healthy hosts for a server deployment.
@@ -60,7 +61,7 @@ export class MinimumHealthyHostsPerZone {
 
   private constructor(private readonly json: CfnDeploymentConfig.MinimumHealthyHostsProperty) {
     if (!Number.isInteger(json.value)) {
-      throw new Error(`The percentage or count value of minimumHealthyHostsPerZone must be an integer, got: ${json.value}`);
+      throw new UnscopedValidationError(`The percentage or count value of minimumHealthyHostsPerZone must be an integer, got: ${json.value}`);
     }
   }
 

@@ -284,6 +284,58 @@
      }
     ]
    }
+  },
+  "pg749EE6ED": {
+   "Type": "AWS::EC2::PlacementGroup",
+   "Properties": {
+    "Strategy": "spread"
+   }
+  },
+  "LTWithPlacementGroup4B40027C": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "Placement": {
+      "GroupName": {
+       "Fn::GetAtt": [
+        "pg749EE6ED",
+        "GroupName"
+       ]
+      }
+     },
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-ec2-lt-metadata-1/LTWithPlacementGroup"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-ec2-lt-metadata-1/LTWithPlacementGroup"
+        }
+       ]
+      }
+     ]
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-ec2-lt-metadata-1/LTWithPlacementGroup"
+       }
+      ]
+     }
+    ]
+   }
   }
  },
  "Mappings": {
