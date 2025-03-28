@@ -195,7 +195,8 @@
     "TableName": {
      "Ref": "TableCD117FA1"
     },
-    "Region": "eu-west-2"
+    "Region": "eu-west-2",
+    "SkipReplicaDeletion": false
    },
    "DependsOn": [
     "TableSourceTableAttachedManagedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole3971612857304880",
@@ -216,7 +217,8 @@
     "TableName": {
      "Ref": "TableCD117FA1"
     },
-    "Region": "eu-central-1"
+    "Region": "eu-central-1",
+    "SkipReplicaDeletion": false
    },
    "DependsOn": [
     "TableReplicaeuwest290D3CD3A",
@@ -246,7 +248,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
        },
-       "/382e5c366bee4bada2d396e43b7f9c1d728220cec00913cb1240c5d387d16a5a.json"
+       "/b34d939b167a38333670a859862b62ed0e68aad6f4c45aa4bc43c2fc8142a3c0.json"
       ]
      ]
     }
