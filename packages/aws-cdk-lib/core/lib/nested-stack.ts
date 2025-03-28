@@ -226,7 +226,8 @@ export class NestedStack extends Stack {
       packaging: FileAssetPackaging.FILE,
       sourceHash: templateHash,
       fileName: this.templateFile,
-      displayName: `${this.stackName} Template`,
+      // this.stackName is a Token for nested stacks, so use something else
+      displayName: `${Names.stackRelativeConstructPath(this)} Nested Stack Template`,
     });
 
     this.addResourceMetadata(this.resource, 'TemplateURL');

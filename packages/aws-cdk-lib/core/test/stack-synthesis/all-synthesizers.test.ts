@@ -1,6 +1,6 @@
 import { FileAssetPackaging } from '@aws-cdk/cloud-assembly-schema';
 import { getAssetManifest, readAssetManifest } from './_helpers';
-import { CliCredentialsStackSynthesizer, LegacyStackSynthesizer } from '../../lib';
+import { Aws, CliCredentialsStackSynthesizer, LegacyStackSynthesizer } from '../../lib';
 import { App } from '../../lib/app';
 import { Stack } from '../../lib/stack';
 import { DefaultStackSynthesizer } from '../../lib/stack-synthesizers/default-synthesizer';
@@ -45,3 +45,29 @@ test.each([
   });
 });
 
+test.each([
+  ['DefaultStackSynthesizer', () => new DefaultStackSynthesizer()],
+  ['CliCredentialsStackSynthesizer', () => new CliCredentialsStackSynthesizer()],
+])('%p: displayName may not contain tokens', (_name, factory) => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack', {
+    synthesizer: factory(),
+    env: {
+      account: '111111111111', region: 'us-east-1',
+    },
+  });
+
+  expect(() => stack.synthesizer.addFileAsset({
+    fileName: __filename,
+    packaging: FileAssetPackaging.FILE,
+    sourceHash: 'fileHash',
+    displayName: Aws.STACK_NAME,
+  })).toThrow(/may not contain a Token/);
+
+  expect(() => stack.synthesizer.addDockerImageAsset({
+    directoryName: '.',
+    sourceHash: 'dockerHash',
+    displayName: Aws.STACK_NAME,
+  })).toThrow(/may not contain a Token/);
+});
