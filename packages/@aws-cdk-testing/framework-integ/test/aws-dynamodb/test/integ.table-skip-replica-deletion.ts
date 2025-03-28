@@ -24,7 +24,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-dynamodb:retainTableReplica': true,
+  },
+});
 const stack = new TestStack(app, 'cdk-dynamodb-skip-replica-deletion');
 
 new IntegTest(

@@ -21,9 +21,11 @@ import {
   Aws, CfnCondition, CfnCustomResource, CfnResource, Duration,
   Fn, Lazy, Names, RemovalPolicy, Stack, Token, CustomResource,
   CfnDeletionPolicy,
+  FeatureFlags,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { DYNAMODB_TABLE_RETAIN_TABLE_REPLICA } from '../../cx-api';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -1691,11 +1693,18 @@ export class Table extends TableBase {
 
     // Replica table's removal policy will default to DynamoDB Table's removal policy
     // unless replica removal policy is specified.
+    const retainReplica = FeatureFlags.of(this).isEnabled(DYNAMODB_TABLE_RETAIN_TABLE_REPLICA);
     const skipReplicaDeletion = Lazy.any({
       produce: () => {
+        // If feature flag is disabled, never retain replica to maintain backward compatibility
+        if (!retainReplica) {
+          return false;
+        }
+        // If feature flag is enabled, prioritize replica removal policy
         if (replicaRemovalPolicy) {
           return replicaRemovalPolicy == RemovalPolicy.RETAIN;
         }
+        // Otherwise fall back to source table's removal policy
         return (this.node.defaultChild as CfnResource).cfnOptions.deletionPolicy === CfnDeletionPolicy.RETAIN;
       },
     });
