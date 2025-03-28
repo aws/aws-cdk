@@ -190,6 +190,14 @@ export interface AwsSdkCall {
   readonly assumedRoleArn?: string;
 
   /**
+   * When assumedRoleArn is also specified, this external ID is used while assuming
+   * the role.
+   *
+   * @default - assume role without using an external ID
+   */
+  readonly assumedRoleExternalId?: string;
+
+  /**
    * A property used to configure logging during lambda function execution.
    *
    * Note: The default Logging configuration is all. This configuration will enable logging on all logged data

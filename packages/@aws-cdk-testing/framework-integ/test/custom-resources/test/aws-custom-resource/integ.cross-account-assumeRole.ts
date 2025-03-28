@@ -58,9 +58,11 @@ const crossAccountOptInStack = new cdk.Stack(app, 'cross-account-opt-in-stack', 
 
 const roleName = 'MyUniqueRole';
 
+const assumedRoleExternalId = 'external-id-1234';
 new iam.Role(roleStack, 'AssumeThisRole', {
   roleName: roleName,
   assumedBy: new iam.AccountPrincipal(crossAccount),
+  externalIds: [assumedRoleExternalId],
 });
 
 const assumedRoleArn = cdk.Stack.of(crossAccountStack).formatArn({
@@ -75,6 +77,7 @@ new AwsCustomResource(crossAccountStack, 'CrossAccountCR', {
   installLatestAwsSdk: false,
   onCreate: {
     assumedRoleArn: assumedRoleArn,
+    assumedRoleExternalId: assumedRoleExternalId,
     service: '@aws-sdk/client-sts',
     action: 'GetCallerIdentityCommand',
     physicalResourceId: PhysicalResourceId.of('id'),
