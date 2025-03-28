@@ -573,6 +573,25 @@ describe('KafkaEventSource', () => {
           },
         }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
     });
+    test('Setting startingPositionTimestamp for kafka event source ', () => {
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
+        startingPositionTimestamp: 1640995200,
+      }),
+      );
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        StartingPosition: 'AT_TIMESTAMP',
+        StartingPositionTimestamp: 1640995200,
+      });
+    });
   });
 
   describe('self-managed kafka', () => {
@@ -1342,6 +1361,28 @@ describe('KafkaEventSource', () => {
             maximumPollers: 1,
           },
         }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
+    });
+
+    test('Setting startingPositionTimestamp for kafka event source ', () => {
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const bootstrapServers = ['kafka-broker:9092'];
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const kafkaTopic = 'some-topic';
+
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+        bootstrapServers,
+        secret: secret,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
+        startingPositionTimestamp: 1640995200,
+      }),
+      );
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        StartingPosition: 'AT_TIMESTAMP',
+        StartingPositionTimestamp: 1640995200,
+      });
     });
   });
 });
