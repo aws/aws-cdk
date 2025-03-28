@@ -166,7 +166,8 @@
     "TableName": {
      "Ref": "TableCD117FA1"
     },
-    "Region": "us-east-2"
+    "Region": "us-east-2",
+    "SkipReplicaDeletion": false
    },
    "DependsOn": [
     "TableSourceTableAttachedManagedPolicyawscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleBE2B1C1A5DC546D2",
@@ -190,7 +191,8 @@
     "TableName": {
      "Ref": "TableCD117FA1"
     },
-    "Region": "eu-west-3"
+    "Region": "eu-west-3",
+    "SkipReplicaDeletion": false
    },
    "DependsOn": [
     "TableSourceTableAttachedManagedPolicyawscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleBE2B1C1A5DC546D2",
@@ -291,7 +293,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/1b09badc4e19e59ec158617bd51789ee6ed15cfe942f7a98932d5b6a3a0a0e56.json"
+       "/db84cdae632e6cba2f8e4a431d3f3a350218ac90c39e5eb62fff4a6737994230.json"
       ]
      ]
     }
