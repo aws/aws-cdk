@@ -14,6 +14,9 @@ import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
 
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
+
+  // Optional: describe the purpose of the asset with a human-readable string
+  displayName: 'Source for my function',
 });
 ```
 

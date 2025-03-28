@@ -2018,6 +2018,19 @@ const cluster = new eks.Cluster(this, 'Cluster', {
 });
 ```
 
+## NodeGroup Repair Config
+
+You can enable Managed Node Group [auto-repair config](https://docs.aws.amazon.com/eks/latest/userguide/node-health.html#node-auto-repair) using `enableNodeAutoRepair`
+property. For example:
+
+```ts
+declare const cluster: eks.Cluster;
+
+cluster.addNodegroupCapacity('NodeGroup', {
+  enableNodeAutoRepair:true,
+});
+```
+
 ## Known Issues and Limitations
 
 * [One cluster per stack](https://github.com/aws/aws-cdk/issues/10073)

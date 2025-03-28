@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "42.0.0",
   "testCases": {
     "integ.kinesis-firehose-stream": {
       "stacks": [
@@ -10,5 +10,6 @@
     }
   },
   "synthContext": {},
-  "enableLookups": false
+  "enableLookups": false,
+  "minimumCliVersion": "2.1006.0"
 }

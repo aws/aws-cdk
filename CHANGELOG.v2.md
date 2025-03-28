@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.187.0](https://github.com/aws/aws-cdk/compare/v2.186.0...v2.187.0) (2025-03-28)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#33954](https://github.com/aws/aws-cdk/issues/33954)) ([7c15988](https://github.com/aws/aws-cdk/commit/7c1598818ac4802f98b5bc583bdb38d28a971362))
+* **ecr:** lookup existing repository ([#33662](https://github.com/aws/aws-cdk/issues/33662)) ([5fff3d6](https://github.com/aws/aws-cdk/commit/5fff3d6c090a5c381af5a02be4bb588390ea0ee4)), closes [#8461](https://github.com/aws/aws-cdk/issues/8461)
+* **eks:** `Nodegroup` support `nodeRepairConfig` ([#32626](https://github.com/aws/aws-cdk/issues/32626)) ([b9cb47c](https://github.com/aws/aws-cdk/commit/b9cb47c4dbaacd839ddfdc38febdc58260d20c57)), closes [#32562](https://github.com/aws/aws-cdk/issues/32562)
+* **kinesisfirehose:** throw `ValidationErrors` instead of untyped Errors ([#33912](https://github.com/aws/aws-cdk/issues/33912)) ([8b23b5d](https://github.com/aws/aws-cdk/commit/8b23b5db3668c5c5b845e06397bf0001a55f5d0e)), closes [#32569](https://github.com/aws/aws-cdk/issues/32569)
+* **lambda-event-sources:** starting position timestamp for kafka ([#31439](https://github.com/aws/aws-cdk/issues/31439)) ([5077d8a](https://github.com/aws/aws-cdk/commit/5077d8abe0a776c6b3e762c2d1f38f0da2003b48)), closes [#31808](https://github.com/aws/aws-cdk/issues/31808)
+* show friendly display names for assets ([#33844](https://github.com/aws/aws-cdk/issues/33844)) ([4e958d4](https://github.com/aws/aws-cdk/commit/4e958d41f2825fd9c20ae27643aefd4c11d7aa8e))
+
+
+### Bug Fixes
+
+* **eks:** looked up vpc causing premature validation errors for private subnets ([#33786](https://github.com/aws/aws-cdk/issues/33786)) ([73744b4](https://github.com/aws/aws-cdk/commit/73744b452c2dd6809fddb123fa2ef6087ed18287)), closes [#22025](https://github.com/aws/aws-cdk/issues/22025) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts#L2705](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts/issues/L2705)
+
 ## [2.186.0](https://github.com/aws/aws-cdk/compare/v2.185.0...v2.186.0) (2025-03-26)
 
 

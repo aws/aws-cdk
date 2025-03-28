@@ -115,17 +115,26 @@ export class AssetManifestReader {
     ];
 
     function makeEntries<A, B, C>(
-      assets: Record<string, { source: A; destinations: Record<string, B> }>,
-      ctor: new (id: DestinationIdentifier, source: A, destination: B) => C): C[] {
+      assets: Record<string, AssetLike<A, B>>,
+      ctor: new (id: DestinationIdentifier, source: A, destination: B, displayName?: string) => C): C[] {
       const ret = new Array<C>();
       for (const [assetId, asset] of Object.entries(assets)) {
         for (const [destId, destination] of Object.entries(asset.destinations)) {
-          ret.push(new ctor(new DestinationIdentifier(assetId, destId), asset.source, destination));
+          ret.push(new ctor(new DestinationIdentifier(assetId, destId), asset.source, destination, asset.displayName));
         }
       }
       return ret;
     }
   }
+}
+
+/**
+ * A data structure that has the general shape of an asset in the asset manifest
+ */
+interface AssetLike<A, B> {
+  readonly source: A;
+  readonly destinations: Record<string, B>;
+  readonly displayName?: string;
 }
 
 type AssetType = 'files' | 'dockerImages';
@@ -155,6 +164,11 @@ export interface IManifestEntry {
    * Type-dependent destination data
    */
   readonly destination: AwsDestination;
+
+  /**
+   * A display name for this asset manifest entry, if given
+   */
+  readonly displayName?: string;
 }
 
 /**
@@ -171,6 +185,8 @@ export class FileManifestEntry implements IManifestEntry {
     public readonly source: FileSource,
     /** Destination for the file asset */
     public readonly destination: FileDestination,
+    /** Display name for the file asset */
+    public readonly displayName?: string,
   ) {
     this.genericSource = source;
   }
@@ -190,6 +206,8 @@ export class DockerImageManifestEntry implements IManifestEntry {
     public readonly source: DockerImageSource,
     /** Destination for the file asset */
     public readonly destination: DockerImageDestination,
+    /** Display name for the file asset */
+    public readonly displayName?: string,
   ) {
     this.genericSource = source;
   }

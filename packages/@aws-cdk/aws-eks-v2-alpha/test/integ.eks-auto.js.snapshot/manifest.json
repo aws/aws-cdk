@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "eks-auto-mode-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/f584a5d2bb2847909c117344e59ed07d153df028d939b611127e97a4df734cc7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/129f6bc049093cc45587efeea853f495e3dfd26915f26d20eda2226f008ec78f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -919,150 +919,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "kubectl290BBFC9": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "kubectl290BBFC9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "helloeksRole59C1FE10": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "helloeksRole59C1FE10",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "helloeksControlPlaneSecurityGroup4C2AFE28": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "helloeksControlPlaneSecurityGroup4C2AFE28",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "helloekshelloeksnodePoolRole81D93FFB": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "helloekshelloeksnodePoolRole81D93FFB",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "helloeksBE273F5A": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "helloeksBE273F5A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "helloeksKubectlReadyBarrierBFD90FAB": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlReadyBarrierBFD90FAB",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "helloeksKubectlProviderHandlerServiceRoleFDA38030": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlProviderHandlerServiceRoleFDA38030",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "helloeksKubectlProviderHandlerServiceRoleDefaultPolicy05FAA1B4": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlProviderHandlerServiceRoleDefaultPolicy05FAA1B4",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "helloeksKubectlProviderHandler788A3C17": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlProviderHandler788A3C17",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "helloeksKubectlProviderAwsCliLayer2A4F5F3D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlProviderAwsCliLayer2A4F5F3D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "helloeksKubectlProviderframeworkonEventServiceRole68309EF1": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlProviderframeworkonEventServiceRole68309EF1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "helloeksKubectlProviderframeworkonEventServiceRoleDefaultPolicy62B3F050": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlProviderframeworkonEventServiceRoleDefaultPolicy62B3F050",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "helloeksKubectlProviderframeworkonEvent1E7B4950": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlProviderframeworkonEvent1E7B4950",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "helloeksKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0883D9EBE": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "helloeksKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0883D9EBE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "helloeksClusterAdminRoleAccess3B9D74AE": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "helloeksClusterAdminRoleAccess3B9D74AE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "helloeksmastersRoleAccessF848B5EF": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "helloeksmastersRoleAccessF848B5EF",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "eks-auto-mode-stack"
@@ -1084,7 +940,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/3621204fd2aecd2d8ad52a90771712b44537e9e33a4aa888c48af0791d7b670b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/350068e881f786934aadb2c885ad7971636049ff39066cca942c992012b24382.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -2012,5 +1868,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

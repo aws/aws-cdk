@@ -150,6 +150,7 @@ export class ProductStack extends cdk.Stack {
       packaging: cdk.FileAssetPackaging.FILE,
       sourceHash: templateHash,
       fileName: this.templateFile,
+      displayName: `${this.node.path} Template`,
     }).httpUrl;
 
     if (this._parentProductStackHistory) {
