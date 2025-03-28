@@ -815,6 +815,7 @@ const callRegion = 'us-west-1'; // sdk call to be made in specified region (opti
 new cr.AwsCustomResource(this, 'CrossAccount', {
   onCreate: {
     assumedRoleArn: crossAccountRoleArn,
+    assumedRoleExternalId: 'my-external-id', // optional
     region: callRegion, // optional
     service: 'sts',
     action: 'GetCallerIdentity',

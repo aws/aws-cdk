@@ -625,8 +625,10 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
   }, {} as AWSLambda.Context);
   expect(credentialProviderMock).toHaveBeenCalledWith(
     expect.objectContaining({
-      RoleArn: 'arn:aws:iam::123456789012:role/CoolRole',
-      ExternalId: 'external-id-1234',
+      params: expect.objectContaining({
+          RoleArn: 'arn:aws:iam::123456789012:role/CoolRole',
+          ExternalId: 'external-id-1234',
+        }),
     }),
   );
   credentialProviderMock.mockClear();
