@@ -107,7 +107,7 @@ describe('Universal schedule target', () => {
 
     Annotations.fromStack(stack).hasWarning(
       '*',
-      'Default policy with * for resources is used. Use custom policy for better security posture. [ack: @aws-cdk/aws-scheduler-alpha:defaultWildcardResourcePolicy]',
+      'Default policy with * for resources is used. Use custom policy for better security posture. [ack: @aws-cdk/aws-scheduler-targets:defaultWildcardResourcePolicy]',
     );
   });
 
