@@ -7,6 +7,11 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "sts:ExternalId": "external-id-1234"
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "AWS": "arn:aws:iam::234567890123:root"
