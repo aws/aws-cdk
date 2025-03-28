@@ -20,8 +20,8 @@
      "StreamViewType": "NEW_AND_OLD_IMAGES"
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "TableSourceTableAttachedManagedPolicycdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole9B3DAE1774B041B9": {
    "Type": "AWS::IAM::ManagedPolicy",
@@ -145,7 +145,7 @@
      "Ref": "TableCD117FA1"
     },
     "Region": "eu-west-2",
-    "SkipReplicaDeletion": true
+    "SkipReplicaDeletion": false
    },
    "DependsOn": [
     "TableSourceTableAttachedManagedPolicycdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleE14EFE68A525E1C7",
@@ -179,7 +179,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/d9e31d4b3fa430d155f38b6f5625409d34d942abcbb70f689db7da89658255ae.json"
+       "/e508fdc33083ad1a2d5239497e03863a26e96cd6cd3455082de4d9315c636d45.json"
       ]
      ]
     }
@@ -200,16 +200,6 @@
      ]
     }
    ]
-  }
- },
- "Outputs": {
-  "ExportsOutputRefTableCD117FA1D18A8047": {
-   "Value": {
-    "Ref": "TableCD117FA1"
-   },
-   "Export": {
-    "Name": "cdk-dynamodb-skip-replica-deletion:ExportsOutputRefTableCD117FA1D18A8047"
-   }
   }
  },
  "Parameters": {

@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "cdk-dynamodb-skip-replica-deletion.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/afae18704b4e7bf7a02095210431d25ae35b5cf6b8d3d4b729a05a9b7536ae7c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f30c6bed38c69fa1027bc379d54d35ed8990dbf66e32e9c8e563ca78c30ae690.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -42,7 +42,7 @@
                 "name": "*",
                 "type": "S"
               },
-              "removalPolicy": "retain",
+              "removalPolicy": "destroy",
               "replicationRegions": "*"
             }
           }
@@ -1372,12 +1372,6 @@
             "data": "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D"
           }
         ],
-        "/cdk-dynamodb-skip-replica-deletion/Exports/Output{\"Ref\":\"TableCD117FA1\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefTableCD117FA1D18A8047"
-          }
-        ],
         "/cdk-dynamodb-skip-replica-deletion/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -1410,7 +1404,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/96babc471417f0b5fcdac3a42e86a98c4907ea71c5ad210749a0111c7a8ba4e2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1423,106 +1417,9 @@
         }
       },
       "dependencies": [
-        "cdk-dynamodb-skip-replica-deletion",
         "cdkdynamodbskipreplicadeletiontestDefaultTestDeployAssert2E817006.assets"
       ],
       "metadata": {
-        "/cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBdescribeTable79852741ec96b7b3b18890ad3f239af6/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBdescribeTable79852741ec96b7b3b18890ad3f239af6/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallDynamoDBdescribeTable79852741ec96b7b3b18890ad3f239af6"
-          }
-        ],
-        "/cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBdescribeTable79852741ec96b7b3b18890ad3f239af6/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallDynamoDBdescribeTable79852741ec96b7b3b18890ad3f239af6"
-          }
-        ],
-        "/cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBupdateTablee433ce04f42b95e62964b4334c195d5f/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBupdateTablee433ce04f42b95e62964b4334c195d5f/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallDynamoDBupdateTablee433ce04f42b95e62964b4334c195d5f"
-          }
-        ],
-        "/cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBupdateTablee433ce04f42b95e62964b4334c195d5f/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallDynamoDBupdateTablee433ce04f42b95e62964b4334c195d5f"
-          }
-        ],
-        "/cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBdeleteTable79852741ec96b7b3b18890ad3f239af6/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBdeleteTable79852741ec96b7b3b18890ad3f239af6/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallDynamoDBdeleteTable79852741ec96b7b3b18890ad3f239af6"
-          }
-        ],
-        "/cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBdeleteTable79852741ec96b7b3b18890ad3f239af6/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallDynamoDBdeleteTable79852741ec96b7b3b18890ad3f239af6"
-          }
-        ],
         "/cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -1544,5 +1441,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }
