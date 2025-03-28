@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, existsSync } from 'fs';
 import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Construct } from 'constructs';
 import { Match, Template } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as ec2 from '../../aws-ec2';
@@ -1121,6 +1122,69 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
       ],
     },
   });
+});
+
+test('deployment allows security groups to be explicitly supplied to lambda', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const vpc = new ec2.Vpc(stack, 'SomeVpc', {});
+  const sg = new ec2.SecurityGroup(stack, 'SomeSecurityGroup', { vpc });
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc1', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    vpc: vpc,
+    securityGroups: [sg],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    VpcConfig: Match.objectLike({
+      SecurityGroupIds: Match.arrayWith([
+        {
+          'Fn::GetAtt': Match.arrayWith([
+            Match.stringLikeRegexp('SomeSecurityGroup'), // Matches dynamically generated SG name
+            'GroupId',
+          ]),
+        },
+      ]),
+    }),
+  });
+});
+
+test('different security groups create different Lambdas and single CLI', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const c1 = new Construct(stack, 'Construct1');
+  const c2 = new Construct(stack, 'Construct2');
+  const vpc = new ec2.Vpc(stack, 'SomeVpc', {});
+  const sg1 = new ec2.SecurityGroup(stack, 'SomeSecurityGroup1', { vpc });
+  const sg2 = new ec2.SecurityGroup(stack, 'SomeSecurityGroup2', { vpc });
+
+  // WHEN
+  new s3deploy.BucketDeployment(c1, 'Deploy1', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    destinationKeyPrefix: 'foo',
+    vpc: vpc,
+    securityGroups: [sg1],
+  });
+  new s3deploy.BucketDeployment(c2, 'Deploy2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website-2'))],
+    destinationBucket: bucket,
+    destinationKeyPrefix: 'bar',
+    vpc: vpc,
+    securityGroups: [sg2],
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.resourceCountIs('AWS::Lambda::LayerVersion', 1);
+  template.resourceCountIs('AWS::Lambda::Function', 2);
+  template.resourceCountIs('Custom::CDKBucketDeployment', 2);
 });
 
 test('s3 deployment bucket is identical to destination bucket', () => {
