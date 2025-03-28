@@ -18,6 +18,7 @@ class TestStack extends cdk.Stack {
       acceptanceRequired: true,
       contributorInsights: true,
       supportedIpAddressTypes: [ec2.IpAddressType.IPV4], // change to ipv4 and re-run
+      allowedRegions: ['us-east-1', 'eu-west-1'], // Test the new allowedRegions property
     });
   }
 }
