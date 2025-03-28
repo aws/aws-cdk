@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.187.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.186.0-alpha.0...v2.187.0-alpha.0) (2025-03-28)
+
+
+### Features
+
+* **apprunner:** throw ValidationError instead of untyped errors ([#33914](https://github.com/aws/aws-cdk/issues/33914)) ([38f89af](https://github.com/aws/aws-cdk/commit/38f89afe2ffdf67b0918e38f861166bdb0f8738f))
+
 ## [2.186.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.185.0-alpha.0...v2.186.0-alpha.0) (2025-03-26)
 
 
