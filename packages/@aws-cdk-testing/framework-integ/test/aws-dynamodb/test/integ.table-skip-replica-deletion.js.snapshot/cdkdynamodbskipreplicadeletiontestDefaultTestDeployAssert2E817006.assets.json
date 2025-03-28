@@ -2,9 +2,9 @@
   "version": "41.0.0",
   "files": {
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
-      "displayName": "cdkdynamodbglobal20191121testDefaultTestDeployAssert469C3611 Template",
+      "displayName": "cdkdynamodbskipreplicadeletiontestDefaultTestDeployAssert2E817006 Template",
       "source": {
-        "path": "cdkdynamodbglobal20191121testDefaultTestDeployAssert469C3611.template.json",
+        "path": "cdkdynamodbskipreplicadeletiontestDefaultTestDeployAssert2E817006.template.json",
         "packaging": "file"
       },
       "destinations": {
