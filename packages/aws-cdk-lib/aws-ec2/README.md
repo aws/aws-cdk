@@ -1119,6 +1119,21 @@ new ec2.VpcEndpointService(this, 'EndpointService', {
 });
 ```
 
+You can specify which IP address types (IPv4, IPv6, or both) are supported for your VPC endpoint service:
+
+```ts
+declare const networkLoadBalancer: elbv2.NetworkLoadBalancer;
+
+new ec2.VpcEndpointService(this, 'EndpointService', {
+  vpcEndpointServiceLoadBalancers: [networkLoadBalancer],
+  // Support both IPv4 and IPv6 connections to the endpoint service
+  supportedIpAddressTypes: [
+    ec2.IpAddressType.IPV4,
+    ec2.IpAddressType.IPV6,
+  ],
+});
+```
+
 Endpoint services support private DNS, which makes it easier for clients to connect to your service by automatically setting up DNS in their VPC.
 You can enable private DNS on an endpoint service like so:
 
@@ -2427,6 +2442,24 @@ const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
 });
 ```
 
+### Placement Group
+
+Specify `placementGroup` to enable the placement group support:
+
+```ts fixture=with-vpc
+declare const instanceType: ec2.InstanceType;
+
+const pg = new ec2.PlacementGroup(this, 'test-pg', {
+  strategy: ec2.PlacementGroupStrategy.SPREAD,
+});
+
+new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  instanceType,
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  placementGroup: pg,
+});
+```
+
 Please note this feature does not support Launch Configurations.
 
 ## Detailed Monitoring
@@ -2501,7 +2534,15 @@ new ec2.PrefixList(this, 'PrefixList', {
 });
 ```
 
-For more information see [Work with customer-managed prefix lists](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-managed-prefix-lists.html)
+To import AWS-managed prefix list, you can use `PrefixList.fromLookup()`.
+
+``` ts
+ec2.PrefixList.fromLookup(this, 'PrefixListFromName', {
+  prefixListName: 'com.amazonaws.global.cloudfront.origin-facing',
+});
+```
+
+For more information see [Work with customer-managed prefix lists](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-managed-prefix-lists.html).
 
 ### IAM instance profile
 

@@ -1431,6 +1431,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
 
+  //////////////////////////////////////////////////////////////////////
   [EVENTBUS_POLICY_SID_REQUIRED]: {
     type: FlagType.BugFix,
     summary: 'When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals.',
@@ -1449,7 +1450,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       This fixes the issue where permissions were silently not being added for service principals.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.186.0' },
     recommendedValue: true,
   },
 };
