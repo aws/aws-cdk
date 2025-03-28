@@ -1694,9 +1694,10 @@ export class Table extends TableBase {
     // Replica table's removal policy will default to DynamoDB Table's removal policy
     // unless replica removal policy is specified.
     const retainReplica = FeatureFlags.of(this).isEnabled(DYNAMODB_TABLE_RETAIN_TABLE_REPLICA);
+
+    // If feature flag is disabled, never retain replica to maintain backward compatibility
     const skipReplicaDeletion = retainReplica ? Lazy.any({
       produce: () => {
-        // If feature flag is disabled, never retain replica to maintain backward compatibility
         // If feature flag is enabled, prioritize replica removal policy
         if (replicaRemovalPolicy) {
           return replicaRemovalPolicy == RemovalPolicy.RETAIN;
