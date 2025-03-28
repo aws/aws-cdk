@@ -21,7 +21,7 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile && cd tools/@aws-cdk/enum-updater && yarn build
+        run: cd tools/@aws-cdk/enum-updater && yarn install --frozen-lockfile && yarn build
 
       - name: Identify Missing Values and Apply Code Changes
         run: |
@@ -46,6 +46,16 @@ jobs:
           # Iterate through each module directory that has changes
           for module in $(git diff --name-only | grep -E '^packages/(@aws-cdk|aws-cdk-lib)/.*' | sed -E 's|^packages/(@aws-cdk\|aws-cdk-lib)/([^/]+).*|\2|' | sort -u); do
             moduleName=$(basename $module)
+                        
+            # Determine the correct path for the module
+            if [[ -d "packages/aws-cdk-lib/$module" ]]; then
+              modulePath="packages/aws-cdk-lib/$module"
+            elif [[ -d "packages/@aws-cdk/$module" ]]; then
+              modulePath="packages/@aws-cdk/$module"
+            else
+              echo "Cannot find module directory for $module"
+              continue
+            fi
           
             # Check for existing PR with the same name
             prExists=$(gh pr list --state open --search "feat(${moduleName#aws-}): add new enum values for ${moduleName#aws-}" --json number,title -q '.[].number')
@@ -61,7 +71,7 @@ jobs:
             git checkout -b "$branchName"
             
             # Stage, commit, and push changes for the module
-            git add "packages/$module"  # Add only changes for this module
+            git add "$modulePath"  # Using the correct path
             git commit -m "chore(${moduleName#aws-}): add new enum values for ${moduleName#aws-}"
             git push origin "$branchName"
           
@@ -70,9 +80,7 @@ jobs:
            --body "This PR updates the enum values for ${moduleName#aws-}." \
            --base main \
            --head "$branchName"
-           --label "contribution/core,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test" \
-           --reviewer "aws-cdk-team" \
+           --label "contribution/core,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test"
           done
-        
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

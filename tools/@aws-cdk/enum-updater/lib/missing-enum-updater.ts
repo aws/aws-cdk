@@ -311,10 +311,12 @@ export class MissingEnumsUpdater {
     let textToInsert = hasDoubleLineBreaks ? '\n' : '';
 
     newEnumValues.forEach((enumVal: string, index: number) => {
-      const enumConstantName = enumVal.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/_+$/, '');
+      // Make sure enumValue is a string
+      const enumValue = enumVal.toString();
+      const enumConstantName = enumValue.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/_+$/, '');
       
       textToInsert += `  /**\n   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT\n   */\n`;
-      textToInsert += `  ${enumConstantName} = '${enumVal}'`;
+      textToInsert += `  ${enumConstantName} = '${enumValue}'`;
       
       // Add a comma and appropriate newlines after each member
       textToInsert += ',';
