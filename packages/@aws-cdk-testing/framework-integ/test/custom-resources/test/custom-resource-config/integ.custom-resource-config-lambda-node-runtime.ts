@@ -12,6 +12,7 @@ new dynamodb.Table(stack, 'Table', {
     name: 'id',
     type: dynamodb.AttributeType.STRING,
   },
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
   replicationRegions: [
     'us-east-2',
   ],

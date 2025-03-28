@@ -20,6 +20,7 @@ import {
   ArnFormat, Resource,
   Aws, CfnCondition, CfnCustomResource, CfnResource, Duration,
   Fn, Lazy, Names, RemovalPolicy, Stack, Token, CustomResource,
+  CfnDeletionPolicy,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -367,6 +368,13 @@ export interface TableOptions extends SchemaOptions {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * The removal policy to apply to the DynamoDB replica tables.
+   *
+   * @default undefined - use DynamoDB Table's removal policy
+   */
+  readonly replicaRemovalPolicy?: RemovalPolicy;
 
   /**
    * Regions where replica tables will be created
@@ -1278,7 +1286,7 @@ export class Table extends TableBase {
     }
 
     if (props.replicationRegions && props.replicationRegions.length > 0) {
-      this.createReplicaTables(props.replicationRegions, props.replicationTimeout, props.waitForReplicationToFinish);
+      this.createReplicaTables(props.replicationRegions, props.replicationTimeout, props.waitForReplicationToFinish, props.replicaRemovalPolicy);
     }
 
     this.node.addValidation({ validate: () => this.validateTable() });
@@ -1659,7 +1667,7 @@ export class Table extends TableBase {
    *
    * @param regions regions where to create tables
    */
-  private createReplicaTables(regions: string[], timeout?: Duration, waitForReplicationToFinish?: boolean) {
+  private createReplicaTables(regions: string[], timeout?: Duration, waitForReplicationToFinish?: boolean, replicaRemovalPolicy?: RemovalPolicy) {
     const stack = Stack.of(this);
 
     if (!Token.isUnresolved(stack.region) && regions.includes(stack.region)) {
@@ -1680,6 +1688,18 @@ export class Table extends TableBase {
 
     let previousRegion: CustomResource | undefined;
     let previousRegionCondition: CfnCondition | undefined;
+
+    // Replica table's removal policy will default to DynamoDB Table's removal policy
+    // unless replica removal policy is specified.
+    const skipReplicaDeletion = Lazy.any({
+      produce: () => {
+        if (replicaRemovalPolicy) {
+          return replicaRemovalPolicy == RemovalPolicy.RETAIN;
+        }
+        return (this.node.defaultChild as CfnResource).cfnOptions.deletionPolicy === CfnDeletionPolicy.RETAIN;
+      },
+    });
+
     for (const region of new Set(regions)) { // Remove duplicates
       // Use multiple custom resources because multiple create/delete
       // updates cannot be combined in a single API call.
@@ -1689,6 +1709,7 @@ export class Table extends TableBase {
         properties: {
           TableName: this.tableName,
           Region: region,
+          SkipReplicaDeletion: skipReplicaDeletion,
           SkipReplicationCompletedWait: waitForReplicationToFinish == null
             ? undefined
             // CFN changes Custom Resource properties to strings anyways,

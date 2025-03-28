@@ -1,28 +1,28 @@
 {
   "version": "42.0.0",
   "artifacts": {
-    "aws-cdk-dynamodb-global-replicas-provisioned.assets": {
+    "cdk-dynamodb-skip-replica-deletion.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-dynamodb-global-replicas-provisioned.assets.json",
+        "file": "cdk-dynamodb-skip-replica-deletion.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-dynamodb-global-replicas-provisioned": {
+    "cdk-dynamodb-skip-replica-deletion": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-dynamodb-global-replicas-provisioned.template.json",
+        "templateFile": "cdk-dynamodb-skip-replica-deletion.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cfc11c7527b6f90290938776ea39cb193c7daa9b2ea93c71dee7825b89eef119.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f30c6bed38c69fa1027bc379d54d35ed8990dbf66e32e9c8e563ca78c30ae690.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-dynamodb-global-replicas-provisioned.assets"
+          "cdk-dynamodb-skip-replica-deletion.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,10 +31,10 @@
         }
       },
       "dependencies": [
-        "aws-cdk-dynamodb-global-replicas-provisioned.assets"
+        "cdk-dynamodb-skip-replica-deletion.assets"
       ],
       "metadata": {
-        "/aws-cdk-dynamodb-global-replicas-provisioned/Table": [
+        "/cdk-dynamodb-skip-replica-deletion/Table": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -43,35 +43,23 @@
                 "type": "S"
               },
               "removalPolicy": "destroy",
-              "replicationRegions": "*",
-              "billingMode": "PROVISIONED"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "autoScaleWriteCapacity": [
-                {
-                  "minCapacity": "*",
-                  "maxCapacity": "*"
-                }
-              ]
+              "replicationRegions": "*"
             }
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/Table/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/Table/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TableCD117FA1"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/Table/ScalingRole": [
+        "/cdk-dynamodb-skip-replica-deletion/Table/ScalingRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/Table/SourceTableAttachedManagedPolicy-awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleD9856B77/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/Table/SourceTableAttachedManagedPolicy-cdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole9B3DAE17/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -106,13 +94,13 @@
             }
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/Table/SourceTableAttachedManagedPolicy-awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleD9856B77/Resource/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/Table/SourceTableAttachedManagedPolicy-cdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole9B3DAE17/Resource/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TableSourceTableAttachedManagedPolicyawscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleD9856B771F8F2CCB"
+            "data": "TableSourceTableAttachedManagedPolicycdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole9B3DAE1774B041B9"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/Table/SourceTableAttachedManagedPolicy-awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleBE2B1C1A/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/Table/SourceTableAttachedManagedPolicy-cdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleE14EFE68/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -139,95 +127,37 @@
             }
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/Table/SourceTableAttachedManagedPolicy-awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleBE2B1C1A/Resource/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/Table/SourceTableAttachedManagedPolicy-cdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleE14EFE68/Resource/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TableSourceTableAttachedManagedPolicyawscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleBE2B1C1A5DC546D2"
+            "data": "TableSourceTableAttachedManagedPolicycdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleE14EFE68A525E1C7"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/Table/Replicaus-east-2": [
+        "/cdk-dynamodb-skip-replica-deletion/Table/Replicaeu-west-2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/Table/Replicaus-east-2/Default": [
+        "/cdk-dynamodb-skip-replica-deletion/Table/Replicaeu-west-2/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TableReplicauseast28A15C236"
+            "data": "TableReplicaeuwest290D3CD3A"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/Table/StackRegionNotEqualsus-east-2": [
+        "/cdk-dynamodb-skip-replica-deletion/Table/StackRegionNotEqualseu-west-2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TableStackRegionNotEqualsuseast2D20A1E77"
+            "data": "TableStackRegionNotEqualseuwest2A03859E7"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/Table/Replicaeu-west-3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/Table/Replicaeu-west-3/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TableReplicaeuwest314C3E552"
-          }
-        ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/Table/StackRegionNotEqualseu-west-3": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TableStackRegionNotEqualseuwest302B3591C"
-          }
-        ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/Table/WriteScaling/Target": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "serviceNamespace": "dynamodb",
-              "scalableDimension": "*",
-              "resourceId": "*",
-              "role": "*",
-              "minCapacity": "*",
-              "maxCapacity": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "scaleToTrackMetric": [
-                "*",
-                {
-                  "policyName": "*",
-                  "disableScaleIn": "*",
-                  "scaleInCooldown": "*",
-                  "targetValue": "*",
-                  "predefinedMetric": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/Table/WriteScaling/Target/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TableWriteScalingTargetE5669214"
-          }
-        ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/Table/WriteScaling/Target/Tracking/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TableWriteScalingTargetTrackingD78DCCD8"
-          }
-        ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/LatestNodeRuntimeMap": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/LatestNodeRuntimeMap": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -242,7 +172,7 @@
             "data": 0
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -260,8 +190,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -284,91 +222,153 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/ImportServiceRole": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "OnEventHandlerServiceRole15A26729"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OnEventHandlerServiceRoleDefaultPolicyC57085D4"
-          }
-        ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "OnEventHandler42BEBAE0"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnEventHandlerinlinePolicyAddedToExecutionRole05B1C3796"
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnEventHandlerinlinePolicyAddedToExecutionRole187629D5C"
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnEventHandlerinlinePolicyAddedToExecutionRole28650F749"
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -383,7 +383,7 @@
             "data": 0
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/ServiceRole": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -399,25 +399,25 @@
             }
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/ServiceRole/ImportServiceRole": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/ServiceRole/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IsCompleteHandlerServiceRole5810CC58"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IsCompleteHandler7073F4DA"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -463,7 +463,7 @@
             }
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -505,8 +505,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -521,8 +529,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -535,19 +551,19 @@
             }
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEventServiceRole9FF04296"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -591,37 +607,97 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEvent83C1D0A7"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkonEventinlinePolicyAddedToExecutionRole0D6E83756"
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkonEventinlinePolicyAddedToExecutionRole17772106B"
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -658,7 +734,7 @@
             }
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -700,8 +776,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -716,25 +800,33 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkisCompleteServiceRoleB1087139"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -770,37 +862,97 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkisCompleteServiceRoleDefaultPolicy2E7140AC"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkisComplete26D7B0CB"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkisCompleteinlinePolicyAddedToExecutionRole0DA398EFB"
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkisCompleteinlinePolicyAddedToExecutionRole11B3461A6"
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -837,7 +989,7 @@
             }
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -879,8 +1031,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -895,25 +1055,33 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonTimeoutServiceRole28643D26"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -949,37 +1117,97 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonTimeoutServiceRoleDefaultPolicy2688969F"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonTimeout0B47CA38"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole03D28EB24"
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole10E895C60"
+          }
+        ],
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1030,19 +1258,19 @@
             }
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/ImportRole": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderwaiterstatemachineRole0C7159F9"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/DefaultPolicy": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1088,13 +1316,13 @@
             }
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderwaiterstatemachineRoleDefaultPolicyD3C3DA1A"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/LogGroup": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1102,76 +1330,76 @@
             }
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/LogGroup/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderwaiterstatemachineLogGroupDD693A98"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Resource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Providerwaiterstatemachine5D4A9DF0"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole348A0C9ARef": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/cdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleFA3AA84ERef": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole348A0C9ARef"
+            "data": "cdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleFA3AA84ERef"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole750F1EE9Ref": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/cdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole82070C50Ref": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole750F1EE9Ref"
+            "data": "cdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole82070C50Ref"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderframeworkonEventACC2C387Arn": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/cdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderframeworkonEventCBBA269EArn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderframeworkonEventACC2C387Arn"
+            "data": "cdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderframeworkonEventCBBA269EArn"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/reference-to-awscdkdynamodbglobalreplicasprovisionedTable12280A12Ref": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/reference-to-cdkdynamodbskipreplicadeletionTableE2C70768Ref": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkdynamodbglobalreplicasprovisionedTable12280A12Ref"
+            "data": "referencetocdkdynamodbskipreplicadeletionTableE2C70768Ref"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStack/@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStackResource": [
+        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStack/@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStackResource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/BootstrapVersion": [
+        "/cdk-dynamodb-skip-replica-deletion/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned/CheckBootstrapVersion": [
+        "/cdk-dynamodb-skip-replica-deletion/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-dynamodb-global-replicas-provisioned"
+      "displayName": "cdk-dynamodb-skip-replica-deletion"
     },
-    "awscdkdynamodbglobalreplicasprovisionedtestDefaultTestDeployAssertE7F91F54.assets": {
+    "cdkdynamodbskipreplicadeletiontestDefaultTestDeployAssert2E817006.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "awscdkdynamodbglobalreplicasprovisionedtestDefaultTestDeployAssertE7F91F54.assets.json",
+        "file": "cdkdynamodbskipreplicadeletiontestDefaultTestDeployAssert2E817006.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "awscdkdynamodbglobalreplicasprovisionedtestDefaultTestDeployAssertE7F91F54": {
+    "cdkdynamodbskipreplicadeletiontestDefaultTestDeployAssert2E817006": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "awscdkdynamodbglobalreplicasprovisionedtestDefaultTestDeployAssertE7F91F54.template.json",
+        "templateFile": "cdkdynamodbskipreplicadeletiontestDefaultTestDeployAssert2E817006.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -1180,7 +1408,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "awscdkdynamodbglobalreplicasprovisionedtestDefaultTestDeployAssertE7F91F54.assets"
+          "cdkdynamodbskipreplicadeletiontestDefaultTestDeployAssert2E817006.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -1189,23 +1417,23 @@
         }
       },
       "dependencies": [
-        "awscdkdynamodbglobalreplicasprovisionedtestDefaultTestDeployAssertE7F91F54.assets"
+        "cdkdynamodbskipreplicadeletiontestDefaultTestDeployAssert2E817006.assets"
       ],
       "metadata": {
-        "/aws-cdk-dynamodb-global-replicas-provisioned-test/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-dynamodb-global-replicas-provisioned-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-dynamodb-global-replicas-provisioned-test/DefaultTest/DeployAssert"
+      "displayName": "cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

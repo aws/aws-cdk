@@ -7,27 +7,9 @@
      {
       "AttributeName": "id",
       "AttributeType": "S"
-     },
-     {
-      "AttributeName": "key",
-      "AttributeType": "S"
      }
     ],
     "BillingMode": "PAY_PER_REQUEST",
-    "GlobalSecondaryIndexes": [
-     {
-      "IndexName": "my-index",
-      "KeySchema": [
-       {
-        "AttributeName": "key",
-        "KeyType": "HASH"
-       }
-      ],
-      "Projection": {
-       "ProjectionType": "ALL"
-      }
-     }
-    ],
     "KeySchema": [
      {
       "AttributeName": "id",
@@ -41,7 +23,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "TableSourceTableAttachedManagedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole6F43DF4A23250B4C": {
+  "TableSourceTableAttachedManagedPolicycdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole9B3DAE1774B041B9": {
    "Type": "AWS::IAM::ManagedPolicy",
    "Properties": {
     "Description": {
@@ -72,7 +54,11 @@
          "Fn::Join": [
           "",
           [
-           "arn:aws:dynamodb:eu-central-1:",
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":dynamodb:eu-west-2:",
            {
             "Ref": "AWS::AccountId"
            },
@@ -84,33 +70,7 @@
          ]
         },
         {
-         "Fn::Join": [
-          "",
-          [
-           "arn:aws:dynamodb:eu-west-2:",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":table/",
-           {
-            "Ref": "TableCD117FA1"
-           }
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "TableCD117FA1",
-             "Arn"
-            ]
-           },
-           "/index/*"
-          ]
-         ]
+         "Ref": "AWS::NoValue"
         }
        ]
       }
@@ -121,13 +81,13 @@
      {
       "Fn::GetAtt": [
        "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
-       "Outputs.cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole3E8625F3Ref"
+       "Outputs.cdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleFA3AA84ERef"
       ]
      }
     ]
    }
   },
-  "TableSourceTableAttachedManagedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole3971612857304880": {
+  "TableSourceTableAttachedManagedPolicycdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleE14EFE68A525E1C7": {
    "Type": "AWS::IAM::ManagedPolicy",
    "Properties": {
     "Description": {
@@ -155,18 +115,7 @@
          ]
         },
         {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "TableCD117FA1",
-             "Arn"
-            ]
-           },
-           "/index/*"
-          ]
-         ]
+         "Ref": "AWS::NoValue"
         }
        ]
       }
@@ -177,7 +126,7 @@
      {
       "Fn::GetAtt": [
        "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
-       "Outputs.cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2F936EC4Ref"
+       "Outputs.cdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole82070C50Ref"
       ]
      }
     ]
@@ -189,7 +138,7 @@
     "ServiceToken": {
      "Fn::GetAtt": [
       "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
-      "Outputs.cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderframeworkonEventCFDD0BA0Arn"
+      "Outputs.cdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderframeworkonEventCBBA269EArn"
      ]
     },
     "TableName": {
@@ -199,40 +148,18 @@
     "SkipReplicaDeletion": false
    },
    "DependsOn": [
-    "TableSourceTableAttachedManagedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole3971612857304880",
-    "TableSourceTableAttachedManagedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole6F43DF4A23250B4C"
+    "TableSourceTableAttachedManagedPolicycdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleE14EFE68A525E1C7",
+    "TableSourceTableAttachedManagedPolicycdkdynamodbskipreplicadeletionawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole9B3DAE1774B041B9"
    ],
    "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "TableReplicaeucentral100A6A6E0": {
-   "Type": "Custom::DynamoDBReplica",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
-      "Outputs.cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderframeworkonEventCFDD0BA0Arn"
-     ]
-    },
-    "TableName": {
-     "Ref": "TableCD117FA1"
-    },
-    "Region": "eu-central-1",
-    "SkipReplicaDeletion": false
-   },
-   "DependsOn": [
-    "TableReplicaeuwest290D3CD3A",
-    "TableSourceTableAttachedManagedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole3971612857304880",
-    "TableSourceTableAttachedManagedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole6F43DF4A23250B4C"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "DeletionPolicy": "Delete",
+   "Condition": "TableStackRegionNotEqualseuwest2A03859E7"
   },
   "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D": {
    "Type": "AWS::CloudFormation::Stack",
    "Properties": {
     "Parameters": {
-     "referencetocdkdynamodbglobal20191121TableB640876BRef": {
+     "referencetocdkdynamodbskipreplicadeletionTableE2C70768Ref": {
       "Ref": "TableCD117FA1"
      }
     },
@@ -240,21 +167,39 @@
      "Fn::Join": [
       "",
       [
-       "https://s3.eu-west-1.",
+       "https://s3.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".",
        {
         "Ref": "AWS::URLSuffix"
        },
        "/",
        {
-        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/99ce8e16a78e3c9de5980fd298e7e5eb3b4b63768f61485a4f30c32a9ac3602e.json"
+       "/e508fdc33083ad1a2d5239497e03863a26e96cd6cd3455082de4d9315c636d45.json"
       ]
      ]
     }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  }
+ },
+ "Conditions": {
+  "TableStackRegionNotEqualseuwest2A03859E7": {
+   "Fn::Not": [
+    {
+     "Fn::Equals": [
+      "eu-west-2",
+      {
+       "Ref": "AWS::Region"
+      }
+     ]
+    }
+   ]
   }
  },
  "Parameters": {
