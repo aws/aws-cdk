@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-cdk-sns-event-target": {
         "id": "aws-cdk-sns-event-target",
         "path": "aws-cdk-sns-event-target",
@@ -28,58 +20,146 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
                   "version": "0.0.0"
                 }
               },
-              "Policy": {
-                "id": "Policy",
-                "path": "aws-cdk-sns-event-target/MyTopic/Policy",
+              "EventsRole": {
+                "id": "EventsRole",
+                "path": "aws-cdk-sns-event-target/MyTopic/EventsRole",
                 "children": {
+                  "ImportEventsRole": {
+                    "id": "ImportEventsRole",
+                    "path": "aws-cdk-sns-event-target/MyTopic/EventsRole/ImportEventsRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-sns-event-target/MyTopic/Policy/Resource",
+                    "path": "aws-cdk-sns-event-target/MyTopic/EventsRole/Resource",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::SNS::TopicPolicy",
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
-                        "policyDocument": {
+                        "assumeRolePolicyDocument": {
                           "Statement": [
                             {
-                              "Action": "sns:Publish",
+                              "Action": "sts:AssumeRole",
                               "Effect": "Allow",
                               "Principal": {
                                 "Service": "events.amazonaws.com"
-                              },
-                              "Resource": {
-                                "Ref": "MyTopic86869434"
-                              },
-                              "Sid": "0"
+                              }
                             }
                           ],
                           "Version": "2012-10-17"
-                        },
-                        "topics": [
-                          {
-                            "Ref": "MyTopic86869434"
-                          }
-                        ]
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-sns.CfnTopicPolicy",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-sns-event-target/MyTopic/EventsRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-sns-event-target/MyTopic/EventsRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sns:Publish",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "MyTopic86869434"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyTopicEventsRoleDefaultPolicyB79AC002",
+                            "roles": [
+                              {
+                                "Ref": "MyTopicEventsRole0D2D3332"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sns.TopicPolicy",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "roleName": "*",
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      }
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-sns.Topic",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.aws_sns.Topic",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "EveryMinute": {
@@ -100,6 +180,12 @@
                         "arn": {
                           "Ref": "MyTopic86869434"
                         },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "MyTopicEventsRole0D2D3332",
+                            "Arn"
+                          ]
+                        },
                         "deadLetterConfig": {
                           "arn": {
                             "Fn::GetAtt": [
@@ -113,14 +199,29 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-events.CfnRule",
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-events.Rule",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "schedule": "*"
+                },
+                {
+                  "addEventPattern": [
+                    "*"
+                  ]
+                },
+                {
+                  "addTarget": [
+                    {}
+                  ]
+                }
+              ]
             }
           },
           "MyQueue": {
@@ -135,7 +236,7 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sqs.CfnQueue",
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
                   "version": "0.0.0"
                 }
               },
@@ -182,14 +283,21 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-sqs.CfnQueuePolicy",
+                      "fqn": "aws-cdk-lib.aws_sqs.CfnQueuePolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sqs.QueuePolicy",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_sqs.QueuePolicy",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "queues": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "awscdksnseventtargetMyTopicB7575CD8": {
@@ -202,33 +310,48 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                       "aws:cdk:cloudformation:props": {
-                        "protocol": "sqs",
-                        "topicArn": {
-                          "Ref": "MyTopic86869434"
-                        },
                         "endpoint": {
                           "Fn::GetAtt": [
                             "MyQueueE6CA6235",
                             "Arn"
                           ]
+                        },
+                        "protocol": "sqs",
+                        "topicArn": {
+                          "Ref": "MyTopic86869434"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-sns.CfnSubscription",
+                      "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sns.Subscription",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_sns.Subscription",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "topic": "*",
+                      "endpoint": "*",
+                      "protocol": "sqs",
+                      "rawMessageDelivery": "*",
+                      "filterPolicy": "*",
+                      "filterPolicyWithMessageBody": "*",
+                      "region": "*",
+                      "deadLetterQueue": "*"
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-sqs.Queue",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "MyDeadLetterQueue": {
@@ -243,7 +366,7 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sqs.CfnQueue",
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
                   "version": "0.0.0"
                 }
               },
@@ -294,32 +417,66 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-sqs.CfnQueuePolicy",
+                      "fqn": "aws-cdk-lib.aws_sqs.CfnQueuePolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sqs.QueuePolicy",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_sqs.QueuePolicy",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "queues": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-sqs.Queue",
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-sns-event-target/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-sns-event-target/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }
