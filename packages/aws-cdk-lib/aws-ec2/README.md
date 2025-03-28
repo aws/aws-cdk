@@ -1134,6 +1134,18 @@ new ec2.VpcEndpointService(this, 'EndpointService', {
 });
 ```
 
+You can restrict access to your endpoint service to specific AWS regions:
+
+```ts
+declare const networkLoadBalancer: elbv2.NetworkLoadBalancer;
+
+new ec2.VpcEndpointService(this, 'EndpointService', {
+  vpcEndpointServiceLoadBalancers: [networkLoadBalancer],
+  // Allow service consumers from these regions only
+  allowedRegions: ['us-east-1', 'eu-west-1'],
+});
+```
+
 Endpoint services support private DNS, which makes it easier for clients to connect to your service by automatically setting up DNS in their VPC.
 You can enable private DNS on an endpoint service like so:
 
