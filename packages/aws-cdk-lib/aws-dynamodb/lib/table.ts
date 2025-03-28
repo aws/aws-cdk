@@ -1694,12 +1694,9 @@ export class Table extends TableBase {
     // Replica table's removal policy will default to DynamoDB Table's removal policy
     // unless replica removal policy is specified.
     const retainReplica = FeatureFlags.of(this).isEnabled(DYNAMODB_TABLE_RETAIN_TABLE_REPLICA);
-    const skipReplicaDeletion = Lazy.any({
+    const skipReplicaDeletion = retainReplica ? Lazy.any({
       produce: () => {
         // If feature flag is disabled, never retain replica to maintain backward compatibility
-        if (!retainReplica) {
-          return false;
-        }
         // If feature flag is enabled, prioritize replica removal policy
         if (replicaRemovalPolicy) {
           return replicaRemovalPolicy == RemovalPolicy.RETAIN;
@@ -1707,7 +1704,7 @@ export class Table extends TableBase {
         // Otherwise fall back to source table's removal policy
         return (this.node.defaultChild as CfnResource).cfnOptions.deletionPolicy === CfnDeletionPolicy.RETAIN;
       },
-    });
+    }) : false;
 
     for (const region of new Set(regions)) { // Remove duplicates
       // Use multiple custom resources because multiple create/delete
@@ -1718,7 +1715,7 @@ export class Table extends TableBase {
         properties: {
           TableName: this.tableName,
           Region: region,
-          SkipReplicaDeletion: skipReplicaDeletion,
+          ...skipReplicaDeletion && { SkipReplicaDeletion: skipReplicaDeletion },
           SkipReplicationCompletedWait: waitForReplicationToFinish == null
             ? undefined
             // CFN changes Custom Resource properties to strings anyways,
