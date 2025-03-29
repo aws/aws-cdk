@@ -446,7 +446,12 @@ testDeprecated('when specifying every property', () => {
 });
 
 test('when replica removal policy is not specified', () => {
-  const stack = new Stack();
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
   new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
@@ -460,7 +465,12 @@ test('when replica removal policy is not specified', () => {
 });
 
 test('when replica removal policy is not specified', () => {
-  const stack = new Stack();
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
   const table = new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
@@ -474,8 +484,13 @@ test('when replica removal policy is not specified', () => {
 });
 
 test('when replica and table removal policy is not specified', () => {
-  const stack = new Stack();
-  const table = new Table(stack, CONSTRUCT_NAME, {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
     replicationRegions: ['eu-west-2', 'eu-west-3'],
@@ -486,9 +501,69 @@ test('when replica and table removal policy is not specified', () => {
   });
 });
 
-test('when replica and table removal policy is not specified', () => {
-  const stack = new Stack();
-  const table = new Table(stack, CONSTRUCT_NAME, {
+test('when replica and table removal policy is not specified with feature flag true', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': true,
+  });
+});
+
+test('when table removal policy is specified with feature flag true', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    removalPolicy: RemovalPolicy.DESTROY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': false,
+  });
+});
+
+test('when replica and table removal policy is not specified with feature flag false', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: false,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': Match.absent(),
+  });
+});
+
+test('when replica is retain and table is destroy', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
     removalPolicy: RemovalPolicy.DESTROY,
@@ -501,9 +576,14 @@ test('when replica and table removal policy is not specified', () => {
   });
 });
 
-test('when replica and table removal policy is not specified', () => {
-  const stack = new Stack();
-  const table = new Table(stack, CONSTRUCT_NAME, {
+test('when replica is destory and table is retain', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
     removalPolicy: RemovalPolicy.RETAIN,

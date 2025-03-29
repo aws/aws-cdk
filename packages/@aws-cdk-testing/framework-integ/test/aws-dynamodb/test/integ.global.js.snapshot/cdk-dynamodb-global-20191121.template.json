@@ -195,8 +195,7 @@
     "TableName": {
      "Ref": "TableCD117FA1"
     },
-    "Region": "eu-west-2",
-    "SkipReplicaDeletion": false
+    "Region": "eu-west-2"
    },
    "DependsOn": [
     "TableSourceTableAttachedManagedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole3971612857304880",
@@ -217,8 +216,7 @@
     "TableName": {
      "Ref": "TableCD117FA1"
     },
-    "Region": "eu-central-1",
-    "SkipReplicaDeletion": false
+    "Region": "eu-central-1"
    },
    "DependsOn": [
     "TableReplicaeuwest290D3CD3A",
