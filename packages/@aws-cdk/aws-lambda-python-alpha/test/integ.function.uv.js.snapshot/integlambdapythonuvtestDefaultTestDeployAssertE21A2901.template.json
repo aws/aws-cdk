@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "LambdaInvoke81c9998b1b428b309c8501e21b919d3d": {
+  "LambdaInvoke3cad21d621f0d126dadbdb71007e5678": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerinline53D120C7B0898676"
+         "Fn::ImportValue": "integ-lambda-python-uv:ExportsOutputRefmyhandlerinlinepython3914E0D89DAA53377B"
         },
         "\""
        ]
@@ -27,17 +27,17 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1742704374104"
+    "salt": "1742698066036"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke81c9998b1b428b309c8501e21b919d3dInvokeEBA46CA4": {
+  "LambdaInvoke3cad21d621f0d126dadbdb71007e5678Invoke8A0FE001": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerinline53D120C7B0898676"
+     "Fn::ImportValue": "integ-lambda-python-uv:ExportsOutputRefmyhandlerinlinepython3914E0D89DAA53377B"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -106,7 +106,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerinline53D120C7B0898676"
+              "Fn::ImportValue": "integ-lambda-python-uv:ExportsOutputRefmyhandlerinlinepython3914E0D89DAA53377B"
              }
             ]
            ]
@@ -146,7 +146,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython3109CF78D6A07113D1F"
+              "Fn::ImportValue": "integ-lambda-python-uv:ExportsOutputRefmyhandlerinlinepython310CCEB365DA798DC08"
              }
             ]
            ]
@@ -186,7 +186,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython311FA85D4467031FBCF"
+              "Fn::ImportValue": "integ-lambda-python-uv:ExportsOutputRefmyhandlerinlinepython31130A54F685779D70D"
              }
             ]
            ]
@@ -226,7 +226,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerinlineexcludes9ACF1422FA94AAF9"
+              "Fn::ImportValue": "integ-lambda-python-uv:ExportsOutputRefmyhandlerinlinepython312E980C237486214AB"
              }
             ]
            ]
@@ -266,47 +266,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython310excludesB5721574A64D7E23"
-             }
-            ]
-           ]
-          }
-         ]
-        },
-        {
-         "Action": [
-          "lambda:Invoke"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "lambda:InvokeFunction"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          {
-           "Fn::Join": [
-            "",
-            [
-             "arn:",
-             {
-              "Ref": "AWS::Partition"
-             },
-             ":lambda:",
-             {
-              "Ref": "AWS::Region"
-             },
-             ":",
-             {
-              "Ref": "AWS::AccountId"
-             },
-             ":function:",
-             {
-              "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython311excludesEBA2ED311D092320"
+              "Fn::ImportValue": "integ-lambda-python-uv:ExportsOutputRefmyhandlerinlinepython313A17B0A537EDB13A7"
              }
             ]
            ]
@@ -347,7 +307,7 @@
     }
    }
   },
-  "LambdaInvoke3b8213cb5b666fef975a9e9797adfb12": {
+  "LambdaInvoke1169f1cd9853adbc01aa3feb2303094f": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -366,7 +326,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython3109CF78D6A07113D1F"
+         "Fn::ImportValue": "integ-lambda-python-uv:ExportsOutputRefmyhandlerinlinepython310CCEB365DA798DC08"
         },
         "\""
        ]
@@ -374,17 +334,17 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1742704374106"
+    "salt": "1742698066038"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke3b8213cb5b666fef975a9e9797adfb12InvokeB39BE3A1": {
+  "LambdaInvoke1169f1cd9853adbc01aa3feb2303094fInvoke3DACF8AE": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython3109CF78D6A07113D1F"
+     "Fn::ImportValue": "integ-lambda-python-uv:ExportsOutputRefmyhandlerinlinepython310CCEB365DA798DC08"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -394,7 +354,7 @@
     }
    }
   },
-  "LambdaInvoke8bc0d57b9728c7cb409cb1d4a6ec16fd": {
+  "LambdaInvokeedc778179c8316b7704f58e7d1b26079": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -413,7 +373,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython311FA85D4467031FBCF"
+         "Fn::ImportValue": "integ-lambda-python-uv:ExportsOutputRefmyhandlerinlinepython31130A54F685779D70D"
         },
         "\""
        ]
@@ -421,17 +381,17 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1742704374106"
+    "salt": "1742698066039"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke8bc0d57b9728c7cb409cb1d4a6ec16fdInvoke349AC0C8": {
+  "LambdaInvokeedc778179c8316b7704f58e7d1b26079Invoke233FCD2E": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython311FA85D4467031FBCF"
+     "Fn::ImportValue": "integ-lambda-python-uv:ExportsOutputRefmyhandlerinlinepython31130A54F685779D70D"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -441,7 +401,7 @@
     }
    }
   },
-  "LambdaInvoke6fb5582f0ea96db4d3c0326fb42fe36c": {
+  "LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -460,7 +420,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerinlineexcludes9ACF1422FA94AAF9"
+         "Fn::ImportValue": "integ-lambda-python-uv:ExportsOutputRefmyhandlerinlinepython312E980C237486214AB"
         },
         "\""
        ]
@@ -468,17 +428,17 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1742704374107"
+    "salt": "1742698066039"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke6fb5582f0ea96db4d3c0326fb42fe36cInvoke7568F400": {
+  "LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401InvokeCBB1B246": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerinlineexcludes9ACF1422FA94AAF9"
+     "Fn::ImportValue": "integ-lambda-python-uv:ExportsOutputRefmyhandlerinlinepython312E980C237486214AB"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -488,7 +448,7 @@
     }
    }
   },
-  "LambdaInvoke264214b12fa508316ae58deaebea7214": {
+  "LambdaInvoke25144ef98e9004a751090b35f432918d": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -507,7 +467,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython310excludesB5721574A64D7E23"
+         "Fn::ImportValue": "integ-lambda-python-uv:ExportsOutputRefmyhandlerinlinepython313A17B0A537EDB13A7"
         },
         "\""
        ]
@@ -515,64 +475,17 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1742704374107"
+    "salt": "1742698066040"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke264214b12fa508316ae58deaebea7214Invoke79625C91": {
+  "LambdaInvoke25144ef98e9004a751090b35f432918dInvoke58341E0D": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython310excludesB5721574A64D7E23"
-    },
-    "Principal": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "LambdaInvoke700f840f3dc2f0057ac7162a03084b93": {
-   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "Lambda",
-    "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
-    "parameters": {
-     "FunctionName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython311excludesEBA2ED311D092320"
-        },
-        "\""
-       ]
-      ]
-     }
-    },
-    "flattenResponse": "false",
-    "salt": "1742704374107"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "LambdaInvoke700f840f3dc2f0057ac7162a03084b93InvokeABD90EB6": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython311excludesEBA2ED311D092320"
+     "Fn::ImportValue": "integ-lambda-python-uv:ExportsOutputRefmyhandlerinlinepython313A17B0A537EDB13A7"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -584,50 +497,42 @@
   }
  },
  "Outputs": {
-  "AssertionResultsLambdaInvoke81c9998b1b428b309c8501e21b919d3d": {
+  "AssertionResultsLambdaInvoke3cad21d621f0d126dadbdb71007e5678": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke81c9998b1b428b309c8501e21b919d3d",
+     "LambdaInvoke3cad21d621f0d126dadbdb71007e5678",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke3b8213cb5b666fef975a9e9797adfb12": {
+  "AssertionResultsLambdaInvoke1169f1cd9853adbc01aa3feb2303094f": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke3b8213cb5b666fef975a9e9797adfb12",
+     "LambdaInvoke1169f1cd9853adbc01aa3feb2303094f",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke8bc0d57b9728c7cb409cb1d4a6ec16fd": {
+  "AssertionResultsLambdaInvokeedc778179c8316b7704f58e7d1b26079": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke8bc0d57b9728c7cb409cb1d4a6ec16fd",
+     "LambdaInvokeedc778179c8316b7704f58e7d1b26079",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke6fb5582f0ea96db4d3c0326fb42fe36c": {
+  "AssertionResultsLambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke6fb5582f0ea96db4d3c0326fb42fe36c",
+     "LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke264214b12fa508316ae58deaebea7214": {
+  "AssertionResultsLambdaInvoke25144ef98e9004a751090b35f432918d": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke264214b12fa508316ae58deaebea7214",
-     "assertion"
-    ]
-   }
-  },
-  "AssertionResultsLambdaInvoke700f840f3dc2f0057ac7162a03084b93": {
-   "Value": {
-    "Fn::GetAtt": [
-     "LambdaInvoke700f840f3dc2f0057ac7162a03084b93",
+     "LambdaInvoke25144ef98e9004a751090b35f432918d",
      "assertion"
     ]
    }
