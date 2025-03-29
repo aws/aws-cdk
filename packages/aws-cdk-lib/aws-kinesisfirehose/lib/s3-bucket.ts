@@ -4,7 +4,7 @@ import { DestinationBindOptions, DestinationConfig, IDestination } from './desti
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
-import { UnscopedValidationError } from '../../core';
+import { UnscopedValidationError, ValidationError } from '../../core';
 
 /**
  * Props for defining an S3 destination of an Amazon Data Firehose delivery stream.
@@ -35,11 +35,16 @@ export class S3Bucket implements IDestination {
       streamId: 'S3Destination',
     }) ?? {};
 
+    if (this.props.processor && this.props.processors) {
+      throw new ValidationError("You can specify either 'processors' or 'processor', not both.", scope);
+    }
+    const dataProcessors = this.props.processor ? [this.props.processor] : this.props.processors;
+
     const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, this.props.s3Backup) ?? {};
     return {
       extendedS3DestinationConfiguration: {
         cloudWatchLoggingOptions: loggingOptions,
-        processingConfiguration: createProcessingConfig(scope, role, this.props.processor),
+        processingConfiguration: createProcessingConfig(scope, role, dataProcessors),
         roleArn: role.roleArn,
         s3BackupConfiguration: backupConfig,
         s3BackupMode: this.getS3BackupMode(),
