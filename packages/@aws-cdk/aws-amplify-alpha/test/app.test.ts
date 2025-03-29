@@ -480,7 +480,24 @@ test.each([amplify.CacheConfigType.AMPLIFY_MANAGED, amplify.CacheConfigType.AMPL
   });
 });
 
-test('create a app with compute role', () => {
+test('create a SSR app with default compute role', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    platform: amplify.Platform.WEB_COMPUTE,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    Platform: amplify.Platform.WEB_COMPUTE,
+    ComputeRoleArn: {
+      'Fn::GetAtt': ['AppComputeRole426920E4', 'Arn'],
+    },
+  });
+
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 2);
+});
+
+test('create a SSR app with compute role', () => {
   // WHEN
   const computeRole = new iam.Role(stack, 'ComputeRole', {
     assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
@@ -498,3 +515,16 @@ test('create a app with compute role', () => {
   });
 });
 
+test('create a SSR app with compute role', () => {
+  // WHEN
+  const computeRole = new iam.Role(stack, 'ComputeRole', {
+    assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
+  });
+
+  expect(() => {
+    new amplify.App(stack, 'App', {
+      platform: amplify.Platform.WEB,
+      computeRole,
+    });
+  }).toThrow('`computeRole` can only be specified for `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.');
+});

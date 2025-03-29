@@ -40,9 +40,6 @@
     "BasicAuthConfig": {
      "EnableBasicAuth": false
     },
-    "CacheConfig": {
-     "Type": "AMPLIFY_MANAGED_NO_COOKIES"
-    },
     "ComputeRoleArn": {
      "Fn::GetAtt": [
       "ComputeRole65BDBE3E",
@@ -56,7 +53,7 @@
      ]
     },
     "Name": "App",
-    "Platform": "WEB"
+    "Platform": "WEB_COMPUTE"
    }
   },
   "AppmainF505BAED": {
