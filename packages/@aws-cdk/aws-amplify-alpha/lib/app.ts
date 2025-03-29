@@ -175,6 +175,14 @@ export interface AppProps {
    * @default CacheConfigType.AMPLIFY_MANAGED
    */
   readonly cacheConfigType?: CacheConfigType;
+
+  /**
+   * The IAM role for an SSR app.
+   * The Compute role allows the Amplify Hosting compute service to securely access specific AWS resources based on the role's permissions.
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/amplify-SSR-compute-role.html
+   * @default undefined - no compute role
+   */
+  readonly computeRole?: iam.IRole;
 }
 
 /**
@@ -260,6 +268,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
         : { enableBasicAuth: false },
       buildSpec: props.buildSpec && props.buildSpec.toBuildSpec(),
       cacheConfig: props.cacheConfigType ? { type: props.cacheConfigType } : undefined,
+      computeRoleArn: props.computeRole?.roleArn,
       customRules: Lazy.any({ produce: () => this.customRules }, { omitEmptyArray: true }),
       description: props.description,
       environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.environmentVariables) }, { omitEmptyArray: true }),
