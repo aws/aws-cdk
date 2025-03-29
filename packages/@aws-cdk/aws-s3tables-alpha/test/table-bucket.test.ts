@@ -1,0 +1,537 @@
+import { Template } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as core from 'aws-cdk-lib/core';
+import * as s3tables from '../lib';
+import * as perms from '../lib/permissions';
+
+/* Allow quotes in the object keys used for CloudFormation template assertions */
+/* eslint-disable quote-props */
+
+describe('TableBucket', () => {
+  const TABLE_BUCKET_CFN_RESOURCE = 'AWS::S3Tables::TableBucket';
+  const TABLE_BUCKET_POLICY_CFN_RESOURCE = 'AWS::S3Tables::TableBucketPolicy';
+
+  let stack: core.Stack;
+
+  beforeEach(() => {
+    stack = new core.Stack();
+  });
+
+  describe('created with default properties', () => {
+    const DEFAULT_PROPS: s3tables.TableBucketProps = {
+      tableBucketName: 'example-table-bucket',
+    };
+    let tableBucket: s3tables.TableBucket;
+
+    beforeEach(() => {
+      tableBucket = new s3tables.TableBucket(stack, 'ExampleTableBucket', DEFAULT_PROPS);
+    });
+
+    test(`creates a ${TABLE_BUCKET_CFN_RESOURCE} resource`, () => {
+      Template.fromStack(stack).resourceCountIs(TABLE_BUCKET_CFN_RESOURCE, 1);
+    });
+
+    test('with tableBucketName property', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
+        'TableBucketName': DEFAULT_PROPS.tableBucketName,
+      });
+    });
+
+    test('returns true from addToResourcePolicy', () => {
+      const result = tableBucket.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3tables:*'],
+        resources: ['*'],
+      }));
+
+      expect(result.statementAdded).toBe(true);
+    });
+  });
+
+  describe('created with optional properties', () => {
+    const TABLE_BUCKET_PROPS: s3tables.TableBucketProps = {
+      account: '0123456789012',
+      region: 'us-west-2',
+      tableBucketName: 'example-table-bucket',
+      unreferencedFileRemoval: {
+        noncurrentDays: 10,
+        unreferencedDays: 10,
+        status: s3tables.UnreferencedFileRemovalStatus.ENABLED,
+      },
+      removalPolicy: core.RemovalPolicy.RETAIN,
+    };
+    let tableBucket: s3tables.TableBucket;
+
+    beforeEach(() => {
+      tableBucket = new s3tables.TableBucket(stack, 'ExampleTableBucket', TABLE_BUCKET_PROPS);
+    });
+
+    test(`creates a ${TABLE_BUCKET_CFN_RESOURCE} resource`, () => {
+      tableBucket;
+      Template.fromStack(stack).resourceCountIs(TABLE_BUCKET_CFN_RESOURCE, 1);
+    });
+
+    test('has UnreferencedFileRemoval properties', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
+        'TableBucketName': TABLE_BUCKET_PROPS.tableBucketName,
+        'UnreferencedFileRemoval': {
+          'NoncurrentDays': TABLE_BUCKET_PROPS.unreferencedFileRemoval?.noncurrentDays,
+          'Status': TABLE_BUCKET_PROPS.unreferencedFileRemoval?.status,
+          'UnreferencedDays': TABLE_BUCKET_PROPS.unreferencedFileRemoval?.unreferencedDays,
+        },
+      });
+    });
+  });
+
+  describe('defined with resource policy', () => {
+    const DEFAULT_PROPS: s3tables.TableBucketProps = {
+      tableBucketName: 'example-table-bucket',
+    };
+    let tableBucket: s3tables.TableBucket;
+
+    beforeEach(() => {
+      tableBucket = new s3tables.TableBucket(stack, 'ExampleTableBucket', DEFAULT_PROPS);
+      tableBucket.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3tables:*'],
+        resources: ['*'],
+      }));
+    });
+
+    test('resourcePolicy contains statement', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+        'ResourcePolicy': {
+          'Statement': [
+            {
+              'Action': 's3tables:*',
+              'Effect': 'Allow',
+              'Resource': '*',
+            },
+          ],
+        },
+      });
+    });
+
+    test('calling multiple times appends statements', () => {
+      tableBucket.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3:*'],
+        effect: iam.Effect.DENY,
+        resources: ['*'],
+      }));
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+        'ResourcePolicy': {
+          'Statement': [
+            {
+              'Action': 's3tables:*',
+              'Effect': 'Allow',
+              'Resource': '*',
+            },
+            {
+              'Action': 's3:*',
+              'Effect': 'Deny',
+              'Resource': '*',
+            },
+          ],
+        },
+      });
+    });
+  });
+
+  describe('import existing table bucket with name', () => {
+    const BUCKET_PROPS = {
+      tableBucketName: 'example-table-bucket',
+    };
+    let tableBucket: s3tables.ITableBucket;
+
+    beforeEach(() => {
+      tableBucket = s3tables.TableBucket.fromTableBucketAttributes(stack, 'ExampleTableBucket', BUCKET_PROPS);
+    });
+
+    test('has the same name as it was imported with', () => {
+      expect(tableBucket.tableBucketName).toEqual(BUCKET_PROPS.tableBucketName);
+    });
+
+    test('renders the correct ARN for Example Resource', () => {
+      const arn = stack.resolve(tableBucket.tableBucketArn);
+      expect(arn).toEqual({
+        'Fn::Join': ['', [
+          'arn:',
+          { 'Ref': 'AWS::Partition' },
+          ':s3tables:',
+          { 'Ref': 'AWS::Region' },
+          ':',
+          { 'Ref': 'AWS::AccountId' },
+          `:bucket/${BUCKET_PROPS.tableBucketName}`,
+        ]],
+      });
+    });
+
+    test('returns false from addToResourcePolicy', () => {
+      const result = tableBucket.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3tables:*'],
+        resources: ['*'],
+      }));
+
+      expect(result.statementAdded).toEqual(false);
+    });
+  });
+
+  describe('import existing table bucket with arn', () => {
+    const BUCKET_NAME = 'test-bucket';
+    const ACCOUNT_ID = '123456789012';
+    const REGION = 'us-west-2';
+    const BUCKET_ARN = `arn:aws:s3tables:${REGION}:${ACCOUNT_ID}:bucket/${BUCKET_NAME}`;
+    let tableBucket: s3tables.ITableBucket;
+
+    beforeEach(() => {
+      tableBucket = s3tables.TableBucket.fromTableBucketArn(stack, 'ExampleTableBucket', BUCKET_ARN);
+    });
+
+    test('has the same name as it was imported with', () => {
+      expect(tableBucket.tableBucketName).toEqual(BUCKET_NAME);
+    });
+
+    test('has the same region as it was imported with', () => {
+      expect(tableBucket.region).toEqual(REGION);
+    });
+
+    test('has the same account as it was imported with', () => {
+      expect(tableBucket.account).toEqual(ACCOUNT_ID);
+    });
+
+    test('returns false from addToResourcePolicy', () => {
+      const result = tableBucket.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3tables:*'],
+        resources: ['*'],
+      }));
+
+      expect(result.statementAdded).toEqual(false);
+    });
+  });
+
+  describe('import existing table bucket with name, region and account', () => {
+    const BUCKET_PROPS = {
+      tableBucketName: 'example-table-bucket',
+      region: 'us-east-2',
+      account: '123456789012',
+    };
+    let tableBucket: s3tables.ITableBucket;
+
+    beforeEach(() => {
+      tableBucket = s3tables.TableBucket.fromTableBucketAttributes(stack, 'ExampleTableBucket', BUCKET_PROPS);
+    });
+
+    test('has the same name as it was imported with', () => {
+      expect(tableBucket.tableBucketName).toEqual(BUCKET_PROPS.tableBucketName);
+    });
+
+    test('has the same account as it was imported with', () => {
+      expect(tableBucket.account).toEqual(BUCKET_PROPS.account);
+    });
+
+    test('has the same region as it was imported with', () => {
+      expect(tableBucket.region).toEqual(BUCKET_PROPS.region);
+    });
+
+    test('renders the correct ARN for Example Resource', () => {
+      const arn = stack.resolve(tableBucket.tableBucketArn);
+      expect(arn).toEqual({
+        'Fn::Join': ['', [
+          'arn:',
+          { 'Ref': 'AWS::Partition' },
+          `:s3tables:${BUCKET_PROPS.region}:${BUCKET_PROPS.account}:bucket/${BUCKET_PROPS.tableBucketName}`,
+        ]],
+      });
+    });
+
+    test('returns false from addToResourcePolicy', () => {
+      const result = tableBucket.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3tables:*'],
+        resources: ['*'],
+      }));
+
+      expect(result.statementAdded).toEqual(false);
+    });
+  });
+
+  describe('grant access methods', () => {
+    const PRINCIPAL = 's3.amazonaws.com';
+    const DEFAULT_PROPS: s3tables.TableBucketProps = {
+      tableBucketName: 'example-table-bucket',
+    };
+    const TABLE_BUCKET_ARN_SUB = {
+      'Fn::GetAtt': ['ExampleTableBucket9B5A2796', 'TableBucketARN'],
+    };
+    let tableBucket: s3tables.TableBucket;
+
+    beforeEach(() => {
+      tableBucket = new s3tables.TableBucket(stack, 'ExampleTableBucket', DEFAULT_PROPS);
+    });
+
+    describe('grantRead', () => {
+      it('provides read and list permissions for all tables', () => {
+        tableBucket.grantRead(new iam.ServicePrincipal(PRINCIPAL));
+        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+          'ResourcePolicy': {
+            'Statement': [
+              {
+                'Action': perms.TABLE_BUCKET_READ_ACCESS,
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': PRINCIPAL,
+                },
+                'Resource': [
+                  TABLE_BUCKET_ARN_SUB,
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, '/table/*']] },
+                ],
+              },
+            ],
+          },
+        });
+      });
+
+      it('provides read and list permissions for a specific table', () => {
+        const TABLE_UUID = 'example-table-uuid';
+        tableBucket.grantRead(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
+        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+          'ResourcePolicy': {
+            'Statement': [
+              {
+                'Action': perms.TABLE_BUCKET_READ_ACCESS,
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': PRINCIPAL,
+                },
+                'Resource': [
+                  TABLE_BUCKET_ARN_SUB,
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/table/${TABLE_UUID}`]] },
+                ],
+              },
+            ],
+          },
+        });
+      });
+    });
+
+    describe('grantWrite', () => {
+      it('provides write permissions for all tables', () => {
+        tableBucket.grantWrite(new iam.ServicePrincipal(PRINCIPAL));
+        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+          'ResourcePolicy': {
+            'Statement': [
+              {
+                'Action': perms.TABLE_BUCKET_WRITE_ACCESS,
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': PRINCIPAL,
+                },
+                'Resource': [
+                  TABLE_BUCKET_ARN_SUB,
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, '/table/*']] },
+                ],
+              },
+            ],
+          },
+        });
+      });
+
+      it('provides write permissions for a specific table', () => {
+        const TABLE_UUID = 'example-table-uuid';
+        tableBucket.grantWrite(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
+        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+          'ResourcePolicy': {
+            'Statement': [
+              {
+                'Action': perms.TABLE_BUCKET_WRITE_ACCESS,
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': PRINCIPAL,
+                },
+                'Resource': [
+                  TABLE_BUCKET_ARN_SUB,
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/table/${TABLE_UUID}`]] },
+                ],
+              },
+            ],
+          },
+        });
+      });
+    });
+
+    describe('grantReadWrite', () => {
+      it('provides read & write permissions for all tables', () => {
+        tableBucket.grantReadWrite(new iam.ServicePrincipal(PRINCIPAL));
+        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+          'ResourcePolicy': {
+            'Statement': [
+              {
+                'Action': perms.TABLE_BUCKET_READ_WRITE_ACCESS,
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': PRINCIPAL,
+                },
+                'Resource': [
+                  TABLE_BUCKET_ARN_SUB,
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, '/table/*']] },
+                ],
+              },
+            ],
+          },
+        });
+      });
+
+      it('provides read & write permissions for a specific table', () => {
+        const TABLE_UUID = 'example-table-uuid';
+        tableBucket.grantReadWrite(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
+        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+          'ResourcePolicy': {
+            'Statement': [
+              {
+                'Action': perms.TABLE_BUCKET_READ_WRITE_ACCESS,
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': PRINCIPAL,
+                },
+                'Resource': [
+                  TABLE_BUCKET_ARN_SUB,
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/table/${TABLE_UUID}`]] },
+                ],
+              },
+            ],
+          },
+        });
+      });
+    });
+  });
+
+  describe('validateBucketName', () => {
+    it('should accept valid bucket names', () => {
+      const validNames = [
+        'my-bucket-123',
+        'test-bucket',
+        'abc',
+        'a'.repeat(63),
+        '123-bucket',
+      ];
+
+      validNames.forEach(name => {
+        expect(() => s3tables.TableBucket.validateTableBucketName(name)).not.toThrow();
+      });
+    });
+
+    it('should skip validation for unresolved tokens', () => {
+      // const mockToken = { isUnresolved: true };
+      // core.Token.isUnresolved = jest.fn().mockReturnValue(true);
+      expect(() => s3tables.TableBucket.validateTableBucketName(undefined)).not.toThrow();
+    });
+
+    it('should reject bucket names that are too short', () => {
+      expect(() => s3tables.TableBucket.validateTableBucketName('XX')).toThrow(
+        /Bucket name must be at least 3/,
+      );
+    });
+
+    it('should reject bucket names that are too long', () => {
+      const longName = 'a'.repeat(64);
+      expect(() => s3tables.TableBucket.validateTableBucketName(longName)).toThrow(
+        /no more than 63 characters/,
+      );
+    });
+
+    it('should reject bucket names with illegal characters', () => {
+      const invalidNames = [
+        'My-Bucket', // uppercase
+        'bucket!123', // special character
+        'bucket.123', // period
+        'bucket_123', // underscore
+      ];
+
+      invalidNames.forEach(name => {
+        expect(() => s3tables.TableBucket.validateTableBucketName(name)).toThrow(
+          /must only contain lowercase characters, numbers, and hyphens/,
+        );
+      });
+    });
+
+    it('should reject bucket names that start with invalid characters', () => {
+      const invalidNames = [
+        '-bucket',
+        '.bucket',
+      ];
+
+      invalidNames.forEach(name => {
+        expect(() => s3tables.TableBucket.validateTableBucketName(name)).toThrow(
+          /must start with a lowercase letter or number/,
+        );
+      });
+    });
+
+    it('should reject bucket names that end with invalid characters', () => {
+      const invalidNames = [
+        'bucket-',
+        'bucket.',
+      ];
+
+      invalidNames.forEach(name => {
+        expect(() => s3tables.TableBucket.validateTableBucketName(name)).toThrow(
+          /must end with a lowercase letter or number/,
+        );
+      });
+    });
+
+    it('should include the invalid bucket name in the error message', () => {
+      const invalidName = 'Invalid-Bucket!';
+      expect(() => s3tables.TableBucket.validateTableBucketName(invalidName)).toThrow(
+        /Invalid-Bucket!/,
+      );
+    });
+
+    it('should handle empty bucket names', () => {
+      expect(() => s3tables.TableBucket.validateTableBucketName('')).toThrow(
+        /Bucket name must be at least 3/,
+      );
+    });
+  });
+
+  describe('validateUnreferencedFileRemoval', () => {
+    it('should not throw error when unreferencedFileRemovalProperty is undefined', () => {
+      expect(() => s3tables.TableBucket.validateUnreferencedFileRemoval(undefined)).not.toThrow();
+    });
+
+    it('should not throw error for valid property values', () => {
+      const validProperty = {
+        noncurrentDays: 1,
+        unreferencedDays: 1,
+        status: s3tables.UnreferencedFileRemovalStatus.ENABLED,
+      };
+      expect(() => s3tables.TableBucket.validateUnreferencedFileRemoval(validProperty)).not.toThrow();
+    });
+
+    it('should throw error when noncurrentDays is less than 1', () => {
+      const invalidProperty = {
+        noncurrentDays: 0,
+        unreferencedDays: 1,
+        status: s3tables.UnreferencedFileRemovalStatus.ENABLED,
+      };
+      expect(() => s3tables.TableBucket.validateUnreferencedFileRemoval(invalidProperty))
+        .toThrow(
+          /noncurrentDays must be at least 1/,
+        );
+    });
+
+    it('should throw error when unreferencedDays is less than 1', () => {
+      const invalidProperty = {
+        noncurrentDays: 1,
+        unreferencedDays: 0,
+        status: s3tables.UnreferencedFileRemovalStatus.ENABLED,
+      };
+      expect(() => s3tables.TableBucket.validateUnreferencedFileRemoval(invalidProperty))
+        .toThrow(
+          /unreferencedDays must be at least 1/,
+        );
+    });
+
+    it('should not throw error when optional fields are undefined', () => {
+      const partialProperty = {};
+      expect(() => s3tables.TableBucket.validateUnreferencedFileRemoval(partialProperty)).not.toThrow();
+    });
+  });
+});
