@@ -6,6 +6,14 @@ import * as ecr from '../../aws-ecr';
 import { AssetStaging, Names, Stack, Stage, ValidationError } from '../../core';
 
 /**
+ * The sed pattern used to extract the image ID from docker load output
+ * Works with both formats:
+ * - "Loaded image: <digest>" (older Docker versions)
+ * - "Loaded image ID: <digest>" (Docker 27.4+)
+ */
+export const DOCKER_LOAD_OUTPUT_REGEX = 's/Loaded image[^:]*: //g';
+
+/**
  * Options for TarballImageAsset
  */
 export interface TarballImageAssetProps {
@@ -99,7 +107,7 @@ export class TarballImageAsset extends Construct implements IAsset {
       executable: [
         'sh',
         '-c',
-        `docker load -i ${relativePathInOutDir} | tail -n 1 | sed "s/Loaded image: //g"`,
+        `docker load -i ${relativePathInOutDir} | tail -n 1 | sed "${DOCKER_LOAD_OUTPUT_REGEX}"`,
       ],
       displayName: props.displayName ?? Names.stackRelativeConstructPath(this),
     });
