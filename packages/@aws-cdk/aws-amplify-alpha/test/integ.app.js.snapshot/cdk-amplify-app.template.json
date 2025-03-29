@@ -70,6 +70,7 @@
     "CustomRules": [
      {
       "Source": "/source",
+      "Status": "301",
       "Target": "/target"
      }
     ],
