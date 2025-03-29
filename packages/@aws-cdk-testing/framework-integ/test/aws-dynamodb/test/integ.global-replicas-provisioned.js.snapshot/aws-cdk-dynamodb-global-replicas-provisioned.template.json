@@ -166,8 +166,7 @@
     "TableName": {
      "Ref": "TableCD117FA1"
     },
-    "Region": "us-east-2",
-    "SkipReplicaDeletion": false
+    "Region": "us-east-2"
    },
    "DependsOn": [
     "TableSourceTableAttachedManagedPolicyawscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleBE2B1C1A5DC546D2",
@@ -191,8 +190,7 @@
     "TableName": {
      "Ref": "TableCD117FA1"
     },
-    "Region": "eu-west-3",
-    "SkipReplicaDeletion": false
+    "Region": "eu-west-3"
    },
    "DependsOn": [
     "TableSourceTableAttachedManagedPolicyawscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleBE2B1C1A5DC546D2",
