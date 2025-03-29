@@ -97,6 +97,74 @@ export enum VpcEndpointType {
 }
 
 /**
+ * IP address type for the endpoint.
+ */
+export enum VpcEndpointIpAddressType {
+  /**
+   * Assign IPv4 addresses to the endpoint network interfaces.
+   * This option is supported only if all selected subnets have IPv4 address ranges
+   * and the endpoint service accepts IPv4 requests.
+   */
+  IPV4 = 'ipv4',
+  /**
+   * Assign IPv6 addresses to the endpoint network interfaces.
+   * This option is supported only if all selected subnets are IPv6 only subnets
+   * and the endpoint service accepts IPv6 requests.
+   */
+  IPV6 = 'ipv6',
+  /**
+   * Assign both IPv4 and IPv6 addresses to the endpoint network interfaces.
+   * This option is supported only if all selected subnets have both IPv4 and IPv6
+   * address ranges and the endpoint service accepts both IPv4 and IPv6 requests.
+   */
+  DUALSTACK = 'dualstack',
+}
+
+/**
+ * Enums for all Dns Record IP Address types.
+ */
+export enum VpcEndpointDnsRecordIpType {
+  /**
+   * Create A records for the private, Regional, and zonal DNS names.
+   * The IP address type must be IPv4 or Dualstack.
+   */
+  IPV4 = 'ipv4',
+  /**
+   * Create AAAA records for the private, Regional, and zonal DNS names.
+   * The IP address type must be IPv6 or Dualstack.
+   */
+  IPV6 = 'ipv6',
+  /**
+   * Create A and AAAA records for the private, Regional, and zonal DNS names.
+   * The IP address type must be Dualstack.
+   */
+  DUALSTACK = 'dualstack',
+  /**
+   * Create A records for the private, Regional, and zonal DNS names and
+   * AAAA records for the Regional and zonal DNS names.
+   * The IP address type must be Dualstack.
+   */
+  SERVICE_DEFINED = 'service-defined',
+}
+
+/**
+ * Indicates whether to enable private DNS only for inbound endpoints.
+ * This option is available only for services that support both gateway and interface endpoints.
+ * It routes traffic that originates from the VPC to the gateway endpoint and traffic that
+ * originates from on-premises to the interface endpoint.
+ */
+export enum VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint {
+  /**
+   * Enable private DNS for all resolvers.
+   */
+  ALL_RESOLVERS = 'AllResolvers',
+  /**
+   * Enable private DNS only for inbound endpoints.
+   */
+  ONLY_INBOUND_RESOLVER = 'OnlyInboundResolver',
+}
+
+/**
  * A service for a gateway VPC endpoint.
  */
 export interface IGatewayVpcEndpointService {
@@ -822,6 +890,27 @@ export interface InterfaceVpcEndpointOptions {
    * @default false
    */
   readonly lookupSupportedAzs?: boolean;
+
+  /**
+   * The IP address type for the endpoint.
+   *
+   * @default not specified
+   */
+  readonly ipAddressType?: VpcEndpointIpAddressType;
+
+  /**
+   * Type of DNS records created for the VPC endpoint.
+   *
+   * @default not specified
+   */
+  readonly dnsRecordIpType?: VpcEndpointDnsRecordIpType;
+
+  /**
+   * Whether to enable private DNS only for inbound endpoints.
+   *
+   * @default not specified
+   */
+  readonly privateDnsOnlyForInboundResolverEndpoint?: VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint;
 }
 
 /**
@@ -942,12 +1031,56 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       vpcEndpointType: VpcEndpointType.INTERFACE,
       subnetIds,
       vpcId: props.vpc.vpcId,
+      ipAddressType: props.ipAddressType,
+      dnsOptions: this.getDnsOptions(props),
     });
 
     this.vpcEndpointId = endpoint.ref;
     this.vpcEndpointCreationTimestamp = endpoint.attrCreationTimestamp;
     this.vpcEndpointDnsEntries = endpoint.attrDnsEntries;
     this.vpcEndpointNetworkInterfaceIds = endpoint.attrNetworkInterfaceIds;
+  }
+
+  private getDnsOptions(props: InterfaceVpcEndpointProps): CfnVPCEndpoint.DnsOptionsSpecificationProperty | undefined {
+    if (!props.privateDnsEnabled && props.privateDnsOnlyForInboundResolverEndpoint !== undefined) {
+      throw new Error('Enable private DNS to set the private DNS only for inbound endpoints');
+    }
+
+    if (!props.ipAddressType && props.dnsRecordIpType !== undefined) {
+      throw new Error('Configure the ipAddressType to use in the VPC endpoint');
+    }
+
+    /**
+     * Checks to see if dnsRecordIpType and ipAddressType are compatible, throw error if not
+     * @see https://docs.aws.amazon.com/vpc/latest/privatelink/create-endpoint-service.html#connect-to-endpoint-service
+     */
+    switch (props.dnsRecordIpType) {
+      case VpcEndpointDnsRecordIpType.IPV4:
+        if (props.ipAddressType === VpcEndpointIpAddressType.IPV6) {
+          throw new Error('Cannot create a VPC endpoint with ipAddressType of IPv6 with DNS Records for IPv4');
+        }
+        break;
+      case VpcEndpointDnsRecordIpType.IPV6:
+        if (props.ipAddressType === VpcEndpointIpAddressType.IPV4) {
+          throw new Error('Cannot create a VPC endpoint with ipAddressType of IPv4 with DNS Records for IPv6');
+        }
+        break;
+      case VpcEndpointDnsRecordIpType.DUALSTACK:
+        if (props.ipAddressType !== VpcEndpointIpAddressType.DUALSTACK) {
+          throw new Error('VPC endpoints with dualstack ipAddressType should set dnsRecordIpType to dualstack');
+        }
+        break;
+      case VpcEndpointDnsRecordIpType.SERVICE_DEFINED:
+        if (props.ipAddressType !== VpcEndpointIpAddressType.DUALSTACK) {
+          throw new Error('VPC endpoints with service defined configuration should set dnsRecordIpType to dualstack');
+        }
+        break;
+    }
+
+    return {
+      privateDnsOnlyForInboundResolverEndpoint: props.privateDnsOnlyForInboundResolverEndpoint,
+      dnsRecordIpType: props.dnsRecordIpType,
+    };
   }
 
   /**
