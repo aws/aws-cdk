@@ -483,7 +483,7 @@ interface DatabaseClusterBaseProps {
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/extended-support.html
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support.html
    *
-   * @default undefined - AWS RDS default id `EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT`
+   * @default undefined - AWS RDS default setting is `EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT`
    */
   readonly engineLifecycleSupport?: EngineLifecycleSupport;
 }
