@@ -21,9 +21,11 @@ import {
   Aws, CfnCondition, CfnCustomResource, CfnResource, Duration,
   Fn, Lazy, Names, RemovalPolicy, Stack, Token, CustomResource,
   CfnDeletionPolicy,
+  FeatureFlags,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { DYNAMODB_TABLE_RETAIN_TABLE_REPLICA } from '../../cx-api';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -1691,14 +1693,19 @@ export class Table extends TableBase {
 
     // Replica table's removal policy will default to DynamoDB Table's removal policy
     // unless replica removal policy is specified.
-    const skipReplicaDeletion = Lazy.any({
+    const retainReplica = FeatureFlags.of(this).isEnabled(DYNAMODB_TABLE_RETAIN_TABLE_REPLICA);
+
+    // If feature flag is disabled, never retain replica to maintain backward compatibility
+    const skipReplicaDeletion = retainReplica ? Lazy.any({
       produce: () => {
+        // If feature flag is enabled, prioritize replica removal policy
         if (replicaRemovalPolicy) {
           return replicaRemovalPolicy == RemovalPolicy.RETAIN;
         }
+        // Otherwise fall back to source table's removal policy
         return (this.node.defaultChild as CfnResource).cfnOptions.deletionPolicy === CfnDeletionPolicy.RETAIN;
       },
-    });
+    }) : false;
 
     for (const region of new Set(regions)) { // Remove duplicates
       // Use multiple custom resources because multiple create/delete
@@ -1709,7 +1716,7 @@ export class Table extends TableBase {
         properties: {
           TableName: this.tableName,
           Region: region,
-          SkipReplicaDeletion: skipReplicaDeletion,
+          ...skipReplicaDeletion && { SkipReplicaDeletion: skipReplicaDeletion },
           SkipReplicationCompletedWait: waitForReplicationToFinish == null
             ? undefined
             // CFN changes Custom Resource properties to strings anyways,
