@@ -1,0 +1,19 @@
+{
+  "version": "40.0.0",
+  "files": {
+    "80fe7111fc9759fc828920536dfcb70cccec5019109f9834309ff97ff3f2d642": {
+      "source": {
+        "path": "aws-cdk-integ-test-service-role-for-actions.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "80fe7111fc9759fc828920536dfcb70cccec5019109f9834309ff97ff3f2d642.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
