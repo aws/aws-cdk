@@ -957,3 +957,6 @@ weakened:aws-cdk-lib.cx_api.MetadataEntryResult
 strengthened:aws-cdk-lib.aws_eks.ClusterProps
 strengthened:aws-cdk-lib.aws_eks.FargateClusterProps
 removed:aws-cdk-lib.lambda_layer_kubectl.KubectlLayer
+
+# Fixing the JsonSchema interface to be consistent with JSON Schema spec
+changed-type:aws-cdk-lib.aws-apigateway.JsonSchema.additionalItems
