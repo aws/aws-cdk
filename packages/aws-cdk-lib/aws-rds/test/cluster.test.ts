@@ -21,6 +21,7 @@ import {
   ClusterScailabilityType,
   DBClusterStorageType,
   DatabaseInsightsMode,
+  EngineLifecycleSupport,
 } from '../lib';
 
 describe('cluster new api', () => {
@@ -167,6 +168,29 @@ describe('cluster new api', () => {
   });
 
   describe('cluster options', () => {
+    test.each([
+      EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
+      EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    ])('specify engine lifecycle support for %s', (engineLifecycleSupport) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        engineLifecycleSupport,
+        writer: ClusterInstance.serverlessV2('writer'),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        EngineLifecycleSupport: engineLifecycleSupport,
+      });
+    });
+
     test.each([true, false])('specify auto minor version upgrade', (autoMinorVersionUpgrade) => {
       // GIVEN
       const stack = testStack();
