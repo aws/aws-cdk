@@ -1,6 +1,4 @@
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import * as constructs from 'constructs';
 import { Code } from '../code';
 import { Job, JobProps } from './job';
@@ -101,15 +99,37 @@ export interface SparkJobProps extends JobProps {
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly sparkUI?: SparkUIProps;
+
+  /**
+   * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
+   *
+   * @default - no extra files specified.
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraFiles?: Code[];
+
+  /**
+   * Extra Jars S3 URL (optional)
+   * S3 URL where additional jar dependencies are located
+   * @default - no extra jar files
+   */
+  readonly extraJars?: Code[];
+
+  /**
+   * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
+   *
+   * @default false - priority is not given to user-provided jars
+   *
+   * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraJarsFirst?: boolean;
 }
 
 /**
  * Base class for different types of Spark Jobs.
  */
 export abstract class SparkJob extends Job {
-  public readonly role: iam.IRole;
-  public readonly grantPrincipal: iam.IPrincipal;
-
   /**
    * The Spark UI logs location if Spark UI monitoring and debugging is enabled.
    *
@@ -118,22 +138,15 @@ export abstract class SparkJob extends Job {
    */
   public readonly sparkUILoggingLocation?: SparkUILoggingLocation;
 
-  constructor(scope: constructs.Construct, id: string, props: SparkJobProps) {
-    super(scope, id, {
-      physicalName: props.jobName,
-    });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
-
-    this.role = props.role;
-    this.grantPrincipal = this.role;
+  protected constructor(scope: constructs.Construct, id: string, props: SparkJobProps) {
+    super(scope, id, props);
 
     this.sparkUILoggingLocation = props.sparkUI ? this.setupSparkUILoggingLocation(props.sparkUI) : undefined;
   }
 
   protected nonExecutableCommonArguments(props: SparkJobProps): {[key: string]: string} {
     // Enable CloudWatch metrics and continuous logging by default as a best practice
-    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
+    const continuousLoggingArgs = this.setupContinuousLogging(props.continuousLogging);
     const profilingMetricsArgs = { '--enable-metrics': '' };
     const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
 
