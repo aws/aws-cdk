@@ -9,7 +9,7 @@
       "Arn"
      ]
     },
-    "Create": "{\"assumedRoleArn\":\"arn:aws:iam::12345678:role/MyUniqueRole\",\"service\":\"@aws-sdk/client-sts\",\"action\":\"GetCallerIdentityCommand\",\"physicalResourceId\":{\"id\":\"id\"}}",
+    "Create": "{\"assumedRoleArn\":\"arn:aws:iam::12345678:role/MyUniqueRole\",\"assumedRoleExternalId\":\"external-id-1234\",\"service\":\"@aws-sdk/client-sts\",\"action\":\"GetCallerIdentityCommand\",\"physicalResourceId\":{\"id\":\"id\"}}",
     "InstallLatestAwsSdk": false
    },
    "DependsOn": [
@@ -75,7 +75,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-234567890123-us-east-1",
-     "S3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
+     "S3Key": "e6691dc6014ee9cc203ede754a4dbd33c0a6f12909a8bedd9fdd630d3f545154.zip"
     },
     "Handler": "index.handler",
     "Role": {
