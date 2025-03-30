@@ -1925,7 +1925,9 @@ export interface BucketProps {
   readonly minimumTLSVersion?: number;
 
   /**
-   * The role to be used by the replication handler
+   * The role to be used by the replication.
+   *
+   * When setting this property, you must also set `replicationRules`.
    *
    * @default - a new role will be created.
    */
