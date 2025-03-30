@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "sns-target-role-integ/DefaultTest": {
+      "stacks": [
+        "sns-target-role"
+      ],
+      "assertionStack": "sns-target-role-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "snstargetroleintegDefaultTestDeployAssert9AEB1BB2"
+    }
+  }
+}

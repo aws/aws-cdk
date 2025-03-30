@@ -447,6 +447,41 @@ rule.addTarget(new targets.EventBus(
 ));
 ```
 
+## Put an event on SNS topic
+
+Use the `SnsTopic` target to route event to a SNS topic.
+
+The code snippet below creates an SNS Topic target that is invoked every minute.
+
+```ts
+import * as sns from 'aws-cdk-lib/aws-sns';
+
+declare const topic: sns.Topic;
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.expression('rate(1 minute)'),
+});
+
+rule.addTarget(new targets.SnsTopic(topic));
+```
+
+You can pass an existing role with the proper permissions to be used for the target when the rule is triggered. The role must be assumable by the `events.amazonaws.com` service principal.
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+declare const topic: sns.Topic;
+declare const rule: events.Rule;
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+});
+
+rule.addTarget(new targets.SnsTopic(topic, {
+  role,
+}));
+```
+
 ## Run an ECS Task
 
 Use the `EcsTask` target to run an ECS Task.

@@ -1,5 +1,6 @@
 import { Template } from '../../../assertions';
 import * as events from '../../../aws-events';
+import * as iam from '../../../aws-iam';
 import * as sns from '../../../aws-sns';
 import * as sqs from '../../../aws-sqs';
 import { Duration, Stack } from '../../../core';
@@ -104,6 +105,67 @@ test('dead letter queue is configured correctly', () => {
             ],
           },
         },
+      },
+    ],
+  });
+});
+
+test('sns target role configured correctly', () => {
+  // GIVEN
+  const stack = new Stack();
+  const topic = new sns.Topic(stack, 'MyTopic');
+  const role = new iam.Role(stack, 'MyRole', {
+    assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+  });
+  const rule = new events.Rule(stack, 'MyRule', {
+    schedule: events.Schedule.rate(Duration.hours(1)),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.SnsTopic(topic, {
+    role,
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Sid: '0',
+          Action: 'sns:Publish',
+          Effect: 'Allow',
+          Principal: { Service: 'events.amazonaws.com' },
+          Resource: { Ref: 'MyTopic86869434' },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Topics: [{ Ref: 'MyTopic86869434' }],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'sns:Publish',
+          Effect: 'Allow',
+          Resource: { Ref: 'MyTopic86869434' },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Roles: [{
+      Ref: 'MyRoleF48FFE04',
+    }],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: { Ref: 'MyTopic86869434' },
+        Id: 'Target0',
       },
     ],
   });
