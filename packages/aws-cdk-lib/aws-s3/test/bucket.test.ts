@@ -6,7 +6,6 @@ import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import * as s3 from '../lib';
 import { ReplicationTimeValue } from '../lib/bucket';
-import { CfnRole } from '../../aws-iam';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable quote-props */
@@ -4139,7 +4138,7 @@ describe('bucket', () => {
       const replicationRole = new iam.Role(stack, 'ReplicationRole', {
         assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
       });
-      (replicationRole.node.defaultChild as CfnRole).overrideLogicalId('CustomReplicationRole');
+      (replicationRole.node.defaultChild as iam.CfnRole).overrideLogicalId('CustomReplicationRole');
       new s3.Bucket(stack, 'SrcBucket', {
         versioned: true,
         replicationRole,
@@ -4515,12 +4514,12 @@ describe('bucket', () => {
         const app = new cdk.App();
         const stack = new cdk.Stack(app, 'stack');
 
-      expect(() => {
-        new s3.Bucket(stack, 'SrcBucket', {
-          versioned: true,
-          replicationRole: new iam.Role(stack, 'ReplicationRole', {
-            assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
-          }),
+        expect(() => {
+          new s3.Bucket(stack, 'SrcBucket', {
+            versioned: true,
+            replicationRole: new iam.Role(stack, 'ReplicationRole', {
+              assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+            }),
             replicationRules: [],
           });
         }).toThrow('cannot specify replicationRole when replicationRules is empty');
