@@ -469,6 +469,7 @@ You can pass an existing role with the proper permissions to be used for the tar
 
 ```ts
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as sns from 'aws-cdk-lib/aws-sns';
 
 declare const topic: sns.Topic;
 declare const rule: events.Rule;
