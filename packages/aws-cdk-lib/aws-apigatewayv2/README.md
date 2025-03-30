@@ -14,6 +14,7 @@
   - [VPC Link](#vpc-link)
   - [Private Integration](#private-integration)
   - [Generating ARN for Execute API](#generating-arn-for-execute-api)
+  - [Access Logging](#access-logging)
 - [WebSocket API](#websocket-api)
   - [Manage Connections Permission](#manage-connections-permission)
   - [Managing access to WebSocket APIs](#managing-access-to-websocket-apis)
@@ -347,6 +348,59 @@ const arn = api.arnForExecuteApi('GET', '/myApiPath', 'dev');
 - Ensure that the path parameter, if provided, starts with '/'.
 - The 'ANY' method can be used for matching any HTTP methods not explicitly defined.
 - The function gracefully handles undefined parameters by using wildcards, making it flexible for various API configurations.
+
+## Access Logging
+
+You can turn on logging to write logs to CloudWatch Logs.
+Read more at [Configure logging for HTTP APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-logging.html)
+
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+declare const api: apigwv2.HttpApi;
+declare const logGroup: logs.LogGroup;
+
+const stage = new apigwv2.HttpStage(this, 'Stage', {
+  httpApi: api,
+  accessLogDestination: new apigwv2.LogGroupLogDestination(logGroup),
+});
+```
+
+The following code will generate the access log in the [CLF format](https://en.wikipedia.org/wiki/Common_Log_Format).
+
+```ts
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+declare const api: apigwv2.HttpApi;
+declare const logGroup: logs.LogGroup;
+
+const stage = new apigwv2.HttpStage(this, 'Stage', {
+  httpApi: api,
+  accessLogDestination: new apigwv2.LogGroupLogDestination(logGroup),
+  accessLogFormat: apigw.AccessLogFormat.clf(),
+});
+```
+
+You can also configure your own access log format by using the `AccessLogFormat.custom()` API.
+`AccessLogField` provides commonly used fields. The following code configures access log to contain.
+
+```ts
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+declare const api: apigwv2.HttpApi;
+declare const logGroup: logs.LogGroup;
+
+const stage = new apigwv2.HttpStage(this, 'Stage', {
+  httpApi: api,
+  accessLogDestination: new apigwv2.LogGroupLogDestination(logGroup),
+  accessLogFormat: apigw.AccessLogFormat.custom(
+    `${apigw.AccessLogField.contextRequestId()} ${apigw.AccessLogField.contextErrorMessage()} ${apigw.AccessLogField.contextErrorMessageString()}
+    ${apigw.AccessLogField.contextAuthorizerError()} ${apigw.AccessLogField.contextAuthorizerIntegrationStatus()}`
+  ),
+});
+```
 
 ## WebSocket API
 

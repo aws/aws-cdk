@@ -1,3 +1,4 @@
+export * from './access-log';
 export * from './api';
 export * from './route';
 export * from './integration';
