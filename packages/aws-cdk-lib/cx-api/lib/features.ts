@@ -128,6 +128,7 @@ export const SET_UNIQUE_REPLICATION_ROLE_NAME = '@aws-cdk/aws-s3:setUniqueReplic
 export const PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceStageRoleTrustScope';
 export const EVENTBUS_POLICY_SID_REQUIRED = '@aws-cdk/aws-events:requireEventBusPolicySid';
 export const DYNAMODB_TABLE_RETAIN_TABLE_REPLICA = '@aws-cdk/aws-dynamodb:retainTableReplica';
+export const LOG_USER_POOL_CLIENT_SECRET_VALUE ='@aws-cdk/cognito:logUserPoolClientSecretValue';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1465,6 +1466,23 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LOG_USER_POOL_CLIENT_SECRET_VALUE]: {
+    type: FlagType.ApiDefault,
+    summary: 'When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.',
+    detailsMd: `
+      When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom 
+      resource lambda function logs.
+      
+      When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom 
+      resource lambda function logs.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    defaults: { v2: false },
+    recommendedValue: false,
+    compatibilityWithOldBehaviorMd: 'Enable the feature flag to keep the old behavior and log the client secret values',
   },
 };
 
