@@ -192,6 +192,18 @@ test('with mail from and hosted zone', () => {
   });
 });
 
+describe('import', () => {
+  test('import email identity by ARN works correctly', () => {
+    const emailIdentity = EmailIdentity.fromEmailIdentityArn(stack, 'Identity', 'arn:aws:ses:us-west-2:123456789012:identity/cdk.dev');
+    expect(emailIdentity.emailIdentityName).toEqual('cdk.dev');
+    expect(emailIdentity.emailIdentityArn).toEqual('arn:aws:ses:us-west-2:123456789012:identity/cdk.dev');
+  });
+
+  test('import email identity by ARN fails with invalid ARN', () => {
+    expect(() => EmailIdentity.fromEmailIdentityArn(stack, 'Identity', 'arn:aws:s3:us-west-2:123456789012:bucket/cdk.dev')).toThrow();
+  });
+});
+
 describe('grants', () => {
   test('grant on a domain identity', () => {
     // GIVEN

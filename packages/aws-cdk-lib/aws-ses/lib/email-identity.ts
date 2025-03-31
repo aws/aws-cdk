@@ -5,7 +5,7 @@ import { CfnEmailIdentity } from './ses.generated';
 import { Grant, IGrantable } from '../../aws-iam';
 import { IPublicHostedZone } from '../../aws-route53';
 import * as route53 from '../../aws-route53';
-import { IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
+import { ArnFormat, IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -395,6 +395,27 @@ export class EmailIdentity extends EmailIdentityBase {
         resource: 'identity',
         resourceName: this.emailIdentityName,
       });
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * Import an email identity by ARN
+   */
+  public static fromEmailIdentityArn(scope: Construct, id: string, emailIdentityArn: string): IEmailIdentity {
+    // emailIdentityArn is in the format 'arn:aws:ses:{region}:{account}:identity/{name}'
+    const stack = Stack.of(scope);
+    const parsedArn = stack.splitArn(emailIdentityArn, ArnFormat.SLASH_RESOURCE_NAME);
+
+    if (parsedArn.service !== 'ses' || parsedArn.resource !== 'identity' || !parsedArn.resourceName) {
+      throw new Error(`Invalid email identity ARN: ${emailIdentityArn}`);
+    }
+
+    const emailIdentityName = parsedArn.resourceName;
+
+    class Import extends EmailIdentityBase {
+      public readonly emailIdentityName = emailIdentityName;
+      public readonly emailIdentityArn = emailIdentityArn;
     }
     return new Import(scope, id);
   }
