@@ -3,7 +3,6 @@ import { AwsApiCall, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { SET_UNIQUE_REPLICATION_ROLE_NAME } from 'aws-cdk-lib/cx-api';
 
 class TestStack extends Stack {
   public readonly sourceBucket: s3.Bucket;
@@ -68,12 +67,7 @@ class TestStack extends Stack {
   }
 }
 
-// Disabled SET_UNIQUE_REPLICATION_ROLE_NAME feature flag
-const app = new App({
-  postCliContext: {
-    [SET_UNIQUE_REPLICATION_ROLE_NAME]: false,
-  },
-});
+const app = new App();
 const stack = new TestStack(app, 'BucketReplicationTestStack');
 const integ = new IntegTest(app, 'ReplicationInteg', {
   testCases: [stack],
