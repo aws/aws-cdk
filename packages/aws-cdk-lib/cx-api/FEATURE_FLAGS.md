@@ -94,6 +94,7 @@ Flags come in three types:
 | [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | 2.184.0 | (default) |
 | [@aws-cdk/aws-events:requireEventBusPolicySid](#aws-cdkaws-eventsrequireeventbuspolicysid) | When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals. | 2.186.0 | (fix) |
 | [@aws-cdk/aws-dynamodb:retainTableReplica](#aws-cdkaws-dynamodbretaintablereplica) | When enabled, table replica will be default to the removal policy of source table unless specified otherwise. | V2NEXT | (fix) |
+| [@aws-cdk/cognito:logUserPoolClientSecretValue](#aws-cdkcognitologuserpoolclientsecretvalue) | When enabled, the value of the user pool client secret will be logged in the custom resource lambda function logs. | V2NEXT | (default) |
 
 <!-- END table -->
 
@@ -1781,6 +1782,25 @@ When enabled, table replica will be default to the removal policy of source tabl
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
+
+
+### @aws-cdk/cognito:logUserPoolClientSecretValue
+
+*When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.* (default)
+
+When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom 
+resource lambda function logs.
+
+When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom 
+resource lambda function logs.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `false` |
+
+**Compatibility with old behavior:** Enable the feature flag to keep the old behavior and log the client secret values
 
 
 <!-- END details -->
