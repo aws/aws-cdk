@@ -6,6 +6,9 @@ import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import * as s3 from '../lib';
 import { ReplicationTimeValue } from '../lib/bucket';
+import { IConstruct } from 'constructs';
+import * as lambda from '../../aws-lambda';
+import * as lambdaev from '../../aws-lambda-event-sources';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable quote-props */
@@ -4794,4 +4797,37 @@ describe('bucket', () => {
       },
     });
   });
+});
+
+test('aspect prio test', () => {
+  class TagNameAspect implements cdk.IAspect {
+    public visit(node: IConstruct): void {
+      if (node instanceof s3.Bucket) {
+        cdk.Tags.of(node).add('Name', 'asdf', { priority: 10 });
+      }
+    }
+  }
+  const app = new cdk.App({
+    postCliContext: {
+      '@aws-cdk/core:aspectStabilization': true,
+    },
+  });
+  const stack = new cdk.Stack(app, 'stack');
+  var bucket = new s3.Bucket(stack, 'test-bucket', {
+    bucketName: 'test-bucket',
+  });
+  const fn = new lambda.Function(stack, 'test-function', {
+    functionName: 'test-function',
+    handler: 'handler',
+    runtime: lambda.Runtime.NODEJS_22_X,
+    code: lambda.Code.fromInline('function(){ }'),
+  });
+
+  fn.addEventSource(new lambdaev.S3EventSourceV2(bucket, {
+    events: [s3.EventType.OBJECT_CREATED],
+  }));
+
+  cdk.Aspects.of(stack).add(new TagNameAspect(), { priority: 10 });
+
+  app.synth();
 });
