@@ -3,8 +3,12 @@
   "DefaultBucket62385A75": {
    "Type": "AWS::S3Tables::TableBucket",
    "Properties": {
-    "TableBucketName": "default-table-bucket",
-    "UnreferencedFileRemoval": {}
+    "TableBucketName": "unreferenced-file-removal-test-bucket",
+    "UnreferencedFileRemoval": {
+     "NoncurrentDays": 20,
+     "Status": "Disabled",
+     "UnreferencedDays": 20
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

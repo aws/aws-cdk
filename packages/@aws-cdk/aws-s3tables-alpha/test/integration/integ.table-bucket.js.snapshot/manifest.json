@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2adaa7cd74d84da1839a998f19276615afe82e1fbcf6fe23a7a3fd0b68a489b3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6a62046bd5ae08b98afa82c3e59e9ff393c0fefd8f4e758ab1b4bf9a9a4c29c5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -61,28 +61,28 @@
       },
       "displayName": "DefaultTestStack"
     },
-    "OptionsTestStack.assets": {
+    "UnreferencedFileRemovalTestStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "OptionsTestStack.assets.json",
+        "file": "UnreferencedFileRemovalTestStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "OptionsTestStack": {
+    "UnreferencedFileRemovalTestStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "OptionsTestStack.template.json",
+        "templateFile": "UnreferencedFileRemovalTestStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3e7927c5130afd58007b8524c81bc36c4edb5e73066f5fab542bb205749545fe.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1e0464d81f4c083065390aaf8452d65a95114f2c33090a5941335a75c190a3e2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "OptionsTestStack.assets"
+          "UnreferencedFileRemovalTestStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -91,47 +91,35 @@
         }
       },
       "dependencies": [
-        "OptionsTestStack.assets"
+        "UnreferencedFileRemovalTestStack.assets"
       ],
       "metadata": {
-        "/OptionsTestStack/BucketWithOptions": [
+        "/UnreferencedFileRemovalTestStack/DefaultBucket": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/OptionsTestStack/BucketWithOptions/BucketWithOptions": [
+        "/UnreferencedFileRemovalTestStack/DefaultBucket/DefaultBucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BucketWithOptions87848D2E"
+            "data": "DefaultBucket62385A75"
           }
         ],
-        "/OptionsTestStack/BucketWithOptions/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/OptionsTestStack/BucketWithOptions/DefaultPolicy/DefaultPolicy": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketWithOptionsDefaultPolicyF7FBC609"
-          }
-        ],
-        "/OptionsTestStack/BootstrapVersion": [
+        "/UnreferencedFileRemovalTestStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/OptionsTestStack/CheckBootstrapVersion": [
+        "/UnreferencedFileRemovalTestStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "OptionsTestStack"
+      "displayName": "UnreferencedFileRemovalTestStack"
     },
     "TableBucketIntegTestDefaultTestDeployAssertA1204D2E.assets": {
       "type": "cdk:asset-manifest",

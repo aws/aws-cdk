@@ -4,7 +4,7 @@
     "TableBucketIntegTest/DefaultTest": {
       "stacks": [
         "DefaultTestStack",
-        "OptionsTestStack"
+        "UnreferencedFileRemovalTestStack"
       ],
       "assertionStack": "TableBucketIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "TableBucketIntegTestDefaultTestDeployAssertA1204D2E"

@@ -1,0 +1,17 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "TableBucketWithGrantIntegTest/DefaultTest": {
+      "stacks": [
+        "grant-read-bucket",
+        "grant-read-bucket-all-tables",
+        "grant-write-bucket",
+        "grant-write-bucket-all-tables",
+        "grant-read-write-bucket",
+        "grant-read-write-bucket-all-tables"
+      ],
+      "assertionStack": "TableBucketWithGrantIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "TableBucketWithGrantIntegTestDefaultTestDeployAssert60E58AB6"
+    }
+  }
+}

@@ -1,0 +1,707 @@
+{
+  "version": "40.0.0",
+  "artifacts": {
+    "grant-read-bucket.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "grant-read-bucket.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "grant-read-bucket": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "grant-read-bucket.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8e9b183cac2263efb9ecce2a9f81fb1e5b8ce7f967113577f612bc746986f746.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "grant-read-bucket.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "grant-read-bucket.assets"
+      ],
+      "metadata": {
+        "/grant-read-bucket/grant-read-bucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/grant-read-bucket/grant-read-bucket/grant-read-bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "grantreadbucketEDD09E34"
+          }
+        ],
+        "/grant-read-bucket/grant-read-bucket/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/grant-read-bucket/grant-read-bucket/DefaultPolicy/DefaultPolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "grantreadbucketDefaultPolicy2DD75AD0"
+          }
+        ],
+        "/grant-read-bucket/Exports/Output{\"Fn::GetAtt\":[\"grantreadbucketEDD09E34\",\"TableBucketARN\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttgrantreadbucketEDD09E34TableBucketARN53C5C483"
+          }
+        ],
+        "/grant-read-bucket/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/grant-read-bucket/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "grant-read-bucket"
+    },
+    "grant-read-bucket-all-tables.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "grant-read-bucket-all-tables.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "grant-read-bucket-all-tables": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "grant-read-bucket-all-tables.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/10495301560d8d740c24f401bdcc76a08c1171a1aa9ed5e55bf83eae78c50c68.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "grant-read-bucket-all-tables.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "grant-read-bucket-all-tables.assets"
+      ],
+      "metadata": {
+        "/grant-read-bucket-all-tables/grant-read-bucket-all-tables": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/grant-read-bucket-all-tables/grant-read-bucket-all-tables/grant-read-bucket-all-tables": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "grantreadbucketalltables5CEE7975"
+          }
+        ],
+        "/grant-read-bucket-all-tables/grant-read-bucket-all-tables/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/grant-read-bucket-all-tables/grant-read-bucket-all-tables/DefaultPolicy/DefaultPolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "grantreadbucketalltablesDefaultPolicy26602145"
+          }
+        ],
+        "/grant-read-bucket-all-tables/Exports/Output{\"Fn::GetAtt\":[\"grantreadbucketalltables5CEE7975\",\"TableBucketARN\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttgrantreadbucketalltables5CEE7975TableBucketARN4625BF90"
+          }
+        ],
+        "/grant-read-bucket-all-tables/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/grant-read-bucket-all-tables/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "grant-read-bucket-all-tables"
+    },
+    "grant-write-bucket.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "grant-write-bucket.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "grant-write-bucket": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "grant-write-bucket.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6274e4cbc59f9ab04a1a7eca160cd2be766b224cc894dbca361ad9d8f4df0560.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "grant-write-bucket.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "grant-write-bucket.assets"
+      ],
+      "metadata": {
+        "/grant-write-bucket/grant-write-bucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/grant-write-bucket/grant-write-bucket/grant-write-bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "grantwritebucket389C9530"
+          }
+        ],
+        "/grant-write-bucket/grant-write-bucket/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/grant-write-bucket/grant-write-bucket/DefaultPolicy/DefaultPolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "grantwritebucketDefaultPolicyF3ED747F"
+          }
+        ],
+        "/grant-write-bucket/Exports/Output{\"Fn::GetAtt\":[\"grantwritebucket389C9530\",\"TableBucketARN\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttgrantwritebucket389C9530TableBucketARND4FD2B0F"
+          }
+        ],
+        "/grant-write-bucket/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/grant-write-bucket/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "grant-write-bucket"
+    },
+    "grant-write-bucket-all-tables.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "grant-write-bucket-all-tables.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "grant-write-bucket-all-tables": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "grant-write-bucket-all-tables.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/277bc0f5491406cfa1e8d3823216354d408f5c15dba476b546e71982c45075d3.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "grant-write-bucket-all-tables.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "grant-write-bucket-all-tables.assets"
+      ],
+      "metadata": {
+        "/grant-write-bucket-all-tables/grant-write-bucket-all-tables": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/grant-write-bucket-all-tables/grant-write-bucket-all-tables/grant-write-bucket-all-tables": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "grantwritebucketalltables5D649B63"
+          }
+        ],
+        "/grant-write-bucket-all-tables/grant-write-bucket-all-tables/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/grant-write-bucket-all-tables/grant-write-bucket-all-tables/DefaultPolicy/DefaultPolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "grantwritebucketalltablesDefaultPolicyBD6FDAE9"
+          }
+        ],
+        "/grant-write-bucket-all-tables/Exports/Output{\"Fn::GetAtt\":[\"grantwritebucketalltables5D649B63\",\"TableBucketARN\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttgrantwritebucketalltables5D649B63TableBucketARN27D60442"
+          }
+        ],
+        "/grant-write-bucket-all-tables/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/grant-write-bucket-all-tables/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "grant-write-bucket-all-tables"
+    },
+    "grant-read-write-bucket.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "grant-read-write-bucket.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "grant-read-write-bucket": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "grant-read-write-bucket.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9485b27ad2282d3f8a0410f6f0565376665b07dea30132e7cb1d010f6f4ab925.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "grant-read-write-bucket.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "grant-read-write-bucket.assets"
+      ],
+      "metadata": {
+        "/grant-read-write-bucket/grant-read-write-bucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/grant-read-write-bucket/grant-read-write-bucket/grant-read-write-bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "grantreadwritebucketBB3EF996"
+          }
+        ],
+        "/grant-read-write-bucket/grant-read-write-bucket/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/grant-read-write-bucket/grant-read-write-bucket/DefaultPolicy/DefaultPolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "grantreadwritebucketDefaultPolicyC6AB2DCC"
+          }
+        ],
+        "/grant-read-write-bucket/Exports/Output{\"Fn::GetAtt\":[\"grantreadwritebucketBB3EF996\",\"TableBucketARN\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttgrantreadwritebucketBB3EF996TableBucketARNB971A18E"
+          }
+        ],
+        "/grant-read-write-bucket/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/grant-read-write-bucket/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "grant-read-write-bucket"
+    },
+    "grant-read-write-bucket-all-tables.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "grant-read-write-bucket-all-tables.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "grant-read-write-bucket-all-tables": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "grant-read-write-bucket-all-tables.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a8f2dd6d325490d5a45c72ade793e635266ba86abb9c59ab5487f53e7a89da71.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "grant-read-write-bucket-all-tables.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "grant-read-write-bucket-all-tables.assets"
+      ],
+      "metadata": {
+        "/grant-read-write-bucket-all-tables/grant-read-write-bucket-all-tables": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/grant-read-write-bucket-all-tables/grant-read-write-bucket-all-tables/grant-read-write-bucket-all-tables": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "grantreadwritebucketalltables77FAB610"
+          }
+        ],
+        "/grant-read-write-bucket-all-tables/grant-read-write-bucket-all-tables/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/grant-read-write-bucket-all-tables/grant-read-write-bucket-all-tables/DefaultPolicy/DefaultPolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "grantreadwritebucketalltablesDefaultPolicyA12127D7"
+          }
+        ],
+        "/grant-read-write-bucket-all-tables/Exports/Output{\"Fn::GetAtt\":[\"grantreadwritebucketalltables77FAB610\",\"TableBucketARN\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttgrantreadwritebucketalltables77FAB610TableBucketARN2F7F937E"
+          }
+        ],
+        "/grant-read-write-bucket-all-tables/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/grant-read-write-bucket-all-tables/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "grant-read-write-bucket-all-tables"
+    },
+    "TableBucketWithGrantIntegTestDefaultTestDeployAssert60E58AB6.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "TableBucketWithGrantIntegTestDefaultTestDeployAssert60E58AB6.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "TableBucketWithGrantIntegTestDefaultTestDeployAssert60E58AB6": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "TableBucketWithGrantIntegTestDefaultTestDeployAssert60E58AB6.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8fa8cbe7de5b87fd9ec23b23eddd650dd6a395194b740825e1f04a3e46190555.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "TableBucketWithGrantIntegTestDefaultTestDeployAssert60E58AB6.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "grant-read-bucket",
+        "grant-read-bucket-all-tables",
+        "grant-write-bucket",
+        "grant-write-bucket-all-tables",
+        "grant-read-write-bucket",
+        "grant-read-write-bucket-all-tables",
+        "TableBucketWithGrantIntegTestDefaultTestDeployAssert60E58AB6.assets"
+      ],
+      "metadata": {
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand587957d285d232e4c15f577b5cd8d796/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand587957d285d232e4c15f577b5cd8d796/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallawssdkclients3tablesGetTableBucketPolicyCommand587957d285d232e4c15f577b5cd8d796"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand587957d285d232e4c15f577b5cd8d796/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTableBucketPolicyCommand587957d285d232e4c15f577b5cd8d796"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand7a2bde89def415980ecb06fdb626c4e5/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand7a2bde89def415980ecb06fdb626c4e5/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallawssdkclients3tablesGetTableBucketPolicyCommand7a2bde89def415980ecb06fdb626c4e5"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand7a2bde89def415980ecb06fdb626c4e5/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTableBucketPolicyCommand7a2bde89def415980ecb06fdb626c4e5"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand6cbf841c445d1334afa4899d83c45299/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand6cbf841c445d1334afa4899d83c45299/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallawssdkclients3tablesGetTableBucketPolicyCommand6cbf841c445d1334afa4899d83c45299"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand6cbf841c445d1334afa4899d83c45299/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTableBucketPolicyCommand6cbf841c445d1334afa4899d83c45299"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand3b5ae0c1c65ee976b5eda345e42d4672/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand3b5ae0c1c65ee976b5eda345e42d4672/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallawssdkclients3tablesGetTableBucketPolicyCommand3b5ae0c1c65ee976b5eda345e42d4672"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand3b5ae0c1c65ee976b5eda345e42d4672/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTableBucketPolicyCommand3b5ae0c1c65ee976b5eda345e42d4672"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand2ef544718e215177af03e16f6ec56388/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand2ef544718e215177af03e16f6ec56388/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallawssdkclients3tablesGetTableBucketPolicyCommand2ef544718e215177af03e16f6ec56388"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand2ef544718e215177af03e16f6ec56388/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTableBucketPolicyCommand2ef544718e215177af03e16f6ec56388"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand7e2b35fd3633f95681cb49af4acb2a42/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand7e2b35fd3633f95681cb49af4acb2a42/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallawssdkclients3tablesGetTableBucketPolicyCommand7e2b35fd3633f95681cb49af4acb2a42"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableBucketPolicyCommand7e2b35fd3633f95681cb49af4acb2a42/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTableBucketPolicyCommand7e2b35fd3633f95681cb49af4acb2a42"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "TableBucketWithGrantIntegTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

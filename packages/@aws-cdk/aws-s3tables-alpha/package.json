@@ -49,7 +49,7 @@
     "lint": "cdk-lint",
     "test": "cdk-test",
     "integ": "integ-runner --language javascript",
-    "build+integ": "yarn build && integ-runner --language javascript --verbose",
+    "build+integ": "yarn build && integ-runner --language javascript --verbose --update-on-failed",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",

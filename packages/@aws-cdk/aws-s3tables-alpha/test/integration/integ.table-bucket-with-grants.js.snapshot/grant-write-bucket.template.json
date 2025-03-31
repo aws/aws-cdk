@@ -1,0 +1,97 @@
+{
+ "Resources": {
+  "grantwritebucket389C9530": {
+   "Type": "AWS::S3Tables::TableBucket",
+   "Properties": {
+    "TableBucketName": "grant-write-bucket",
+    "UnreferencedFileRemoval": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "grantwritebucketDefaultPolicyF3ED747F": {
+   "Type": "AWS::S3Tables::TableBucketPolicy",
+   "Properties": {
+    "ResourcePolicy": {
+     "Statement": [
+      {
+       "Action": [
+        "s3tables:CreateNamespace",
+        "s3tables:CreateTable",
+        "s3tables:DeleteNamespace",
+        "s3tables:PutTableBucketMaintenanceConfiguration",
+        "s3tables:PutTableData",
+        "s3tables:RenameTable",
+        "s3tables:UpdateTableMetadataLocation"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "grantwritebucket389C9530",
+         "TableBucketARN"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "TableBucketARN": {
+     "Fn::GetAtt": [
+      "grantwritebucket389C9530",
+      "TableBucketARN"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttgrantwritebucket389C9530TableBucketARND4FD2B0F": {
+   "Value": {
+    "Fn::GetAtt": [
+     "grantwritebucket389C9530",
+     "TableBucketARN"
+    ]
+   },
+   "Export": {
+    "Name": "grant-write-bucket:ExportsOutputFnGetAttgrantwritebucket389C9530TableBucketARND4FD2B0F"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

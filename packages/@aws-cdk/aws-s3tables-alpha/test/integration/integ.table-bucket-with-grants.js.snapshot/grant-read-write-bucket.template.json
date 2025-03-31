@@ -1,0 +1,100 @@
+{
+ "Resources": {
+  "grantreadwritebucketBB3EF996": {
+   "Type": "AWS::S3Tables::TableBucket",
+   "Properties": {
+    "TableBucketName": "grant-read-write-bucket",
+    "UnreferencedFileRemoval": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "grantreadwritebucketDefaultPolicyC6AB2DCC": {
+   "Type": "AWS::S3Tables::TableBucketPolicy",
+   "Properties": {
+    "ResourcePolicy": {
+     "Statement": [
+      {
+       "Action": [
+        "s3tables:CreateNamespace",
+        "s3tables:CreateTable",
+        "s3tables:DeleteNamespace",
+        "s3tables:Get*",
+        "s3tables:ListNamespace",
+        "s3tables:ListTables",
+        "s3tables:PutTableBucketMaintenanceConfiguration",
+        "s3tables:PutTableData",
+        "s3tables:RenameTable",
+        "s3tables:UpdateTableMetadataLocation"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "grantreadwritebucketBB3EF996",
+         "TableBucketARN"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "TableBucketARN": {
+     "Fn::GetAtt": [
+      "grantreadwritebucketBB3EF996",
+      "TableBucketARN"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttgrantreadwritebucketBB3EF996TableBucketARNB971A18E": {
+   "Value": {
+    "Fn::GetAtt": [
+     "grantreadwritebucketBB3EF996",
+     "TableBucketARN"
+    ]
+   },
+   "Export": {
+    "Name": "grant-read-write-bucket:ExportsOutputFnGetAttgrantreadwritebucketBB3EF996TableBucketARNB971A18E"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -69,7 +69,7 @@ export interface ITableBucket extends IResource {
    * to an IAM principal (Role/Group/User).
    *
    * @param identity The principal to allow read permissions to
-   * @param tableId Restrict the permission to a single table by its unique ID (default '*' for all tables).
+   * @param tableId Allow the permissions to all tables using '*' or to single table by its unique ID.
    */
   grantRead(identity: iam.IGrantable, tableId?: string): iam.Grant;
 
@@ -78,7 +78,7 @@ export interface ITableBucket extends IResource {
    * to an IAM principal (Role/Group/User).
    *
    * @param identity The principal to allow write permissions to
-   * @param tableId Restrict the permission to a single table by its unique ID (default '*' for all tables).
+   * @param tableId Allow the permissions to all tables using '*' or to single table by its unique ID.
    */
   grantWrite(identity: iam.IGrantable, tableId?: string): iam.Grant;
 
@@ -87,7 +87,7 @@ export interface ITableBucket extends IResource {
    * to an IAM principal (Role/Group/User).
    *
    * @param identity The principal to allow read and write permissions to
-   * @param tableId Restrict the permission to a single table by its unique ID (default '*' for all tables).
+   * @param tableId Allow the permissions to all tables using '*' or to single table by its unique ID.
    */
   grantReadWrite(identity: iam.IGrantable, tableId?: string): iam.Grant;
 }
@@ -98,19 +98,25 @@ export interface ITableBucket extends IResource {
 export interface UnreferencedFileRemoval {
   /**
    * Duration after which noncurrent files should be removed. Should be at least one day.
-   * @default 10 days by default
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-table-buckets-maintenance.html
+   *
+   * @default - See S3 Tables User Guide
    */
   readonly noncurrentDays?: number;
 
   /**
    * Status of unreferenced file removal. Can be Enabled or Disabled.
-   * @default enabled by default
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-table-buckets-maintenance.html
+   *
+   * @default - See S3 Tables User Guide
    */
   readonly status?: UnreferencedFileRemovalStatus;
 
   /**
    * Duration after which unreferenced files should be removed. Should be at least one day.
-   * @default 3 days by default
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-table-buckets-maintenance.html
+   *
+   * @default - See S3 Tables User Guide
    */
   readonly unreferencedDays?: number;
 }
@@ -185,22 +191,16 @@ abstract class TableBucketBase extends Resource implements ITableBucket {
     return { statementAdded: false };
   }
 
-  public grantRead(identity: iam.IGrantable, tableId: string = '*') {
-    return this.grant(identity, perms.TABLE_BUCKET_READ_ACCESS,
-      this.tableBucketArn,
-      `${this.tableBucketArn}/table/${tableId}`);
+  public grantRead(identity: iam.IGrantable, tableId?: string) {
+    return this.grant(identity, perms.TABLE_BUCKET_READ_ACCESS, this.tableBucketArn, this.getTableArn(tableId));
   }
 
-  public grantWrite(identity: iam.IGrantable, tableId: string = '*') {
-    return this.grant(identity, perms.TABLE_BUCKET_WRITE_ACCESS,
-      this.tableBucketArn,
-      `${this.tableBucketArn}/table/${tableId}`);
+  public grantWrite(identity: iam.IGrantable, tableId?: string) {
+    return this.grant(identity, perms.TABLE_BUCKET_WRITE_ACCESS, this.tableBucketArn, this.getTableArn(tableId));
   }
 
-  public grantReadWrite(identity: iam.IGrantable, tableId: string = '*') {
-    return this.grant(identity, perms.TABLE_BUCKET_READ_WRITE_ACCESS,
-      this.tableBucketArn,
-      `${this.tableBucketArn}/table/${tableId}`);
+  public grantReadWrite(identity: iam.IGrantable, tableId?: string) {
+    return this.grant(identity, perms.TABLE_BUCKET_READ_WRITE_ACCESS, this.tableBucketArn, this.getTableArn(tableId));
   }
 
   /**
@@ -211,14 +211,18 @@ abstract class TableBucketBase extends Resource implements ITableBucket {
     grantee: iam.IGrantable,
     tableBucketActions: string[],
     resourceArn: string,
-    ...otherResourceArns: string[]) {
-    const resources = [resourceArn, ...otherResourceArns];
+    ...otherResourceArns: (string | undefined)[]) {
+    const resources = [resourceArn, ...otherResourceArns].filter(arn => arn != undefined);
     return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: tableBucketActions,
       resourceArns: resources,
       resource: this,
     });
+  }
+
+  private getTableArn(tableId: string | undefined) {
+    return tableId ? `${this.tableBucketArn}/table/${tableId}` : undefined;
   }
 }
 

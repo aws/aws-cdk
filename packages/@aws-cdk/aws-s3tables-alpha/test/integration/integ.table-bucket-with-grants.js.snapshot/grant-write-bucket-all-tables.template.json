@@ -1,37 +1,27 @@
 {
  "Resources": {
-  "BucketWithOptions87848D2E": {
+  "grantwritebucketalltables5D649B63": {
    "Type": "AWS::S3Tables::TableBucket",
    "Properties": {
-    "TableBucketName": "table-bucket-with-options",
-    "UnreferencedFileRemoval": {
-     "NoncurrentDays": 20,
-     "Status": "Disabled",
-     "UnreferencedDays": 20
-    }
+    "TableBucketName": "grant-write-bucket-all-tables",
+    "UnreferencedFileRemoval": {}
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "BucketWithOptionsDefaultPolicyF7FBC609": {
+  "grantwritebucketalltablesDefaultPolicyBD6FDAE9": {
    "Type": "AWS::S3Tables::TableBucketPolicy",
    "Properties": {
     "ResourcePolicy": {
      "Statement": [
       {
-       "Action": "s3tables:*",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "s3.amazonaws.com"
-       },
-       "Resource": "*"
-      },
-      {
        "Action": [
-        "s3tables:Get*",
-        "s3tables:ListNamespace",
-        "s3tables:ListTables",
+        "s3tables:CreateNamespace",
+        "s3tables:CreateTable",
+        "s3tables:DeleteNamespace",
+        "s3tables:PutTableBucketMaintenanceConfiguration",
         "s3tables:PutTableData",
+        "s3tables:RenameTable",
         "s3tables:UpdateTableMetadataLocation"
        ],
        "Effect": "Allow",
@@ -41,7 +31,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "BucketWithOptions87848D2E",
+          "grantwritebucketalltables5D649B63",
           "TableBucketARN"
          ]
         },
@@ -51,7 +41,7 @@
           [
            {
             "Fn::GetAtt": [
-             "BucketWithOptions87848D2E",
+             "grantwritebucketalltables5D649B63",
              "TableBucketARN"
             ]
            },
@@ -66,10 +56,23 @@
     },
     "TableBucketARN": {
      "Fn::GetAtt": [
-      "BucketWithOptions87848D2E",
+      "grantwritebucketalltables5D649B63",
       "TableBucketARN"
      ]
     }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttgrantwritebucketalltables5D649B63TableBucketARN27D60442": {
+   "Value": {
+    "Fn::GetAtt": [
+     "grantwritebucketalltables5D649B63",
+     "TableBucketARN"
+    ]
+   },
+   "Export": {
+    "Name": "grant-write-bucket-all-tables:ExportsOutputFnGetAttgrantwritebucketalltables5D649B63TableBucketARN27D60442"
    }
   }
  },

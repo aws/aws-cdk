@@ -1,6 +1,5 @@
 import * as core from 'aws-cdk-lib/core';
-import * as s3tables from '../lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import * as s3tables from '../../lib';
 import { Construct } from 'constructs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
@@ -14,7 +13,7 @@ class DefaultTestStack extends core.Stack {
     super(scope, id, props);
 
     this.tableBucket = new s3tables.TableBucket(this, 'DefaultBucket', {
-      tableBucketName: 'default-table-bucket',
+      tableBucketName: 'default-test-bucket',
       // we don't want to leave trash in the account after running the deployment of this
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
@@ -24,46 +23,34 @@ class DefaultTestStack extends core.Stack {
 /**
  * Snapshot test for table bucket with optional parameters
  */
-class OptionsTestStack extends core.Stack {
+class UnreferencedFileRemovalTestStack extends core.Stack {
   public readonly tableBucket: s3tables.TableBucket;
 
   constructor(scope: Construct, id: string, props?: core.StackProps) {
     super(scope, id, props);
 
-    this.tableBucket = new s3tables.TableBucket(this, 'BucketWithOptions', {
-      tableBucketName: 'table-bucket-with-options',
-      account: props?.env?.account,
-      region: props?.env?.region,
+    this.tableBucket = new s3tables.TableBucket(this, 'DefaultBucket', {
+      tableBucketName: 'unreferenced-file-removal-test-bucket',
       unreferencedFileRemoval: {
         noncurrentDays: 20,
         status: s3tables.UnreferencedFileRemovalStatus.DISABLED,
         unreferencedDays: 20,
       },
+      // we don't want to leave trash in the account after running the deployment of this
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
-
-    const policy = new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['s3tables:*'],
-      resources: ['*'],
-      principals: [
-        new iam.ServicePrincipal('s3.amazonaws.com'),
-      ],
-    });
-    this.tableBucket.addToResourcePolicy(policy);
-    this.tableBucket.grantRead(new iam.ServicePrincipal('s3.amazonaws.com'));
-    this.tableBucket.grantWrite(new iam.ServicePrincipal('s3.amazonaws.com'));
-    this.tableBucket.grantReadWrite(new iam.ServicePrincipal('s3.amazonaws.com'));
   }
 }
 
 const app = new core.App();
 
 const defaultBucketTest = new DefaultTestStack(app, 'DefaultTestStack');
-const bucketWithOptionsTest = new OptionsTestStack(app, 'OptionsTestStack');
+const unreferencedFileRemovalTestStack = new UnreferencedFileRemovalTestStack(app, 'UnreferencedFileRemovalTestStack');
 
 new IntegTest(app, 'TableBucketIntegTest', {
-  testCases: [defaultBucketTest, bucketWithOptionsTest],
+  testCases: [defaultBucketTest, unreferencedFileRemovalTestStack],
 });
+
+// TODO Add assertions for unreferenced file removal
 
 app.synth();

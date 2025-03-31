@@ -9,10 +9,12 @@ export const TABLE_BUCKET_READ_ACCESS = [
 export const TABLE_BUCKET_WRITE_ACCESS = [
   's3tables:PutTableData',
   's3tables:UpdateTableMetadataLocation',
+  's3tables:CreateNamespace',
+  's3tables:DeleteNamespace',
+  's3tables:PutTableBucketMaintenanceConfiguration',
+  's3tables:CreateTable',
+  's3tables:RenameTable',
 ];
-
-// Full access
-export const TABLE_BUCKET_FULL_ACCESS = 's3tables:*';
 
 export const TABLE_BUCKET_READ_WRITE_ACCESS = [...new Set([
   ...TABLE_BUCKET_READ_ACCESS,

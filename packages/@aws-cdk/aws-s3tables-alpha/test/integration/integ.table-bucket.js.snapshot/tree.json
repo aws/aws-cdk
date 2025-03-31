@@ -18,7 +18,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3Tables::TableBucket",
                   "aws:cdk:cloudformation:props": {
-                    "tableBucketName": "default-table-bucket",
+                    "tableBucketName": "default-test-bucket",
                     "unreferencedFileRemoval": {}
                   }
                 },
@@ -58,21 +58,21 @@
           "version": "0.0.0"
         }
       },
-      "OptionsTestStack": {
-        "id": "OptionsTestStack",
-        "path": "OptionsTestStack",
+      "UnreferencedFileRemovalTestStack": {
+        "id": "UnreferencedFileRemovalTestStack",
+        "path": "UnreferencedFileRemovalTestStack",
         "children": {
-          "BucketWithOptions": {
-            "id": "BucketWithOptions",
-            "path": "OptionsTestStack/BucketWithOptions",
+          "DefaultBucket": {
+            "id": "DefaultBucket",
+            "path": "UnreferencedFileRemovalTestStack/DefaultBucket",
             "children": {
-              "BucketWithOptions": {
-                "id": "BucketWithOptions",
-                "path": "OptionsTestStack/BucketWithOptions/BucketWithOptions",
+              "DefaultBucket": {
+                "id": "DefaultBucket",
+                "path": "UnreferencedFileRemovalTestStack/DefaultBucket/DefaultBucket",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3Tables::TableBucket",
                   "aws:cdk:cloudformation:props": {
-                    "tableBucketName": "table-bucket-with-options",
+                    "tableBucketName": "unreferenced-file-removal-test-bucket",
                     "unreferencedFileRemoval": {
                       "noncurrentDays": 20,
                       "status": "Disabled",
@@ -83,86 +83,6 @@
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3tables.CfnTableBucket",
                   "version": "0.0.0"
-                }
-              },
-              "DefaultPolicy": {
-                "id": "DefaultPolicy",
-                "path": "OptionsTestStack/BucketWithOptions/DefaultPolicy",
-                "children": {
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "OptionsTestStack/BucketWithOptions/DefaultPolicy/DefaultPolicy",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::S3Tables::TableBucketPolicy",
-                      "aws:cdk:cloudformation:props": {
-                        "resourcePolicy": {
-                          "Statement": [
-                            {
-                              "Action": "s3tables:*",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "s3.amazonaws.com"
-                              },
-                              "Resource": "*"
-                            },
-                            {
-                              "Action": [
-                                "s3tables:Get*",
-                                "s3tables:ListNamespace",
-                                "s3tables:ListTables",
-                                "s3tables:PutTableData",
-                                "s3tables:UpdateTableMetadataLocation"
-                              ],
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "s3.amazonaws.com"
-                              },
-                              "Resource": [
-                                {
-                                  "Fn::GetAtt": [
-                                    "BucketWithOptions87848D2E",
-                                    "TableBucketARN"
-                                  ]
-                                },
-                                {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      {
-                                        "Fn::GetAtt": [
-                                          "BucketWithOptions87848D2E",
-                                          "TableBucketARN"
-                                        ]
-                                      },
-                                      "/table/*"
-                                    ]
-                                  ]
-                                }
-                              ]
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "tableBucketArn": {
-                          "Fn::GetAtt": [
-                            "BucketWithOptions87848D2E",
-                            "TableBucketARN"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3tables.CfnTableBucketPolicy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3tables-alpha.TableBucketPolicy",
-                  "version": "0.0.0",
-                  "metadata": [
-                    "*"
-                  ]
                 }
               }
             },
@@ -176,7 +96,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "OptionsTestStack/BootstrapVersion",
+            "path": "UnreferencedFileRemovalTestStack/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -184,7 +104,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "OptionsTestStack/CheckBootstrapVersion",
+            "path": "UnreferencedFileRemovalTestStack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
