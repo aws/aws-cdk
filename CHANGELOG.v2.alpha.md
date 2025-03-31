@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.187.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.186.0-alpha.0...v2.187.0-alpha.0) (2025-03-31)
+
+
+### Features
+
+* **apprunner:** throw ValidationError instead of untyped errors ([#33914](https://github.com/aws/aws-cdk/issues/33914)) ([38f89af](https://github.com/aws/aws-cdk/commit/38f89afe2ffdf67b0918e38f861166bdb0f8738f))
+* **ec2:** adding `placementGroup` to `LaunchTemplateProps` and `LaunchTemplate` ([#33726](https://github.com/aws/aws-cdk/issues/33726)) ([e5f71db](https://github.com/aws/aws-cdk/commit/e5f71db53ce985172e565eb9da5692d77ab7b268)), closes [#33721](https://github.com/aws/aws-cdk/issues/33721)
+* **ec2:** support the new `SupportedRegions` property for `AWS::EC2::VPCEndpointService` ([#33959](https://github.com/aws/aws-cdk/issues/33959)) ([0c77cb6](https://github.com/aws/aws-cdk/commit/0c77cb627e1e7e729205624a9603331f5442af8e))
+* **iot:** backfill enum values in iot module ([#33969](https://github.com/aws/aws-cdk/issues/33969)) ([2a8a8a3](https://github.com/aws/aws-cdk/commit/2a8a8a36ed872f7f3de4b24fd7d9c874a3da9dbf))
+
 ## [2.186.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.185.0-alpha.0...v2.186.0-alpha.0) (2025-03-26)
 
 
