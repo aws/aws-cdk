@@ -127,6 +127,7 @@ export const LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY = '@aws-cdk/aws-lam
 export const SET_UNIQUE_REPLICATION_ROLE_NAME = '@aws-cdk/aws-s3:setUniqueReplicationRoleName';
 export const PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceStageRoleTrustScope';
 export const EVENTBUS_POLICY_SID_REQUIRED = '@aws-cdk/aws-events:requireEventBusPolicySid';
+export const DYNAMODB_TABLE_RETAIN_TABLE_REPLICA = '@aws-cdk/aws-dynamodb:retainTableReplica';
 export const S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS = '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions';
 
 export const FLAGS: Record<string, FlagInfo> = {
@@ -1461,6 +1462,18 @@ export const FLAGS: Record<string, FlagInfo> = {
     summary: 'Add an S3 trust policy to a KMS key resource policy for SNS subscriptions.',
     detailsMd: `
       When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
+          `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, table replica will be default to the removal policy of source table unless specified otherwise.',
+    detailsMd: `
+      Currently, table replica will always be deleted when stack deletes regardless of source table's deletion policy.
+      When enabled, table replica will be default to the removal policy of source table unless specified otherwise.
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,

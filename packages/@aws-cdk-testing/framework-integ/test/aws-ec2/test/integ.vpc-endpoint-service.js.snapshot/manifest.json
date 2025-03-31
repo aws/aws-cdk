@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "TestStackLoadBalancer.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7d05d5d0741fd1e8bbb02fa8e103eff75a3d89b43c86c4478d03aa82a9cc12b8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0730babc31e937bb756275553b65882c3054d2e23ab1f7142e70361a7de3818b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -345,7 +345,10 @@
                 "*"
               ],
               "acceptanceRequired": true,
-              "contributorInsights": true
+              "contributorInsights": true,
+              "supportedIpAddressTypes": [
+                "ipv4"
+              ]
             }
           }
         ],
@@ -424,5 +427,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }
