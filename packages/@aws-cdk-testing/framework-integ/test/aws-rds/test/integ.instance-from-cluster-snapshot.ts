@@ -12,7 +12,7 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefau
 new rds.DatabaseInstanceFromSnapshot(stack, 'FromSnapshot', {
   clusterSnapshotIdentifier: 'arn:aws:rds:us-east-1:703671916075:cluster-snapshot:test-cluster-snpa',
   allocatedStorage: 200,
-  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_40}),
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_40 }),
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   vpc,
   removalPolicy: RemovalPolicy.DESTROY,
