@@ -7,6 +7,8 @@ import { IPublicHostedZone } from '../../aws-route53';
 import * as route53 from '../../aws-route53';
 import { IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { ReceiptRule } from "./receipt-rule";
 
 /**
  * An email identity
@@ -382,7 +384,13 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
 /**
  * An email identity
  */
+@propertyInjectionDecorator
 export class EmailIdentity extends EmailIdentityBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ses.EmailIdentity';
+
   /**
    * Use an existing email identity
    */
