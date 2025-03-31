@@ -248,6 +248,7 @@ describe('TableBucket', () => {
       }));
 
       expect(result.statementAdded).toEqual(false);
+      Template.fromStack(stack).resourceCountIs('AWS::S3Tables::TableBucketPolicy', 0);
     });
   });
 
@@ -292,6 +293,95 @@ describe('TableBucket', () => {
     it('should not throw error when optional fields are undefined', () => {
       const partialProperty = {};
       expect(() => s3tables.TableBucket.validateUnreferencedFileRemoval(partialProperty)).not.toThrow();
+    });
+  });
+
+  describe('validateBucketName', () => {
+    it('should accept valid bucket names', () => {
+      const validNames = [
+        'my-bucket-123',
+        'test-bucket',
+        'abc',
+        'a'.repeat(63),
+        '123-bucket',
+      ];
+
+      validNames.forEach(name => {
+        expect(() => s3tables.TableBucket.validateTableBucketName(name)).not.toThrow();
+      });
+    });
+
+    it('should skip validation for unresolved tokens', () => {
+      // const mockToken = { isUnresolved: true };
+      // core.Token.isUnresolved = jest.fn().mockReturnValue(true);
+      expect(() => s3tables.TableBucket.validateTableBucketName(undefined)).not.toThrow();
+    });
+
+    it('should reject bucket names that are too short', () => {
+      expect(() => s3tables.TableBucket.validateTableBucketName('XX')).toThrow(
+        /Bucket name must be at least 3/,
+      );
+    });
+
+    it('should reject bucket names that are too long', () => {
+      const longName = 'a'.repeat(64);
+      expect(() => s3tables.TableBucket.validateTableBucketName(longName)).toThrow(
+        /no more than 63 characters/,
+      );
+    });
+
+    it('should reject bucket names with illegal characters', () => {
+      const invalidNames = [
+        'My-Bucket', // uppercase
+        'bucket!123', // special character
+        'bucket.123', // period
+        'bucket_123', // underscore
+      ];
+
+      invalidNames.forEach(name => {
+        expect(() => s3tables.TableBucket.validateTableBucketName(name)).toThrow(
+          /must only contain lowercase characters, numbers, and hyphens/,
+        );
+      });
+    });
+
+    it('should reject bucket names that start with invalid characters', () => {
+      const invalidNames = [
+        '-bucket',
+        '.bucket',
+      ];
+
+      invalidNames.forEach(name => {
+        expect(() => s3tables.TableBucket.validateTableBucketName(name)).toThrow(
+          /must start with a lowercase letter or number/,
+        );
+      });
+    });
+
+    it('should reject bucket names that end with invalid characters', () => {
+      const invalidNames = [
+        'bucket-',
+        'bucket.',
+      ];
+
+      invalidNames.forEach(name => {
+        expect(() => s3tables.TableBucket.validateTableBucketName(name)).toThrow(
+          /must end with a lowercase letter or number/,
+        );
+      });
+    });
+
+    it('should include the invalid bucket name in the error message', () => {
+      const invalidName = 'Invalid-Bucket!';
+      expect(() => s3tables.TableBucket.validateTableBucketName(invalidName)).toThrow(
+        /Invalid-Bucket!/,
+      );
+    });
+
+    it('should handle empty bucket names', () => {
+      expect(() => s3tables.TableBucket.validateTableBucketName('')).toThrow(
+        /Bucket name must be at least 3/,
+      );
     });
   });
 });

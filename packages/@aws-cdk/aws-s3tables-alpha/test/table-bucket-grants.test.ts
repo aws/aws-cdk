@@ -7,251 +7,346 @@ import * as perms from '../lib/permissions';
 /* Allow quotes in the object keys used for CloudFormation template assertions */
 /* eslint-disable quote-props */
 
-describe('TableBucket', () => {
+describe('Access grant methods', () => {
   const TABLE_BUCKET_POLICY_CFN_RESOURCE = 'AWS::S3Tables::TableBucketPolicy';
+  const PRINCIPAL = 's3.amazonaws.com';
+  const DEFAULT_PROPS: s3tables.TableBucketProps = { tableBucketName: 'example-table-bucket' };
+  const TABLE_BUCKET_ARN_SUB = { 'Fn::GetAtt': ['ExampleTableBucket9B5A2796', 'TableBucketARN'] };
+  const EXISTING_ROLE_ARN = 'arn:aws:iam::123456789012:role/existing-role';
 
   let stack: core.Stack;
+  let tableBucket: s3tables.TableBucket;
+  let role: iam.Role;
+  let importedRole: iam.IRole;
+  let user: iam.User;
 
   beforeEach(() => {
     stack = new core.Stack();
+    tableBucket = new s3tables.TableBucket(stack, 'ExampleTableBucket', DEFAULT_PROPS);
+    role = new iam.Role(stack, 'TestRole', { assumedBy: new iam.ServicePrincipal('sample') });
+    user = new iam.User(stack, 'TestUser');
+    importedRole = iam.Role.fromRoleArn(
+      stack,
+      'ImportedRole',
+      EXISTING_ROLE_ARN,
+    );
   });
 
-  describe('grant access methods', () => {
-    const PRINCIPAL = 's3.amazonaws.com';
-    const DEFAULT_PROPS: s3tables.TableBucketProps = {
-      tableBucketName: 'example-table-bucket',
-    };
-    const TABLE_BUCKET_ARN_SUB = {
-      'Fn::GetAtt': ['ExampleTableBucket9B5A2796', 'TableBucketARN'],
-    };
-    let tableBucket: s3tables.TableBucket;
-
-    beforeEach(() => {
-      tableBucket = new s3tables.TableBucket(stack, 'ExampleTableBucket', DEFAULT_PROPS);
-    });
-
-    describe('grantRead', () => {
-      it('provides read and list permissions for all tables', () => {
-        tableBucket.grantRead(new iam.ServicePrincipal(PRINCIPAL));
-        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
-          'ResourcePolicy': {
-            'Statement': [
-              {
-                'Action': perms.TABLE_BUCKET_READ_ACCESS,
-                'Effect': 'Allow',
-                'Principal': {
-                  'Service': PRINCIPAL,
-                },
-                'Resource': [
-                  TABLE_BUCKET_ARN_SUB,
-                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, '/table/*']] },
-                ],
+  describe('grantRead', () => {
+    it('provides read and list permissions to the bucket', () => {
+      tableBucket.grantRead(new iam.ServicePrincipal(PRINCIPAL));
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+        'ResourcePolicy': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_READ_ACCESS,
+              'Effect': 'Allow',
+              'Principal': {
+                'Service': PRINCIPAL,
               },
-            ],
-          },
-        });
-      });
-
-      it('provides read and list permissions for a specific table', () => {
-        const TABLE_UUID = 'example-table-uuid';
-        tableBucket.grantRead(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
-        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
-          'ResourcePolicy': {
-            'Statement': [
-              {
-                'Action': perms.TABLE_BUCKET_READ_ACCESS,
-                'Effect': 'Allow',
-                'Principal': {
-                  'Service': PRINCIPAL,
-                },
-                'Resource': [
-                  TABLE_BUCKET_ARN_SUB,
-                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/table/${TABLE_UUID}`]] },
-                ],
-              },
-            ],
-          },
-        });
+              'Resource': TABLE_BUCKET_ARN_SUB,
+            },
+          ],
+        },
       });
     });
 
-    describe('grantWrite', () => {
-      it('provides write permissions for all tables', () => {
-        tableBucket.grantWrite(new iam.ServicePrincipal(PRINCIPAL));
-        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
-          'ResourcePolicy': {
-            'Statement': [
-              {
-                'Action': perms.TABLE_BUCKET_WRITE_ACCESS,
-                'Effect': 'Allow',
-                'Principal': {
-                  'Service': PRINCIPAL,
-                },
-                'Resource': [
-                  TABLE_BUCKET_ARN_SUB,
-                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, '/table/*']] },
-                ],
+    it('provides read and list permissions for a specific table', () => {
+      const TABLE_UUID = 'example-table-uuid';
+      tableBucket.grantRead(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+        'ResourcePolicy': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_READ_ACCESS,
+              'Effect': 'Allow',
+              'Principal': {
+                'Service': PRINCIPAL,
               },
-            ],
-          },
-        });
-      });
-
-      it('provides write permissions for a specific table', () => {
-        const TABLE_UUID = 'example-table-uuid';
-        tableBucket.grantWrite(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
-        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
-          'ResourcePolicy': {
-            'Statement': [
-              {
-                'Action': perms.TABLE_BUCKET_WRITE_ACCESS,
-                'Effect': 'Allow',
-                'Principal': {
-                  'Service': PRINCIPAL,
-                },
-                'Resource': [
-                  TABLE_BUCKET_ARN_SUB,
-                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/table/${TABLE_UUID}`]] },
-                ],
-              },
-            ],
-          },
-        });
+              'Resource': [
+                TABLE_BUCKET_ARN_SUB,
+                { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/table/${TABLE_UUID}`]] },
+              ],
+            },
+          ],
+        },
       });
     });
 
-    describe('grantReadWrite', () => {
-      it('provides read & write permissions for all tables', () => {
-        tableBucket.grantReadWrite(new iam.ServicePrincipal(PRINCIPAL));
-        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
-          'ResourcePolicy': {
-            'Statement': [
-              {
-                'Action': perms.TABLE_BUCKET_READ_WRITE_ACCESS,
-                'Effect': 'Allow',
-                'Principal': {
-                  'Service': PRINCIPAL,
-                },
-                'Resource': [
-                  TABLE_BUCKET_ARN_SUB,
-                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, '/table/*']] },
-                ],
-              },
-            ],
-          },
-        });
+    it('creates IAM policies for a role', () => {
+      tableBucket.grantRead(role);
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_READ_ACCESS,
+              'Effect': 'Allow',
+              'Resource': TABLE_BUCKET_ARN_SUB,
+            },
+          ],
+          'Version': '2012-10-17',
+        },
       });
+      Template.fromStack(stack).resourceCountIs(TABLE_BUCKET_POLICY_CFN_RESOURCE, 0);
+    });
 
-      it('provides read & write permissions for a specific table', () => {
-        const TABLE_UUID = 'example-table-uuid';
-        tableBucket.grantReadWrite(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
-        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
-          'ResourcePolicy': {
-            'Statement': [
-              {
-                'Action': perms.TABLE_BUCKET_READ_WRITE_ACCESS,
-                'Effect': 'Allow',
-                'Principal': {
-                  'Service': PRINCIPAL,
-                },
-                'Resource': [
-                  TABLE_BUCKET_ARN_SUB,
-                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/table/${TABLE_UUID}`]] },
-                ],
+    it('creates IAM policies for a user', () => {
+      tableBucket.grantRead(user);
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_READ_ACCESS,
+              'Effect': 'Allow',
+              'Resource': TABLE_BUCKET_ARN_SUB,
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+      });
+      Template.fromStack(stack).resourceCountIs(TABLE_BUCKET_POLICY_CFN_RESOURCE, 0);
+    });
+
+    it('creates IAM policies for an imported role', () => {
+      tableBucket.grantRead(importedRole);
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_READ_ACCESS,
+              'Effect': 'Allow',
+              'Resource': TABLE_BUCKET_ARN_SUB,
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+        'ResourcePolicy': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_READ_ACCESS,
+              'Effect': 'Allow',
+              'Principal': {
+                'AWS': EXISTING_ROLE_ARN,
               },
-            ],
-          },
-        });
+              'Resource': TABLE_BUCKET_ARN_SUB,
+            },
+          ],
+        },
       });
     });
   });
 
-  describe('validateBucketName', () => {
-    it('should accept valid bucket names', () => {
-      const validNames = [
-        'my-bucket-123',
-        'test-bucket',
-        'abc',
-        'a'.repeat(63),
-        '123-bucket',
-      ];
-
-      validNames.forEach(name => {
-        expect(() => s3tables.TableBucket.validateTableBucketName(name)).not.toThrow();
+  describe('grantWrite', () => {
+    it('provides write permissions to the bucket', () => {
+      tableBucket.grantWrite(new iam.ServicePrincipal(PRINCIPAL));
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+        'ResourcePolicy': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_WRITE_ACCESS,
+              'Effect': 'Allow',
+              'Principal': {
+                'Service': PRINCIPAL,
+              },
+              'Resource': TABLE_BUCKET_ARN_SUB,
+            },
+          ],
+        },
       });
     });
 
-    it('should skip validation for unresolved tokens', () => {
-      // const mockToken = { isUnresolved: true };
-      // core.Token.isUnresolved = jest.fn().mockReturnValue(true);
-      expect(() => s3tables.TableBucket.validateTableBucketName(undefined)).not.toThrow();
-    });
-
-    it('should reject bucket names that are too short', () => {
-      expect(() => s3tables.TableBucket.validateTableBucketName('XX')).toThrow(
-        /Bucket name must be at least 3/,
-      );
-    });
-
-    it('should reject bucket names that are too long', () => {
-      const longName = 'a'.repeat(64);
-      expect(() => s3tables.TableBucket.validateTableBucketName(longName)).toThrow(
-        /no more than 63 characters/,
-      );
-    });
-
-    it('should reject bucket names with illegal characters', () => {
-      const invalidNames = [
-        'My-Bucket', // uppercase
-        'bucket!123', // special character
-        'bucket.123', // period
-        'bucket_123', // underscore
-      ];
-
-      invalidNames.forEach(name => {
-        expect(() => s3tables.TableBucket.validateTableBucketName(name)).toThrow(
-          /must only contain lowercase characters, numbers, and hyphens/,
-        );
+    it('provides write permissions for a specific table', () => {
+      const TABLE_UUID = 'example-table-uuid';
+      tableBucket.grantWrite(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+        'ResourcePolicy': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_WRITE_ACCESS,
+              'Effect': 'Allow',
+              'Principal': {
+                'Service': PRINCIPAL,
+              },
+              'Resource': [
+                TABLE_BUCKET_ARN_SUB,
+                { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/table/${TABLE_UUID}`]] },
+              ],
+            },
+          ],
+        },
       });
     });
 
-    it('should reject bucket names that start with invalid characters', () => {
-      const invalidNames = [
-        '-bucket',
-        '.bucket',
-      ];
+    it('creates IAM policies for a role', () => {
+      tableBucket.grantWrite(role);
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_WRITE_ACCESS,
+              'Effect': 'Allow',
+              'Resource': TABLE_BUCKET_ARN_SUB,
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+      });
+      Template.fromStack(stack).resourceCountIs(TABLE_BUCKET_POLICY_CFN_RESOURCE, 0);
+    });
 
-      invalidNames.forEach(name => {
-        expect(() => s3tables.TableBucket.validateTableBucketName(name)).toThrow(
-          /must start with a lowercase letter or number/,
-        );
+    it('creates IAM policies for a user', () => {
+      tableBucket.grantWrite(user);
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_WRITE_ACCESS,
+              'Effect': 'Allow',
+              'Resource': TABLE_BUCKET_ARN_SUB,
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+      });
+      Template.fromStack(stack).resourceCountIs(TABLE_BUCKET_POLICY_CFN_RESOURCE, 0);
+    });
+
+    it('creates IAM policies for an imported role', () => {
+      tableBucket.grantWrite(importedRole);
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_WRITE_ACCESS,
+              'Effect': 'Allow',
+              'Resource': TABLE_BUCKET_ARN_SUB,
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+        'ResourcePolicy': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_WRITE_ACCESS,
+              'Effect': 'Allow',
+              'Principal': {
+                'AWS': EXISTING_ROLE_ARN,
+              },
+              'Resource': TABLE_BUCKET_ARN_SUB,
+            },
+          ],
+        },
+      });
+    });
+  });
+
+  describe('grantReadWrite', () => {
+    it('provides read & write permissions to the bucket', () => {
+      tableBucket.grantReadWrite(new iam.ServicePrincipal(PRINCIPAL));
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+        'ResourcePolicy': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_READ_WRITE_ACCESS,
+              'Effect': 'Allow',
+              'Principal': {
+                'Service': PRINCIPAL,
+              },
+              'Resource': TABLE_BUCKET_ARN_SUB,
+            },
+          ],
+        },
       });
     });
 
-    it('should reject bucket names that end with invalid characters', () => {
-      const invalidNames = [
-        'bucket-',
-        'bucket.',
-      ];
-
-      invalidNames.forEach(name => {
-        expect(() => s3tables.TableBucket.validateTableBucketName(name)).toThrow(
-          /must end with a lowercase letter or number/,
-        );
+    it('provides read & write permissions for a specific table', () => {
+      const TABLE_UUID = 'example-table-uuid';
+      tableBucket.grantReadWrite(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+        'ResourcePolicy': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_READ_WRITE_ACCESS,
+              'Effect': 'Allow',
+              'Principal': {
+                'Service': PRINCIPAL,
+              },
+              'Resource': [
+                TABLE_BUCKET_ARN_SUB,
+                { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/table/${TABLE_UUID}`]] },
+              ],
+            },
+          ],
+        },
       });
     });
 
-    it('should include the invalid bucket name in the error message', () => {
-      const invalidName = 'Invalid-Bucket!';
-      expect(() => s3tables.TableBucket.validateTableBucketName(invalidName)).toThrow(
-        /Invalid-Bucket!/,
-      );
+    it('creates IAM policies for a role', () => {
+      tableBucket.grantReadWrite(role);
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_READ_WRITE_ACCESS,
+              'Effect': 'Allow',
+              'Resource': TABLE_BUCKET_ARN_SUB,
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+      });
+      Template.fromStack(stack).resourceCountIs(TABLE_BUCKET_POLICY_CFN_RESOURCE, 0);
     });
 
-    it('should handle empty bucket names', () => {
-      expect(() => s3tables.TableBucket.validateTableBucketName('')).toThrow(
-        /Bucket name must be at least 3/,
-      );
+    it('creates IAM policies for a user', () => {
+      tableBucket.grantReadWrite(user);
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_READ_WRITE_ACCESS,
+              'Effect': 'Allow',
+              'Resource': TABLE_BUCKET_ARN_SUB,
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+      });
+      Template.fromStack(stack).resourceCountIs(TABLE_BUCKET_POLICY_CFN_RESOURCE, 0);
+    });
+
+    it('creates IAM policies for an imported role', () => {
+      tableBucket.grantReadWrite(importedRole);
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_READ_WRITE_ACCESS,
+              'Effect': 'Allow',
+              'Resource': TABLE_BUCKET_ARN_SUB,
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+        'ResourcePolicy': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_READ_WRITE_ACCESS,
+              'Effect': 'Allow',
+              'Principal': {
+                'AWS': EXISTING_ROLE_ARN,
+              },
+              'Resource': TABLE_BUCKET_ARN_SUB,
+            },
+          ],
+        },
+      });
     });
   });
 });
