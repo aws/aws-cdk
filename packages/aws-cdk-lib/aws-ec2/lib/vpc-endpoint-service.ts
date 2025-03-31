@@ -104,6 +104,11 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
   private readonly supportedIpAddressTypes?: IpAddressType[];
 
   /**
+   * The Regions from which service consumers can access the service.
+   */
+  private readonly allowedRegions?: string[];
+
+  /**
    * The id of the VPC Endpoint Service, like vpce-svc-xxxxxxxxxxxxxxxx.
    * @attribute
    */
@@ -132,6 +137,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     this.acceptanceRequired = props.acceptanceRequired ?? true;
     this.contributorInsightsEnabled = props.contributorInsights;
     this.supportedIpAddressTypes = props.supportedIpAddressTypes;
+    this.allowedRegions = props.allowedRegions;
 
     if (props.allowedPrincipals && props.whitelistedPrincipals) {
       throw new Error('`whitelistedPrincipals` is deprecated; please use `allowedPrincipals` instead');
@@ -144,6 +150,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
       acceptanceRequired: this.acceptanceRequired,
       contributorInsightsEnabled: this.contributorInsightsEnabled,
       supportedIpAddressTypes: this.supportedIpAddressTypes?.map(type => type.toString()),
+      supportedRegions: this.allowedRegions,
     });
 
     this.vpcEndpointServiceId = this.endpointService.ref;
@@ -220,4 +227,10 @@ export interface VpcEndpointServiceProps {
    * @default - No specific IP address types configured
    */
   readonly supportedIpAddressTypes?: IpAddressType[];
+
+  /**
+   * The Regions from which service consumers can access the service.
+   * @default - No Region restrictions
+   */
+  readonly allowedRegions?: string[];
 }

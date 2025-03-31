@@ -34,6 +34,7 @@ class TestStack extends Stack {
 const app = new App({
   postCliContext: {
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+    '@aws-cdk/aws-dynamodb:retainTableReplica': false,
   },
 });
 const stack = new TestStack(app, 'cdk-dynamodb-global-20191121', { env: { region: 'eu-west-1' } });

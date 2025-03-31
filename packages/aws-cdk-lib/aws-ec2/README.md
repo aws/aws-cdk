@@ -1134,6 +1134,18 @@ new ec2.VpcEndpointService(this, 'EndpointService', {
 });
 ```
 
+You can restrict access to your endpoint service to specific AWS regions:
+
+```ts
+declare const networkLoadBalancer: elbv2.NetworkLoadBalancer;
+
+new ec2.VpcEndpointService(this, 'EndpointService', {
+  vpcEndpointServiceLoadBalancers: [networkLoadBalancer],
+  // Allow service consumers from these regions only
+  allowedRegions: ['us-east-1', 'eu-west-1'],
+});
+```
+
 Endpoint services support private DNS, which makes it easier for clients to connect to your service by automatically setting up DNS in their VPC.
 You can enable private DNS on an endpoint service like so:
 
@@ -2439,6 +2451,24 @@ To use [AWS Systems Manager parameters instead of AMI IDs](https://docs.aws.amaz
 ```ts
 const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
   machineImage: ec2.MachineImage.resolveSsmParameterAtLaunch('parameterName'),
+});
+```
+
+### Placement Group
+
+Specify `placementGroup` to enable the placement group support:
+
+```ts fixture=with-vpc
+declare const instanceType: ec2.InstanceType;
+
+const pg = new ec2.PlacementGroup(this, 'test-pg', {
+  strategy: ec2.PlacementGroupStrategy.SPREAD,
+});
+
+new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  instanceType,
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  placementGroup: pg,
 });
 ```
 

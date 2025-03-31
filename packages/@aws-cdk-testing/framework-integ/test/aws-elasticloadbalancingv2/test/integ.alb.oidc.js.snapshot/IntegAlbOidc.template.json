@@ -635,7 +635,7 @@
        {
         "Ref": "UserPoolUserPoolClient40176907"
        },
-       "\"}}"
+       "\"},\"logApiResponseData\":false}"
       ]
      ]
     },
@@ -659,7 +659,7 @@
        {
         "Ref": "UserPoolUserPoolClient40176907"
        },
-       "\"}}"
+       "\"},\"logApiResponseData\":false}"
       ]
      ]
     },
