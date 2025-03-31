@@ -1464,7 +1464,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Currently, table replica will always be deleted when stack deletes regardless of source table's deletion policy.
       When enabled, table replica will be default to the removal policy of source table unless specified otherwise.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.187.0' },
     recommendedValue: true,
   },
 
@@ -1479,7 +1479,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom 
       resource lambda function logs.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.187.0' },
     defaults: { v2: false },
     recommendedValue: false,
     compatibilityWithOldBehaviorMd: 'Enable the feature flag to keep the old behavior and log the client secret values',
