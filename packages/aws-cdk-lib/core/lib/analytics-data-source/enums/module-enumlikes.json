@@ -38,15 +38,6 @@
       "RUBY_31"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-cognito-identitypool-alpha/lib/identitypool.ts": {
-    "IdentityPoolProviderUrl": [
-      "FACEBOOK",
-      "GOOGLE",
-      "AMAZON",
-      "APPLE",
-      "TWITTER"
-    ]
-  },
   "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/access-entry.ts": {
     "AccessPolicyArn": [
       "AMAZON_EKS_ADMIN_POLICY",
@@ -208,15 +199,6 @@
       "ZEPPELIN_FLINK_2_0",
       "ZEPPELIN_FLINK_1_0",
       "SQL_1_0"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-kinesisfirehose-destinations-alpha/lib/common.ts": {
-    "Compression": [
-      "GZIP",
-      "HADOOP_SNAPPY",
-      "SNAPPY",
-      "ZIP",
-      "UNCOMPRESSED"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-msk-alpha/lib/cluster-version.ts": {
@@ -3071,6 +3053,7 @@
       "VER_15_00_4395_2_V1",
       "VER_15_00_4410_1_V1",
       "VER_15_00_4415_2_V1",
+      "VER_15_00_4420_2_V1",
       "VER_16",
       "VER_16_00_4085_2_V1",
       "VER_16_00_4095_4_V1",
