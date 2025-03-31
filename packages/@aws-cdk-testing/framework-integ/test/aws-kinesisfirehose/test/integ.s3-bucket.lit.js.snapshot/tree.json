@@ -1131,7 +1131,8 @@
                         }
                       },
                       "errorOutputPrefix": "errorPrefix",
-                      "prefix": "regularPrefix"
+                      "prefix": "regularPrefix",
+                      "fileExtension": ".log.gz"
                     }
                   }
                 },
