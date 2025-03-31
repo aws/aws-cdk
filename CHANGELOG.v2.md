@@ -18,7 +18,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **cognito:** fix logging behaviour for user pool client custom resource ([#33983](https://github.com/aws/aws-cdk/issues/33983)) ([d02e64a](https://github.com/aws/aws-cdk/commit/d02e64aac18a72195ddcdb973defea7f32382c33))
+* **cognito:** fix logging behaviour for user pool client custom resource ([#33983](https://github.com/aws/aws-cdk/issues/33983)) ([d02e64a](https://github.com/aws/aws-cdk/commit/d02e64aac18a72195ddcdb973defea7f32382c33)), closes [GHSA-qq4x-c6h6-rfxh](https://github.com/aws/aws-cdk/security/advisories/GHSA-qq4x-c6h6-rfxh)
 * **core:** asset names for nested stacks contain Tokens ([#33966](https://github.com/aws/aws-cdk/issues/33966)) ([85fc87f](https://github.com/aws/aws-cdk/commit/85fc87f0773ca1e68b395dcc5aae6103b239c38d))
 * **dynamodb:** table v1 retain replica table if table is retain ([#33953](https://github.com/aws/aws-cdk/issues/33953)) ([21d0a5c](https://github.com/aws/aws-cdk/commit/21d0a5ce687e88250a08492e7c5f43cc30da50cf)), closes [#33952](https://github.com/aws/aws-cdk/issues/33952)
 * **eks:** looked up vpc causing premature validation errors for private subnets ([#33786](https://github.com/aws/aws-cdk/issues/33786)) ([73744b4](https://github.com/aws/aws-cdk/commit/73744b452c2dd6809fddb123fa2ef6087ed18287)), closes [#22025](https://github.com/aws/aws-cdk/issues/22025) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts#L2705](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts/issues/L2705)
