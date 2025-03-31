@@ -287,3 +287,91 @@ class MyStack extends cdk.Stack {
   }
 }
 ```
+
+## Application Signals SLO L2 Constructs
+
+A collection of L2 constructs which leverages native L1 CFN resources, simplifying Application Signals Service Level 
+Objectives (SLOs) creation process to monitor the reliability of a service against customer expectations.
+
+
+### ServiceLevelObjective
+
+`ServiceLevelObjective` aims to address key challenges in the current CDK process of creating and managing SLOs while providing the flexibility.
+The construct provides two types of SLOs:<br>
+Period-based SLOs: Evaluate performance against goals using defined time periods.<br>
+Request-based SLOs: Measure performance based on request success ratios
+
+Key Features:
+
+1. Easy creation of both period-based and request-based SLOs.
+2. Support for custom CloudWatch metrics and math expressions.
+3. Automatic error budget calculation and tracking.
+
+#### Use Case 1 - Create a Period-based SLO with custom metrics, default attainmentGoal: 99.9 and warningThreshold: 30
+
+```
+const periodSlo = ServiceLevelObjective.periodBased(this, 'PeriodSLO', {
+  name: 'my-period-slo',
+  goal: {
+    interval: Interval.rolling({
+      duration: 7,
+      unit: DurationUnit.DAY,
+    }),
+  },
+  metric: {
+    metricThreshold: 100,
+    periodSeconds: 300,
+    statistic: 'Average',
+    metricDataQueries: [/* ... */],
+  },
+});
+```
+
+#### Use Case 2 - Create a Period-based SLO with service/operation, attainmentGoal is 99.99 and warningThreshold is 50
+
+```
+const availabilitySlo = ServiceLevelObjective.periodBased(this, 'ApiAvailabilitySlo', {
+  name: 'api-availability-slo',
+  description: 'API endpoint availability SLO',
+  goal: {
+    attainmentGoal: 99.99,
+    warningThreshold: 50,
+    interval: Interval.calendar({
+      duration: 1,
+      unit: DurationUnit.MONTH,
+      // default startTime is now,
+    }),
+  },
+  metric: {
+    metricThreshold: 99,
+    metricType: MetricType.AVAILABILITY,
+    operationName: 'OrderProcessing',
+    keyAttributes: KeyAttributes.service({
+     name: 'MyService',
+     environment: 'Development',
+   });
+    periodSeconds: 300,
+    statistic: 'Average',
+  },
+});
+```
+
+#### Use Case 3 - Create request based SLO with custom metrics
+
+```
+const requestSlo = ServiceLevelObjective.requestBased(this, 'RequestSLO', {
+  name: 'my-request-slo',
+  goal: {
+    interval: Interval.calendar({
+      duration: 30,
+      unit: DurationUnit.DAY,
+      startTime: 1,
+    }),
+  },
+  metric: {
+    metricThreshold: 200,
+    goodCountMetrics: [/* ... */],
+    totalCountMetrics: [/* ... */],
+  },
+});
+```
