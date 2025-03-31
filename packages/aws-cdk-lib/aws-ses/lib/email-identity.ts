@@ -8,7 +8,6 @@ import * as route53 from '../../aws-route53';
 import { IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
-import { ReceiptRule } from "./receipt-rule";
 
 /**
  * An email identity
