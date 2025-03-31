@@ -92,6 +92,8 @@ Flags come in three types:
 | [@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy](#aws-cdkaws-lambdacreatenewpolicieswithaddtorolepolicy) | When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement | 2.180.0 | (fix) |
 | [@aws-cdk/aws-s3:setUniqueReplicationRoleName](#aws-cdkaws-s3setuniquereplicationrolename) | When enabled, CDK will automatically generate a unique role name that is used for s3 object replication. | 2.182.0 | (fix) |
 | [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | 2.184.0 | (default) |
+| [@aws-cdk/aws-events:requireEventBusPolicySid](#aws-cdkaws-eventsrequireeventbuspolicysid) | When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals. | 2.186.0 | (fix) |
+| [@aws-cdk/aws-dynamodb:retainTableReplica](#aws-cdkaws-dynamodbretaintablereplica) | When enabled, table replica will be default to the removal policy of source table unless specified otherwise. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -170,7 +172,9 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
     "@aws-cdk/core:enableAdditionalMetadataCollection": true,
     "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true,
-    "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true
+    "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
+    "@aws-cdk/aws-events:requireEventBusPolicySid": true,
+    "@aws-cdk/aws-dynamodb:retainTableReplica": true
   }
 }
 ```
@@ -1738,6 +1742,45 @@ When this feature flag is disabled, it will keep the root account principal in t
 | 2.184.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to add the root account principal back
+
+
+### @aws-cdk/aws-events:requireEventBusPolicySid
+
+*When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals.* (fix)
+
+Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails 
+because service principals require resource policies with Statement IDs. 
+
+When this flag is enabled:
+- Resource policies will be created with Statement IDs for service principals
+- The operation will succeed as expected
+
+When this flag is disabled:
+- A warning will be emitted
+- The grant operation will be dropped
+- No permissions will be added
+
+This fixes the issue where permissions were silently not being added for service principals.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.186.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-dynamodb:retainTableReplica
+
+*When enabled, table replica will be default to the removal policy of source table unless specified otherwise.* (fix)
+
+Currently, table replica will always be deleted when stack deletes regardless of source table's deletion policy.
+When enabled, table replica will be default to the removal policy of source table unless specified otherwise.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
