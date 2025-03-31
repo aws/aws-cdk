@@ -1,7 +1,7 @@
 import * as core from 'aws-cdk-lib/core';
 import * as s3tables from '../../lib';
 import { Construct } from 'constructs';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /**
  * Snapshot test for table bucket with default parameters
@@ -47,10 +47,28 @@ const app = new core.App();
 const defaultBucketTest = new DefaultTestStack(app, 'DefaultTestStack');
 const unreferencedFileRemovalTestStack = new UnreferencedFileRemovalTestStack(app, 'UnreferencedFileRemovalTestStack');
 
-new IntegTest(app, 'TableBucketIntegTest', {
+const integ = new IntegTest(app, 'TableBucketIntegTest', {
   testCases: [defaultBucketTest, unreferencedFileRemovalTestStack],
 });
 
-// TODO Add assertions for unreferenced file removal
+// Add assertions for unreferenced file removal
+const maintenanceConfiguration = integ.assertions.awsApiCall('@aws-sdk/client-s3tables', 'GetTableBucketMaintenanceConfigurationCommand', {
+  tableBucketARN: unreferencedFileRemovalTestStack.tableBucket.tableBucketArn,
+});
+
+maintenanceConfiguration.expect(ExpectedResult.objectLike({
+  configuration: {
+    icebergUnreferencedFileRemoval: {
+      status: 'disabled',
+      settings: {
+        icebergUnreferencedFileRemoval: {
+          nonCurrentDays: 20,
+          unreferencedDays: 20,
+        },
+      },
+    },
+  },
+  tableBucketARN: unreferencedFileRemovalTestStack.tableBucket.tableBucketArn,
+}));
 
 app.synth();

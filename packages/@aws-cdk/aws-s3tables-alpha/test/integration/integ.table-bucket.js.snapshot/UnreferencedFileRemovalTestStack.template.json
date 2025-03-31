@@ -14,6 +14,19 @@
    "DeletionPolicy": "Delete"
   }
  },
+ "Outputs": {
+  "ExportsOutputFnGetAttDefaultBucket62385A75TableBucketARN40A5C30D": {
+   "Value": {
+    "Fn::GetAtt": [
+     "DefaultBucket62385A75",
+     "TableBucketARN"
+    ]
+   },
+   "Export": {
+    "Name": "UnreferencedFileRemovalTestStack:ExportsOutputFnGetAttDefaultBucket62385A75TableBucketARN40A5C30D"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
