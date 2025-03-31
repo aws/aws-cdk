@@ -37,12 +37,6 @@ export interface ITableBucket extends IResource {
   readonly region?: string;
 
   /**
-   * The resource policy for this table bucket.
-   * @attribute
-   */
-  readonly tableBucketPolicy?: TableBucketPolicy;
-
-  /**
    * Adds a statement to the resource policy for a principal (i.e.
    * account/role/service) to perform actions on this table bucket and/or its
    * contents. Use `tableBucketArn` and `arnForObjects(keys)` to obtain ARNs for
