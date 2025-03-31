@@ -108,7 +108,27 @@ export class EngineVersion {
   /**
    * Neptune engine version 1.3.4.0
    */
-  public static readonly V1_3_4_0 = new EngineVersion('1.3.4.0');
+  public static readonly V1_3_4_0 = new EngineVersion('1.3.4.0');  
+  /**
+  * Neptune engine version 1.4.0.0
+  */
+  public static readonly V1_4_0_0 = new EngineVersion('1.4.0.0');
+  /**
+  * Neptune engine version 1.4.1.0
+  */
+  public static readonly V1_4_1_0 = new EngineVersion('1.4.1.0');
+  /**
+  * Neptune engine version 1.4.2.0
+  */
+  public static readonly V1_4_2_0 = new EngineVersion('1.4.2.0');
+  /**
+  * Neptune engine version 1.4.3.0
+  */
+  public static readonly V1_4_3_0 = new EngineVersion('1.4.3.0');
+  /**
+  * Neptune engine version 1.4.4.0
+  */
+  public static readonly V1_4_4_0 = new EngineVersion('1.4.4.0');
 
   /**
    * Constructor for specifying a custom engine version
