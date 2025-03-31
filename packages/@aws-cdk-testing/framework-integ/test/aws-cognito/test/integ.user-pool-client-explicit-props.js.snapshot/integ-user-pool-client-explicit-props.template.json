@@ -129,7 +129,7 @@
        {
         "Ref": "myuserpoolmyuserpoolclientAFB2274E"
        },
-       "\"}}"
+       "\"},\"logApiResponseData\":false}"
       ]
      ]
     },
@@ -153,7 +153,7 @@
        {
         "Ref": "myuserpoolmyuserpoolclientAFB2274E"
        },
-       "\"}}"
+       "\"},\"logApiResponseData\":false}"
       ]
      ]
     },
@@ -229,7 +229,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
+     "S3Key": "cde607091ceabfbfb56e643cd4a5647680cfaf19c63f4d59b3f4880df4a71c8d.zip"
     },
     "Handler": "index.handler",
     "Role": {

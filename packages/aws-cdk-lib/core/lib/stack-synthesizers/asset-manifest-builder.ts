@@ -5,6 +5,7 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { FileAssetSource, FileAssetPackaging, DockerImageAssetSource } from '../assets';
 import { resolvedOr } from '../helpers-internal/string-specializer';
 import { Stack } from '../stack';
+import { Token } from '../token';
 
 /**
  * Build an asset manifest from assets added to a stack
@@ -289,11 +290,19 @@ function validateFileAssetSource(asset: FileAssetSource) {
   if (!!asset.packaging !== !!asset.fileName) {
     throw new Error(`'packaging' is expected in combination with 'fileName', got: ${JSON.stringify(asset)}`);
   }
+
+  if (Token.isUnresolved(asset.displayName)) {
+    throw new Error(`'displayName' may not contain a Token, got: ${JSON.stringify(asset.displayName)}`);
+  }
 }
 
 function validateDockerImageAssetSource(asset: DockerImageAssetSource) {
   if (!!asset.executable === !!asset.directoryName) {
     throw new Error(`Exactly one of 'directoryName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
+  }
+
+  if (Token.isUnresolved(asset.displayName)) {
+    throw new Error(`'displayName' may not contain a Token, got: ${JSON.stringify(asset.displayName)}`);
   }
 
   check('dockerBuildArgs');
