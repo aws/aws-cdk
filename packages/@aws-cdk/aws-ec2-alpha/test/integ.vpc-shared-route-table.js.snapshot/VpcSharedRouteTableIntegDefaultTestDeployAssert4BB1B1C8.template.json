@@ -15,11 +15,15 @@
      "Fn::Join": [
       "",
       [
-       "{\"$ObjectLike\":{\"RouteTables\":[{\"$ObjectLike\":{\"Routes\":[{\"DestinationCidrBlock\":\"10.1.0.0/16\",\"GatewayId\":\"local\"},{\"DestinationCidrBlock\":\"0.0.0.0/0\",\"GatewayId\":\"",
+       "{\"$ObjectLike\":{\"RouteTables\":[{\"$ObjectLike\":{\"Routes\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"DestinationCidrBlock\":\"10.1.0.0/16\",\"GatewayId\":\"local\",\"Origin\":\"CreateRouteTable\",\"State\":\"active\"}},{\"$ObjectLike\":{\"DestinationCidrBlock\":\"0.0.0.0/0\",\"GatewayId\":\"",
        {
         "Fn::ImportValue": "aws-cdk-ec2-alpha-shared-route-table:ExportsOutputFnGetAttVPCInternetGatewayIGW3C1F5485InternetGatewayId25C881CB"
        },
-       "\"}]}}]}}"
+       "\",\"Origin\":\"CreateRoute\",\"State\":\"active\"}},{\"$ObjectLike\":{\"DestinationIpv6CidrBlock\":{\"$StringLike\":\".*::/56\"},\"GatewayId\":\"local\",\"Origin\":\"CreateRouteTable\",\"State\":\"active\"}},{\"$ObjectLike\":{\"DestinationIpv6CidrBlock\":\"::/0\",\"EgressOnlyInternetGatewayId\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-ec2-alpha-shared-route-table:ExportsOutputFnGetAttVPCEgressOnlyGWEIGW4D24FCEAId75399B0C"
+       },
+       "\",\"Origin\":\"CreateRoute\",\"State\":\"active\"}}]}}}]}}"
       ]
      ]
     },
@@ -38,7 +42,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1743113940087"
+    "salt": "1743452784910"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

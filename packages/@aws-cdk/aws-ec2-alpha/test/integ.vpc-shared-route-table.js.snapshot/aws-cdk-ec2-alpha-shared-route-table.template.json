@@ -15,6 +15,18 @@
     ]
    }
   },
+  "VPCAmazonProvidedIpv6CidrBlockA44BAB04": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCB9E5F0B4",
+      "VpcId"
+     ]
+    }
+   }
+  },
   "VPCInternetGatewayIGW3C1F5485": {
    "Type": "AWS::EC2::InternetGateway",
    "Properties": {
@@ -65,6 +77,38 @@
     "VPCInternetGatewayIGW3C1F5485"
    ]
   },
+  "VPCEgressOnlyGWEIGW4D24FCEA": {
+   "Type": "AWS::EC2::EgressOnlyInternetGateway",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCB9E5F0B4",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "VPCPublicSubnet1EgressRouteC0FA32F9": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationIpv6CidrBlock": "::/0",
+    "EgressOnlyInternetGatewayId": {
+     "Fn::GetAtt": [
+      "VPCEgressOnlyGWEIGW4D24FCEA",
+      "Id"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "SharedRouteTable7A86E44F",
+      "RouteTableId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCEgressOnlyGWEIGW4D24FCEA"
+   ]
+  },
   "SharedRouteTable7A86E44F": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
@@ -104,7 +148,10 @@
       "VpcId"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "VPCAmazonProvidedIpv6CidrBlockA44BAB04"
+   ]
   },
   "PublicSubnet1RouteTableAssociation0E73B917": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -118,7 +165,10 @@
     "SubnetId": {
      "Ref": "PublicSubnet1Subnet03067927"
     }
-   }
+   },
+   "DependsOn": [
+    "VPCAmazonProvidedIpv6CidrBlockA44BAB04"
+   ]
   },
   "PublicSubnet2Subnet78B4B4BD": {
    "Type": "AWS::EC2::Subnet",
@@ -142,7 +192,10 @@
       "VpcId"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "VPCAmazonProvidedIpv6CidrBlockA44BAB04"
+   ]
   },
   "PublicSubnet2RouteTableAssociation1339F17B": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -156,7 +209,10 @@
     "SubnetId": {
      "Ref": "PublicSubnet2Subnet78B4B4BD"
     }
-   }
+   },
+   "DependsOn": [
+    "VPCAmazonProvidedIpv6CidrBlockA44BAB04"
+   ]
   }
  },
  "Outputs": {
@@ -169,6 +225,17 @@
    },
    "Export": {
     "Name": "aws-cdk-ec2-alpha-shared-route-table:ExportsOutputFnGetAttVPCInternetGatewayIGW3C1F5485InternetGatewayId25C881CB"
+   }
+  },
+  "ExportsOutputFnGetAttVPCEgressOnlyGWEIGW4D24FCEAId75399B0C": {
+   "Value": {
+    "Fn::GetAtt": [
+     "VPCEgressOnlyGWEIGW4D24FCEA",
+     "Id"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-ec2-alpha-shared-route-table:ExportsOutputFnGetAttVPCEgressOnlyGWEIGW4D24FCEAId75399B0C"
    }
   },
   "ExportsOutputFnGetAttSharedRouteTable7A86E44FRouteTableId53F8A4E1": {

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e560b29933771e9cdf1141f2797d687b82a82b545c59c59c388bf283f8152f70.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/61ce0dc303cb24014d4b1ebda544e15d76b64ade22bd3a420024c856bd9a3f64.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -44,6 +44,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/VPC/AmazonProvidedIpv6CidrBlock": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/VPC/AmazonProvidedIpv6CidrBlock/AmazonProvidedIpv6CidrBlock": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCAmazonProvidedIpv6CidrBlockA44BAB04"
           }
         ],
         "/aws-cdk-ec2-alpha-shared-route-table/VPC/InternetGateway": [
@@ -74,6 +86,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1DefaultRouteBCD13929"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/VPC/EgressOnlyGW": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/VPC/EgressOnlyGW/EIGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCEgressOnlyGWEIGW4D24FCEA"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/VPC/PublicSubnet1-EgressRoute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-shared-route-table/VPC/PublicSubnet1-EgressRoute/Route": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1EgressRouteC0FA32F9"
           }
         ],
         "/aws-cdk-ec2-alpha-shared-route-table/SharedRouteTable": [
@@ -130,6 +166,12 @@
             "data": "ExportsOutputFnGetAttVPCInternetGatewayIGW3C1F5485InternetGatewayId25C881CB"
           }
         ],
+        "/aws-cdk-ec2-alpha-shared-route-table/Exports/Output{\"Fn::GetAtt\":[\"VPCEgressOnlyGWEIGW4D24FCEA\",\"Id\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttVPCEgressOnlyGWEIGW4D24FCEAId75399B0C"
+          }
+        ],
         "/aws-cdk-ec2-alpha-shared-route-table/Exports/Output{\"Fn::GetAtt\":[\"SharedRouteTable7A86E44F\",\"RouteTableId\"]}": [
           {
             "type": "aws:cdk:logicalId",
@@ -168,7 +210,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/deda2e8419683a1655605921ffe99d3d546d8b744fdfef81853e02600722f2c2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/91a951a036aa3acb8fc76026efb51554e5773a1c995c3756bd8caa5c60cadd25.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

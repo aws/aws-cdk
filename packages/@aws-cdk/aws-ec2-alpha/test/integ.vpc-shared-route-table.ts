@@ -17,6 +17,11 @@ const stack = new cdk.Stack(app, 'aws-cdk-ec2-alpha-shared-route-table');
 
 const vpc = new vpc_v2.VpcV2(stack, 'VPC', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
+  secondaryAddressBlocks: [
+    vpc_v2.IpAddresses.amazonProvidedIpv6({
+      cidrBlockName: 'AmazonProvidedIpv6CidrBlock',
+    }),
+  ],
   enableDnsHostnames: true,
   enableDnsSupport: true,
   vpcName: 'SharedRouteTableVPC',
@@ -52,6 +57,13 @@ vpc.addInternetGateway({
   internetGatewayName: 'SharedRouteTableIGW',
 });
 
+vpc.addEgressOnlyInternetGateway({
+  egressOnlyInternetGatewayName: 'SharedRouteTableEgressOnlyIGW',
+  subnets: [{
+    subnetType: SubnetType.PUBLIC,
+  }],
+});
+
 const integ = new IntegTest(app, 'VpcSharedRouteTableInteg', {
   testCases: [stack],
 });
@@ -65,17 +77,33 @@ const rtbassertion = integ.assertions.awsApiCall('ec2', 'DescribeRouteTablesComm
 rtbassertion.expect(ExpectedResult.objectLike({
   RouteTables: [
     Match.objectLike({
-      Routes: [
-        {
+      Routes: Match.arrayWith([
+        Match.objectLike({
           DestinationCidrBlock: '10.1.0.0/16',
           GatewayId: 'local',
-        },
-        // Default route to internet gateway (should be only one)
-        {
+          Origin: 'CreateRouteTable',
+          State: 'active',
+        }),
+        Match.objectLike({
           DestinationCidrBlock: '0.0.0.0/0',
           GatewayId: vpc.internetGatewayId,
-        },
-      ],
+          Origin: 'CreateRoute',
+          State: 'active',
+        }),
+        // Local route for IPv6 - this is automatically created for IPv6-enabled VPCs
+        Match.objectLike({
+          DestinationIpv6CidrBlock: Match.stringLikeRegexp('.*::/56'), // The actual CIDR will be assigned by AWS
+          GatewayId: 'local',
+          Origin: 'CreateRouteTable',
+          State: 'active',
+        }),
+        Match.objectLike({
+          DestinationIpv6CidrBlock: '::/0',
+          EgressOnlyInternetGatewayId: vpc.egressOnlyInternetGatewayId,
+          Origin: 'CreateRoute',
+          State: 'active',
+        }),
+      ]),
     }),
   ],
 }));
