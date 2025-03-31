@@ -312,8 +312,14 @@ describe('TableBucket', () => {
     });
 
     it('should skip validation for unresolved tokens', () => {
-      // const mockToken = { isUnresolved: true };
-      // core.Token.isUnresolved = jest.fn().mockReturnValue(true);
+      const isUnresolved = core.Token.isUnresolved;
+      core.Token.isUnresolved = jest.fn().mockReturnValue(true);
+      expect(() => s3tables.TableBucket.validateTableBucketName('unresolved')).not.toThrow();
+      // Cleanup
+      core.Token.isUnresolved = isUnresolved;
+    });
+
+    it('should skip validation for undefined name', () => {
       expect(() => s3tables.TableBucket.validateTableBucketName(undefined)).not.toThrow();
     });
 
