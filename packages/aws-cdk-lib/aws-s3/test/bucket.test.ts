@@ -4505,7 +4505,6 @@ describe('bucket', () => {
             replicationRole: new iam.Role(stack, 'ReplicationRole', {
               assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
             }),
-            replicationRules: [],
           });
         }).toThrow('cannot specify replicationRole when replicationRules is empty');
       });
