@@ -658,3 +658,39 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-events:requireEventBusPolicySid`
+
+When this flag is enabled:
+- Resource policies will be created with Statement IDs for service principals
+- The operation will succeed as expected
+
+When this flag is disabled:
+- A warning will be emitted
+- The grant operation will be dropped
+- No permissions will be added
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-events:requireEventBusPolicySid": true
+  }
+}
+```
+
+* `@aws-cdk/aws-dynamodb:retainTableReplica`
+
+Currently, table replica will always be deleted when stack deletes regardless of source table's deletion policy.
+When enabled, table replica will be default to the removal policy of source table unless specified otherwise.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-dynamodb:retainTableReplica": true
+  }
+}
+```
