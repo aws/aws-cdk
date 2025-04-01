@@ -289,7 +289,7 @@ function invokeAspectsV2(root: IConstruct) {
 
   throw new Error('We have detected a possible infinite loop while invoking Aspects. Please check your Aspects and verify there is no configuration that would cause infinite Aspect or Node creation.');
 
-  function recurse(construct: IConstruct, inheritedAspects: AspectApplication[]): 'invoked' | 'aspect-added' | 'nothing' {
+  function recurse(construct: IConstruct, inheritedAspects: AspectApplication[]): 'invoked' | 'abort-recursion' | 'nothing' {
     const node = construct.node;
 
     let ret: ReturnType<typeof recurse> = 'nothing';
@@ -315,7 +315,7 @@ function invokeAspectsV2(root: IConstruct) {
         );
       }
 
-      aspectApplication.aspect.visit(construct);
+      aspectApplication.aspect.visit(construct); // +500
 
       ret = 'invoked';
 
@@ -327,23 +327,17 @@ function invokeAspectsV2(root: IConstruct) {
       // entire tree. This could probably be made more efficient, but restarting
       // the tree from the top currently does it as well.
       if (currentAspectTreeRevision() !== versionAtStart) {
-        return 'aspect-added';
+        return 'abort-recursion';
       }
     }
 
     for (const child of construct.node.children) {
       if (!Stage.isStage(child)) {
         const childDidSomething = recurse(child, allAspectsHere);
-        switch (childDidSomething) {
-          case 'aspect-added':
-            // Must abort immediately if we see this.
-            return 'aspect-added';
-          case 'invoked':
-            // We have to keep on invoking until there's nothing left to do.
-            ret = 'invoked';
-            break;
-          default:
-            break;
+        ret = childDidSomething !== 'nothing' ? childDidSomething : ret;
+
+        if (ret === 'abort-recursion') {
+          break;
         }
       }
     }
