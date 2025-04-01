@@ -563,7 +563,7 @@
        }
       ],
       "Essential": true,
-      "Image": "amazon/cloudwatch-agent:latest",
+      "Image": "public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest",
       "LogConfiguration": {
        "LogDriver": "awslogs",
        "Options": {
@@ -813,7 +813,7 @@
        },
        {
         "Name": "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
-        "Value": "hhttp://cwagent-4316-http:4316/v1/traces"
+        "Value": "http://cwagent-4316-http:4316/v1/traces"
        },
        {
         "Name": "OTEL_TRACES_SAMPLER",
@@ -840,8 +840,8 @@
         "Value": "/otel-auto-instrumentation-python/opentelemetry/instrumentation/auto_instrumentation:/otel-auto-instrumentation-python"
        },
        {
-        "Name": "OTEL_RESOURCE_ATTRIBUTES",
-        "Value": "service.name=demo"
+        "Name": "OTEL_SERVICE_NAME",
+        "Value": "demo"
        }
       ],
       "Essential": true,
