@@ -697,7 +697,7 @@ _cdk.json_
 
 * `@aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue`
 
-When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console. 
+When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console.
 The previous behavior in cdk before this feature was; if only some of the BlockPublicAccessOptions were set (not all 4), then the ones undefined would default to false.
 This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
 The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
