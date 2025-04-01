@@ -58,25 +58,6 @@
       1
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-cognito-identitypool-alpha/lib/identitypool.ts": {
-    "IdentityPoolProviderType": [
-      "Facebook",
-      "Google",
-      "Amazon",
-      "Apple",
-      "Twitter",
-      "OpenId",
-      "Saml",
-      "UserPool",
-      "Custom"
-    ],
-    "RoleMappingMatchType": [
-      "Equals",
-      "Contains",
-      "StartsWith",
-      "NotEqual"
-    ]
-  },
   "aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/ipam.ts": {
     "AddressFamily": [
       "ipv4",
@@ -536,19 +517,6 @@
       "TASK",
       "OPERATOR",
       "PARALLELISM"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-kinesisfirehose-alpha/lib/delivery-stream.ts": {
-    "StreamEncryptionType": [
-      0,
-      1,
-      2
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-kinesisfirehose-destinations-alpha/lib/common.ts": {
-    "BackupMode": [
-      0,
-      1
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/packaging.ts": {
