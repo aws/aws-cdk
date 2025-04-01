@@ -701,7 +701,7 @@ When this feature flag is enabled, the SDK API call response to desribe user poo
 resource lambda function logs.
 
 When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom 
-resource lambda function logs.
+resource lambda function logs. 
 
 _cdk.json_
 
