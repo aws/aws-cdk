@@ -23,7 +23,7 @@ test('Via service, principal with conditions', () => {
   // WHEN
   const statement = new iam.PolicyStatement({
     actions: ['abc:call'],
-    principals: [new kms.ViaServicePrincipal('bla.amazonaws.com', new iam.OrganizationPrincipal('o-1234'))],
+    principals: [new kms.ViaServicePrincipal('bla.amazonaws.com', new iam.OrganizationPrincipal('o-12345abcde'))],
     resources: ['*'],
   });
 
@@ -33,7 +33,7 @@ test('Via service, principal with conditions', () => {
     Condition: {
       StringEquals: {
         'kms:ViaService': 'bla.amazonaws.com',
-        'aws:PrincipalOrgID': 'o-1234',
+        'aws:PrincipalOrgID': 'o-12345abcde',
       },
     },
     Effect: 'Allow',
