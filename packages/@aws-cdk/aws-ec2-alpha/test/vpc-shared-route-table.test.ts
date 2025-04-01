@@ -1,4 +1,4 @@
-import { Template } from 'aws-cdk-lib/assertions';
+import { Annotations, Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib/vpc-v2';
 import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
@@ -55,6 +55,25 @@ describe('VPC with shared route tables', () => {
 
     // Count the number of routes with this route table ID and destination 0.0.0.0/0
     template.hasResource('AWS::EC2::Route', 1);
+
+    // Verify no warning with public subnets
+    Annotations.fromStack(stack).hasNoWarning('/Default/TestVpc', 'Given Subnet is not a public subnet. Internet Gateway should be added only to public subnets. [ack: InternetGatewayWarning]');
+  });
+
+  test('addInternetGateway throws warning if route is being added for private subnet', () => {
+    const subnet = new SubnetV2(stack, 'Subnet', {
+      vpc: myVpc,
+      ipv4CidrBlock: new IpCidr('10.1.1.0/24'),
+      availabilityZone: 'us-east-1a',
+      subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+      routeTable: sharedRouteTable,
+    });
+
+    myVpc.addInternetGateway({
+      internetGatewayName: 'TestIGW',
+      subnets: [subnet],
+    });
+    Annotations.fromStack(stack).hasWarning('/Default/TestVpc', 'Given Subnet is not a public subnet. Internet Gateway should be added only to public subnets. [ack: InternetGatewayWarning]');
   });
 
   test('addInternetGateway with default public subnets sharing route table creates only one route', () => {
@@ -85,6 +104,9 @@ describe('VPC with shared route tables', () => {
 
     // Count the number of routes with this route table ID and destination 0.0.0.0/0
     template.hasResource('AWS::EC2::Route', 1);
+
+    // Verify no warning with public subnets
+    Annotations.fromStack(stack).hasNoWarning('/Default/TestVpc', 'Given Subnet is not a public subnet. Internet Gateway should be added only to public subnets. [ack: InternetGatewayWarning]');
   });
 
   test('addEgressOnlyInternetGateway with subnets sharing route table creates only one route', () => {

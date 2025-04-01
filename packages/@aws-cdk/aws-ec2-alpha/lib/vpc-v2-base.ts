@@ -540,6 +540,9 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     const processedSubnets = new Set<string>();
     const processedRouteTables = new Set<string>();
     subnets.forEach((subnet) => {
+      if (!this.publicSubnets.includes(subnet)) {
+        Annotations.of(this).addWarningV2('InternetGatewayWarning', `Given ${subnet.node.id} is not a public subnet. Internet Gateway should be added only to public subnets.`);
+      }
       if (!processedSubnets.has(subnet.node.id)) {
         if (subnet.routeTable && !processedRouteTables.has(subnet.routeTable.routeTableId)) {
           routeHandler(subnet);
