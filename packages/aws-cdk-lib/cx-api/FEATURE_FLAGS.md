@@ -93,6 +93,8 @@ Flags come in three types:
 | [@aws-cdk/aws-s3:setUniqueReplicationRoleName](#aws-cdkaws-s3setuniquereplicationrolename) | When enabled, CDK will automatically generate a unique role name that is used for s3 object replication. | 2.182.0 | (fix) |
 | [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | 2.184.0 | (default) |
 | [@aws-cdk/aws-events:requireEventBusPolicySid](#aws-cdkaws-eventsrequireeventbuspolicysid) | When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals. | 2.186.0 | (fix) |
+| [@aws-cdk/aws-dynamodb:retainTableReplica](#aws-cdkaws-dynamodbretaintablereplica) | When enabled, table replica will be default to the removal policy of source table unless specified otherwise. | 2.187.0 | (fix) |
+| [@aws-cdk/cognito:logUserPoolClientSecretValue](#aws-cdkcognitologuserpoolclientsecretvalue) | When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs. | 2.187.0 | (default) |
 | [@aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue](#aws-cdkaws-s3blockpublicaccessoptionautotrue) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | V2NEXT | (fix) |
 
 <!-- END table -->
@@ -174,6 +176,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true,
     "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
     "@aws-cdk/aws-events:requireEventBusPolicySid": true,
+    "@aws-cdk/aws-dynamodb:retainTableReplica": true,
     "@aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue": true
   }
 }
@@ -1767,6 +1770,39 @@ This fixes the issue where permissions were silently not being added for service
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.186.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-dynamodb:retainTableReplica
+
+*When enabled, table replica will be default to the removal policy of source table unless specified otherwise.* (fix)
+
+Currently, table replica will always be deleted when stack deletes regardless of source table's deletion policy.
+When enabled, table replica will be default to the removal policy of source table unless specified otherwise.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.187.0 | `false` | `true` |
+
+
+### @aws-cdk/cognito:logUserPoolClientSecretValue
+
+*When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.* (default)
+
+When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom 
+resource lambda function logs.
+
+When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom 
+resource lambda function logs.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.187.0 | `false` | `false` |
+
+**Compatibility with old behavior:** Enable the feature flag to keep the old behavior and log the client secret values
 
 
 ### @aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue
