@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd": {
-   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+  "AwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310": {
+   "Type": "Custom::DeployAssert@SdkCallCodePipelinegetPipeline",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,43 +9,21 @@
       "Arn"
      ]
     },
-    "service": "Lambda",
-    "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"Payload\":\"\\\"Authenticated\\\"\"}}",
+    "service": "CodePipeline",
+    "api": "getPipeline",
+    "expected": "{\"$StringLike\":\"codepipeline-integ-trigger-test\"}",
+    "actualPath": "pipeline.name",
     "parameters": {
-     "FunctionName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "IntegAlbOidc:ExportsOutputRefSignin352C80E64BA58F71"
-        },
-        "\""
-       ]
-      ]
-     }
+     "name": "\"codepipeline-integ-trigger-test\""
     },
-    "flattenResponse": "false",
-    "salt": "1743017150303"
+    "flattenResponse": "true",
+    "outputPaths": [
+     "pipeline.name"
+    ],
+    "salt": "1743445611942"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  },
-  "LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bdInvoke5A72F915": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::ImportValue": "IntegAlbOidc:ExportsOutputRefSignin352C80E64BA58F71"
-    },
-    "Principal": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
-      "Arn"
-     ]
-    }
-   }
   },
   "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
    "Type": "AWS::IAM::Role",
@@ -75,47 +53,7 @@
        "Statement": [
         {
          "Action": [
-          "lambda:Invoke"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "lambda:InvokeFunction"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          {
-           "Fn::Join": [
-            "",
-            [
-             "arn:",
-             {
-              "Ref": "AWS::Partition"
-             },
-             ":lambda:",
-             {
-              "Ref": "AWS::Region"
-             },
-             ":",
-             {
-              "Ref": "AWS::AccountId"
-             },
-             ":function:",
-             {
-              "Fn::ImportValue": "IntegAlbOidc:ExportsOutputRefSignin352C80E64BA58F71"
-             }
-            ]
-           ]
-          }
-         ]
-        },
-        {
-         "Action": [
-          "cognito-idp:AdminGetUser"
+          "codepipeline:GetPipeline"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -155,54 +93,13 @@
      ]
     }
    }
-  },
-  "AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837": {
-   "Type": "Custom::DeployAssert@SdkCallCognitoIdentityServiceProviderad",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "CognitoIdentityServiceProvider",
-    "api": "adminGetUser",
-    "expected": "{\"$ObjectLike\":{\"UserStatus\":\"CONFIRMED\",\"Enabled\":true,\"UserAttributes\":[{\"Name\":\"email\",\"Value\":\"test-user@example.com\"},{\"Name\":\"email_verified\",\"Value\":\"true\"},{\"Name\":\"sub\",\"Value\":{\"$StringLike\":\"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$\"}}]}}",
-    "parameters": {
-     "UserPoolId": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "IntegAlbOidc:ExportsOutputRefUserPool6BA7E5F296FD7236"
-        },
-        "\""
-       ]
-      ]
-     },
-     "Username": "\"test-user@example.com\""
-    },
-    "flattenResponse": "false",
-    "salt": "1743017150304"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsLambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd": {
+  "AssertionResultsAwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd",
-     "assertion"
-    ]
-   }
-  },
-  "AssertionResultsAwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837",
+     "AwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310",
      "assertion"
     ]
    }
