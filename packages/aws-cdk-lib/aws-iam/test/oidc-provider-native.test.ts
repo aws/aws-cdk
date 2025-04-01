@@ -11,7 +11,7 @@ describe('OidcProvider resource', () => {
     const stack = new Stack();
 
     // WHEN
-    const provider = new iam.OidcProvider(stack, 'MyProvider', {
+    const provider = new iam.OidcProviderNative(stack, 'MyProvider', {
       url: 'https://openid-endpoint',
       thumbprints: ['thumbprint'],
     });
@@ -27,7 +27,7 @@ describe('OidcProvider resource', () => {
     const stack = new Stack();
 
     // WHEN
-    const provider = iam.OidcProvider.fromOidcProviderArn(
+    const provider = iam.OidcProviderNative.fromOidcProviderArn(
       stack,
       'MyProvider',
       arnOfProvider,
@@ -44,7 +44,7 @@ describe('OidcProvider resource', () => {
     const stack = new Stack();
 
     // WHEN
-    new iam.OidcProvider(stack, 'MyProvider', {
+    new iam.OidcProviderNative(stack, 'MyProvider', {
       url: 'https://my-url',
       clientIds: ['client1', 'client2'],
       thumbprints: ['thumb1'],
@@ -65,7 +65,7 @@ describe('OIDC issuer', () => {
     const stack = new Stack();
 
     // WHEN
-    const provider = new iam.OidcProvider(stack, 'MyProvider', {
+    const provider = new iam.OidcProviderNative(stack, 'MyProvider', {
       url: 'https://my-issuer',
       thumbprints: ['thumb1'],
     });
@@ -84,7 +84,7 @@ describe('OIDC issuer', () => {
     const stack = new Stack();
 
     // WHEN
-    const provider = iam.OidcProvider.fromOidcProviderArn(
+    const provider = iam.OidcProviderNative.fromOidcProviderArn(
       stack,
       'MyProvider',
       arnOfProvider,
@@ -101,7 +101,7 @@ describe('OIDC issuer', () => {
     const stack = new Stack();
 
     // WHEN
-    const provider = iam.OidcProvider.fromOidcProviderArn(
+    const provider = iam.OidcProviderNative.fromOidcProviderArn(
       stack,
       'MyProvider',
       Token.asString({ Ref: 'ARN' }),
