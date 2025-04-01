@@ -315,7 +315,7 @@ function invokeAspectsV2(root: IConstruct) {
         );
       }
 
-      aspectApplication.aspect.visit(construct); // +500
+      aspectApplication.aspect.visit(construct);
 
       ret = 'invoked';
 
