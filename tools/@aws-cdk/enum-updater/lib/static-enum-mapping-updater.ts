@@ -30,13 +30,33 @@ export interface SdkEnums {
 }
 
 
-function extractEnums(schema: Record<string, any>, enums: { [enumName: string]: (string | number)[] }) {
+function extractEnums(schema: Record<string, any>, enums: { [enumName: string]: (string | number)[] }, excludeDict: Record<string, any>) {
   // Helper function to process a property and its potential enum values
   function processProperty(propertyName: string, property: any) {
       if (property.enum) {
+        if (propertyName in excludeDict) {
+          const excludeList = excludeDict[propertyName] as string[];
+          if (excludeList && excludeList.length > 0) {
+            // if property.enum include a value in excludeList, ignore the value
+            const filteredEnum = property.enum.filter((value: string) => !excludeList.includes(value));
+            enums[propertyName] = filteredEnum;
+          }
+        }
+        else {
           enums[propertyName] = property.enum;
+        }
       } else if (property.items?.enum) {
-          enums[propertyName] = property.items.enum;
+          if (propertyName in excludeDict) {
+            const excludeList = excludeDict[propertyName] as string[];
+            if (excludeList) {
+              // if property.enum include a value in excludeList, ignore the value
+              const filteredEnum = property.item.enum.filter((value: string) => !excludeList.includes(value));
+              enums[propertyName] = filteredEnum;
+            }
+          }
+          else {
+            enums[propertyName] = property.enum;
+          }
       }
 
       // Process nested properties
@@ -213,6 +233,8 @@ export async function parseAwsSdkEnums(sdkModelsPath: string): Promise<void> {
   try {
     const jsonFiles = getJsonFiles(sdkModelsPath);
 
+    const excludeEnums = readJsonFile(path.join(__dirname, 'exclude-values.json'));
+    
     for (const file of jsonFiles) {
       try {
         if (file == 'module.json') {
@@ -224,8 +246,10 @@ export async function parseAwsSdkEnums(sdkModelsPath: string): Promise<void> {
 
         const enumMap = sdkEnums[service] ?? {};
 
+        const excludeList = excludeEnums[service] ?? [];
+
         // Extract enums
-        extractEnums(jsonData, enumMap);
+        extractEnums(jsonData, enumMap, excludeList);
 
         sdkEnums[service] = enumMap;
       } catch (error) {

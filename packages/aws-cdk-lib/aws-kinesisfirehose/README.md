@@ -112,6 +112,16 @@ const s3Destination = new firehose.S3Bucket(bucket, {
 See: [Custom S3 Prefixes](https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html)
 in the *Amazon Data Firehose Developer Guide*.
 
+To override default file extension appended by Data Format Conversion or S3 compression features, specify `fileExtension`.
+
+```ts
+declare const bucket: s3.Bucket;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  compression: firehose.Compression.GZIP,
+  fileExtension: '.json.gz',
+});
+```
+
 ## Server-side Encryption
 
 Enabling server-side encryption (SSE) requires Amazon Data Firehose to encrypt all data
