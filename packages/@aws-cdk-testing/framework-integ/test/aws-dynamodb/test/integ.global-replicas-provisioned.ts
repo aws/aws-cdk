@@ -6,6 +6,7 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+    '@aws-cdk/aws-dynamodb:retainTableReplica': false,
   },
 });
 const stack = new cdk.Stack(app, 'aws-cdk-dynamodb-global-replicas-provisioned');
