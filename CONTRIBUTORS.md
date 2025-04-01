@@ -17,8 +17,8 @@ Shout out to our top contributors!
 - [TheRealAmazonKendra](https://github.com/TheRealAmazonKendra)
 - [comcalvi](https://github.com/comcalvi)
 - [go-to-k](https://github.com/go-to-k)
-- [madeline-k](https://github.com/madeline-k)
 - [badmintoncryer](https://github.com/badmintoncryer)
+- [madeline-k](https://github.com/madeline-k)
 - [NetaNir](https://github.com/NetaNir)
 - [robertd](https://github.com/robertd)
 - [MrArnoldPalmer](https://github.com/MrArnoldPalmer)
@@ -29,4 +29,4 @@ Shout out to our top contributors!
 - [GavinZZ](https://github.com/GavinZZ)
 
 
-_Last updated: Sat, 01 Mar 25 00:12:56 +0000_
+_Last updated: Tue, 01 Apr 25 09:38:50 +0000_
