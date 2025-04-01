@@ -547,7 +547,7 @@ describe('User Pool', () => {
     });
   });
 
-  test('add preTokenGeneration trigger v2', () => {
+  testDeprecated('add preTokenGeneration trigger v2', () => {
     // GIVEN
     const stack = new Stack();
     const kmsKey = fooKey(stack, 'TestKMSKey');
@@ -583,7 +583,42 @@ describe('User Pool', () => {
     });
   });
 
-  test('throw error when lambda trigger version v2 is specified for an invalid operation', () => {
+  test.each([
+    LambdaVersion.V2_0,
+    LambdaVersion.V3_0,
+  ])('add preTokenGeneration trigger %s', (lambdaVersion) => {
+    // GIVEN
+    const stack = new Stack();
+    const kmsKey = fooKey(stack, 'TestKMSKey');
+
+    const preTokenGeneration = fooFunction(stack, 'preTokenGeneration');
+
+    // WHEN
+    const pool = new UserPool(stack, 'Pool', {
+      customSenderKmsKey: kmsKey,
+      featurePlan: FeaturePlan.PLUS,
+    });
+    pool.addTrigger(UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG, preTokenGeneration, lambdaVersion);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      LambdaConfig: {
+        PreTokenGenerationConfig: {
+          LambdaArn: stack.resolve(preTokenGeneration.functionArn),
+          LambdaVersion: lambdaVersion,
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: stack.resolve(preTokenGeneration.functionArn),
+      Principal: 'cognito-idp.amazonaws.com',
+      SourceArn: stack.resolve(pool.userPoolArn),
+    });
+  });
+
+  testDeprecated('throw error when lambda trigger version v2 is specified for an invalid operation', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -600,7 +635,29 @@ describe('User Pool', () => {
         preTokenGeneration,
         LambdaVersion.V2_0,
       );
-    }).toThrow(/Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 lambda version./);
+    }).toThrow(/Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 and V3_0 lambda version./);
+  });
+
+  test.each([
+    LambdaVersion.V2_0,
+    LambdaVersion.V3_0,
+  ])('throw error when lambda trigger version %s is specified for an invalid operation', (lambdaVersion) => {
+    // GIVEN
+    const stack = new Stack();
+
+    const preTokenGeneration = fooFunction(stack, 'preTokenGeneration');
+
+    // WHEN
+    const pool = new UserPool(stack, 'Pool', {
+      featurePlan: FeaturePlan.PLUS,
+    });
+    expect(() => {
+      pool.addTrigger(
+        UserPoolOperation.PRE_TOKEN_GENERATION,
+        preTokenGeneration,
+        lambdaVersion,
+      );
+    }).toThrow(/Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 and V3_0 lambda version./);
   });
 
   test('can use same lambda as trigger for multiple user pools', () => {
