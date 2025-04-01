@@ -1,6 +1,7 @@
 import { SubscriptionProps } from './subscription';
 import * as sns from '../../aws-sns';
 import { Token } from '../../core';
+import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
 
 /**
  * Options for URL subscriptions.
@@ -37,7 +38,13 @@ export interface UrlSubscriptionProps extends SubscriptionProps {
  *
  * @see https://docs.aws.amazon.com/sns/latest/dg/sns-http-https-endpoint-as-subscriber.html
  */
+@propertyInjectionDecorator
 export class UrlSubscription implements sns.ITopicSubscription {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-sns-subscriptions.UrlSubscription';
+
   private readonly protocol: sns.SubscriptionProtocol;
   private readonly unresolvedUrl: boolean;
 
