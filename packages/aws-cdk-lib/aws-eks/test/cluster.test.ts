@@ -245,6 +245,96 @@ describe('cluster', () => {
     });
   });
 
+  test('should not throw when using vpc lookup with placeClusterHandlerInVpc and subnet filtering by ID', () => {
+    const vpcId = 'vpc-12345';
+    // can't use the regular fixture because it also adds a VPC to the stack, which prevents
+    // us from setting context.
+    const stack = new cdk.Stack(new cdk.App(), 'Stack', {
+      env: {
+        account: '11112222',
+        region: 'us-east-1',
+      },
+    });
+    stack.node.setContext(`vpc-provider:account=${stack.account}:filter.vpc-id=${vpcId}:region=${stack.region}:returnAsymmetricSubnets=true`, {
+      vpcId: vpcId,
+      vpcCidrBlock: '10.0.0.0/16',
+      subnetGroups: [
+        {
+          name: 'Private',
+          type: 'Private',
+          subnets: [
+            {
+              subnetId: 'subnet-private-1',
+              cidr: '10.0.1.0/24',
+              availabilityZone: 'us-east-1a',
+              routeTableId: 'rtb-123',
+            },
+            {
+              subnetId: 'subnet-private-2',
+              cidr: '10.0.2.0/24',
+              availabilityZone: 'us-east-1b',
+              routeTableId: 'rtb-456',
+            },
+          ],
+        },
+        {
+          name: 'Public',
+          type: 'Public',
+          subnets: [
+            {
+              subnetId: 'subnet-public-1',
+              cidr: '10.0.3.0/24',
+              availabilityZone: 'us-east-1a',
+              routeTableId: 'rtb-789',
+            },
+          ],
+        },
+      ],
+    });
+
+    const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
+      vpcId: vpcId,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'ProxyInstanceSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+
+    // This should not throw
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      vpc,
+      placeClusterHandlerInVpc: true,
+      clusterHandlerSecurityGroup: securityGroup,
+      vpcSubnets: [{
+        subnetFilters: [
+          ec2.SubnetFilter.byIds(['subnet-private-1', 'subnet-private-2']),
+        ],
+      }],
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
+
+    // verify that security group id is configured properly
+    Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+      VpcConfig: {
+        SecurityGroupIds: [{ Ref: 'referencetoStackProxyInstanceSG80B79D87GroupId' }],
+      },
+    });
+
+    // Verify the cluster is created with the correct subnets
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+      Config: Match.objectLike({
+        roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
+        version: CLUSTER_VERSION.version,
+        resourcesVpcConfig: {
+          subnetIds: ['subnet-private-1', 'subnet-private-2'],
+        },
+      }),
+    });
+  });
+
   test('security group of self-managed asg is not tagged with owned', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -2881,6 +2971,159 @@ describe('cluster', () => {
             ec2.Subnet.fromSubnetId(stack, 'Private', 'subnet-private-in-us-east-1a'),
             ec2.Subnet.fromSubnetId(stack, 'Public', 'subnet-public-in-us-east-1c'),
           ],
+        }],
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+        VpcConfig: { SubnetIds: ['subnet-private-in-us-east-1a'] },
+      });
+    });
+
+    test('private endpoint access selects private subnets from looked up vpc for filtering by IDs with given context', () => {
+      const vpcId = 'vpc-12345';
+      // can't use the regular fixture because it also adds a VPC to the stack, which prevents
+      // us from setting context.
+      const stack = new cdk.Stack(new cdk.App(), 'Stack', {
+        env: {
+          account: '11112222',
+          region: 'us-east-1',
+        },
+      });
+
+      stack.node.setContext(`vpc-provider:account=${stack.account}:filter.vpc-id=${vpcId}:region=${stack.region}:returnAsymmetricSubnets=true`, {
+        vpcId: vpcId,
+        vpcCidrBlock: '10.0.0.0/16',
+        subnetGroups: [
+          {
+            name: 'Private',
+            type: 'Private',
+            subnets: [
+              {
+                subnetId: 'subnet-private-in-us-east-1a',
+                cidr: '10.0.1.0/24',
+                availabilityZone: 'us-east-1a',
+                routeTableId: 'rtb-06068e4c4049921ef',
+              },
+            ],
+          },
+          {
+            name: 'Public',
+            type: 'Public',
+            subnets: [
+              {
+                subnetId: 'subnet-public-in-us-east-1c',
+                cidr: '10.0.0.0/24',
+                availabilityZone: 'us-east-1c',
+                routeTableId: 'rtb-0ff08e62195198dbb',
+              },
+            ],
+          },
+        ],
+      });
+
+      const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
+        vpcId: vpcId,
+      });
+
+      new eks.Cluster(stack, 'Cluster', {
+        vpc,
+        version: CLUSTER_VERSION,
+        prune: false,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        vpcSubnets: [{
+          subnetFilters: [
+            ec2.SubnetFilter.byIds(['subnet-private-in-us-east-1a']),
+          ],
+        }],
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+        VpcConfig: { SubnetIds: ['subnet-private-in-us-east-1a'] },
+      });
+    });
+
+    test('private endpoint access skips validation for private subnets from looked up vpc for filtering by IDs with no context', () => {
+      const vpcId = 'vpc-12345';
+      const stack = new cdk.Stack(new cdk.App(), 'Stack', {
+        env: {
+          account: '11112222',
+          region: 'us-east-1',
+        },
+      });
+
+      const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
+        vpcId: vpcId,
+      });
+
+      new eks.Cluster(stack, 'Cluster', {
+        vpc,
+        version: CLUSTER_VERSION,
+        prune: false,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        vpcSubnets: [{
+          subnetFilters: [
+            ec2.SubnetFilter.byIds(['subnet-private-in-us-east-1a']),
+          ],
+        }],
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+    });
+
+    test('private endpoint access validates private subnets from looked up vpc for other select subnet options', () => {
+      const vpcId = 'vpc-12345';
+      const stack = new cdk.Stack(new cdk.App(), 'Stack', {
+        env: {
+          account: '11112222',
+          region: 'us-east-1',
+        },
+      });
+
+      stack.node.setContext(`vpc-provider:account=${stack.account}:filter.vpc-id=${vpcId}:region=${stack.region}:returnAsymmetricSubnets=true`, {
+        vpcId: vpcId,
+        vpcCidrBlock: '10.0.0.0/16',
+        subnetGroups: [
+          {
+            name: 'Public',
+            type: 'Public',
+            subnets: [
+              {
+                subnetId: 'subnet-public-in-us-east-1c',
+                cidr: '10.0.0.0/24',
+                availabilityZone: 'us-east-1c',
+                routeTableId: 'rtb-0ff08e62195198dbb',
+              },
+            ],
+          },
+          {
+            name: 'Private',
+            type: 'Private',
+            subnets: [
+              {
+                subnetId: 'subnet-private-in-us-east-1a',
+                cidr: '10.0.1.0/24',
+                availabilityZone: 'us-east-1a',
+                routeTableId: 'rtb-06068e4c4049921ef',
+              },
+            ],
+          },
+        ],
+      });
+
+      const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
+        vpcId: vpcId,
+      });
+
+      new eks.Cluster(stack, 'Cluster', {
+        vpc,
+        version: CLUSTER_VERSION,
+        prune: false,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        vpcSubnets: [{
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
         }],
         kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       });

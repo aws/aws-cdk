@@ -241,6 +241,24 @@
        ]
       },
       {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnEventHandler42BEBAE0",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
        "Action": "states:StartExecution",
        "Effect": "Allow",
        "Resource": {
@@ -309,58 +327,6 @@
     "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133",
     "ProviderframeworkonEventServiceRole9FF04296"
    ]
-  },
-  "ProviderframeworkonEventinlinePolicyAddedToExecutionRole0D6E83756": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "OnEventHandler42BEBAE0",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "ProviderframeworkonEventinlinePolicyAddedToExecutionRole0D6E83756",
-    "Roles": [
-     {
-      "Ref": "ProviderframeworkonEventServiceRole9FF04296"
-     }
-    ]
-   }
-  },
-  "ProviderframeworkonEventinlinePolicyAddedToExecutionRole17772106B": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "IsCompleteHandler7073F4DA",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "ProviderframeworkonEventinlinePolicyAddedToExecutionRole17772106B",
-    "Roles": [
-     {
-      "Ref": "ProviderframeworkonEventServiceRole9FF04296"
-     }
-    ]
-   }
   },
   "ProviderframeworkisCompleteServiceRoleB1087139": {
    "Type": "AWS::IAM::Role",
@@ -443,6 +409,24 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnEventHandler42BEBAE0",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -503,58 +487,6 @@
     "ProviderframeworkisCompleteServiceRoleDefaultPolicy2E7140AC",
     "ProviderframeworkisCompleteServiceRoleB1087139"
    ]
-  },
-  "ProviderframeworkisCompleteinlinePolicyAddedToExecutionRole0DA398EFB": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "OnEventHandler42BEBAE0",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "ProviderframeworkisCompleteinlinePolicyAddedToExecutionRole0DA398EFB",
-    "Roles": [
-     {
-      "Ref": "ProviderframeworkisCompleteServiceRoleB1087139"
-     }
-    ]
-   }
-  },
-  "ProviderframeworkisCompleteinlinePolicyAddedToExecutionRole11B3461A6": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "IsCompleteHandler7073F4DA",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "ProviderframeworkisCompleteinlinePolicyAddedToExecutionRole11B3461A6",
-    "Roles": [
-     {
-      "Ref": "ProviderframeworkisCompleteServiceRoleB1087139"
-     }
-    ]
-   }
   },
   "ProviderframeworkonTimeoutServiceRole28643D26": {
    "Type": "AWS::IAM::Role",
@@ -637,6 +569,24 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnEventHandler42BEBAE0",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -697,58 +647,6 @@
     "ProviderframeworkonTimeoutServiceRoleDefaultPolicy2688969F",
     "ProviderframeworkonTimeoutServiceRole28643D26"
    ]
-  },
-  "ProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole03D28EB24": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "OnEventHandler42BEBAE0",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "ProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole03D28EB24",
-    "Roles": [
-     {
-      "Ref": "ProviderframeworkonTimeoutServiceRole28643D26"
-     }
-    ]
-   }
-  },
-  "ProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole10E895C60": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "IsCompleteHandler7073F4DA",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "ProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole10E895C60",
-    "Roles": [
-     {
-      "Ref": "ProviderframeworkonTimeoutServiceRole28643D26"
-     }
-    ]
-   }
   },
   "ProviderwaiterstatemachineRole0C7159F9": {
    "Type": "AWS::IAM::Role",

@@ -25,6 +25,7 @@ import {
   Token,
   Tokenization,
   Annotations,
+  PhysicalName,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -2544,6 +2545,22 @@ export class Bucket extends BucketBase {
         throw new ValidationError('All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`', self);
       }
 
+      // Validate transitions: exactly one of transitionDate or transitionAfter must be specified
+      if (rule.transitions) {
+        for (const transition of rule.transitions) {
+          const hasTransitionDate = transition.transitionDate !== undefined;
+          const hasTransitionAfter = transition.transitionAfter !== undefined;
+
+          if (!hasTransitionDate && !hasTransitionAfter) {
+            throw new ValidationError('Exactly one of transitionDate or transitionAfter must be specified in lifecycle rule transition', self);
+          }
+
+          if (hasTransitionDate && hasTransitionAfter) {
+            throw new ValidationError('Exactly one of transitionDate or transitionAfter must be specified in lifecycle rule transition', self);
+          }
+        }
+      }
+
       const x: CfnBucket.RuleProperty = {
         // eslint-disable-next-line max-len
         abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfter !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfter.toDays() } : undefined,
@@ -2664,7 +2681,7 @@ export class Bucket extends BucketBase {
     }
 
     if (accessControlRequiresObjectOwnership && this.objectOwnership === ObjectOwnership.BUCKET_OWNER_ENFORCED) {
-      throw new ValidationError (`objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`, this);
+      throw new ValidationError(`objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`, this);
     }
 
     return {
@@ -2787,9 +2804,7 @@ export class Bucket extends BucketBase {
 
     const replicationRole = new iam.Role(this, 'ReplicationRole', {
       assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
-      // To avoid the error where the replication role cannot be used during cross-account replication,
-      // it is necessary to set the `roleName`.
-      roleName: 'CDKReplicationRole',
+      roleName: FeatureFlags.of(this).isEnabled(cxapi.SET_UNIQUE_REPLICATION_ROLE_NAME) ? PhysicalName.GENERATE_IF_NEEDED : 'CDKReplicationRole',
     });
 
     // add permissions to the role
@@ -3292,6 +3307,21 @@ export enum EventType {
    * object’s ACL.
    */
   OBJECT_ACL_PUT = 's3:ObjectAcl:Put',
+
+  /**
+   * Using restore object event types you can receive notifications for
+   * initiation and completion when restoring objects from the S3 Glacier
+   * storage class.
+   *
+   * You use s3:ObjectRestore:* to request notification of
+   * any restoration event.
+   */
+  OBJECT_RESTORE = 's3:ObjectRestore:*',
+
+  /**
+   * You receive this notification event for any object replication event.
+   */
+  REPLICATION = 's3:Replication:*',
 }
 
 export interface NotificationKeyFilter {

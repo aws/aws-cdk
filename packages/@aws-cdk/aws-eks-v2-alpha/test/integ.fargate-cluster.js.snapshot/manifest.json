@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "eks-fargate-cluster-test-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7a6bcbf9eeec018eed54563f9ef3fbfa3e3b143620fc5ffd4a32ee78d50755f5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7e1cd5b4cb47e08605f1aff6db45963b0522d1fdced03eaf7b70a08c1b14084f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -394,10 +394,7 @@
         "/eks-fargate-cluster-test-stack/FargateTestCluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateTestClusterCAF9262D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "FargateTestClusterCAF9262D"
           }
         ],
         "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlReadyBarrier": [
@@ -794,10 +791,7 @@
         "/eks-fargate-cluster-test-stack/FargateTestCluster/ClusterAdminRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateTestClusterClusterAdminRoleAccess9EFE9888",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "FargateTestClusterClusterAdminRoleAccess9EFE9888"
           }
         ],
         "/eks-fargate-cluster-test-stack/FargateTestCluster/CoreDnsComputeTypePatch/Resource": [
@@ -843,10 +837,7 @@
         "/eks-fargate-cluster-test-stack/FargateTestCluster/fargate-profile-default/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateTestClusterfargateprofiledefault120EDDF6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "FargateTestClusterfargateprofiledefault120EDDF6"
           }
         ],
         "/eks-fargate-cluster-test-stack/LatestNodeRuntimeMap": [
@@ -942,5 +933,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

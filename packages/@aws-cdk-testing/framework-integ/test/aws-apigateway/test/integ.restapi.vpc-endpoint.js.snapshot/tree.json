@@ -1926,6 +1926,16 @@
                       "*"
                     ]
                   }
+                },
+                {
+                  "addToResourcePolicy": [
+                    {}
+                  ]
+                },
+                {
+                  "addToResourcePolicy": [
+                    {}
+                  ]
                 }
               ]
             }
@@ -1999,6 +2009,86 @@
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "ApiGatewayVpcEndpointTestStack/TestFunction0/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "ApiGatewayVpcEndpointTestStack/TestFunction0/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "execute-api:Invoke",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":execute-api:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "ApiF70053CD"
+                                        },
+                                        "/*/*/*"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "TestFunction0ServiceRoleDefaultPolicy02794024",
+                            "roles": [
+                              {
+                                "Ref": "TestFunction0ServiceRoleD0765191"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
+                    }
                   }
                 },
                 "constructInfo": {
@@ -2017,6 +2107,11 @@
                         {
                           "managedPolicyArn": "*"
                         }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
                       ]
                     },
                     {
@@ -2151,88 +2246,6 @@
                   "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
-              },
-              "inlinePolicyAddedToExecutionRole-0": {
-                "id": "inlinePolicyAddedToExecutionRole-0",
-                "path": "ApiGatewayVpcEndpointTestStack/TestFunction0/inlinePolicyAddedToExecutionRole-0",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "ApiGatewayVpcEndpointTestStack/TestFunction0/inlinePolicyAddedToExecutionRole-0/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                      "aws:cdk:cloudformation:props": {
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "execute-api:Invoke",
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":execute-api:",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    ":",
-                                    {
-                                      "Ref": "AWS::AccountId"
-                                    },
-                                    ":",
-                                    {
-                                      "Ref": "ApiF70053CD"
-                                    },
-                                    "/*/*/*"
-                                  ]
-                                ]
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "policyName": "TestFunction0inlinePolicyAddedToExecutionRole00B5803B5",
-                        "roles": [
-                          {
-                            "Ref": "TestFunction0ServiceRoleD0765191"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "statements": "*"
-                    },
-                    {
-                      "addStatements": [
-                        {}
-                      ]
-                    },
-                    {
-                      "attachToRole": [
-                        "*"
-                      ]
-                    },
-                    {
-                      "attachToRole": [
-                        "*"
-                      ]
-                    }
-                  ]
-                }
               }
             },
             "constructInfo": {
@@ -2324,6 +2337,86 @@
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "ApiGatewayVpcEndpointTestStack/TestFunction1/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "ApiGatewayVpcEndpointTestStack/TestFunction1/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "execute-api:Invoke",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":execute-api:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "ApiF70053CD"
+                                        },
+                                        "/*/*/*"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "TestFunction1ServiceRoleDefaultPolicyEA6A8ACA",
+                            "roles": [
+                              {
+                                "Ref": "TestFunction1ServiceRoleFF9BD7F5"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
+                    }
                   }
                 },
                 "constructInfo": {
@@ -2342,6 +2435,11 @@
                         {
                           "managedPolicyArn": "*"
                         }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
                       ]
                     },
                     {
@@ -2475,88 +2573,6 @@
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
-                }
-              },
-              "inlinePolicyAddedToExecutionRole-0": {
-                "id": "inlinePolicyAddedToExecutionRole-0",
-                "path": "ApiGatewayVpcEndpointTestStack/TestFunction1/inlinePolicyAddedToExecutionRole-0",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "ApiGatewayVpcEndpointTestStack/TestFunction1/inlinePolicyAddedToExecutionRole-0/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                      "aws:cdk:cloudformation:props": {
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "execute-api:Invoke",
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":execute-api:",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    ":",
-                                    {
-                                      "Ref": "AWS::AccountId"
-                                    },
-                                    ":",
-                                    {
-                                      "Ref": "ApiF70053CD"
-                                    },
-                                    "/*/*/*"
-                                  ]
-                                ]
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "policyName": "TestFunction1inlinePolicyAddedToExecutionRole054C03DAF",
-                        "roles": [
-                          {
-                            "Ref": "TestFunction1ServiceRoleFF9BD7F5"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "statements": "*"
-                    },
-                    {
-                      "addStatements": [
-                        {}
-                      ]
-                    },
-                    {
-                      "attachToRole": [
-                        "*"
-                      ]
-                    },
-                    {
-                      "attachToRole": [
-                        "*"
-                      ]
-                    }
-                  ]
                 }
               }
             },

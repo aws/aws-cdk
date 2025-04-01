@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { ILogGroup } from './log-group';
 import { IBucket } from '../../aws-s3';
-import { Stack } from '../../core';
+import { Stack, UnscopedValidationError } from '../../core';
 /**
  * Creates a data protection policy for CloudWatch Logs log groups.
  */
@@ -10,7 +10,7 @@ export class DataProtectionPolicy {
 
   constructor(props: DataProtectionPolicyProps) {
     if (props.identifiers.length == 0) {
-      throw new Error('DataIdentifier cannot be empty');
+      throw new UnscopedValidationError('DataIdentifier cannot be empty');
     }
     this.dataProtectionPolicyProps = props;
   }
@@ -165,7 +165,7 @@ export interface DataProtectionPolicyProps {
   readonly s3BucketAuditDestination?: IBucket;
 
   /**
-   * Amazon Kinesis Data Firehose delivery stream to send audit findings to. The delivery stream must already exist.
+   * Amazon Data Firehose delivery stream to send audit findings to. The delivery stream must already exist.
    *
    * @default - no firehose delivery stream audit destination
    */

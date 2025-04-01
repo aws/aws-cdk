@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
 import { App, CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
-import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern } from '../lib';
+import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern, FieldIndexPolicy } from '../lib';
 
 describe('log group', () => {
   test('set kms key when provided', () => {
@@ -921,6 +921,66 @@ describe('log group', () => {
   });
 });
 
+test('set field index policy with four fields indexed', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  const fieldIndexPolicy = new FieldIndexPolicy({
+    fields: ['Operation', 'RequestId', 'timestamp', 'message'],
+  });
+
+  // WHEN
+  const logGroupName = 'test-field-index-log-group';
+  new LogGroup(stack, 'LogGroup', {
+    logGroupName: logGroupName,
+    fieldIndexPolicies: [fieldIndexPolicy],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+    LogGroupName: logGroupName,
+    FieldIndexPolicies: [{
+      Fields: [
+        'Operation',
+        'RequestId',
+        'timestamp',
+        'message',
+      ],
+    }],
+  });
+});
+
+test('set more than 20 field indexes in a field index policy', () => {
+  let message;
+  try {
+    // GIVEN
+    const stack = new Stack();
+    const fieldIndexPolicy = new FieldIndexPolicy({
+      fields: createMoreThan20FieldIndexes(),
+    });
+
+    // WHEN
+    const logGroupName = 'test-field-multiple-field-index-policies';
+    new LogGroup(stack, 'LogGroup', {
+      logGroupName: logGroupName,
+      fieldIndexPolicies: [fieldIndexPolicy],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: logGroupName,
+      FieldIndexPolicies: [{
+        Fields: ['abc'],
+      }],
+    });
+  } catch (e) {
+    message = (e as Error).message;
+  }
+
+  expect(message).toBeDefined();
+  expect(message).toEqual('A maximum of 20 fields can be indexed per log group');
+});
+
 describe('subscription filter', () => {
   test('add subscription filter with custom name', () => {
     // GIVEN
@@ -951,6 +1011,14 @@ function dataDrivenTests(cases: string[], body: (suffix: string) => void): void 
       body(args);
     });
   }
+}
+
+function createMoreThan20FieldIndexes(): string[] {
+  let arr: string[] = [];
+  for (let i = 0; i < 23; i++) {
+    arr.push('abc' + i.toString());
+  }
+  return arr;
 }
 
 class FakeDestination implements ILogSubscriptionDestination {

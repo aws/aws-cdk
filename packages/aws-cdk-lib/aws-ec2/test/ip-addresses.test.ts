@@ -12,12 +12,12 @@ describe('Cidr vpc allocation', () => {
 
   test('Default Cidr returns ipv4IpamPoolId as undefined', () => {
     const ipAddresses = IpAddresses.cidr('10.0.0.0/16');
-    expect(ipAddresses.allocateVpcCidr().ipv4IpamPoolId).toBeUndefined;
+    expect(ipAddresses.allocateVpcCidr().ipv4IpamPoolId).toBeUndefined();
   });
 
   test('Default Cidr returns ipv4NetmaskLength as undefined', () => {
     const ipAddresses = IpAddresses.cidr('10.0.0.0/16');
-    expect(ipAddresses.allocateVpcCidr().ipv4NetmaskLength).toBeUndefined;
+    expect(ipAddresses.allocateVpcCidr().ipv4NetmaskLength).toBeUndefined();
   });
 });
 
@@ -102,7 +102,7 @@ describe('AwsIpam vpc allocation', () => {
 
   test('AwsIpam returns cidrBlock as undefined', () => {
     const ipAddresses = IpAddresses.awsIpamAllocation(awsIpamProps);
-    expect(ipAddresses.allocateVpcCidr().cidrBlock).toBeUndefined;
+    expect(ipAddresses.allocateVpcCidr().cidrBlock).toBeUndefined();
   });
 
   test('AwsIpam returns the correct vpc ipv4IpamPoolId', () => {

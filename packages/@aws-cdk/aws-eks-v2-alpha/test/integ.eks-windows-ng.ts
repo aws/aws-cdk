@@ -50,7 +50,11 @@ class EksClusterStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-windows-ng-test');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-windows-ng', {

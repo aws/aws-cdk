@@ -253,6 +253,13 @@ export class Runtime {
   });
 
   /**
+   * The .NET 9 runtime (dotnet9)
+   */
+  public static readonly DOTNET_9 = new Runtime('dotnet9', RuntimeFamily.DOTNET_CORE, {
+    supportsSnapStart: true,
+  });
+
+  /**
    * The .NET Core 1.0 runtime (dotnetcore1.0)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */
@@ -303,6 +310,11 @@ export class Runtime {
    * The Ruby 3.3 runtime (ruby3.3)
    */
   public static readonly RUBY_3_3 = new Runtime('ruby3.3', RuntimeFamily.RUBY);
+
+  /**
+   * The Ruby 3.4 runtime (ruby3.4)
+   */
+  public static readonly RUBY_3_4 = new Runtime('ruby3.4', RuntimeFamily.RUBY);
 
   /**
    * The custom provided runtime (provided)

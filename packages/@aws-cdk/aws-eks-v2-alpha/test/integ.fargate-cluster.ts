@@ -23,7 +23,11 @@ class EksFargateClusterStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 const stack = new EksFargateClusterStack(app, 'eks-fargate-cluster-test-stack', {});
 new integ.IntegTest(app, 'eks-fargate-cluster', {
   testCases: [stack],

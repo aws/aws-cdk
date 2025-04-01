@@ -14,6 +14,10 @@ export enum StorageType {
    * Hard Disk Drive storage
    */
   HDD = 'HDD',
+  /**
+   * Intelligent Tiering storage
+   */
+  INTELLIGENT_TIERING = 'INTELLIGENT_TIERING',
 }
 
 /**
