@@ -83,7 +83,7 @@ new appsignals.ApplicationSignalsIntegration(stack, 'TestEc2TaskDefinitionIntegr
       value: 'http://cwagent-4316-http:4316/v1/metrics',
     }, {
       name: appsignals.TraceExporting.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT,
-      value: 'hhttp://cwagent-4316-http:4316/v1/traces',
+      value: 'http://cwagent-4316-http:4316/v1/traces',
     }, {
       name: appsignals.TraceExporting.OTEL_TRACES_SAMPLER_ARG,
       value: 'endpoint=http://cwagent-2000-http:2000',
