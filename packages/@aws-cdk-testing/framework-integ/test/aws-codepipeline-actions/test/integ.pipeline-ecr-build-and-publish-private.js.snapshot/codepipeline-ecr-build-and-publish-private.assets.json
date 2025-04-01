@@ -1,16 +1,15 @@
 {
-  "version": "41.0.0",
+  "version": "40.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
-      "displayName": "integiamroleDefaultTestDeployAssert48737E31 Template",
+    "7f96267a2a5edbc12aadfa24a62a951f1866f1459b3c29f1b91f554f449f3b19": {
       "source": {
-        "path": "integiamroleDefaultTestDeployAssert48737E31.template.json",
+        "path": "codepipeline-ecr-build-and-publish-private.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "7f96267a2a5edbc12aadfa24a62a951f1866f1459b3c29f1b91f554f449f3b19.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
