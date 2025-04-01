@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Construct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
 import { App, DefaultStackSynthesizer, DockerBuildSecret, IgnoreMode, Lazy, LegacyStackSynthesizer, Stack, Stage } from '../../core';
 import * as cxapi from '../../cx-api';
@@ -280,6 +281,29 @@ test('nested assemblies share assets: default synth edition', () => {
     expect(manifest.dockerImages[DEMO_IMAGE_ASSET_HASH].source).toEqual({
       directory: `../asset.${DEMO_IMAGE_ASSET_HASH}`,
     });
+  }
+});
+
+test('assets have a display name based on their construct path', () => {
+  // GIVEN
+  const app = new App();
+  const stack1 = new Stack(new Stage(app, 'Stage1'), 'Stack');
+  const ctr1 = new Construct(stack1, 'Ctr');
+
+  // WHEN
+  new DockerImageAsset(ctr1, 'MyImage', { directory: path.join(__dirname, 'demo-image') });
+
+  // THEN
+  const assembly = app.synth();
+
+  // Read the assets from the asset manifest
+  for (const stageName of ['Stage1']) {
+    const manifestArtifact = assembly.getNestedAssembly(`assembly-${stageName}`).artifacts.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact)[0];
+    const manifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
+
+    expect(manifest.dockerImages[DEMO_IMAGE_ASSET_HASH]).toEqual(expect.objectContaining({
+      displayName: 'Ctr/MyImage',
+    }));
   }
 });
 
