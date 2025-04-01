@@ -13,6 +13,7 @@ export * from './kinesis-stream';
 export * from './log-group';
 export * from './kinesis-firehose-stream';
 export * from './api-gateway';
+export * from './api-gatewayv2';
 export * from './api-destination';
 export * from './appsync';
 export * from './util';

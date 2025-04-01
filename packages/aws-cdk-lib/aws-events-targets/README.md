@@ -319,6 +319,19 @@ rule.addTarget(
 )
 ```
 
+## Invoke an API Gateway V2 HTTP API
+
+Use the `ApiGatewayV2` target to trigger a HTTP API.
+
+```ts
+import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
+
+declare const httpApi: apigwv2.HttpApi;
+declare const rule: events.Rule;
+
+rule.addTarget(new targets.ApiGatewayV2(httpApi));
+```
+
 ## Invoke an API Destination
 
 Use the `targets.ApiDestination` target to trigger an external API. You need to
