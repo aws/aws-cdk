@@ -1400,6 +1400,14 @@ describe('vpc', () => {
         DependsOn: ['TheVPCipv6cidrF3E84E30'],
       });
     });
+
+    test('warns when availabilityZones is empty', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        availabilityZones: [],
+      });
+      Annotations.fromStack(stack).hasWarning('/TestStack/VPC', 'An empty list of availabilityZones was provided. This is probably not intended and may cause errors when configuring subnets (More info: https://github.com/aws/aws-cdk/pull/33993) [ack: @aws-cdk/aws-ec2:emptyVpcAvailabilityZones]');
+    });
   });
 
   describe('fromVpcAttributes', () => {

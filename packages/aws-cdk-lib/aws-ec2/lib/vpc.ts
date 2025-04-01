@@ -1594,6 +1594,12 @@ export class Vpc extends VpcBase {
     const defaultSubnet = props.natGateways === 0 ? Vpc.DEFAULT_SUBNETS_NO_NAT : Vpc.DEFAULT_SUBNETS;
     this.subnetConfiguration = ifUndefined(props.subnetConfiguration, defaultSubnet);
 
+    // Validate that at least one availability zone was provided if subnets are to be created
+    if (this.subnetConfiguration.length > 0 && this.availabilityZones.length == 0) {
+      // eslint-disable-next-line max-len
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:emptyVpcAvailabilityZones', 'An empty list of availabilityZones was provided. This is probably not intended and may cause errors when configuring subnets (More info: https://github.com/aws/aws-cdk/pull/33993)');
+    }
+
     const natGatewayPlacement = props.natGatewaySubnets || { subnetType: SubnetType.PUBLIC };
     const natGatewayCount = determineNatGatewayCount(props.natGateways, this.subnetConfiguration, this.availabilityZones.length);
 

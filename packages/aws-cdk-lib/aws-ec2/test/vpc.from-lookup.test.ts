@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { Annotations } from '../../assertions';
 import * as cxschema from '../../cloud-assembly-schema';
 import { ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
@@ -179,6 +180,22 @@ describe('vpc from lookup', () => {
 
       // THEN
       expect(subnets.subnets.length).toEqual(2);
+    });
+
+    test('allows empty availabilityZones in dummy lookup VPC subnets', () => {
+      // GIVEN
+      const stack = new Stack(undefined, 'MyTestStack', { env: { account: '1234567890', region: 'dummy' } });
+      const vpc = Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+
+      // WHEN
+      const subnets = vpc.selectSubnets({
+        availabilityZones: [],
+      });
+
+      // THEN
+      expect(subnets.subnets.length).toEqual(0);
+
+      Annotations.fromStack(stack).hasNoWarning('/TestStack/VPC', 'An empty list of availabilityZones was provided. This is probably not intended and may cause errors when configuring subnets (More info: https://github.com/aws/aws-cdk/pull/33993) [ack: @aws-cdk/aws-ec2:emptyVpcAvailabilityZones]');
     });
 
     test('don\'t crash when using subnetgroup name in lookup VPC', () => {
