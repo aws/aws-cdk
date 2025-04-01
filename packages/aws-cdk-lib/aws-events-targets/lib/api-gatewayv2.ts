@@ -29,7 +29,7 @@ export class ApiGatewayV2 implements events.IRuleTarget {
    * Returns a RuleTarget that can be used to trigger this API Gateway HTTP APIs
    * as a result from an EventBridge event.
    *
-   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sqs-permissions
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-use-resource-based.html#eb-api-gateway-permissions
    */
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
     if (this.props?.deadLetterQueue) {
