@@ -1,6 +1,5 @@
 # AWS CodePipeline Construct Library
 
-
 ## Pipeline
 
 To construct an empty Pipeline:
@@ -825,13 +824,14 @@ new codepipeline.Pipeline(this, 'Pipeline', {
 ```
 
 ## Stage Level Condition
+
 Conditions are used for specific types of expressions and each has specific options for results available as follows:
 
-    Entry - The conditions for making checks that, if met, allow entry to a stage. Rules are engaged with the following result options: Fail or Skip
+  Entry - The conditions for making checks that, if met, allow entry to a stage. Rules are engaged with the following result options: Fail or Skip
 
-    On Failure - The conditions for making checks for the stage when it fails. Rules are engaged with the following result option: Rollback
+  On Failure - The conditions for making checks for the stage when it fails. Rules are engaged with the following result option: Rollback
 
-    On Success - The conditions for making checks for the stage when it succeeds. Rules are engaged with the following result options: Rollback or Fail
+  On Success - The conditions for making checks for the stage when it succeeds. Rules are engaged with the following result options: Rollback or Fail
 
 Conditions are supported by a set of rules for each type of condition.
 
@@ -902,6 +902,10 @@ new codepipeline.Pipeline(this, 'Pipeline', {
 
 });
 ```
+
+## Use pipeline service role as default action role in pipeline
+
+You could enable this field to use pipeline service role as default action role in Codepipeline by set `usePipelineServiceRoleForActions` as true if no action role provided.
 
 ## Migrating a pipeline type from V1 to V2
 
