@@ -31,12 +31,28 @@
        "Principal": {
         "Service": "s3.amazonaws.com"
        },
-       "Resource": {
-        "Fn::GetAtt": [
-         "grantreadwritebucketBB3EF996",
-         "TableBucketARN"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "grantreadwritebucketBB3EF996",
+          "TableBucketARN"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "grantreadwritebucketBB3EF996",
+             "TableBucketARN"
+            ]
+           },
+           "/table/s3.amazonaws.com"
+          ]
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"

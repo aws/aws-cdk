@@ -15,7 +15,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"$ObjectLike\":{\"resourcePolicy\":{\"$SerializedJson\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"s3.amazonaws.com\"},\"Action\":[\"s3tables:Get*\",\"s3tables:ListNamespace\",\"s3tables:ListTables\"],\"Resource\":{\"$StringLike\":\"arn:aws:s3tables:",
+       "{\"$ObjectLike\":{\"resourcePolicy\":{\"$SerializedJson\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"s3.amazonaws.com\"},\"Action\":[\"s3tables:Get*\",\"s3tables:ListNamespace\",\"s3tables:ListTables\"],\"Resource\":[{\"$StringLike\":\"arn:aws:s3tables:",
        {
         "Ref": "AWS::Region"
        },
@@ -23,7 +23,15 @@
        {
         "Ref": "AWS::AccountId"
        },
-       ":bucket/grant-read-bucket\"}}]}}}}"
+       ":bucket/grant-read-bucket\"},{\"$StringLike\":\"arn:aws:s3tables:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":bucket/grant-read-bucket/table/s3.amazonaws.com\"}]}]}}}}"
       ]
      ]
     },
@@ -42,7 +50,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1743439051353"
+    "salt": "1743551501542"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -149,7 +157,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6eae57da2b343229b97cfa6b9fd2a70b0a928ebe32bb59e744e59440381146af.zip"
+     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -211,7 +219,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1743439051354"
+    "salt": "1743551501543"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -231,7 +239,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"$ObjectLike\":{\"resourcePolicy\":{\"$SerializedJson\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"s3.amazonaws.com\"},\"Action\":[\"s3tables:CreateNamespace\",\"s3tables:CreateTable\",\"s3tables:DeleteNamespace\",\"s3tables:PutTableBucketMaintenanceConfiguration\",\"s3tables:PutTableData\",\"s3tables:RenameTable\",\"s3tables:UpdateTableMetadataLocation\"],\"Resource\":{\"$StringLike\":\"arn:aws:s3tables:",
+       "{\"$ObjectLike\":{\"resourcePolicy\":{\"$SerializedJson\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"s3.amazonaws.com\"},\"Action\":[\"s3tables:CreateNamespace\",\"s3tables:CreateTable\",\"s3tables:DeleteNamespace\",\"s3tables:PutTableBucketMaintenanceConfiguration\",\"s3tables:PutTableData\",\"s3tables:RenameTable\",\"s3tables:UpdateTableMetadataLocation\"],\"Resource\":[{\"$StringLike\":\"arn:aws:s3tables:",
        {
         "Ref": "AWS::Region"
        },
@@ -239,7 +247,15 @@
        {
         "Ref": "AWS::AccountId"
        },
-       ":bucket/grant-write-bucket\"}}]}}}}"
+       ":bucket/grant-write-bucket\"},{\"$StringLike\":\"arn:aws:s3tables:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":bucket/grant-write-bucket/table/s3.amazonaws.com\"}]}]}}}}"
       ]
      ]
     },
@@ -258,7 +274,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1743439051355"
+    "salt": "1743551501543"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -313,7 +329,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1743439051355"
+    "salt": "1743551501544"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -333,7 +349,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"$ObjectLike\":{\"resourcePolicy\":{\"$SerializedJson\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"s3.amazonaws.com\"},\"Action\":[\"s3tables:CreateNamespace\",\"s3tables:CreateTable\",\"s3tables:DeleteNamespace\",\"s3tables:Get*\",\"s3tables:ListNamespace\",\"s3tables:ListTables\",\"s3tables:PutTableBucketMaintenanceConfiguration\",\"s3tables:PutTableData\",\"s3tables:RenameTable\",\"s3tables:UpdateTableMetadataLocation\"],\"Resource\":{\"$StringLike\":\"arn:aws:s3tables:",
+       "{\"$ObjectLike\":{\"resourcePolicy\":{\"$SerializedJson\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"s3.amazonaws.com\"},\"Action\":[\"s3tables:CreateNamespace\",\"s3tables:CreateTable\",\"s3tables:DeleteNamespace\",\"s3tables:Get*\",\"s3tables:ListNamespace\",\"s3tables:ListTables\",\"s3tables:PutTableBucketMaintenanceConfiguration\",\"s3tables:PutTableData\",\"s3tables:RenameTable\",\"s3tables:UpdateTableMetadataLocation\"],\"Resource\":[{\"$StringLike\":\"arn:aws:s3tables:",
        {
         "Ref": "AWS::Region"
        },
@@ -341,7 +357,15 @@
        {
         "Ref": "AWS::AccountId"
        },
-       ":bucket/grant-read-write-bucket\"}}]}}}}"
+       ":bucket/grant-read-write-bucket\"},{\"$StringLike\":\"arn:aws:s3tables:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":bucket/grant-read-write-bucket/table/s3.amazonaws.com\"}]}]}}}}"
       ]
      ]
     },
@@ -360,7 +384,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1743439051355"
+    "salt": "1743551501544"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -415,7 +439,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1743439051355"
+    "salt": "1743551501544"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

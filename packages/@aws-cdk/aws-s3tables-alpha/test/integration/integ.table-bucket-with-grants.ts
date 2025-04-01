@@ -6,9 +6,11 @@ import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as perms from '../../lib/permissions';
 
 const PRINCIPAL = 's3.amazonaws.com';
+const TABLE_ID = 's3.amazonaws.com';
+const WILDCARD = '*';
 
 enum TestType {
-  BUCKET_ONLY,
+  SINGLE_TABLE,
   ALL_TABLES,
 }
 
@@ -33,10 +35,10 @@ abstract class GrantTestBase extends core.Stack {
 
 class GrantReadTest extends GrantTestBase {
   tableBucketName = 'grant-read-bucket';
-  type = TestType.BUCKET_ONLY;
+  type = TestType.SINGLE_TABLE;
   actions = perms.TABLE_BUCKET_READ_ACCESS;
   grantAccess() {
-    this.tableBucket.grantRead(new iam.ServicePrincipal(PRINCIPAL));
+    this.tableBucket.grantRead(new iam.ServicePrincipal(PRINCIPAL), TABLE_ID);
   }
 }
 
@@ -45,16 +47,16 @@ class GrantReadAllTablesTest extends GrantTestBase {
   type = TestType.ALL_TABLES;
   actions = perms.TABLE_BUCKET_READ_ACCESS;
   grantAccess() {
-    this.tableBucket.grantRead(new iam.ServicePrincipal(PRINCIPAL), '*');
+    this.tableBucket.grantRead(new iam.ServicePrincipal(PRINCIPAL), WILDCARD);
   }
 }
 
 class GrantWriteTest extends GrantTestBase {
   tableBucketName = 'grant-write-bucket';
-  type = TestType.BUCKET_ONLY;
+  type = TestType.SINGLE_TABLE;
   actions = perms.TABLE_BUCKET_WRITE_ACCESS;
   grantAccess() {
-    this.tableBucket.grantWrite(new iam.ServicePrincipal(PRINCIPAL));
+    this.tableBucket.grantWrite(new iam.ServicePrincipal(PRINCIPAL), TABLE_ID);
   }
 }
 
@@ -63,16 +65,16 @@ class GrantWriteAllTablesTest extends GrantTestBase {
   type = TestType.ALL_TABLES;
   actions = perms.TABLE_BUCKET_WRITE_ACCESS;
   grantAccess() {
-    this.tableBucket.grantWrite(new iam.ServicePrincipal(PRINCIPAL), '*');
+    this.tableBucket.grantWrite(new iam.ServicePrincipal(PRINCIPAL), WILDCARD);
   }
 }
 
 class GrantReadWriteTest extends GrantTestBase {
   tableBucketName = 'grant-read-write-bucket';
-  type = TestType.BUCKET_ONLY;
+  type = TestType.SINGLE_TABLE;
   actions = perms.TABLE_BUCKET_READ_WRITE_ACCESS;
   grantAccess() {
-    this.tableBucket.grantReadWrite(new iam.ServicePrincipal(PRINCIPAL));
+    this.tableBucket.grantReadWrite(new iam.ServicePrincipal(PRINCIPAL), TABLE_ID);
   }
 }
 
@@ -81,7 +83,7 @@ class GrantReadWriteAllTablesTest extends GrantTestBase {
   type = TestType.ALL_TABLES;
   actions = perms.TABLE_BUCKET_READ_WRITE_ACCESS;
   grantAccess() {
-    this.tableBucket.grantReadWrite(new iam.ServicePrincipal(PRINCIPAL), '*');
+    this.tableBucket.grantReadWrite(new iam.ServicePrincipal(PRINCIPAL), WILDCARD);
   }
 }
 
@@ -98,18 +100,21 @@ const testCases = [
 const integ = new IntegTest(app, 'TableBucketWithGrantIntegTest', { testCases });
 
 const getTableBucketArn = (stack: GrantTestBase) => `arn:aws:s3tables:${stack.region}:${stack.account}:bucket/${stack.tableBucketName}`;
-const getAllTablesArn = (stack: GrantTestBase) => `${getTableBucketArn(stack)}/table/*`;
+const getTablesArn = (stack: GrantTestBase, tableId: string) => `${getTableBucketArn(stack)}/table/${tableId}`;
 
 testCases.forEach(testCase => {
   const tableBucketPolicy = integ.assertions.awsApiCall('@aws-sdk/client-s3tables', 'GetTableBucketPolicyCommand', {
     tableBucketARN: testCase.tableBucket.tableBucketArn,
   });
 
-  let expectedResources = testCase.type == TestType.BUCKET_ONLY
-    ? Match.stringLikeRegexp(getTableBucketArn(testCase))
+  let expectedResources = testCase.type == TestType.SINGLE_TABLE
+    ? [
+      Match.stringLikeRegexp(getTableBucketArn(testCase)),
+      Match.stringLikeRegexp(getTablesArn(testCase, TABLE_ID)),
+    ]
     : [
       Match.stringLikeRegexp(getTableBucketArn(testCase)),
-      Match.stringLikeRegexp(getAllTablesArn(testCase)),
+      Match.stringLikeRegexp(getTablesArn(testCase, WILDCARD)),
     ];
 
   tableBucketPolicy.expect(ExpectedResult.objectLike({

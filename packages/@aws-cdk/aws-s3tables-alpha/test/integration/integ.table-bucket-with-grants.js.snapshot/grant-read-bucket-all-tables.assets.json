@@ -1,7 +1,8 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "files": {
     "10495301560d8d740c24f401bdcc76a08c1171a1aa9ed5e55bf83eae78c50c68": {
+      "displayName": "grant-read-bucket-all-tables Template",
       "source": {
         "path": "grant-read-bucket-all-tables.template.json",
         "packaging": "file"

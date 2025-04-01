@@ -28,12 +28,28 @@
        "Principal": {
         "Service": "s3.amazonaws.com"
        },
-       "Resource": {
-        "Fn::GetAtt": [
-         "grantwritebucket389C9530",
-         "TableBucketARN"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "grantwritebucket389C9530",
+          "TableBucketARN"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "grantwritebucket389C9530",
+             "TableBucketARN"
+            ]
+           },
+           "/table/s3.amazonaws.com"
+          ]
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"

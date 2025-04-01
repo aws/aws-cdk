@@ -12,6 +12,11 @@ describe('Access grant methods', () => {
   const PRINCIPAL = 's3.amazonaws.com';
   const DEFAULT_PROPS: s3tables.TableBucketProps = { tableBucketName: 'example-table-bucket' };
   const TABLE_BUCKET_ARN_SUB = { 'Fn::GetAtt': ['ExampleTableBucket9B5A2796', 'TableBucketARN'] };
+  const TABLE_UUID = 'example-table-uuid';
+  const RESOURCES_WITH_TABLE_ARN = [
+    TABLE_BUCKET_ARN_SUB,
+    { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/table/${TABLE_UUID}`]] },
+  ];
   const EXISTING_ROLE_ARN = 'arn:aws:iam::123456789012:role/existing-role';
 
   let stack: core.Stack;
@@ -34,25 +39,6 @@ describe('Access grant methods', () => {
 
   describe('grantRead', () => {
     it('provides read and list permissions to the bucket', () => {
-      tableBucket.grantRead(new iam.ServicePrincipal(PRINCIPAL));
-      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
-        'ResourcePolicy': {
-          'Statement': [
-            {
-              'Action': perms.TABLE_BUCKET_READ_ACCESS,
-              'Effect': 'Allow',
-              'Principal': {
-                'Service': PRINCIPAL,
-              },
-              'Resource': TABLE_BUCKET_ARN_SUB,
-            },
-          ],
-        },
-      });
-    });
-
-    it('provides read and list permissions for a specific table', () => {
-      const TABLE_UUID = 'example-table-uuid';
       tableBucket.grantRead(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
       Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
         'ResourcePolicy': {
@@ -63,10 +49,25 @@ describe('Access grant methods', () => {
               'Principal': {
                 'Service': PRINCIPAL,
               },
-              'Resource': [
-                TABLE_BUCKET_ARN_SUB,
-                { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/table/${TABLE_UUID}`]] },
-              ],
+              'Resource': RESOURCES_WITH_TABLE_ARN,
+            },
+          ],
+        },
+      });
+    });
+
+    it('provides read and list permissions for a specific table', () => {
+      tableBucket.grantRead(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+        'ResourcePolicy': {
+          'Statement': [
+            {
+              'Action': perms.TABLE_BUCKET_READ_ACCESS,
+              'Effect': 'Allow',
+              'Principal': {
+                'Service': PRINCIPAL,
+              },
+              'Resource': RESOURCES_WITH_TABLE_ARN,
             },
           ],
         },
@@ -74,14 +75,14 @@ describe('Access grant methods', () => {
     });
 
     it('creates IAM policies for a role', () => {
-      tableBucket.grantRead(role);
+      tableBucket.grantRead(role, TABLE_UUID);
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
               'Action': perms.TABLE_BUCKET_READ_ACCESS,
               'Effect': 'Allow',
-              'Resource': TABLE_BUCKET_ARN_SUB,
+              'Resource': RESOURCES_WITH_TABLE_ARN,
             },
           ],
           'Version': '2012-10-17',
@@ -91,14 +92,14 @@ describe('Access grant methods', () => {
     });
 
     it('creates IAM policies for a user', () => {
-      tableBucket.grantRead(user);
+      tableBucket.grantRead(user, TABLE_UUID);
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
               'Action': perms.TABLE_BUCKET_READ_ACCESS,
               'Effect': 'Allow',
-              'Resource': TABLE_BUCKET_ARN_SUB,
+              'Resource': RESOURCES_WITH_TABLE_ARN,
             },
           ],
           'Version': '2012-10-17',
@@ -108,14 +109,14 @@ describe('Access grant methods', () => {
     });
 
     it('creates IAM policies for an imported role', () => {
-      tableBucket.grantRead(importedRole);
+      tableBucket.grantRead(importedRole, TABLE_UUID);
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
               'Action': perms.TABLE_BUCKET_READ_ACCESS,
               'Effect': 'Allow',
-              'Resource': TABLE_BUCKET_ARN_SUB,
+              'Resource': RESOURCES_WITH_TABLE_ARN,
             },
           ],
           'Version': '2012-10-17',
@@ -130,7 +131,7 @@ describe('Access grant methods', () => {
               'Principal': {
                 'AWS': EXISTING_ROLE_ARN,
               },
-              'Resource': TABLE_BUCKET_ARN_SUB,
+              'Resource': RESOURCES_WITH_TABLE_ARN,
             },
           ],
         },
@@ -140,7 +141,7 @@ describe('Access grant methods', () => {
 
   describe('grantWrite', () => {
     it('provides write permissions to the bucket', () => {
-      tableBucket.grantWrite(new iam.ServicePrincipal(PRINCIPAL));
+      tableBucket.grantWrite(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
       Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
         'ResourcePolicy': {
           'Statement': [
@@ -150,7 +151,7 @@ describe('Access grant methods', () => {
               'Principal': {
                 'Service': PRINCIPAL,
               },
-              'Resource': TABLE_BUCKET_ARN_SUB,
+              'Resource': RESOURCES_WITH_TABLE_ARN,
             },
           ],
         },
@@ -158,7 +159,6 @@ describe('Access grant methods', () => {
     });
 
     it('provides write permissions for a specific table', () => {
-      const TABLE_UUID = 'example-table-uuid';
       tableBucket.grantWrite(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
       Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
         'ResourcePolicy': {
@@ -180,14 +180,14 @@ describe('Access grant methods', () => {
     });
 
     it('creates IAM policies for a role', () => {
-      tableBucket.grantWrite(role);
+      tableBucket.grantWrite(role, TABLE_UUID);
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
               'Action': perms.TABLE_BUCKET_WRITE_ACCESS,
               'Effect': 'Allow',
-              'Resource': TABLE_BUCKET_ARN_SUB,
+              'Resource': RESOURCES_WITH_TABLE_ARN,
             },
           ],
           'Version': '2012-10-17',
@@ -197,14 +197,14 @@ describe('Access grant methods', () => {
     });
 
     it('creates IAM policies for a user', () => {
-      tableBucket.grantWrite(user);
+      tableBucket.grantWrite(user, TABLE_UUID);
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
               'Action': perms.TABLE_BUCKET_WRITE_ACCESS,
               'Effect': 'Allow',
-              'Resource': TABLE_BUCKET_ARN_SUB,
+              'Resource': RESOURCES_WITH_TABLE_ARN,
             },
           ],
           'Version': '2012-10-17',
@@ -214,14 +214,14 @@ describe('Access grant methods', () => {
     });
 
     it('creates IAM policies for an imported role', () => {
-      tableBucket.grantWrite(importedRole);
+      tableBucket.grantWrite(importedRole, TABLE_UUID);
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
               'Action': perms.TABLE_BUCKET_WRITE_ACCESS,
               'Effect': 'Allow',
-              'Resource': TABLE_BUCKET_ARN_SUB,
+              'Resource': RESOURCES_WITH_TABLE_ARN,
             },
           ],
           'Version': '2012-10-17',
@@ -236,7 +236,7 @@ describe('Access grant methods', () => {
               'Principal': {
                 'AWS': EXISTING_ROLE_ARN,
               },
-              'Resource': TABLE_BUCKET_ARN_SUB,
+              'Resource': RESOURCES_WITH_TABLE_ARN,
             },
           ],
         },
@@ -246,7 +246,7 @@ describe('Access grant methods', () => {
 
   describe('grantReadWrite', () => {
     it('provides read & write permissions to the bucket', () => {
-      tableBucket.grantReadWrite(new iam.ServicePrincipal(PRINCIPAL));
+      tableBucket.grantReadWrite(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
       Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
         'ResourcePolicy': {
           'Statement': [
@@ -256,7 +256,7 @@ describe('Access grant methods', () => {
               'Principal': {
                 'Service': PRINCIPAL,
               },
-              'Resource': TABLE_BUCKET_ARN_SUB,
+              'Resource': RESOURCES_WITH_TABLE_ARN,
             },
           ],
         },
@@ -264,7 +264,6 @@ describe('Access grant methods', () => {
     });
 
     it('provides read & write permissions for a specific table', () => {
-      const TABLE_UUID = 'example-table-uuid';
       tableBucket.grantReadWrite(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
       Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
         'ResourcePolicy': {
@@ -286,14 +285,14 @@ describe('Access grant methods', () => {
     });
 
     it('creates IAM policies for a role', () => {
-      tableBucket.grantReadWrite(role);
+      tableBucket.grantReadWrite(role, TABLE_UUID);
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
               'Action': perms.TABLE_BUCKET_READ_WRITE_ACCESS,
               'Effect': 'Allow',
-              'Resource': TABLE_BUCKET_ARN_SUB,
+              'Resource': RESOURCES_WITH_TABLE_ARN,
             },
           ],
           'Version': '2012-10-17',
@@ -303,14 +302,14 @@ describe('Access grant methods', () => {
     });
 
     it('creates IAM policies for a user', () => {
-      tableBucket.grantReadWrite(user);
+      tableBucket.grantReadWrite(user, TABLE_UUID);
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
               'Action': perms.TABLE_BUCKET_READ_WRITE_ACCESS,
               'Effect': 'Allow',
-              'Resource': TABLE_BUCKET_ARN_SUB,
+              'Resource': RESOURCES_WITH_TABLE_ARN,
             },
           ],
           'Version': '2012-10-17',
@@ -320,14 +319,14 @@ describe('Access grant methods', () => {
     });
 
     it('creates IAM policies for an imported role', () => {
-      tableBucket.grantReadWrite(importedRole);
+      tableBucket.grantReadWrite(importedRole, TABLE_UUID);
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
               'Action': perms.TABLE_BUCKET_READ_WRITE_ACCESS,
               'Effect': 'Allow',
-              'Resource': TABLE_BUCKET_ARN_SUB,
+              'Resource': RESOURCES_WITH_TABLE_ARN,
             },
           ],
           'Version': '2012-10-17',
@@ -342,7 +341,7 @@ describe('Access grant methods', () => {
               'Principal': {
                 'AWS': EXISTING_ROLE_ARN,
               },
-              'Resource': TABLE_BUCKET_ARN_SUB,
+              'Resource': RESOURCES_WITH_TABLE_ARN,
             },
           ],
         },

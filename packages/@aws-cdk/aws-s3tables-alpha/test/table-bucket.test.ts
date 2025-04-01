@@ -146,6 +146,7 @@ describe('TableBucket', () => {
 
     test('has the same name as it was imported with', () => {
       expect(tableBucket.tableBucketName).toEqual(BUCKET_PROPS.tableBucketName);
+      tableBucket.grantRead(new iam.ServicePrincipal(''), '*');
     });
 
     test('renders the correct ARN for Example Resource', () => {

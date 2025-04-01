@@ -41,13 +41,13 @@ Learn more about table buckets maintenance operations and default behavior from 
 ### Controlling Table Bucket Permissions
 
 ```ts
-// Grant read permissions to the bucket and all tables within
+// Grant the principal read permissions to the bucket and all tables within
 const accountId = '123456789012'
-tableBucket.grantRead(new iam.AccountPrincipal(accountId));
-// Grant write permissions to the bucket and all tables within
-tableBucket.grantWrite(new iam.AccountPrincipal(accountId));
-// Grant read and write permissions to the bucket and all tables within
-tableBucket.grantReadWrite(new iam.AccountPrincipal(accountId));
+tableBucket.grantRead(new iam.AccountPrincipal(accountId), '*');
+// Grant the role write permissions to the bucket and all tables within
+tableBucket.grantWrite(new iam.Role(stack, 'MyRole'), '*');
+// Grant the user read and write permissions to the bucket and all tables within 
+tableBucket.grantReadWrite(new iam.User(stack, 'MyUser'), '*');
 
 // Grant permissions to the bucket and a particular table within it
 const tableId = '6ba046b2-26de-44cf-9144-0c7862593a7b'

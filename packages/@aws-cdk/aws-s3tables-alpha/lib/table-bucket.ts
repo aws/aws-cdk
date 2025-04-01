@@ -65,7 +65,7 @@ export interface ITableBucket extends IResource {
    * @param identity The principal to allow read permissions to
    * @param tableId Allow the permissions to all tables using '*' or to single table by its unique ID.
    */
-  grantRead(identity: iam.IGrantable, tableId?: string): iam.Grant;
+  grantRead(identity: iam.IGrantable, tableId: string): iam.Grant;
 
   /**
    * Grant write permissions for this table bucket and its tables
@@ -74,7 +74,7 @@ export interface ITableBucket extends IResource {
    * @param identity The principal to allow write permissions to
    * @param tableId Allow the permissions to all tables using '*' or to single table by its unique ID.
    */
-  grantWrite(identity: iam.IGrantable, tableId?: string): iam.Grant;
+  grantWrite(identity: iam.IGrantable, tableId: string): iam.Grant;
 
   /**
    * Grant read and write permissions for this table bucket and its tables
@@ -83,7 +83,7 @@ export interface ITableBucket extends IResource {
    * @param identity The principal to allow read and write permissions to
    * @param tableId Allow the permissions to all tables using '*' or to single table by its unique ID.
    */
-  grantReadWrite(identity: iam.IGrantable, tableId?: string): iam.Grant;
+  grantReadWrite(identity: iam.IGrantable, tableId: string): iam.Grant;
 }
 
 /**
@@ -185,15 +185,15 @@ abstract class TableBucketBase extends Resource implements ITableBucket {
     return { statementAdded: false };
   }
 
-  public grantRead(identity: iam.IGrantable, tableId?: string) {
+  public grantRead(identity: iam.IGrantable, tableId: string) {
     return this.grant(identity, perms.TABLE_BUCKET_READ_ACCESS, this.tableBucketArn, this.getTableArn(tableId));
   }
 
-  public grantWrite(identity: iam.IGrantable, tableId?: string) {
+  public grantWrite(identity: iam.IGrantable, tableId: string) {
     return this.grant(identity, perms.TABLE_BUCKET_WRITE_ACCESS, this.tableBucketArn, this.getTableArn(tableId));
   }
 
-  public grantReadWrite(identity: iam.IGrantable, tableId?: string) {
+  public grantReadWrite(identity: iam.IGrantable, tableId: string) {
     return this.grant(identity, perms.TABLE_BUCKET_READ_WRITE_ACCESS, this.tableBucketArn, this.getTableArn(tableId));
   }
 
