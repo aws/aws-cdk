@@ -701,8 +701,27 @@ It is recommended to use the new `OidcProviderNative` which native CloudFormatio
 const nativeProvider = new iam.OidcProviderNative(this, 'MyProvider', {
   url: 'https://openid/connect',
   clientIds: [ 'myclient1', 'myclient2' ],
+  thumbprints: ['aa00aa1122aa00aa1122aa00aa1122aa00aa1122'],
 });
 ```
+
+For the new `OidcProviderNative`, you must provide at least one thumbprint when creating an IAM OIDC
+provider. For example, assume that the OIDC provider is server.example.com
+and the provider stores its keys at
+https://keys.server.example.com/openid-connect. In that case, the
+thumbprint string would be the hex-encoded SHA-1 hash value of the
+certificate used by https://keys.server.example.com.
+
+The server certificate thumbprint is the hex-encoded SHA-1 hash value of
+the X.509 certificate used by the domain where the OpenID Connect provider
+makes its keys available. It is always a 40-character string.
+
+Typically this list includes only one entry. However, IAM lets you have up
+to five thumbprints for an OIDC provider. This lets you maintain multiple
+thumbprints if the identity provider is rotating certificates.
+
+Obtain the thumbprint of the root certificate authority from the provider's
+server as described in https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
 
 The older `OpenIdConnectProvider` is still supported but it is recommended to use the new `OidcProviderNative` instead.
 ```ts
@@ -712,12 +731,12 @@ const provider = new iam.OpenIdConnectProvider(this, 'MyProvider', {
 });
 ```
 
-You can specify an optional list of `thumbprints`. If not specified, the
+For the older `OpenIdConnectProvider`, you can specify an optional list of `thumbprints`. If not specified, the
 thumbprint of the root certificate authority (CA) will automatically be obtained
 from the host as described
 [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html).
 
-Byy default, the custom resource enforces strict security practices by rejecting
+By default, the custom resource enforces strict security practices by rejecting
 any unauthorized connections when downloading CA thumbprints from the issuer URL.
 If you need to connect to an unauthorized OIDC identity provider and understand the
 implications, you can disable this behavior by setting the feature flag
