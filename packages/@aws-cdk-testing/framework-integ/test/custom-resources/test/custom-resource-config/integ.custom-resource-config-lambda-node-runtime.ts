@@ -7,6 +7,7 @@ import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
 const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-dynamodb:retainTableReplica': true,
   },
 });
 const stack = new cdk.Stack(app, 'MyStack');
@@ -16,6 +17,7 @@ new dynamodb.Table(stack, 'Table', {
     name: 'id',
     type: dynamodb.AttributeType.STRING,
   },
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
   replicationRegions: [
     'us-east-2',
   ],

@@ -10,7 +10,7 @@ import { Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput } from '../testhelpers';
+import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput, TwoFileAssetsApp } from '../testhelpers';
 
 let app: TestApp;
 
@@ -409,6 +409,62 @@ describe('deployment of stack', () => {
         Name: 'App',
       }]),
     });
+  });
+});
+
+test('display name can contain illegal characters which are sanitized for the pipeline', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    crossAccountKeys: true,
+    useChangeSets: false,
+  });
+  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {
+    displayName: 'asdf & also qwerty!',
+  }));
+
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+
+  // We expect `asdf` and `asdf2` Actions in the pipeline
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'Assets',
+      Actions: Match.arrayWith([
+        Match.objectLike({
+          Name: 'asdf_also_qwerty_',
+        }),
+      ]),
+    }]),
+  });
+});
+
+test('two assets can have same display name, which are reflected in the pipeline', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    crossAccountKeys: true,
+    useChangeSets: false,
+  });
+  pipeline.addStage(new TwoFileAssetsApp(pipelineStack, 'App', {
+    displayName1: 'asdf',
+    displayName2: 'asdf',
+  }));
+
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+
+  // We expect `asdf` and `asdf2` Actions in the pipeline
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'Assets',
+      Actions: Match.arrayWith([
+        Match.objectLike({
+          Name: 'asdf',
+        }),
+        Match.objectLike({
+          Name: 'asdf2',
+        }),
+      ]),
+    }]),
   });
 });
 

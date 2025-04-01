@@ -132,7 +132,7 @@ export abstract class StackInstances {
    */
   public static fromArtifactPath(artifactPath: codepipeline.ArtifactPath, regions: string[]): StackInstances {
     if (regions.length === 0) {
-      throw new Error("'regions' may not be an empty list");
+      throw new cdk.UnscopedValidationError("'regions' may not be an empty list");
     }
 
     return new class extends StackInstances {
@@ -159,11 +159,11 @@ export abstract class StackInstances {
    */
   private static fromList(targets: string[], regions: string[]): StackInstances {
     if (targets.length === 0) {
-      throw new Error("'targets' may not be an empty list");
+      throw new cdk.UnscopedValidationError("'targets' may not be an empty list");
     }
 
     if (regions.length === 0) {
-      throw new Error("'regions' may not be an empty list");
+      throw new cdk.UnscopedValidationError("'regions' may not be an empty list");
     }
 
     return new class extends StackInstances {
