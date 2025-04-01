@@ -37,7 +37,7 @@ export interface IHttpApi extends IApi {
    * The default stage of this API
    *
    * @attribute
-   * @default - no default stage
+   * @default - a stage will be created
    */
   readonly defaultStage?: IHttpStage;
 

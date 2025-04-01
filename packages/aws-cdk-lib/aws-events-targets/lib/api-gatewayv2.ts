@@ -41,7 +41,7 @@ export class ApiGatewayV2 implements events.IRuleTarget {
       throw new Error('The number of wildcards in the path does not match the number of path pathParameterValues.');
     }
 
-    const apiArn = this._httpApi.arnForExecuteApi(
+    const httpApiArn = this._httpApi.arnForExecuteApi(
       this.props?.method,
       this.props?.path || '/',
       this.props?.stage || this._httpApi.defaultStage?.stageName,
@@ -49,7 +49,7 @@ export class ApiGatewayV2 implements events.IRuleTarget {
 
     const role = this.props?.eventRole || singletonEventRole(this._httpApi);
     role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: [apiArn],
+      resources: [httpApiArn],
       actions: [
         'execute-api:Invoke',
         'execute-api:ManageConnections',
@@ -58,7 +58,7 @@ export class ApiGatewayV2 implements events.IRuleTarget {
 
     return {
       ...(this.props ? bindBaseTargetConfig(this.props) : {}),
-      arn: apiArn,
+      arn: httpApiArn,
       role,
       deadLetterConfig: this.props?.deadLetterQueue && { arn: this.props.deadLetterQueue?.queueArn },
       input: this.props?.postBody,
