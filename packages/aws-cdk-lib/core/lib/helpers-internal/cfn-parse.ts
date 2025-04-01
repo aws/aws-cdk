@@ -457,6 +457,7 @@ export class CfnParser {
       rollUp.parseCase('maxBatchSize', FromCloudFormation.getNumber);
       rollUp.parseCase('minInstancesInService', FromCloudFormation.getNumber);
       rollUp.parseCase('minSuccessfulInstancesPercent', FromCloudFormation.getNumber);
+      rollUp.parseCase('minActiveInstancesPercent', FromCloudFormation.getNumber);
       rollUp.parseCase('pauseTime', FromCloudFormation.getString);
       rollUp.parseCase('suspendProcesses', FromCloudFormation.getStringArray);
       rollUp.parseCase('waitOnResourceSignals', FromCloudFormation.getBoolean);
