@@ -610,6 +610,7 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
         service: '@aws-sdk/client-s3',
         action: 'GetObjectCommand',
         assumedRoleArn: 'arn:aws:iam::123456789012:role/CoolRole',
+        assumedRoleExternalId: 'external-id-1234',
         parameters: {
           Bucket: 'foo',
           Key: 'bar',
@@ -622,7 +623,14 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
     ServiceToken: 'serviceToken',
     StackId: 'stackId',
   }, {} as AWSLambda.Context);
-  expect(credentialProviderMock).toHaveBeenCalled();
+  expect(credentialProviderMock).toHaveBeenCalledWith(
+    expect.objectContaining({
+      params: expect.objectContaining({
+        RoleArn: 'arn:aws:iam::123456789012:role/CoolRole',
+        ExternalId: 'external-id-1234',
+      }),
+    }),
+  );
   credentialProviderMock.mockClear();
 
   await handler({

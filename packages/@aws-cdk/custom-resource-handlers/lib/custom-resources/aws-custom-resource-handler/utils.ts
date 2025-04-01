@@ -103,10 +103,14 @@ export async function getCredentials(call: AwsSdkCall, physicalResourceId: strin
   if (call.assumedRoleArn) {
     const timestamp = (new Date()).getTime();
 
-    const params = {
+    const params:{RoleArn: string; RoleSessionName: string; ExternalId?: string} = {
       RoleArn: call.assumedRoleArn,
       RoleSessionName: `${timestamp}-${physicalResourceId}`.substring(0, 64),
     };
+
+    if (call.assumedRoleExternalId) {
+      params.ExternalId = call.assumedRoleExternalId;
+    }
 
     const { fromTemporaryCredentials } = await import('@aws-sdk/credential-providers');
     credentials = fromTemporaryCredentials({
