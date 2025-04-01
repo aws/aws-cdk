@@ -36,6 +36,10 @@ export class JavaInstrumentationVersion extends InstrumentationVersion {
    */
   public static readonly DEFAULT_MEMORY_LIMIT_MIB = 64;
   /**
+   * ADOT Java Instrumentation version 2.10.0
+   */
+  public static readonly V2_10_0 = new JavaInstrumentationVersion(JavaInstrumentationVersion.IMAGE_REPO, 'v2.10.0', JavaInstrumentationVersion.DEFAULT_MEMORY_LIMIT_MIB);
+  /**
    * ADOT Java Instrumentation version 1.33.0
    */
   public static readonly V1_33_0 = new JavaInstrumentationVersion(JavaInstrumentationVersion.IMAGE_REPO, 'v1.33.0', JavaInstrumentationVersion.DEFAULT_MEMORY_LIMIT_MIB);

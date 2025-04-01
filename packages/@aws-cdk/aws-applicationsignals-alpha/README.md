@@ -36,8 +36,8 @@ ECS, with plans to potentially extend support to other platforms in the future.
 
 #### Enable Application Signals on ECS with sidecar mode
 
-1. Configure `instrumentation` to instrument the application with the ADOT Java Agent.
-2. Setting `enableSidecar` to true to add the CloudWatch Agent as a sidecar container.
+1. Configure `instrumentation` to instrument the application with the ADOT SDK Agent.
+2. Specify `cloudWatchAgentSidecar` to configure the CloudWatch Agent as a sidecar container.
 
 ```ts
 import { Construct } from 'constructs';
@@ -79,7 +79,6 @@ Note: Since the daemon deployment strategy is not supported on ECS Fargate, this
 
 1. Run CloudWatch Agent as a daemon service with service connect.
 1. Configure `instrumentation` to instrument the application with the ADOT Python Agent.
-1. Set `enableSidecar` to false to disable running CloudWatch agent as a sidecar.
 1. Override environment variables by configuring `overrideEnvironments` to use service connect endpoints to communicate to the CloudWatch agent server
 
 ```ts

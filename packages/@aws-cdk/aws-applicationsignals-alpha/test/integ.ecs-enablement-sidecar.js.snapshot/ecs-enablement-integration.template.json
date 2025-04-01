@@ -125,8 +125,8 @@
         "Value": "C:\\otel-auto-instrumentation-dotnet\\store"
        },
        {
-        "Name": "OTEL_RESOURCE_ATTRIBUTES",
-        "Value": "service.name=demo"
+        "Name": "OTEL_SERVICE_NAME",
+        "Value": "demo"
        }
       ],
       "Essential": true,
@@ -177,7 +177,7 @@
        }
       ],
       "Essential": true,
-      "Image": "amazon/cloudwatch-agent:latest",
+      "Image": "public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest",
       "Memory": 512,
       "Name": "cloudwatch-agent",
       "User": "0:1338"
