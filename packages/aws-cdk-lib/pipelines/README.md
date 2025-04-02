@@ -976,6 +976,12 @@ Note that if you provide an existing pipeline, you cannot provide values for
 `pipelineName`, `crossAccountKeys`, `reuseCrossRegionSupportStacks`, or `role`
 because those values are passed in directly to the underlying `codepipeline.Pipeline`.
 
+### Use pipeline service role as default action role in pipeline
+
+By default CDK automatically creates roles for each action (`CodeBuildStep`, etc).
+If you prefer to use the pipeline service role as default instead, set the `usePipelineRoleForActions` property.
+This will tell CDK to default to the pipeline service role in AWS CodePipeline if no action role is provided.
+
 ## Using Docker in the pipeline
 
 Docker can be used in 3 different places in the pipeline:
