@@ -4,7 +4,7 @@ import { Construct } from 'constructs';
 import * as ecr_assets from '../../../aws-ecr-assets';
 import * as s3 from '../../../aws-s3';
 import * as s3_assets from '../../../aws-s3-assets';
-import { App, AppProps, Environment, CfnOutput, Stage, StageProps, Stack, StackProps } from '../../../core';
+import { App, AppProps, Environment, CfnOutput, Stage, StageProps, Stack, StackProps, ValidationError } from '../../../core';
 import { assemblyBuilderOf } from '../../lib/private/construct-internals';
 
 export const PIPELINE_ENV: Environment = {
@@ -185,23 +185,40 @@ export class FileAssetApp extends Stage {
   }
 }
 
-export interface TwoFileAssetsAppProps extends StageProps {
-  readonly displayName1?: string;
-  readonly displayName2?: string;
+export interface MultipleFileAssetsProps extends StageProps {
+  readonly n: number;
+
+  /**
+   * Up to 3 display names for equally many assets
+   */
+  readonly displayNames?: string[];
 }
 
-export class TwoFileAssetsApp extends Stage {
-  constructor(scope: Construct, id: string, props?: TwoFileAssetsAppProps) {
+/**
+ * Supports up to 3 file assets
+ */
+export class MultipleFileAssetsApp extends Stage {
+  constructor(scope: Construct, id: string, props: MultipleFileAssetsProps) {
     super(scope, id, props);
     const stack = new Stack(this, 'Stack');
-    new s3_assets.Asset(stack, 'Asset1', {
-      path: path.join(__dirname, 'assets', 'test-file-asset.txt'),
-      displayName: props?.displayName1,
-    });
-    new s3_assets.Asset(stack, 'Asset2', {
-      path: path.join(__dirname, 'assets', 'test-file-asset-two.txt'),
-      displayName: props?.displayName2,
-    });
+
+    const fileNames = ['test-file-asset.txt', 'test-file-asset-two.txt', 'test-file-asset-three.txt'];
+    if (props.displayNames && props.displayNames.length !== props.n) {
+      throw new Error('Incorrect displayNames lenght');
+    }
+
+    for (let i = 0; i < props.n; i++) {
+      const displayName = props.displayNames ? props.displayNames[i] : undefined;
+      const fn = fileNames[i];
+      if (!fn) {
+        throw new ValidationError(`Got more displayNames than we have fileNames: ${i + 1}`, this);
+      }
+
+      new s3_assets.Asset(stack, `Asset${i + 1}`, {
+        path: path.join(__dirname, 'assets', fn),
+        displayName,
+      });
+    }
   }
 }
 

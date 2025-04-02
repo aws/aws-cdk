@@ -529,7 +529,7 @@ export class CodePipeline extends PipelineBase {
         const sharedParent = new GraphNodeCollection(flatten(tranches)).commonAncestor();
 
         // If we produce the same action name for some actions, append a unique number
-        let namesCtrs = new Map<string, number>();
+        let namesUsed = new Set<string>();
 
         let runOrder = 1;
         for (const tranche of tranches) {
@@ -540,12 +540,16 @@ export class CodePipeline extends PipelineBase {
             const nodeType = this.nodeTypeFromNode(node);
 
             // Come up with a unique name for this action, incrementing a counter if necessary
-            let name = actionName(node, sharedParent);
-            const nameCount = namesCtrs.get(name) ?? 0;
-            if (nameCount > 0) {
-              name += `${nameCount + 1}`;
+            const baseName = actionName(node, sharedParent);
+            let name = baseName;
+            for (let ctr = 1; ; ctr++) {
+              const candidate = ctr > 1 ? `${name}${ctr}` : name;
+              if (!namesUsed.has(candidate)) {
+                name = candidate;
+                break;
+              }
             }
-            namesCtrs.set(name, nameCount + 1);
+            namesUsed.add(name);
 
             const variablesNamespace = node.data?.type === 'step'
               ? namespaceStepOutputs(node.data.step, pipelineStage, name)
