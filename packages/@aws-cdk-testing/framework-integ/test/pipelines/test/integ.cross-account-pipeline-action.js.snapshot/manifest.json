@@ -25,7 +25,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-test-region/3b78a1ac2e24b54b17381c14f502a1f0ad6cf3e080c030523898aa89565191d6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-test-region/9dd384b985662e65a9e941e70bf3a34b94c5406d3ccfe65013d86152f11a538f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -55,7 +55,10 @@
         "/CrossAccountSourceStack/SourceBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SourceBucketDDD2130A"
+            "data": "SourceBucketDDD2130A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/CrossAccountSourceStack/SourceBucket/Policy": [
@@ -69,7 +72,10 @@
         "/CrossAccountSourceStack/SourceBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SourceBucketPolicy703DFBF9"
+            "data": "SourceBucketPolicy703DFBF9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/CrossAccountSourceStack/SourceBucket/AutoDeleteObjectsCustomResource": [
@@ -111,7 +117,10 @@
         "/CrossAccountSourceStack/DeploySource/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeploySourceAwsCliLayer55AA2312"
+            "data": "DeploySourceAwsCliLayer55AA2312",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/CrossAccountSourceStack/DeploySource/CustomResourceHandler": [
@@ -325,7 +334,7 @@
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
           }
         ],
-        "/CrossAccountSourceStack/CdkPipelineInvestigationStackPipeline029CB441 - Source - S3Source - ActionRole": [
+        "/CrossAccountSourceStack/CdkPipelineInvestigationStackPipeline029CB441-Source-S3Source-ActionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -394,19 +403,22 @@
             }
           }
         ],
-        "/CrossAccountSourceStack/CdkPipelineInvestigationStackPipeline029CB441 - Source - S3Source - ActionRole/ImportCdkPipelineInvestigationStackPipeline029CB441 - Source - S3Source - ActionRole": [
+        "/CrossAccountSourceStack/CdkPipelineInvestigationStackPipeline029CB441-Source-S3Source-ActionRole/ImportCdkPipelineInvestigationStackPipeline029CB441-Source-S3Source-ActionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/CrossAccountSourceStack/CdkPipelineInvestigationStackPipeline029CB441 - Source - S3Source - ActionRole/Resource": [
+        "/CrossAccountSourceStack/CdkPipelineInvestigationStackPipeline029CB441-Source-S3Source-ActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CdkPipelineInvestigationStackPipeline029CB441SourceS3SourceActionRoleC3B48A6A"
+            "data": "CdkPipelineInvestigationStackPipeline029CB441SourceS3SourceActionRole7C8DE2D3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
-        "/CrossAccountSourceStack/CdkPipelineInvestigationStackPipeline029CB441 - Source - S3Source - ActionRole/DefaultPolicy": [
+        "/CrossAccountSourceStack/CdkPipelineInvestigationStackPipeline029CB441-Source-S3Source-ActionRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -452,10 +464,10 @@
             }
           }
         ],
-        "/CrossAccountSourceStack/CdkPipelineInvestigationStackPipeline029CB441 - Source - S3Source - ActionRole/DefaultPolicy/Resource": [
+        "/CrossAccountSourceStack/CdkPipelineInvestigationStackPipeline029CB441-Source-S3Source-ActionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CdkPipelineInvestigationStackPipeline029CB441SourceS3SourceActionRoleDefaultPolicy4AF18DD0"
+            "data": "CdkPipelineInvestigationStackPipeline029CB441SourceS3SourceActionRoleDefaultPolicy9F106E57"
           }
         ],
         "/CrossAccountSourceStack/BootstrapVersion": [
@@ -490,7 +502,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/d061470d8e7f7611e846a37076f146819545874c93c0c2570d01153076e4d34c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/8bdd8046137f3e99cc71490f4e85180148a55ecd058bac492ca98fa409cda117.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -576,7 +588,10 @@
         "/CdkPipelineInvestigationStack/Pipeline/Pipeline/ArtifactsBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineArtifactsBucketAEA9A052"
+            "data": "PipelineArtifactsBucketAEA9A052",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/CdkPipelineInvestigationStack/Pipeline/Pipeline/ArtifactsBucket/Policy": [
@@ -590,7 +605,10 @@
         "/CdkPipelineInvestigationStack/Pipeline/Pipeline/ArtifactsBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineArtifactsBucketPolicyF53CCC52"
+            "data": "PipelineArtifactsBucketPolicyF53CCC52",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Role": [
@@ -686,7 +704,10 @@
         "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineRoleB27FAA37"
+            "data": "PipelineRoleB27FAA37",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Role/DefaultPolicy": [

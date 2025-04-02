@@ -41,7 +41,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":iam::234567890123:role/crossaccountsourcestacksourceactionrole3c6d62a5367f9418eee4"
+           ":iam::234567890123:role/crossaccountsourcestacksourceactionrole897ff83e126e129e1ac8"
           ]
          ]
         }
@@ -193,7 +193,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":iam::234567890123:role/crossaccountsourcestacksourceactionrole3c6d62a5367f9418eee4"
+           ":iam::234567890123:role/crossaccountsourcestacksourceactionrole897ff83e126e129e1ac8"
           ]
          ]
         }
@@ -296,12 +296,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "Tags": [
-     {
-      "Key": "aws-cdk:cross-account-codepipeline-role",
-      "Value": "CdkPipelineInvestigationStack_c89fcccce396335378eee22afe2fa032cb5f345ae0"
-     }
-    ]
+    "RoleName": "cdkpipelineinvestigationstackpipelinerolef5bd0177afc1918da364"
    }
   },
   "PipelineRoleDefaultPolicy7BDC1ABB": {
@@ -409,7 +404,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":iam::234567890123:role/crossaccountsourcestacksourceactionrole3c6d62a5367f9418eee4"
+           ":iam::234567890123:role/crossaccountsourcestacksourceactionrole897ff83e126e129e1ac8"
           ]
          ]
         }
@@ -481,7 +476,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":iam::234567890123:role/crossaccountsourcestacksourceactionrole3c6d62a5367f9418eee4"
+           ":iam::234567890123:role/crossaccountsourcestacksourceactionrole897ff83e126e129e1ac8"
           ]
          ]
         },

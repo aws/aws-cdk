@@ -37,7 +37,6 @@ import {
   Stage as CdkStage,
   Token,
   ValidationError,
-  Tags,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
@@ -1100,7 +1099,13 @@ export class Pipeline extends PipelineBase {
     const roleProps = {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: isRemoveRootPrincipal
-        ? this.createScopedPrincipal(basePrincipal, pipelineStack)
+        ? basePrincipal.withConditions(
+          {
+            ArnEquals: {
+              'aws:PrincipalArn': this.role.roleArn,
+            },
+          }
+        )
         : basePrincipal,
     };
 
@@ -1112,37 +1117,6 @@ export class Pipeline extends PipelineBase {
     pipelineStack.addDependency(otherAccountStack);
 
     return ret;
-  }
-
-  /**
-   * Creates a scoped principal for cross-account access.
-   *
-   * This method creates a principal with additional conditions to restrict cross-account access:
-   * - For non-Role resources (e.g. imported roles): Uses ARN-based condition to limit access to a specific role
-   * - For Role resources: Uses tag-based condition and adds a unique tag to the role
-   *
-   * @param basePrincipal - The account principal to be scoped
-   * @param pipelineStack - The stack containing the pipeline
-   * @returns An IAM principal with additional trust conditions
-   *
-   */
-  private createScopedPrincipal(basePrincipal: iam.AccountPrincipal, pipelineStack: Stack) {
-    if (!iam.Role.isRole(this.role)) {
-      return basePrincipal.withConditions({
-        ArnEquals: {
-          'aws:PrincipalArn': this.role.roleArn,
-        },
-      });
-    }
-
-    const roleTag = `${pipelineStack.stackName}_${this.role.node.addr}`;
-    Tags.of(this.role).add('aws-cdk:cross-account-codepipeline-role', roleTag);
-
-    return basePrincipal.withConditions({
-      StringEquals: {
-        'aws:PrincipalTag/aws-cdk:cross-account-codepipeline-role': roleTag,
-      },
-    });
   }
 
   /**

@@ -1,7 +1,7 @@
 {
   "version": "41.0.0",
   "files": {
-    "d061470d8e7f7611e846a37076f146819545874c93c0c2570d01153076e4d34c": {
+    "8bdd8046137f3e99cc71490f4e85180148a55ecd058bac492ca98fa409cda117": {
       "displayName": "CdkPipelineInvestigationStack Template",
       "source": {
         "path": "CdkPipelineInvestigationStack.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "12345678-test-region": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "d061470d8e7f7611e846a37076f146819545874c93c0c2570d01153076e4d34c.json",
+          "objectKey": "8bdd8046137f3e99cc71490f4e85180148a55ecd058bac492ca98fa409cda117.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }
