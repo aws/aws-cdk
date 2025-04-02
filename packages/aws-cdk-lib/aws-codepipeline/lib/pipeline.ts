@@ -37,6 +37,7 @@ import {
   Stage as CdkStage,
   Token,
   ValidationError,
+  Tags,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
@@ -647,8 +648,11 @@ export class Pipeline extends PipelineBase {
     this.artifactBucket = propsBucket;
 
     // If a role has been provided, use it - otherwise, create a role.
+    const isRemoveRootPrincipal = FeatureFlags.of(this).isEnabled(cxapi.PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE);
+
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
+      roleName: isRemoveRootPrincipal ? PhysicalName.GENERATE_IF_NEEDED : undefined,
     });
 
     const isDefaultV2 = FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2);
@@ -1024,7 +1028,7 @@ export class Pipeline extends PipelineBase {
       }
       // generate a Role for this specific Action
       const isRemoveRootPrincipal = FeatureFlags.of(this).isEnabled(cxapi.PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE);
-      const roleProps = isRemoveRootPrincipal? {
+      const roleProps = isRemoveRootPrincipal ? {
         assumedBy: new iam.ArnPrincipal(this.role.roleArn), // Allow only the pipeline execution role
       } : {
         assumedBy: new iam.AccountPrincipal(pipelineStack.account),
@@ -1090,17 +1094,55 @@ export class Pipeline extends PipelineBase {
       return undefined;
     }
 
+    const isRemoveRootPrincipal = FeatureFlags.of(this).isEnabled(cxapi.PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE);
+    const basePrincipal = new iam.AccountPrincipal(pipelineStack.account);
+
+    const roleProps = {
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
+      assumedBy: isRemoveRootPrincipal
+        ? this.createScopedPrincipal(basePrincipal, pipelineStack)
+        : basePrincipal,
+    };
+
     // generate a role in the other stack, that the Pipeline will assume for executing this action
     const ret = new iam.Role(otherAccountStack,
-      `${Names.uniqueId(this)}-${stage.stageName}-${action.actionProperties.actionName}-ActionRole`, {
-        assumedBy: new iam.AccountPrincipal(pipelineStack.account),
-        roleName: PhysicalName.GENERATE_IF_NEEDED,
-      });
+      `${Names.uniqueId(this)}-${stage.stageName}-${action.actionProperties.actionName}-ActionRole`, roleProps);
     // the other stack with the role has to be deployed before the pipeline stack
     // (CodePipeline verifies you can assume the action Role on creation)
     pipelineStack.addDependency(otherAccountStack);
 
     return ret;
+  }
+
+  /**
+   * Creates a scoped principal for cross-account access.
+   *
+   * This method creates a principal with additional conditions to restrict cross-account access:
+   * - For non-Role resources (e.g. imported roles): Uses ARN-based condition to limit access to a specific role
+   * - For Role resources: Uses tag-based condition and adds a unique tag to the role
+   *
+   * @param basePrincipal - The account principal to be scoped
+   * @param pipelineStack - The stack containing the pipeline
+   * @returns An IAM principal with additional trust conditions
+   *
+   */
+  private createScopedPrincipal(basePrincipal: iam.AccountPrincipal, pipelineStack: Stack) {
+    if (!iam.Role.isRole(this.role)) {
+      return basePrincipal.withConditions({
+        ArnEquals: {
+          'aws:PrincipalArn': this.role.roleArn,
+        },
+      });
+    }
+
+    const roleTag = `${pipelineStack.stackName}_${this.role.node.addr}`;
+    Tags.of(this.role).add('aws-cdk:cross-account-codepipeline-role', roleTag);
+
+    return basePrincipal.withConditions({
+      StringEquals: {
+        'aws:PrincipalTag/aws-cdk:cross-account-codepipeline-role': roleTag,
+      },
+    });
   }
 
   /**
