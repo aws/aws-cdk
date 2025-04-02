@@ -695,6 +695,24 @@ _cdk.json_
 }
 ```
 
+* `@aws-cdk/cognito:logUserPoolClientSecretValue`
+
+When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom 
+resource lambda function logs.
+
+When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom 
+resource lambda function logs. 
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/cognito:logUserPoolClientSecretValue": true
+  }
+}
+```
+
 * `@aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue`
 
 When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console.
