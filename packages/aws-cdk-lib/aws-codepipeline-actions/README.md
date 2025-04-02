@@ -613,6 +613,54 @@ const buildAction = new codepipeline_actions.JenkinsAction({
 });
 ```
 
+## Build
+
+### ECR Build And Publish
+
+This build action `ECRBuildAndPublish` allows you to automate building and pushing a new image when a change occurs in your source.
+
+This action builds based on a specified Docker file location and pushes the image. This build action is not the
+same as the Amazon ECR source action in CodePipeline, which triggers pipeline when a change occurs in your
+Amazon ECR source repository.
+
+For information about the `ECRBuildAndPublish` build action,
+see [ECRBuildAndPublish build action reference](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECRBuildAndPublish.html).
+
+```ts
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+
+declare const pipeline: codepipeline.Pipeline;
+declare const repository: ecr.IRepository;
+
+const sourceOutput = new codepipeline.Artifact();
+// your source repository
+const sourceAction = new codepipeline_actions.CodeStarConnectionsSourceAction({
+  actionName: 'CodeStarConnectionsSourceAction',
+  output: sourceOutput,
+  connectionArn: 'your-connection-arn',
+  owner: 'your-owner',
+  repo: 'your-repo',
+});
+
+const buildAction = new codepipeline_actions.EcrBuildAndPublishAction({
+  actionName: 'EcrBuildAndPublishAction',
+  repositoryName: repository.repositoryName,
+  registryType: codepipeline_actions.RegistryType.PRIVATE,
+  dockerfileDirectoryPath: './my-dir', // The path indicates ./my-dir/Dockerfile in the source repository
+  imageTags: ['my-tag-1', 'my-tag-2'],
+  input: sourceOutput,
+});
+
+pipeline.addStage({
+  stageName: 'Source',
+  actions: [sourceAction],
+});
+pipeline.addStage({
+  stageName: 'Build',
+  actions: [buildAction],
+});
+```
+
 ## Deploy
 
 ### AWS CloudFormation
