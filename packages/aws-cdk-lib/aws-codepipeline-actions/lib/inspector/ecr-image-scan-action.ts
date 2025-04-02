@@ -56,12 +56,7 @@ export class InspectorEcrImageScanAction extends InspectorScanActionBase {
 
     // This permission was not listed in the above reference, but without it,
     // an error would occur since `ecr get-login-password` is executed in the action.
-    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: [
-        'ecr:GetAuthorizationToken',
-      ],
-    }));
+    ecr.AuthorizationToken.grantRead(options.role);
 
     return config;
   }
