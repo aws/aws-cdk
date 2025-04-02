@@ -1,4 +1,3 @@
-import { log } from 'console';
 import * as fs from 'fs';
 import * as path from 'path';
 import { IConstruct, Construct, Node } from 'constructs';
@@ -443,7 +442,6 @@ export class Stack extends Construct implements ITaggable {
     if (props.propertyInjectors) {
       const injectors = PropertyInjectors.of(this);
       injectors.add(...props.propertyInjectors);
-      log(`supportedClasses: ${injectors.supportedClasses()}`);
     }
 
     this._missingContext = new Array<cxschema.MissingContext>();

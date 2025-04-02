@@ -141,8 +141,6 @@ export function applyInjectors(uniqueId: string, originalProps: any, context: In
       scope: context.scope,
       id: context.id,
     });
-  } else {
-    warn(`no injector found for ${uniqueId} at ${context.scope}`);
   }
 
   return originalProps;

@@ -1,4 +1,3 @@
-import { log } from 'console';
 import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
 import { FeatureFlags } from './feature-flags';
@@ -178,7 +177,6 @@ export class Stage extends Construct {
     if (props.propertyInjectors) {
       const injectors = PropertyInjectors.of(this);
       injectors.add(...props.propertyInjectors);
-      log(`supportedClasses: ${injectors.supportedClasses()}`);
     }
 
     Object.defineProperty(this, STAGE_SYMBOL, { value: true });
