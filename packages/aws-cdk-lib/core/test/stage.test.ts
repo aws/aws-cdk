@@ -288,6 +288,7 @@ describe('stage', () => {
   test('stage name validation', () => {
     const app = new App();
 
+    new Stage(app, 'a');
     new Stage(app, 'abcd');
     new Stage(app, 'abcd123');
     new Stage(app, 'abcd123-588dfjjk');
