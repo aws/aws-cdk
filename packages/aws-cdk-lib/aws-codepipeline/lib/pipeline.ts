@@ -1093,7 +1093,7 @@ export class Pipeline extends PipelineBase {
       return undefined;
     }
 
-    const isRemoveRootPrincipal = FeatureFlags.of(this).isEnabled(cxapi.PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE);
+    const isRemoveRootPrincipal = FeatureFlags.of(this).isEnabled(cxapi.PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE);
     const basePrincipal = new iam.AccountPrincipal(pipelineStack.account);
 
     const roleProps = {
