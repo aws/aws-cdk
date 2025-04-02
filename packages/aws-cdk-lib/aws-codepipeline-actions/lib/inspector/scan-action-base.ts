@@ -87,7 +87,7 @@ export abstract class InspectorScanActionBase extends Action {
 
   protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
-    // see: https://docs.aws.amazon.com/codepipeline/latest/userguide/security-iam.html#how-to-custom-role
+    // see: https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-InspectorScan.html#edit-role-InspectorScan
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: [

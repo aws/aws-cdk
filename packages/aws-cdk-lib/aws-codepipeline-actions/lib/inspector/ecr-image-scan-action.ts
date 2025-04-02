@@ -44,7 +44,7 @@ export class InspectorEcrImageScanAction extends InspectorScanActionBase {
   codepipeline.ActionConfig {
     const config = super.bound(scope, stage, options);
 
-    // see: https://docs.aws.amazon.com/codepipeline/latest/userguide/security-iam.html#how-to-custom-role
+    // see: https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-InspectorScan.html#edit-role-InspectorScan
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: [this.ecrProps.repository.repositoryArn],
       actions: [
