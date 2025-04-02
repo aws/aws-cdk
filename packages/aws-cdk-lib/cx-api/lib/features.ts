@@ -1462,18 +1462,23 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [ASPECT_PRIORITIES_MUTATING]: {
     type: FlagType.ApiDefault,
-    summary: 'When set, Aspects added by the construct library on your behalf will be given a priority of MUTATING.',
+    summary: 'When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING.',
     detailsMd: `
-      Custom Aspets you add have a priority of DEFAULT (500) if not overridden,
-      which is higher than MUTATING (200). This is relevant if a custom Aspect
-      you add and an Aspect added by CDK try to configure the same value.
+      Custom Aspects you add have a priority of DEFAULT (500) if you don't
+      assign a more specific priority, which is higher than MUTATING (200). This
+      is relevant if a custom Aspect you add and an Aspect added by CDK try to
+      configure the same value.
 
-      If this flag is not set (old behavior), the Aspects that is closest
-      to the target construct executes last (either yours or the Aspect added
-      by the CDK).
+      If this flag is set to false (old behavior), Aspects added by CDK are also
+      added with a priority of DEFAULT; because their priorities are equal, the
+      Aspects that is closest to the target construct executes last (either
+      yours or the Aspect added by the CDK).
 
-      If this flag is set (recommended behavior), custom Aspects you add with
-      default priority will always execute last and "win" the write.
+      If this flag is set to true (recommended behavior), Aspects added by CDK are added
+      with a priority of MUTATING, and custom Aspects you add with DEFAULT
+      priority will always execute last and "win" the write. If you need Aspects
+      added by CDK to run after yours, your Aspect needs to have a priority of
+      MUTATING or lower.
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,

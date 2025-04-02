@@ -2,17 +2,20 @@ export enum FlagType {
   /**
    * Change the default behavior of the API
    *
-   * The old behavior is not disrecommended, and possible to achieve with source
-   * code changes. Also valid for changes that don't affect CloudFormation, but
-   * the CXAPI contract.
+   * The old behavior is still valid, and possible to achieve with source
+   * code changes, but we recommend the new behavior instead.
+   *
+   * Also valid for changes that don't affect CloudFormation, but the CXAPI
+   * contract.
    */
   ApiDefault,
 
   /**
-   * Address a bug/introduce a recommended change
+   * Address a bug in a way that requires contract breaking or has availability implications for existing infrastructure
    *
-   * The old behavior is no longer recommended. The only way to achieve it is by
-   * keeping the flag at the legacy value.
+   * The old behavior is not recommended, and shouldn't have been possible in the first place.
+   * We only have this flag because we can't roll out the fix to everyone
+   * automatically for fear of breakage.
    */
   BugFix,
 
