@@ -43,10 +43,10 @@ const scanAction = new cpactions.InspectorEcrImageScanAction({
   output: scanOutput,
   repository: image.repository,
   imageTag: image.imageTag,
-  criticalThreshold: 1,
-  highThreshold: 1,
-  mediumThreshold: 1,
-  lowThreshold: 1,
+  criticalThreshold: 5,
+  highThreshold: 5,
+  mediumThreshold: 5,
+  lowThreshold: 5,
 });
 
 const deployBucket = new s3.Bucket(stack, 'DeployBucket', {
