@@ -375,6 +375,13 @@ export interface PipelineProps {
    * @default - ExecutionMode.SUPERSEDED
    */
   readonly executionMode?: ExecutionMode;
+
+  /**
+   * Use pipeline service role for actions if no action role configured
+   *
+   * @default - false
+   */
+  readonly usePipelineRoleForActions?: boolean;
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
@@ -576,6 +583,7 @@ export class Pipeline extends PipelineBase {
   private readonly reuseCrossRegionSupportStacks: boolean;
   private readonly codePipeline: CfnPipeline;
   private readonly pipelineType: PipelineType;
+  private readonly usePipelineRoleForActions: boolean;
   private readonly variables = new Array<Variable>();
   private readonly triggers = new Array<Trigger>();
 
@@ -604,6 +612,7 @@ export class Pipeline extends PipelineBase {
     }
 
     this.reuseCrossRegionSupportStacks = props.reuseCrossRegionSupportStacks ?? true;
+    this.usePipelineRoleForActions = props.usePipelineRoleForActions ?? false;
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = this.getArtifactBucketFromProps(props);
@@ -1010,6 +1019,9 @@ export class Pipeline extends PipelineBase {
     let actionRole = this.getRoleFromActionPropsOrGenerateIfCrossAccount(stage, action);
 
     if (!actionRole && this.isAwsOwned(action)) {
+      if (this.usePipelineRoleForActions) {
+        return undefined;
+      }
       // generate a Role for this specific Action
       const isRemoveRootPrincipal = FeatureFlags.of(this).isEnabled(cxapi.PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE);
       const roleProps = isRemoveRootPrincipal? {
