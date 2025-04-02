@@ -1,6 +1,6 @@
 #!/bin/bash
 #---------------------------------------------------------------------------------------------------
-# executes unit tests
+# executes large file tests
 #
 # prepares a staging directory with the requirements
 set -e
@@ -18,8 +18,8 @@ cd ${staging}
 cp -f ${scriptdir}/../../../lib/aws-s3-deployment/bucket-deployment-handler/* $PWD
 cp -f ${scriptdir}/* $PWD
 
-# this will run our tests inside the right environment
+# Build the Docker image with --no-cache to force rebuild
 DOCKER_CMD=${CDK_DOCKER:-docker}
-$DOCKER_CMD build --no-cache -t s3-deployment-test .
+$DOCKER_CMD build -f Dockerfile_large --no-cache -t s3-deployment-test .
 
 $DOCKER_CMD run --rm s3-deployment-test

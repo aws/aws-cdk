@@ -328,19 +328,29 @@ def is_json_content(content):
         return False
 
 def replace_markers(filename, markers):
+    """Replace markers in a file, with special handling for JSON files."""
+    # if there are no markers, skip
+    if not markers:
+        return
+    
     outfile = filename + '.new'
+    # We need to handle a special replacement in the case where the file content is JSON and
+    # if one of the marker's value contain a double quote
+    marker_contains_double_quote = any('"' in v for v in markers.values())
     replace_tokens = dict([(k.encode('utf-8'), v.encode('utf-8')) for k, v in markers.items()])
 
-    # First try to read as text to check if it's JSON
-    try:
-        with open(filename, 'r', encoding='utf-8') as f:
-            content = f.read()
-            is_json = is_json_content(content)
-    except UnicodeDecodeError:
-        # If we can't read as text, it's definitely not JSON
-        is_json = False
+    # If no marker values contain a double quote, there is no need to check if the content format is JSON
+    if marker_contains_double_quote:
+        # First try to read as text to check if it's JSON
+        try:
+            with open(filename, 'r', encoding='utf-8') as f:
+                content = f.read()
+                is_json = is_json_content(content)
+        except UnicodeDecodeError:
+            # If we can't read as text, it's definitely not JSON
+            is_json = False
 
-    if is_json:
+    if marker_contains_double_quote and is_json:
         # Handle JSON content with proper structure parsing
         new_content = replace_markers_in_json(content, replace_tokens)
         # Write JSON in text mode
@@ -355,12 +365,12 @@ def replace_markers(filename, markers):
                     line = line.replace(token, replacement)
                 fo.write(line)
 
-    # # delete the original file and rename the new one to the original
+    # Delete the original file and rename the new one to the original
     os.remove(filename)
     os.rename(outfile, filename)
 
-
 def replace_markers_in_json(content, replace_tokens):
+    """Replace markers in JSON content with proper escaping."""
     try:
         # Parse the JSON structure
         data = json.loads(content)
