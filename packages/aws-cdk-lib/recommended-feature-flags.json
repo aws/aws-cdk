@@ -65,7 +65,7 @@
   "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true,
   "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
   "@aws-cdk/core:enableAdditionalMetadataCollection": true,
-  "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true,
+  "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false,
   "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
   "@aws-cdk/aws-events:requireEventBusPolicySid": true,
   "@aws-cdk/aws-dynamodb:retainTableReplica": true
