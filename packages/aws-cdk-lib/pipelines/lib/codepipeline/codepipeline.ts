@@ -254,6 +254,13 @@ export interface CodePipelineProps {
    * @default - no cross region replication buckets.
    */
   readonly crossRegionReplicationBuckets?: { [region: string]: s3.IBucket };
+
+  /**
+   * Use pipeline service role for actions if no action role configured
+   *
+   * @default - false
+   */
+  readonly usePipelineRoleForActions?: boolean;
 }
 
 /**
@@ -357,6 +364,12 @@ export class CodePipeline extends PipelineBase {
    */
   public readonly selfMutationEnabled: boolean;
 
+  /**
+   * Allow pipeline service role used for actions if no action role configured
+   * instead of creating a new role for each action
+   */
+  public readonly usePipelineRoleForActions: boolean;
+
   private _pipeline?: cp.Pipeline;
   private artifacts = new ArtifactMap();
   private _synthProject?: cb.IProject;
@@ -391,6 +404,7 @@ export class CodePipeline extends PipelineBase {
     this.cliVersion = props.cliVersion ?? preferredCliVersion();
     this.useChangeSets = props.useChangeSets ?? true;
     this.stackOutputs = new StackOutputsMap(this);
+    this.usePipelineRoleForActions = props.usePipelineRoleForActions ?? false;
   }
 
   /**
@@ -477,6 +491,7 @@ export class CodePipeline extends PipelineBase {
         role: this.props.role,
         enableKeyRotation: this.props.enableKeyRotation,
         artifactBucket: this.props.artifactBucket,
+        usePipelineRoleForActions: this.usePipelineRoleForActions,
       });
     }
 
