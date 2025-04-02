@@ -476,6 +476,31 @@ interface DatabaseClusterBaseProps {
    * @deprecated Use clusterScalabilityType instead. This will be removed in the next major version.
    */
   readonly clusterScailabilityType?: ClusterScailabilityType;
+
+  /**
+   * The life cycle type for this DB cluster.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/extended-support.html
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support.html
+   *
+   * @default undefined - AWS RDS default setting is `EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT`
+   */
+  readonly engineLifecycleSupport?: EngineLifecycleSupport;
+}
+
+/**
+ * Engine lifecycle support for Amazon RDS and Amazon Aurora
+ */
+export enum EngineLifecycleSupport {
+  /**
+   * Using Amazon RDS extended support
+   */
+  OPEN_SOURCE_RDS_EXTENDED_SUPPORT = 'open-source-rds-extended-support',
+
+  /**
+   * Not using Amazon RDS extended support
+   */
+  OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED = 'open-source-rds-extended-support-disabled',
 }
 
 /**
@@ -945,6 +970,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? props.monitoringInterval?.toSeconds() : undefined,
       monitoringRoleArn: props.enableClusterLevelEnhancedMonitoring ? this.monitoringRole?.roleArn : undefined,
+      engineLifecycleSupport: props.engineLifecycleSupport,
     };
   }
 
