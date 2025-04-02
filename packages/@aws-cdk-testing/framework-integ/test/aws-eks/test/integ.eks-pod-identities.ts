@@ -65,7 +65,11 @@ class EksClusterStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 
 const stack = new EksClusterStack(app, 'eks-pod-identities');
 

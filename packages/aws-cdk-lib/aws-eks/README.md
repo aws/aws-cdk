@@ -33,6 +33,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
     - [ARM64 Support](#arm64-support)
     - [Masters Role](#masters-role)
     - [Encryption](#encryption)
+    - [Hybrid nodes](#hybrid-nodes)
   - [Permissions and Security](#permissions-and-security)
     - [AWS IAM Mapping](#aws-iam-mapping)
     - [Access Config](#access-config)
@@ -135,19 +136,25 @@ A more detailed breakdown of each is provided further down this README.
 
 ## Provisioning clusters
 
-Creating a new cluster is done using the `Cluster` or `FargateCluster` constructs. The only required property is the kubernetes `version`.
+Creating a new cluster is done using the `Cluster` or `FargateCluster` constructs. The only required properties are the kubernetes `version` and `kubectlLayer`.
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_32,
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
 You can also use `FargateCluster` to provision a cluster that uses only fargate workers.
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 new eks.FargateCluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_32,
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
@@ -170,10 +177,13 @@ By default, this library will allocate a managed node group with 2 *m5.large* in
 At cluster instantiation time, you can customize the number of instances and their type:
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_32,
   defaultCapacity: 5,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.SMALL),
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
@@ -182,9 +192,12 @@ To access the node group that was created on your behalf, you can use `cluster.d
 Additional customizations are available post instantiation. To apply them, set the default capacity to 0, and use the `cluster.addNodegroupCapacity` method:
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 const cluster = new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_32,
   defaultCapacity: 0,
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 
 cluster.addNodegroupCapacity('custom-node-group', {
@@ -260,6 +273,8 @@ Node groups are available with IPv6 configured networks.  For custom roles assig
 > For more details visit [Configuring the Amazon VPC CNI plugin for Kubernetes to use IAM roles for service accounts](https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html#cni-iam-role-create-role)
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 const ipv6Management = new iam.PolicyDocument({
     statements: [new iam.PolicyStatement({
     resources: ['arn:aws:ec2:*:*:network-interface/*'],
@@ -286,6 +301,7 @@ const eksClusterNodeGroupRole = new iam.Role(this, 'eksClusterNodeGroupRole', {
 const cluster = new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_32,
   defaultCapacity: 0,
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 
 cluster.addNodegroupCapacity('custom-node-group', {
@@ -397,8 +413,11 @@ has been changed. As a workaround, you need to add a temporary policy to the clu
 successful replacement. Consider this example if you are renaming the cluster from `foo` to `bar`:
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 const cluster = new eks.Cluster(this, 'cluster-to-rename', {
   clusterName: 'foo', // rename this to 'bar'
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
   version: eks.KubernetesVersion.V1_32,
 });
 
@@ -452,8 +471,11 @@ To create an EKS cluster that **only** uses Fargate capacity, you can use `Farga
 The following code defines an Amazon EKS cluster with a default Fargate Profile that matches all pods from the "kube-system" and "default" namespaces. It is also configured to [run CoreDNS on Fargate](https://docs.aws.amazon.com/eks/latest/userguide/fargate-getting-started.html#fargate-gs-coredns).
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 const cluster = new eks.FargateCluster(this, 'MyCluster', {
   version: eks.KubernetesVersion.V1_32,
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
@@ -529,9 +551,12 @@ To disable bootstrapping altogether (i.e. to fully customize user-data), set `bo
 You can also configure the cluster to use an auto-scaling group as the default capacity:
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 const cluster = new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_32,
   defaultCapacityType: eks.DefaultCapacityType.EC2,
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
@@ -633,9 +658,12 @@ AWS Identity and Access Management (IAM) and native Kubernetes [Role Based Acces
 You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html) by using the `endpointAccess` property:
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_32,
   endpointAccess: eks.EndpointAccess.PRIVATE, // No access outside of your VPC.
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
@@ -655,11 +683,14 @@ From the docs:
 To deploy the controller on your EKS cluster, configure the `albController` property:
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_32,
   albController: {
     version: eks.AlbControllerVersion.V2_8_2,
   },
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
@@ -696,12 +727,15 @@ if (cluster.albController) {
 You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properties:
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 declare const vpc: ec2.Vpc;
 
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_32,
   vpc,
   vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
@@ -744,6 +778,8 @@ The `ClusterHandler` is a set of Lambda functions (`onEventHandler`, `isComplete
 You can configure the environment of the Cluster Handler functions by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 declare const proxyInstanceSecurityGroup: ec2.SecurityGroup;
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_32,
@@ -755,6 +791,7 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
    * Cluster Handler Lambdas so that it can reach the proxy.
    */
   clusterHandlerSecurityGroup: proxyInstanceSecurityGroup,
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
@@ -763,6 +800,7 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 You can optionally choose to configure your cluster to use IPv6 using the [`ipFamily`](https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily) definition for your cluster.  Note that this will require the underlying subnets to have an associated IPv6 CIDR.
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 declare const vpc: ec2.Vpc;
 
 function associateSubnetWithV6Cidr(vpc: ec2.Vpc, count: number, subnet: ec2.ISubnet) {
@@ -792,6 +830,7 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
   vpc: vpc,
   ipFamily: eks.IpFamily.IP_V6,
   vpcSubnets: [{ subnets: vpc.publicSubnets }],
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
@@ -822,11 +861,14 @@ const cluster = eks.Cluster.fromClusterAttributes(this, 'Cluster', {
 You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_32,
   kubectlEnvironment: {
     'http_proxy': 'http://proxy.myproxy.com',
   },
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
@@ -898,9 +940,12 @@ const cluster2 = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
 By default, the kubectl provider is configured with 1024MiB of memory. You can use the `kubectlMemory` option to specify the memory size for the AWS Lambda function:
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 new eks.Cluster(this, 'MyCluster', {
   kubectlMemory: Size.gibibytes(4),
   version: eks.KubernetesVersion.V1_32,
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 
 // or
@@ -937,10 +982,13 @@ cluster.addAutoScalingGroupCapacity('self-ng-arm', {
 When you create a cluster, you can specify a `mastersRole`. The `Cluster` construct will associate this role with the `system:masters` [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) group, giving it super-user access to the cluster.
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 declare const role: iam.Role;
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_32,
   mastersRole: role,
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
@@ -986,20 +1034,26 @@ You can use the `secretsEncryptionKey` to configure which key the cluster will u
 > This setting can only be specified when the cluster is created and cannot be updated.
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 const secretsKey = new kms.Key(this, 'SecretsKey');
 const cluster = new eks.Cluster(this, 'MyCluster', {
   secretsEncryptionKey: secretsKey,
   version: eks.KubernetesVersion.V1_32,
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
 You can also use a similar configuration for running a cluster built using the FargateCluster construct.
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 const secretsKey = new kms.Key(this, 'SecretsKey');
 const cluster = new eks.FargateCluster(this, 'MyFargateCluster', {
   secretsEncryptionKey: secretsKey,
   version: eks.KubernetesVersion.V1_32,
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
@@ -1008,6 +1062,31 @@ The Amazon Resource Name (ARN) for that CMK can be retrieved.
 ```ts
 declare const cluster: eks.Cluster;
 const clusterEncryptionConfigKeyArn = cluster.clusterEncryptionConfigKeyArn;
+```
+
+### Hybrid Nodes
+
+When you create an Amazon EKS cluster, you can configure it to leverage the [EKS Hybrid Nodes](https://aws.amazon.com/eks/hybrid-nodes/) feature, allowing you to use your on-premises and edge infrastructure as nodes in your EKS cluster. Refer to the Hyrid Nodes [networking documentation](https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-networking.html) to configure your on-premises network, node and pod CIDRs, access control, etc before creating your EKS Cluster.
+
+Once you have identified the on-premises node and pod (optional) CIDRs you will use for your hybrid nodes and the workloads running on them, you can specify them during cluster creation using the `remoteNodeNetworks` and `remotePodNetworks` (optional) properties:
+
+```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
+new eks.Cluster(this, 'Cluster', {
+  version: eks.KubernetesVersion.V1_32,
+  kubectlLayer: new KubectlV32Layer(this, 'KubectlLayer'),
+  remoteNodeNetworks: [
+    {
+      cidrs: ['10.0.0.0/16'],
+    },
+  ],
+  remotePodNetworks: [
+    {
+      cidrs: ['192.168.0.0/16'],
+    },
+  ],
+});
 ```
 
 ## Permissions and Security
@@ -1520,9 +1599,12 @@ Pruning is enabled by default but can be disabled through the `prune` option
 when a cluster is defined:
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 new eks.Cluster(this, 'MyCluster', {
   version: eks.KubernetesVersion.V1_32,
   prune: false,
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
@@ -1922,6 +2004,8 @@ You can enable logging for each one separately using the `clusterLogging`
 property. For example:
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 const cluster = new eks.Cluster(this, 'Cluster', {
   // ...
   version: eks.KubernetesVersion.V1_32,
@@ -1930,6 +2014,20 @@ const cluster = new eks.Cluster(this, 'Cluster', {
     eks.ClusterLoggingTypes.AUTHENTICATOR,
     eks.ClusterLoggingTypes.SCHEDULER,
   ],
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
+});
+```
+
+## NodeGroup Repair Config
+
+You can enable Managed Node Group [auto-repair config](https://docs.aws.amazon.com/eks/latest/userguide/node-health.html#node-auto-repair) using `enableNodeAutoRepair`
+property. For example:
+
+```ts
+declare const cluster: eks.Cluster;
+
+cluster.addNodegroupCapacity('NodeGroup', {
+  enableNodeAutoRepair:true,
 });
 ```
 

@@ -35,7 +35,45 @@ const updateProjectField = async ({
       }
     );
   };
-  
+
+/**
+ * Updates a date field value for an item in a GitHub Project.
+ * @param {Object} params - The parameters for updating the project field
+ * @param {Object} params.github - The GitHub API client
+ * @param {string} params.projectId - The ID of the project
+ * @param {string} params.itemId - The ID of the item to update
+ * @param {string} params.fieldId - The ID of the field to update
+ * @param {string} params.date - The date string in ISO format
+ * @returns {Promise<Object>} The GraphQL mutation response
+ */
+const updateProjectDateField = async ({
+  github,
+  projectId,
+  itemId,
+  fieldId,
+  date,
+}) => {
+  return github.graphql(
+    `
+      mutation($input: UpdateProjectV2ItemFieldValueInput!) {
+        updateProjectV2ItemFieldValue(input: $input) {
+          projectV2Item {
+            id
+          }
+        }
+      }
+    `,
+    {
+      input: {
+        projectId,
+        itemId,
+        fieldId,
+        value: { date },
+      },
+    }
+  );
+};
+
 /**
  * Adds an item (PR) to a GitHub Project.
  * @param {Object} params - The parameters for adding an item to the project
@@ -153,10 +191,10 @@ const updateProjectField = async ({
   };
 
   /**
-   * Fetches project item details for a specific PR
+   * Fetches project item details for a specific PR or Issue
    * @param {Object} params - The parameters for fetching project item
    * @param {Object} params.github - The GitHub API client
-   * @param {string} params.contentId - PR node ID
+   * @param {string} params.contentId - PR/Issue node ID
    * @returns {Promise<Object>} Project item details if PR is in project
    */
   const fetchProjectItem = async ({ github, contentId }) => {
@@ -165,6 +203,28 @@ const updateProjectField = async ({
       query($contentId: ID!) {
         node(id: $contentId) {
           ... on PullRequest {
+            projectItems(first: 100) {
+              nodes {
+                id
+                project {
+                  id
+                }
+                fieldValues(first: 8) {
+                  nodes {
+                    ... on ProjectV2ItemFieldSingleSelectValue {
+                      name
+                      field {
+                        ... on ProjectV2SingleSelectField {
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          ... on Issue {
             projectItems(first: 100) {
               nodes {
                 id
@@ -211,6 +271,18 @@ const updateProjectField = async ({
             items(first: 100, after: $cursor) {
               nodes {
                 id
+                createdAt
+                type
+                content {
+                  ... on Issue {
+                    id
+                    number
+                  }
+                  ... on PullRequest {
+                    id
+                    number
+                  }
+                }
                 fieldValues(first: 20) {
                   nodes {
                     ... on ProjectV2ItemFieldSingleSelectValue {
@@ -221,6 +293,14 @@ const updateProjectField = async ({
                         }
                       }
                       updatedAt
+                    }
+                    ... on ProjectV2ItemFieldDateValue {
+                      date
+                      field {
+                        ... on ProjectV2Field {
+                          name
+                        }
+                      }
                     }
                   }
                 }
@@ -239,6 +319,7 @@ const updateProjectField = async ({
 
   module.exports = {
     updateProjectField,
+    updateProjectDateField,
     addItemToProject,
     fetchProjectFields,
     fetchOpenPullRequests,

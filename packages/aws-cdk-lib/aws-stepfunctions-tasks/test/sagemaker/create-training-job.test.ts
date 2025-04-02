@@ -1,3 +1,4 @@
+import { Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
@@ -672,4 +673,215 @@ test('Cannot create a SageMaker train task with incorrect algorithmName', () => 
     },
   }))
     .toThrow(/Expected algorithm name to match pattern/);
+});
+
+test('required permissions are granted to StateMachine role', () => {
+  // WHEN
+  const definition = new SageMakerCreateTrainingJob(stack, 'TrainSagemaker', {
+    trainingJobName: 'MyTrainJob',
+    algorithmSpecification: {
+      algorithmName: 'BlazingText',
+    },
+    outputDataConfig: {
+      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath'),
+    },
+  });
+
+  new sfn.StateMachine(stack, 'MyStateMachine', {
+    definition,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'sagemaker:CreateTrainingJob',
+            'sagemaker:DescribeTrainingJob',
+            'sagemaker:StopTrainingJob',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':sagemaker:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':training-job/MyTrainJob*',
+              ],
+            ],
+          },
+        },
+        {
+          Action: 'sagemaker:ListTags',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: 'sagemaker:AddTags',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':sagemaker:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':training-job/MyTrainJob*',
+              ],
+            ],
+          },
+        },
+        {
+          Action: 'iam:PassRole',
+          Condition: {
+            StringEquals: {
+              'iam:PassedToService': 'sagemaker.amazonaws.com',
+            },
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('required permissions are granted to StateMachine role if RUN_JOB is supplied as service integration pattern', () => {
+  // WHEN
+  const definition = new SageMakerCreateTrainingJob(stack, 'TrainSagemaker', {
+    trainingJobName: 'MyTrainJob',
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    algorithmSpecification: {
+      algorithmName: 'BlazingText',
+    },
+    outputDataConfig: {
+      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath'),
+    },
+  });
+
+  new sfn.StateMachine(stack, 'MyStateMachine', {
+    definition,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'sagemaker:CreateTrainingJob',
+            'sagemaker:DescribeTrainingJob',
+            'sagemaker:StopTrainingJob',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':sagemaker:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':training-job/MyTrainJob*',
+              ],
+            ],
+          },
+        },
+        {
+          Action: 'sagemaker:ListTags',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: 'sagemaker:AddTags',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':sagemaker:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':training-job/MyTrainJob*',
+              ],
+            ],
+          },
+        },
+        {
+          Action: 'iam:PassRole',
+          Condition: {
+            StringEquals: {
+              'iam:PassedToService': 'sagemaker.amazonaws.com',
+            },
+          },
+        },
+        {
+          Action: [
+            'events:PutTargets',
+            'events:PutRule',
+            'events:DescribeRule',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':events:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':rule/StepFunctionsGetEventsForSageMakerTrainingJobsRule',
+              ],
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
 });

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bf71547ed96e34c74bbbd0018f5bc5c335015c6e386e2d1832709ebfdd8362ac.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/09b128feca3982b74e355b7d1898c5e88d6e0596429ec6a18aec926da1c7bad5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -237,6 +237,82 @@
             }
           }
         ],
+        "/aws-cdk-redshift-cluster-create/Cluster/RedshiftClusterRebooterFunction/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-redshift-cluster-create/Cluster/RedshiftClusterRebooterFunction/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterRedshiftClusterRebooterFunctioninlinePolicyAddedToExecutionRole0D490C9BC"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-create/Cluster/RedshiftClusterRebooterFunction/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-redshift-cluster-create/Cluster/RedshiftClusterRebooterFunction/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterRedshiftClusterRebooterFunctioninlinePolicyAddedToExecutionRole1F50EA7FB"
+          }
+        ],
         "/aws-cdk-redshift-cluster-create/Cluster/ResourceProvider/framework-onEvent": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -307,8 +383,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
@@ -353,14 +437,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/aws-cdk-redshift-cluster-create/Cluster/ResourceProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -373,6 +449,44 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterResourceProviderframeworkonEvent15BB3722"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-create/Cluster/ResourceProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-redshift-cluster-create/Cluster/ResourceProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterResourceProviderframeworkonEventinlinePolicyAddedToExecutionRole0F6158EFC"
           }
         ],
         "/aws-cdk-redshift-cluster-create/Cluster/RedshiftClusterRebooterCustomResource": [
@@ -422,14 +536,6 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
               "attachInlinePolicy": [
                 "*"
               ]
@@ -446,8 +552,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
@@ -462,50 +576,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonLambda511e207f13df4b8bb632c32b30b65ac2ServiceRole4BDC9525"
-          }
-        ],
-        "/aws-cdk-redshift-cluster-create/SingletonLambda511e207f13df4b8bb632c32b30b65ac2/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-redshift-cluster-create/SingletonLambda511e207f13df4b8bb632c32b30b65ac2/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonLambda511e207f13df4b8bb632c32b30b65ac2ServiceRoleDefaultPolicyF49983EF"
           }
         ],
         "/aws-cdk-redshift-cluster-create/SingletonLambda511e207f13df4b8bb632c32b30b65ac2/Resource": [
@@ -546,7 +616,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d79ee05d0bb10eab300f98ecfae9c01b6a9a0956c83252df320ab63cb05bee0f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/66a86a7abad16d6b51d45c4c540a4d536b69a6cf4bec5252b30c4f7c266a72a4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -766,6 +836,82 @@
             }
           }
         ],
+        "/aws-cdk-redshift-cluster-update/Cluster/RedshiftClusterRebooterFunction/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-redshift-cluster-update/Cluster/RedshiftClusterRebooterFunction/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterRedshiftClusterRebooterFunctioninlinePolicyAddedToExecutionRole0D490C9BC"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-update/Cluster/RedshiftClusterRebooterFunction/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-redshift-cluster-update/Cluster/RedshiftClusterRebooterFunction/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterRedshiftClusterRebooterFunctioninlinePolicyAddedToExecutionRole1F50EA7FB"
+          }
+        ],
         "/aws-cdk-redshift-cluster-update/Cluster/ResourceProvider/framework-onEvent": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -836,8 +982,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
@@ -882,14 +1036,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/aws-cdk-redshift-cluster-update/Cluster/ResourceProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -902,6 +1048,44 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterResourceProviderframeworkonEvent15BB3722"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-update/Cluster/ResourceProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-redshift-cluster-update/Cluster/ResourceProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterResourceProviderframeworkonEventinlinePolicyAddedToExecutionRole0F6158EFC"
           }
         ],
         "/aws-cdk-redshift-cluster-update/Cluster/RedshiftClusterRebooterCustomResource": [
@@ -951,14 +1135,6 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
               "attachInlinePolicy": [
                 "*"
               ]
@@ -975,8 +1151,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
@@ -991,50 +1175,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonLambda511e207f13df4b8bb632c32b30b65ac2ServiceRole4BDC9525"
-          }
-        ],
-        "/aws-cdk-redshift-cluster-update/SingletonLambda511e207f13df4b8bb632c32b30b65ac2/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-redshift-cluster-update/SingletonLambda511e207f13df4b8bb632c32b30b65ac2/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonLambda511e207f13df4b8bb632c32b30b65ac2ServiceRoleDefaultPolicyF49983EF"
           }
         ],
         "/aws-cdk-redshift-cluster-update/SingletonLambda511e207f13df4b8bb632c32b30b65ac2/Resource": [
@@ -1087,7 +1227,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0ad63393233b6df0b5091f6d97bc78bf7d076c7071089b398acc90c6530f80ae.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7dda39f593c656ed9f7ce9f400ce77ee06c92198d73c5341ecd6f96bf860dc1a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

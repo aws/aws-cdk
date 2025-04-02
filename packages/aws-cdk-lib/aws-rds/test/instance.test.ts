@@ -443,6 +443,21 @@ describe('instance', () => {
     });
   });
 
+  test.each([[true], [false]])('instance with applyImmediately set to %s', (applyImmediately) => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE4_GRAVITON, ec2.InstanceSize.SMALL),
+      vpc,
+      applyImmediately,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      ApplyImmediately: applyImmediately,
+    });
+  });
+
   describe('DatabaseInstanceFromSnapshot', () => {
     test('create an instance from snapshot', () => {
       new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {

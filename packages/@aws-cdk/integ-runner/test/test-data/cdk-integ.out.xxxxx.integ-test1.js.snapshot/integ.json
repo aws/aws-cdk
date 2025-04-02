@@ -1,8 +1,0 @@
-{
-  "version": "v19.0.0",
-  "testCases": {
-    "xxxxx.integ-test1": {
-      "stacks": ["stack1"]
-    }
-  }
-}

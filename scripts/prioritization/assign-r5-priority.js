@@ -10,6 +10,7 @@ const { PRIORITIES, LABELS, STATUS, DAYS_THRESHOLD, ...PROJECT_CONFIG } = requir
 
 const {
   updateProjectField,
+  updateProjectDateField,
   addItemToProject,
   fetchProjectFields,
   fetchOpenPullRequests,
@@ -102,8 +103,8 @@ module.exports = async ({ github }) => {
       });
 
       // Filter specific project
-      const projectItem = result.node.projectItems.nodes
-        .find(item => item.project.id === PROJECT_CONFIG.projectId);
+      const projectItem = result?.node?.projectItems?.nodes
+        ?.find(item => item.project.id === PROJECT_CONFIG.projectId);
       
       // Skip if PR is already in project
       if (projectItem) {
@@ -120,7 +121,7 @@ module.exports = async ({ github }) => {
         contentId: pr.id,
       });
 
-      // Set initial priority and status
+      // Set priority, Ready status and current date for new items
       await Promise.all([
         updateProjectField({
           github,
@@ -135,6 +136,13 @@ module.exports = async ({ github }) => {
           itemId: addResult.addProjectV2ItemById.item.id,
           fieldId: PROJECT_CONFIG.statusFieldId,
           value: readyStatusId,
+        }),
+        updateProjectDateField({
+          github,
+          projectId: PROJECT_CONFIG.projectId,
+          itemId: itemId,
+          fieldId: PROJECT_CONFIG.addedOnFieldId,
+          date: new Date().toISOString(),
         })
       ]);
     } catch (error) {

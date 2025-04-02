@@ -140,7 +140,7 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
   readonly tumblingWindow?: Duration;
 
   /**
-   * An Amazon SQS queue or Amazon SNS topic destination for discarded records.
+   * An Amazon S3, Amazon SQS queue or Amazon SNS topic destination for discarded records.
    *
    * @default - discarded records are ignored
    */
@@ -200,7 +200,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
   public abstract bind(_target: lambda.IFunction): void;
 
   protected enrichMappingOptions(options: lambda.EventSourceMappingOptions): lambda.EventSourceMappingOptions {
-    // check if this event source support S3 as OnFailure, currently only kakfa source are supported
+    // check if this event source support S3 as OnFailure, Kinesis, Kafka, DynamoDB has supported S3 OFD
     if (this.props.onFailure instanceof S3OnFailureDestination && !options.supportS3OnFailureDestination) {
       throw new Error('S3 onFailure Destination is not supported for this event source');
     }

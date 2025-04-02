@@ -1150,6 +1150,12 @@ export enum DefaultInstanceTenancy {
    * Any instance launched into the VPC automatically has dedicated tenancy, unless you launch it with the default tenancy.
    */
   DEDICATED = 'dedicated',
+
+  /**
+   * Instances must be launched on dedicated hosts. This provides additional visibility
+   * and control over instance placement at the physical host level.
+   */
+  HOST = 'host',
 }
 
 /**

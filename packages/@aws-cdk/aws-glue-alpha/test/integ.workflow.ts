@@ -37,7 +37,7 @@ workflow.addOnDemandTrigger('OnDemandTrigger', {
   actions: [{ job: InboundJob }],
 });
 
-workflow.addconditionalTrigger('ConditionalTrigger', {
+workflow.addConditionalTrigger('ConditionalTrigger', {
   actions: [{ job: OutboundJob }],
   predicate: {
     conditions: [

@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/37afad1f11fa7f1f86938e6390536052a2aac8727707e51a3a25a41cf7357cab.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/b242f71fda82df4e6a1c40eac1c3e6a2f851b6f8ca62c8c0ad58f6e4178e8f47.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -334,10 +334,7 @@
         "/aws-cdk-eks-cluster/kubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "kubectlLayer44321E08",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "kubectlLayer44321E08"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster": [
@@ -1118,8 +1115,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
@@ -1164,14 +1169,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -1184,6 +1181,44 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterKubectlProviderframeworkonEvent68E0CF80"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole081AD342A"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/ClusterAdminRoleAccess": [
@@ -1273,6 +1308,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterNodegroupDefaultCapacityDA0920A3"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/ConfigCommand": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterConfigCommand43AAE40F"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/GetTokenCommand": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterGetTokenCommand06AE992E"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/fargate-profile-default/PodExecutionRole": [
@@ -3391,5 +3438,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

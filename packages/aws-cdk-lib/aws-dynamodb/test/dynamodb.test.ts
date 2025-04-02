@@ -9,6 +9,7 @@ import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import { App, Aws, CfnDeletionPolicy, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
 import * as cr from '../../custom-resources';
+import * as cxapi from '../../cx-api';
 import {
   Attribute,
   AttributeType,
@@ -444,6 +445,157 @@ testDeprecated('when specifying every property', () => {
   );
 });
 
+test('when replica removal policy is not specified', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    removalPolicy: RemovalPolicy.RETAIN,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': true,
+  });
+});
+
+test('when replica removal policy is not specified', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+  table.applyRemovalPolicy(RemovalPolicy.DESTROY);
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': false,
+  });
+});
+
+test('when replica and table removal policy is not specified', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': true,
+  });
+});
+
+test('when replica and table removal policy is not specified with feature flag true', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': true,
+  });
+});
+
+test('when table removal policy is specified with feature flag true', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    removalPolicy: RemovalPolicy.DESTROY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': false,
+  });
+});
+
+test('when replica and table removal policy is not specified with feature flag false', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: false,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': Match.absent(),
+  });
+});
+
+test('when replica is retain and table is destroy', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    removalPolicy: RemovalPolicy.DESTROY,
+    replicaRemovalPolicy: RemovalPolicy.RETAIN,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': true,
+  });
+});
+
+test('when replica is destory and table is retain', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    removalPolicy: RemovalPolicy.RETAIN,
+    replicaRemovalPolicy: RemovalPolicy.DESTROY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': false,
+  });
+});
+
 test('when specifying sse with customer managed CMK', () => {
   const stack = new Stack();
   const table = new Table(stack, CONSTRUCT_NAME, {
@@ -643,9 +795,115 @@ test('if an encryption key is included, encrypt/decrypt permissions are added to
   });
 });
 
-test('replica-handler permission check', () => {
+test('replica-handler permission check @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
   // GIVEN
-  const app = new App();
+  const app = new App({
+    context: {
+      [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+    },
+  });
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN
+  const provider = ReplicaProvider.getOrCreate(stack, {
+    tableName: 'test',
+    regions: ['eu-central-1', 'eu-west-1'],
+  });
+
+  // THEN
+  Template.fromStack(provider).hasResourceProperties('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': [
+        {
+          'Action': 'iam:CreateServiceLinkedRole',
+          'Effect': 'Allow',
+          'Resource': {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':iam::',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':role/aws-service-role/replication.dynamodb.amazonaws.com/AWSServiceRoleForDynamoDBReplication',
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
+  Template.fromStack(provider).hasResourceProperties('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': [
+        {
+          'Action': 'dynamodb:DescribeLimits',
+          'Effect': 'Allow',
+          'Resource': '*',
+        },
+      ],
+    },
+  });
+  Template.fromStack(provider).hasResourceProperties('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': [
+        {
+          'Action': [
+            'dynamodb:DeleteTable',
+            'dynamodb:DeleteTableReplica',
+          ],
+          'Effect': 'Allow',
+          'Resource': [
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':dynamodb:eu-central-1:',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/test',
+                ],
+              ],
+            },
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':dynamodb:eu-west-1:',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/test',
+                ],
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  });
+});
+
+test('replica-handler permission check @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+  // GIVEN
+  const app = new App({
+    context: {
+      [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+    },
+  });
   const stack = new Stack(app, 'Stack');
 
   // WHEN

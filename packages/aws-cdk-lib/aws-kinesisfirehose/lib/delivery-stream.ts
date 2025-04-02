@@ -18,7 +18,7 @@ const PUT_RECORD_ACTIONS = [
 ];
 
 /**
- * Represents a Kinesis Data Firehose delivery stream.
+ * Represents an Amazon Data Firehose delivery stream.
  */
 export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable {
   /**
@@ -72,7 +72,7 @@ export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.ICon
   metricBackupToS3Bytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
-   * Metric for the age (from getting into Kinesis Data Firehose to now) of the oldest record in Kinesis Data Firehose.
+   * Metric for the age (from getting into Amazon Data Firehose to now) of the oldest record in Amazon Data Firehose.
    *
    * Any record older than this age has been delivered to the Amazon S3 bucket for backup.
    *
@@ -89,7 +89,7 @@ export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.ICon
 }
 
 /**
- * Base class for new and imported Kinesis Data Firehose delivery streams.
+ * Base class for new and imported Amazon Data Firehose delivery streams.
  */
 abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStream {
   public abstract readonly deliveryStreamName: string;
@@ -99,7 +99,7 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
-   * Network connections between Kinesis Data Firehose and other resources, i.e. Redshift cluster.
+   * Network connections between Amazon Data Firehose and other resources, i.e. Redshift cluster.
    */
   public readonly connections: ec2.Connections;
 
@@ -206,7 +206,7 @@ export interface DeliveryStreamProps {
   /**
    * The IAM role associated with this delivery stream.
    *
-   * Assumed by Kinesis Data Firehose to read from sources and encrypt data server-side.
+   * Assumed by Amazon Data Firehose to read from sources and encrypt data server-side.
    *
    * @default - a role will be created with default permissions.
    */
@@ -245,7 +245,7 @@ export interface DeliveryStreamAttributes {
   /**
    * The IAM role associated with this delivery stream.
    *
-   * Assumed by Kinesis Data Firehose to read from sources and encrypt data server-side.
+   * Assumed by Amazon Data Firehose to read from sources and encrypt data server-side.
    *
    * @default - the imported stream cannot be granted access to other resources as an `iam.IGrantable`.
    */
@@ -253,7 +253,7 @@ export interface DeliveryStreamAttributes {
 }
 
 /**
- * Create a Kinesis Data Firehose delivery stream
+ * Create a Amazon Data Firehose delivery stream
  *
  * @resource AWS::KinesisFirehose::DeliveryStream
  */
@@ -277,13 +277,13 @@ export class DeliveryStream extends DeliveryStreamBase {
    */
   static fromDeliveryStreamAttributes(scope: Construct, id: string, attrs: DeliveryStreamAttributes): IDeliveryStream {
     if (!attrs.deliveryStreamName && !attrs.deliveryStreamArn) {
-      throw new Error('Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes');
+      throw new cdk.ValidationError('Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes', scope);
     }
     const deliveryStreamName = attrs.deliveryStreamName ??
       cdk.Stack.of(scope).splitArn(attrs.deliveryStreamArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!deliveryStreamName) {
-      throw new Error(`No delivery stream name found in ARN: '${attrs.deliveryStreamArn}'`);
+      throw new cdk.ValidationError(`No delivery stream name found in ARN: '${attrs.deliveryStreamArn}'`, scope);
     }
     const deliveryStreamArn = attrs.deliveryStreamArn ?? cdk.Stack.of(scope).formatArn({
       service: 'firehose',
@@ -334,7 +334,7 @@ export class DeliveryStream extends DeliveryStreamBase {
       props.source &&
         (props.encryption?.type === StreamEncryptionType.AWS_OWNED || props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED)
     ) {
-      throw new Error('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
+      throw new cdk.ValidationError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.', this);
     }
     const encryptionKey = props.encryption?.encryptionKey ?? (props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED ? new kms.Key(this, 'Key') : undefined);
     const encryptionConfig = (encryptionKey || (props.encryption?.type === StreamEncryptionType.AWS_OWNED)) ? {

@@ -75,6 +75,25 @@ export enum VpcEndpointType {
    * your route table, used for traffic destined to a supported AWS service.
    */
   GATEWAY = 'Gateway',
+
+  /**
+   * A Gateway Load Balancer (GWLB) endpoint is an entry/exit point in your VPC that allows traffic
+   * to flow between your VPC and Gateway Load Balancer appliances (like firewalls, intrusion detection systems,
+   * or other security appliances) deployed in a separate VPC.
+   */
+  GATEWAYLOADBALANCER = 'GatewayLoadBalancer',
+
+  /**
+   * A ServiceNetwork VPC endpoint is a feature to connect your VPC to an AWS Cloud WAN (Wide Area Network)
+   * or Amazon VPC Lattice service.
+   */
+  SERVICENETWORK = 'ServiceNetwork',
+
+  /**
+   * A Resource VPC endpoint in AWS is specifically designed to connect to AWS Resource Access Manager (RAM) service
+   * privately within your VPC, without requiring access through the public internet.
+   */
+  RESOURCE = 'Resource',
 }
 
 /**
@@ -308,6 +327,10 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly BEDROCK_AGENT = new InterfaceVpcEndpointAwsService('bedrock-agent');
   public static readonly BEDROCK_AGENT_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-agent-runtime');
   public static readonly BEDROCK_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-runtime');
+  public static readonly BEDROCK_DATA_AUTOMATION = new InterfaceVpcEndpointAwsService('bedrock-data-automation');
+  public static readonly BEDROCK_DATA_AUTOMATION_FIPS = new InterfaceVpcEndpointAwsService('bedrock-data-automation-fips');
+  public static readonly BEDROCK_DATA_AUTOMATION_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-data-automation-runtime');
+  public static readonly BEDROCK_DATA_AUTOMATION_RUNTIME_FIPS = new InterfaceVpcEndpointAwsService('bedrock-data-automation-runtime-fips');
   public static readonly BILLING = new InterfaceVpcEndpointAwsService('billing');
   public static readonly BILLING_AND_COST_MANAGEMENT_FREETIER = new InterfaceVpcEndpointAwsService('freetier', 'aws.api');
   public static readonly BILLING_AND_COST_MANAGEMENT_TAX = new InterfaceVpcEndpointAwsService('tax');
@@ -409,6 +432,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly EMR_EKS = new InterfaceVpcEndpointAwsService('emr-containers');
   public static readonly EMR_SERVERLESS = new InterfaceVpcEndpointAwsService('emr-serverless');
   public static readonly EMR_SERVERLESS_LIVY = new InterfaceVpcEndpointAwsService('emr-serverless-services.livy');
+  public static readonly EMR_SERVERLESS_DASHBOARD = new InterfaceVpcEndpointAwsService('emr-serverless.dashboard');
   public static readonly EMR_WAL = new InterfaceVpcEndpointAwsService('emrwal.prod');
   public static readonly END_USER_MESSAGING_SOCIAL = new InterfaceVpcEndpointAwsService('social-messaging');
   public static readonly ENTITY_RESOLUTION = new InterfaceVpcEndpointAwsService('entityresolution');
@@ -485,9 +509,17 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly LICENSE_MANAGER_LINUX_SUBSCRIPTIONS = new InterfaceVpcEndpointAwsService('license-manager-linux-subscriptions');
   public static readonly LICENSE_MANAGER_LINUX_SUBSCRIPTIONS_FIPS = new InterfaceVpcEndpointAwsService('license-manager-linux-subscriptions-fips');
   public static readonly LICENSE_MANAGER_USER_SUBSCRIPTIONS = new InterfaceVpcEndpointAwsService('license-manager-user-subscriptions');
+  public static readonly LOCATION_SERVICE_GEOFENCING = new InterfaceVpcEndpointAwsService('geo.geofencing');
+  public static readonly LOCATION_SERVICE_MAPS = new InterfaceVpcEndpointAwsService('geo.maps');
+  public static readonly LOCATION_SERVICE_METADATA = new InterfaceVpcEndpointAwsService('geo.metadata');
+  public static readonly LOCATION_SERVICE_PLACES = new InterfaceVpcEndpointAwsService('geo.places');
+  public static readonly LOCATION_SERVICE_ROUTE = new InterfaceVpcEndpointAwsService('geo.routes');
+  public static readonly LOCATION_SERVICE_TRACKING = new InterfaceVpcEndpointAwsService('geo.tracking');
   public static readonly LOOKOUT_EQUIPMENT = new InterfaceVpcEndpointAwsService('lookoutequipment');
   public static readonly LOOKOUT_METRICS = new InterfaceVpcEndpointAwsService('lookoutmetrics');
   public static readonly LOOKOUT_VISION = new InterfaceVpcEndpointAwsService('lookoutvision');
+  public static readonly MAILMANAGER = new InterfaceVpcEndpointAwsService('mail-manager');
+  public static readonly MAILMANAGER_FIPS = new InterfaceVpcEndpointAwsService('mail-manager-fips');
   public static readonly MAINFRAME_MODERNIZATION = new InterfaceVpcEndpointAwsService('m2');
   public static readonly MAINFRAME_MODERNIZATION_APP_TEST = new InterfaceVpcEndpointAwsService('apptest');
   public static readonly MACIE = new InterfaceVpcEndpointAwsService('macie2');
@@ -592,6 +624,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly SAGEMAKER_STUDIO = new InterfaceVpcEndpointAwsService('studio', 'aws.sagemaker');
   public static readonly SECRETS_MANAGER = new InterfaceVpcEndpointAwsService('secretsmanager');
   public static readonly SECURITYHUB = new InterfaceVpcEndpointAwsService('securityhub');
+  public static readonly SECURITYLAKE = new InterfaceVpcEndpointAwsService('securitylake');
+  public static readonly SECURITYLAKE_FIPS = new InterfaceVpcEndpointAwsService('securitylake-fips');
   public static readonly SERVICE_CATALOG = new InterfaceVpcEndpointAwsService('servicecatalog');
   public static readonly SERVICE_CATALOG_APPREGISTRY = new InterfaceVpcEndpointAwsService('servicecatalog-appregistry');
   public static readonly SERVER_MIGRATION_SERVICE = new InterfaceVpcEndpointAwsService('sms');
@@ -629,6 +663,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly TRANSFER_SERVER = new InterfaceVpcEndpointAwsService('transfer.server');
   public static readonly TRANSLATE = new InterfaceVpcEndpointAwsService('translate');
   public static readonly TRUSTED_ADVISOR = new InterfaceVpcEndpointAwsService('trustedadvisor');
+  public static readonly WAFV2 = new InterfaceVpcEndpointAwsService('wafv2');
+  public static readonly WAFV2_FIPS = new InterfaceVpcEndpointAwsService('wafv2-fips');
   public static readonly WELL_ARCHITECTED_TOOL = new InterfaceVpcEndpointAwsService('wellarchitected');
   public static readonly WORKMAIL = new InterfaceVpcEndpointAwsService('workmail');
   public static readonly WORKSPACES = new InterfaceVpcEndpointAwsService('workspaces');
