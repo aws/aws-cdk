@@ -11,6 +11,7 @@ export * from './ecr';
 export * from './ecs/deploy-action';
 export * from './elastic-beanstalk/deploy-action';
 export * from './github/source-action';
+export * from './inspector';
 export * from './jenkins/jenkins-action';
 export * from './jenkins/jenkins-provider';
 export * from './lambda/invoke-action';
