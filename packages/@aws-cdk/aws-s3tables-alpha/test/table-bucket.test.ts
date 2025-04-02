@@ -44,6 +44,12 @@ describe('TableBucket', () => {
 
       expect(result.statementAdded).toBe(true);
     });
+
+    test('has removalPolicy set to "Retain"', () => {
+      Template.fromStack(stack).hasResource(TABLE_BUCKET_CFN_RESOURCE, {
+        'DeletionPolicy': 'Retain',
+      });
+    });
   });
 
   describe('created with optional properties', () => {
@@ -56,7 +62,7 @@ describe('TableBucket', () => {
         unreferencedDays: 10,
         status: s3tables.UnreferencedFileRemovalStatus.ENABLED,
       },
-      removalPolicy: core.RemovalPolicy.RETAIN,
+      removalPolicy: core.RemovalPolicy.DESTROY,
     };
     let tableBucket: s3tables.TableBucket;
 
@@ -77,6 +83,12 @@ describe('TableBucket', () => {
           'Status': TABLE_BUCKET_PROPS.unreferencedFileRemoval?.status,
           'UnreferencedDays': TABLE_BUCKET_PROPS.unreferencedFileRemoval?.unreferencedDays,
         },
+      });
+    });
+
+    test('has removalPolicy set to "Delete"', () => {
+      Template.fromStack(stack).hasResource(TABLE_BUCKET_CFN_RESOURCE, {
+        'DeletionPolicy': 'Delete',
       });
     });
   });
