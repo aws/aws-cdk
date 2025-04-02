@@ -1307,6 +1307,76 @@ pipeline.addStage({
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-StepFunctions.html)
 for information on Action structure reference.
 
+## Invoke
+
+### Inspector
+
+Amazon Inspector is a vulnerability management service that automatically discovers workloads and continually scans them
+for software vulnerabilities and unintended network exposure.
+
+The actions `InspectorSourceCodeScanAction` and `InspectorEcrImageScanAction` automate detecting and fixing security
+vulnerabilities in your open source code. The actions are managed compute actions with security scanning capabilities.
+You can use the actions with application source code in your third-party repository, such as GitHub or Bitbucket Cloud,
+or with images for container applications.
+
+Your actions will scan and report on vulnerability levels and alerts that you configure.
+
+#### Inspector Source Code Scan
+
+The `InspectorSourceCodeScanAction` allows you to scan the application source code for vulnerabilities in your repository.
+
+```ts
+declare const pipeline: codepipeline.Pipeline;
+
+const sourceOutput = new codepipeline.Artifact();
+const sourceAction = new codepipeline_actions.CodeStarConnectionsSourceAction({
+  actionName: 'CodeStarConnectionsSourceAction',
+  output: sourceOutput,
+  connectionArn: 'your-connection-arn',
+  owner: 'your-owner',
+  repo: 'your-repo',
+});
+
+const scanOutput = new codepipeline.Artifact();
+const scanAction = new codepipeline_actions.InspectorSourceCodeScanAction({
+  actionName: 'InspectorSourceCodeScanAction',
+  input: sourceOutput,
+  output: scanOutput,
+});
+
+pipeline.addStage({
+  stageName: 'Source',
+  actions: [sourceAction],
+});
+pipeline.addStage({
+  stageName: 'Scan',
+  actions: [scanAction],
+});
+```
+
+#### Inspector ECR Image Scan
+
+The `InspectorEcrImageScanAction` allows you to scan the image for vulnerabilities in your container applications.
+
+```ts
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+
+declare const pipeline: codepipeline.Pipeline;
+declare const repository: ecr.IRepository;
+
+const scanOutput = new codepipeline.Artifact();
+const scanAction = new codepipeline_actions.InspectorEcrImageScanAction({
+  actionName: 'InspectorEcrImageScanAction',
+  output: scanOutput,
+  repository: repository,
+});
+
+pipeline.addStage({
+  stageName: 'Scan',
+  actions: [scanAction],
+});
+```
+
 ## Compute
 
 ### Commands

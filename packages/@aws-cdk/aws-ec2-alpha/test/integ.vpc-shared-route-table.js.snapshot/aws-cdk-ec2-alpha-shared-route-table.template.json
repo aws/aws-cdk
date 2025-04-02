@@ -1,0 +1,287 @@
+{
+ "Resources": {
+  "VPCB9E5F0B4": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.1.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "SharedRouteTableVPC"
+     }
+    ]
+   }
+  },
+  "VPCAmazonProvidedIpv6CidrBlockA44BAB04": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCB9E5F0B4",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "VPCInternetGatewayIGW3C1F5485": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "SharedRouteTableIGW"
+     }
+    ]
+   }
+  },
+  "VPCInternetGatewayGWAttachment9C225BF5": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Fn::GetAtt": [
+      "VPCInternetGatewayIGW3C1F5485",
+      "InternetGatewayId"
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCB9E5F0B4",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "VPCPublicSubnet1DefaultRouteBCD13929": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Fn::GetAtt": [
+      "VPCInternetGatewayIGW3C1F5485",
+      "InternetGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "SharedRouteTable7A86E44F",
+      "RouteTableId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCInternetGatewayGWAttachment9C225BF5",
+    "VPCInternetGatewayIGW3C1F5485"
+   ]
+  },
+  "VPCEgressOnlyGWEIGW4D24FCEA": {
+   "Type": "AWS::EC2::EgressOnlyInternetGateway",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCB9E5F0B4",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "VPCPublicSubnet1EgressRouteC0FA32F9": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationIpv6CidrBlock": "::/0",
+    "EgressOnlyInternetGatewayId": {
+     "Fn::GetAtt": [
+      "VPCEgressOnlyGWEIGW4D24FCEA",
+      "Id"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "SharedRouteTable7A86E44F",
+      "RouteTableId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCEgressOnlyGWEIGW4D24FCEA"
+   ]
+  },
+  "SharedRouteTable7A86E44F": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "SharedRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCB9E5F0B4",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "PublicSubnet1Subnet03067927": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": false,
+    "AvailabilityZone": "us-west-2a",
+    "CidrBlock": "10.1.1.0/24",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "PublicSubnet1"
+     },
+     {
+      "Key": "VpcName",
+      "Value": "SharedRouteTableVPC"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCB9E5F0B4",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCAmazonProvidedIpv6CidrBlockA44BAB04"
+   ]
+  },
+  "PublicSubnet1RouteTableAssociation0E73B917": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "SharedRouteTable7A86E44F",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "PublicSubnet1Subnet03067927"
+    }
+   },
+   "DependsOn": [
+    "VPCAmazonProvidedIpv6CidrBlockA44BAB04"
+   ]
+  },
+  "PublicSubnet2Subnet78B4B4BD": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": false,
+    "AvailabilityZone": "us-west-2b",
+    "CidrBlock": "10.1.2.0/24",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "PublicSubnet2"
+     },
+     {
+      "Key": "VpcName",
+      "Value": "SharedRouteTableVPC"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCB9E5F0B4",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCAmazonProvidedIpv6CidrBlockA44BAB04"
+   ]
+  },
+  "PublicSubnet2RouteTableAssociation1339F17B": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "SharedRouteTable7A86E44F",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "PublicSubnet2Subnet78B4B4BD"
+    }
+   },
+   "DependsOn": [
+    "VPCAmazonProvidedIpv6CidrBlockA44BAB04"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttVPCInternetGatewayIGW3C1F5485InternetGatewayId25C881CB": {
+   "Value": {
+    "Fn::GetAtt": [
+     "VPCInternetGatewayIGW3C1F5485",
+     "InternetGatewayId"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-ec2-alpha-shared-route-table:ExportsOutputFnGetAttVPCInternetGatewayIGW3C1F5485InternetGatewayId25C881CB"
+   }
+  },
+  "ExportsOutputFnGetAttVPCEgressOnlyGWEIGW4D24FCEAId75399B0C": {
+   "Value": {
+    "Fn::GetAtt": [
+     "VPCEgressOnlyGWEIGW4D24FCEA",
+     "Id"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-ec2-alpha-shared-route-table:ExportsOutputFnGetAttVPCEgressOnlyGWEIGW4D24FCEAId75399B0C"
+   }
+  },
+  "ExportsOutputFnGetAttSharedRouteTable7A86E44FRouteTableId53F8A4E1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "SharedRouteTable7A86E44F",
+     "RouteTableId"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-ec2-alpha-shared-route-table:ExportsOutputFnGetAttSharedRouteTable7A86E44FRouteTableId53F8A4E1"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
