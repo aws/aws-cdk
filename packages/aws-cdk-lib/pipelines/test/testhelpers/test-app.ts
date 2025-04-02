@@ -186,10 +186,12 @@ export class FileAssetApp extends Stage {
 }
 
 export interface MultipleFileAssetsProps extends StageProps {
+  readonly n: number;
+
   /**
    * Up to 3 display names for equally many assets
    */
-  readonly displayNames: string[];
+  readonly displayNames?: string[];
 }
 
 /**
@@ -201,18 +203,22 @@ export class MultipleFileAssetsApp extends Stage {
     const stack = new Stack(this, 'Stack');
 
     const fileNames = ['test-file-asset.txt', 'test-file-asset-two.txt', 'test-file-asset-three.txt'];
+    if (props.displayNames && props.displayNames.length !== props.n) {
+      throw new Error('Incorrect displayNames lenght');
+    }
 
-    props.displayNames.forEach((displayName, i) => {
+    for (let i = 0; i < props.n; i++) {
+      const displayName = props.displayNames ? props.displayNames[i] : undefined;
       const fn = fileNames[i];
       if (!fn) {
         throw new ValidationError(`Got more displayNames than we have fileNames: ${i + 1}`, this);
       }
 
-      new s3_assets.Asset(stack, `Asset${i}`, {
+      new s3_assets.Asset(stack, `Asset${i + 1}`, {
         path: path.join(__dirname, 'assets', fn),
         displayName,
       });
-    });
+    }
   }
 }
 

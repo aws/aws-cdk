@@ -445,6 +445,7 @@ test.each([2, 3])('%p assets can have same display name, which are reflected in 
     useChangeSets: false,
   });
   pipeline.addStage(new MultipleFileAssetsApp(pipelineStack, 'App', {
+    n,
     displayNames: Array.from({ length: n }, () => 'asdf'),
   }));
 
@@ -471,6 +472,7 @@ test('assets can have display names that conflict with calculated action names',
     useChangeSets: false,
   });
   pipeline.addStage(new MultipleFileAssetsApp(pipelineStack, 'App', {
+    n: 3,
     displayNames: ['asdf', 'asdf', 'asdf2'], // asdf2 will conflict with the second generated name which will also be asdf2
   }));
 
