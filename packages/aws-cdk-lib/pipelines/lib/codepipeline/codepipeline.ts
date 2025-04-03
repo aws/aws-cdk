@@ -379,12 +379,6 @@ export class CodePipeline extends PipelineBase {
    */
   public readonly usePipelineRoleForActions: boolean;
 
-  /**
-   * Allow pipeline service role used for actions if no action role configured
-   * instead of creating a new role for each action
-   */
-  public readonly usePipelineRoleForActions: boolean;
-
   private _pipeline?: cp.Pipeline;
   private artifacts = new ArtifactMap();
   private _synthProject?: cb.IProject;
