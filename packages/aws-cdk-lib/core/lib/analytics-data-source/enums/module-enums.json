@@ -9,7 +9,8 @@
     ],
     "Platform": [
       "WEB",
-      "WEB_COMPUTE"
+      "WEB_COMPUTE",
+      "WEB_DYNAMIC"
     ],
     "CacheConfigType": [
       "AMPLIFY_MANAGED",
@@ -55,25 +56,6 @@
     "RepositoryVisibility": [
       0,
       1
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-cognito-identitypool-alpha/lib/identitypool.ts": {
-    "IdentityPoolProviderType": [
-      "Facebook",
-      "Google",
-      "Amazon",
-      "Apple",
-      "Twitter",
-      "OpenId",
-      "Saml",
-      "UserPool",
-      "Custom"
-    ],
-    "RoleMappingMatchType": [
-      "Equals",
-      "Contains",
-      "StartsWith",
-      "NotEqual"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/ipam.ts": {
@@ -186,7 +168,8 @@
     ],
     "CapacityType": [
       "SPOT",
-      "ON_DEMAND"
+      "ON_DEMAND",
+      "CAPACITY_BLOCK"
     ],
     "TaintEffect": [
       "NO_SCHEDULE",
@@ -536,19 +519,6 @@
       "PARALLELISM"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-kinesisfirehose-alpha/lib/delivery-stream.ts": {
-    "StreamEncryptionType": [
-      0,
-      1,
-      2
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-kinesisfirehose-destinations-alpha/lib/common.ts": {
-    "BackupMode": [
-      0,
-      1
-    ]
-  },
   "aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/packaging.ts": {
     "DependenciesFile": [
       "requirements.txt",
@@ -778,24 +748,6 @@
       1
     ]
   },
-  "aws-cdk/packages/@aws-cdk/cdk-cli-wrapper/lib/commands/common.ts": {
-    "RequireApproval": [
-      "never",
-      "any-change",
-      "broadening"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/cdk-cli-wrapper/lib/commands/deploy.ts": {
-    "HotswapMode": [
-      "fall-back",
-      "hotswap-only",
-      "full-deployment"
-    ],
-    "StackActivityProgress": [
-      "bar",
-      "events"
-    ]
-  },
   "aws-cdk/packages/@aws-cdk/custom-resource-handlers/lib/core/cfn-utils-provider/index.ts": {
     "CfnUtilsResourceType": [
       "Custom::AWSCDKCfnJson",
@@ -814,18 +766,6 @@
       "SingletonFunction",
       "CustomResourceProvider",
       "NoOp"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/integ-runner/lib/workers/common.ts": {
-    "DiagnosticReason": [
-      "NO_SNAPSHOT",
-      "TEST_FAILED",
-      "TEST_ERROR",
-      "SNAPSHOT_FAILED",
-      "SNAPSHOT_ERROR",
-      "SNAPSHOT_SUCCESS",
-      "TEST_SUCCESS",
-      "ASSERTION_FAILED"
     ]
   },
   "aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/lambda-handler/types.ts": {
@@ -1112,7 +1052,9 @@
       "comprehend",
       "kafka",
       "elasticache",
-      "neptune"
+      "neptune",
+      "cassandra",
+      "workspaces"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-applicationautoscaling/lib/step-scaling-action.ts": {
@@ -1331,6 +1273,11 @@
     "HealthCheckType": [
       "EC2",
       "ELB"
+    ],
+    "AdditionalHealthCheckType": [
+      "ELB",
+      "EBS",
+      "VPC_LATTICE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/lifecycle-hook.ts": {
@@ -2091,6 +2038,16 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.ts": {
+    "Result": [
+      "ROLLBACK",
+      "FAIL",
+      "RETRY",
+      "SKIP"
+    ],
+    "RetryMode": [
+      "ALL_ACTIONS",
+      "FAILED_ACTIONS"
+    ],
     "PipelineType": [
       "V1",
       "V2"
@@ -2115,6 +2072,25 @@
     "DetailType": [
       "BASIC",
       "FULL"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-cognito-identitypool/lib/identitypool.ts": {
+    "IdentityPoolProviderType": [
+      "Facebook",
+      "Google",
+      "Amazon",
+      "Apple",
+      "Twitter",
+      "OpenId",
+      "Saml",
+      "UserPool",
+      "Custom"
+    ],
+    "RoleMappingMatchType": [
+      "Equals",
+      "Contains",
+      "StartsWith",
+      "NotEqual"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool-domain.ts": {
@@ -2905,10 +2881,19 @@
       "standard"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint-service.ts": {
+    "IpAddressType": [
+      "ipv4",
+      "ipv6"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.ts": {
     "VpcEndpointType": [
       "Interface",
-      "Gateway"
+      "Gateway",
+      "GatewayLoadBalancer",
+      "ServiceNetwork",
+      "Resource"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.ts": {
@@ -2946,7 +2931,8 @@
     ],
     "DefaultInstanceTenancy": [
       "default",
-      "dedicated"
+      "dedicated",
+      "host"
     ],
     "RouterType": [
       "CarrierGateway",
@@ -3441,7 +3427,8 @@
     "FileSystemType": [
       "ext3",
       "ext4",
-      "xfs"
+      "xfs",
+      "ntfs"
     ],
     "EbsPropagatedTagSource": [
       "SERVICE",
@@ -3783,7 +3770,8 @@
     ],
     "CapacityType": [
       "SPOT",
-      "ON_DEMAND"
+      "ON_DEMAND",
+      "CAPACITY_BLOCK"
     ],
     "TaintEffect": [
       "NO_SCHEDULE",
@@ -3980,7 +3968,8 @@
   "aws-cdk/packages/aws-cdk-lib/aws-fsx/lib/file-system.ts": {
     "StorageType": [
       "SSD",
-      "HDD"
+      "HDD",
+      "INTELLIGENT_TIERING"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-fsx/lib/lustre-file-system.ts": {
@@ -4300,6 +4289,9 @@
     "IpAddressType": [
       "ipv4",
       "dualstack"
+    ],
+    "NodeType": [
+      "coordinator"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.ts": {
@@ -4467,7 +4459,8 @@
   "aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.ts": {
     "ServerSideEncryption": [
       "AES256",
-      "aws:kms"
+      "aws:kms",
+      "aws:kms:dsse"
     ],
     "StorageClass": [
       "STANDARD",
@@ -4550,7 +4543,9 @@
       "s3:ObjectTagging:*",
       "s3:ObjectTagging:Put",
       "s3:ObjectTagging:Delete",
-      "s3:ObjectAcl:Put"
+      "s3:ObjectAcl:Put",
+      "s3:ObjectRestore:*",
+      "s3:Replication:*"
     ],
     "BucketAccessControl": [
       "Private",

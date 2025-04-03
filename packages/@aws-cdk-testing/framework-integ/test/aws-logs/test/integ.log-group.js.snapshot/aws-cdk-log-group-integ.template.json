@@ -112,6 +112,14 @@
       ]
      }
     },
+    "FieldIndexPolicies": [
+     {
+      "Fields": [
+       "Operation",
+       "RequestId"
+      ]
+     }
+    ],
     "RetentionInDays": 731
    },
    "UpdateReplacePolicy": "Retain",

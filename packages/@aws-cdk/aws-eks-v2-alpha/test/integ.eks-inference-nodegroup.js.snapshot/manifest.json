@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster-inference-nodegroup.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b917aa7f15fe7521b923019fb76804ea4d8ac0be343d2045c3cb9b15df1d06c7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e3fd87f70e9234afa413da721c9e465c51415b8dea07ed958ef01c5c307c2809.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -370,10 +370,7 @@
         "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterEB0386A7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterEB0386A7"
           }
         ],
         "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/KubectlReadyBarrier": [
@@ -770,10 +767,7 @@
         "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/ClusterAdminRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterAdminRoleAccessF2BFF759",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterAdminRoleAccessF2BFF759"
           }
         ],
         "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/OpenIdConnectProvider": [
@@ -864,10 +858,7 @@
         "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/NodegroupDefaultCapacity/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupDefaultCapacityDA0920A3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupDefaultCapacityDA0920A3"
           }
         ],
         "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/manifest-NeuronDevicePlugin/Resource": [
@@ -944,10 +935,7 @@
         "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/NodegroupInferenceInstances/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupInferenceInstances3C846611",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupInferenceInstances3C846611"
           }
         ],
         "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/NodegroupInference2Instances": [
@@ -1012,10 +1000,7 @@
         "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/NodegroupInference2Instances/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupInference2InstancesEE502FE8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupInference2InstancesEE502FE8"
           }
         ],
         "/aws-cdk-eks-cluster-inference-nodegroup/LatestNodeRuntimeMap": [
@@ -1492,5 +1477,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }
