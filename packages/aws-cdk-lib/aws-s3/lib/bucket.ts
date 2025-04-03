@@ -1639,8 +1639,7 @@ export interface BucketProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default - `KMS` if `encryptionKey` is specified, or `UNENCRYPTED` otherwise.
-   * But if `UNENCRYPTED` is specified, the bucket will be encrypted as `S3_MANAGED` automatically.
+   * @default - `KMS` if `encryptionKey` is specified, or `S3_MANAGED` otherwise.
    */
   readonly encryption?: BucketEncryption;
 

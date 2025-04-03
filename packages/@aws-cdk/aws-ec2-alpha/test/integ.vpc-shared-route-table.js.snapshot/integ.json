@@ -1,0 +1,12 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "VpcSharedRouteTableInteg/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-alpha-shared-route-table"
+      ],
+      "assertionStack": "VpcSharedRouteTableInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "VpcSharedRouteTableIntegDefaultTestDeployAssert4BB1B1C8"
+    }
+  }
+}

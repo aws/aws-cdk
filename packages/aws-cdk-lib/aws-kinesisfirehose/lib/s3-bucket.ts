@@ -4,12 +4,22 @@ import { DestinationBindOptions, DestinationConfig, IDestination } from './desti
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
-import { UnscopedValidationError } from '../../core';
+import { Token, UnscopedValidationError, ValidationError } from '../../core';
 
 /**
  * Props for defining an S3 destination of an Amazon Data Firehose delivery stream.
  */
 export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinationProps {
+  /**
+   * Specify a file extension.
+   * It will override the default file extension appended by Data Format Conversion or S3 compression features such as `.parquet` or `.gz`.
+   *
+   * File extension must start with a period (`.`) and can contain allowed characters: `0-9a-z!-_.*'()`.
+   *
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html#create-destination-s3
+   * @default - The default file extension appended by Data Format Conversion or S3 compression features
+   */
+  readonly fileExtension?: string;
 }
 
 /**
@@ -36,6 +46,17 @@ export class S3Bucket implements IDestination {
     }) ?? {};
 
     const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, this.props.s3Backup) ?? {};
+
+    const fileExtension = this.props.fileExtension;
+    if (fileExtension && !Token.isUnresolved(fileExtension)) {
+      if (!fileExtension.startsWith('.')) {
+        throw new ValidationError("fileExtension must start with '.'", scope);
+      }
+      if (/[^0-9a-z!\-_.*'()]/.test(fileExtension)) {
+        throw new ValidationError("fileExtension can contain allowed characters: 0-9a-z!-_.*'()", scope);
+      }
+    }
+
     return {
       extendedS3DestinationConfiguration: {
         cloudWatchLoggingOptions: loggingOptions,
@@ -49,6 +70,7 @@ export class S3Bucket implements IDestination {
         encryptionConfiguration: createEncryptionConfig(role, this.props.encryptionKey),
         errorOutputPrefix: this.props.errorOutputPrefix,
         prefix: this.props.dataOutputPrefix,
+        fileExtension: this.props.fileExtension,
       },
       dependables: [bucketGrant, ...(loggingDependables ?? []), ...(backupDependables ?? [])],
     };

@@ -867,7 +867,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'WED',
     'THU',
     'FRI',
-    'SAT'
+    'SAT',
+    'UNSET_VALUE'
   ],
   'DeduplicationScope': [
     'messageGroup',
@@ -1068,6 +1069,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'EndpointType': [
     'EDGE',
     'REGIONAL'
+  ],
+  'EngineLifecycleSupport': [
+    'open-source-rds-extended-support',
+    'open-source-rds-extended-support-disabled'
   ],
   'EnvironmentFileType': [
     's3'
@@ -2033,7 +2038,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   'LambdaVersion': [
     'V1_0',
-    'V2_0'
+    'V2_0',
+    'V3_0'
   ],
   'LatencyMode': [
     'LOW',
@@ -2316,6 +2322,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'BOTTLEROCKET_x86_64',
     'BOTTLEROCKET_ARM_64_NVIDIA',
     'BOTTLEROCKET_x86_64_NVIDIA',
+    'BOTTLEROCKET_ARM_64_FIPS',
+    'BOTTLEROCKET_x86_64_FIPS',
     'WINDOWS_CORE_2019_x86_64',
     'WINDOWS_CORE_2022_x86_64',
     'WINDOWS_FULL_2019_x86_64',
@@ -2747,6 +2755,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'ReferenceRendering': [
     0,
     1
+  ],
+  'RegistryType': [
+    'private',
+    'public'
   ],
   'RemovalPolicy': [
     'destroy',

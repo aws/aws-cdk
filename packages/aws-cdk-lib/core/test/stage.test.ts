@@ -288,6 +288,7 @@ describe('stage', () => {
   test('stage name validation', () => {
     const app = new App();
 
+    new Stage(app, 'a');
     new Stage(app, 'abcd');
     new Stage(app, 'abcd123');
     new Stage(app, 'abcd123-588dfjjk');
@@ -298,7 +299,6 @@ describe('stage', () => {
     expect(() => new Stage(app, 'abcd123-588dfjjk.sss_ajsid/dfo')).toThrow(/invalid stage name "abcd123-588dfjjk.sss_ajsid\/dfo"/);
     expect(() => new Stage(app, '&')).toThrow(/invalid stage name "&"/);
     expect(() => new Stage(app, '45hello')).toThrow(/invalid stage name "45hello"/);
-    expect(() => new Stage(app, 'f')).toThrow(/invalid stage name "f"/);
   });
 
   test('outdir cannot be specified for nested stages', () => {

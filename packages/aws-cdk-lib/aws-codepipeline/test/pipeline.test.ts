@@ -44,7 +44,55 @@ describe('', () => {
         },
       });
     });
+    test('can use service role for actions if no action role configured', () => {
+      const stack = new cdk.Stack();
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
+      });
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        role,
+        usePipelineRoleForActions: true,
+      });
 
+      const sourceArtifact = new codepipeline.Artifact();
+      testPipelineSetup(
+        pipeline,
+        [new FakeSourceAction({
+          actionName: 'Source',
+          output: sourceArtifact,
+        })],
+        [new FakeBuildAction({
+          actionName: 'Build',
+          input: sourceArtifact,
+        })],
+      );
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        RoleArn: {
+          'Fn::GetAtt': [
+            'Role1ABCC5F0',
+            'Arn',
+          ],
+        },
+        Stages: Match.arrayWith([{
+          Name: 'Source',
+          Actions: [
+            Match.objectLike({
+              Name: 'Source',
+            }),
+          ],
+        },
+        {
+          Name: 'Build',
+          Actions: [
+            Match.objectLike({
+              Name: 'Build',
+            }),
+          ],
+        }]),
+
+      });
+    });
     test('can be imported by ARN', () => {
       const stack = new cdk.Stack();
 

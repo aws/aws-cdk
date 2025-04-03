@@ -123,7 +123,9 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
     let input: any;
     if (this.props.associateWithParent) {
       const associateWithParentEntry = {
-        AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID: sfn.JsonPath.stringAt('$$.Execution.Id'),
+        AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID: queryLanguage === sfn.QueryLanguage.JSONATA
+          ? '{% $states.context.Execution.Id %}'
+          : sfn.JsonPath.stringAt('$$.Execution.Id'),
       };
       input = this.props.input ? { ...this.props.input.value, ...associateWithParentEntry } : associateWithParentEntry;
     } else {

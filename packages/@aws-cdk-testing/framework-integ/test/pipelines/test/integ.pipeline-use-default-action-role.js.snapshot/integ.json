@@ -1,0 +1,13 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "UsePipelineRoleForActionsTest/DefaultTest": {
+      "stacks": [
+        "UsePipelineRoleForActions"
+      ],
+      "diffAssets": true,
+      "assertionStack": "UsePipelineRoleForActionsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "UsePipelineRoleForActionsTestDefaultTestDeployAssert16904455"
+    }
+  }
+}

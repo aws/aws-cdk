@@ -1,0 +1,12 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "AutoScalingUpdatePolicyTest/DefaultTest": {
+      "stacks": [
+        "Stack"
+      ],
+      "assertionStack": "AutoScalingUpdatePolicyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AutoScalingUpdatePolicyTestDefaultTestDeployAssert35BEDF6F"
+    }
+  }
+}
