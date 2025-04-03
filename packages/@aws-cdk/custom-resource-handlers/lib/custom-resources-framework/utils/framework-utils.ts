@@ -25,8 +25,5 @@ export function toLambdaRuntime(runtime: Runtime) {
     case Runtime.PYTHON_3_11: {
       return 'lambda.Runtime.PYTHON_3_11';
     }
-    case Runtime.PYTHON_3_13: {
-      return 'lambda.Runtime.PYTHON_3_13';
-    }
   }
 }

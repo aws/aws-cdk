@@ -350,7 +350,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.13",
+    "Runtime": "python3.11",
     "Timeout": 900
    },
    "DependsOn": [

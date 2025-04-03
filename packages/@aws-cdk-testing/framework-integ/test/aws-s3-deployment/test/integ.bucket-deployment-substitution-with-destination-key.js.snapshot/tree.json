@@ -474,7 +474,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "python3.13",
+                    "runtime": "python3.11",
                     "timeout": 900
                   }
                 },
