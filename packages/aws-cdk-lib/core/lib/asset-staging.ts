@@ -215,6 +215,7 @@ export class AssetStaging extends Construct {
       assetHashType: this.hashType,
       customFingerprint: this.customSourceFingerprint,
       extraHash: props.extraHash,
+      include: props.include,
       exclude: props.exclude,
       ignoreMode: props.ignoreMode,
       skip,
