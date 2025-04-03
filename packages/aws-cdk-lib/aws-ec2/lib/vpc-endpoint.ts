@@ -518,6 +518,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly LOOKOUT_EQUIPMENT = new InterfaceVpcEndpointAwsService('lookoutequipment');
   public static readonly LOOKOUT_METRICS = new InterfaceVpcEndpointAwsService('lookoutmetrics');
   public static readonly LOOKOUT_VISION = new InterfaceVpcEndpointAwsService('lookoutvision');
+  public static readonly MAILMANAGER = new InterfaceVpcEndpointAwsService('mail-manager');
+  public static readonly MAILMANAGER_FIPS = new InterfaceVpcEndpointAwsService('mail-manager-fips');
   public static readonly MAINFRAME_MODERNIZATION = new InterfaceVpcEndpointAwsService('m2');
   public static readonly MAINFRAME_MODERNIZATION_APP_TEST = new InterfaceVpcEndpointAwsService('apptest');
   public static readonly MACIE = new InterfaceVpcEndpointAwsService('macie2');
