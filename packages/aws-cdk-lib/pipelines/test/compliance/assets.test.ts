@@ -5,7 +5,7 @@ import * as cb from '../../../aws-codebuild';
 import * as ec2 from '../../../aws-ec2';
 import { Stack, Stage } from '../../../core';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, MegaAssetsApp, TwoFileAssetsApp, DockerAssetApp, PlainStackApp, stringLike } from '../testhelpers';
+import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, MegaAssetsApp, MultipleFileAssetsApp, DockerAssetApp, PlainStackApp, stringLike } from '../testhelpers';
 
 const FILE_ASSET_SOURCE_HASH = '8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5';
 const FILE_ASSET_SOURCE_HASH2 = 'ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e';
@@ -183,7 +183,7 @@ describe('basic pipeline', () => {
 
   test('multiple assets are published in parallel', () => {
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
-    pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
+    pipeline.addStage(new MultipleFileAssetsApp(app, 'FileAssetApp', { n: 2 }));
 
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
@@ -519,13 +519,13 @@ describe('pipeline with single asset publisher', () => {
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-1', {
       publishAssetsInParallel: false,
     });
-    pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
+    pipeline.addStage(new MultipleFileAssetsApp(app, 'FileAssetApp', { n: 2 }));
 
     const pipelineStack2 = new Stack(app, 'PipelineStack2', { env: PIPELINE_ENV });
     const otherPipeline = new ModernTestGitHubNpmPipeline(pipelineStack2, 'Cdk-2', {
       publishAssetsInParallel: false,
     });
-    otherPipeline.addStage(new TwoFileAssetsApp(app, 'OtherFileAssetApp'));
+    otherPipeline.addStage(new MultipleFileAssetsApp(app, 'OtherFileAssetApp', { n: 2 }));
     // THEN
     const buildSpecName1 = new Capture(stringLike('buildspec-*.yaml'));
     const buildSpecName2 = new Capture(stringLike('buildspec-*.yaml'));
@@ -585,7 +585,7 @@ describe('pipeline with single asset publisher', () => {
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       publishAssetsInParallel: false,
     });
-    pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
+    pipeline.addStage(new MultipleFileAssetsApp(app, 'FileAssetApp', { n: 2 }));
 
     // THEN
     const buildSpecName = new Capture(stringLike('buildspec-*.yaml'));
@@ -634,7 +634,7 @@ describe('pipeline with custom asset publisher BuildSpec', () => {
         }),
       },
     });
-    pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
+    pipeline.addStage(new MultipleFileAssetsApp(app, 'FileAssetApp', { n: 2 }));
 
     const buildSpecName = new Capture(stringLike('buildspec-*'));
 
