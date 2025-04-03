@@ -341,6 +341,8 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
       bucketName: translateCfnTokenToAssetToken(bucketName),
       bucketPrefix: prefix,
       role: assumeRoleArn ? { assumeRoleArn: translateCfnTokenToAssetToken(assumeRoleArn) } : undefined,
+    }, {
+      displayName: asset.displayName,
     });
 
     if (dependencyStack) {
@@ -359,6 +361,8 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
     const location = this.assetManifest.defaultAddDockerImageAsset(this.boundStack, asset, {
       repositoryName: translateCfnTokenToAssetToken(repoName),
       role: assumeRoleArn ? { assumeRoleArn: translateCfnTokenToAssetToken(assumeRoleArn) } : undefined,
+    }, {
+      displayName: asset.displayName,
     });
 
     if (dependencyStack) {

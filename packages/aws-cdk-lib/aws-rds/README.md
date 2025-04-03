@@ -147,6 +147,19 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
 });
 ```
 
+To configure [the life cycle type of the cluster](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/extended-support.html), use the `engineLifecycleSupport` property:
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_0 }),
+  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
+  vpc,
+  engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
+});
+```
+
 ### Updating the database instances in a cluster
 
 Database cluster instances may be updated in bulk or on a rolling basis.
