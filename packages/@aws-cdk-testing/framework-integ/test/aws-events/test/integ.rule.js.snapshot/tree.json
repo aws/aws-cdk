@@ -8,6 +8,60 @@
         "id": "RuleStack",
         "path": "RuleStack",
         "children": {
+          "MyRole": {
+            "id": "MyRole",
+            "path": "RuleStack/MyRole",
+            "children": {
+              "ImportMyRole": {
+                "id": "ImportMyRole",
+                "path": "RuleStack/MyRole/ImportMyRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "RuleStack/MyRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "events.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "assumedBy": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  }
+                }
+              ]
+            }
+          },
           "MyRule": {
             "id": "MyRule",
             "path": "RuleStack/MyRule",
@@ -161,18 +215,54 @@
                         "0"
                       ]
                     },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "MyRoleF48FFE04",
+                        "Arn"
+                      ]
+                    },
                     "state": "ENABLED"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "eventPattern": {
+                    "account": "*",
+                    "detail": "*",
+                    "detailType": "*",
+                    "id": "*",
+                    "region": "*",
+                    "resources": "*",
+                    "source": "*",
+                    "time": "*",
+                    "version": "*"
+                  }
+                },
+                {
+                  "addEventPattern": [
+                    {
+                      "account": "*",
+                      "detail": "*",
+                      "detailType": "*",
+                      "id": "*",
+                      "region": "*",
+                      "resources": "*",
+                      "source": "*",
+                      "time": "*",
+                      "version": "*"
+                    }
+                  ]
+                }
+              ]
             }
           },
           "MyWildcardRule": {
@@ -196,14 +286,28 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "eventPattern": {
+                    "account": "*"
+                  }
+                },
+                {
+                  "addEventPattern": [
+                    {
+                      "account": "*"
+                    }
+                  ]
+                }
+              ]
             }
           },
           "MyAnythingButPrefixRule": {
@@ -229,14 +333,28 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "eventPattern": {
+                    "account": "*"
+                  }
+                },
+                {
+                  "addEventPattern": [
+                    {
+                      "account": "*"
+                    }
+                  ]
+                }
+              ]
             }
           },
           "MyAnythingButSuffixRule": {
@@ -262,14 +380,28 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "eventPattern": {
+                    "account": "*"
+                  }
+                },
+                {
+                  "addEventPattern": [
+                    {
+                      "account": "*"
+                    }
+                  ]
+                }
+              ]
             }
           },
           "MyAnythingButWildcardRule": {
@@ -295,14 +427,28 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "eventPattern": {
+                    "account": "*"
+                  }
+                },
+                {
+                  "addEventPattern": [
+                    {
+                      "account": "*"
+                    }
+                  ]
+                }
+              ]
             }
           },
           "MyAnythingButEqualsIgnoreCase": {
@@ -331,14 +477,28 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "eventPattern": {
+                    "account": "*"
+                  }
+                },
+                {
+                  "addEventPattern": [
+                    {
+                      "account": "*"
+                    }
+                  ]
+                }
+              ]
             }
           },
           "MyPrefixEqualsIgnoreCase": {
@@ -364,14 +524,28 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "eventPattern": {
+                    "account": "*"
+                  }
+                },
+                {
+                  "addEventPattern": [
+                    {
+                      "account": "*"
+                    }
+                  ]
+                }
+              ]
             }
           },
           "MySuffixEqualsIgnoreCase": {
@@ -397,36 +571,50 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "eventPattern": {
+                    "account": "*"
+                  }
+                },
+                {
+                  "addEventPattern": [
+                    {
+                      "account": "*"
+                    }
+                  ]
+                }
+              ]
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "RuleStack/BootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "RuleStack/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.4.2"
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
         }
       },
       "IntegTest-BatchDefaultEnvVarsStack": {
@@ -453,22 +641,22 @@
                     "id": "BootstrapVersion",
                     "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.4.2"
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.4.2"
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -493,8 +681,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.4.2"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }
