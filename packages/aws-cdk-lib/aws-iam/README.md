@@ -133,24 +133,6 @@ const role = iam.Role.fromLookup(this, 'Role', {
 });
 ```
 
-If the target role is not found in your account when using `Role.fromLookup()`, an error will be thrown.
-To prevent the error in the case, you can receive a dummy role without the error
-by setting `mustExist` to `false`. The dummy role has a `roleArn` of
-`arn:aws:iam::123456789012:role/DUMMY_ARN`. The value of the dummy role arn can also be
-referenced using the `Role.DEFAULT_DUMMY_ROLE_ARN` variable, and you can check if the
-role is a dummy role by using the `Role.isLookupDummy()` method.
-
-```ts
-const dummy = iam.Role.fromLookup(this, 'Role', {
-  roleName: 'DummyRole',
-  mustExist: false,
-});
-
-if (iam.Role.isLookupDummy(dummy)) {
-  // alternative process
-}
-```
-
 ### Customizing role creation
 
 It is best practice to allow CDK to manage IAM roles and permissions. You can prevent CDK from
