@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "EcrRepoLookupStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/694b1f59a97a2cabd43348095c6983d394ce506020298a3a62f3067ae6ce7e18.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/a41837dbefd99eb379b4aee82e9ecd25ce286233e8cae49a43a93648cdc325b5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -106,6 +106,18 @@
             "data": "RepositoryUri"
           }
         ],
+        "/EcrRepoLookupStack/DummyRepoArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DummyRepoArn"
+          }
+        ],
+        "/EcrRepoLookupStack/IsDummy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IsDummy"
+          }
+        ],
         "/EcrRepoLookupStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -183,7 +195,7 @@
       "props": {
         "dummyValue": [
           {
-            "Arn": "arn:${Token[AWS.Partition.3]}:ecr:us-east-1:123456789012:repository/DUMMY_ARN"
+            "Arn": "arn:${Token[AWS.Partition.9]}:ecr:us-east-1:123456789012:repository/DUMMY_ARN"
           }
         ],
         "account": "12345678",
@@ -195,6 +207,27 @@
         ],
         "lookupRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region"
       }
+    },
+    {
+      "key": "cc-api-provider:account=12345678:exactIdentifier=does-not-exist-repo:propertiesToReturn.0=Arn:region=test-region:typeName=AWS$:$:ECR$:$:Repository",
+      "provider": "cc-api-provider",
+      "props": {
+        "dummyValue": [
+          {
+            "Arn": "arn:${Token[AWS.Partition.9]}:ecr:us-east-1:123456789012:repository/DUMMY_ARN"
+          }
+        ],
+        "ignoreErrorOnMissingContext": true,
+        "account": "12345678",
+        "region": "test-region",
+        "typeName": "AWS::ECR::Repository",
+        "exactIdentifier": "does-not-exist-repo",
+        "propertiesToReturn": [
+          "Arn"
+        ],
+        "lookupRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region"
+      }
     }
-  ]
+  ],
+  "minimumCliVersion": "2.1006.0"
 }

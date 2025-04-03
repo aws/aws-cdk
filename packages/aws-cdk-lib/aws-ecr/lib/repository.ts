@@ -23,6 +23,7 @@ import {
   Arn,
   ValidationError,
   UnscopedValidationError,
+  ArnComponents,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
@@ -620,11 +621,31 @@ export interface RepositoryLookupOptions {
    * @default - Do not filter on repository ARN
    */
   readonly repositoryArn?: string;
+
+  /**
+   * Whether to throw an error if the repository was not found.
+   *
+   * If it is set to `false` and the repository was not found, a dummy
+   * repository with the arn 'arn:{partition}:ecr:us-east-1:123456789012:repository/DUMMY_ARN'
+   * will be returned. You can check if the repository is a dummy repository by using the
+   * `Repository.isLookupDummy()` method.
+   *
+   * @default true
+   */
+  readonly mustExist?: boolean;
 }
 
 export interface RepositoryAttributes {
   readonly repositoryName: string;
   readonly repositoryArn: string;
+}
+
+const dummyArnComponents: ArnComponents = {
+  service: 'ecr',
+  region: 'us-east-1',
+  account: '123456789012',
+  resource: 'repository',
+  resourceName: 'DUMMY_ARN',
 }
 
 /**
@@ -633,6 +654,10 @@ export interface RepositoryAttributes {
 export class Repository extends RepositoryBase {
   /**
    * Lookup an existing repository
+   *
+   * If you set `mustExist` to `false` in `options` and the repository was not found,
+   * this method will return a dummy repository with the arn 'arn:{partition}:ecr:us-east-1:123456789012:repository/DUMMY_ARN'.
+   * You can check if the repository is a dummy repository by using the `Repository.isLookupDummy()` method.
    */
   public static fromLookup(scope: Construct, id: string, options: RepositoryLookupOptions): IRepository {
     if (Token.isUnresolved(options.repositoryName) || Token.isUnresolved(options.repositoryArn)) {
@@ -659,15 +684,10 @@ export class Repository extends RepositoryBase {
       } as cxschema.CcApiContextQuery,
       dummyValue: [
         {
-          Arn: Stack.of(scope).formatArn({
-            service: 'ecr',
-            region: 'us-east-1',
-            account: '123456789012',
-            resource: 'repository',
-            resourceName: 'DUMMY_ARN',
-          }),
+          Arn: Stack.of(scope).formatArn(dummyArnComponents),
         },
       ],
+      mustExist: options.mustExist,
     }).value;
 
     const repository = response[0];
@@ -677,6 +697,17 @@ export class Repository extends RepositoryBase {
       repositoryName: repositoryName,
       repositoryArn: repository.Arn,
     });
+  }
+
+  /**
+   * Checks if the repository returned by the `Repository.fromLookup()` method is a dummy repository,
+   * i.e., a repository that was not found.
+   *
+   * This method can only be used if the `mustExist` option is set to `false` in the `options`
+   * for the `Repository.fromLookup()` method.
+   */
+  public static isLookupDummy(repository: IRepository): boolean {
+    return repository.repositoryArn === Stack.of(repository).formatArn(dummyArnComponents);
   }
 
   /**

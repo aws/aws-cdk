@@ -117,6 +117,61 @@ describe('repository', () => {
       expect(repo.repositoryArn).toEqual(ecr.Repository.arnForLocalRepository('DUMMY_ARN', stack));
     });
 
+    test.each([
+      true,
+      false,
+    ])('the reverse of mustExist($mustExist) is reflected in ignoreErrorOnMissingContext.', (mustExist) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
+      ecr.Repository.fromLookup(stack, 'MyRepo', {
+        repositoryName: 'DummyRepo',
+        mustExist,
+      });
+
+      // THEN
+      expect(app.synth().manifest.missing![0].props).toMatchObject({
+        ignoreErrorOnMissingContext: !mustExist,
+      });
+    });
+
+    test('isLookupDummy method returns false if the lookup repository is not a dummy repository', () => {
+      const repoArn = 'arn:aws:ecr:us-east-1:123456789012:repository/my-repo';
+      // GIVEN
+      const resultObjs = [
+        {
+          'Arn': repoArn,
+        },
+      ];
+      const value = {
+        value: resultObjs,
+      };
+      const mock = jest.spyOn(cdk.ContextProvider, 'getValue').mockReturnValue(value);
+
+      // WHEN
+      const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+      const repo = ecr.Repository.fromLookup(stack, 'MyRepo', {
+        repositoryArn: repoArn,
+      });
+
+      // THEN
+      expect(ecr.Repository.isLookupDummy(repo)).toBe(false);
+
+      mock.mockRestore();
+    });
+
+    test('isLookupDummy method returns true if the lookup repository is a dummy repository', () => {
+      const repoArn = 'arn:aws:ecr:us-east-1:123456789012:repository/does-not-exist-repo';
+      // WHEN
+      const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+      const repo = ecr.Repository.fromLookup(stack, 'MyRepo', {
+        repositoryArn: repoArn,
+      });
+
+      // THEN
+      expect(ecr.Repository.isLookupDummy(repo)).toBe(true);
+    });
+
     test('throw error if repository name is a token', () => {
       // GIVEN
       const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });

@@ -229,6 +229,23 @@ const repositoryFromLookup = ecr.Repository.fromLookup(this, 'ImportedRepoByLook
 });
 ```
 
+If the target repository is not found in your account when using `Repository.fromLookup()`, an error will be thrown.
+To prevent the error in the case, you can receive a dummy repository without the error
+by setting `mustExist` to `false`. The dummy repository has a `repositoryArn` of
+`arn:{partition}:ecr:us-east-1:123456789012:repository/DUMMY_ARN`. You can check if the
+repository is a dummy repository by using the `Repository.isLookupDummy()` method.
+
+```ts
+const dummy = ecr.Repository.fromLookup(this, 'ImportedRepoByLookup', {
+  repositoryArn: 'arn:aws:ecr:us-east-1:123456789012:repository/does-not-exist-repo',
+  mustExist: false,
+});
+
+if (ecr.Repository.isLookupDummy(dummy)) {
+  // alternative process
+}
+```
+
 ## CloudWatch event rules
 
 You can publish repository events to a CloudWatch event rule with `onEvent`:

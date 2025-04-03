@@ -27,6 +27,14 @@ new CfnOutput(lookupStack, 'RepositoryUri', {
   value: lookupRepo.repositoryUri,
 });
 
+const dummyRepo = ecr.Repository.fromLookup(lookupStack, 'DummyRepo', {
+  repositoryArn: 'arn:aws:ecr:us-east-1:123456789012:repository/does-not-exist-repo',
+  mustExist: false,
+});
+
+new CfnOutput(lookupStack, 'DummyRepoArn', { value: dummyRepo.repositoryArn });
+new CfnOutput(lookupStack, 'IsDummy', { value: String(ecr.Repository.isLookupDummy(dummyRepo)) });
+
 new IntegTest(app, 'EcrRepoLookupTest', {
   enableLookups: true,
   stackUpdateWorkflow: false,

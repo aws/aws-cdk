@@ -101,6 +101,23 @@
      ]
     ]
    }
+  },
+  "DummyRepoArn": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arn:",
+      {
+       "Ref": "AWS::Partition"
+      },
+      ":ecr:us-east-1:123456789012:repository/DUMMY_ARN"
+     ]
+    ]
+   }
+  },
+  "IsDummy": {
+   "Value": "true"
   }
  },
  "Parameters": {
