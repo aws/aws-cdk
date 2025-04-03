@@ -18,9 +18,7 @@
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0",
-                  "metadata": [
-                    "*"
-                  ]
+                  "metadata": ["*"]
                 }
               },
               "Resource": {
@@ -34,9 +32,7 @@
                         {
                           "Action": "sts:AssumeRole",
                           "Effect": "Allow",
-                          "Principal": {
-                            "Service": "sqs.amazonaws.com"
-                          }
+                          "Principal": { "Service": "sqs.amazonaws.com" }
                         }
                       ],
                       "Version": "2012-10-17"
@@ -69,11 +65,7 @@
                           "Version": "2012-10-17"
                         },
                         "policyName": "TestRoleDefaultPolicyD1C92014",
-                        "roles": [
-                          {
-                            "Ref": "TestRole6C9272DF"
-                          }
-                        ]
+                        "roles": [{ "Ref": "TestRole6C9272DF" }]
                       }
                     },
                     "constructInfo": {
@@ -87,21 +79,9 @@
                   "version": "0.0.0",
                   "metadata": [
                     "*",
-                    {
-                      "attachToRole": [
-                        "*"
-                      ]
-                    },
-                    {
-                      "attachToRole": [
-                        "*"
-                      ]
-                    },
-                    {
-                      "addStatements": [
-                        {}
-                      ]
-                    }
+                    { "attachToRole": ["*"] },
+                    { "attachToRole": ["*"] },
+                    { "addStatements": [{}] }
                   ]
                 }
               }
@@ -116,31 +96,11 @@
                     "assumeRoleAction": "*"
                   }
                 },
-                {
-                  "addToPolicy": [
-                    {}
-                  ]
-                },
-                {
-                  "addToPrincipalPolicy": [
-                    {}
-                  ]
-                },
-                {
-                  "attachInlinePolicy": [
-                    "*"
-                  ]
-                },
-                {
-                  "attachInlinePolicy": [
-                    "*"
-                  ]
-                },
-                {
-                  "attachInlinePolicy": [
-                    "*"
-                  ]
-                }
+                { "addToPolicy": [{}] },
+                { "addToPrincipalPolicy": [{}] },
+                { "attachInlinePolicy": ["*"] },
+                { "attachInlinePolicy": ["*"] },
+                { "attachInlinePolicy": ["*"] }
               ]
             }
           },
@@ -165,11 +125,7 @@
                       "Version": "2012-10-17"
                     },
                     "policyName": "Default",
-                    "roles": [
-                      {
-                        "Ref": "TestRole6C9272DF"
-                      }
-                    ]
+                    "roles": [{ "Ref": "TestRole6C9272DF" }]
                   }
                 },
                 "constructInfo": {
@@ -182,29 +138,11 @@
               "fqn": "aws-cdk-lib.aws_iam.Policy",
               "version": "0.0.0",
               "metadata": [
-                {
-                  "policyName": "*"
-                },
-                {
-                  "addStatements": [
-                    {}
-                  ]
-                },
-                {
-                  "attachToRole": [
-                    "*"
-                  ]
-                },
-                {
-                  "attachToRole": [
-                    "*"
-                  ]
-                },
-                {
-                  "attachToRole": [
-                    "*"
-                  ]
-                }
+                { "policyName": "*" },
+                { "addStatements": [{}] },
+                { "attachToRole": ["*"] },
+                { "attachToRole": ["*"] },
+                { "attachToRole": ["*"] }
               ]
             }
           },
@@ -214,9 +152,7 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0",
-              "metadata": [
-                "*"
-              ]
+              "metadata": ["*"]
             }
           },
           "TestRole2": {
@@ -229,9 +165,7 @@
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0",
-                  "metadata": [
-                    "*"
-                  ]
+                  "metadata": ["*"]
                 }
               },
               "Resource": {
@@ -245,9 +179,7 @@
                         {
                           "Action": "sts:AssumeRole",
                           "Condition": {
-                            "StringEquals": {
-                              "sts:ExternalId": "supply-me"
-                            }
+                            "StringEquals": { "sts:ExternalId": "supply-me" }
                           },
                           "Effect": "Allow",
                           "Principal": {
@@ -256,13 +188,9 @@
                                 "",
                                 [
                                   "arn:",
-                                  {
-                                    "Ref": "AWS::Partition"
-                                  },
+                                  { "Ref": "AWS::Partition" },
                                   ":iam::",
-                                  {
-                                    "Ref": "AWS::AccountId"
-                                  },
+                                  { "Ref": "AWS::AccountId" },
                                   ":root"
                                 ]
                               ]
@@ -304,9 +232,7 @@
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0",
-                  "metadata": [
-                    "*"
-                  ]
+                  "metadata": ["*"]
                 }
               },
               "Resource": {
@@ -325,9 +251,7 @@
                             }
                           },
                           "Effect": "Allow",
-                          "Principal": {
-                            "AWS": "*"
-                          }
+                          "Principal": { "AWS": "*" }
                         }
                       ],
                       "Version": "2012-10-17"
@@ -370,10 +294,7 @@
             }
           }
         },
-        "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
-        }
+        "constructInfo": { "fqn": "aws-cdk-lib.Stack", "version": "0.0.0" }
       },
       "integ-iam-role": {
         "id": "integ-iam-role",
@@ -432,15 +353,9 @@
       "Tree": {
         "id": "Tree",
         "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.4.2"
-        }
+        "constructInfo": { "fqn": "constructs.Construct", "version": "10.4.2" }
       }
     },
-    "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
-    }
+    "constructInfo": { "fqn": "aws-cdk-lib.App", "version": "0.0.0" }
   }
 }

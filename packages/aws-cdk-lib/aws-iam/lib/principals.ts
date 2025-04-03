@@ -603,19 +603,22 @@ export class ServicePrincipal extends PrincipalBase {
 
 /**
  * A principal that represents an AWS Organization
- *
- * Property organizationId must match regex pattern ^o-[a-z0-9]{10,32}$
- * @see https://docs.aws.amazon.com/organizations/latest/APIReference/API_Organization.html
  */
 export class OrganizationPrincipal extends PrincipalBase {
   /**
    *
    * @param organizationId The unique identifier (ID) of an organization (i.e. o-12345abcde)
+   * It must match regex pattern ^o-[a-z0-9]{10,32}$
+   * @see https://docs.aws.amazon.com/organizations/latest/APIReference/API_Organization.html
    */
   constructor(public readonly organizationId: string) {
     super();
-    if (!organizationId.match(/^o-[a-z0-9]{10,32}$/)) {
-      throw new Error(`Expected Organization ID must match regex pattern ^o-[a-z0-9]{10,32}$, received ${organizationId}`);
+
+    // We can only validate if it's a literal string (not a token)
+    if (!cdk.Token.isUnresolved(organizationId)) {
+      if (!organizationId.match(/^o-[a-z0-9]{10,32}$/)) {
+        throw new Error(`Expected Organization ID must match regex pattern ^o-[a-z0-9]{10,32}$, received ${organizationId}`);
+      }
     }
   }
 
