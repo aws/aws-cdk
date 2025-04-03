@@ -1,0 +1,19 @@
+{
+  "version": "40.0.0",
+  "files": {
+    "eecc0b3185a63402e8b10f70ff668e6ecf2a1196374afde9ed95dc5c7428697d": {
+      "source": {
+        "path": "codepipeline-ecr-build-and-publish-public.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "eecc0b3185a63402e8b10f70ff668e6ecf2a1196374afde9ed95dc5c7428697d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
