@@ -1,11 +1,12 @@
 {
   "enableLookups": true,
-  "version": "40.0.0",
+  "version": "41.0.0",
   "testCases": {
     "integ-iam-role-from-lookup/DefaultTest": {
       "stacks": [
         "LookupRoleStack"
       ],
+      "stackUpdateWorkflow": false,
       "assertionStack": "integ-iam-role-from-lookup/DefaultTest/DeployAssert",
       "assertionStackName": "integiamrolefromlookupDefaultTestDeployAssert63955306"
     }

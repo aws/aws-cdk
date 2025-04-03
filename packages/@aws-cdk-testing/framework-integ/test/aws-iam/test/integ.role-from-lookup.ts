@@ -32,5 +32,6 @@ new CfnOutput(stack, 'LookupRoleName', { value: lookupRole.roleName });
 
 new IntegTest(app, 'integ-iam-role-from-lookup', {
   enableLookups: true,
+  stackUpdateWorkflow: false,
   testCases: [stack],
 });

@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "LookupRoleStack.assets": {
       "type": "cdk:asset-manifest",
@@ -53,25 +53,15 @@
         "/LookupRoleStack/HelloPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "policyName": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
+            "data": "*"
           }
         ],
         "/LookupRoleStack/HelloPolicy/Resource": [
@@ -163,7 +153,7 @@
       "props": {
         "dummyValue": [
           {
-            "Arn": "arn:${Token[AWS.Partition.7]}:iam::123456789012:role/DUMMY_ARN"
+            "Arn": "arn:aws:iam::123456789012:role/DUMMY_ARN"
           }
         ],
         "account": "12345678",
@@ -176,5 +166,6 @@
         "lookupRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region"
       }
     }
-  ]
+  ],
+  "minimumCliVersion": "2.1006.0"
 }

@@ -1,7 +1,8 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "files": {
     "9f7857eee9ee57ddb56d90bf11818fd02733fd8755e480f17a77e9e5d8ad4f23": {
+      "displayName": "LookupRoleStack Template",
       "source": {
         "path": "LookupRoleStack.template.json",
         "packaging": "file"
