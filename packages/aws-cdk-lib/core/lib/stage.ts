@@ -163,7 +163,7 @@ export class Stage extends Construct {
   constructor(scope: Construct, id: string, props: StageProps = {}) {
     super(scope, id);
 
-    if (id !== '' && !/^[a-z][a-z0-9\-\_\.]+$/i.test(id)) {
+    if (id !== '' && !/^[a-z][a-z0-9\-\_\.]*$/i.test(id)) {
       throw new Error(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`);
     }
 
