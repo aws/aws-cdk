@@ -2,13 +2,6 @@ import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Policy, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 
-/*
- * To run this integ test, create an IAM Role with the name `MyLookupTestRole` in your AWS account beforehand.
- *
- * ```bash
- * aws iam create-role --role-name MyLookupTestRole --assume-role-policy-document '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"sqs.amazonaws.com"},"Action":"sts:AssumeRole"}]}'
- * ```
- */
 const roleName = 'MyLookupTestRole';
 
 const app = new App();
@@ -34,4 +27,9 @@ new IntegTest(app, 'integ-iam-role-from-lookup', {
   enableLookups: true,
   stackUpdateWorkflow: false,
   testCases: [stack],
+  // create the role before the test and delete it after
+  hooks: {
+    preDeploy: [`aws iam create-role --role-name ${roleName} --assume-role-policy-document file://policy-document.json`],
+    postDestroy: [`aws iam delete-role --role-name ${roleName}`],
+  },
 });
