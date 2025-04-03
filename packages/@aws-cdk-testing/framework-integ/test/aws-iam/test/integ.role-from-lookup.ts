@@ -17,6 +17,13 @@ const lookupRole = Role.fromLookup(stack, 'LookupRole', {
   roleName,
 });
 
+const dummyRole = Role.fromLookup(stack, 'DummyRole', {
+  roleName: 'DummyRole',
+  mustExist: false,
+});
+
+new CfnOutput(stack, 'DummyRoleArn', { value: dummyRole.roleArn });
+
 const policy = new Policy(stack, 'HelloPolicy', { policyName: 'Default' });
 policy.addStatements(new PolicyStatement({ actions: ['ec2:*'], resources: ['*'] }));
 policy.attachToRole(lookupRole);

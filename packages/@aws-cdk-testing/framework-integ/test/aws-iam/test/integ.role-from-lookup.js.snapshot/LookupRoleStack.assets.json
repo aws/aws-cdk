@@ -1,7 +1,7 @@
 {
   "version": "41.0.0",
   "files": {
-    "9f7857eee9ee57ddb56d90bf11818fd02733fd8755e480f17a77e9e5d8ad4f23": {
+    "a933ee725fb4efeb53cf7cf3782487671d54697249f2fbb7caff31a2c0d30e6a": {
       "displayName": "LookupRoleStack Template",
       "source": {
         "path": "LookupRoleStack.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "12345678-test-region": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "9f7857eee9ee57ddb56d90bf11818fd02733fd8755e480f17a77e9e5d8ad4f23.json",
+          "objectKey": "a933ee725fb4efeb53cf7cf3782487671d54697249f2fbb7caff31a2c0d30e6a.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }
