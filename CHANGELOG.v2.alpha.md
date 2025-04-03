@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.188.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.187.0-alpha.0...v2.188.0-alpha.0) (2025-04-03)
+
+
+### Features
+
+* **ec2:** add mailmanager vpc endpoints ([#33996](https://github.com/aws/aws-cdk/issues/33996)) ([7ee77d7](https://github.com/aws/aws-cdk/commit/7ee77d71df569d21c280866976109333e3266132))
+* **eks-v2-alpha:** add new nodegroup ami type ([#34025](https://github.com/aws/aws-cdk/issues/34025)) ([864a7c6](https://github.com/aws/aws-cdk/commit/864a7c6f6811777971d1349e7552567604167f02))
+
+
+### Bug Fixes
+
+* **ec2-alpha:** addInternetGW handles shared route table for subnets ([#33824](https://github.com/aws/aws-cdk/issues/33824)) ([3154d01](https://github.com/aws/aws-cdk/commit/3154d016ba31455f2d57ff5d90ee7b394c25e88f)), closes [#33672](https://github.com/aws/aws-cdk/issues/33672)
+
 ## [2.187.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.186.0-alpha.0...v2.187.0-alpha.0) (2025-03-31)
 
 
