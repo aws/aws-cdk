@@ -646,7 +646,7 @@ const dummyArnComponents: ArnComponents = {
   account: '123456789012',
   resource: 'repository',
   resourceName: 'DUMMY_ARN',
-}
+};
 
 /**
  * Define an ECR repository
