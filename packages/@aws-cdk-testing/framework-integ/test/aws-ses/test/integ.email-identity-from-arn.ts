@@ -22,7 +22,7 @@ class TestStack extends Stack {
     const importedEmailIdentity = ses.EmailIdentity.fromEmailIdentityArn(
       this,
       'ImportedEmailIdentity',
-      emailIdentity.emailIdentityArn
+      emailIdentity.emailIdentityArn,
     );
 
     const lambdaFunction = new Function(this, 'Function', {
