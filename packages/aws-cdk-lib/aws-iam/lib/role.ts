@@ -272,6 +272,7 @@ export class Role extends Resource implements IRole {
    * This value is used as a dummy role arn if the role was not found
    * by the `Role.fromLookup()` method.
    */
+  // eslint-disable-next-line @cdklabs/no-literal-partition
   public static readonly DEFAULT_DUMMY_ROLE_ARN = 'arn:aws:iam::123456789012:role/DUMMY_ARN';
 
   /**
@@ -299,7 +300,6 @@ export class Role extends Resource implements IRole {
       } as cxschema.CcApiContextQuery,
       dummyValue: [
         {
-          // eslint-disable-next-line @cdklabs/no-literal-partition
           Arn: Role.DEFAULT_DUMMY_ROLE_ARN,
         },
       ],
