@@ -24,6 +24,11 @@ export enum Runtime {
    * The Python 3.11 runtime
    */
   PYTHON_3_11 = 'python3.11',
+
+  /**
+   * The Python 3.13 runtime
+   */
+  PYTHON_3_13 = 'python3.13',
 }
 
 /**
@@ -277,7 +282,7 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.SINGLETON_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-s3-deployment', 'bucket-deployment-handler', 'index.py'),
-        runtime: Runtime.PYTHON_3_11,
+        runtime: Runtime.PYTHON_3_13,
         minifyAndBundle: false,
       },
     ],
