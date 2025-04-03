@@ -1,12 +1,4 @@
 {
- "Outputs": {
-  "DummyRoleArn": {
-   "Value": "arn:aws:iam::123456789012:role/DUMMY_ARN"
-  },
-  "LookupRoleName": {
-   "Value": "MyLookupTestRole"
-  }
- },
  "Resources": {
   "HelloPolicyD59007DF": {
    "Type": "AWS::IAM::Policy",
@@ -26,6 +18,17 @@
      "MyLookupTestRole"
     ]
    }
+  }
+ },
+ "Outputs": {
+  "LookupRoleName": {
+   "Value": "MyLookupTestRole"
+  },
+  "DummyRoleArn": {
+   "Value": "arn:aws:iam::123456789012:role/DUMMY_ARN"
+  },
+  "IsDummy": {
+   "Value": "true"
   }
  },
  "Parameters": {

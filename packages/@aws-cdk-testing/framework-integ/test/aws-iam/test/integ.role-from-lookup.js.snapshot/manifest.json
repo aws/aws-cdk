@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/a933ee725fb4efeb53cf7cf3782487671d54697249f2fbb7caff31a2c0d30e6a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/760b16f40cc4b52f8ecd250c8c58043f64ab72d38672f69074b9c8c6f66c3245.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -50,24 +50,6 @@
             "data": "*"
           }
         ],
-        "/LookupRoleStack/MutableRoleDummyRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/LookupRoleStack/DummyRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/LookupRoleStack/DummyRoleArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DummyRoleArn"
-          }
-        ],
         "/LookupRoleStack/HelloPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -92,6 +74,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LookupRoleName"
+          }
+        ],
+        "/LookupRoleStack/MutableRoleDummyRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/LookupRoleStack/DummyRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/LookupRoleStack/DummyRoleArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DummyRoleArn"
+          }
+        ],
+        "/LookupRoleStack/IsDummy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IsDummy"
           }
         ],
         "/LookupRoleStack/BootstrapVersion": [

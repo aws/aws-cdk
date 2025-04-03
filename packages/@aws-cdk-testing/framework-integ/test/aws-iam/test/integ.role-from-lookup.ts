@@ -17,18 +17,19 @@ const lookupRole = Role.fromLookup(stack, 'LookupRole', {
   roleName,
 });
 
+const policy = new Policy(stack, 'HelloPolicy', { policyName: 'Default' });
+policy.addStatements(new PolicyStatement({ actions: ['ec2:*'], resources: ['*'] }));
+policy.attachToRole(lookupRole);
+
+new CfnOutput(stack, 'LookupRoleName', { value: lookupRole.roleName });
+
 const dummyRole = Role.fromLookup(stack, 'DummyRole', {
   roleName: 'DummyRole',
   mustExist: false,
 });
 
 new CfnOutput(stack, 'DummyRoleArn', { value: dummyRole.roleArn });
-
-const policy = new Policy(stack, 'HelloPolicy', { policyName: 'Default' });
-policy.addStatements(new PolicyStatement({ actions: ['ec2:*'], resources: ['*'] }));
-policy.attachToRole(lookupRole);
-
-new CfnOutput(stack, 'LookupRoleName', { value: lookupRole.roleName });
+new CfnOutput(stack, 'IsDummy', { value: String(Role.isLookupDummy(dummyRole)) });
 
 new IntegTest(app, 'integ-iam-role-from-lookup', {
   enableLookups: true,
