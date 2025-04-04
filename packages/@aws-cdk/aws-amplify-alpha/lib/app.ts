@@ -1,7 +1,7 @@
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { IResource, Lazy, Resource, SecretValue } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
+import { IResource, Lazy, Resource, SecretValue, ValidationError } from 'aws-cdk-lib/core';
+import { Construct, IConstruct } from 'constructs';
 import { CfnApp } from 'aws-cdk-lib/aws-amplify';
 import { BasicAuth } from './basic-auth';
 import { Branch, BranchOptions } from './branch';
@@ -267,7 +267,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
       name: props.appName || this.node.id,
       oauthToken: sourceCodeProviderOptions?.oauthToken?.unsafeUnwrap(), // Safe usage
       repository: sourceCodeProviderOptions?.repository,
-      customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders) : undefined,
+      customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders, this) : undefined,
       platform: props.platform || Platform.WEB,
     });
 
@@ -544,13 +544,13 @@ export interface CustomResponseHeader {
   readonly headers: { [key: string]: string };
 }
 
-function renderCustomResponseHeaders(customHeaders: CustomResponseHeader[]): string {
+function renderCustomResponseHeaders(customHeaders: CustomResponseHeader[], scope: IConstruct): string {
   const hasAppRoot = customHeaders[0].appRoot !== undefined;
   const yaml = [hasAppRoot ? 'applications:' : 'customHeaders:'];
 
   for (const customHeader of customHeaders) {
     if ((customHeader.appRoot !== undefined) !== hasAppRoot) {
-      throw new Error('appRoot must be either be present or absent across all custom response headers');
+      throw new ValidationError('appRoot must be either be present or absent across all custom response headers', scope);
     }
 
     const baseIndentation = ' '.repeat(hasAppRoot ? 6 : 2);
