@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "60ded11346a0e7d0f912df61b5bd3e42c402e2da645b63b9731e6bb26bd7ff34": {
+      "displayName": "PipelineStackSinglePublisher Template",
+      "source": {
+        "path": "PipelineStackSinglePublisher.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "60ded11346a0e7d0f912df61b5bd3e42c402e2da645b63b9731e6bb26bd7ff34.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
