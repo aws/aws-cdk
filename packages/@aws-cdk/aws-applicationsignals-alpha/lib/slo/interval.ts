@@ -26,15 +26,36 @@ export abstract class Interval implements IInterval {
  * Implementation of Calendar Interval
  */
 export class CalendarInterval extends Interval {
+    /**
+     * The duration value for the interval
+     * Must be greater than 0
+     *
+     * @private
+     */
     private readonly duration: number;
+
+    /**
+     * The unit of duration measurement
+     * Can be MINUTE, HOUR, DAY, or MONTH
+     *
+     * @private
+     */
     private readonly unit: DurationUnit;
+
+    /**
+     * The start time of the interval
+     * Specified as Unix timestamp in milliseconds
+     * Default starts from now
+     *
+     * @private
+     */
     private readonly startTime: number;
 
     constructor(props: CalendarIntervalProps) {
         super();
         this.duration = props.duration;
         this.unit = props.unit;
-        this.startTime = props.startTime;
+        this.startTime = props.startTime?? Date.now();
         this.validate();
     }
 

@@ -1,74 +1,5 @@
-import { MetricDataQuery, SliMetricBaseProps } from './slo';
 import { ComparisonOperator, MetricStatistic, MetricType } from './constants';
 import { KeyAttributes } from './keyAttributes';
-
-// /**
-//  * Base properties for SLI metric configuration
-//  */
-// export type SliMetricBaseProps = {
-//     /**
-//      * The threshold value for the metric
-//      *
-//      * @required
-//      */
-//     readonly metricThreshold: number;
-//
-//     /**
-//      * The comparison operator
-//      *
-//      * @default - Based on metric type
-//      */
-//     readonly comparisonOperator?: ComparisonOperator;
-// } & (ApplicationSignalsMetricProps | CloudWatchMetricProps);
-//
-// /**
-//  * Period-based metric properties
-//  */
-// export interface PeriodBasedMetricProps extends SliMetricBaseProps {
-//     /**
-//      * The period in seconds
-//      *
-//      * @required
-//      */
-//     readonly periodSeconds: number;
-//
-//     /**
-//      * The statistic to use
-//      *
-//      * @required
-//      */
-//     readonly statistic: MetricStatistic;
-// }
-//
-// /**
-//  * Request-based metric properties
-//  */
-// export interface RequestBasedMetricProps extends SliMetricBaseProps {
-//     /**
-//      * The good count metrics
-//      * Required for request-based SLOs
-//      *
-//      * @required
-//      */
-//     readonly goodCountMetrics: MetricDataQuery[];
-//
-//     /**
-//      * The total count metrics
-//      * Required for request-based SLOs
-//      *
-//      * @required
-//      */
-//     readonly totalCountMetrics: MetricDataQuery[];
-//
-//     /**
-//      * The bad count metrics
-//      * Optional for request-based SLOs
-//      *
-//      * @default - undefined
-//      */
-//     readonly badCountMetrics?: MetricDataQuery[];
-// }
-
 
 /**
  * Interface for metric dimension
@@ -290,10 +221,43 @@ export interface MetricDataQuery {
  * Period-based metric properties with Application Signals
  */
 export interface PeriodBasedAppSignalsMetricProps extends SliMetricBaseProps {
+    /**
+     * The type of metric being measured
+     * Can be LATENCY or AVAILABILITY
+     *
+     * @required
+     */
     readonly metricType: MetricType;
+
+    /**
+     * Key attributes for the service being monitored
+     * Must include at least one of Type, Name, and Environment
+     *
+     * @required
+     */
     readonly keyAttributes: { [key: string]: string };
+
+    /**
+     * The name of the operation being measured
+     * Used to filter metrics for specific operation
+     *
+     */
     readonly operationName?: string;
+
+    /**
+     * The period in seconds for metric aggregation
+     * Must be a multiple of 60
+     *
+     * @required
+     */
     readonly periodSeconds: number;
+
+    /**
+     * The statistic to use for aggregation
+     * Examples: Average, Sum, p99
+     *
+     * @required
+     */
     readonly statistic: MetricStatistic;
 }
 
@@ -301,8 +265,28 @@ export interface PeriodBasedAppSignalsMetricProps extends SliMetricBaseProps {
  * Period-based metric properties with CloudWatch metrics
  */
 export interface PeriodBasedCloudWatchMetricProps extends SliMetricBaseProps {
+    /**
+     * The metric data queries to execute
+     * Can include raw metrics and math expressions
+     *
+     * @required
+     */
     readonly metricDataQueries: MetricDataQuery[];
+
+    /**
+     * The period in seconds for metric aggregation
+     * Must be a multiple of 60
+     *
+     * @required
+     */
     readonly periodSeconds: number;
+
+    /**
+     * The statistic to use for aggregation
+     * Examples: Average, Sum, p99
+     *
+     * @required
+     */
     readonly statistic: MetricStatistic;
 }
 
@@ -310,8 +294,26 @@ export interface PeriodBasedCloudWatchMetricProps extends SliMetricBaseProps {
  * Request-based metric properties with Application Signals
  */
 export interface RequestBasedAppSignalsMetricProps extends SliMetricBaseProps {
+    /**
+     * The type of metric being measured
+     * Can be LATENCY or AVAILABILITY
+     *
+     * @required
+     */
     readonly metricType: MetricType;
+
+    /**
+     * Key attributes for the applications being monitored
+     * Must include at least one of Type, Name, and Environment
+     *
+     * @required
+     */
     readonly keyAttributes: { [key: string]: string };
+
+    /**
+     * The name of the operation being measured
+     *
+     */
     readonly operationName?: string;
 }
 
@@ -319,8 +321,28 @@ export interface RequestBasedAppSignalsMetricProps extends SliMetricBaseProps {
  * Request-based metric properties with CloudWatch metrics
  */
 export interface RequestBasedCloudWatchMetricProps extends SliMetricBaseProps {
+    /**
+     * Metrics that count successful requests
+     * Optional if can be derived from total - bad
+     * Used to calculate success rate
+     *
+     * @required
+     */
     readonly goodCountMetrics: MetricDataQuery[];
+
+    /**
+     * Metrics that count total requests
+     * Used as denominator for success rate
+     *
+     * @required
+     */
     readonly totalCountMetrics: MetricDataQuery[];
+
+    /**
+     * Metrics that count failed requests
+     * Optional if can be derived from total - good
+     *
+     */
     readonly badCountMetrics?: MetricDataQuery[];
 }
 
