@@ -129,6 +129,7 @@ export const PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduce
 export const EVENTBUS_POLICY_SID_REQUIRED = '@aws-cdk/aws-events:requireEventBusPolicySid';
 export const DYNAMODB_TABLE_RETAIN_TABLE_REPLICA = '@aws-cdk/aws-dynamodb:retainTableReplica';
 export const LOG_USER_POOL_CLIENT_SECRET_VALUE ='@aws-cdk/cognito:logUserPoolClientSecretValue';
+export const S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE = '@aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1486,6 +1487,20 @@ export const FLAGS: Record<string, FlagInfo> = {
     defaults: { v2: false },
     recommendedValue: false,
     compatibilityWithOldBehaviorMd: 'Enable the feature flag to keep the old behavior and log the client secret values',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined.',
+    detailsMd: `
+      When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console. 
+      The previous behavior in cdk before this feature was; if only some of the BlockPublicAccessOptions were set (not all 4), then the ones undefined would default to false.
+      This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
+      The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
   },
 };
 
