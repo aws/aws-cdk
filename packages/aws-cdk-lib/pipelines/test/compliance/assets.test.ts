@@ -594,7 +594,7 @@ describe('pipeline with single asset publisher', () => {
         Name: 'Assets',
         Actions: [
           // Only one file asset action
-          Match.objectLike({ RunOrder: 1, Name: 'Asset1' }),
+          Match.objectLike({ RunOrder: 1, Name: 'FileAsset' }),
         ],
       }]),
     });
@@ -643,7 +643,7 @@ describe('pipeline with custom asset publisher BuildSpec', () => {
         Name: 'Assets',
         Actions: [
           // Only one file asset action
-          Match.objectLike({ RunOrder: 1, Name: 'Asset1' }),
+          Match.objectLike({ RunOrder: 1, Name: 'FileAsset' }),
         ],
       }]),
     });
