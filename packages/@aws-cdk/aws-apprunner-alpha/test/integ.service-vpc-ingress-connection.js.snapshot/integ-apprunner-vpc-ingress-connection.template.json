@@ -489,7 +489,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "bde7b5c89cb43285f884c94f0b9e17cdb0f5eb5345005114dd60342e0b8a85a1.zip"
+     "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -562,6 +562,7 @@
   "VpcEndpoint80208C18": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
+    "DnsOptions": {},
     "PrivateDnsEnabled": false,
     "SecurityGroupIds": [
      {

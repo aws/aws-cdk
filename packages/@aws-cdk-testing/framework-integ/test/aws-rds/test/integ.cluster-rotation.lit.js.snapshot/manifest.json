@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "40.0.0",
   "artifacts": {
     "aws-cdk-rds-cluster-rotation.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "aws-cdk-rds-cluster-rotation.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9a5c390599d915fbbde6a4b4753f574ea0487b8e82b81dcdb290793561e258df.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d265474f615502c611cb91d4f3a176f6a5519dc6860f2032e3a641c8167482a3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -35,10 +34,54 @@
         "aws-cdk-rds-cluster-rotation.assets"
       ],
       "metadata": {
+        "/aws-cdk-rds-cluster-rotation/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "restrictDefaultSecurityGroup": false
+            }
+          }
+        ],
         "/aws-cdk-rds-cluster-rotation/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/aws-cdk-rds-cluster-rotation/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-rds-cluster-rotation/VPC/PublicSubnet1/Subnet": [
@@ -77,6 +120,42 @@
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
+        "/aws-cdk-rds-cluster-rotation/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/aws-cdk-rds-cluster-rotation/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -113,6 +192,34 @@
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
+        "/aws-cdk-rds-cluster-rotation/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/aws-cdk-rds-cluster-rotation/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -135,6 +242,34 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/aws-cdk-rds-cluster-rotation/VPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/aws-cdk-rds-cluster-rotation/VPC/PrivateSubnet2/Subnet": [
@@ -173,10 +308,65 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
+        "/aws-cdk-rds-cluster-rotation/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          }
+        ],
         "/aws-cdk-rds-cluster-rotation/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SecurityGroupDD263621"
+          }
+        ],
+        "/aws-cdk-rds-cluster-rotation/Endpoint": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "service": {
+                "privateDnsDefault": true,
+                "name": "*",
+                "port": "*"
+              }
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-rotation/Endpoint/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
           }
         ],
         "/aws-cdk-rds-cluster-rotation/Endpoint/SecurityGroup/Resource": [
@@ -191,10 +381,63 @@
             "data": "EndpointEEF1FD8F"
           }
         ],
+        "/aws-cdk-rds-cluster-rotation/Database": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "engine": {
+                "engineType": "*",
+                "singleUserRotationApplication": "*",
+                "engineVersion": {
+                  "fullVersion": "*",
+                  "majorVersion": "*"
+                },
+                "parameterGroupFamily": "*",
+                "engineFamily": "*",
+                "supportedLogTypes": "*",
+                "combineImportAndExportRoles": true
+              },
+              "vpc": "*",
+              "writer": "*",
+              "readers": "*"
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-rotation/Database/Subnets": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "removalPolicy": "*"
+            }
+          }
+        ],
         "/aws-cdk-rds-cluster-rotation/Database/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseSubnets56F17B9A"
+          }
+        ],
+        "/aws-cdk-rds-cluster-rotation/Database/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
           }
         ],
         "/aws-cdk-rds-cluster-rotation/Database/SecurityGroup/Resource": [
@@ -209,10 +452,48 @@
             "data": "DatabaseSecurityGroupfromawscdkrdsclusterrotationDatabaseRotationSingleUserSecurityGroup0FFF34B1IndirectPortE6A88723"
           }
         ],
+        "/aws-cdk-rds-cluster-rotation/Database/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryptionKey": "*",
+              "secretName": "*",
+              "replicaRegions": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "username": "*",
+              "secretName": "*",
+              "encryptionKey": "*",
+              "excludeCharacters": "*",
+              "replaceOnPasswordCriteriaChanges": "*",
+              "replicaRegions": "*"
+            }
+          }
+        ],
         "/aws-cdk-rds-cluster-rotation/Database/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseSecret3B817195"
+          }
+        ],
+        "/aws-cdk-rds-cluster-rotation/Database/Secret/Attachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToResourcePolicy": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-rds-cluster-rotation/Database/Secret/Attachment/Resource": [
@@ -221,10 +502,29 @@
             "data": "DatabaseSecretAttachmentE5D1B020"
           }
         ],
+        "/aws-cdk-rds-cluster-rotation/Database/Secret/Attachment/RotationSchedule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "rotationLambda": "*",
+              "automaticallyAfter": "*",
+              "rotateImmediatelyOnUpdate": "*"
+            }
+          }
+        ],
         "/aws-cdk-rds-cluster-rotation/Database/Secret/Attachment/RotationSchedule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseSecretAttachmentRotationScheduleA4E9F034"
+          }
+        ],
+        "/aws-cdk-rds-cluster-rotation/Database/Secret/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*"
+            }
           }
         ],
         "/aws-cdk-rds-cluster-rotation/Database/Secret/Policy/Resource": [
@@ -239,16 +539,47 @@
             "data": "DatabaseB269D8BB"
           }
         ],
+        "/aws-cdk-rds-cluster-rotation/Database/Instance1Wrapper": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-rds-cluster-rotation/Database/Instance1": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseInstance1844F58FD"
           }
         ],
+        "/aws-cdk-rds-cluster-rotation/Database/Instance2Wrapper": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-rds-cluster-rotation/Database/Instance2": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseInstance2AA380DEE"
+          }
+        ],
+        "/aws-cdk-rds-cluster-rotation/Database/RotationSingleUser/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
           }
         ],
         "/aws-cdk-rds-cluster-rotation/Database/RotationSingleUser/SecurityGroup/Resource": [
@@ -269,10 +600,63 @@
             "data": "DatabaseRotationSingleUser65F55654"
           }
         ],
+        "/aws-cdk-rds-cluster-rotation/CustomRotationOptions": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "engine": {
+                "engineType": "*",
+                "singleUserRotationApplication": "*",
+                "engineVersion": {
+                  "fullVersion": "*",
+                  "majorVersion": "*"
+                },
+                "parameterGroupFamily": "*",
+                "engineFamily": "*",
+                "supportedLogTypes": "*",
+                "combineImportAndExportRoles": true
+              },
+              "vpc": "*",
+              "writer": "*",
+              "readers": "*"
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-rotation/CustomRotationOptions/Subnets": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "removalPolicy": "*"
+            }
+          }
+        ],
         "/aws-cdk-rds-cluster-rotation/CustomRotationOptions/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomRotationOptionsSubnets52AEBCED"
+          }
+        ],
+        "/aws-cdk-rds-cluster-rotation/CustomRotationOptions/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
           }
         ],
         "/aws-cdk-rds-cluster-rotation/CustomRotationOptions/SecurityGroup/Resource": [
@@ -287,10 +671,48 @@
             "data": "CustomRotationOptionsSecurityGroupfromawscdkrdsclusterrotationSecurityGroupB986D266IndirectPortF3255731"
           }
         ],
+        "/aws-cdk-rds-cluster-rotation/CustomRotationOptions/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryptionKey": "*",
+              "secretName": "*",
+              "replicaRegions": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "username": "*",
+              "secretName": "*",
+              "encryptionKey": "*",
+              "excludeCharacters": "*",
+              "replaceOnPasswordCriteriaChanges": "*",
+              "replicaRegions": "*"
+            }
+          }
+        ],
         "/aws-cdk-rds-cluster-rotation/CustomRotationOptions/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomRotationOptionsSecret7DCFFFDB"
+          }
+        ],
+        "/aws-cdk-rds-cluster-rotation/CustomRotationOptions/Secret/Attachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToResourcePolicy": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-rds-cluster-rotation/CustomRotationOptions/Secret/Attachment/Resource": [
@@ -299,10 +721,29 @@
             "data": "CustomRotationOptionsSecretAttachment697A23BF"
           }
         ],
+        "/aws-cdk-rds-cluster-rotation/CustomRotationOptions/Secret/Attachment/RotationSchedule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "rotationLambda": "*",
+              "automaticallyAfter": "*",
+              "rotateImmediatelyOnUpdate": false
+            }
+          }
+        ],
         "/aws-cdk-rds-cluster-rotation/CustomRotationOptions/Secret/Attachment/RotationSchedule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomRotationOptionsSecretAttachmentRotationScheduleD5AEB622"
+          }
+        ],
+        "/aws-cdk-rds-cluster-rotation/CustomRotationOptions/Secret/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*"
+            }
           }
         ],
         "/aws-cdk-rds-cluster-rotation/CustomRotationOptions/Secret/Policy/Resource": [
@@ -317,10 +758,22 @@
             "data": "CustomRotationOptions7CA9E132"
           }
         ],
+        "/aws-cdk-rds-cluster-rotation/CustomRotationOptions/Instance1Wrapper": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-rds-cluster-rotation/CustomRotationOptions/Instance1": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomRotationOptionsInstance1D693E87C"
+          }
+        ],
+        "/aws-cdk-rds-cluster-rotation/CustomRotationOptions/Instance2Wrapper": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-rds-cluster-rotation/CustomRotationOptions/Instance2": [
@@ -371,7 +824,6 @@
         "templateFile": "testrdsclusterrotationDefaultTestDeployAssertCC761439.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",

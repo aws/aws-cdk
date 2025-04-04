@@ -1092,6 +1092,31 @@ myEndpoint.connections.allowDefaultPortFromAnyIpv4();
 
 Alternatively, existing security groups can be used by specifying the `securityGroups` prop.
 
+#### IPv6 and Dualstack support
+
+As IPv4 addresses are running out, many AWS services are adding support for IPv6 or Dualstack (IPv4 and IPv6 support) for their VPC Endpoints.
+
+IPv6 and Dualstack address types can be configured by using:
+
+```ts fixture=with-vpc
+vpc.addInterfaceEndpoint('ExampleEndpoint', {
+  service: ec2.InterfaceVpcEndpointAwsService.ECR,
+  ipAddressType: ec2.VpcEndpointIpAddressType.IPV6,
+  dnsRecordIpType: ec2.VpcEndpointDnsRecordIpType.IPV6,
+});
+```
+The possible values for `ipAddressType` are:
+* `IPV4` This option is supported only if all selected subnets have IPv4 address ranges and the endpoint service accepts IPv4 requests.
+* `IPV6` This option is supported only if all selected subnets are IPv6 only subnets and the endpoint service accepts IPv6 requests.
+* `DUALSTACK` Assign both IPv4 and IPv6 addresses to the endpoint network interfaces. This option is supported only if all selected subnets have both IPv4 and IPv6 address ranges and the endpoint service accepts both IPv4 and IPv6 requests.
+  The possible values for `dnsRecordIpType` are:
+* `IPV4` Create A records for the private, Regional, and zonal DNS names. `ipAddressType` MUST be `IPV4` or `DUALSTACK`
+* `IPV6` Create AAAA records for the private, Regional, and zonal DNS names. `ipAddressType` MUST be `IPV6` or `DUALSTACK`
+* `DUALSTACK` Create A and AAAA records for the private, Regional, and zonal DNS names. `ipAddressType` MUST be `DUALSTACK`
+* `SERVICE_DEFINED` Create A records for the private, Regional, and zonal DNS names and AAAA records for the Regional and zonal DNS names. `ipAddressType` MUST be `DUALSTACK`
+  We can only configure dnsRecordIpType when ipAddressType is specified and private DNS must be enabled to use any DNS related features. To avoid complications, it is recommended to always set `privateDnsEnabled` to true (defaults to true) and set the `ipAddressType` and `dnsRecordIpType` explicitly when needing specific IP type behavior. Furthermore, check that the VPC being used supports the IP address type that is being configued.
+  More documentation on compatibility and specifications can be found [here](https://docs.aws.amazon.com/vpc/latest/privatelink/create-endpoint-service.html#connect-to-endpoint-service)
+
 ### VPC endpoint services
 
 A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via allowed principals (anything that extends ArnPrincipal), and require that new connections be manually accepted. You can also enable Contributor Insight rules.
