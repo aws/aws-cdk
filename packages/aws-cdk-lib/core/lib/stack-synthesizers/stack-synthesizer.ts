@@ -313,6 +313,7 @@ function stackTemplateFileAsset(stack: Stack, session: ISynthesisSession): FileA
     packaging: FileAssetPackaging.FILE,
     sourceHash,
     deployTime: true,
+    displayName: `${stack.stackName} Template`,
   };
 }
 

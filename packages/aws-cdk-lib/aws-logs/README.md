@@ -149,6 +149,23 @@ new logs.SubscriptionFilter(this, 'Subscription', {
 });
 ```
 
+When you use `FirehoseDestination`, you can choose the method used to
+distribute log data to the destination by setting the `distribution` property.
+
+```ts
+import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+
+declare const deliveryStream: firehose.IDeliveryStream;
+declare const logGroup: logs.LogGroup;
+
+new logs.SubscriptionFilter(this, 'Subscription', {
+  logGroup,
+  destination: new destinations.FirehoseDestination(deliveryStream),
+  filterPattern: logs.FilterPattern.allEvents(),
+});
+```
+
 ## Metric Filters
 
 CloudWatch Logs can extract and emit metrics based on a textual log stream.
@@ -409,17 +426,16 @@ Each policy may consist of a log group, S3 bucket, and/or Firehose delivery stre
 Example:
 
 ```ts
-import * as kinesisfirehose from '@aws-cdk/aws-kinesisfirehose-alpha';
-import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations-alpha';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 const logGroupDestination = new logs.LogGroup(this, 'LogGroupLambdaAudit', {
   logGroupName: 'auditDestinationForCDK',
 });
 
 const bucket = new s3.Bucket(this, 'audit-bucket');
-const s3Destination = new destinations.S3Bucket(bucket);
+const s3Destination = new firehose.S3Bucket(bucket);
 
-const deliveryStream = new kinesisfirehose.DeliveryStream(this, 'Delivery Stream', {
+const deliveryStream = new firehose.DeliveryStream(this, 'Delivery Stream', {
   destination: s3Destination,
 });
 

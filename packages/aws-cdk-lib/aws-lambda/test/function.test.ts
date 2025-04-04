@@ -191,7 +191,7 @@ describe('function', () => {
     test('can supply principalOrgID via permission property', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
-      const org = new iam.OrganizationPrincipal('o-12345abcde');
+      const org = new iam.OrganizationPrincipal('o-xxxxxxxxxx');
       const account = new iam.AccountPrincipal('123456789012');
 
       fn.addPermission('S3Permission', {

@@ -337,6 +337,46 @@ describe('rules', () => {
     });
   });
 
+  test('throws when neither transitionDate nor transitionAfter is specified', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Bucket(stack, 'Bucket', {
+      lifecycleRules: [{
+        transitions: [{
+          storageClass: StorageClass.GLACIER,
+        }],
+      }],
+    });
+
+    // THEN
+    expect(() => {
+      Template.fromStack(stack).toJSON();
+    }).toThrow('Exactly one of transitionDate or transitionAfter must be specified in lifecycle rule transition');
+  });
+
+  test('throws when both transitionDate and transitionAfter are specified', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Bucket(stack, 'Bucket', {
+      lifecycleRules: [{
+        transitions: [{
+          storageClass: StorageClass.GLACIER,
+          transitionDate: new Date('2023-01-01'),
+          transitionAfter: Duration.days(30),
+        }],
+      }],
+    });
+
+    // THEN
+    expect(() => {
+      Template.fromStack(stack).toJSON();
+    }).toThrow('Exactly one of transitionDate or transitionAfter must be specified in lifecycle rule transition');
+  });
+
   describe('required properties for rules', () => {
     test('throw if there is a rule doesn\'t have required properties', () => {
       const stack = new Stack();

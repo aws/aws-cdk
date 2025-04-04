@@ -60,7 +60,7 @@ export enum FlowLogDestinationType {
   S3 = 's3',
 
   /**
-   * Send flow logs to Kinesis Data Firehose
+   * Send flow logs to Amazon Data Firehose
    */
   KINESIS_DATA_FIREHOSE = 'kinesis-data-firehose',
 }
@@ -215,9 +215,9 @@ export abstract class FlowLogDestination {
   }
 
   /**
-   * Use Kinesis Data Firehose as the destination
+   * Use Amazon Data Firehose as the destination
    *
-   * @param deliveryStreamArn the ARN of Kinesis Data Firehose delivery stream to publish logs to
+   * @param deliveryStreamArn the ARN of Amazon Data Firehose delivery stream to publish logs to
    */
   public static toKinesisDataFirehoseDestination(deliveryStreamArn: string): FlowLogDestination {
     return new KinesisDataFirehoseDestination({
@@ -272,7 +272,7 @@ export interface FlowLogDestinationConfig {
   readonly keyPrefix?: string;
 
   /**
-   * The ARN of Kinesis Data Firehose delivery stream to publish the flow logs to
+   * The ARN of Amazon Data Firehose delivery stream to publish the flow logs to
    *
    * @default - undefined
    */
@@ -849,7 +849,7 @@ export class FlowLog extends FlowLogBase {
   public readonly logGroup?: logs.ILogGroup;
 
   /**
-   * The ARN of the Kinesis Data Firehose delivery stream to publish flow logs to
+   * The ARN of the Amazon Data Firehose delivery stream to publish flow logs to
    */
   public readonly deliveryStreamArn?: string;
 
