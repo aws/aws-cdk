@@ -62,7 +62,7 @@ class TestStack extends Stack {
       },
       indexActions: [{
         resourceTypes: [backup.IndexActionResourceType.S3],
-      }]
+      }],
     }));
   }
 }
