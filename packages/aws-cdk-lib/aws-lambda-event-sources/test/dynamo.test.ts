@@ -587,9 +587,9 @@ describe('DynamoEventSource', () => {
     // THEN
     expect(() =>
       fn.addEventSource(new sources.DynamoEventSource(table, {
-        retryAttempts: -1,
+        retryAttempts: -2, // Test an invalid negative value
         startingPosition: lambda.StartingPosition.LATEST,
-      }))).toThrow(/retryAttempts must be between 0 and 10000 inclusive, got -1/);
+      }))).toThrow(/retryAttempts must be -1 \(for infinite\) or between 0 and 10000 inclusive, got -2/);
   });
 
   test('fails if retryAttempts > 10000', () => {
@@ -609,7 +609,7 @@ describe('DynamoEventSource', () => {
       fn.addEventSource(new sources.DynamoEventSource(table, {
         retryAttempts: 10001,
         startingPosition: lambda.StartingPosition.LATEST,
-      }))).toThrow(/retryAttempts must be between 0 and 10000 inclusive, got 10001/);
+      }))).toThrow(/retryAttempts must be -1 \(for infinite\) or between 0 and 10000 inclusive, got 10001/);
   });
 
   test('specific bisectBatchOnFunctionError', () => {

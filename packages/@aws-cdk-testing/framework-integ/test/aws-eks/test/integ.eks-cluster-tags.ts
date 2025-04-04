@@ -13,10 +13,10 @@ class EksClusterTagsStack extends Stack {
     const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
     new eks.Cluster(this, 'Cluster', {
       vpc,
-      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_30),
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_31),
       defaultCapacity: 0,
       tags: {
-        foo: 'bar',
+        foo: 'world',
       },
     },
     );
@@ -41,4 +41,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-cluster-tags-integ', {
     },
   },
 });
-app.synth();
