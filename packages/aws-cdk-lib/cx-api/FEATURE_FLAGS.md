@@ -95,6 +95,7 @@ Flags come in three types:
 | [@aws-cdk/aws-events:requireEventBusPolicySid](#aws-cdkaws-eventsrequireeventbuspolicysid) | When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals. | 2.186.0 | (fix) |
 | [@aws-cdk/aws-dynamodb:retainTableReplica](#aws-cdkaws-dynamodbretaintablereplica) | When enabled, table replica will be default to the removal policy of source table unless specified otherwise. | 2.187.0 | (fix) |
 | [@aws-cdk/cognito:logUserPoolClientSecretValue](#aws-cdkcognitologuserpoolclientsecretvalue) | When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs. | 2.187.0 | (default) |
+| [@aws-cdk/aws-efs:mountTargetImportedSubnetAwareLogicalId](#aws-cdkaws-efsmounttargetimportedsubnetawarelogicalid) | When enabled, mount targets will have a unique generated logicalId that also covers imported subnet | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -175,7 +176,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false,
     "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
     "@aws-cdk/aws-events:requireEventBusPolicySid": true,
-    "@aws-cdk/aws-dynamodb:retainTableReplica": true
+    "@aws-cdk/aws-dynamodb:retainTableReplica": true,
+    "@aws-cdk/aws-efs:mountTargetImportedSubnetAwareLogicalId": true
   }
 }
 ```
@@ -1804,6 +1806,24 @@ resource lambda function logs.
 | 2.187.0 | `false` | `false` |
 
 **Compatibility with old behavior:** Enable the feature flag to keep the old behavior and log the client secret values
+
+
+### @aws-cdk/aws-efs:mountTargetImportedSubnetAwareLogicalId
+
+*When enabled, mount targets will have a unique generated logicalId that also covers imported subnet* (fix)
+
+When this feature flag is enabled, mount targets will have a unique generated logicalId linked to the associated subnet
+that also covers the case of imported subnet.
+
+When this feature flag is disabled, mount targets will use counter logicalId or fail to create if associated with imported subnet.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to keep the old logicalId generation behavior
 
 
 <!-- END details -->

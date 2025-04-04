@@ -89,6 +89,7 @@ export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePr
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
 export const EFS_DENY_ANONYMOUS_ACCESS = '@aws-cdk/aws-efs:denyAnonymousAccess';
 export const EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID = '@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId';
+export const EFS_MOUNTTARGET_IMPORTED_SUBNET_AWARE_LOGICAL_ID = '@aws-cdk/aws-efs:mountTargetImportedSubnetAwareLogicalId';
 export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE = '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
 export const ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY = '@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby';
 export const LAMBDA_NODEJS_USE_LATEST_RUNTIME = '@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion';
@@ -1486,6 +1487,21 @@ export const FLAGS: Record<string, FlagInfo> = {
     defaults: { v2: false },
     recommendedValue: false,
     compatibilityWithOldBehaviorMd: 'Enable the feature flag to keep the old behavior and log the client secret values',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EFS_MOUNTTARGET_IMPORTED_SUBNET_AWARE_LOGICAL_ID]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, mount targets will have a unique generated logicalId that also covers imported subnet',
+    detailsMd: `
+      When this feature flag is enabled, mount targets will have a unique generated logicalId linked to the associated subnet
+      that also covers the case of imported subnet.
+      
+      When this feature flag is disabled, mount targets will use counter logicalId or fail to create if associated with imported subnet.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to keep the old logicalId generation behavior',
   },
 };
 
