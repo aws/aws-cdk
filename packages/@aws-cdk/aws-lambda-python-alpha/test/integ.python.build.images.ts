@@ -19,11 +19,13 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     const runtimes: Runtime[]= [
-      Runtime.PYTHON_3_8, Runtime.PYTHON_3_9, Runtime.PYTHON_3_10, Runtime.PYTHON_3_11, Runtime.PYTHON_3_12, Runtime.PYTHON_3_13,
+      Runtime.PYTHON_3_9, Runtime.PYTHON_3_10, Runtime.PYTHON_3_11, Runtime.PYTHON_3_12, Runtime.PYTHON_3_13,
     ];
 
-    runtimes.forEach((runtime, index) => {
-      const func = new lambda.PythonFunction(this, `func-${runtime.name}-${index}`, {
+    const uniqueRuntimes: Runtime[] = runtimes.filter((value, index, array) => array.findIndex(value1 => value1.runtimeEquals(value)) === index);
+
+    uniqueRuntimes.forEach((runtime) => {
+      const func = new lambda.PythonFunction(this, `func-${runtime.name}`, {
         entry: path.join(__dirname, 'lambda-handler'),
         runtime: runtime,
       });

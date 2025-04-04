@@ -28,7 +28,6 @@ describe('utils', () => {
   });
 
   describe('parseBucketName', () => {
-
     test('explicit name', () => {
       const stack = new cdk.Stack();
       const bucketName = 'foo';

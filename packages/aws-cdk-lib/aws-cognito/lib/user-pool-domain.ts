@@ -4,7 +4,23 @@ import { IUserPool } from './user-pool';
 import { UserPoolClient } from './user-pool-client';
 import { ICertificate } from '../../aws-certificatemanager';
 import { IResource, Resource, Stack, Token } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { AwsCustomResource, AwsCustomResourcePolicy, AwsSdkCall, PhysicalResourceId } from '../../custom-resources';
+
+/**
+ * The branding version of managed login for the domain.
+ */
+export enum ManagedLoginVersion {
+  /**
+   * The classic hosted UI.
+   */
+  CLASSIC_HOSTED_UI = 1,
+  /**
+   * The newer managed login with the branding designer.
+   */
+  NEWER_MANAGED_LOGIN = 2,
+}
 
 /**
  * Represents a user pool domain.
@@ -65,6 +81,16 @@ export interface UserPoolDomainOptions {
    * @default - not set if `customDomain` is specified, otherwise, throws an error.
    */
   readonly cognitoDomain?: CognitoDomainOptions;
+
+  /**
+   * A version that indicates the state of managed login.
+   * This choice applies to all app clients that host services at the domain.
+   *
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-managed-login.html
+   *
+   * @default undefined - Cognito default setting is ManagedLoginVersion.CLASSIC_HOSTED_UI
+   */
+  readonly managedLoginVersion?: ManagedLoginVersion;
 }
 
 /**
@@ -100,16 +126,17 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
 
   constructor(scope: Construct, id: string, props: UserPoolDomainProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!!props.customDomain === !!props.cognitoDomain) {
-      throw new Error('One of, and only one of, cognitoDomain or customDomain must be specified');
+      throw new ValidationError('One of, and only one of, cognitoDomain or customDomain must be specified', this);
     }
 
     if (props.cognitoDomain?.domainPrefix &&
       !Token.isUnresolved(props.cognitoDomain?.domainPrefix) &&
       !/^[a-z0-9-]+$/.test(props.cognitoDomain.domainPrefix)) {
-
-      throw new Error('domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens');
+      throw new ValidationError('domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens', this);
     }
 
     this.isCognitoDomain = !!props.cognitoDomain;
@@ -119,6 +146,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
       userPoolId: props.userPool.userPoolId,
       domain: domainName,
       customDomainConfig: props.customDomain ? { certificateArn: props.customDomain.certificate.certificateArn } : undefined,
+      managedLoginVersion: props.managedLoginVersion,
     });
 
     this.domainName = this.resource.ref;
@@ -169,6 +197,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
    *
    * @param options options to customize baseUrl
    */
+  @MethodMetadata()
   public baseUrl(options?: BaseUrlOptions): string {
     if (this.isCognitoDomain) {
       const authDomain = 'auth' + (options?.fips ? '-fips' : '');
@@ -182,6 +211,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
    * @param client [disable-awslint:ref-via-interface] the user pool client that the UI will use to interact with the UserPool
    * @param options options to customize signInUrl.
    */
+  @MethodMetadata()
   public signInUrl(client: UserPoolClient, options: SignInUrlOptions): string {
     let responseType: string;
     if (client.oAuthFlows.authorizationCodeGrant) {
@@ -189,7 +219,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
     } else if (client.oAuthFlows.implicitCodeGrant) {
       responseType = 'token';
     } else {
-      throw new Error('signInUrl is not supported for clients without authorizationCodeGrant or implicitCodeGrant flow enabled');
+      throw new ValidationError('signInUrl is not supported for clients without authorizationCodeGrant or implicitCodeGrant flow enabled', this);
     }
     const path = options.signInPath ?? '/login';
     return `${this.baseUrl(options)}${path}?client_id=${client.userPoolClientId}&response_type=${responseType}&redirect_uri=${options.redirectUri}`;

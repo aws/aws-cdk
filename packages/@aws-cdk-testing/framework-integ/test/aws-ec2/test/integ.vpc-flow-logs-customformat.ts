@@ -79,7 +79,6 @@ class TestStack extends Stack {
         LogFormat.SRC_PORT,
       ],
     });
-
   }
 }
 

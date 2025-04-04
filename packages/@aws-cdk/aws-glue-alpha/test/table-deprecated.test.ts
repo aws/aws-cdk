@@ -1380,7 +1380,6 @@ describe('validate', () => {
         columns: [],
       });
     }).toThrow('you must specify at least one column for the table');
-
   });
 
   test('unique column names', () => {
@@ -1395,7 +1394,6 @@ describe('validate', () => {
         }],
       });
     }).toThrow("column names and partition keys must be unique, but 'col1' is duplicated");
-
   });
 
   test('unique partition keys', () => {
@@ -1414,7 +1412,6 @@ describe('validate', () => {
         }],
       });
     }).toThrow("column names and partition keys must be unique, but 'p1' is duplicated");
-
   });
 
   test('column names and partition keys are all unique', () => {
@@ -1430,7 +1427,6 @@ describe('validate', () => {
         }],
       });
     }).toThrow("column names and partition keys must be unique, but 'col1' is duplicated");
-
   });
 
   test('can not specify an explicit bucket and encryption', () => {

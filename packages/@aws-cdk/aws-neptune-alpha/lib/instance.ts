@@ -6,6 +6,7 @@ import { IDatabaseCluster } from './cluster';
 import { Endpoint } from './endpoint';
 import { CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
 import { IParameterGroup } from './parameter-group';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Possible Instances Types to use in Neptune cluster
@@ -48,8 +49,8 @@ export class InstanceType {
   public static readonly X2G_16XLARGE = InstanceType.of('db.x2g.16xlarge');
 
   /**
-  * db.x2iedn.xlarge
-  */
+   * db.x2iedn.xlarge
+   */
   public static readonly X2IEDN_XLARGE = InstanceType.of('db.x2iedn.xlarge');
 
   /**
@@ -108,8 +109,8 @@ export class InstanceType {
   public static readonly R6G_8XLARGE = InstanceType.of('db.r6g.8xlarge');
 
   /**
-  * db.r6g.12xlarge
-  */
+   * db.r6g.12xlarge
+   */
   public static readonly R6G_12XLARGE = InstanceType.of('db.r6g.12xlarge');
 
   /**
@@ -471,7 +472,6 @@ export abstract class DatabaseInstanceBase extends cdk.Resource implements IData
  * @resource AWS::Neptune::DBInstance
  */
 export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseInstance {
-
   /**
    * The instance's database cluster
    */
@@ -499,6 +499,8 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const instance = new CfnDBInstance(this, 'Resource', {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,

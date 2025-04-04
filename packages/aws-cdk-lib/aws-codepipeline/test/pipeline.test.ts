@@ -44,7 +44,55 @@ describe('', () => {
         },
       });
     });
+    test('can use service role for actions if no action role configured', () => {
+      const stack = new cdk.Stack();
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
+      });
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        role,
+        usePipelineRoleForActions: true,
+      });
 
+      const sourceArtifact = new codepipeline.Artifact();
+      testPipelineSetup(
+        pipeline,
+        [new FakeSourceAction({
+          actionName: 'Source',
+          output: sourceArtifact,
+        })],
+        [new FakeBuildAction({
+          actionName: 'Build',
+          input: sourceArtifact,
+        })],
+      );
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        RoleArn: {
+          'Fn::GetAtt': [
+            'Role1ABCC5F0',
+            'Arn',
+          ],
+        },
+        Stages: Match.arrayWith([{
+          Name: 'Source',
+          Actions: [
+            Match.objectLike({
+              Name: 'Source',
+            }),
+          ],
+        },
+        {
+          Name: 'Build',
+          Actions: [
+            Match.objectLike({
+              Name: 'Build',
+            }),
+          ],
+        }]),
+
+      });
+    });
     test('can be imported by ARN', () => {
       const stack = new cdk.Stack();
 
@@ -350,7 +398,6 @@ describe('', () => {
           'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-west-2');
         expect(supportStackArtifact.cloudFormationExecutionRoleArn).toEqual(
           'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-west-2');
-
       });
 
       test('generates the same support stack containing the replication Bucket without the need to bootstrap in that environment for multiple pipelines', () => {
@@ -370,7 +417,6 @@ describe('', () => {
         expect(() => {
           assembly.getStackByName('PipelineStackB-support-eu-south-1');
         }).toThrow(/Unable to find stack with stack name/);
-
       });
 
       test('generates the unique support stack containing the replication Bucket without the need to bootstrap in that environment for multiple pipelines', () => {
@@ -1034,7 +1080,7 @@ function createPipelineWithSourceAndBuildStages(scope: Construct, pipelineName?:
       },
     ],
   });
-};
+}
 
 interface CreatePipelineStackOptions {
   readonly withFeatureFlag?: boolean;
@@ -1053,7 +1099,7 @@ function createPipelineStack(options: CreatePipelineStackOptions): PipelineStack
     pipelineName: `Actual-Pipeline-${options.suffix}`.substring(0, 100),
     pipelineId: options.pipelineId,
   });
-};
+}
 
 // Adding 2 stages with actions so pipeline validation will pass
 function testPipelineSetup(pipeline: codepipeline.Pipeline, sourceActions?: codepipeline.IAction[], buildActions?: codepipeline.IAction[]) {

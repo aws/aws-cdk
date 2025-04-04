@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "36.0.0",
   "artifacts": {
     "aws-glue-job.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/472ef683512322adcc5fad4705de91c6ee394b671ca18bc5fd2a09b663d879ea.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd8261e4900491c4aaaec8bcd31c57b1f30085f1d579f19089bd55a4bdb023b7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -196,60 +196,6 @@
             "data": "StreamingJob40E284A782"
           }
         ],
-        "/aws-glue-job/EtlJob5.0/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EtlJob50ServiceRole3F950524"
-          }
-        ],
-        "/aws-glue-job/EtlJob5.0/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EtlJob50ServiceRoleDefaultPolicyD67CA798"
-          }
-        ],
-        "/aws-glue-job/EtlJob5.0/SparkUIBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EtlJob50SparkUIBucket28E6EA39"
-          }
-        ],
-        "/aws-glue-job/EtlJob5.0/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EtlJob502E3517AF"
-          }
-        ],
-        "/aws-glue-job/EtlJob5.0/SuccessMetricRule/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EtlJob50SuccessMetricRule2BFA7538"
-          }
-        ],
-        "/aws-glue-job/StreamingJob5.0/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StreamingJob50ServiceRoleE8945CAE"
-          }
-        ],
-        "/aws-glue-job/StreamingJob5.0/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StreamingJob50ServiceRoleDefaultPolicy815A506E"
-          }
-        ],
-        "/aws-glue-job/StreamingJob5.0/SparkUIBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StreamingJob50SparkUIBucket31964232"
-          }
-        ],
-        "/aws-glue-job/StreamingJob5.0/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StreamingJob506D8CB337"
-          }
-        ],
         "/aws-glue-job/ShellJob/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -320,24 +266,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EtlJobWithFLEX928B4212"
-          }
-        ],
-        "/aws-glue-job/EtlJobWithRunQueuing/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EtlJobWithRunQueuingServiceRole33547334"
-          }
-        ],
-        "/aws-glue-job/EtlJobWithRunQueuing/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EtlJobWithRunQueuingServiceRoleDefaultPolicy5725F511"
-          }
-        ],
-        "/aws-glue-job/EtlJobWithRunQueuing/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EtlJobWithRunQueuingA1B098B5"
           }
         ],
         "/aws-glue-job/BootstrapVersion": [

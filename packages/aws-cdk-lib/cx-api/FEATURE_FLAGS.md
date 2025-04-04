@@ -84,8 +84,17 @@ Flags come in three types:
 | [@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault](#aws-cdkaws-ec2bastionhostuseamazonlinux2023bydefault) | When enabled, the BastionHost construct will use the latest Amazon Linux 2023 AMI, instead of Amazon Linux 2. | 2.172.0 | (default) |
 | [@aws-cdk/core:aspectStabilization](#aws-cdkcoreaspectstabilization) | When enabled, a stabilization loop will be run when invoking Aspects during synthesis. | 2.172.0 | (config) |
 | [@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource](#aws-cdkaws-route53-targetsuserpooldomainnamemethodwithoutcustomresource) | When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource. | 2.174.0 | (fix) |
-| [@aws-cdk/aws-ecs:disableEcsImdsBlocking](#aws-cdkaws-ecsdisableecsimdsblocking) | When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)** | V2NEXT | (temporary) |
-| [@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature](#aws-cdkaws-ecsenableimdsblockingdeprecatedfeature) | When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)** | V2NEXT | (temporary) |
+| [@aws-cdk/aws-ecs:disableEcsImdsBlocking](#aws-cdkaws-ecsdisableecsimdsblocking) | When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)** | 2.175.0 | (temporary) |
+| [@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature](#aws-cdkaws-ecsenableimdsblockingdeprecatedfeature) | When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)** | 2.175.0 | (temporary) |
+| [@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault](#aws-cdkaws-elasticloadbalancingv2albdualstackwithoutpublicipv4securitygrouprulesdefault) | When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere | 2.176.0 | (fix) |
+| [@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections](#aws-cdkaws-iamoidcrejectunauthorizedconnections) | When enabled, the default behaviour of OIDC provider will reject unauthorized connections | 2.177.0 | (fix) |
+| [@aws-cdk/core:enableAdditionalMetadataCollection](#aws-cdkcoreenableadditionalmetadatacollection) | When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues. | 2.178.0 | (config) |
+| [@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy](#aws-cdkaws-lambdacreatenewpolicieswithaddtorolepolicy) | [Deprecated] When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement | 2.180.0 | (fix) |
+| [@aws-cdk/aws-s3:setUniqueReplicationRoleName](#aws-cdkaws-s3setuniquereplicationrolename) | When enabled, CDK will automatically generate a unique role name that is used for s3 object replication. | 2.182.0 | (fix) |
+| [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | 2.184.0 | (default) |
+| [@aws-cdk/aws-events:requireEventBusPolicySid](#aws-cdkaws-eventsrequireeventbuspolicysid) | When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals. | 2.186.0 | (fix) |
+| [@aws-cdk/aws-dynamodb:retainTableReplica](#aws-cdkaws-dynamodbretaintablereplica) | When enabled, table replica will be default to the removal policy of source table unless specified otherwise. | 2.187.0 | (fix) |
+| [@aws-cdk/cognito:logUserPoolClientSecretValue](#aws-cdkcognitologuserpoolclientsecretvalue) | When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs. | 2.187.0 | (default) |
 
 <!-- END table -->
 
@@ -159,7 +168,14 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": true,
     "@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy": true,
     "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true,
-    "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true
+    "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true,
+    "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true,
+    "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
+    "@aws-cdk/core:enableAdditionalMetadataCollection": true,
+    "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false,
+    "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
+    "@aws-cdk/aws-events:requireEventBusPolicySid": true,
+    "@aws-cdk/aws-dynamodb:retainTableReplica": true
   }
 }
 ```
@@ -205,6 +221,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | (default) |  | `false` | `true` |
 | [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | (fix) |  | `false` | `true` |
 | [@aws-cdk/core:aspectStabilization](#aws-cdkcoreaspectstabilization) | When enabled, a stabilization loop will be run when invoking Aspects during synthesis. | (config) |  | `false` | `true` |
+| [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | (default) |  | `false` | `true` |
 
 <!-- END diff -->
 
@@ -219,10 +236,7 @@ Here is an example of a `cdk.json` file that restores v1 behavior for these flag
     "@aws-cdk/aws-rds:lowercaseDbIdentifier": false,
     "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": false,
     "@aws-cdk/aws-lambda:recognizeVersionProps": false,
-    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": false,
-    "@aws-cdk/pipelines:reduceAssetRoleTrustScope": false,
-    "@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask": false,
-    "@aws-cdk/core:aspectStabilization": false
+    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": false
   }
 }
 ```
@@ -1576,6 +1590,22 @@ When this feature flag is enabled, a stabilization loop is run to recurse the co
 | 2.172.0 | `true` | `true` |
 
 
+### @aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource
+
+*When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.* (fix)
+
+When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
+creates a custom resource internally, but the new method doesn't need a custom resource.
+
+If the flag is set to false then a custom resource will be created when using `UserPoolDomainTarget`.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.174.0 | `false` | `true` |
+
+
 ### @aws-cdk/aws-ecs:disableEcsImdsBlocking
 
 *When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)*** (temporary)
@@ -1591,7 +1621,7 @@ It is recommended to follow ECS documentation to block IMDS for your specific pl
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.175.0 | `false` | `true` |
 
 **Compatibility with old behavior:** It is strongly recommended to set this flag to true. However, if necessary, set this flag to false to continue using the old implementation.
 
@@ -1610,25 +1640,170 @@ It is recommended to follow ECS documentation to block IMDS for your specific pl
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `false` |
+| 2.175.0 | `false` | `false` |
 
 **Compatibility with old behavior:** Set this flag to false in order to continue using old and outdated commands. However, it is **not** recommended.
 
 
-### @aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource
+### @aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault
 
-*When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.* (fix)
+*When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere* (fix)
 
-When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
-creates a custom resource internally, but the new method doesn't need a custom resource.
+For internet facing ALBs with 'dualstack-without-public-ipv4' IP address type, the default security group rules
+will allow IPv6 ingress from anywhere (::/0). Previously, the default security group rules would only allow IPv4 ingress.
 
-If the flag is set to false then a custom resource will be created when using `UserPoolDomainTarget`.
+Using a feature flag to make sure existing customers who might be relying
+on the overly restrictive permissions are not broken.
 
 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.174.0 | `false` | `true` |
+| 2.176.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to only allow IPv4 ingress in the default security group rules.
+
+
+### @aws-cdk/aws-iam:oidcRejectUnauthorizedConnections
+
+*When enabled, the default behaviour of OIDC provider will reject unauthorized connections* (fix)
+
+When this feature flag is enabled, the default behaviour of OIDC Provider's custom resource handler will
+default to reject unauthorized connections when downloading CA Certificates.
+
+When this feature flag is disabled, the behaviour will be the same as current and will allow downloading
+thumbprints from unsecure connections.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.177.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to allow unsecure OIDC connection.
+
+
+### @aws-cdk/core:enableAdditionalMetadataCollection
+
+*When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues.* (config)
+
+When this feature flag is enabled, CDK expands the scope of usage data collection to include the following:
+  * L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
+  * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted. 
+  * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.178.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy
+
+*[Deprecated] When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement* (fix)
+
+[Deprecated default feature] When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
+This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
+However in the current implementation, we have removed a dependency of the lambda function on the policy. In addition to this, a Role will be attached to the Policy instead of an inline policy being attached to the role. 
+This will create a data race condition in the CloudFormation template because the creation of the Lambda function no longer waits for the policy to be created. Having said that, we are not deprecating the feature (we are defaulting the feature flag to false for new stacks) since this feature can still be used to get around the circular dependency issue (issue-7016) particularly in cases where the lambda resource creation doesnt need to depend on the policy resource creation. 
+We recommend to unset the feature flag if already set which will restore the original behavior.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.180.0 | `false` | `false` |
+
+
+### @aws-cdk/aws-s3:setUniqueReplicationRoleName
+
+*When enabled, CDK will automatically generate a unique role name that is used for s3 object replication.* (fix)
+
+When performing cross-account S3 replication, we need to explicitly specify a role name for the replication execution role.
+When this feature flag is enabled, a unique role name is specified only when performing cross-account replication.
+When disabled, 'CDKReplicationRole' is always specified.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.182.0 | `false` | `true` |
+
+
+### @aws-cdk/pipelines:reduceStageRoleTrustScope
+
+*Remove the root account principal from Stage addActions trust policy* (default)
+
+When this feature flag is enabled, the root account principal will not be added to the trust policy of stage role.
+When this feature flag is disabled, it will keep the root account principal in the trust policy.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.184.0 | `true` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to add the root account principal back
+
+
+### @aws-cdk/aws-events:requireEventBusPolicySid
+
+*When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals.* (fix)
+
+Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails 
+because service principals require resource policies with Statement IDs. 
+
+When this flag is enabled:
+- Resource policies will be created with Statement IDs for service principals
+- The operation will succeed as expected
+
+When this flag is disabled:
+- A warning will be emitted
+- The grant operation will be dropped
+- No permissions will be added
+
+This fixes the issue where permissions were silently not being added for service principals.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.186.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-dynamodb:retainTableReplica
+
+*When enabled, table replica will be default to the removal policy of source table unless specified otherwise.* (fix)
+
+Currently, table replica will always be deleted when stack deletes regardless of source table's deletion policy.
+When enabled, table replica will be default to the removal policy of source table unless specified otherwise.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.187.0 | `false` | `true` |
+
+
+### @aws-cdk/cognito:logUserPoolClientSecretValue
+
+*When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.* (default)
+
+When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom 
+resource lambda function logs.
+
+When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom 
+resource lambda function logs.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.187.0 | `false` | `false` |
+
+**Compatibility with old behavior:** Enable the feature flag to keep the old behavior and log the client secret values
 
 
 <!-- END details -->

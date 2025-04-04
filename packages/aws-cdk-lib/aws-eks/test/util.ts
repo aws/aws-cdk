@@ -1,3 +1,4 @@
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import * as ec2 from '../../aws-ec2';
 import { App, Stack } from '../../core';
 import { Cluster, FargateCluster, ClusterProps, KubernetesVersion } from '../lib';
@@ -24,7 +25,7 @@ export interface testFixtureClusterOptions {
    * If true, a FargateCluster will be created, otherwise a regular Cluster.
    */
   isFargate?: boolean;
-};
+}
 
 /**
  * Creates a test fixture for an EKS cluster.
@@ -44,4 +45,4 @@ export function testFixtureCluster(props: Omit<ClusterProps, 'version'> = {}, re
   const cluster = options?.isFargate ? new FargateCluster(stack, 'Cluster', clusterProps) : new Cluster(stack, 'Cluster', clusterProps);
 
   return { stack, app, cluster };
-};
+}

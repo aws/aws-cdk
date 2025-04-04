@@ -3,6 +3,7 @@ import { Connections } from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnVpcConnector } from 'aws-cdk-lib/aws-apprunner';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties of the AppRunner VPC Connector
@@ -135,18 +136,19 @@ export class VpcConnector extends cdk.Resource implements IVpcConnector {
     super(scope, id, {
       physicalName: props.vpcConnectorName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.vpcConnectorName !== undefined && !cdk.Token.isUnresolved(props.vpcConnectorName)) {
-
       if (props.vpcConnectorName.length < 4 || props.vpcConnectorName.length > 40) {
-        throw new Error(
-          `\`vpcConnectorName\` must be between 4 and 40 characters, got: ${props.vpcConnectorName.length} characters.`,
+        throw new cdk.ValidationError(
+          `\`vpcConnectorName\` must be between 4 and 40 characters, got: ${props.vpcConnectorName.length} characters.`, this,
         );
       }
 
       if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.vpcConnectorName)) {
-        throw new Error(
-          `\`vpcConnectorName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.vpcConnectorName}.`,
+        throw new cdk.ValidationError(
+          `\`vpcConnectorName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.vpcConnectorName}.`, this,
         );
       }
     }

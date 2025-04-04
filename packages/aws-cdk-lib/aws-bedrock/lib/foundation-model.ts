@@ -143,22 +143,40 @@ export class FoundationModelIdentifier {
    **/
   public static readonly ANTHROPIC_CLAUDE_V1 = new FoundationModelIdentifier('anthropic.claude-v1');
 
-  /** Base model "anthropic.claude-v2". */
+  /**
+   * Base model "anthropic.claude-v2".
+   * @deprecated use latest version of the model
+   */
   public static readonly ANTHROPIC_CLAUDE_V2 = new FoundationModelIdentifier('anthropic.claude-v2');
 
-  /** Base model "anthropic.claude-v2:0:18k". */
+  /**
+   * Base model "anthropic.claude-v2:0:18k".
+   * @deprecated use latest version of the model
+   */
   public static readonly ANTHROPIC_CLAUDE_V2_0_18K = new FoundationModelIdentifier('anthropic.claude-v2:0:18k');
 
-  /** Base model "anthropic.claude-v2:0:100k". */
+  /**
+   * Base model "anthropic.claude-v2:0:100k".
+   * @deprecated use latest version of the model
+   */
   public static readonly ANTHROPIC_CLAUDE_V2_0_100K = new FoundationModelIdentifier('anthropic.claude-v2:0:100k');
 
-  /** Base model "anthropic.claude-v2:1". */
+  /**
+   * Base model "anthropic.claude-v2:1".
+   * @deprecated use latest version of the model
+   */
   public static readonly ANTHROPIC_CLAUDE_V2_1 = new FoundationModelIdentifier('anthropic.claude-v2:1');
 
-  /** Base model "anthropic.claude-v2:1:18k". */
+  /**
+   * Base model "anthropic.claude-v2:1:18k".
+   * @deprecated use latest version of the model
+   */
   public static readonly ANTHROPIC_CLAUDE_V2_1_18K = new FoundationModelIdentifier('anthropic.claude-v2:1:18k');
 
-  /** Base model "anthropic.claude-v2:1:200k". */
+  /**
+   * Base model "anthropic.claude-v2:1:200k".
+   * @deprecated use latest version of the model
+   */
   public static readonly ANTHROPIC_CLAUDE_V2_1_200K = new FoundationModelIdentifier('anthropic.claude-v2:1:200k');
 
   /** Base model "anthropic.claude-3-sonnet-20240229-v1:0". */
@@ -194,6 +212,9 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-3-5-sonnet-20241022-v2:0:200k". */
   public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_200K = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20241022-v2:0:200k');
 
+  /** Base model "anthropic.claude-3-7-sonnet-20250219-v1:0" */
+  public static readonly ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-7-sonnet-20250219-v1:0');
+
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0". */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0');
 
@@ -218,10 +239,16 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-3-opus-20240229-v1:0:200k". */
   public static readonly ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_200K = new FoundationModelIdentifier('anthropic.claude-3-opus-20240229-v1:0:200k');
 
-  /** Base model "anthropic.claude-instant-v1". */
+  /**
+   * Base model "anthropic.claude-instant-v1".
+   * @deprecated use latest version of the model
+   */
   public static readonly ANTHROPIC_CLAUDE_INSTANT_V1 = new FoundationModelIdentifier('anthropic.claude-instant-v1');
 
-  /** Base model "anthropic.claude-instant-v1:2:100k". */
+  /**
+   * Base model "anthropic.claude-instant-v1:2:100k".
+   * @deprecated use latest version of the model
+   */
   public static readonly ANTHROPIC_CLAUDE_INSTANT_V1_2_100K = new FoundationModelIdentifier('anthropic.claude-instant-v1:2:100k');
 
   /** Base model "cohere.command-text-v14". */
@@ -256,6 +283,12 @@ export class FoundationModelIdentifier {
 
   /** Base model "cohere.embed-multilingual-v3:0:512". */
   public static readonly COHERE_EMBED_MULTILINGUAL_V3_0_512 = new FoundationModelIdentifier('cohere.embed-multilingual-v3:0:512');
+
+  /** Base model "deepseek.r1-v1:0". */
+  public static readonly DEEP_SEEK_R1_V1_0 = new FoundationModelIdentifier('deepseek.r1-v1:0');
+
+  /** Base model "luma.ray-v2:0". */
+  public static readonly LUMA_RAY_V2_0 = new FoundationModelIdentifier('luma.ray-v2:0');
 
   /**
    * Base model "meta.llama2-13b-v1".

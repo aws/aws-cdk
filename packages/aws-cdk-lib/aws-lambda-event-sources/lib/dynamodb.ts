@@ -32,6 +32,7 @@ export class DynamoEventSource extends StreamEventSource {
       this.enrichMappingOptions({
         eventSourceArn: this.table.tableStreamArn,
         metricsConfig: this.props.metricsConfig,
+        supportS3OnFailureDestination: true,
       }),
     );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;

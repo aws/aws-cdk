@@ -1,9 +1,8 @@
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { CfnAccessEntry } from 'aws-cdk-lib/aws-eks';
-import {
-  Resource, IResource, Aws, Lazy,
-} from 'aws-cdk-lib/core';
+import { Resource, IResource, Aws, Lazy } from 'aws-cdk-lib/core';
+import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents an access entry in an Amazon EKS cluster.
@@ -143,7 +142,6 @@ export class AccessPolicyArn {
   constructor(public readonly policyName: string) {
     this.policyArn = `arn:${Aws.PARTITION}:eks::aws:cluster-access-policy/${policyName}`;
   }
-
 }
 
 /**
@@ -309,7 +307,6 @@ export class AccessEntry extends Resource implements IAccessEntry {
     class Import extends Resource implements IAccessEntry {
       public readonly accessEntryName = attrs.accessEntryName;
       public readonly accessEntryArn = attrs.accessEntryArn;
-
     }
     return new Import(scope, id);
   }
@@ -327,6 +324,8 @@ export class AccessEntry extends Resource implements IAccessEntry {
 
   constructor(scope: Construct, id: string, props: AccessEntryProps ) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.cluster = props.cluster;
     this.principal = props.principal;
@@ -345,7 +344,6 @@ export class AccessEntry extends Resource implements IAccessEntry {
           policyArn: p.policy,
         })),
       }),
-
     });
     this.accessEntryName = this.getResourceNameAttribute(resource.ref);
     this.accessEntryArn = this.getResourceArnAttribute(resource.attrAccessEntryArn, {
@@ -358,6 +356,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
    * Add the access policies for this entry.
    * @param newAccessPolicies - The new access policies to add.
    */
+  @MethodMetadata()
   public addAccessPolicies(newAccessPolicies: IAccessPolicy[]): void {
     // add newAccessPolicies to this.accessPolicies
     this.accessPolicies.push(...newAccessPolicies);

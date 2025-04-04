@@ -4,6 +4,7 @@ import { CfnLaunchTemplate } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
+import { IPlacementGroup } from './placement-group';
 import { launchTemplateBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup } from './security-group';
 import { UserData } from './user-data';
@@ -23,6 +24,7 @@ import {
   Token,
   FeatureFlags,
 } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -48,7 +50,7 @@ export enum CpuCredits {
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-performance-instances-unlimited-mode.html
    */
   UNLIMITED = 'unlimited',
-};
+}
 
 /**
  * Provides the options for specifying the instance initiated shutdown behavior.
@@ -66,7 +68,7 @@ export enum InstanceInitiatedShutdownBehavior {
    * The instance will be terminated when it initiates a shutdown.
    */
   TERMINATE = 'terminate',
-};
+}
 
 /**
  * Interface for LaunchTemplate-like objects.
@@ -191,7 +193,7 @@ export interface LaunchTemplateSpotOptions {
    * @default The default end date is 7 days from the current date.
    */
   readonly validUntil?: Expiration;
-};
+}
 
 /**
  * The state of token usage for your instance metadata requests.
@@ -440,6 +442,13 @@ export interface LaunchTemplateProps {
    * @default - No instance profile
    */
   readonly instanceProfile?: iam.IInstanceProfile;
+
+  /**
+   * The placement group that you want to launch the instance into.
+   *
+   * @default - no placement group will be used for this launch template.
+   */
+  readonly placementGroup?: IPlacementGroup;
 }
 
 /**
@@ -597,6 +606,8 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
 
   constructor(scope: Construct, id: string, props: LaunchTemplateProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Basic validation of the provided spot block duration
     const spotDuration = props?.spotOptions?.blockDuration?.toHours({ integral: true });
@@ -780,6 +791,9 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         userData: userDataToken,
         metadataOptions: this.renderMetadataOptions(props),
         networkInterfaces,
+        placement: props.placementGroup ? {
+          groupName: props.placementGroup.placementGroupName,
+        } : undefined,
 
         // Fields not yet implemented:
         // ==========================
@@ -808,7 +822,8 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         // Should be implemented via the Tagging aspect in CDK core. Complication will be that this tagging interface is very unique to LaunchTemplates.
         // tagSpecification: undefined
 
-        // CDK has no abstraction for Placement yet.
+        // CDK only has placement groups, not placement.
+        // Specifiying options other than placementGroup is not supported yet.
         // placement: undefined,
 
       },
@@ -860,6 +875,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    *
    * @param securityGroup: The security group to add
    */
+  @MethodMetadata()
   public addSecurityGroup(securityGroup: ISecurityGroup): void {
     if (!this._connections) {
       throw new Error('LaunchTemplate can only be added a securityGroup if another securityGroup is initialized in the constructor.');

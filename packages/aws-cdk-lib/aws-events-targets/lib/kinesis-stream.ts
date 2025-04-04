@@ -35,7 +35,6 @@ export interface KinesisStreamProps extends TargetBaseProps {
  *
  */
 export class KinesisStream implements events.IRuleTarget {
-
   constructor(private readonly stream: kinesis.IStream, private readonly props: KinesisStreamProps = {}) {
   }
 
@@ -56,5 +55,4 @@ export class KinesisStream implements events.IRuleTarget {
       kinesisParameters: this.props.partitionKeyPath ? { partitionKeyPath: this.props.partitionKeyPath } : undefined,
     };
   }
-
 }

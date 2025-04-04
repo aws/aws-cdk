@@ -106,7 +106,7 @@ export class Stage extends Construct {
    * Test whether the given construct is a stage.
    *
    */
-  public static isStage(x: any ): x is Stage {
+  public static isStage(this: void, x: any): x is Stage {
     return x !== null && typeof(x) === 'object' && STAGE_SYMBOL in x;
   }
 
@@ -163,7 +163,7 @@ export class Stage extends Construct {
   constructor(scope: Construct, id: string, props: StageProps = {}) {
     super(scope, id);
 
-    if (id !== '' && !/^[a-z][a-z0-9\-\_\.]+$/i.test(id)) {
+    if (id !== '' && !/^[a-z][a-z0-9\-\_\.]*$/i.test(id)) {
       throw new Error(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`);
     }
 
@@ -217,7 +217,6 @@ export class Stage extends Construct {
    * calls will return the same assembly.
    */
   public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
-
     let newConstructPaths = this.listAllConstructPaths(this);
 
     // If the assembly cache is uninitiazed, run synthesize and reset construct paths cache

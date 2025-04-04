@@ -1,6 +1,5 @@
 # Cloud Executable API
 
-
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ## V2 Feature Flags
@@ -19,7 +18,7 @@ and error indicating that a bucket policy already exists.
 In cases where we know what the required policy is we can go ahead and create the policy so we can
 remain in control of it.
 
-https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html#AWS-logs-infrastructure-S3
+<https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html#AWS-logs-infrastructure-S3>
 
 _cdk.json_
 
@@ -122,7 +121,7 @@ enabled on the bucket.
 This flag uses a Bucket Policy statement to allow Server Access Log delivery, following best
 practices for S3.
 
-https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
+<https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html>
 
 ```json
 {
@@ -172,7 +171,7 @@ Enable this feature flag to use the \`AmazonEMRServicePolicy_v2\` managed polici
 This is a feature flag as the old behavior will be deprecated, but some resources may require manual
 intervention since they might not have the appropriate tags propagated automatically.
 
-https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html
+<https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html>
 
 _cdk.json_
 
@@ -189,8 +188,9 @@ _cdk.json_
 Enable this feature flag to include the stack's prefixes to the name generation process.
 
 Not doing so can cause the name of stack to exceed 128 characters:
-- The name generation ensures it doesn't exceed 128 characters
-- Without this feature flag, the prefix is prepended to the generated name, which result can exceed 128 characters
+
+* The name generation ensures it doesn't exceed 128 characters
+* Without this feature flag, the prefix is prepended to the generated name, which result can exceed 128 characters
 
 This is a feature flag as it changes the name generated for stacks. Any CDK application deployed prior this fix will
 most likely be generated with a new name, causing the stack to be recreated with the new name, and then deleting the old one.
@@ -228,8 +228,8 @@ _cdk.json_
 
 Enable this feature flag to update the default branch for CodeCommit source actions to `main`.
 
-Previously, the default branch for CodeCommit source actions was set to `master`. 
-However, this convention is no longer supported, and repositories created after March 2021 now have `main` as 
+Previously, the default branch for CodeCommit source actions was set to `master`.
+However, this convention is no longer supported, and repositories created after March 2021 now have `main` as
 their default branch.
 
 _cdk.json_
@@ -364,7 +364,7 @@ _cdk.json_
 When enabled, IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN.
 
 When this feature flag is enabled, the IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN.
-The revision ARN is more specific than the task definition ARN. See https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
+The revision ARN is more specific than the task definition ARN. See <https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html>
 for more details.
 
 _cdk.json_
@@ -412,8 +412,8 @@ _cdk.json_
 
 * `@aws-cdk/aws-ec2:ec2SumTImeoutEnabled`
 
-Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance, only the value from 'resourceSignalTimeout' will be used. 
-      
+Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance, only the value from 'resourceSignalTimeout' will be used.
+
 When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
 
 _cdk.json_
@@ -478,7 +478,7 @@ _cdk.json_
 
 * `@aws-cdk/aws-dynamodb:resourcePolicyPerReplica`
 
-If this flag is not set, the default behavior for \`TableV2\` is to use a different \`resourcePolicy\` for each replica. 
+If this flag is not set, the default behavior for \`TableV2\` is to use a different \`resourcePolicy\` for each replica.
 
 If this flag is set to false, the behavior is that each replica shares the same \`resourcePolicy\` as the source table.
 This will prevent you from creating a new table which has an additional replica and a resource policy.
@@ -546,7 +546,6 @@ guarantee the correct execution of the feature in all platforms. See [Github dis
 
 **It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.**
 
-
 _cdk.json_
 
 ```json
@@ -554,5 +553,165 @@ _cdk.json_
   "context": {
     "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": false,
   },
+}
+```
+
+* `@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault`
+
+When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere,
+For internet facing ALBs with `dualstack-without-public-ipv4` IP address type, the default security group rules
+will allow IPv6 ingress from anywhere (::/0). Previously, the default security group rules would only allow IPv4 ingress.
+
+Using a feature flag to make sure existing customers who might be relying
+on the overly restrictive permissions are not broken.,
+
+If the flag is set to false then the default security group rules will only allow IPv4 ingress.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true
+  }
+}
+```
+
+* `@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections`
+
+When this feature flag is enabled, the default behaviour of OIDC Provider's custom resource handler will
+default to reject unauthorized connections when downloading CA Certificates.
+
+When this feature flag is disabled, the behaviour will be the same as current and will allow downloading
+thumbprints from unsecure connnections.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true
+  }
+}
+```
+
+* `@aws-cdk/core:enableAdditionalMetadataCollection`
+
+When this feature flag is enabled, CDK expands the scope of usage data collection to include the:
+
+* L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
+* L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted.
+* L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:enableAdditionalMetadataCollection": true
+  }
+}
+```
+
+* `@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy`
+
+[Deprecated default feature] When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
+This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
+However in the current implementation, we have removed a dependency of the lambda function on the policy. In addition to this, a Role will be attached to the Policy instead of an inline policy being attached to the role. 
+This will create a data race condition in the CloudFormation template because the creation of the Lambda function no longer waits for the policy to be created. Having said that, we are not deprecating the feature (we are defaulting the feature flag to false for new stacks) since this feature can still be used to get around the circular dependency issue (issue-7016) particularly in cases where the lambda resource creation doesnt need to depend on the policy resource creation. 
+We recommend to unset the feature flag if already set which will restore the original behavior.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false
+  }
+}
+```
+
+* `@aws-cdk/aws-s3:setUniqueReplicationRoleName`
+
+When this feature flag is enabled, a unique role name is specified only when performing cross-account replication.
+When disabled, 'CDKReplicationRole' is always specified.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true
+  }
+}
+```
+
+* `@aws-cdk/pipelines:reduceStageRoleTrustScope`
+
+When this feature flag is enabled, the root account principal will not be added to the trust policy of stage role.
+When this feature flag is disabled, it will keep the root account principal in the trust policy.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/pipelines:reduceStageRoleTrustScope": true
+  }
+}
+```
+
+* `@aws-cdk/aws-events:requireEventBusPolicySid`
+
+When this flag is enabled:
+- Resource policies will be created with Statement IDs for service principals
+- The operation will succeed as expected
+
+When this flag is disabled:
+- A warning will be emitted
+- The grant operation will be dropped
+- No permissions will be added
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-events:requireEventBusPolicySid": true
+  }
+}
+```
+
+* `@aws-cdk/aws-dynamodb:retainTableReplica`
+
+Currently, table replica will always be deleted when stack deletes regardless of source table's deletion policy.
+When enabled, table replica will be default to the removal policy of source table unless specified otherwise.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-dynamodb:retainTableReplica": true
+  }
+}
+```
+
+* `@aws-cdk/cognito:logUserPoolClientSecretValue`
+
+When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom 
+resource lambda function logs.
+
+When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom 
+resource lambda function logs. 
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/cognito:logUserPoolClientSecretValue": true
+  }
 }
 ```

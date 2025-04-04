@@ -130,7 +130,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (integ-provider-no-echo/my-provider)",
     "Environment": {
@@ -165,6 +165,32 @@
     "myproviderframeworkonEventServiceRoleDefaultPolicy5C6BFF87",
     "myproviderframeworkonEventServiceRole793AEC4D"
    ]
+  },
+  "myproviderframeworkonEventinlinePolicyAddedToExecutionRole04C8892C5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "myhandler42A6C3AB",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "myproviderframeworkonEventinlinePolicyAddedToExecutionRole04C8892C5",
+    "Roles": [
+     {
+      "Ref": "myproviderframeworkonEventServiceRole793AEC4D"
+     }
+    ]
+   }
   },
   "myproviderframeworkonEventLogRetentionA3431778": {
    "Type": "Custom::LogRetention",
@@ -261,7 +287,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e4afb15788ec44ed9ff3377e1d131ba2768d7b2e2931bc000d1f2005879b3035.zip"
+     "S3Key": "c9e084a249774d97a978bed2e1976874a70517128a904136b8737f0792322c1f.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -337,10 +363,10 @@
     "value": "nodejs20.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "eu-central-1": {
     "value": "nodejs20.x"
@@ -391,10 +417,10 @@
     "value": "nodejs20.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"

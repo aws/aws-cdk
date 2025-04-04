@@ -4,11 +4,7 @@ import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for calling a EKS endpoint with EksCall
- */
-export interface EksCallProps extends sfn.TaskStateBaseProps {
-
+interface EksCallOptions {
   /**
    * The EKS cluster
    */
@@ -39,11 +35,46 @@ export interface EksCallProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for calling a EKS endpoint with EksCall using JSONPath
+ */
+export interface EksCallJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EksCallOptions { }
+
+/**
+ * Properties for calling a EKS endpoint with EksCall using JSONata
+ */
+export interface EksCallJsonataProps extends sfn.TaskStateJsonataBaseProps, EksCallOptions { }
+
+/**
+ * Properties for calling a EKS endpoint with EksCall
+ */
+export interface EksCallProps extends sfn.TaskStateBaseProps, EksCallOptions { }
+
+/**
  * Call a EKS endpoint as a Task
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-eks.html
  */
 export class EksCall extends sfn.TaskStateBase {
+  /**
+   * Call a EKS endpoint as a Task that using JSONPath
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-eks.html
+   */
+  public static jsonPath(scope: Construct, id: string, props: EksCallJsonPathProps) {
+    return new EksCall(scope, id, props);
+  }
+
+  /**
+   * Call a EKS endpoint as a Task that using JSONata
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-eks.html
+   */
+  public static jsonata(scope: Construct, id: string, props: EksCallJsonataProps) {
+    return new EksCall(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
 
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
@@ -83,10 +114,11 @@ export class EksCall extends sfn.TaskStateBase {
    * Provides the EKS Call service integration task configuration
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('eks', 'call', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         ClusterName: this.props.cluster.clusterName,
         CertificateAuthority: this.clusterCertificateAuthorityData,
         Endpoint: this.clusterEndpoint,
@@ -94,7 +126,7 @@ export class EksCall extends sfn.TaskStateBase {
         Path: this.props.httpPath,
         QueryParameters: this.props.queryParameters,
         RequestBody: this.props.requestBody?.value,
-      }),
+      }, queryLanguage),
     };
   }
 }

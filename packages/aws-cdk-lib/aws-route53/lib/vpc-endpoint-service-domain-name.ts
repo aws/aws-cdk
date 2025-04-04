@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { IVpcEndpointService } from '../../aws-ec2';
 import { Fn, Names, Stack } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
 import { IPublicHostedZone, TxtRecord } from '../lib';
@@ -35,7 +36,6 @@ export interface VpcEndpointServiceDomainNameProps {
  * A Private DNS configuration for a VPC endpoint service.
  */
 export class VpcEndpointServiceDomainName extends Construct {
-
   // Track all domain names created, so someone doesn't accidentally associate two domains with a single service
   private static readonly endpointServices: IVpcEndpointService[] = [];
 
@@ -81,8 +81,7 @@ export class VpcEndpointServiceDomainName extends Construct {
     const serviceUniqueId = Names.nodeUniqueId(props.endpointService.node);
     if (serviceUniqueId in VpcEndpointServiceDomainName.endpointServicesMap) {
       const endpoint = VpcEndpointServiceDomainName.endpointServicesMap[serviceUniqueId];
-      throw new Error(
-        `Cannot create a VpcEndpointServiceDomainName for service ${serviceUniqueId}, another VpcEndpointServiceDomainName (${endpoint}) is already associated with it`);
+      throw new ValidationError(`Cannot create a VpcEndpointServiceDomainName for service ${serviceUniqueId}, another VpcEndpointServiceDomainName (${endpoint}) is already associated with it`, this);
     }
   }
 
@@ -91,7 +90,6 @@ export class VpcEndpointServiceDomainName extends Construct {
    * returning the values to use in a TxtRecord, which AWS uses to verify domain ownership.
    */
   private getPrivateDnsConfiguration(serviceUniqueId: string, serviceId: string, privateDnsName: string): PrivateDnsConfiguration {
-
     // The custom resource which tells AWS to enable Private DNS on the given service, using the given domain name
     // AWS will generate a name/value pair for use in a TxtRecord, which is used to verify domain ownership.
     const enablePrivateDnsAction = {
@@ -230,4 +228,4 @@ interface PrivateDnsConfiguration {
  */
 function hashcode(s: string): string {
   return md5hash(s);
-};
+}

@@ -16,7 +16,7 @@ What AWS use cases does this change enable? To enable the use cases, which AWS s
 
 ### Describe any new or updated permissions being added
 
-<!— What new or updated IAM permissions are needed to support the changes being introduced ? -->
+<!-- What new or updated IAM permissions are needed to support the changes being introduced ? -->
 
 
 ### Description of how you validated changes

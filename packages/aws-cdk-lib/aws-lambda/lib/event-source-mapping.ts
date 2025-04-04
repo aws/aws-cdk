@@ -5,13 +5,14 @@ import { CfnEventSourceMapping } from './lambda.generated';
 import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import * as cdk from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The type of authentication protocol or the VPC components for your event source's SourceAccessConfiguration
  * @see https://docs.aws.amazon.com/lambda/latest/dg/API_SourceAccessConfiguration.html#SSS-Type-SourceAccessConfiguration-Type
  */
 export class SourceAccessConfigurationType {
-
   /**
    * (MQ) The Secrets Manager secret that stores your broker credentials.
    */
@@ -47,6 +48,11 @@ export class SourceAccessConfigurationType {
    * The Secrets Manager ARN of your secret key containing the root CA certificate (X.509 PEM) used for TLS encryption of your Apache Kafka brokers.
    */
   public static readonly SERVER_ROOT_CA_CERTIFICATE = new SourceAccessConfigurationType('SERVER_ROOT_CA_CERTIFICATE');
+
+  /**
+   * The name of the virtual host in your RabbitMQ broker. Lambda uses this RabbitMQ host as the event source.
+   */
+  public static readonly VIRTUAL_HOST = new SourceAccessConfigurationType('VIRTUAL_HOST');
 
   /** A custom source access configuration property */
   public static of(name: string): SourceAccessConfigurationType {
@@ -128,7 +134,7 @@ export interface EventSourceMappingOptions {
   readonly bisectBatchOnError?: boolean;
 
   /**
-   * An Amazon SQS queue or Amazon SNS topic destination for discarded records.
+   * An Amazon S3, Amazon SQS queue or Amazon SNS topic destination for discarded records.
    *
    * @default discarded records are ignored
    */
@@ -247,7 +253,7 @@ export interface EventSourceMappingOptions {
   readonly kafkaBootstrapServers?: string[];
 
   /**
-   * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value. The value must have a lenght between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'. For more information, see [Customizable consumer group ID](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id).
+   * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value. The value must have a length between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'. For more information, see [Customizable consumer group ID](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id).
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-amazonmanagedkafkaeventsourceconfig.html
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-selfmanagedkafkaeventsourceconfig.html
    *
@@ -282,8 +288,7 @@ export interface EventSourceMappingOptions {
   readonly filterEncryption?: IKey;
 
   /**
-   * Check if support S3 onfailure destination(ODF). Currently only MSK and self managed kafka event support S3 ODF
-   *
+   * Check if support S3 onfailure destination(OFD). Kinesis, DynamoDB, MSK and self managed kafka event support S3 OFD
    * @default false
    */
   readonly supportS3OnFailureDestination?: boolean;
@@ -319,8 +324,8 @@ export enum MetricType {
  */
 export interface MetricsConfig {
   /**
-  * List of metric types to enable for this event source
-  */
+   * List of metric types to enable for this event source
+   */
   readonly metrics: MetricType[];
 }
 
@@ -371,7 +376,6 @@ export interface IEventSourceMapping extends cdk.IResource {
  * modify the Lambda's execution role so it can consume messages from the queue.
  */
 export class EventSourceMapping extends cdk.Resource implements IEventSourceMapping {
-
   /**
    * Import an event source into this stack from its event source id.
    */
@@ -400,72 +404,75 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
 
   constructor(scope: Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.eventSourceArn == undefined && props.kafkaBootstrapServers == undefined) {
-      throw new Error('Either eventSourceArn or kafkaBootstrapServers must be set');
+      throw new ValidationError('Either eventSourceArn or kafkaBootstrapServers must be set', this);
     }
 
     if (props.eventSourceArn !== undefined && props.kafkaBootstrapServers !== undefined) {
-      throw new Error('eventSourceArn and kafkaBootstrapServers are mutually exclusive');
+      throw new ValidationError('eventSourceArn and kafkaBootstrapServers are mutually exclusive', this);
     }
 
     if (props.provisionedPollerConfig) {
       const { minimumPollers, maximumPollers } = props.provisionedPollerConfig;
       if (minimumPollers != undefined) {
         if (minimumPollers < 1 || minimumPollers > 200) {
-          throw new Error('Minimum provisioned pollers must be between 1 and 200 inclusive');
+          throw new ValidationError('Minimum provisioned pollers must be between 1 and 200 inclusive', this);
         }
       }
       if (maximumPollers != undefined) {
         if (maximumPollers < 1 || maximumPollers > 2000) {
-          throw new Error('Maximum provisioned pollers must be between 1 and 2000 inclusive');
+          throw new ValidationError('Maximum provisioned pollers must be between 1 and 2000 inclusive', this);
         }
       }
       if (minimumPollers != undefined && maximumPollers != undefined) {
         if (minimumPollers > maximumPollers) {
-          throw new Error('Minimum provisioned pollers must be less than or equal to maximum provisioned pollers');
+          throw new ValidationError('Minimum provisioned pollers must be less than or equal to maximum provisioned pollers', this);
         }
       }
     }
 
     if (props.kafkaBootstrapServers && (props.kafkaBootstrapServers?.length < 1)) {
-      throw new Error('kafkaBootStrapServers must not be empty if set');
+      throw new ValidationError('kafkaBootStrapServers must not be empty if set', this);
     }
 
     if (props.maxBatchingWindow && props.maxBatchingWindow.toSeconds() > 300) {
-      throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
+      throw new ValidationError(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`, this);
     }
 
     if (props.maxConcurrency && !cdk.Token.isUnresolved(props.maxConcurrency) && (props.maxConcurrency < 2 || props.maxConcurrency > 1000)) {
-      throw new Error('maxConcurrency must be between 2 and 1000 concurrent instances');
+      throw new ValidationError('maxConcurrency must be between 2 and 1000 concurrent instances', this);
     }
 
     if (props.maxRecordAge && (props.maxRecordAge.toSeconds() < 60 || props.maxRecordAge.toDays({ integral: false }) > 7)) {
-      throw new Error('maxRecordAge must be between 60 seconds and 7 days inclusive');
+      throw new ValidationError('maxRecordAge must be between 60 seconds and 7 days inclusive', this);
     }
 
     props.retryAttempts !== undefined && cdk.withResolved(props.retryAttempts, (attempts) => {
-      if (attempts < 0 || attempts > 10000) {
-        throw new Error(`retryAttempts must be between 0 and 10000 inclusive, got ${attempts}`);
+      // Allow -1 for infinite retries, otherwise validate the 0-10000 range
+      if (!(attempts === -1 || (attempts >= 0 && attempts <= 10000))) {
+        throw new ValidationError(`retryAttempts must be -1 (for infinite) or between 0 and 10000 inclusive, got ${attempts}`, this);
       }
     });
 
     props.parallelizationFactor !== undefined && cdk.withResolved(props.parallelizationFactor, (factor) => {
       if (factor < 1 || factor > 10) {
-        throw new Error(`parallelizationFactor must be between 1 and 10 inclusive, got ${factor}`);
+        throw new ValidationError(`parallelizationFactor must be between 1 and 10 inclusive, got ${factor}`, this);
       }
     });
 
     if (props.tumblingWindow && !cdk.Token.isUnresolved(props.tumblingWindow) && props.tumblingWindow.toSeconds() > 900) {
-      throw new Error(`tumblingWindow cannot be over 900 seconds, got ${props.tumblingWindow.toSeconds()}`);
+      throw new ValidationError(`tumblingWindow cannot be over 900 seconds, got ${props.tumblingWindow.toSeconds()}`, this);
     }
 
     if (props.startingPosition === StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
-      throw new Error('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
+      throw new ValidationError('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP', this);
     }
 
     if (props.startingPosition !== StartingPosition.AT_TIMESTAMP && props.startingPositionTimestamp) {
-      throw new Error('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+      throw new ValidationError('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP', this);
     }
 
     if (props.kafkaConsumerGroupId) {
@@ -473,7 +480,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     }
 
     if (props.filterEncryption !== undefined && props.filters == undefined) {
-      throw new Error('filter criteria must be provided to enable setting filter criteria encryption');
+      throw new ValidationError('filter criteria must be provided to enable setting filter criteria encryption', this);
     }
 
     /**
@@ -540,13 +547,13 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     }
 
     if (kafkaConsumerGroupId.length > 200 || kafkaConsumerGroupId.length < 1) {
-      throw new Error('kafkaConsumerGroupId must be a valid string between 1 and 200 characters');
+      throw new ValidationError('kafkaConsumerGroupId must be a valid string between 1 and 200 characters', this);
     }
 
     const regex = new RegExp(/[a-zA-Z0-9-\/*:_+=.@-]*/);
     const patternMatch = regex.exec(kafkaConsumerGroupId);
     if (patternMatch === null || patternMatch[0] !== kafkaConsumerGroupId) {
-      throw new Error('kafkaConsumerGroupId contains invalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
+      throw new ValidationError('kafkaConsumerGroupId contains invalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"', this);
     }
   }
 }

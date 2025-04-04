@@ -45,6 +45,7 @@ export abstract class ContainerImage {
   public static fromDockerImageAsset(asset: DockerImageAsset): ContainerImage {
     return {
       bind(_scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+        containerDefinition._defaultDisableVersionConsistency?.();
         asset.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
         return {
           imageName: asset.imageUri,
@@ -65,7 +66,6 @@ export abstract class ContainerImage {
   public static fromTarball(tarballFile: string): ContainerImage {
     return {
       bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
-
         const asset = new TarballImageAsset(scope, 'Tarball', { tarballFile });
         asset.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
 

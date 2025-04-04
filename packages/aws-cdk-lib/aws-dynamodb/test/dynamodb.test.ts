@@ -9,6 +9,7 @@ import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import { App, Aws, CfnDeletionPolicy, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
 import * as cr from '../../custom-resources';
+import * as cxapi from '../../cx-api';
 import {
   Attribute,
   AttributeType,
@@ -104,14 +105,12 @@ describe('default properties', () => {
     });
 
     Template.fromStack(stack).hasResource('AWS::DynamoDB::Table', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
-
   });
 
   test('removalPolicy is DESTROY', () => {
     new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, removalPolicy: RemovalPolicy.DESTROY });
 
     Template.fromStack(stack).hasResource('AWS::DynamoDB::Table', { DeletionPolicy: CfnDeletionPolicy.DELETE });
-
   });
 
   test('hash + range key', () => {
@@ -172,6 +171,71 @@ describe('default properties', () => {
         ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       },
     );
+  });
+
+  test('point-in-time-recovery-specification enabled', () => {
+    new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+      pointInTimeRecoverySpecification: {
+        pointInTimeRecoveryEnabled: true,
+        recoveryPeriodInDays: 5,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+      {
+        AttributeDefinitions: [
+          { AttributeName: 'hashKey', AttributeType: 'S' },
+          { AttributeName: 'sortKey', AttributeType: 'N' },
+        ],
+        KeySchema: [
+          { AttributeName: 'hashKey', KeyType: 'HASH' },
+          { AttributeName: 'sortKey', KeyType: 'RANGE' },
+        ],
+        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+        PointInTimeRecoverySpecification: {
+          PointInTimeRecoveryEnabled: true,
+          RecoveryPeriodInDays: 5,
+        },
+      },
+    );
+  });
+
+  test('both point-in-time-recovery-specification and point-in-time-recovery set', () => {
+    expect(() => new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+      pointInTimeRecovery: true,
+      pointInTimeRecoverySpecification: {
+        pointInTimeRecoveryEnabled: true,
+        recoveryPeriodInDays: 5,
+      },
+    })).toThrow('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.');
+  });
+
+  test('recoveryPeriodInDays set out of bounds', () => {
+    expect(() => {
+      new Table(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        pointInTimeRecoverySpecification: {
+          pointInTimeRecoveryEnabled: true,
+          recoveryPeriodInDays: 36,
+        },
+      });
+    }).toThrow('`recoveryPeriodInDays` must be a value between `1` and `35`.');
+  });
+
+  test('recoveryPeriodInDays set but pitr disabled', () => {
+    expect(() => {
+      new Table(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        pointInTimeRecoverySpecification: {
+          pointInTimeRecoveryEnabled: false,
+          recoveryPeriodInDays: 35,
+        },
+      });
+    }).toThrow('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.');
   });
 
   test('server-side encryption is not enabled', () => {
@@ -381,6 +445,157 @@ testDeprecated('when specifying every property', () => {
   );
 });
 
+test('when replica removal policy is not specified', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    removalPolicy: RemovalPolicy.RETAIN,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': true,
+  });
+});
+
+test('when replica removal policy is not specified', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+  table.applyRemovalPolicy(RemovalPolicy.DESTROY);
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': false,
+  });
+});
+
+test('when replica and table removal policy is not specified', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': true,
+  });
+});
+
+test('when replica and table removal policy is not specified with feature flag true', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': true,
+  });
+});
+
+test('when table removal policy is specified with feature flag true', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    removalPolicy: RemovalPolicy.DESTROY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': false,
+  });
+});
+
+test('when replica and table removal policy is not specified with feature flag false', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: false,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': Match.absent(),
+  });
+});
+
+test('when replica is retain and table is destroy', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    removalPolicy: RemovalPolicy.DESTROY,
+    replicaRemovalPolicy: RemovalPolicy.RETAIN,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': true,
+  });
+});
+
+test('when replica is destory and table is retain', () => {
+  const app = new App({
+    context: {
+      [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
+    },
+  });
+  const stack = new Stack(app);
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    removalPolicy: RemovalPolicy.RETAIN,
+    replicaRemovalPolicy: RemovalPolicy.DESTROY,
+    replicationRegions: ['eu-west-2', 'eu-west-3'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    'SkipReplicaDeletion': false,
+  });
+});
+
 test('when specifying sse with customer managed CMK', () => {
   const stack = new Stack();
   const table = new Table(stack, CONSTRUCT_NAME, {
@@ -580,9 +795,115 @@ test('if an encryption key is included, encrypt/decrypt permissions are added to
   });
 });
 
-test('replica-handler permission check', () => {
+test('replica-handler permission check @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
   // GIVEN
-  const app = new App();
+  const app = new App({
+    context: {
+      [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+    },
+  });
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN
+  const provider = ReplicaProvider.getOrCreate(stack, {
+    tableName: 'test',
+    regions: ['eu-central-1', 'eu-west-1'],
+  });
+
+  // THEN
+  Template.fromStack(provider).hasResourceProperties('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': [
+        {
+          'Action': 'iam:CreateServiceLinkedRole',
+          'Effect': 'Allow',
+          'Resource': {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':iam::',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':role/aws-service-role/replication.dynamodb.amazonaws.com/AWSServiceRoleForDynamoDBReplication',
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
+  Template.fromStack(provider).hasResourceProperties('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': [
+        {
+          'Action': 'dynamodb:DescribeLimits',
+          'Effect': 'Allow',
+          'Resource': '*',
+        },
+      ],
+    },
+  });
+  Template.fromStack(provider).hasResourceProperties('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': [
+        {
+          'Action': [
+            'dynamodb:DeleteTable',
+            'dynamodb:DeleteTableReplica',
+          ],
+          'Effect': 'Allow',
+          'Resource': [
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':dynamodb:eu-central-1:',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/test',
+                ],
+              ],
+            },
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':dynamodb:eu-west-1:',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/test',
+                ],
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  });
+});
+
+test('replica-handler permission check @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+  // GIVEN
+  const app = new App({
+    context: {
+      [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+    },
+  });
   const stack = new Stack(app, 'Stack');
 
   // WHEN
@@ -846,14 +1167,14 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for table with hash key only', () => {
+  test('get schema for table with hash key only', () => {
     expect(table.schema()).toEqual({
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: undefined,
     });
   });
 
-  test('get scheama for table with hash key + range key', () => {
+  test('get schema for table with hash key + range key', () => {
     table = new Table(stack, 'TableB', {
       tableName: TABLE_NAME,
       partitionKey: TABLE_PARTITION_KEY,
@@ -866,7 +1187,7 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for GSI with hash key', () => {
+  test('get schema for GSI with hash key', () => {
     table.addGlobalSecondaryIndex({
       indexName: GSI_NAME,
       partitionKey: GSI_PARTITION_KEY,
@@ -878,7 +1199,7 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for GSI with hash key + range key', () => {
+  test('get schema for GSI with hash key + range key', () => {
     table.addGlobalSecondaryIndex({
       indexName: GSI_NAME,
       partitionKey: GSI_PARTITION_KEY,
@@ -891,7 +1212,7 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for LSI', () => {
+  test('get schema for LSI', () => {
     table.addLocalSecondaryIndex({
       indexName: LSI_NAME,
       sortKey: LSI_SORT_KEY,
@@ -903,7 +1224,7 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for multiple secondary indexes', () => {
+  test('get schema for multiple secondary indexes', () => {
     table.addLocalSecondaryIndex({
       indexName: LSI_NAME,
       sortKey: LSI_SORT_KEY,
@@ -926,7 +1247,7 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for unknown secondary index', () => {
+  test('get schema for unknown secondary index', () => {
     expect(() => table.schema(GSI_NAME))
       .toThrow(/Cannot find schema for index: MyGSI. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index/);
   });
@@ -1324,7 +1645,7 @@ test('when adding a global secondary index without specifying read and write cap
   );
 });
 
-test.each([true, false])('when adding a global secondary index with contributoreIngishtsEnabled %s', (contributorInsightsEnabled: boolean) => {
+test.each([true, false])('when adding a global secondary index with contributorInsightsEnabled %s', (contributorInsightsEnabled: boolean) => {
   const stack = new Stack();
   const table = new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
@@ -1482,7 +1803,6 @@ test('error when adding more than 5 local secondary indexes', () => {
 
   expect(() => table.addLocalSecondaryIndex(lsiGenerator.next().value))
     .toThrow(/a maximum number of local secondary index per table is 5/);
-
 });
 
 test('error when adding a local secondary index with the name of a global secondary index', () => {
@@ -1722,7 +2042,6 @@ describe('metrics', () => {
   });
 
   test('Using metricSystemErrorsForOperations with no operations will default to all', () => {
-
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
@@ -1744,11 +2063,9 @@ describe('metrics', () => {
       'batchexecutestatement',
       'executestatement',
     ]);
-
   });
 
   testDeprecated('Can use metricSystemErrors without the TableName dimension', () => {
-
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
@@ -1758,11 +2075,9 @@ describe('metrics', () => {
       TableName: table.tableName,
       Operation: 'GetItem',
     });
-
   });
 
   testDeprecated('Using metricSystemErrors without the Operation dimension will fail', () => {
-
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
@@ -1770,11 +2085,9 @@ describe('metrics', () => {
 
     expect(() => table.metricSystemErrors({ dimensions: { TableName: table.tableName } }))
       .toThrow(/'Operation' dimension must be passed for the 'SystemErrors' metric./);
-
   });
 
   test('Can use metricSystemErrorsForOperations on a Dynamodb Table', () => {
-
     // GIVEN
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
@@ -1813,7 +2126,6 @@ describe('metrics', () => {
         },
       },
     });
-
   });
 
   testDeprecated('Can use metricSystemErrors on a Dynamodb Table', () => {
@@ -1841,7 +2153,6 @@ describe('metrics', () => {
     });
 
     expect(() => table.metricUserErrors({ dimensions: { TableName: table.tableName } })).toThrow(/'dimensions' is not supported for the 'UserErrors' metric/);
-
   });
 
   test('Can use metricUserErrors on a Dynamodb Table', () => {
@@ -1879,7 +2190,6 @@ describe('metrics', () => {
   });
 
   test('Can use metricSuccessfulRequestLatency without the TableName dimension', () => {
-
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
@@ -1889,11 +2199,9 @@ describe('metrics', () => {
       TableName: table.tableName,
       Operation: 'GetItem',
     });
-
   });
 
   test('Using metricSuccessfulRequestLatency without the Operation dimension will fail', () => {
-
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
@@ -1901,7 +2209,6 @@ describe('metrics', () => {
 
     expect(() => table.metricSuccessfulRequestLatency({ dimensionsMap: { TableName: table.tableName } }))
       .toThrow(/'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric./);
-
   });
 
   test('Can use metricSuccessfulRequestLatency on a Dynamodb Table', () => {
@@ -1928,7 +2235,6 @@ describe('metrics', () => {
 });
 
 describe('grants', () => {
-
   test('"grant" allows adding arbitrary actions associated with this table resource', () => {
     // GIVEN
     const stack = new Stack();
@@ -3707,7 +4013,6 @@ test('Warm Throughput test on-demand', () => {
       },
     ],
   });
-
 });
 
 test('Warm Throughput test provisioned', () => {
@@ -3782,7 +4087,6 @@ test('Warm Throughput test provisioned', () => {
       },
     ],
   });
-
 });
 
 test('Kinesis Stream - precision timestamp', () => {

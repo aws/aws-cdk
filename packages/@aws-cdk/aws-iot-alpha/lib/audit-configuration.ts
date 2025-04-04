@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import * as iot from 'aws-cdk-lib/aws-iot';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents AWS IoT Audit Configuration
@@ -197,6 +198,8 @@ export class AccountAuditConfiguration extends Resource implements IAccountAudit
 
   constructor(scope: Construct, id: string, props?: AccountAuditConfigurationProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.accountId = Stack.of(this).account;
 

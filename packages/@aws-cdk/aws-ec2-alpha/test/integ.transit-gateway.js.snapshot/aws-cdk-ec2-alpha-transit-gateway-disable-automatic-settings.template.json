@@ -1,0 +1,223 @@
+{
+ "Resources": {
+  "SubnetTest3296A161": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.1.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/SubnetTest"
+     }
+    ]
+   }
+  },
+  "SubnetTestSecondaryTest2AB12223": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "SubnetTest3296A161",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "testSubnet1Subnet72087287": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": false,
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.1.0.0/20",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "SubnetTest3296A161",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "SubnetTestSecondaryTest2AB12223"
+   ]
+  },
+  "testSubnet1RouteTableB5FDDF81": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "SubnetTest3296A161",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "SubnetTestSecondaryTest2AB12223"
+   ]
+  },
+  "testSubnet1RouteTableAssociation1DA9E185": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "testSubnet1RouteTableB5FDDF81",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "testSubnet1Subnet72087287"
+    }
+   },
+   "DependsOn": [
+    "SubnetTestSecondaryTest2AB12223"
+   ]
+  },
+  "TransitGateway11B93D57": {
+   "Type": "AWS::EC2::TransitGateway",
+   "Properties": {
+    "DefaultRouteTableAssociation": "disable",
+    "DefaultRouteTablePropagation": "disable"
+   }
+  },
+  "TransitGatewayDefaultRouteTable608EC117": {
+   "Type": "AWS::EC2::TransitGatewayRouteTable",
+   "Properties": {
+    "TransitGatewayId": {
+     "Fn::GetAtt": [
+      "TransitGateway11B93D57",
+      "Id"
+     ]
+    }
+   }
+  },
+  "TransitGatewayDefaultRouteTabledefaultRTBRouteTransitGatewayRouteAB7CA8FF": {
+   "Type": "AWS::EC2::TransitGatewayRoute",
+   "Properties": {
+    "Blackhole": false,
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "TransitGatewayAttachmentId": {
+     "Fn::GetAtt": [
+      "TransitGatewayDefaultRtbAttachment6E19DB55",
+      "Id"
+     ]
+    },
+    "TransitGatewayRouteTableId": {
+     "Fn::GetAtt": [
+      "TransitGatewayDefaultRouteTable608EC117",
+      "TransitGatewayRouteTableId"
+     ]
+    }
+   }
+  },
+  "TransitGatewayDefaultRtbAttachment6E19DB55": {
+   "Type": "AWS::EC2::TransitGatewayAttachment",
+   "Properties": {
+    "SubnetIds": [
+     {
+      "Ref": "testSubnet1Subnet72087287"
+     }
+    ],
+    "TransitGatewayId": {
+     "Fn::GetAtt": [
+      "TransitGateway11B93D57",
+      "Id"
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "SubnetTest3296A161",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "TransitGatewayRouteTable2047E2A04": {
+   "Type": "AWS::EC2::TransitGatewayRouteTable",
+   "Properties": {
+    "TransitGatewayId": {
+     "Fn::GetAtt": [
+      "TransitGateway11B93D57",
+      "Id"
+     ]
+    }
+   }
+  },
+  "TransitGatewayRouteTable2customRtbAssociation353F1A21": {
+   "Type": "AWS::EC2::TransitGatewayRouteTableAssociation",
+   "Properties": {
+    "TransitGatewayAttachmentId": {
+     "Fn::GetAtt": [
+      "TransitGatewayDefaultRtbAttachment6E19DB55",
+      "Id"
+     ]
+    },
+    "TransitGatewayRouteTableId": {
+     "Fn::GetAtt": [
+      "TransitGatewayRouteTable2047E2A04",
+      "TransitGatewayRouteTableId"
+     ]
+    }
+   }
+  },
+  "TransitGatewayRouteTable2customRtbPropagation45784C74": {
+   "Type": "AWS::EC2::TransitGatewayRouteTablePropagation",
+   "Properties": {
+    "TransitGatewayAttachmentId": {
+     "Fn::GetAtt": [
+      "TransitGatewayDefaultRtbAttachment6E19DB55",
+      "Id"
+     ]
+    },
+    "TransitGatewayRouteTableId": {
+     "Fn::GetAtt": [
+      "TransitGatewayRouteTable2047E2A04",
+      "TransitGatewayRouteTableId"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -73,6 +73,13 @@ export interface StageOptions {
    * @default - no description
    */
   readonly description?: string;
+
+  /**
+   * Specifies whether detailed metrics are enabled.
+   *
+   * @default false
+   */
+  readonly detailedMetricsEnabled?: boolean;
 }
 
 /**

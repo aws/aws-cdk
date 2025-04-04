@@ -29,7 +29,7 @@ export enum ExperimentalChangesTreatment {
   STRIP = 'strip',
   /** Write experimental changes to a separate changelog */
   SEPARATE = 'separate',
-};
+}
 
 export interface ReleaseOptions {
   releaseAs: ReleaseType;

@@ -27,6 +27,7 @@ import {
   AspectPriority,
   FeatureFlags, Annotations,
 } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { Disable_ECS_IMDS_Blocking, Enable_IMDS_Blocking_Deprecated_Feature } from '../../cx-api';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
@@ -83,8 +84,15 @@ export interface ClusterProps {
    * If true CloudWatch Container Insights will be enabled for the cluster
    *
    * @default - Container Insights will be disabled for this cluster.
+   * @deprecated See {@link containerInsightsV2}
    */
   readonly containerInsights?: boolean;
+
+  /**
+   * The CloudWatch Container Insights configuration for the cluster
+   *  @default {@link ContainerInsights.DISABLED} This may be overridden by ECS account level settings.
+   */
+  readonly containerInsightsV2?: ContainerInsights;
 
   /**
    * The execute command configuration for the cluster
@@ -136,12 +144,11 @@ const getCanContainersAccessInstanceRoleDefault = (canContainersAccessInstanceRo
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
 export class Cluster extends Resource implements ICluster {
-
   /**
    * Return whether the given object is a Cluster
    */
-  public static isCluster(x: any) : x is Cluster {
-    return x !== null && typeof(x) === 'object' && CLUSTER_SYMBOL in x;
+  public static isCluster(x: any): x is Cluster {
+    return x !== null && typeof (x) === 'object' && CLUSTER_SYMBOL in x;
   }
 
   /**
@@ -254,17 +261,28 @@ export class Cluster extends Resource implements ICluster {
     super(scope, id, {
       physicalName: props.clusterName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    if ((props.containerInsights !== undefined) && props.containerInsightsV2) {
+      throw new Error('You cannot set both containerInsights and containerInsightsV2');
+    }
 
     /**
      * clusterSettings needs to be undefined if containerInsights is not explicitly set in order to allow any
      * containerInsights settings on the account to apply.  See:
      * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-clustersettings.html#cfn-ecs-cluster-clustersettings-value
      */
-    let clusterSettings = undefined;
+    let clusterSettings: CfnCluster.ClusterSettingsProperty[] | undefined;
     if (props.containerInsights !== undefined) {
       clusterSettings = [{
         name: 'containerInsights',
         value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED,
+      }];
+    } else if (props.containerInsightsV2 !== undefined) {
+      clusterSettings = [{
+        name: 'containerInsights',
+        value: props.containerInsightsV2,
       }];
     }
 
@@ -355,6 +373,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * Enable the Fargate capacity providers for this cluster.
    */
+  @MethodMetadata()
   public enableFargateCapacityProviders() {
     for (const provider of ['FARGATE', 'FARGATE_SPOT']) {
       if (!this._capacityProviderNames.includes(provider)) {
@@ -377,6 +396,7 @@ export class Cluster extends Resource implements ICluster {
    *   }
    * ]
    */
+  @MethodMetadata()
   public addDefaultCapacityProviderStrategy(defaultCapacityProviderStrategy: CapacityProviderStrategy[]) {
     if (this._defaultCapacityProviderStrategy.length > 0) {
       throw new Error('Cluster default capacity provider strategy is already set.');
@@ -409,6 +429,7 @@ export class Cluster extends Resource implements ICluster {
       },
       managedStorageConfiguration: this._managedStorageConfiguration && {
         fargateEphemeralStorageKmsKeyId: this._managedStorageConfiguration.fargateEphemeralStorageKmsKey?.keyId,
+        kmsKeyId: this._managedStorageConfiguration.kmsKey?.keyId,
       },
     };
   }
@@ -435,6 +456,7 @@ export class Cluster extends Resource implements ICluster {
    * NOTE: HttpNamespaces are supported only for use cases involving Service Connect. For use cases involving both Service-
    * Discovery and Service Connect, customers should manage the HttpNamespace outside of the Cluster.addDefaultCloudMapNamespace method.
    */
+  @MethodMetadata()
   public addDefaultCloudMapNamespace(options: CloudMapNamespaceOptions): cloudmap.INamespace {
     if (this._defaultCloudMapNamespace !== undefined) {
       throw new Error('Can only add default namespace once.');
@@ -504,6 +526,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * Returns the AutoScalingGroup so you can add autoscaling settings to it.
    */
+  @MethodMetadata()
   public addCapacity(id: string, options: AddCapacityOptions): autoscaling.AutoScalingGroup {
     // Do 2-way defaulting here: if the machineImageType is BOTTLEROCKET, pick the right AMI.
     // Otherwise, determine the machineImageType from the given AMI.
@@ -535,6 +558,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @param provider the capacity provider to add to this cluster.
    */
+  @MethodMetadata()
   public addAsgCapacityProvider(provider: AsgCapacityProvider, options: AddAutoScalingGroupCapacityOptions = {}) {
     // Don't add the same capacity provider more than once.
     if (this._capacityProviderNames.includes(provider.capacityProviderName)) {
@@ -562,6 +586,7 @@ export class Cluster extends Resource implements ICluster {
    * [disable-awslint:ref-via-interface] is needed in order to install the ECS
    * agent by updating the ASGs user data.
    */
+  @MethodMetadata()
   public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
     this._hasEc2Capacity = true;
     this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
@@ -699,7 +724,6 @@ export class Cluster extends Resource implements ICluster {
 
     if (options.canContainersAccessInstanceRole === false ||
       options.canContainersAccessInstanceRole === undefined) {
-
       if (!FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking) &&
         FeatureFlags.of(this).isEnabled(Enable_IMDS_Blocking_Deprecated_Feature)) {
         // new commands from https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html#task-iam-role-considerations
@@ -726,6 +750,7 @@ export class Cluster extends Resource implements ICluster {
    * @deprecated Use `enableFargateCapacityProviders` instead.
    * @see `addAsgCapacityProvider` to add an Auto Scaling Group capacity provider to the cluster.
    */
+  @MethodMetadata()
   public addCapacityProvider(provider: string) {
     if (!(provider === 'FARGATE' || provider === 'FARGATE_SPOT')) {
       throw new Error('CapacityProvider not supported');
@@ -742,6 +767,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @param keyPattern Task id pattern
    */
+  @MethodMetadata()
   public arnForTasks(keyPattern: string): string {
     return Stack.of(this).formatArn({
       service: 'ecs',
@@ -758,6 +784,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @param grantee The entity (e.g., IAM role or user) to grant the permissions to.
    */
+  @MethodMetadata()
   public grantTaskProtection(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
@@ -830,6 +857,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @default average over 5 minutes
    */
+  @MethodMetadata()
   public metricCpuReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ECSMetrics.cpuReservationAverage, props);
   }
@@ -839,6 +867,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @default average over 5 minutes
    */
+  @MethodMetadata()
   public metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ECSMetrics.cpuUtilizationAverage, props);
   }
@@ -848,6 +877,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @default average over 5 minutes
    */
+  @MethodMetadata()
   public metricMemoryReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ECSMetrics.memoryReservationAverage, props);
   }
@@ -857,13 +887,15 @@ export class Cluster extends Resource implements ICluster {
    *
    * @default average over 5 minutes
    */
+  @MethodMetadata()
   public metricMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ECSMetrics.memoryUtilizationAverage, props);
   }
 
   /**
-   * This method returns the specifed CloudWatch metric for this cluster.
+   * This method returns the specified CloudWatch metric for this cluster.
    */
+  @MethodMetadata()
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
@@ -1042,6 +1074,8 @@ class ImportedCluster extends Resource implements ICluster {
    */
   constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.clusterName = props.clusterName;
     this.vpc = props.vpc;
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
@@ -1197,17 +1231,26 @@ export interface CloudMapNamespaceOptions {
 
 }
 
-enum ContainerInsights {
+/**
+ * The CloudWatch Container Insights setting
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-container-insights.html
+ */
+export enum ContainerInsights {
   /**
    * Enable CloudWatch Container Insights for the cluster
    */
-
   ENABLED = 'enabled',
 
   /**
    * Disable CloudWatch Container Insights for the cluster
    */
   DISABLED = 'disabled',
+
+  /**
+   * Enable CloudWatch Container Insights with enhanced observability for the cluster
+   */
+  ENHANCED = 'enhanced',
 }
 
 /**
@@ -1423,14 +1466,23 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
 export interface ManagedStorageConfiguration {
 
   /**
-   * KMS Key used to encrypt ECS Fargate ephemeral Storage.
+   * Customer KMS Key used to encrypt ECS Fargate ephemeral Storage.
    * The configured KMS Key's policy will be modified to allow ECS to use the Key to encrypt the ephemeral Storage for this cluster.
    *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-storage-encryption.html
    *
-   * @default No encryption will be applied
+   * @default - Encrypted using AWS-managed key
    */
   readonly fargateEphemeralStorageKmsKey?: IKey;
+
+  /**
+   * Customer KMS Key used to encrypt ECS managed Storage.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-managedstorageconfiguration.html#cfn-ecs-cluster-managedstorageconfiguration-kmskeyid
+   *
+   * @default - Encrypted using AWS-managed key
+   */
+  readonly kmsKey?: IKey;
 }
 
 /**

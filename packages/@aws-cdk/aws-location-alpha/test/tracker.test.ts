@@ -126,7 +126,7 @@ test('grant update device positions action', () => {
   }));
 });
 
-test('grant resd device positions actions', () => {
+test('grant read device positions actions', () => {
   const tracker = new Tracker(stack, 'Tracker', {});
 
   const role = new iam.Role(stack, 'Role', {

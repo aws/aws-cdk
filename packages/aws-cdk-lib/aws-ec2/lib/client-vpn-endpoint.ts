@@ -10,6 +10,7 @@ import { IVpc, SubnetSelection } from './vpc';
 import { ISamlProvider } from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import { CfnOutput, Resource, Token } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Options for a client VPN endpoint
@@ -264,7 +265,7 @@ export interface ClientVpnEndpointAttributes {
 }
 
 /**
- * A client VPN connnection
+ * A client VPN connection
  */
 export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
   /**
@@ -292,6 +293,8 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
 
   constructor(scope: Construct, id: string, props: ClientVpnEndpointProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!Token.isUnresolved(props.vpc.vpcCidrBlock)) {
       const clientCidr = new CidrBlock(props.cidr);
@@ -397,6 +400,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
   /**
    * Adds an authorization rule to this endpoint
    */
+  @MethodMetadata()
   public addAuthorizationRule(id: string, props: ClientVpnAuthorizationRuleOptions): ClientVpnAuthorizationRule {
     return new ClientVpnAuthorizationRule(this, id, {
       ...props,
@@ -407,6 +411,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
   /**
    * Adds a route to this endpoint
    */
+  @MethodMetadata()
   public addRoute(id: string, props: ClientVpnRouteOptions): ClientVpnRoute {
     return new ClientVpnRoute(this, id, {
       ...props,

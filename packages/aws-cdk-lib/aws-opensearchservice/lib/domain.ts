@@ -15,6 +15,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -82,6 +83,13 @@ export interface CapacityConfig {
    * is true, no multi-az with standby otherwise
    */
   readonly multiAzWithStandbyEnabled?: boolean;
+
+  /**
+   * Additional node options for the domain
+   *
+   * @default - no additional node options
+   */
+  readonly nodeOptions?: NodeOptions[];
 }
 
 /**
@@ -380,7 +388,7 @@ export interface AdvancedSecurityOptions {
 
   /**
    * Container for information about the SAML configuration for OpenSearch Dashboards.
-   * If set, `samlAuthenticationEnabled` will be enabled.
+   * If set, `samlAuthenticationEnabled` will be enabled.
    *
    * @default - no SAML authentication options
    */
@@ -437,6 +445,58 @@ export enum IpAddressType {
    * IPv4 and IPv6 addresses
    */
   DUAL_STACK = 'dualstack',
+}
+
+/**
+ * Configuration for a specific node type in OpenSearch domain
+ */
+export interface NodeConfig {
+  /**
+   * Whether this node type is enabled
+   *
+   * @default - false
+   */
+  readonly enabled?: boolean;
+
+  /**
+   * The instance type for the nodes
+   *
+   * @default - m5.large.search
+   */
+  readonly type?: string;
+
+  /**
+   * The number of nodes of this type
+   *
+   * @default - 1
+   */
+  readonly count?: number;
+}
+
+/**
+ * NodeType is a string enum of the node types in OpenSearch domain
+ *
+ */
+export enum NodeType {
+  /**
+   * Coordinator node type
+   */
+  COORDINATOR = 'coordinator',
+}
+
+/**
+ * Configuration for node options in OpenSearch domain
+ */
+export interface NodeOptions {
+  /**
+   * The type of node. Currently only 'coordinator' is supported.
+   */
+  readonly nodeType: NodeType;
+
+  /**
+   * Configuration for the node type
+   */
+  readonly nodeConfig: NodeConfig;
 }
 
 /**
@@ -1390,9 +1450,12 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     super(scope, id, {
       physicalName: props.domainName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const defaultInstanceType = 'r5.large.search';
     const warmDefaultInstanceType = 'ultrawarm1.medium.search';
+    const defaultCoordinatorInstanceType = 'm5.large.search';
 
     const dedicatedMasterType = initializeInstanceType(defaultInstanceType, props.capacity?.masterNodeInstanceType);
     const dedicatedMasterCount = props.capacity?.masterNodes ?? 0;
@@ -1513,21 +1576,20 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     function isInstanceType(t: string): Boolean {
       return dedicatedMasterType.startsWith(t) || instanceType.startsWith(t);
-    };
+    }
 
     function isSomeInstanceType(...instanceTypes: string[]): Boolean {
       return instanceTypes.some(isInstanceType);
-    };
+    }
 
     function isEveryDatanodeInstanceType(...instanceTypes: string[]): Boolean {
       return instanceTypes.some(t => instanceType.startsWith(t));
-    };
+    }
 
     // Validate feature support for the given Elasticsearch/OpenSearch version, per
     // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/features-by-version.html
     const { versionNum: versionNum, isElasticsearchVersion } = parseVersion(props.version);
     if (isElasticsearchVersion) {
-
       if (
         versionNum <= 7.7 &&
         ![
@@ -1656,16 +1718,6 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
             '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`, `PROVISIONED_IOPS_SSD_IO2` or `GENERAL_PURPOSE_SSD_GP3`.',
           );
         }
-        // Enforce minimum & maximum IOPS:
-        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
-        const iopsRanges: { [key: string]: { Min: number; Max: number } } = {};
-        iopsRanges[ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 3000, Max: 16000 };
-        iopsRanges[ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 100, Max: 64000 };
-        iopsRanges[ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 64000 };
-        const { Min, Max } = iopsRanges[volumeType];
-        if (props.ebs?.iops < Min || props.ebs?.iops > Max) {
-          throw new Error(`\`${volumeType}\` volumes iops must be between ${Min} and ${Max}.`);
-        }
 
         // Enforce maximum ratio of IOPS/GiB:
         // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html
@@ -1763,7 +1815,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.SEARCH_SLOW_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     if (props.logging?.slowIndexLogEnabled) {
       this.slowIndexLogGroup = props.logging.slowIndexLogGroup ??
@@ -1780,7 +1832,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.INDEX_SLOW_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     if (props.logging?.appLogEnabled) {
       this.appLogGroup = props.logging.appLogGroup ??
@@ -1797,7 +1849,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.ES_APPLICATION_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     if (props.logging?.auditLogEnabled) {
       this.auditLogGroup = props.logging.auditLogGroup ??
@@ -1814,7 +1866,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.AUDIT_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
     if (logGroups.length > 0 && !props.suppressLogsResourcePolicy) {
@@ -1871,6 +1923,20 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       this.validateSamlAuthenticationOptions(props.fineGrainedAccessControl?.samlAuthenticationOptions);
     }
 
+    if (props.capacity?.nodeOptions) {
+      // Validate coordinator node configuration
+      const coordinatorConfig = props.capacity.nodeOptions.find(opt => opt.nodeType === NodeType.COORDINATOR)?.nodeConfig;
+      if (coordinatorConfig?.enabled) {
+        const coordinatorType = initializeInstanceType(defaultCoordinatorInstanceType, coordinatorConfig.type);
+        if (!cdk.Token.isUnresolved(coordinatorType) && !coordinatorType.endsWith('.search')) {
+          throw new Error('Coordinator node instance type must end with ".search".');
+        }
+        if (coordinatorConfig.count !== undefined && coordinatorConfig.count < 1) {
+          throw new Error('Coordinator node count must be at least 1.');
+        }
+      }
+    }
+
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
       domainName: this.physicalName,
@@ -1902,6 +1968,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         zoneAwarenessConfig: zoneAwarenessEnabled
           ? { availabilityZoneCount }
           : undefined,
+        nodeOptions: props.capacity?.nodeOptions,
       },
       ebsOptions: {
         ebsEnabled,
@@ -2093,6 +2160,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
   /**
    * Add policy statements to the domain access policy
    */
+  @MethodMetadata()
   public addAccessPolicies(...accessPolicyStatements: iam.PolicyStatement[]) {
     if (accessPolicyStatements.length > 0) {
       if (!this.accessPolicy) {
@@ -2194,7 +2262,7 @@ function zoneAwarenessCheckShouldBeSkipped(vpc: ec2.IVpc, vpcSubnets: ec2.Subnet
   for (const selection of vpcSubnets) {
     if (vpc.selectSubnets(selection).isPendingLookup) {
       return true;
-    };
+    }
   }
   return false;
 }

@@ -2,6 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib/core';
 import * as constructs from 'constructs';
 import { CfnConnection } from 'aws-cdk-lib/aws-glue';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * The type of the glue connection
@@ -12,7 +13,6 @@ import { CfnConnection } from 'aws-cdk-lib/aws-glue';
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-connectioninput.html#cfn-glue-connection-connectioninput-connectiontype
  */
 export class ConnectionType {
-
   /**
    * Designates a connection to a database through Java Database Connectivity (JDBC).
    */
@@ -246,7 +246,6 @@ export interface ConnectionProps extends ConnectionOptions {
  * An AWS Glue connection to a data source.
  */
 export class Connection extends cdk.Resource implements IConnection {
-
   /**
    * Creates a Connection construct that represents an external connection.
    *
@@ -303,6 +302,8 @@ export class Connection extends cdk.Resource implements IConnection {
     super(scope, id, {
       physicalName: props.connectionName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.properties = props.properties || {};
 
@@ -334,6 +335,7 @@ export class Connection extends cdk.Resource implements IConnection {
    * @param key parameter key
    * @param value parameter value
    */
+  @MethodMetadata()
   public addProperty(key: string, value: string): void {
     this.properties[key] = value;
   }

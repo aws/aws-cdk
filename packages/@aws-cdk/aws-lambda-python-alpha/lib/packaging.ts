@@ -40,7 +40,6 @@ export interface PoetryPackagingProps {
 }
 
 export class Packaging {
-
   /**
    * Standard packaging with `pip`.
    */

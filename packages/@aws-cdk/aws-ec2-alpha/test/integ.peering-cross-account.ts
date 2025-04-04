@@ -51,7 +51,7 @@ class AcceptorStack extends cdk.Stack {
       primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
     });
 
-    //Same account VPC peering
+    // Same account VPC peering
     const requestorVpc = new vpc_v2.VpcV2(this, 'requestorVpcSameAccount', {
       primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
     });
@@ -60,7 +60,7 @@ class AcceptorStack extends cdk.Stack {
       acceptorVpc: acceptorVpc,
     });
 
-    //For cross-account peering connection
+    // For cross-account peering connection
     acceptorVpc.createAcceptorVpcRole(account);
   }
 }
@@ -69,9 +69,9 @@ class RequestorStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    //Import acceptorVpc into the requestor stack, change vpcId after vpc is created using acceptorStack definition
+    // Import acceptorVpc into the requestor stack, change vpcId after vpc is created using acceptorStack definition
     const acceptorVpc = vpc_v2.VpcV2.fromVpcV2Attributes(this, 'acceptorVpc', {
-      //Replace VPC Id before running integ test again
+      // Replace VPC Id before running integ test again
       vpcId: 'vpc-09b9235d8a3195ba3',
       vpcCidrBlock: '10.0.0.0/16',
       region: 'us-east-1',

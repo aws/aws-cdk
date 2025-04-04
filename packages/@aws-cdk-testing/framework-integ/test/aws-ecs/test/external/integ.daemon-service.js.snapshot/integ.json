@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "ecs-external-service-daemon/ecs-external-service-daemon-test/DefaultTest": {
+      "stacks": [
+        "ecs-external-service-daemon"
+      ],
+      "assertionStack": "ecs-external-service-daemon/ecs-external-service-daemon-test/DefaultTest/DeployAssert",
+      "assertionStackName": "ecsexternalservicedaemonecsexternalservicedaemontestDefaultTestDeployAssert31EDBC58"
+    }
+  }
+}

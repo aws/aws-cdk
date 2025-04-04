@@ -1,0 +1,62 @@
+name: CDK Analytics Metadata Updater
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - v2-release
+
+jobs:
+  update-analytics-metadata:
+    if: github.repository == 'aws/aws-cdk' && github.actor == 'aws-cdk-automation'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "*"
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile && cd tools/@aws-cdk/construct-metadata-updater && yarn build+test
+
+      - name: Invoke Analytics Metadata Updater
+        run: |
+          cd tools/@aws-cdk/construct-metadata-updater
+          ./bin/update-construct-metadata
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit & Push changes
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git config --global user.name 'aws-cdk-automation'
+          git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
+
+          git fetch origin ${{ github.event.pull_request.head.ref }}
+
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/${{ github.event.pull_request.head.ref }})" ]; then
+            echo "Remote branch updated since approved commit; aborting."
+            exit 1
+          fi
+
+          git checkout -B ${{ github.event.pull_request.head.ref }}
+          git add .
+          git commit -m "chore: update analytics metadata blueprints"
+          git push origin ${{ github.event.pull_request.head.ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

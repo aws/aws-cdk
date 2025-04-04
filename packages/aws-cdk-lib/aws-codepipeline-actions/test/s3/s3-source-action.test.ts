@@ -29,7 +29,6 @@ describe('S3 source Action', () => {
       }));
 
       Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 0);
-
     });
 
     test('does not poll for source changes and uses Events for S3Trigger.EVENTS', () => {
@@ -53,7 +52,6 @@ describe('S3 source Action', () => {
       }));
 
       Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 1);
-
     });
 
     test('polls for source changes and does not use Events for S3Trigger.POLL', () => {
@@ -77,7 +75,6 @@ describe('S3 source Action', () => {
       }));
 
       Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 0);
-
     });
 
     test('does not poll for source changes and does not use Events for S3Trigger.NONE', () => {
@@ -114,7 +111,6 @@ describe('S3 source Action', () => {
           output: new codepipeline.Artifact(),
         });
       }).toThrow(/Property bucketKey cannot be an empty string/);
-
     });
 
     test('allows using the same bucket with events trigger mutliple times with different bucket paths', () => {
@@ -133,7 +129,6 @@ describe('S3 source Action', () => {
         trigger: cpactions.S3Trigger.EVENTS,
         output: new codepipeline.Artifact(),
       }));
-
     });
 
     test('throws an error if the same bucket and path with trigger = Events are added to the same pipeline twice', () => {

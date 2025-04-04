@@ -40,7 +40,10 @@ export interface AspectOptions {
    * The priority value to apply on an Aspect.
    * Priority must be a non-negative integer.
    *
-   * @default - AspectPriority.DEFAULT
+   * Aspects that have same priority value are not guaranteed to be
+   * executed in a consistent order.
+   *
+   * @default AspectPriority.DEFAULT
    */
   readonly priority?: number;
 }
@@ -82,7 +85,12 @@ export class Aspects {
    * @param options Options to apply on this aspect.
    */
   public add(aspect: IAspect, options?: AspectOptions) {
-    this._appliedAspects.push(new AspectApplication(this._scope, aspect, options?.priority ?? AspectPriority.DEFAULT));
+    const newApplication = new AspectApplication(this._scope, aspect, options?.priority ?? AspectPriority.DEFAULT);
+    if (this._appliedAspects.some(a => a.aspect === newApplication.aspect && a.priority === newApplication.priority)) {
+      return;
+    }
+    this._appliedAspects.push(newApplication);
+    bumpAspectTreeRevision(this._scope);
   }
 
   /**
@@ -100,6 +108,33 @@ export class Aspects {
   public get applied(): AspectApplication[] {
     return [...this._appliedAspects];
   }
+}
+
+/**
+ * Bump the tree revision for the tree containing the given construct.
+ *
+ * Module-local function since I don't want to open up the door for *anyone* calling this.
+ */
+function bumpAspectTreeRevision(construct: IConstruct) {
+  const root = construct.node.root;
+  const rev = (root as any)[TREE_REVISION_SYM] ?? 0;
+  (root as any)[TREE_REVISION_SYM] = rev + 1;
+}
+
+/**
+ * Return the aspect revision of the tree that the given construct is part of
+ *
+ * The revision number is changed every time an aspect is added to the tree.
+ *
+ * Instead of returning the version, returns a function that returns the
+ * version: we can cache the root lookup inside the function; this saves
+ * crawling the tree on every read, which is frequent.
+ *
+ * @internal
+ */
+export function _aspectTreeRevisionReader(construct: IConstruct): () => number {
+  const root = construct.node.root;
+  return () => (root as any)[TREE_REVISION_SYM] ?? 0;
 }
 
 /**
@@ -146,5 +181,10 @@ export class AspectApplication {
       throw new Error('Priority must be a non-negative number');
     }
     this._priority = priority;
+
+    // This invalidates any cached ordering.
+    bumpAspectTreeRevision(this.construct);
   }
 }
+
+const TREE_REVISION_SYM = Symbol.for('@aws-cdk/core.Aspects.treeRevision');

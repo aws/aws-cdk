@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "aws-s3-object-lambda.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-s3-object-lambda.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a636d01487e734fb47ae37f7f7cf57bc08b6dc9f5ef71d6ef4e6acd3812522fa.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/09bae57707b35dd189a7248f5764ca8e47a3099d4d1a56fd864659d7e6ce96ea.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -45,16 +46,16 @@
             "data": "MyFunction1ServiceRole9852B06B"
           }
         ],
-        "/aws-s3-object-lambda/MyFunction1/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunction1ServiceRoleDefaultPolicy39556460"
-          }
-        ],
         "/aws-s3-object-lambda/MyFunction1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFunction12A744C2E"
+          }
+        ],
+        "/aws-s3-object-lambda/MyFunction1/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction1inlinePolicyAddedToExecutionRole0BD012510"
           }
         ],
         "/aws-s3-object-lambda/MyFunction2/ServiceRole/Resource": [
@@ -63,16 +64,16 @@
             "data": "MyFunction2ServiceRole07E5BE0E"
           }
         ],
-        "/aws-s3-object-lambda/MyFunction2/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunction2ServiceRoleDefaultPolicyA79C693E"
-          }
-        ],
         "/aws-s3-object-lambda/MyFunction2/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFunction2F2A964CA"
+          }
+        ],
+        "/aws-s3-object-lambda/MyFunction2/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction2inlinePolicyAddedToExecutionRole0DB08BBEE"
           }
         ],
         "/aws-s3-object-lambda/MyObjectLambda1/SupportingAccessPoint": [
@@ -109,6 +110,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyFunction1ServiceRoleDefaultPolicy39556460": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction1ServiceRoleDefaultPolicy39556460",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyFunction2ServiceRoleDefaultPolicyA79C693E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction2ServiceRoleDefaultPolicyA79C693E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

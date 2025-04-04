@@ -19,4 +19,6 @@ module.exports = {
       statements: 55,
     },
   },
+
+  testEnvironment: './testhelpers/jest-bufferedconsole.ts',
 };

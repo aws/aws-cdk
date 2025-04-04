@@ -14,7 +14,6 @@ describe('environment file', () => {
 
       // THEN
       expect(() => defineContainerDefinition(stack, fileAsset)).toThrow(/Asset must be a single file/);
-
     });
 
     test('only one environment file asset object is created even if multiple container definitions use the same file', () => {
@@ -42,7 +41,6 @@ describe('environment file', () => {
 
       // container one has an asset, container two does not
       expect(synthesized.assets.length).toEqual(1);
-
     });
   });
 });

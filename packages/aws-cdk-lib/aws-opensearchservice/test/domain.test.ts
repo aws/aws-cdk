@@ -10,7 +10,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Domain, DomainProps, EngineVersion, IpAddressType } from '../lib';
+import { Domain, DomainProps, EngineVersion, IpAddressType, NodeOptions } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -48,7 +48,6 @@ const testedOpenSearchVersions = [
 ];
 
 each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
-
   expect(() => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
@@ -57,7 +56,6 @@ each(testedOpenSearchVersions).test('connections throws if domain is not placed 
 });
 
 each(testedOpenSearchVersions).test('subnets and security groups can be provided when vpc is used', (engineVersion) => {
-
   const vpc = new Vpc(stack, 'Vpc');
   const securityGroup = new SecurityGroup(stack, 'CustomSecurityGroup', {
     vpc,
@@ -87,11 +85,9 @@ each(testedOpenSearchVersions).test('subnets and security groups can be provided
       ],
     },
   });
-
 });
 
 each(testedOpenSearchVersions).test('default subnets and security group when vpc is used', (engineVersion) => {
-
   const vpc = new Vpc(stack, 'Vpc');
   const domain = new Domain(stack, 'Domain', {
     version: engineVersion,
@@ -122,11 +118,9 @@ each(testedOpenSearchVersions).test('default subnets and security group when vpc
       ],
     },
   });
-
 });
 
 each(testedOpenSearchVersions).test('connections has no default port if enforceHttps is false', (engineVersion) => {
-
   const vpc = new Vpc(stack, 'Vpc');
   const domain = new Domain(stack, 'Domain', {
     version: engineVersion,
@@ -135,11 +129,9 @@ each(testedOpenSearchVersions).test('connections has no default port if enforceH
   });
 
   expect(domain.connections.defaultPort).toBeUndefined();
-
 });
 
 each(testedOpenSearchVersions).test('connections has default port 443 if enforceHttps is true', (engineVersion) => {
-
   const vpc = new Vpc(stack, 'Vpc');
   const domain = new Domain(stack, 'Domain', {
     version: engineVersion,
@@ -148,7 +140,6 @@ each(testedOpenSearchVersions).test('connections has default port 443 if enforce
   });
 
   expect(domain.connections.defaultPort).toEqual(Port.tcp(443));
-
 });
 
 each(testedOpenSearchVersions).test('default removalpolicy is retain', (engineVersion) => {
@@ -162,7 +153,6 @@ each(testedOpenSearchVersions).test('default removalpolicy is retain', (engineVe
 });
 
 each([testedOpenSearchVersions]).test('grants kms permissions if needed', (engineVersion) => {
-
   const key = new kms.Key(stack, 'Key');
 
   new Domain(stack, 'Domain', {
@@ -196,7 +186,6 @@ each([testedOpenSearchVersions]).test('grants kms permissions if needed', (engin
 
   const resources = Template.fromStack(stack).toJSON().Resources;
   expect(resources.AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E.Properties.PolicyDocument).toStrictEqual(expectedPolicy);
-
 });
 
 each([
@@ -318,7 +307,6 @@ each([testedOpenSearchVersions]).test('can set a self-referencing custom policy'
 });
 
 each([testedOpenSearchVersions]).describe('UltraWarm instances', (engineVersion) => {
-
   test('can enable UltraWarm instances', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
@@ -357,7 +345,6 @@ each([testedOpenSearchVersions]).describe('UltraWarm instances', (engineVersion)
       },
     });
   });
-
 });
 
 each([testedOpenSearchVersions]).test('can use tokens in capacity configuration', (engineVersion) => {
@@ -452,7 +439,6 @@ each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY se
 });
 
 each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
-
   test('slowSearchLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
@@ -960,7 +946,6 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
 });
 
 each(testedOpenSearchVersions).describe('grants', (engineVersion) => {
-
   test('"grantRead" allows read actions associated with this domain resource', () => {
     testGrant(readActions, (p, d) => d.grantRead(p), engineVersion);
   });
@@ -1091,11 +1076,9 @@ each(testedOpenSearchVersions).describe('grants', (engineVersion) => {
       ],
     });
   });
-
 });
 
 each(testedOpenSearchVersions).describe('metrics', (engineVersion) => {
-
   test('metricClusterStatusRed', () => {
     testMetric(
       (domain) => domain.metricClusterStatusRed(),
@@ -1232,11 +1215,9 @@ each(testedOpenSearchVersions).describe('metrics', (engineVersion) => {
       'p99',
     );
   });
-
 });
 
 describe('import', () => {
-
   test('static fromDomainEndpoint(endpoint) allows importing an external/existing domain', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
     const domainEndpointWithoutHttps = `${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
@@ -1804,11 +1785,9 @@ each(testedOpenSearchVersions).describe('custom endpoints', (engineVersion) => {
       ],
     });
   });
-
 });
 
 each(testedOpenSearchVersions).describe('custom error responses', (engineVersion) => {
-
   test('error when availabilityZoneCount does not match vpcOptions.subnets length', () => {
     const vpc = new Vpc(stack, 'Vpc', {
       maxAzs: 1,
@@ -2169,7 +2148,6 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
       },
     })).toThrow(/Dedicated master node is required when UltraWarm storage is enabled/);
   });
-
 });
 
 test('can specify future version', () => {
@@ -2482,7 +2460,6 @@ each(testedOpenSearchVersions).describe('offPeakWindow and softwareUpdateOptions
 });
 
 describe('EBS Options Configurations', () => {
-
   test('iops', () => {
     const domainProps: DomainProps = {
       version: EngineVersion.OPENSEARCH_2_5,
@@ -2580,54 +2557,6 @@ describe('EBS Options Configurations', () => {
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
     }).toThrow('General Purpose EBS volumes can not be used with Iops or Throughput configuration');
-
-    expect(() => {
-      const domainProps: DomainProps = {
-        version: EngineVersion.OPENSEARCH_2_5,
-        ebs: {
-          volumeSize: 30,
-          volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
-          iops: 99,
-        },
-      };
-      new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('`io1` volumes iops must be between 100 and 64000.');
-
-    expect(() => {
-      const domainProps: DomainProps = {
-        version: EngineVersion.OPENSEARCH_2_5,
-        ebs: {
-          volumeSize: 30,
-          volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
-          iops: 64001,
-        },
-      };
-      new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('`io1` volumes iops must be between 100 and 64000.');
-
-    expect(() => {
-      const domainProps: DomainProps = {
-        version: EngineVersion.OPENSEARCH_2_5,
-        ebs: {
-          volumeSize: 30,
-          volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
-          iops: 16001,
-        },
-      };
-      new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('`gp3` volumes iops must be between 3000 and 16000.');
-
-    expect(() => {
-      const domainProps: DomainProps = {
-        version: EngineVersion.OPENSEARCH_2_5,
-        ebs: {
-          volumeSize: 30,
-          volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
-          iops: 2999,
-        },
-      };
-      new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('`gp3` volumes iops must be between 3000 and 16000.');
 
     expect(() => {
       const domainProps: DomainProps = {
@@ -2747,3 +2676,94 @@ function testMetric(
   });
   expect(metric.dimensions).toHaveProperty('DomainName');
 }
+
+each(testedOpenSearchVersions).test('can configure coordinator nodes with nodeOptions', (engineVersion) => {
+  const coordinatorConfig: NodeOptions = {
+    nodeType: 'coordinator',
+    nodeConfig: {
+      enabled: true,
+      type: 'm5.large.search',
+      count: 2,
+    },
+  };
+
+  const domain = new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      nodeOptions: [coordinatorConfig],
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    ClusterConfig: {
+      NodeOptions: [{
+        NodeType: 'coordinator',
+        NodeConfig: {
+          Enabled: true,
+          Type: 'm5.large.search',
+          Count: 2,
+        },
+      }],
+    },
+  });
+});
+
+each(testedOpenSearchVersions).test('throws when coordinator node instance type does not end with .search', (engineVersion) => {
+  expect(() => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      capacity: {
+        nodeOptions: [{
+          nodeType: 'coordinator' as const,
+          nodeConfig: {
+            enabled: true,
+            type: 'm5.large',
+          },
+        }],
+      },
+    });
+  }).toThrow('Coordinator node instance type must end with ".search".');
+});
+
+each(testedOpenSearchVersions).test('throws when coordinator node count is less than 1', (engineVersion) => {
+  expect(() => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      capacity: {
+        nodeOptions: [{
+          nodeType: 'coordinator' as const,
+          nodeConfig: {
+            enabled: true,
+            count: 0,
+            type: 'm5.large.search',
+          },
+        }],
+      },
+    });
+  }).toThrow('Coordinator node count must be at least 1.');
+});
+
+each(testedOpenSearchVersions).test('can disable coordinator nodes', (engineVersion) => {
+  const domain = new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      nodeOptions: [{
+        nodeType: 'coordinator' as const,
+        nodeConfig: {
+          enabled: false,
+        },
+      }],
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    ClusterConfig: {
+      NodeOptions: [{
+        NodeType: 'coordinator',
+        NodeConfig: {
+          Enabled: false,
+        },
+      }],
+    },
+  });
+});

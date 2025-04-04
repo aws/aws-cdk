@@ -25,7 +25,6 @@ test('create a cluster parameter group', () => {
       },
     ],
   });
-
 });
 
 describe('Adding parameters to an existing group', () => {

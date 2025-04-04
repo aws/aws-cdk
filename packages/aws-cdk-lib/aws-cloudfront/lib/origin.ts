@@ -1,6 +1,23 @@
 import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
-import { Duration, Token } from '../../core';
+import { Duration, Token, UnscopedValidationError, ValidationError } from '../../core';
+
+/**
+ * The selection criteria for the origin group.
+ */
+export enum OriginSelectionCriteria {
+  /**
+   * Default selection behavior.
+   */
+  DEFAULT='default',
+
+  /**
+   * Selection based on media quality.
+   *
+   * This option is only valid for AWS Elemental MediaPackage v2 Origins.
+   */
+  MEDIA_QUALITY_BASED='media-quality-based',
+}
 
 /**
  * The failover configuration used for Origin Groups,
@@ -33,6 +50,15 @@ export interface OriginBindConfig {
    * @default - nothing is returned
    */
   readonly failoverConfig?: OriginFailoverConfig;
+
+  /**
+   * The selection criteria for how your origins are selected.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html#concept_origin_groups.creating
+   *
+   * @default - OriginSelectionCriteria.DEFAULT
+   */
+  readonly selectionCriteria?: OriginSelectionCriteria;
 }
 
 /**
@@ -170,12 +196,13 @@ export abstract class OriginBase implements IOrigin {
   /**
    * Binds the origin to the associated Distribution. Can be used to grant permissions, create dependent resources, etc.
    */
-  public bind(_scope: Construct, options: OriginBindOptions): OriginBindConfig {
+  public bind(scope: Construct, options: OriginBindOptions): OriginBindConfig {
     const s3OriginConfig = this.renderS3OriginConfig();
     const customOriginConfig = this.renderCustomOriginConfig();
+    const vpcOriginConfig = this.renderVpcOriginConfig();
 
-    if (!s3OriginConfig && !customOriginConfig) {
-      throw new Error('Subclass must override and provide either s3OriginConfig or customOriginConfig');
+    if (!s3OriginConfig && !customOriginConfig && !vpcOriginConfig) {
+      throw new ValidationError('Subclass must override and provide either s3OriginConfig, customOriginConfig or vpcOriginConfig', scope);
     }
 
     return {
@@ -188,6 +215,7 @@ export abstract class OriginBase implements IOrigin {
         originCustomHeaders: this.renderCustomHeaders(),
         s3OriginConfig,
         customOriginConfig,
+        vpcOriginConfig,
         originShield: this.renderOriginShield(this.originShieldEnabled, this.originShieldRegion),
         originAccessControlId: this.originAccessControlId,
       },
@@ -201,6 +229,11 @@ export abstract class OriginBase implements IOrigin {
 
   // Overridden by sub-classes to provide custom origin config.
   protected renderCustomOriginConfig(): CfnDistribution.CustomOriginConfigProperty | undefined {
+    return undefined;
+  }
+
+  // Overridden by sub-classes to provide VPC origin config.
+  protected renderVpcOriginConfig(): CfnDistribution.VpcOriginConfigProperty | undefined {
     return undefined;
   }
 
@@ -242,7 +275,7 @@ function validateIntInRangeOrUndefined(name: string, min: number, max: number, v
   if (value === undefined) { return; }
   if (!Number.isInteger(value) || value < min || value > max) {
     const seconds = isDuration ? ' seconds' : '';
-    throw new Error(`${name}: Must be an int between ${min} and ${max}${seconds} (inclusive); received ${value}.`);
+    throw new UnscopedValidationError(`${name}: Must be an int between ${min} and ${max}${seconds} (inclusive); received ${value}.`);
   }
 }
 
@@ -270,9 +303,9 @@ function validateCustomHeaders(customHeaders?: Record<string, string>) {
   });
 
   if (prohibitedHeadersKeysMatches.length !== 0) {
-    throw new Error(`The following headers cannot be configured as custom origin headers: ${prohibitedHeadersKeysMatches.join(', ')}`);
+    throw new UnscopedValidationError(`The following headers cannot be configured as custom origin headers: ${prohibitedHeadersKeysMatches.join(', ')}`);
   }
   if (prohibitedHeaderPrefixMatches.length !== 0) {
-    throw new Error(`The following headers cannot be used as prefixes for custom origin headers: ${prohibitedHeaderPrefixMatches.join(', ')}`);
+    throw new UnscopedValidationError(`The following headers cannot be used as prefixes for custom origin headers: ${prohibitedHeaderPrefixMatches.join(', ')}`);
   }
 }

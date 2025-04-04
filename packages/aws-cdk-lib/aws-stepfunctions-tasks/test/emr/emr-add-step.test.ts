@@ -50,6 +50,46 @@ test('Add Step with static ClusterId and Step configuration', () => {
   });
 });
 
+test('Add Step with static ClusterId and Step configuration - using JSONata', () => {
+  // WHEN
+  const task = tasks.EmrAddStep.jsonata(stack, 'Task', {
+    clusterId: 'ClusterId',
+    name: 'StepName',
+    jar: 'Jar',
+    actionOnFailure: tasks.ActionOnFailure.CONTINUE,
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:addStep.sync',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      ClusterId: 'ClusterId',
+      Step: {
+        Name: 'StepName',
+        ActionOnFailure: 'CONTINUE',
+        HadoopJarStep: {
+          Jar: 'Jar',
+        },
+      },
+    },
+  });
+});
+
 test('Add Step with execution role ARN', () => {
   const executionRole = new iam.Role(stack, 'Role', {
     roleName: 'EmrStepExecutionRole',

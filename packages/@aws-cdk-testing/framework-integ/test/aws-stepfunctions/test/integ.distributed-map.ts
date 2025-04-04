@@ -33,7 +33,6 @@ class DistributedMapStack extends cdk.Stack {
     this.stateMachine = new sfn.StateMachine(this, 'StateMachine', {
       definition: distributedMap,
     });
-
   }
 }
 

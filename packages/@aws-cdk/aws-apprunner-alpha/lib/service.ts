@@ -11,6 +11,7 @@ import { CfnService } from 'aws-cdk-lib/aws-apprunner';
 import { IVpcConnector } from './vpc-connector';
 import { IAutoScalingConfiguration } from './auto-scaling-configuration';
 import { IObservabilityConfiguration } from './observability-configuration';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * The image repository types
@@ -72,8 +73,8 @@ export class Cpu {
       (pattern) => pattern === unit,
     );
     if (!isValidValue) {
-      throw new Error('CPU value is invalid');
-    };
+      throw new cdk.UnscopedValidationError('CPU value is invalid');
+    }
 
     return new Cpu(unit);
   }
@@ -149,8 +150,8 @@ export class Memory {
       (pattern) => pattern === unit,
     );
     if (!isValidValue) {
-      throw new Error('Memory value is invalid');
-    };
+      throw new cdk.UnscopedValidationError('Memory value is invalid');
+    }
 
     return new Memory(unit);
   }
@@ -166,7 +167,6 @@ export class Memory {
  * The code runtimes
  */
 export class Runtime {
-
   /**
    * CORRETTO 8
    */
@@ -1019,7 +1019,7 @@ export class HealthCheck {
   ) {
     if (this.healthCheckProtocolType === HealthCheckProtocolType.HTTP) {
       if (this.path !== undefined && this.path.length === 0) {
-        throw new Error('path length must be greater than 0');
+        throw new cdk.UnscopedValidationError('path length must be greater than 0');
       }
       if (this.path === undefined) {
         this.path = '/';
@@ -1027,16 +1027,16 @@ export class HealthCheck {
     }
 
     if (this.healthyThreshold < 1 || this.healthyThreshold > 20) {
-      throw new Error(`healthyThreshold must be between 1 and 20, got ${this.healthyThreshold}`);
+      throw new cdk.UnscopedValidationError(`healthyThreshold must be between 1 and 20, got ${this.healthyThreshold}`);
     }
     if (this.unhealthyThreshold < 1 || this.unhealthyThreshold > 20) {
-      throw new Error(`unhealthyThreshold must be between 1 and 20, got ${this.unhealthyThreshold}`);
+      throw new cdk.UnscopedValidationError(`unhealthyThreshold must be between 1 and 20, got ${this.unhealthyThreshold}`);
     }
     if (this.interval.toSeconds() < 1 || this.interval.toSeconds() > 20) {
-      throw new Error(`interval must be between 1 and 20 seconds, got ${this.interval.toSeconds()}`);
+      throw new cdk.UnscopedValidationError(`interval must be between 1 and 20 seconds, got ${this.interval.toSeconds()}`);
     }
     if (this.timeout.toSeconds() < 1 || this.timeout.toSeconds() > 20) {
-      throw new Error(`timeout must be between 1 and 20 seconds, got ${this.timeout.toSeconds()}`);
+      throw new cdk.UnscopedValidationError(`timeout must be between 1 and 20 seconds, got ${this.timeout.toSeconds()}`);
     }
   }
 
@@ -1267,6 +1267,8 @@ export class Service extends cdk.Resource implements IService, iam.IGrantable {
 
   public constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const source = props.source.bind(this);
     this.source = source;
@@ -1291,20 +1293,19 @@ export class Service extends cdk.Resource implements IService, iam.IGrantable {
 
     if (this.source.codeRepository?.codeConfiguration.configurationSource == ConfigurationSourceType.REPOSITORY &&
       this.source.codeRepository?.codeConfiguration.configurationValues) {
-      throw new Error('configurationValues cannot be provided if the ConfigurationSource is Repository');
+      throw new cdk.ValidationError('configurationValues cannot be provided if the ConfigurationSource is Repository', this);
     }
 
     if (props.serviceName !== undefined && !cdk.Token.isUnresolved(props.serviceName)) {
-
       if (props.serviceName.length < 4 || props.serviceName.length > 40) {
-        throw new Error(
-          `\`serviceName\` must be between 4 and 40 characters, got: ${props.serviceName.length} characters.`,
+        throw new cdk.ValidationError(
+          `\`serviceName\` must be between 4 and 40 characters, got: ${props.serviceName.length} characters.`, this,
         );
       }
 
       if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.serviceName)) {
-        throw new Error(
-          `\`serviceName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.serviceName}.`,
+        throw new cdk.ValidationError(
+          `\`serviceName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.serviceName}.`, this,
         );
       }
     }
@@ -1372,6 +1373,7 @@ export class Service extends cdk.Resource implements IService, iam.IGrantable {
   /**
    * Adds a statement to the instance role.
    */
+  @MethodMetadata()
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.instanceRole.addToPrincipalPolicy(statement);
   }
@@ -1379,9 +1381,10 @@ export class Service extends cdk.Resource implements IService, iam.IGrantable {
   /**
    * This method adds an environment variable to the App Runner service.
    */
+  @MethodMetadata()
   public addEnvironmentVariable(name: string, value: string) {
     if (name.startsWith('AWSAPPRUNNER')) {
-      throw new Error(`Environment variable key ${name} with a prefix of AWSAPPRUNNER is not allowed`);
+      throw new cdk.ValidationError(`Environment variable key ${name} with a prefix of AWSAPPRUNNER is not allowed`, this);
     }
     this.variables.push({ name: name, value: value });
   }
@@ -1389,9 +1392,10 @@ export class Service extends cdk.Resource implements IService, iam.IGrantable {
   /**
    * This method adds a secret as environment variable to the App Runner service.
    */
+  @MethodMetadata()
   public addSecret(name: string, secret: Secret) {
     if (name.startsWith('AWSAPPRUNNER')) {
-      throw new Error(`Environment secret key ${name} with a prefix of AWSAPPRUNNER is not allowed`);
+      throw new cdk.ValidationError(`Environment secret key ${name} with a prefix of AWSAPPRUNNER is not allowed`, this);
     }
     secret.grantRead(this.instanceRole);
     this.secrets.push({ name: name, value: secret.arn });
@@ -1442,10 +1446,10 @@ export class Service extends cdk.Resource implements IService, iam.IGrantable {
     ];
 
     if (codeEnv.every(el => el !== undefined) || imageEnv.every(el => el !== undefined)) {
-      throw new Error([
+      throw new cdk.ValidationError([
         'You cannot set both \'environmentVariables\' and \'environment\' properties.',
         'Please only use environmentVariables, as environment is deprecated.',
-      ].join(' '));
+      ].join(' '), this);
     }
 
     return codeEnv.find(el => el !== undefined) || imageEnv.find(el => el !== undefined) || {};

@@ -53,7 +53,7 @@ export interface KubernetesObjectValueProps {
  */
 export class KubernetesObjectValue extends Construct {
   /**
-   * The CloudFormation reosurce type.
+   * The CloudFormation resource type.
    */
   public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-KubernetesObjectValue';
 
@@ -62,14 +62,17 @@ export class KubernetesObjectValue extends Construct {
   constructor(scope: Construct, id: string, props: KubernetesObjectValueProps) {
     super(scope, id);
 
-    const provider = KubectlProvider.getOrCreate(this, props.cluster);
+    const provider = KubectlProvider.getKubectlProvider(this, props.cluster);
+
+    if (!provider) {
+      throw new Error('Kubectl Provider is not defined in this cluster. Define it when creating the cluster');
+    }
 
     this._resource = new CustomResource(this, 'Resource', {
       resourceType: KubernetesObjectValue.RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
         ClusterName: props.cluster.clusterName,
-        RoleArn: provider.roleArn,
         ObjectType: props.objectType,
         ObjectName: props.objectName,
         ObjectNamespace: props.objectNamespace ?? 'default',
@@ -77,7 +80,6 @@ export class KubernetesObjectValue extends Construct {
         TimeoutSeconds: (props?.timeout ?? Duration.minutes(5)).toSeconds(),
       },
     });
-
   }
 
   /**

@@ -463,7 +463,7 @@ DatabaseSubnet3   |`ISOLATED`|`10.0.6.32/28`|#3|Only routes within the VPC
 
 #### Dual Stack Configurations
 
-Here is a break down of IPv4 and IPv6 specifc `subnetConfiguration` properties in a dual stack VPC:
+Here is a break down of IPv4 and IPv6 specific `subnetConfiguration` properties in a dual stack VPC:
 
 ```ts
 const vpc = new ec2.Vpc(this, 'TheVPC', {
@@ -1116,6 +1116,33 @@ declare const networkLoadBalancer: elbv2.NetworkLoadBalancer;
 new ec2.VpcEndpointService(this, 'EndpointService', {
   vpcEndpointServiceLoadBalancers: [networkLoadBalancer],
   allowedPrincipals: [new iam.ArnPrincipal('ec2.amazonaws.com')],
+});
+```
+
+You can specify which IP address types (IPv4, IPv6, or both) are supported for your VPC endpoint service:
+
+```ts
+declare const networkLoadBalancer: elbv2.NetworkLoadBalancer;
+
+new ec2.VpcEndpointService(this, 'EndpointService', {
+  vpcEndpointServiceLoadBalancers: [networkLoadBalancer],
+  // Support both IPv4 and IPv6 connections to the endpoint service
+  supportedIpAddressTypes: [
+    ec2.IpAddressType.IPV4,
+    ec2.IpAddressType.IPV6,
+  ],
+});
+```
+
+You can restrict access to your endpoint service to specific AWS regions:
+
+```ts
+declare const networkLoadBalancer: elbv2.NetworkLoadBalancer;
+
+new ec2.VpcEndpointService(this, 'EndpointService', {
+  vpcEndpointServiceLoadBalancers: [networkLoadBalancer],
+  // Allow service consumers from these regions only
+  allowedRegions: ['us-east-1', 'eu-west-1'],
 });
 ```
 
@@ -2202,7 +2229,7 @@ new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
 });
 ```
 
-*Kinesis Data Firehose*
+*Amazon Data Firehose*
 
 ```ts
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
@@ -2427,6 +2454,24 @@ const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
 });
 ```
 
+### Placement Group
+
+Specify `placementGroup` to enable the placement group support:
+
+```ts fixture=with-vpc
+declare const instanceType: ec2.InstanceType;
+
+const pg = new ec2.PlacementGroup(this, 'test-pg', {
+  strategy: ec2.PlacementGroupStrategy.SPREAD,
+});
+
+new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  instanceType,
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  placementGroup: pg,
+});
+```
+
 Please note this feature does not support Launch Configurations.
 
 ## Detailed Monitoring
@@ -2501,7 +2546,15 @@ new ec2.PrefixList(this, 'PrefixList', {
 });
 ```
 
-For more information see [Work with customer-managed prefix lists](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-managed-prefix-lists.html)
+To import AWS-managed prefix list, you can use `PrefixList.fromLookup()`.
+
+``` ts
+ec2.PrefixList.fromLookup(this, 'PrefixListFromName', {
+  prefixListName: 'com.amazonaws.global.cloudfront.origin-facing',
+});
+```
+
+For more information see [Work with customer-managed prefix lists](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-managed-prefix-lists.html).
 
 ### IAM instance profile
 

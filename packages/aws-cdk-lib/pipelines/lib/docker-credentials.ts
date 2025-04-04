@@ -2,7 +2,7 @@ import * as ec2 from '../../aws-ec2';
 import * as ecr from '../../aws-ecr';
 import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { Fn } from '../../core';
+import { Fn, UnscopedValidationError } from '../../core';
 
 /**
  * Represents credentials used to access a Docker registry.
@@ -109,7 +109,7 @@ export enum DockerCredentialUsage {
   SELF_UPDATE = 'SELF_UPDATE',
   /** Asset publishing */
   ASSET_PUBLISHING = 'ASSET_PUBLISHING',
-};
+}
 
 /** DockerCredential defined by registry domain and a secret */
 class ExternalDockerCredential extends DockerCredential {
@@ -153,7 +153,7 @@ class EcrDockerCredential extends DockerCredential {
     super(opts.usages);
 
     if (repositories.length === 0) {
-      throw new Error('must supply at least one `ecr.IRepository` to create an `EcrDockerCredential`');
+      throw new UnscopedValidationError('must supply at least one `ecr.IRepository` to create an `EcrDockerCredential`');
     }
     this.registryDomain = Fn.select(0, Fn.split('/', repositories[0].repositoryUri));
   }
@@ -203,7 +203,6 @@ export function dockerCredentialsInstallCommands(
   usage: DockerCredentialUsage,
   registries?: DockerCredential[],
   osType?: ec2.OperatingSystemType | 'both'): string[] {
-
   const relevantRegistries = (registries ?? []).filter(reg => reg._applicableForUsage(usage));
   if (!relevantRegistries || relevantRegistries.length === 0) { return []; }
 

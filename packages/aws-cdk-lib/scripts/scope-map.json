@@ -308,6 +308,9 @@
   "aws-gamelift": [
     "AWS::GameLift"
   ],
+  "aws-gameliftstreams": [
+    "AWS::GameLiftStreams"
+  ],
   "aws-globalaccelerator": [
     "AWS::GlobalAccelerator"
   ],
@@ -358,9 +361,6 @@
   ],
   "aws-iot": [
     "AWS::IoT"
-  ],
-  "aws-iot1click": [
-    "AWS::IoT1Click"
   ],
   "aws-iotanalytics": [
     "AWS::IoTAnalytics"
@@ -509,6 +509,12 @@
   ],
   "aws-nimblestudio": [
     "AWS::NimbleStudio"
+  ],
+  "aws-notifications": [
+    "AWS::Notifications"
+  ],
+  "aws-notificationscontacts": [
+    "AWS::NotificationsContacts"
   ],
   "aws-oam": [
     "AWS::Oam"

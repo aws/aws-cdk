@@ -365,7 +365,7 @@ describe('portfolio associations and product constraints', () => {
     portfolio.addProduct(product);
     portfolio.addProduct(product); // If not idempotent these calls should fail
 
-    Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::PortfolioProductAssociation', 1); //check anyway
+    Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::PortfolioProductAssociation', 1); // check anyway
   }),
 
   test('add tag options to portfolio', () => {
@@ -378,7 +378,7 @@ describe('portfolio associations and product constraints', () => {
 
     portfolio.associateTagOptions(tagOptions);
 
-    Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+    Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); // Generates a resource for each unique key-value pair
     Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
   }),
 
@@ -396,7 +396,7 @@ describe('portfolio associations and product constraints', () => {
       tagOptions: tagOptions,
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+    Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); // Generates a resource for each unique key-value pair
     Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
   }),
 
@@ -411,7 +411,7 @@ describe('portfolio associations and product constraints', () => {
     portfolio.associateTagOptions(tagOptions);
     portfolio.associateTagOptions(tagOptions); // If not idempotent this would fail
 
-    Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+    Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); // Generates a resource for each unique key-value pair
     Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
   }),
 

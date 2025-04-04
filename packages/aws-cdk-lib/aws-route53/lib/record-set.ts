@@ -7,6 +7,8 @@ import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
 import * as iam from '../../aws-iam';
 import { CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
 import { DeleteExistingRecordSetProvider } from '../../custom-resource-handlers/dist/aws-route53/delete-existing-record-set-provider.generated';
 
@@ -338,18 +340,20 @@ export class RecordSet extends Resource implements IRecordSet {
 
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.weight && !Token.isUnresolved(props.weight) && (props.weight < 0 || props.weight > 255)) {
-      throw new Error(`weight must be between 0 and 255 inclusive, got: ${props.weight}`);
+      throw new ValidationError(`weight must be between 0 and 255 inclusive, got: ${props.weight}`, this);
     }
     if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
-      throw new Error(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`);
+      throw new ValidationError(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`, this);
     }
     if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer) {
-      throw new Error('setIdentifier can only be specified for non-simple routing policies');
+      throw new ValidationError('setIdentifier can only be specified for non-simple routing policies', this);
     }
     if (props.multiValueAnswer && props.target.aliasTarget) {
-      throw new Error('multiValueAnswer cannot be specified for alias record');
+      throw new ValidationError('multiValueAnswer cannot be specified for alias record', this);
     }
 
     const nonSimpleRoutingPolicies = [
@@ -359,7 +363,7 @@ export class RecordSet extends Resource implements IRecordSet {
       props.multiValueAnswer,
     ].filter((variable) => variable !== undefined).length;
     if (nonSimpleRoutingPolicies > 1) {
-      throw new Error('Only one of region, weight, multiValueAnswer or geoLocation can be defined');
+      throw new ValidationError('Only one of region, weight, multiValueAnswer or geoLocation can be defined', this);
     }
 
     this.geoLocation = props.geoLocation;
@@ -513,7 +517,6 @@ export interface ARecordAttrs extends RecordSetOptions{
  * @resource AWS::Route53::RecordSet
  */
 export class ARecord extends RecordSet {
-
   /**
    * Creates new A record of type alias with target set to an existing A Record DNS.
    * Use when the target A record is created outside of CDK
@@ -537,6 +540,8 @@ export class ARecord extends RecordSet {
       recordType: RecordType.A,
       target: props.target,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }
 
@@ -547,9 +552,9 @@ class ARecordAsAliasTarget implements IAliasRecordTarget {
   constructor(private readonly aRrecordAttrs: ARecordAttrs) {
   }
 
-  public bind(_record: IRecordSet, _zone?: IHostedZone | undefined): AliasRecordTargetConfig {
-    if (!_zone) {
-      throw new Error('Cannot bind to record without a zone');
+  public bind(record: IRecordSet, zone?: IHostedZone | undefined): AliasRecordTargetConfig {
+    if (!zone) {
+      throw new ValidationError('Cannot bind to record without a zone', record);
     }
     return {
       dnsName: this.aRrecordAttrs.targetDNS,
@@ -580,6 +585,8 @@ export class AaaaRecord extends RecordSet {
       recordType: RecordType.AAAA,
       target: props.target,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }
 
@@ -605,6 +612,8 @@ export class CnameRecord extends RecordSet {
       recordType: RecordType.CNAME,
       target: RecordTarget.fromValues(props.domainName),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }
 
@@ -630,6 +639,8 @@ export class TxtRecord extends RecordSet {
       recordType: RecordType.TXT,
       target: RecordTarget.fromValues(...props.values.map(v => formatTxt(v))),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }
 
@@ -699,6 +710,8 @@ export class SrvRecord extends RecordSet {
       recordType: RecordType.SRV,
       target: RecordTarget.fromValues(...props.values.map(v => `${v.priority} ${v.weight} ${v.port} ${v.hostName}`)),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }
 
@@ -767,6 +780,8 @@ export class CaaRecord extends RecordSet {
       recordType: RecordType.CAA,
       target: RecordTarget.fromValues(...props.values.map(v => `${v.flag} ${v.tag} "${v.value}"`)),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }
 
@@ -795,6 +810,8 @@ export class CaaAmazonRecord extends CaaRecord {
         },
       ],
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }
 
@@ -835,6 +852,8 @@ export class MxRecord extends RecordSet {
       recordType: RecordType.MX,
       target: RecordTarget.fromValues(...props.values.map(v => `${v.priority} ${v.hostName}`)),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }
 
@@ -860,6 +879,8 @@ export class NsRecord extends RecordSet {
       recordType: RecordType.NS,
       target: RecordTarget.fromValues(...props.values),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }
 
@@ -885,6 +906,8 @@ export class DsRecord extends RecordSet {
       recordType: RecordType.DS,
       target: RecordTarget.fromValues(...props.values),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }
 
@@ -912,6 +935,8 @@ export class ZoneDelegationRecord extends RecordSet {
       ),
       ttl: props.ttl || Duration.days(2),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }
 
@@ -966,7 +991,11 @@ export interface CrossAccountZoneDelegationRecordProps {
 }
 
 /**
- * A Cross Account Zone Delegation record
+ * A Cross Account Zone Delegation record. This construct uses custom resource lambda that calls Route53
+ * ChangeResourceRecordSets API to upsert a NS record into the `parentHostedZone`.
+ *
+ * WARNING: The default removal policy of this resource is DESTROY, therefore, if this resource's logical ID changes or
+ * if this resource is removed from the stack, the existing NS record will be removed.
  */
 export class CrossAccountZoneDelegationRecord extends Construct {
   constructor(scope: Construct, id: string, props: CrossAccountZoneDelegationRecordProps) {

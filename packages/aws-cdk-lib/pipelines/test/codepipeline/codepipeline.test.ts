@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { Template, Annotations, Match } from '../../../assertions';
 import * as ccommit from '../../../aws-codecommit';
-import { Pipeline } from '../../../aws-codepipeline';
+import { Pipeline, PipelineType } from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as sqs from '../../../aws-sqs';
@@ -10,7 +10,7 @@ import { Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput } from '../testhelpers';
+import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput, MultipleFileAssetsApp } from '../testhelpers';
 
 let app: TestApp;
 
@@ -176,7 +176,37 @@ test('Policy sizes do not exceed the maximum size', () => {
   const annotations = Annotations.fromStack(pipelineStack);
   annotations.hasWarning('*', Match.stringLikeRegexp('^Template size is approaching limit'));
   const warnings = annotations.findWarning('*', Match.anyValue());
-  expect(warnings.length).toEqual(1);
+  expect(warnings.length).toEqual(2);
+});
+
+test.each([
+  [PipelineType.V1, 'V1'],
+  [PipelineType.V2, 'V2'],
+  [undefined, 'V1'],
+])('can specify pipeline type %s when feature flag is not set', (type, expected) => {
+  const stack = new cdk.Stack();
+  const repo = new ccommit.Repository(stack, 'Repo', {
+    repositoryName: 'MyRepo',
+  });
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(
+    repo,
+    'main',
+  );
+  new CodePipeline(stack, 'Pipeline', {
+    synth: new cdkp.ShellStep('Synth', {
+      input: cdkInput,
+      installCommands: ['npm ci'],
+      commands: [
+        'npm run build',
+        'npx cdk synth',
+      ],
+    }),
+    pipelineType: type,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    PipelineType: expected,
+  });
 });
 
 test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
@@ -203,7 +233,7 @@ test('CodeBuild asset role has the right Principal with the feature enabled', ()
   stack.node.setContext(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, true);
   const pipelineStack = new cdk.Stack(stack, 'PipelineStack', { env: PIPELINE_ENV });
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
-  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));;
+  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));
   const template = Template.fromStack(pipelineStack);
   const assetRole = template.toJSON().Resources.CdkAssetsFileRole6BE17A07;
   const statementLength = assetRole.Properties.AssumeRolePolicyDocument.Statement;
@@ -225,7 +255,7 @@ test('CodeBuild asset role has the right Principal with the feature disabled', (
   stack.node.setContext(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, false);
   const pipelineStack = new cdk.Stack(stack, 'PipelineStack', { env: PIPELINE_ENV });
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
-  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));;
+  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));
   const template = Template.fromStack(pipelineStack);
   const assetRole = template.toJSON().Resources.CdkAssetsFileRole6BE17A07;
   const statementLength = assetRole.Properties.AssumeRolePolicyDocument.Statement;
@@ -351,6 +381,59 @@ test('CodePipeline supports use of existing role', () => {
   });
 });
 
+test('CodePipeline supports use of service role for actions', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const repo = new ccommit.Repository(pipelineStack, 'Repo', {
+    repositoryName: 'MyRepo',
+  });
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(
+    repo,
+    'main',
+  );
+
+  const pipeline = new CodePipeline(pipelineStack, 'Pipeline', {
+    synth: new cdkp.ShellStep('Synth', {
+      input: cdkInput,
+      installCommands: ['npm ci'],
+      commands: [
+        'npm run build',
+        'npx cdk synth',
+      ],
+    }),
+    role: new iam.Role(pipelineStack, 'CustomRole', {
+      assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
+      roleName: 'MyCustomPipelineRole',
+    }),
+    usePipelineRoleForActions: true,
+  });
+
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'codepipeline.amazonaws.com',
+          },
+        },
+      ],
+    },
+    RoleName: 'MyCustomPipelineRole',
+  });
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    RoleArn: { 'Fn::GetAtt': ['CustomRole6D8E6809', 'Arn'] },
+  });
+
+  pipeline.pipeline.stages.forEach(s =>{
+    const actions = s.actions;
+    actions.forEach(a => {
+      expect(a.actionProperties.role).toBeUndefined();
+    });
+  });
+});
+
 describe('deployment of stack', () => {
   test('is done with Prepare and Deploy step by default', () => {
     const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
@@ -409,6 +492,86 @@ describe('deployment of stack', () => {
         Name: 'App',
       }]),
     });
+  });
+});
+
+test('display name can contain illegal characters which are sanitized for the pipeline', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    crossAccountKeys: true,
+    useChangeSets: false,
+  });
+  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {
+    displayName: 'asdf & also qwerty!',
+  }));
+
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+
+  // We expect `asdf` and `asdf2` Actions in the pipeline
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'Assets',
+      Actions: Match.arrayWith([
+        Match.objectLike({
+          Name: 'asdf_also_qwerty_',
+        }),
+      ]),
+    }]),
+  });
+});
+
+test.each([2, 3])('%p assets can have same display name, which are reflected in the pipeline', (n) => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    crossAccountKeys: true,
+    useChangeSets: false,
+  });
+  pipeline.addStage(new MultipleFileAssetsApp(pipelineStack, 'App', {
+    n,
+    displayNames: Array.from({ length: n }, () => 'asdf'),
+  }));
+
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+
+  // We expect at least `asdf` and `asdf2` Actions in the pipeline,
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'Assets',
+      Actions: Match.arrayWith([
+        Match.objectLike({ Name: 'asdf' }),
+        Match.objectLike({ Name: 'asdf2' }),
+        ...(n == 3 ? [Match.objectLike({ Name: 'asdf3' })] : []),
+      ]),
+    }]),
+  });
+});
+
+test('assets can have display names that conflict with calculated action names', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    crossAccountKeys: true,
+    useChangeSets: false,
+  });
+  pipeline.addStage(new MultipleFileAssetsApp(pipelineStack, 'App', {
+    n: 3,
+    displayNames: ['asdf', 'asdf', 'asdf2'], // asdf2 will conflict with the second generated name which will also be asdf2
+  }));
+
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+
+  // We expect `asdf`, `asdf2` and `asdf22` Actions in the pipeline
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'Assets',
+      Actions: Match.arrayWith([
+        Match.objectLike({ Name: 'asdf' }),
+        Match.objectLike({ Name: 'asdf2' }),
+        Match.objectLike({ Name: 'asdf22' }),
+      ]),
+    }]),
   });
 });
 
@@ -524,7 +687,6 @@ test('artifactBucket can be overridden', () => {
 });
 
 test('throws when deploy role session tags are used', () => {
-
   const synthesizer = new cdk.DefaultStackSynthesizer({
     deployRoleAdditionalOptions: {
       Tags: [{ Key: 'Departement', Value: 'Enginerring' }],
@@ -541,7 +703,6 @@ test('throws when deploy role session tags are used', () => {
       },
     });
   }).toThrow('Deployment of stack SampleStage-123456789012-us-east-1-SampleStack requires assuming the role arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1 with session tags, but assuming roles with session tags is not supported by CodePipeline.');
-
 });
 
 interface ReuseCodePipelineStackProps extends cdk.StackProps {
@@ -585,7 +746,6 @@ class ReuseCodePipelineStack extends cdk.Stack {
       },
     );
     pipeline.addStage(stage);
-
   }
 }
 

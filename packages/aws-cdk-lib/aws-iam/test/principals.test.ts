@@ -397,7 +397,6 @@ describe('standardized Service Principal behavior', () => {
     const stack = new Stack(app, 'Stack', { env: { region: 'af-south-1' } });
     expect(stack.resolve(afSouth1StatesPrincipal.policyFragment).principalJson).toEqual({ Service: ['states.amazonaws.com'] });
   });
-
 });
 
 test('Can enable session tags', () => {

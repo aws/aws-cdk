@@ -5,7 +5,6 @@ import { IpAddresses, SubnetType, Vpc, cidrSplitToCfnExpression } from '../lib';
 import { CidrSplit } from '../lib/cidr-splits';
 
 describe('Cidr vpc allocation', () => {
-
   test('Default Cidr returns the correct vpc cidr', () => {
     const ipAddresses = IpAddresses.cidr('10.0.0.0/16');
     expect(ipAddresses.allocateVpcCidr().cidrBlock).toEqual('10.0.0.0/16');
@@ -13,18 +12,16 @@ describe('Cidr vpc allocation', () => {
 
   test('Default Cidr returns ipv4IpamPoolId as undefined', () => {
     const ipAddresses = IpAddresses.cidr('10.0.0.0/16');
-    expect(ipAddresses.allocateVpcCidr().ipv4IpamPoolId).toBeUndefined;
+    expect(ipAddresses.allocateVpcCidr().ipv4IpamPoolId).toBeUndefined();
   });
 
   test('Default Cidr returns ipv4NetmaskLength as undefined', () => {
     const ipAddresses = IpAddresses.cidr('10.0.0.0/16');
-    expect(ipAddresses.allocateVpcCidr().ipv4NetmaskLength).toBeUndefined;
+    expect(ipAddresses.allocateVpcCidr().ipv4NetmaskLength).toBeUndefined();
   });
-
 });
 
 describe('IpAddresses.cidr subnets allocation', () => {
-
   const cidrProps = '10.0.0.0/16';
 
   test('Default Cidr returns the correct subnet allocations, when you do not give a cidr for the subnets', () => {
@@ -95,11 +92,9 @@ describe('IpAddresses.cidr subnets allocation', () => {
       vpcCidr: '10.0.0.0/16',
     }).allocatedSubnets).toEqual([{ cidr: '10.0.128.0/17' }, { cidr: '10.0.0.0/24' }]);
   });
-
 });
 
 describe('AwsIpam vpc allocation', () => {
-
   const awsIpamProps = {
     ipv4IpamPoolId: 'ipam-pool-0111222333444',
     ipv4NetmaskLength: 22,
@@ -107,7 +102,7 @@ describe('AwsIpam vpc allocation', () => {
 
   test('AwsIpam returns cidrBlock as undefined', () => {
     const ipAddresses = IpAddresses.awsIpamAllocation(awsIpamProps);
-    expect(ipAddresses.allocateVpcCidr().cidrBlock).toBeUndefined;
+    expect(ipAddresses.allocateVpcCidr().cidrBlock).toBeUndefined();
   });
 
   test('AwsIpam returns the correct vpc ipv4IpamPoolId', () => {
@@ -119,11 +114,9 @@ describe('AwsIpam vpc allocation', () => {
     const ipAddresses = IpAddresses.awsIpamAllocation(awsIpamProps);
     expect(ipAddresses.allocateVpcCidr().ipv4NetmaskLength).toEqual(22);
   });
-
 });
 
 describe('AwsIpam subnets allocation', () => {
-
   const awsIpamProps = {
     ipv4IpamPoolId: 'ipam-pool-0111222333444',
     ipv4NetmaskLength: 22,
@@ -209,12 +202,10 @@ describe('AwsIpam subnets allocation', () => {
     expect (allocations.allocatedSubnets[0].cidr).toContain('TOKEN');
     expect (allocations.allocatedSubnets[1].cidr).toContain('TOKEN');
   });
-
 });
 
 describe('IpAddresses.cidr Vpc Integration', () => {
   test('IpAddresses.cidr provides the correct Cidr allocation to the Vpc ', () => {
-
     const stack = new Stack();
 
     const cidrProps = '10.0.0.0/16';
@@ -228,7 +219,6 @@ describe('IpAddresses.cidr Vpc Integration', () => {
   });
 
   test('IpAddresses.cidr provides the correct Subnet allocation to the Vpc', () => {
-
     const stack = new Stack();
 
     const cidrProps = '10.0.0.0/16';
@@ -254,9 +244,7 @@ describe('IpAddresses.cidr Vpc Integration', () => {
 });
 
 describe('AwsIpam Vpc Integration', () => {
-
   test('Should throw if there are subnets without explicit Cidr and no defaultCidr given', () => {
-
     const stack = new Stack();
 
     const awsIpamProps = {
@@ -266,12 +254,10 @@ describe('AwsIpam Vpc Integration', () => {
 
     const ipAddresses = IpAddresses.awsIpamAllocation(awsIpamProps);
 
-    expect(() => {new Vpc(stack, 'VpcNetwork', { ipAddresses: ipAddresses });}).toThrow(/If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in AwsIpam Options/);;
-
+    expect(() => {new Vpc(stack, 'VpcNetwork', { ipAddresses: ipAddresses });}).toThrow(/If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in AwsIpam Options/);
   });
 
   test('AwsIpam provides the correct Cidr allocation to the Vpc ', () => {
-
     const stack = new Stack();
 
     const awsIpamProps = {
@@ -291,7 +277,6 @@ describe('AwsIpam Vpc Integration', () => {
   });
 
   test('AwsIpam provides the correct Subnet allocation to the Vpc', () => {
-
     const stack = new Stack();
 
     const awsIpamProps = {
@@ -345,7 +330,6 @@ describe('AwsIpam Vpc Integration', () => {
   });
 
   test('Should throw if ipv4NetmaskLength not big enough to allocate subnets', () => {
-
     const stack = new Stack();
 
     const awsIpamProps = {
@@ -356,12 +340,10 @@ describe('AwsIpam Vpc Integration', () => {
 
     const ipAddresses = IpAddresses.awsIpamAllocation(awsIpamProps);
 
-    expect(() => {new Vpc(stack, 'VpcNetwork', { ipAddresses: ipAddresses });}).toThrow('IP space of size /18 not big enough to allocate subnets of sizes /17,/17,/17,/17');;
-
+    expect(() => {new Vpc(stack, 'VpcNetwork', { ipAddresses: ipAddresses });}).toThrow('IP space of size /18 not big enough to allocate subnets of sizes /17,/17,/17,/17');
   });
 
   test('Should be able to allocate subnets from a SubnetConfiguration in Vpc Constructor', () => {
-
     const stack = new Stack();
 
     const awsIpamProps = {
@@ -405,7 +387,6 @@ describe('AwsIpam Vpc Integration', () => {
     });
 
     template.resourceCountIs('AWS::EC2::Subnet', 2);
-
   });
 });
 

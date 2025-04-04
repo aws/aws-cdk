@@ -3,6 +3,7 @@ import { CfnKeyPair } from './ec2.generated';
 import { OperatingSystemType } from './machine-image';
 import { StringParameter, IStringParameter } from '../../aws-ssm';
 import { Resource, ResourceProps, Names, Lazy, IResource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The format of the Key Pair
@@ -202,6 +203,8 @@ export class KeyPair extends Resource implements IKeyPair {
         produce: () => Names.uniqueResourceName(this, { maxLength: 255 }),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props?.publicKeyMaterial && props?.type) {
       throw new Error('Cannot specify \'type\' for keys with imported material');

@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "36.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "integ-mock-websocket-integration.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-mock-websocket-integration.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aabdbe840e6768f96ec51dd87886969be769aeca5a21773e27cd16f1a90367fe.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6b60feae70a32f40a6973349f09261825e869adf03504811cee49c59d2691e3c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -57,16 +52,22 @@
             "data": "mywsapidefaultRouteE9382DF8"
           }
         ],
-        "/integ-mock-websocket-integration/mywsapi/sendmessage-Route/SendMessageIntegration/Resource": [
+        "/integ-mock-websocket-integration/mywsapi/sendmessage-Route/DefaultIntegration/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapisendmessageRouteSendMessageIntegrationD29E12F9"
+            "data": "mywsapisendmessageRouteDefaultIntegration702159AD"
           }
         ],
         "/integ-mock-websocket-integration/mywsapi/sendmessage-Route/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "mywsapisendmessageRouteAE873328"
+          }
+        ],
+        "/integ-mock-websocket-integration/mywsapi/sendmessage-Route/Response": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapisendmessageRouteResponse2ED167D2"
           }
         ],
         "/integ-mock-websocket-integration/mystage/Resource": [
@@ -92,9 +93,72 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "mywsapisendmessageRouteSendMessageIntegrationD29E12F9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapisendmessageRouteSendMessageIntegrationD29E12F9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "integ-mock-websocket-integration"
+    },
+    "apigatewayv2mockintegrationintegtestDefaultTestDeployAssert3D8FA778.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "apigatewayv2mockintegrationintegtestDefaultTestDeployAssert3D8FA778.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "apigatewayv2mockintegrationintegtestDefaultTestDeployAssert3D8FA778": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "apigatewayv2mockintegrationintegtestDefaultTestDeployAssert3D8FA778.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "apigatewayv2mockintegrationintegtestDefaultTestDeployAssert3D8FA778.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "apigatewayv2mockintegrationintegtestDefaultTestDeployAssert3D8FA778.assets"
+      ],
+      "metadata": {
+        "/apigatewayv2-mock-integration-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/apigatewayv2-mock-integration-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "apigatewayv2-mock-integration-integ-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

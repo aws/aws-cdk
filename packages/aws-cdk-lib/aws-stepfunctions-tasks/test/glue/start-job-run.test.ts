@@ -39,6 +39,37 @@ test('Invoke glue job with just job ARN', () => {
   });
 });
 
+test('Invoke glue job with just job ARN - using JSONata', () => {
+  const task = GlueStartJobRun.jsonata(stack, 'Task', {
+    glueJobName,
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::glue:startJobRun',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      JobName: glueJobName,
+      NotificationProperty: null,
+    },
+  });
+});
+
 test('Cannot set both workerType properties', () => {
   expect(() => {
     const task = new GlueStartJobRun(stack, 'Task', {

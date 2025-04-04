@@ -4,13 +4,18 @@ import { Metric } from '../../../aws-cloudwatch';
 import { Stack } from '../../../core';
 import { DomainName, HttpApi, HttpStage } from '../../lib';
 
+let stack: Stack;
+let api: HttpApi;
+
+beforeEach(() => {
+  stack = new Stack();
+  api = new HttpApi(stack, 'Api', {
+    createDefaultStage: false,
+  });
+});
+
 describe('HttpStage', () => {
   test('default', () => {
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: false,
-    });
-
     new HttpStage(stack, 'Stage', {
       httpApi: api,
     });
@@ -22,11 +27,6 @@ describe('HttpStage', () => {
   });
 
   test('import', () => {
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: false,
-    });
-
     const stage = new HttpStage(stack, 'Stage', {
       httpApi: api,
     });
@@ -40,11 +40,6 @@ describe('HttpStage', () => {
   });
 
   test('url returns the correct path', () => {
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: false,
-    });
-
     const defaultStage = new HttpStage(stack, 'DefaultStage', {
       httpApi: api,
     });
@@ -60,10 +55,6 @@ describe('HttpStage', () => {
 
   test('get metric', () => {
     // GIVEN
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'test-api', {
-      createDefaultStage: false,
-    });
     const stage = new HttpStage(stack, 'Stage', {
       httpApi: api,
     });
@@ -86,10 +77,6 @@ describe('HttpStage', () => {
 
   test('Exercise metrics', () => {
     // GIVEN
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'test-api', {
-      createDefaultStage: false,
-    });
     const stage = new HttpStage(stack, 'Stage', {
       httpApi: api,
     });
@@ -123,11 +110,6 @@ describe('HttpStage with domain mapping', () => {
   const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
 
   test('domainUrl returns the correct path', () => {
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: false,
-    });
-
     const dn = new DomainName(stack, 'DN', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
@@ -148,11 +130,6 @@ describe('HttpStage with domain mapping', () => {
   });
 
   test('domainUrl throws error if domainMapping is not configured', () => {
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: false,
-    });
-
     const stage = new HttpStage(stack, 'DefaultStage', {
       httpApi: api,
     });
@@ -165,12 +142,6 @@ describe('HttpStage with domain mapping', () => {
   });
 
   test('correctly sets throttle settings', () => {
-    // GIVEN
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: false,
-    });
-
     // WHEN
     new HttpStage(stack, 'DefaultStage', {
       httpApi: api,
@@ -191,13 +162,47 @@ describe('HttpStage with domain mapping', () => {
     });
   });
 
-  test('specify description', () => {
-    // GIVEN
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: false,
+  test('correctly sets details metrics settings', () => {
+    // WHEN
+    new HttpStage(stack, 'DefaultStage', {
+      httpApi: api,
+      detailedMetricsEnabled: true,
     });
 
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
+      StageName: '$default',
+      DefaultRouteSettings: {
+        DetailedMetricsEnabled: true,
+      },
+    });
+  });
+
+  test('correctly sets route settings', () => {
+    // WHEN
+    new HttpStage(stack, 'DefaultStage', {
+      httpApi: api,
+      throttle: {
+        burstLimit: 1000,
+        rateLimit: 1000,
+      },
+      detailedMetricsEnabled: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
+      StageName: '$default',
+      DefaultRouteSettings: {
+        ThrottlingBurstLimit: 1000,
+        ThrottlingRateLimit: 1000,
+        DetailedMetricsEnabled: true,
+      },
+    });
+  });
+
+  test('specify description', () => {
     // WHEN
     new HttpStage(stack, 'DefaultStage', {
       httpApi: api,

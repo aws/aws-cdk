@@ -52,7 +52,7 @@ describe('custom resource provider handler', () => {
     });
 
     // THEN
-    sinon.assert.calledWithExactly(downloadThumbprint, 'https://my-urlx');
+    sinon.assert.calledWithExactly(downloadThumbprint, 'https://my-urlx', false);
     sinon.assert.calledWithExactly(createOpenIDConnectProvider, {
       ClientIDList: [],
       Url: 'https://my-urlx',
@@ -131,7 +131,37 @@ describe('custom resource provider handler', () => {
         Thumbprints: '["FAKE-THUMBPRINT"]',
       },
     });
-    sinon.assert.calledOnceWithExactly(downloadThumbprint, 'https://new');
+    sinon.assert.calledOnceWithExactly(downloadThumbprint, 'https://new', false);
+    sinon.assert.calledOnceWithExactly(createOpenIDConnectProvider, {
+      ClientIDList: [],
+      Url: 'https://new',
+      ThumbprintList: ['FAKE-THUMBPRINT'],
+    });
+    sinon.assert.notCalled(deleteOpenIDConnectProvider);
+  });
+
+  test('update url with no thumbprint with reject unauthorized', async () => {
+    // WHEN
+    const response = await invokeHandler({
+      RequestType: 'Update',
+      ResourceProperties: {
+        ServiceToken: 'Foo',
+        Url: 'https://new',
+        RejectUnauthorized: true,
+      },
+      OldResourceProperties: {
+        Url: 'https://old',
+      },
+    });
+
+    // THEN
+    expect(response).toStrictEqual({
+      PhysicalResourceId: 'FAKE-ARN',
+      Data: {
+        Thumbprints: '["FAKE-THUMBPRINT"]',
+      },
+    });
+    sinon.assert.calledOnceWithExactly(downloadThumbprint, 'https://new', true);
     sinon.assert.calledOnceWithExactly(createOpenIDConnectProvider, {
       ClientIDList: [],
       Url: 'https://new',
@@ -252,14 +282,13 @@ describe('custom resource provider handler', () => {
     sinon.assert.notCalled(removeClientIDFromOpenIDConnectProvider);
     sinon.assert.notCalled(updateOpenIDConnectProviderThumbprint);
     sinon.assert.notCalled(addClientIDToOpenIDConnectProvider);
-    sinon.assert.calledOnceWithExactly(downloadThumbprint, 'https://new-url'); // since thumbprint list is empty
+    sinon.assert.calledOnceWithExactly(downloadThumbprint, 'https://new-url', false); // since thumbprint list is empty
     sinon.assert.calledOnceWithExactly(createOpenIDConnectProvider, {
       ClientIDList: ['A'],
       ThumbprintList: ['FAKE-THUMBPRINT'],
       Url: 'https://new-url',
     });
   });
-
 });
 
 describe('arrayDiff', () => {

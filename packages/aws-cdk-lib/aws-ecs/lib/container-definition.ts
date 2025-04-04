@@ -322,6 +322,19 @@ export interface ContainerDefinitionOptions {
   readonly user?: string;
 
   /**
+   * Specifies whether Amazon ECS will resolve the container image tag provided
+   * in the container definition to an image digest.
+   *
+   * If you set the value for a container as disabled, Amazon ECS will
+   * not resolve the provided container image tag to a digest and will use the
+   * original image URI specified in the container definition for deployment.
+   *
+   * @default VersionConsistency.DISABLED if `image` is a CDK asset, VersionConsistency.ENABLED otherwise
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinition.html#cfn-ecs-taskdefinition-containerdefinition-versionconsistency
+   */
+  readonly versionConsistency?: VersionConsistency;
+
+  /**
    * The working directory in which to run commands inside the container.
    *
    * @default /
@@ -548,6 +561,8 @@ export class ContainerDefinition extends Construct {
 
   private _namedPorts: Map<string, PortMapping>;
 
+  private versionConsistency?: VersionConsistency;
+
   /**
    * Constructs a new instance of the ContainerDefinition class.
    */
@@ -568,6 +583,8 @@ export class ContainerDefinition extends Construct {
     this.imageName = this.imageConfig.imageName;
 
     this._namedPorts = new Map<string, PortMapping>();
+
+    this.versionConsistency = props.versionConsistency;
 
     if (props.logging) {
       this.logDriverConfig = props.logging.bind(this, this);
@@ -877,6 +894,23 @@ export class ContainerDefinition extends Construct {
   }
 
   /**
+   * Allows disabling version consistency if the user did not specify a value.
+   *
+   * Intended for CDK asset images, as asset images are tagged based upon a hash
+   * of image inputs, meaning the image won't change if the tag didn't change,
+   * making version consistency for such containers a waste of time. Literally,
+   * as version consistency can only be achieved by slowing down deployments.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html#deployment-container-image-stability
+   * @internal
+   */
+  public _defaultDisableVersionConsistency() {
+    if (!this.versionConsistency) {
+      this.versionConsistency = VersionConsistency.DISABLED;
+    }
+  }
+
+  /**
    * Render this container definition to a CloudFormation object
    *
    * @param _taskDefinition [disable-awslint:ref-via-interface] (unused but kept to avoid breaking change)
@@ -910,6 +944,7 @@ export class ContainerDefinition extends Construct {
       stopTimeout: this.props.stopTimeout && this.props.stopTimeout.toSeconds(),
       ulimits: cdk.Lazy.any({ produce: () => this.ulimits.map(renderUlimit) }, { omitEmptyArray: true }),
       user: this.props.user,
+      versionConsistency: this.versionConsistency,
       volumesFrom: cdk.Lazy.any({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
@@ -1264,7 +1299,6 @@ export interface PortMapping {
  * PortMap ValueObjectClass having by ContainerDefinition
  */
 export class PortMap {
-
   /**
    * The networking mode to use for the containers in the task.
    */
@@ -1329,7 +1363,6 @@ export class PortMap {
     }
     return true;
   }
-
 }
 
 /**
@@ -1498,6 +1531,22 @@ function renderMountPoint(mp: MountPoint): CfnTaskDefinition.MountPointProperty 
     readOnly: mp.readOnly,
     sourceVolume: mp.sourceVolume,
   };
+}
+
+/**
+ * State of the container version consistency feature.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinition.html#cfn-ecs-taskdefinition-containerdefinition-versionconsistency
+ */
+export enum VersionConsistency {
+  /**
+   * The version consistency feature is enabled for this container.
+   */
+  ENABLED = 'enabled',
+  /**
+   * The version consistency feature is disabled for this container.
+   */
+  DISABLED = 'disabled',
 }
 
 /**

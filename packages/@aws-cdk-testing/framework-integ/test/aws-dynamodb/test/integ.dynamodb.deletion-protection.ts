@@ -4,7 +4,6 @@ import { Construct } from 'constructs';
 import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
 
 export class TestStack extends Stack {
-
   readonly table: Table;
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);

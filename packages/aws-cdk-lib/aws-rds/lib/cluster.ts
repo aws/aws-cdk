@@ -11,6 +11,7 @@ import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, R
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import { validateDatabaseClusterProps } from './validate-database-cluster-props';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -20,6 +21,8 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Annotations, ArnFormat, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -380,13 +383,13 @@ interface DatabaseClusterBaseProps {
   readonly networkType?: NetworkType;
 
   /**
-  * Directory ID for associating the DB cluster with a specific Active Directory.
-  *
-  * Necessary for enabling Kerberos authentication. If specified, the DB cluster joins the given Active Directory, enabling Kerberos authentication.
-  * If not specified, the DB cluster will not be associated with any Active Directory, and Kerberos authentication will not be enabled.
-  *
-  * @default - DB cluster is not associated with an Active Directory; Kerberos authentication is not enabled.
-  */
+   * Directory ID for associating the DB cluster with a specific Active Directory.
+   *
+   * Necessary for enabling Kerberos authentication. If specified, the DB cluster joins the given Active Directory, enabling Kerberos authentication.
+   * If not specified, the DB cluster will not be associated with any Active Directory, and Kerberos authentication will not be enabled.
+   *
+   * @default - DB cluster is not associated with an Active Directory; Kerberos authentication is not enabled.
+   */
   readonly domain?: string;
 
   /**
@@ -420,14 +423,17 @@ interface DatabaseClusterBaseProps {
   /**
    * Whether to enable Performance Insights for the DB cluster.
    *
-   * @default - false, unless `performanceInsightRetention` or `performanceInsightEncryptionKey` is set.
+   * @default - false, unless `performanceInsightRetention` or `performanceInsightEncryptionKey` is set,
+   * or `databaseInsightsMode` is set to `DatabaseInsightsMode.ADVANCED`.
    */
   readonly enablePerformanceInsights?: boolean;
 
   /**
    * The amount of time, in days, to retain Performance Insights data.
    *
-   * @default 7
+   * If you set `databaseInsightsMode` to `DatabaseInsightsMode.ADVANCED`, you must set this property to `PerformanceInsightRetention.MONTHS_15`.
+   *
+   * @default - 7
    */
   readonly performanceInsightRetention?: PerformanceInsightRetention;
 
@@ -437,6 +443,13 @@ interface DatabaseClusterBaseProps {
    * @default - default master key
    */
   readonly performanceInsightEncryptionKey?: kms.IKey;
+
+  /**
+   * The database insights mode.
+   *
+   * @default - DatabaseInsightsMode.STANDARD when performance insights are enabled and Amazon Aurora engine is used, otherwise not set.
+   */
+  readonly databaseInsightsMode?: DatabaseInsightsMode;
 
   /**
    * Specifies whether minor engine upgrades are applied automatically to the DB cluster during the maintenance window.
@@ -450,9 +463,44 @@ interface DatabaseClusterBaseProps {
    *
    * Set LIMITLESS if you want to use a limitless database; otherwise, set it to STANDARD.
    *
+   * @default ClusterScalabilityType.STANDARD
+   */
+  readonly clusterScalabilityType?: ClusterScalabilityType;
+
+  /**
+   * [Misspelled] Specifies the scalability mode of the Aurora DB cluster.
+   *
+   * Set LIMITLESS if you want to use a limitless database; otherwise, set it to STANDARD.
+   *
    * @default ClusterScailabilityType.STANDARD
+   * @deprecated Use clusterScalabilityType instead. This will be removed in the next major version.
    */
   readonly clusterScailabilityType?: ClusterScailabilityType;
+
+  /**
+   * The life cycle type for this DB cluster.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/extended-support.html
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support.html
+   *
+   * @default undefined - AWS RDS default setting is `EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT`
+   */
+  readonly engineLifecycleSupport?: EngineLifecycleSupport;
+}
+
+/**
+ * Engine lifecycle support for Amazon RDS and Amazon Aurora
+ */
+export enum EngineLifecycleSupport {
+  /**
+   * Using Amazon RDS extended support
+   */
+  OPEN_SOURCE_RDS_EXTENDED_SUPPORT = 'open-source-rds-extended-support',
+
+  /**
+   * Not using Amazon RDS extended support
+   */
+  OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED = 'open-source-rds-extended-support-disabled',
 }
 
 /**
@@ -492,6 +540,25 @@ export enum InstanceUpdateBehaviour {
 /**
  * The scalability mode of the Aurora DB cluster.
  */
+export enum ClusterScalabilityType {
+  /**
+   * The cluster uses normal DB instance creation.
+   */
+  STANDARD = 'standard',
+
+  /**
+   * The cluster operates as an Aurora Limitless Database,
+   * allowing you to create a DB shard group for horizontal scaling (sharding) capabilities.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html
+   */
+  LIMITLESS = 'limitless',
+}
+
+/**
+ * The scalability mode of the Aurora DB cluster.
+ * @deprecated Use ClusterScalabilityType instead. This will be removed in the next major version.
+ */
 export enum ClusterScailabilityType {
   /**
    * The cluster uses normal DB instance creation.
@@ -505,6 +572,21 @@ export enum ClusterScailabilityType {
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html
    */
   LIMITLESS = 'limitless',
+}
+
+/**
+ * The database insights mode of the Aurora DB cluster.
+ */
+export enum DatabaseInsightsMode {
+  /**
+   * Standard mode.
+   */
+  STANDARD = 'standard',
+
+  /**
+   * Advanced mode.
+   */
+  ADVANCED = 'advanced',
 }
 
 /**
@@ -608,7 +690,7 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
    */
   public grantDataApiAccess(grantee: iam.IGrantable): iam.Grant {
     if (this.enableDataApi === false) {
-      throw new Error('Cannot grant Data API access when the Data API is disabled');
+      throw new ValidationError('Cannot grant Data API access when the Data API is disabled', this);
     }
 
     this.enableDataApi = true;
@@ -688,6 +770,11 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   public readonly performanceInsightEncryptionKey?: kms.IKey;
 
   /**
+   * The database insights mode.
+   */
+  public readonly databaseInsightsMode?: DatabaseInsightsMode;
+
+  /**
    * The IAM role for the enhanced monitoring.
    */
   public readonly monitoringRole?: iam.IRole;
@@ -701,11 +788,15 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   constructor(scope: Construct, id: string, props: DatabaseClusterBaseProps) {
     super(scope, id);
 
+    if (props.clusterScalabilityType !== undefined && props.clusterScailabilityType !== undefined) {
+      throw new ValidationError('You cannot specify both clusterScalabilityType and clusterScailabilityType (deprecated). Use clusterScalabilityType.', this);
+    }
+
     if ((props.vpc && props.instanceProps?.vpc) || (!props.vpc && !props.instanceProps?.vpc)) {
-      throw new Error('Provide either vpc or instanceProps.vpc, but not both');
+      throw new ValidationError('Provide either vpc or instanceProps.vpc, but not both', this);
     }
     if ((props.vpcSubnets && props.instanceProps?.vpcSubnets)) {
-      throw new Error('Provide either vpcSubnets or instanceProps.vpcSubnets, but not both');
+      throw new ValidationError('Provide either vpcSubnets or instanceProps.vpcSubnets, but not both', this);
     }
     this.vpc = props.instanceProps?.vpc ?? props.vpc!;
     this.vpcSubnets = props.instanceProps?.vpcSubnets ?? props.vpcSubnets;
@@ -746,7 +837,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, combineRoles);
 
     if (props.parameterGroup && props.parameters) {
-      throw new Error('You cannot specify both parameterGroup and parameters');
+      throw new ValidationError('You cannot specify both parameterGroup and parameters', this);
     }
     const parameterGroup = props.parameterGroup ?? (
       props.parameters
@@ -796,41 +887,18 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       });
     }
 
+    validateDatabaseClusterProps(this, props);
+
     const enablePerformanceInsights = props.enablePerformanceInsights
-      || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
-    if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
-      throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
-    }
-
-    if (props.clusterScailabilityType === ClusterScailabilityType.LIMITLESS) {
-      if (!props.enablePerformanceInsights) {
-        throw new Error('Performance Insights must be enabled for Aurora Limitless Database.');
-      }
-      if (!props.performanceInsightRetention || props.performanceInsightRetention < PerformanceInsightRetention.MONTHS_1) {
-        throw new Error('Performance Insights retention period must be set at least 31 days for Aurora Limitless Database.');
-      }
-      if (!props.monitoringInterval || !props.enableClusterLevelEnhancedMonitoring) {
-        throw new Error('Cluster level enhanced monitoring must be set for Aurora Limitless Database. Please set \'monitoringInterval\' and enable \'enableClusterLevelEnhancedMonitoring\'.');
-      }
-      if (props.writer || props.readers) {
-        throw new Error('Aurora Limitless Database does not support readers or writer instances.');
-      }
-      if (!props.engine.engineVersion?.fullVersion?.endsWith('limitless')) {
-        throw new Error(`Aurora Limitless Database requires an engine version that supports it, got ${props.engine.engineVersion?.fullVersion}`);
-      }
-      if (props.storageType !== DBClusterStorageType.AURORA_IOPT1) {
-        throw new Error(`Aurora Limitless Database requires I/O optimized storage type, got: ${props.storageType}`);
-      }
-      if (props.cloudwatchLogsExports === undefined || props.cloudwatchLogsExports.length === 0) {
-        throw new Error('Aurora Limitless Database requires CloudWatch Logs exports to be set.');
-      }
-    }
-
+      || props.performanceInsightRetention !== undefined
+      || props.performanceInsightEncryptionKey !== undefined
+      || props.databaseInsightsMode === DatabaseInsightsMode.ADVANCED;
     this.performanceInsightsEnabled = enablePerformanceInsights;
     this.performanceInsightRetention = enablePerformanceInsights
       ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
       : undefined;
     this.performanceInsightEncryptionKey = props.performanceInsightEncryptionKey;
+    this.databaseInsightsMode = props.databaseInsightsMode;
 
     // configure enhanced monitoring role for the cluster or instance
     this.monitoringRole = props.monitoringRole;
@@ -844,10 +912,13 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     }
 
     if (props.enableClusterLevelEnhancedMonitoring && !props.monitoringInterval) {
-      throw new Error('`monitoringInterval` must be set when `enableClusterLevelEnhancedMonitoring` is true.');
+      throw new ValidationError('`monitoringInterval` must be set when `enableClusterLevelEnhancedMonitoring` is true.', this);
     }
-    if (props.monitoringInterval && [0, 1, 5, 10, 15, 30, 60].indexOf(props.monitoringInterval.toSeconds()) === -1) {
-      throw new Error(`'monitoringInterval' must be one of 0, 1, 5, 10, 15, 30, or 60 seconds, got: ${props.monitoringInterval.toSeconds()} seconds.`);
+    if (
+      props.monitoringInterval && !props.monitoringInterval.isUnresolved() &&
+      [0, 1, 5, 10, 15, 30, 60].indexOf(props.monitoringInterval.toSeconds()) === -1
+    ) {
+      throw new ValidationError(`'monitoringInterval' must be one of 0, 1, 5, 10, 15, 30, or 60 seconds, got: ${props.monitoringInterval.toSeconds()} seconds.`, this);
     }
 
     this.newCfnProps = {
@@ -877,7 +948,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       }),
       storageType: props.storageType?.toString(),
       enableLocalWriteForwarding: props.enableLocalWriteForwarding,
-      clusterScalabilityType: props.clusterScailabilityType,
+      clusterScalabilityType: props.clusterScalabilityType ?? props.clusterScailabilityType,
       // Admin
       backtrackWindow: props.backtrackWindow?.toSeconds(),
       backupRetentionPeriod: props.backup?.retention?.toDays(),
@@ -895,9 +966,11 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       performanceInsightsEnabled: this.performanceInsightsEnabled || props.enablePerformanceInsights, // fall back to undefined if not set
       performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: this.performanceInsightRetention,
+      databaseInsightsMode: this.databaseInsightsMode,
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? props.monitoringInterval?.toSeconds() : undefined,
       monitoringRoleArn: props.enableClusterLevelEnhancedMonitoring ? this.monitoringRole?.roleArn : undefined,
+      engineLifecycleSupport: props.engineLifecycleSupport,
     };
   }
 
@@ -1011,7 +1084,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
             'availability issues if a failover event occurs. It is recommended that at least one reader '+
             'has `scaleWithWriter` set to true',
           );
-
         }
       } else {
         if (serverlessInHighestTier && highestTier > 1) {
@@ -1075,22 +1147,21 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   private validateServerlessScalingConfig(): void {
     if (this.serverlessV2MaxCapacity > 256 || this.serverlessV2MaxCapacity < 1) {
-      throw new Error('serverlessV2MaxCapacity must be >= 1 & <= 256');
+      throw new ValidationError('serverlessV2MaxCapacity must be >= 1 & <= 256', this);
     }
 
     if (this.serverlessV2MinCapacity > 256 || this.serverlessV2MinCapacity < 0) {
-      throw new Error('serverlessV2MinCapacity must be >= 0 & <= 256');
+      throw new ValidationError('serverlessV2MinCapacity must be >= 0 & <= 256', this);
     }
 
     if (this.serverlessV2MaxCapacity < this.serverlessV2MinCapacity) {
-      throw new Error('serverlessV2MaxCapacity must be greater than serverlessV2MinCapacity');
+      throw new ValidationError('serverlessV2MaxCapacity must be greater than serverlessV2MinCapacity', this);
     }
 
     const regexp = new RegExp(/^[0-9]+\.?5?$/);
     if (!regexp.test(this.serverlessV2MaxCapacity.toString()) || !regexp.test(this.serverlessV2MinCapacity.toString())) {
-      throw new Error('serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments, received '+
-      `min: ${this.serverlessV2MaxCapacity}, max: ${this.serverlessV2MaxCapacity}`);
-
+      throw new ValidationError('serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments, received '+
+      `min: ${this.serverlessV2MaxCapacity}, max: ${this.serverlessV2MaxCapacity}`, this);
     }
   }
 
@@ -1100,13 +1171,13 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    */
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new Error('Cannot add a single user rotation for a cluster without a secret.');
+      throw new ValidationError('Cannot add a single user rotation for a cluster without a secret.', this);
     }
 
     const id = 'RotationSingleUser';
     const existing = this.node.tryFindChild(id);
     if (existing) {
-      throw new Error('A single user rotation was already added to this cluster.');
+      throw new ValidationError('A single user rotation was already added to this cluster.', this);
     }
 
     return new secretsmanager.SecretRotation(this, id, {
@@ -1124,7 +1195,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    */
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new Error('Cannot add a multi user rotation for a cluster without a secret.');
+      throw new ValidationError('Cannot add a multi user rotation for a cluster without a secret.', this);
     }
 
     return new secretsmanager.SecretRotation(this, id, {
@@ -1157,6 +1228,8 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
 
   constructor(scope: Construct, id: string, attrs: DatabaseClusterAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     this.clusterIdentifier = attrs.clusterIdentifier;
     this._clusterResourceIdentifier = attrs.clusterResourceIdentifier;
@@ -1181,35 +1254,35 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
 
   public get clusterResourceIdentifier() {
     if (!this._clusterResourceIdentifier) {
-      throw new Error('Cannot access `clusterResourceIdentifier` of an imported cluster without a clusterResourceIdentifier');
+      throw new ValidationError('Cannot access `clusterResourceIdentifier` of an imported cluster without a clusterResourceIdentifier', this);
     }
     return this._clusterResourceIdentifier;
   }
 
   public get clusterEndpoint() {
     if (!this._clusterEndpoint) {
-      throw new Error('Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port');
+      throw new ValidationError('Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port', this);
     }
     return this._clusterEndpoint;
   }
 
   public get clusterReadEndpoint() {
     if (!this._clusterReadEndpoint) {
-      throw new Error('Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port');
+      throw new ValidationError('Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port', this);
     }
     return this._clusterReadEndpoint;
   }
 
   public get instanceIdentifiers() {
     if (!this._instanceIdentifiers) {
-      throw new Error('Cannot access `instanceIdentifiers` of an imported cluster without provided instanceIdentifiers');
+      throw new ValidationError('Cannot access `instanceIdentifiers` of an imported cluster without provided instanceIdentifiers', this);
     }
     return this._instanceIdentifiers;
   }
 
   public get instanceEndpoints() {
     if (!this._instanceEndpoints) {
-      throw new Error('Cannot access `instanceEndpoints` of an imported cluster without instanceEndpointAddresses and port');
+      throw new ValidationError('Cannot access `instanceEndpoints` of an imported cluster without instanceEndpointAddresses and port', this);
     }
     return this._instanceEndpoints;
   }
@@ -1225,6 +1298,14 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
    * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
    */
   readonly credentials?: Credentials;
+
+  /**
+   * The Amazon Resource Name (ARN) of the source DB instance or DB cluster if this DB cluster is created as a read replica.
+   * Cannot be used with credentials.
+   *
+   * @default - This DB Cluster is not a read replica
+   */
+  readonly replicationSourceIdentifier?: string;
 }
 
 /**
@@ -1255,15 +1336,20 @@ export class DatabaseCluster extends DatabaseClusterNew {
 
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const credentials = renderCredentials(this, props.engine, props.credentials);
     const secret = credentials.secret;
 
+    const canHaveCredentials = props.replicationSourceIdentifier == undefined;
+
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       // Admin
-      masterUsername: credentials.username,
-      masterUserPassword: credentials.password?.unsafeUnwrap(),
+      masterUsername: canHaveCredentials ? credentials.username : undefined,
+      masterUserPassword: canHaveCredentials ? credentials.password?.unsafeUnwrap() : undefined,
+      replicationSourceIdentifier: props.replicationSourceIdentifier,
     });
 
     this.clusterIdentifier = cluster.ref;
@@ -1287,13 +1373,13 @@ export class DatabaseCluster extends DatabaseClusterNew {
     setLogRetention(this, props);
 
     // create the instances for only standard aurora clusters
-    if (props.clusterScailabilityType !== ClusterScailabilityType.LIMITLESS) {
+    if (props.clusterScalabilityType !== ClusterScalabilityType.LIMITLESS && props.clusterScailabilityType !== ClusterScailabilityType.LIMITLESS) {
       if ((props.writer || props.readers) && (props.instances || props.instanceProps)) {
-        throw new Error('Cannot provide writer or readers if instances or instanceProps are provided');
+        throw new ValidationError('Cannot provide writer or readers if instances or instanceProps are provided', this);
       }
 
       if (!props.instanceProps && !props.writer) {
-        throw new Error('writer must be provided');
+        throw new ValidationError('writer must be provided', this);
       }
 
       const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
@@ -1342,7 +1428,6 @@ const INSTANCE_TYPE_XLARGE_MEMORY_MAPPING: { [instanceType: string]: number } = 
  * @returns true if the instance size is supported by serverless v2 instances
  */
 function instanceSizeSupportedByServerlessV2(instanceSize: string, serverlessV2MaxCapacity: number): boolean {
-
   const serverlessMaxMem = serverlessV2MaxCapacity*2;
   // i.e. r5.xlarge
   const sizeParts = instanceSize.split('.');
@@ -1438,6 +1523,8 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
 
   constructor(scope: Construct, id: string, props: DatabaseClusterFromSnapshotProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.credentials && !props.credentials.password && !props.credentials.secret) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-rds:useSnapshotCredentials', 'Use `snapshotCredentials` to modify password of a cluster created from a snapshot.');
@@ -1485,7 +1572,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
 
     setLogRetention(this, props);
     if ((props.writer || props.readers) && (props.instances || props.instanceProps)) {
-      throw new Error('Cannot provide clusterInstances if instances or instanceProps are provided');
+      throw new ValidationError('Cannot provide clusterInstances if instances or instanceProps are provided', this);
     }
     const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
     this.instanceIdentifiers = createdInstances.instanceIdentifiers;
@@ -1501,7 +1588,7 @@ function setLogRetention(cluster: DatabaseClusterNew, props: DatabaseClusterBase
   if (props.cloudwatchLogsExports) {
     const unsupportedLogTypes = props.cloudwatchLogsExports.filter(logType => !props.engine.supportedLogTypes.includes(logType));
     if (unsupportedLogTypes.length > 0) {
-      throw new Error(`Unsupported logs for the current engine type: ${unsupportedLogTypes.join(',')}`);
+      throw new ValidationError(`Unsupported logs for the current engine type: ${unsupportedLogTypes.join(',')}`, cluster);
     }
 
     if (props.cloudwatchLogsRetention) {
@@ -1533,10 +1620,10 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
   const instanceCount = props.instances != null ? props.instances : 2;
   const instanceUpdateBehaviour = props.instanceUpdateBehaviour ?? InstanceUpdateBehaviour.BULK;
   if (Token.isUnresolved(instanceCount)) {
-    throw new Error('The number of instances an RDS Cluster consists of cannot be provided as a deploy-time only value!');
+    throw new ValidationError('The number of instances an RDS Cluster consists of cannot be provided as a deploy-time only value!', cluster);
   }
   if (instanceCount < 1) {
-    throw new Error('At least one instance is required');
+    throw new ValidationError('At least one instance is required', cluster);
   }
 
   const instanceIdentifiers: string[] = [];
@@ -1550,7 +1637,7 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
   const enablePerformanceInsights = instanceProps.enablePerformanceInsights
     || instanceProps.performanceInsightRetention !== undefined || instanceProps.performanceInsightEncryptionKey !== undefined;
   if (enablePerformanceInsights && instanceProps.enablePerformanceInsights === false) {
-    throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
+    throw new ValidationError('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set', cluster);
   }
   const performanceInsightRetention = enablePerformanceInsights
     ? (instanceProps.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
@@ -1567,7 +1654,7 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
   const instanceType = instanceProps.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM);
 
   if (instanceProps.parameterGroup && instanceProps.parameters) {
-    throw new Error('You cannot specify both parameterGroup and parameters');
+    throw new ValidationError('You cannot specify both parameterGroup and parameters', cluster);
   }
 
   const instanceParameterGroup = instanceProps.parameterGroup ?? (
@@ -1675,7 +1762,7 @@ function validatePerformanceInsightsSettings(
     instance.performanceInsightRetention &&
     instance.performanceInsightRetention !== cluster.performanceInsightRetention
   ) {
-    throw new Error(`\`performanceInsightRetention\` for each instance must be the same as the one at cluster level, got ${target}: ${instance.performanceInsightRetention}, cluster: ${cluster.performanceInsightRetention}`);
+    throw new ValidationError(`\`performanceInsightRetention\` for each instance must be the same as the one at cluster level, got ${target}: ${instance.performanceInsightRetention}, cluster: ${cluster.performanceInsightRetention}`, cluster);
   }
 
   // If `performanceInsightEncryptionKey` is enabled on the cluster, the same parameter for each instance must be
@@ -1686,11 +1773,11 @@ function validatePerformanceInsightsSettings(
     const compared = Token.compareStrings(clusterKeyArn, instanceKeyArn);
 
     if (compared === TokenComparison.DIFFERENT) {
-      throw new Error(`\`performanceInsightEncryptionKey\` for each instance must be the same as the one at cluster level, got ${target}: '${instance.performanceInsightEncryptionKey.keyArn}', cluster: '${cluster.performanceInsightEncryptionKey.keyArn}'`);
+      throw new ValidationError(`\`performanceInsightEncryptionKey\` for each instance must be the same as the one at cluster level, got ${target}: '${instance.performanceInsightEncryptionKey.keyArn}', cluster: '${cluster.performanceInsightEncryptionKey.keyArn}'`, cluster);
     }
     // Even if both of cluster and instance keys are unresolved, check if they are the same token.
     if (compared === TokenComparison.BOTH_UNRESOLVED && clusterKeyArn !== instanceKeyArn) {
-      throw new Error('`performanceInsightEncryptionKey` for each instance must be the same as the one at cluster level');
+      throw new ValidationError('`performanceInsightEncryptionKey` for each instance must be the same as the one at cluster level', cluster);
     }
   }
 }

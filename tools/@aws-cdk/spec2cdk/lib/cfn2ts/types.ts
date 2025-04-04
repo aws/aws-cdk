@@ -28,6 +28,11 @@ export interface GenerateAllOptions extends CodeGeneratorOptions, AugmentationsG
    * Path of the file containing the map of module names to their CFN Scopes
    */
   scopeMapPath: string;
+
+  /**
+   * List of service names to be skipped it will be in format AWS::Service like AWS::S3
+   */
+  skippedServices?: string[];
 }
 
 /**

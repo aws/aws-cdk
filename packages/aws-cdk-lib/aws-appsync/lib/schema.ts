@@ -2,10 +2,10 @@ import { readFileSync } from 'fs';
 import { IGraphqlApi } from './graphqlapi-base';
 
 /**
-  * Configuration for bound graphql schema
-  *
-  * Returned from ISchema.bind allowing late binding of schemas to graphqlapi-base
-  */
+ * Configuration for bound graphql schema
+ *
+ * Returned from ISchema.bind allowing late binding of schemas to graphqlapi-base
+ */
 export interface ISchemaConfig {
   /**
    * The ID of the api the schema is bound to
@@ -27,10 +27,10 @@ export interface ISchemaConfig {
 export interface SchemaBindOptions {}
 
 /**
-  * Interface for implementing your own schema
-  *
-  * Useful for providing schema's from sources other than assets
-  */
+ * Interface for implementing your own schema
+ *
+ * Useful for providing schema's from sources other than assets
+ */
 export interface ISchema {
   /**
    * Binds a schema string to a GraphQlApi
@@ -52,7 +52,7 @@ export interface SchemaProps {
    * existing file from disk.
    */
   readonly filePath: string;
-};
+}
 
 /**
  * The Schema for a GraphQL Api

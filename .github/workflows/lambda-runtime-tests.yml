@@ -6,12 +6,14 @@ on:
 
 jobs:
   update-lambda-tests:
-    if: github.repository == 'aws/aws-cdk'
+    if: github.repository == 'aws/aws-cdk' && github.actor == 'aws-cdk-automation'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -42,6 +44,17 @@ jobs:
         run: |
           git config --global user.name 'aws-cdk-automation'
           git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
+
+          git fetch origin ${{ github.event.pull_request.head.ref }}
+
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/${{ github.event.pull_request.head.ref }})" ]; then
+            echo "Remote branch updated since approved commit; aborting."
+            exit 1
+          fi
+
+          git checkout -B ${{ github.event.pull_request.head.ref }}
           git add .
           git commit -m "chore: update lambda runtime integration tests"
           git push origin ${{ github.event.pull_request.head.ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,17 +1,67 @@
 import { Construct, IConstruct } from 'constructs';
-import { ICluster, Cluster } from './cluster';
+import { Cluster, ICluster } from './cluster';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { Duration, Stack, NestedStack, Names, CfnCondition, Fn, Aws } from 'aws-cdk-lib/core';
+import { Duration, CfnCondition, Fn, Aws, Size } from 'aws-cdk-lib/core';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { AwsCliLayer } from 'aws-cdk-lib/lambda-layer-awscli';
-import { KubectlLayer } from 'aws-cdk-lib/lambda-layer-kubectl';
 import * as path from 'path';
+
+export interface KubectlProviderOptions {
+  /**
+   * An IAM role that can perform kubectl operations against this cluster.
+   *
+   * The role should be mapped to the `system:masters` Kubernetes RBAC role.
+   *
+   * This role is directly passed to the lambda handler that sends Kube Ctl commands to the cluster.
+   * @default - if not specified, the default role created by a lambda function will
+   * be used.
+   */
+  readonly role?: iam.IRole;
+
+  /**
+   * An AWS Lambda layer that contains the `aws` CLI.
+   *
+   * If not defined, a default layer will be used containing the AWS CLI 2.x.
+   */
+  readonly awscliLayer?: lambda.ILayerVersion;
+
+  /**
+   *
+   * Custom environment variables when running `kubectl` against this cluster.
+   */
+  readonly environment?: { [key: string]: string };
+
+  /**
+   * A security group to use for `kubectl` execution.
+   *
+   * @default - If not specified, the k8s endpoint is expected to be accessible
+   * publicly.
+   */
+  readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * The amount of memory allocated to the kubectl provider's lambda function.
+   */
+  readonly memory?: Size;
+
+  /**
+   * An AWS Lambda layer that includes `kubectl` and `helm`
+   */
+  readonly kubectlLayer: lambda.ILayerVersion;
+
+  /**
+   * Subnets to host the `kubectl` compute resources. If not specified, the k8s
+   * endpoint is expected to be accessible publicly.
+   */
+  readonly privateSubnets?: ec2.ISubnet[];
+}
 
 /**
  * Properties for a KubectlProvider
  */
-export interface KubectlProviderProps {
+export interface KubectlProviderProps extends KubectlProviderOptions {
   /**
    * The cluster to control.
    */
@@ -23,19 +73,17 @@ export interface KubectlProviderProps {
  */
 export interface KubectlProviderAttributes {
   /**
-   * The custom resource provider's service token.
+   * The kubectl provider lambda arn
    */
-  readonly functionArn: string;
+  readonly serviceToken: string;
 
   /**
-   * The IAM role to assume in order to perform kubectl operations against this cluster.
+   * The role of the provider lambda function.
+   * Only required if you deploy helm charts using this imported provider.
+   *
+   * @default - no role.
    */
-  readonly kubectlRoleArn: string;
-
-  /**
-   * The IAM execution role of the handler. This role must be able to assume kubectlRoleArn
-   */
-  readonly handlerRole: iam.IRole;
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -48,48 +96,30 @@ export interface IKubectlProvider extends IConstruct {
   readonly serviceToken: string;
 
   /**
-   * The IAM role to assume in order to perform kubectl operations against this cluster.
+   * The role of the provider lambda function. If undefined,
+   * you cannot use this provider to deploy helm charts.
    */
-  readonly roleArn: string;
-
-  /**
-   * The IAM execution role of the handler.
-   */
-  readonly handlerRole: iam.IRole;
+  readonly role?: iam.IRole;
 }
 
 /**
  * Implementation of Kubectl Lambda
  */
-export class KubectlProvider extends NestedStack implements IKubectlProvider {
-
+export class KubectlProvider extends Construct implements IKubectlProvider {
   /**
-   * Take existing provider or create new based on cluster
+   * Take existing provider on cluster
    *
    * @param scope Construct
    * @param cluster k8s cluster
    */
-  public static getOrCreate(scope: Construct, cluster: ICluster) {
-    // if this is an "owned" cluster, it has a provider associated with it
+  public static getKubectlProvider(scope: Construct, cluster: ICluster) {
+    // if this is an "owned" cluster, we need to wait for the kubectl barrier
+    // before applying any resources.
     if (cluster instanceof Cluster) {
-      return cluster._attachKubectlResourceScope(scope);
+      cluster._dependOnKubectlBarrier(scope);
     }
 
-    // if this is an imported cluster, it maybe has a predefined kubectl provider?
-    if (cluster.kubectlProvider) {
-      return cluster.kubectlProvider;
-    }
-
-    // if this is an imported cluster and there is no kubectl provider defined, we need to provision a custom resource provider in this stack
-    // we will define one per stack for each cluster based on the cluster uniqueid
-    const uid = `${Names.nodeUniqueId(cluster.node)}-KubectlProvider`;
-    const stack = Stack.of(scope);
-    let provider = stack.node.tryFindChild(uid) as KubectlProvider;
-    if (!provider) {
-      provider = new KubectlProvider(stack, uid, { cluster });
-    }
-
-    return provider;
+    return cluster.kubectlProvider;
   }
 
   /**
@@ -100,7 +130,11 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
    * @param attrs attributes for the provider
    */
   public static fromKubectlProviderAttributes(scope: Construct, id: string, attrs: KubectlProviderAttributes): IKubectlProvider {
-    return new ImportedKubectlProvider(scope, id, attrs);
+    class Import extends Construct implements IKubectlProvider {
+      public readonly serviceToken: string = attrs.serviceToken;
+      public readonly role?: iam.IRole = attrs.role;
+    }
+    return new Import(scope, id);
   }
 
   /**
@@ -109,68 +143,58 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
   public readonly serviceToken: string;
 
   /**
-   * The IAM role to assume in order to perform kubectl operations against this cluster.
-   */
-  public readonly roleArn: string;
-
-  /**
    * The IAM execution role of the handler.
    */
-  public readonly handlerRole: iam.IRole;
+  public readonly role?: iam.IRole;
 
   public constructor(scope: Construct, id: string, props: KubectlProviderProps) {
     super(scope, id);
 
-    const cluster = props.cluster;
-
-    if (!cluster.kubectlRole) {
-      throw new Error('"kubectlRole" is not defined, cannot issue kubectl commands against this cluster');
+    const vpc = props.privateSubnets ? props.cluster.vpc : undefined;
+    let securityGroups;
+    if (props.privateSubnets && props.cluster.clusterSecurityGroup) {
+      securityGroups = [props.cluster.clusterSecurityGroup];
     }
-
-    if (cluster.kubectlPrivateSubnets && !cluster.kubectlSecurityGroup) {
-      throw new Error('"kubectlSecurityGroup" is required if "kubectlSubnets" is specified');
-    }
-
-    const memorySize = cluster.kubectlMemory ? cluster.kubectlMemory.toMebibytes() : 1024;
+    const privateSubnets = props.privateSubnets ? { subnets: props.privateSubnets } : undefined;
 
     const handler = new lambda.Function(this, 'Handler', {
       timeout: Duration.minutes(15),
       description: 'onEvent handler for EKS kubectl resource provider',
-      memorySize,
+      memorySize: props.memory?.toMebibytes() ?? 1024,
       environment: {
         // required and recommended for boto3
         AWS_STS_REGIONAL_ENDPOINTS: 'regional',
-        ...cluster.kubectlEnvironment,
+        ...props.environment,
       },
-      role: cluster.kubectlLambdaRole ? cluster.kubectlLambdaRole : undefined,
+      role: props.role,
       code: lambda.Code.fromAsset(path.join(__dirname, 'kubectl-handler')),
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_11,
       // defined only when using private access
-      vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
-      securityGroups: cluster.kubectlPrivateSubnets && cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
-      vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
+      vpc,
+      securityGroups,
+      vpcSubnets: privateSubnets,
     });
 
     // allow user to customize the layers with the tools we need
-    handler.addLayers(props.cluster.awscliLayer ?? new AwsCliLayer(this, 'AwsCliLayer'));
-    handler.addLayers(props.cluster.kubectlLayer ?? new KubectlLayer(this, 'KubectlLayer'));
+    handler.addLayers(props.awscliLayer ?? new AwsCliLayer(this, 'AwsCliLayer'));
+    handler.addLayers(props.kubectlLayer);
 
-    this.handlerRole = handler.role!;
+    const handlerRole = handler.role!;
 
-    this.handlerRole.addToPrincipalPolicy(new iam.PolicyStatement({
+    handlerRole.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['eks:DescribeCluster'],
-      resources: [cluster.clusterArn],
+      resources: [props.cluster.clusterArn],
     }));
 
     // taken from the lambda default role logic.
     // makes it easier for roles to be passed in.
     if (handler.isBoundToVpc) {
-      handler.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
+      handlerRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
     }
 
     // For OCI helm chart authorization.
-    this.handlerRole.addManagedPolicy(
+    handlerRole.addManagedPolicy(
       iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
     );
 
@@ -178,7 +202,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
      * For OCI helm chart public ECR authorization. As ECR public is only available in `aws` partition,
      * we conditionally attach this policy when the AWS partition is `aws`.
      */
-    const hasEcrPublicCondition = new CfnCondition(this.handlerRole.node.scope!, 'HasEcrPublic', {
+    const hasEcrPublicCondition = new CfnCondition(handlerRole.node.scope!, 'HasEcrPublic', {
       expression: Fn.conditionEquals(Aws.PARTITION, 'aws'),
     });
 
@@ -188,46 +212,16 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
         Aws.NO_VALUE).toString(),
     );
 
-    this.handlerRole.addManagedPolicy(iam.ManagedPolicy.fromManagedPolicyArn(this, 'conditionalPolicy', conditionalPolicy.managedPolicyArn));
-
-    // allow this handler to assume the kubectl role
-    cluster.kubectlRole.grant(this.handlerRole, 'sts:AssumeRole');
+    handlerRole.addManagedPolicy(iam.ManagedPolicy.fromManagedPolicyArn(this, 'conditionalPolicy', conditionalPolicy.managedPolicyArn));
 
     const provider = new cr.Provider(this, 'Provider', {
       onEventHandler: handler,
-      vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
-      vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
-      securityGroups: cluster.kubectlPrivateSubnets && cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
+      vpc: props.cluster.vpc,
+      vpcSubnets: privateSubnets,
+      securityGroups,
     });
 
     this.serviceToken = provider.serviceToken;
-    this.roleArn = cluster.kubectlRole.roleArn;
-  }
-
-}
-
-class ImportedKubectlProvider extends Construct implements IKubectlProvider {
-
-  /**
-   * The custom resource provider's service token.
-   */
-  public readonly serviceToken: string;
-
-  /**
-   * The IAM role to assume in order to perform kubectl operations against this cluster.
-   */
-  public readonly roleArn: string;
-
-  /**
-   * The IAM execution role of the handler.
-   */
-  public readonly handlerRole: iam.IRole;
-
-  constructor(scope: Construct, id: string, props: KubectlProviderAttributes) {
-    super(scope, id);
-
-    this.serviceToken = props.functionArn;
-    this.roleArn = props.kubectlRoleArn;
-    this.handlerRole = props.handlerRole;
+    this.role = handlerRole;
   }
 }

@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "appsync-event-api-channel-namespace/DefaultTest": {
+      "stacks": [
+        "EventApiChannelNamespaceStack"
+      ],
+      "assertionStack": "appsync-event-api-channel-namespace/DefaultTest/DeployAssert",
+      "assertionStackName": "appsynceventapichannelnamespaceDefaultTestDeployAssert6BCB222F"
+    }
+  }
+}

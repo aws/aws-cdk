@@ -2,7 +2,8 @@ import { Construct } from 'constructs';
 import { ManagedRule, ManagedRuleIdentifiers, ResourceType, RuleProps, RuleScope } from './rule';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
-import { Duration, Lazy, Stack } from '../../core';
+import { Duration, Lazy, Stack, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Construction properties for a AccessKeysRotated
@@ -37,6 +38,8 @@ export class AccessKeysRotated extends ManagedRule {
           : {},
       },
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }
 
@@ -81,6 +84,8 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
         cloudformationRoleArn: Lazy.string({ produce: () => this.role.roleArn }),
       },
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.ruleScope = RuleScope.fromResource( ResourceType.CLOUDFORMATION_STACK, props.ownStackOnly ? Stack.of(this).stackId : undefined );
 
@@ -116,7 +121,7 @@ export interface CloudFormationStackNotificationCheckProps extends RuleProps {
 export class CloudFormationStackNotificationCheck extends ManagedRule {
   constructor(scope: Construct, id: string, props: CloudFormationStackNotificationCheckProps = {}) {
     if (props.topics && props.topics.length > 5) {
-      throw new Error('At most 5 topics can be specified.');
+      throw new ValidationError('At most 5 topics can be specified.', scope);
     }
 
     super(scope, id, {
@@ -128,5 +133,7 @@ export class CloudFormationStackNotificationCheck extends ManagedRule {
       ),
       ruleScope: RuleScope.fromResources([ResourceType.CLOUDFORMATION_STACK]),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }

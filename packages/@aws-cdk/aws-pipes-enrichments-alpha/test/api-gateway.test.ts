@@ -16,7 +16,6 @@ describe('api-destination', () => {
 
     restApi = new RestApi(stack, 'RestApi');
     restApi.root.addResource('test').addMethod('GET');
-
   });
 
   it('should have only enrichment arn', () => {

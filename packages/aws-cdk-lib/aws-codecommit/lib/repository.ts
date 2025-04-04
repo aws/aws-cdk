@@ -5,7 +5,8 @@ import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, IResource, Lazy, Resource, Stack } from '../../core';
+import { ArnFormat, IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Additional options to pass to the notification rule.
@@ -510,7 +511,6 @@ export interface RepositoryProps {
  * Provides a CodeCommit Repository.
  */
 export class Repository extends RepositoryBase {
-
   /**
    * Imports a codecommit repository.
    * @param repositoryArn (e.g. `arn:aws:codecommit:us-east-1:123456789012:MyDemoRepo`)
@@ -563,6 +563,8 @@ export class Repository extends RepositoryBase {
     super(scope, id, {
       physicalName: props.repositoryName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const repository = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
@@ -587,8 +589,8 @@ export class Repository extends RepositoryBase {
    * @param arn   Arn of the resource that repository events will notify
    * @param options Trigger options to run actions
    */
+  @MethodMetadata()
   public notify(arn: string, options?: RepositoryTriggerOptions): Repository {
-
     let evt = options && options.events;
     if (evt && evt.length > 1 && evt.indexOf(RepositoryEventTrigger.ALL) > -1) {
       evt = [RepositoryEventTrigger.ALL];
@@ -603,7 +605,7 @@ export class Repository extends RepositoryBase {
     }
 
     if (this.triggers.find(prop => prop.name === name)) {
-      throw new Error(`Unable to set repository trigger named ${name} because trigger names must be unique`);
+      throw new ValidationError(`Unable to set repository trigger named ${name} because trigger names must be unique`, this);
     }
 
     this.triggers.push({

@@ -11,6 +11,21 @@ const fn = new lambda.Function(this, 'MyFunction', {
 });
 ```
 
+When deployed, this construct creates or updates an existing
+`AWS::Lambda::Function` resource. When updating, AWS CloudFormation calls the
+[UpdateFunctionConfiguration](https://docs.aws.amazon.com/lambda/latest/api/API_UpdateFunctionConfiguration.html)
+and [UpdateFunctionCode](https://docs.aws.amazon.com/lambda/latest/api/API_UpdateFunctionCode.html)
+Lambda APIs under the hood. Because these calls happen sequentially, and
+invocations can happen between these calls, your function may encounter errors
+in the time between the calls. For example, if you update an existing Lambda
+function by removing an environment variable and the code that references that
+environment variable in the same CDK deployment, you may see invocation errors
+related to a missing environment variable. To work around this, you can invoke
+your function against a version or alias by default, rather than the `$LATEST`
+version.
+
+To further mitigate these issues, you can ensure consistency between your function code and infrastructure configuration by defining environment variables as a single source of truth in your CDK stack. You can define them in a separate `env.ts` file and reference them in both your handler and CDK configuration. This approach allows you to catch errors at compile time, benefit from improved IDE support, minimize the risk of mismatched configurations, and enhance maintainability.
+
 ## Handler Code
 
 The `lambda.Code` class includes static convenience methods for various types of
@@ -854,7 +869,7 @@ fn.addEventSource(new eventsources.DynamoEventSource(table, {
 
 ### Observability
 
-Customers can now opt-in to get enhanced metrics for their event source mapping that capture each stage of processing using the `MetrcisConfig` property.
+Customers can now opt-in to get enhanced metrics for their event source mapping that capture each stage of processing using the `MetricsConfig` property.
 
 The following code shows how to opt in for the enhanced metrics. 
 

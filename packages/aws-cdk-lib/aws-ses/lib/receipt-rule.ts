@@ -4,6 +4,7 @@ import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';
 import * as iam from '../../aws-iam';
 import { Aws, IResource, Lazy, Resource } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { DropSpamSingletonFunction } from '../../custom-resource-handlers/dist/aws-ses/drop-spam-provider.generated';
 
 /**
@@ -103,7 +104,6 @@ export interface ReceiptRuleProps extends ReceiptRuleOptions {
  * A new receipt rule.
  */
 export class ReceiptRule extends Resource implements IReceiptRule {
-
   public static fromReceiptRuleName(scope: Construct, id: string, receiptRuleName: string): IReceiptRule {
     class Import extends Resource implements IReceiptRule {
       public readonly receiptRuleName = receiptRuleName;
@@ -118,6 +118,8 @@ export class ReceiptRule extends Resource implements IReceiptRule {
     super(scope, id, {
       physicalName: props.receiptRuleName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnReceiptRule(this, 'Resource', {
       after: props.after?.receiptRuleName,
@@ -142,6 +144,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
   /**
    * Adds an action to this receipt rule.
    */
+  @MethodMetadata()
   public addAction(action: IReceiptRuleAction) {
     this.actions.push(action.bind(this));
   }

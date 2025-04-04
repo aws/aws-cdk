@@ -6,6 +6,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 import * as cxapi from '../../cx-api';
 
 export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.AssetOptions {
@@ -54,6 +55,28 @@ export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.Asse
    * @default - the default server-side encryption with Amazon S3 managed keys(SSE-S3) key will be used.
    */
   readonly sourceKMSKey?: kms.IKey;
+
+  /**
+   * A display name for this asset
+   *
+   * If supplied, the display name will be used in locations where the asset
+   * identifier is printed, like in the CLI progress information. If the same
+   * asset is added multiple times, the display name of the first occurrence is
+   * used.
+   *
+   * The default is the construct path of the Asset construct, with respect to
+   * the enclosing stack. If the asset is produced by a construct helper
+   * function (such as `lambda.Code.fromAsset()`), this will look like
+   * `MyFunction/Code`.
+   *
+   * We use the stack-relative construct path so that in the common case where
+   * you have multiple stacks with the same asset, we won't show something like
+   * `/MyBetaStack/MyFunction/Code` when you are actually deploying to
+   * production.
+   *
+   * @default - Stack-relative construct path
+   */
+  readonly displayName?: string;
 }
 
 export interface AssetProps extends AssetOptions {
@@ -143,7 +166,7 @@ export class Asset extends Construct implements cdk.IAsset {
     super(scope, id);
 
     if (!props.path) {
-      throw new Error('Asset path cannot be empty');
+      throw new ValidationError('Asset path cannot be empty', this);
     }
 
     this.isBundled = props.bundling != null;
@@ -172,6 +195,7 @@ export class Asset extends Construct implements cdk.IAsset {
       sourceHash: this.sourceHash,
       fileName: this.assetPath,
       deployTime: props.deployTime,
+      displayName: props.displayName ?? cdk.Names.stackRelativeConstructPath(this),
     });
 
     this.s3BucketName = location.bucketName;
