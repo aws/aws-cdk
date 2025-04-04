@@ -13,6 +13,13 @@ export interface SnsTopicProps extends TargetBaseProps {
    * @default the entire EventBridge event
    */
   readonly message?: events.RuleTargetInput;
+
+  /**
+   * The IAM role to be assumed to send to the SNS Topic
+   *
+   * @default - a new role will be created
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -40,6 +47,10 @@ export class SnsTopic implements events.IRuleTarget {
     // deduplicated automatically
     this.topic.grantPublish(new iam.ServicePrincipal('events.amazonaws.com'));
 
+    if (this.props.role) {
+      this.topic.grantPublish(this.props.role);
+    }
+
     if (this.props.deadLetterQueue) {
       addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
     }
@@ -49,6 +60,7 @@ export class SnsTopic implements events.IRuleTarget {
       arn: this.topic.topicArn,
       input: this.props.message,
       targetResource: this.topic,
+      role: this.props.role,
     };
   }
 }
