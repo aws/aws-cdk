@@ -860,7 +860,10 @@ export class MysqlEngineVersion {
    * @deprecated MySQL 5.7.43 is no longer supported by Amazon RDS.
    */
   public static readonly VER_5_7_43 = MysqlEngineVersion.of('5.7.43', '5.7');
-  /** Version "5.7.44". */
+  /**
+   * Version "5.7.44"
+   * @deprecated MySQL 5.7.44 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_5_7_44 = MysqlEngineVersion.of('5.7.44', '5.7');
   /** Version "5.7.44-rds.20240408". */
   public static readonly VER_5_7_44_RDS_20240408 = MysqlEngineVersion.of('5.7.44-rds.20240408', '5.7');
@@ -955,15 +958,30 @@ export class MysqlEngineVersion {
    * @deprecated MySQL 8.0.31 is no longer supported by Amazon RDS.
    */
   public static readonly VER_8_0_31 = MysqlEngineVersion.of('8.0.31', '8.0');
-  /** Version "8.0.32". */
+  /**
+   * Version "8.0.32"
+   * @deprecated MySQL 8.0.32 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_8_0_32 = MysqlEngineVersion.of('8.0.32', '8.0');
-  /** Version "8.0.33". */
+  /**
+   * Version "8.0.33"
+   * @deprecated MySQL 8.0.33 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_8_0_33 = MysqlEngineVersion.of('8.0.33', '8.0');
-  /** Version "8.0.34". */
+  /**
+   * Version "8.0.34"
+   * @deprecated MySQL 8.0.34 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_8_0_34 = MysqlEngineVersion.of('8.0.34', '8.0');
-  /** Version "8.0.35". */
+  /**
+   * Version "8.0.35"
+   * @deprecated MySQL 8.0.35 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_8_0_35 = MysqlEngineVersion.of('8.0.35', '8.0');
-  /** Version "8.0.36". */
+  /**
+   * Version "8.0.36"
+   * @deprecated MySQL 8.0.36 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_8_0_36 = MysqlEngineVersion.of('8.0.36', '8.0');
   /** Version "8.0.37". */
   public static readonly VER_8_0_37 = MysqlEngineVersion.of('8.0.37', '8.0');
