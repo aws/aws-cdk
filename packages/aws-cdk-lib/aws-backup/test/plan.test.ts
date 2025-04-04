@@ -1,7 +1,7 @@
 import { Template } from '../../assertions';
 import * as events from '../../aws-events';
 import { App, Duration, Stack } from '../../core';
-import { BackupPlan, BackupPlanRule, BackupVault } from '../lib';
+import { BackupPlan, IndexActionResourceType, BackupPlanRule, BackupVault } from '../lib';
 
 let stack: Stack;
 beforeEach(() => {
@@ -367,6 +367,42 @@ test('create a plan and add rule with recoveryPointTags', () => {
           RecoveryPointTags: {
             key: 'value',
           },
+        },
+      ],
+    },
+  });
+});
+
+test('create a plan and add rule with indexActions', () => {
+  // WHEN
+  new BackupPlan(stack, 'Plan', {
+    backupPlanRules: [
+      new BackupPlanRule({
+        indexActions: [{ resourceTypes: [IndexActionResourceType.S3] }],
+      }),
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
+    BackupPlan: {
+      BackupPlanName: 'Plan',
+      BackupPlanRule: [
+        {
+          RuleName: 'PlanRule0',
+          TargetBackupVault: {
+            'Fn::GetAtt': [
+              'PlanVault0284B0C2',
+              'BackupVaultName',
+            ],
+          },
+          IndexActions: [
+            {
+              ResourceTypes: [
+                'S3',
+              ],
+            },
+          ],
         },
       ],
     },
