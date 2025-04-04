@@ -156,6 +156,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
       protocolType: 'WEBSOCKET',
       description: props?.description,
       routeSelectionExpression: props?.routeSelectionExpression ?? '$request.body.action',
+      ipAddressType: props?.ipAddressType,
     });
     this.apiId = resource.ref;
     this.apiEndpoint = resource.attrApiEndpoint;
