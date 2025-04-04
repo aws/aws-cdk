@@ -144,7 +144,6 @@ export interface ICluster extends IResource, ec2.IConnectable {
   /**
    * An AWS Lambda layer that includes `kubectl` and `helm`
    *
-   * If not defined, a default layer will be used containing Kubectl 1.20 and Helm 3.8
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
 
@@ -377,8 +376,7 @@ export interface ClusterAttributes {
    * This layer is used by the kubectl handler to apply manifests and install
    * helm charts. You must pick an appropriate releases of one of the
    * `@aws-cdk/layer-kubectl-vXX` packages, that works with the version of
-   * Kubernetes you have chosen. If you don't supply this value `kubectl`
-   * 1.20 will be used, but that version is most likely too old.
+   * Kubernetes you have chosen.
    *
    * The handler expects the layer to include the following executables:
    *
@@ -387,7 +385,7 @@ export interface ClusterAttributes {
    * /opt/kubectl/kubectl
    * ```
    *
-   * @default - a default layer with Kubectl 1.20 and helm 3.8.
+   * @default - No default layer will be provided
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
 
@@ -568,8 +566,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    * This layer is used by the kubectl handler to apply manifests and install
    * helm charts. You must pick an appropriate releases of one of the
    * `@aws-cdk/layer-kubectl-vXX` packages, that works with the version of
-   * Kubernetes you have chosen. If you don't supply this value `kubectl`
-   * 1.20 will be used, but that version is most likely too old.
+   * Kubernetes you have chosen.
    *
    * The handler expects the layer to include the following executables:
    *
@@ -577,10 +574,8 @@ export interface ClusterOptions extends CommonClusterOptions {
    * /opt/helm/helm
    * /opt/kubectl/kubectl
    * ```
-   *
-   * @default - a default layer with Kubectl 1.20.
    */
-  readonly kubectlLayer?: lambda.ILayerVersion;
+  readonly kubectlLayer: lambda.ILayerVersion;
 
   /**
    * An AWS Lambda layer that contains the `aws` CLI.
@@ -1106,6 +1101,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly ipFamily?: IpFamily;
   public abstract readonly kubectlRole?: iam.IRole;
   public abstract readonly kubectlLambdaRole?: iam.IRole;
+  public abstract readonly kubectlLayer?: lambda.ILayerVersion;
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
   public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
@@ -1496,7 +1492,6 @@ export class Cluster extends ClusterBase {
   /**
    * An AWS Lambda layer that includes `kubectl` and `helm`
    *
-   * If not defined, a default layer will be used containing Kubectl 1.20 and Helm 3.8
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
 
@@ -1602,9 +1597,6 @@ export class Cluster extends ClusterBase {
     this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
 
-    if (!props.kubectlLayer) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:clusterKubectlLayerNotSpecified', `You created a cluster with Kubernetes Version ${props.version.version} without specifying the kubectlLayer property. The property will become required instead of optional in 2025 Jan. Please update your CDK code to provide a kubectlLayer.`);
-    }
     this.version = props.version;
 
     // since this lambda role needs to be added to the trust policy of the creation role,
@@ -1664,22 +1656,30 @@ export class Cluster extends ClusterBase {
       && this.endpointAccess._config.publicCidrs
       && this.endpointAccess._config.publicCidrs.length !== 0;
 
+    // Check if any subnet selection is pending lookup
+    const hasPendingLookup = this.vpcSubnets.some(placement =>
+      this.vpc.selectSubnets(placement).isPendingLookup,
+    );
+
     // validate endpoint access configuration
+    if (!hasPendingLookup) {
+      if (privateSubnets.length === 0 && publicAccessDisabled) {
+        // no private subnets and no public access at all, no good.
+        throw new Error('Vpc must contain private subnets when public endpoint access is disabled');
+      }
 
-    if (privateSubnets.length === 0 && publicAccessDisabled) {
-      // no private subnets and no public access at all, no good.
-      throw new Error('Vpc must contain private subnets when public endpoint access is disabled');
-    }
-
-    if (privateSubnets.length === 0 && publicAccessRestricted) {
+      if (privateSubnets.length === 0 && publicAccessRestricted) {
       // no private subnets and public access is restricted, no good.
-      throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
+        throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
+      }
     }
 
     const placeClusterHandlerInVpc = props.placeClusterHandlerInVpc ?? false;
 
-    if (placeClusterHandlerInVpc && privateSubnets.length === 0) {
-      throw new Error('Cannot place cluster handler in the VPC since no private subnets could be selected');
+    if (!hasPendingLookup) {
+      if (placeClusterHandlerInVpc && privateSubnets.length === 0) {
+        throw new Error('Cannot place cluster handler in the VPC since no private subnets could be selected');
+      }
     }
 
     if (props.clusterHandlerSecurityGroup && !placeClusterHandlerInVpc) {

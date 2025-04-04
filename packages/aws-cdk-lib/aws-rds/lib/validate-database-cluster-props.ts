@@ -21,6 +21,10 @@ const standardDatabaseRules: ValidationRule<DatabaseClusterProps>[] = [
     condition: (props) => props.databaseInsightsMode !== undefined && !props.engine.engineType.startsWith('aurora'),
     message: () => '`performanceInsightEncryptionKey` must be set when `databaseInsightsMode` is set to \'${DatabaseInsightsMode.ADVANCED}\'',
   },
+  {
+    condition: (props) => props.replicationSourceIdentifier !== undefined && props.credentials !== undefined,
+    message: () => 'Cannot specify both `replicationSourceIdentifier` and `credentials`. The value is inherited from the source DB cluster',
+  },
 ];
 
 const limitlessDatabaseRules: ValidationRule<DatabaseClusterProps>[] = [

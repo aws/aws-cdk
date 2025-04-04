@@ -226,6 +226,17 @@ export interface ClusterInstanceOptions {
   readonly publiclyAccessible?: boolean;
 
   /**
+   * The Availability Zone (AZ) where the database will be created.
+   *
+   * For Amazon Aurora, each Aurora DB cluster hosts copies of its storage in three separate Availability Zones.
+   * Specify one of these Availability Zones. Aurora automatically chooses an appropriate Availability Zone if you don't specify one.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.RegionsAndAvailabilityZones.html
+   * @default - A random, system-chosen Availability Zone in the endpointʼs AWS Region.
+   */
+  readonly availabilityZone?: string;
+
+  /**
    * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
    *
    * Example: 'Sun:23:45-Mon:00:15'
@@ -323,6 +334,20 @@ export interface ClusterInstanceOptions {
    * @default - RDS will choose a certificate authority
    */
   readonly caCertificate?: CaCertificate;
+
+  /**
+   * Specifies whether changes to the DB instance and any pending modifications are applied immediately, regardless of the `preferredMaintenanceWindow` setting.
+   * If set to `false`, changes are applied during the next maintenance window.
+   *
+   * Until RDS applies the changes, the DB instance remains in a drift state.
+   * As a result, the configuration doesn't fully reflect the requested modifications and temporarily diverges from the intended state.
+   *
+   * This property also determines whether the DB instance reboots when a static parameter is modified in the associated DB parameter group.
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Modifying.html
+   *
+   * @default - Changes will be applied immediately
+   */
+  readonly applyImmediately?: boolean;
 }
 
 /**
@@ -538,6 +563,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         // Instance properties
         dbInstanceClass: props.instanceType ? databaseInstanceType(instanceType) : undefined,
         publiclyAccessible,
+        availabilityZone: props.availabilityZone,
         preferredMaintenanceWindow: props.preferredMaintenanceWindow,
         enablePerformanceInsights: this.performanceInsightsEnabled || props.enablePerformanceInsights, // fall back to undefined if not set
         performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
@@ -552,6 +578,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
         allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
         caCertificateIdentifier: props.caCertificate && props.caCertificate.toString(),
+        applyImmediately: props.applyImmediately,
       });
     // For instances that are part of a cluster:
     //

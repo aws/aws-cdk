@@ -23,12 +23,14 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
       - [Code Verification](#code-verification)
       - [Link Verification](#link-verification)
     - [Sign In](#sign-in)
+      - [Choice-based authentication](#choice-based-authentication-passwordless-sign-in--passkey-sign-in)
     - [Attributes](#attributes)
     - [Attribute verification](#attribute-verification)
     - [Security](#security)
       - [Multi-factor Authentication (MFA)](#multi-factor-authentication-mfa)
       - [Account Recovery Settings](#account-recovery-settings)
       - [Advanced Security Mode](#advanced-security-mode)
+      - [Threat Protection](#threat-protection)
     - [Emails](#emails)
     - [Device Tracking](#device-tracking)
     - [Lambda Triggers](#lambda-triggers)
@@ -211,6 +213,84 @@ new cognito.UserPool(this, 'myuserpool', {
 A user pool can optionally ignore case when evaluating sign-ins. When `signInCaseSensitive` is false, Cognito will not
 check the capitalization of the alias when signing in. Default is true.
 
+#### Choice-based authentication: passwordless sign-in / passkey sign-in
+
+User pools can be configured to allow the following authentication methods in choice-based authentication:
+- Passwordless sign-in with email message one-time password
+- Passwordless sign-in with SMS message one-time password
+- Passkey (WebAuthn) sign-in
+
+To use choice-based authentication, [User pool feature plan](#user-pool-feature-plans) should be Essentials or higher.
+
+For details of authentication methods and client implementation, see [Manage authentication methods in AWS SDKs](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flows-selection-sdk.html).
+
+The following code configures a user pool with choice-based authentication enabled:
+
+```ts
+const userPool = new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: {
+      password: true, // password authentication must be enabled
+      emailOtp: true, // enables email message one-time password
+      smsOtp: true,   // enables SMS message one-time password
+      passkey: true,  // enables passkey sign-in
+    },
+  },
+});
+
+// You should also configure the user pool client with USER_AUTH authentication flow allowed
+userPool.addClient('myclient', {
+  authFlows: { user: true },
+});
+```
+
+⚠️ Enabling SMS message one-time password requires the AWS account be activated to SMS message sending.
+Learn more about [SMS message settings for Amazon Cognito user pools](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-sms-settings.html).
+
+When enabling passkey sign-in, you should specify the authentication domain used as the relying party ID.
+Learn more about [passkey sign-in of user pools](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow-methods.html#amazon-cognito-user-pools-authentication-flow-methods-passkey) and [Web Authentication API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API).
+
+```ts
+// Use the hosted Amazon Cognito domain as the relying party ID
+new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true, passkey: true },
+  },
+  passkeyRelyingPartyId: 'myclientname.auth.region-name.amazoncognito.com',
+});
+
+// Use the custom domain as the relying party ID
+new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true, passkey: true },
+  },
+  passkeyRelyingPartyId: 'auth.example.com',
+});
+```
+
+You can configure user verification to be preferred (default) or required. When you set user verification to preferred, users can set up authenticators that don't have the user verification capability, and registration and authentication operations can succeed without user verification. To mandate user verification in passkey registration and authentication, specify `passkeyUserVerification` to `PasskeyUserVerification.REQUIRED`.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true, passkey: true },
+  },
+  passkeyRelyingPartyId: 'auth.example.com',
+  passkeyUserVerification: cognito.PasskeyUserVerification.REQUIRED,
+});
+```
+
+To disable choice-based authentication explicitly, specify `password` only.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true },
+  },
+  featurePlan: cognito.FeaturePlan.LITE,
+});
+```
+
 ### Attributes
 
 Attributes represent the various properties of each user that's collected and stored in the user pool. Cognito
@@ -387,7 +467,7 @@ A user will not be allowed to reset their password via phone if they are also us
 
 #### Advanced Security Mode
 
-⚠️ Advanced Security Mode is deprecated in favor of [user pool feature plans](#user-pool-feature-plans).
+⚠️ Advanced Security Mode is deprecated in favor of [Threat Protection](#threat-protection).
 
 User pools can be configured to use Advanced security. You can turn the user pool advanced security features on, and customize the actions that are taken in response to different risks. Or you can use audit mode to gather metrics on detected risks without taking action. In audit mode, the advanced security features publish metrics to Amazon CloudWatch. See the [documentation on Advanced security](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-advanced-security.html) to learn more.
 
@@ -397,6 +477,16 @@ new cognito.UserPool(this, 'myuserpool', {
   advancedSecurityMode: cognito.AdvancedSecurityMode.ENFORCED,
 });
 ```
+
+### Threat Protection
+
+This feature is only available if your Feature Plan is set to PLUS. 
+
+Threat Protection can be set to configure enforcement levels and automatic responses for users in password-based and custom-challenge authentication flows.
+For configuration, there are 2 options for standard authentication and custom authentication.
+These are represented with properties `standardThreatProtectionMode` and `customThreatProtectionMode`.
+See the [documentation on Threat Protection](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-threat-protection.html)
+
 
 ### Emails
 
@@ -523,7 +613,8 @@ userpool.addTrigger(cognito.UserPoolOperation.USER_MIGRATION, new lambda.Functio
 }));
 ```
 
-Additionally, only the pre token generation Lambda trigger supports trigger events with lambda version V2.0:
+Additionally, only the pre token generation Lambda trigger supports trigger events with lambda version V2.0 or V3.0.
+For details, see [Pre Token Generation Lambda Trigger](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html).
 
 ```ts
 declare const userpool: cognito.UserPool;

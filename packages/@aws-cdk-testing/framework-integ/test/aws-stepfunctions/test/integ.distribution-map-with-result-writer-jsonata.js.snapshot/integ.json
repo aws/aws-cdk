@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "DistributedMap-JSONATA/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-map-with-result-writer"
+      ],
+      "assertionStack": "DistributedMap-JSONATA/DefaultTest/DeployAssert",
+      "assertionStackName": "DistributedMapJSONATADefaultTestDeployAssertF1573CB9"
+    }
+  }
+}

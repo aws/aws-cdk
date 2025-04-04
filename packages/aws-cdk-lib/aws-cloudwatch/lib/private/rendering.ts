@@ -2,6 +2,7 @@ import { DropEmptyObjectAtTheEndOfAnArray } from './drop-empty-object-at-the-end
 import { accountIfDifferentFromStack, regionIfDifferentFromStack } from './env-tokens';
 import { dispatchMetric, metricKey } from './metric-util';
 import { dropUndefined } from './object';
+import { UnscopedValidationError } from '../../../core';
 import { IMetric } from '../metric-types';
 
 /**
@@ -159,7 +160,7 @@ export class MetricSet<A> {
     if (id) {
       existingEntry = this.metricById.get(id);
       if (existingEntry && metricKey(existingEntry.metric) !== key) {
-        throw new Error(`Cannot have two different metrics share the same id ('${id}') in one Alarm or Graph. Rename one of them.`);
+        throw new UnscopedValidationError(`Cannot have two different metrics share the same id ('${id}') in one Alarm or Graph. Rename one of them.`);
       }
     }
 

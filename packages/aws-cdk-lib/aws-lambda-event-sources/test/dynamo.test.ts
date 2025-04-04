@@ -587,9 +587,9 @@ describe('DynamoEventSource', () => {
     // THEN
     expect(() =>
       fn.addEventSource(new sources.DynamoEventSource(table, {
-        retryAttempts: -1,
+        retryAttempts: -2, // Test an invalid negative value
         startingPosition: lambda.StartingPosition.LATEST,
-      }))).toThrow(/retryAttempts must be between 0 and 10000 inclusive, got -1/);
+      }))).toThrow(/retryAttempts must be -1 \(for infinite\) or between 0 and 10000 inclusive, got -2/);
   });
 
   test('fails if retryAttempts > 10000', () => {
@@ -609,7 +609,7 @@ describe('DynamoEventSource', () => {
       fn.addEventSource(new sources.DynamoEventSource(table, {
         retryAttempts: 10001,
         startingPosition: lambda.StartingPosition.LATEST,
-      }))).toThrow(/retryAttempts must be between 0 and 10000 inclusive, got 10001/);
+      }))).toThrow(/retryAttempts must be -1 \(for infinite\) or between 0 and 10000 inclusive, got 10001/);
   });
 
   test('specific bisectBatchOnFunctionError', () => {
@@ -897,7 +897,7 @@ describe('DynamoEventSource', () => {
     });
   });
 
-  test('S3 onFailure Destination raise unsupport error', () => {
+  test('S3 onFailure Destination supported', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const testLambdaFunction = new TestFunction(stack, 'Fn');
@@ -913,14 +913,20 @@ describe('DynamoEventSource', () => {
     const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
     const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
 
-    expect(() => {
-      // WHEN
-      testLambdaFunction.addEventSource(new sources.DynamoEventSource(table, {
-        startingPosition: lambda.StartingPosition.LATEST,
-        onFailure: s3OnFailureDestination,
-      }));
-    // THEN
-    }).toThrow('S3 onFailure Destination is not supported for this event source');
+    testLambdaFunction.addEventSource(new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      onFailure: s3OnFailureDestination,
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'DestinationConfig': {
+        'OnFailure': {
+          'Destination': {
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']],
+          },
+        },
+      },
+    });
   });
 
   test('filter on boolean', () => {

@@ -1,0 +1,70 @@
+{
+ "Resources": {
+  "RequiredResourceA026AF42": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Outputs": {
+  "StringReference": {
+   "Value": {
+    "Fn::ImportValue": "Producer:ExportsOutputFnGetAttNestedNestedStackNestedNestedStackResourceDEFDAA4DOutputsProducerNestedNestedString6B1C0634Ref48A5688D"
+   }
+  },
+  "NumberReference": {
+   "Value": {
+    "Fn::ImportValue": "Producer:ExportsOutputFnGetAttNestedNestedStackNestedNestedStackResourceDEFDAA4DOutputsProducerNestedNestedNumberEF88914ERefF4C5CBF2"
+   }
+  },
+  "ListReference": {
+   "Value": {
+    "Fn::Join": [
+     "$$",
+     {
+      "Fn::Split": [
+       "||",
+       {
+        "Fn::ImportValue": "Producer:ExportsOutputFnGetAttNestedNestedStackNestedNestedStackResourceDEFDAA4DOutputsProducerNestedNestedListCF0BC56DRefE50D3EDA"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
