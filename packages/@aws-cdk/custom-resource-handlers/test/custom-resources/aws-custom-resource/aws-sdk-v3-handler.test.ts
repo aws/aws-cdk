@@ -649,6 +649,46 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
   expect(credentialProviderMock).not.toHaveBeenCalled();
 });
 
+test('Role Session Name is sanitized before assuming', async () => {
+  // GIVEN
+  s3MockClient.on(S3.GetObjectCommand).resolves({});
+  const credentialProviders = await import('@aws-sdk/credential-providers' as string);
+  const mockCreds = credentialProviders.fromTemporaryCredentials({
+    params: { RoleArn: 'arn:aws:iam::123456789012:role/CoolRole' },
+  });
+  const credentialProviderMock = jest.spyOn(credentialProviders, 'fromTemporaryCredentials').mockReturnValue(mockCreds);
+  credentialProviderMock.mockClear();
+
+  await handler({
+    LogicalResourceId: 'logicalResourceId',
+    RequestId: 'requestId',
+    RequestType: 'Create',
+    ResponseURL: 'responseUrl',
+    ResourceProperties: {
+      Create: JSON.stringify({
+        service: '@aws-sdk/client-s3',
+        action: 'GetObjectCommand',
+        assumedRoleArn: 'arn:aws:iam::123456789012:role/CoolRole',
+        parameters: {
+          Bucket: 'foo',
+          Key: 'bar',
+        },
+        physicalResourceId: { id: 'This:String(Should)Get$Sanitized' },
+      }),
+      ServiceToken: 'serviceToken',
+    },
+    ResourceType: 'resourceType',
+    ServiceToken: 'serviceToken',
+    StackId: 'stackId',
+  }, {} as AWSLambda.Context);
+  expect(credentialProviderMock).toHaveBeenCalledWith(expect.objectContaining({
+    params: expect.objectContaining({
+      RoleSessionName: expect.stringContaining('ThisStringShouldGetSanitized'),
+    }),
+  }));
+  credentialProviderMock.mockClear();
+});
+
 test('Being able to call the AWS SDK v2 format', async () => {
   s3MockClient.on(S3.GetObjectCommand).resolves({});
   const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
