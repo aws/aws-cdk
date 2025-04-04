@@ -124,8 +124,10 @@ export interface BackupPlanCopyActionProps {
 export interface BackupPlanIndexActionProps {
   /**
    * Specifies the resource types to include in the index action.
+   *
+   * @default - no resource types are specified
    */
-  readonly resourceTypes: IndexActionResourceType[];
+  readonly resourceTypes?: IndexActionResourceType[];
 }
 
 /**
