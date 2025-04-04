@@ -1827,6 +1827,17 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
 });
 ```
 
+## Migrating a pipeline type from V1 to V2
+
+To migrate your pipeline type from V1 to V2, you just need to update the `pipelineType` property to `PipelineType.V2`.
+This migration does not cause replacement of your pipeline.
+
+When the `@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2` feature flag is set to `true` (default for new projects),
+the V2 type is selected by default if you do not specify a value for `pipelineType` property. Otherwise, the V1 type is selected.
+
+See the [CodePipeline documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/pipeline-types-planning.html)
+for more details on the differences between each type.
+
 ## Known Issues
 
 There are some usability issues that are caused by underlying technology, and
