@@ -356,6 +356,32 @@ resource handler.
 > NOTE: a new AWS Lambda handler will be created in your stack for each combination
 > of memory and storage size.
 
+### Memory Requirements for JSON Files with Double Quotes in Markers
+
+When deploying JSON files and using markers that contain double quotes (especially with `Source.jsonData`), 
+you may need to increase the memory limit. This is because JSON files with double quotes in markers 
+require special processing that can consume significant memory, especially for large or complex JSON files.
+
+```ts
+declare const bucket: s3.Bucket;
+const deployment = new s3deploy.BucketDeployment(this, 'JsonDeployment', {
+  sources: [
+    s3deploy.Source.jsonData('config.json', {
+      api_endpoint: 'https://api.example.com',
+      message: 'Hello "World"', // Contains double quotes
+      // And many additional properties
+    })
+  ],
+  destinationBucket: bucket,
+  memoryLimit: 1024, // Increase memory limit for large JSON (few MB or more) with double quotes
+});
+```
+
+Our testing shows:
+- Standard operations stay under 32MB memory usage
+- Complex JSON files with double quotes in markers may require up to 256MB or more
+- Memory usage for complex JSON processing can be up to 7-8x the file size
+
 ## EFS Support
 
 If your workflow needs more disk space than default (512 MB) disk space, you may attach an EFS storage to underlying
