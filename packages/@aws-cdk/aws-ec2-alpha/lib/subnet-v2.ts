@@ -100,7 +100,7 @@ export interface SubnetV2Props {
    * Controls if instances launched into the subnet should be assigned a public IP address.
    * This property can only be set for public subnets.
    *
-   * @default false
+   * @default - undefined in case not provided as an input
    */
   readonly mapPublicIpOnLaunch?: boolean;
 
@@ -294,7 +294,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
       ipv6CidrBlock: ipv6CidrBlock,
       availabilityZone: props.availabilityZone,
       assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation ?? false,
-      mapPublicIpOnLaunch: props.mapPublicIpOnLaunch ?? false,
+      mapPublicIpOnLaunch: props.mapPublicIpOnLaunch ?? undefined,
     });
 
     this.node.defaultChild = subnet;
