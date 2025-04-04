@@ -1,5 +1,4 @@
-import { ComparisonOperator, DurationUnit, KeyAttributeType, MetricStatistic, MetricType } from './constants';
-import { KeyAttributes } from './KeyAttributes';
+import { DurationUnit, KeyAttributeType } from './constants';
 import { PeriodBasedMetricProps, RequestBasedMetricProps } from './metric';
 import { Goal } from './interval';
 
@@ -121,45 +120,6 @@ export interface KeyAttributesProps {
 }
 
 /**
- * Base interface for all SLO properties
- */
-export interface SloBaseProps {
-    /**
-     * The name of the SLO
-     * Must be unique within the account/region
-     *
-     * @required
-     */
-    readonly name: string;
-
-    /**
-     * A description of the SLO's purpose
-     *
-     * @default - no description
-     */
-    readonly description?: string;
-
-    /**
-     * The goal configuration for the SLO
-     * Includes attainment target and time window
-     * Defines what "good" looks like for this SLO
-     *
-     * @required
-     */
-    readonly goal: Goal;
-
-    /**
-     * The burn rate windows in minutes
-     * Used to calculate error budget consumption
-     * Maximum of 10 windows
-     * Each window cannot exceed 7 days (10080 minutes)
-     *
-     * @default - no burn rate windows
-     */
-    readonly burnRateWindows?: number[];
-}
-
-/**
  * Interface defining SLO behavior and runtime properties
  */
 export interface ISlo {
@@ -198,39 +158,50 @@ export interface ISlo {
 }
 
 /**
- * Properties for period-based SLO configuration
- */
-export interface PeriodBasedSloProps {
+* Base interface for all SLO properties
+*/
+export interface SloBaseProps {
     /**
      * The name of the SLO
+     * Must be unique within the account/region
      *
      * @required
      */
     readonly name: string;
 
     /**
-     * The description of the SLO
+     * A description of the SLO's purpose
      *
      * @default - no description
      */
     readonly description?: string;
 
     /**
-     * The goal configuration
+     * The goal configuration for the SLO
+     * Includes attainment target and time window
+     * Defines what "good" looks like for this SLO
      *
      * @required
      */
     readonly goal: Goal;
 
     /**
-     * The burn rate windows
+     * The burn rate windows in minutes
+     * Used to calculate error budget consumption
+     * Maximum of 10 windows
+     * Each window cannot exceed 7 days (10080 minutes)
      *
      * @default - no burn rate windows
      */
     readonly burnRateWindows?: number[];
+}
 
+/**
+ * Properties for period-based SLO configuration
+ */
+export interface PeriodBasedSloProps extends SloBaseProps {
     /**
-     * The metric configuration
+     * The Period Based Slo metric configuration
      *
      * @required
      */
@@ -240,10 +211,11 @@ export interface PeriodBasedSloProps {
 /**
  * Properties for request-based SLO configuration
  */
-export interface RequestBasedSloProps {
-    readonly name: string;
-    readonly description?: string;
-    readonly goal: Goal;
-    readonly burnRateWindows?: number[];
+export interface RequestBasedSloProps extends SloBaseProps{
+    /**
+     * The Request Based Slo metric configuration
+     *
+     * @required
+     */
     readonly metric: RequestBasedMetricProps;
 }

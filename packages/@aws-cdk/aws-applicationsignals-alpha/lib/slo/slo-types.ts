@@ -1,8 +1,10 @@
 import { ISlo, PeriodBasedSloProps, RequestBasedSloProps } from './slo';
 import { ComparisonOperator, MetricType } from './constants';
 import { Goal } from './interval';
-import { PeriodBasedAppSignalsMetricProps, PeriodBasedCloudWatchMetricProps, RequestBasedAppSignalsMetricProps, RequestBasedCloudWatchMetricProps, SliMetricBaseProps } from './metric';
-
+import { PeriodBasedAppSignalsMetricProps, PeriodBasedCloudWatchMetricProps, RequestBasedAppSignalsMetricProps, RequestBasedCloudWatchMetricProps } from './metric';
+import { Resource } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+import * as applicationsignals from 'aws-cdk-lib/aws-applicationsginals';
 
 /**
  * Base class for all SLO implementations
@@ -45,13 +47,27 @@ export abstract class ServiceLevelObjective extends Resource implements ISlo {
     }
 
     protected getMetricComparisonOperator(metric: PeriodBasedAppSignalsMetricProps | PeriodBasedCloudWatchMetricProps | RequestBasedAppSignalsMetricProps | RequestBasedCloudWatchMetricProps): ComparisonOperator {
-        return metric.comparisonOperator ?? getDefaultComparisonOperator(metric.metricType);
+        return metric.comparisonOperator ?? this.getDefaultComparisonOperator(metric.metricType);
+    }
+
+    protected getPeriod(periodSeconds?: number): number {
+        return periodSeconds ?? 60;
     }
 
     protected isAppSignalsMetric(metric: PeriodBasedAppSignalsMetricProps | PeriodBasedCloudWatchMetricProps | RequestBasedAppSignalsMetricProps | RequestBasedCloudWatchMetricProps): boolean {
         return 'metricType' in metric && 'keyAttributes' in metric;
     }
 
+    protected getDefaultComparisonOperator(metricType?: MetricType): ComparisonOperator {
+        switch (metricType) {
+            case MetricType.LATENCY:
+                return ComparisonOperator.LESS_THAN_OR_EQUAL;
+            case MetricType.AVAILABILITY:
+                return ComparisonOperator.GREATER_THAN_OR_EQUAL;
+            default:
+                throw new Error('ComparisonOperator must be specified when metricType is not provided');
+        }
+    }
     abstract _bind(): applicationsignals.CfnServiceLevelObjectiveProps;
 }
 
@@ -75,11 +91,11 @@ export class PeriodBasedSlo extends ServiceLevelObjective {
                     metricType: metric.metricType,
                     keyAttributes: metric.keyAttributes,
                     operationName: metric.operationName,
-                    periodSeconds: metric.periodSeconds,
+                    periodSeconds: this.getPeriod(metric.periodSeconds),
                     statistic: metric.statistic,
                 } : {
                     metricDataQueries: metric.metricDataQueries,
-                    periodSeconds: metric.periodSeconds,
+                    periodSeconds: this.getPeriod(metric.periodSeconds),
                     statistic: metric.statistic,
                 },
                 comparisonOperator: this.getMetricComparisonOperator(metric),
@@ -118,19 +134,5 @@ export class RequestBasedSlo extends ServiceLevelObjective {
                 metricThreshold: metric.metricThreshold,
             },
         };
-    }
-}
-
-/**
- * Helper function to get default comparison operator
- */
-function getDefaultComparisonOperator(metricType?: MetricType): ComparisonOperator {
-    switch (metricType) {
-        case MetricType.LATENCY:
-            return ComparisonOperator.LESS_THAN_OR_EQUAL;
-        case MetricType.AVAILABILITY:
-            return ComparisonOperator.GREATER_THAN_OR_EQUAL;
-        default:
-            throw new Error('ComparisonOperator must be specified when metricType is not provided');
     }
 }
