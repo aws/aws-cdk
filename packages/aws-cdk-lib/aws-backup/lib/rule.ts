@@ -130,6 +130,8 @@ export interface BackupPlanIndexActionProps {
 
 /**
  * The resource type to index.
+ *
+ * @see https://docs.aws.amazon.com/aws-backup/latest/devguide/API_IndexAction.html
  */
 export enum IndexActionResourceType {
   /**
