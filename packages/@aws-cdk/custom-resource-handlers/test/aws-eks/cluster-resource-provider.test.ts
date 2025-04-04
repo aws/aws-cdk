@@ -403,7 +403,7 @@ describe('cluster resource provider', () => {
         mocks.simulateResponse.describeUpdateResponseMockErrors = [
           {
             errorMessage: 'errorMessageMock',
-            errorCode: 'errorCodeMock',
+            errorCode: eks.ErrorCode.UNKNOWN,
             resourceIds: [
               'foo', 'bar',
             ],
@@ -418,7 +418,7 @@ describe('cluster resource provider', () => {
         }
         expect(error).toBeDefined();
         expect(mocks.actualRequest.describeUpdateRequest).toEqual({ name: 'physical-resource-id', updateId: 'foobar' });
-        expect(error.message).toEqual('cluster update id "foobar" failed with errors: [{"errorMessage":"errorMessageMock","errorCode":"errorCodeMock","resourceIds":["foo","bar"]}]');
+        expect(error.message).toEqual('cluster update id "foobar" failed with errors: [{"errorMessage":"errorMessageMock","errorCode":"Unknown","resourceIds":["foo","bar"]}]');
       });
 
       test('with "InProgress" status, returns IsComplete=false', async () => {
@@ -541,6 +541,95 @@ describe('cluster resource provider', () => {
           const resp = await handler.onEvent();
           expect(resp).toEqual({ EksUpdateId: 'MockEksUpdateStatusId' });
           expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+        });
+
+        test('update both version and authModeUpdate with accessConfig undefined', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            version: '2.0',
+            accessConfig: { authenticationMode: 'API' },
+          }, {
+            version: '1.0',
+            accessConfig: undefined,
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+        });
+
+        test('both version and authModeUpdate defined and modify both of them', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            version: '2.0',
+            accessConfig: { authenticationMode: 'API' },
+          }, {
+            version: '1.0',
+            accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+        });
+
+        test('update both version and logging with logging undefined', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            version: '2.0',
+            logging: {
+              clusterLogging: [
+                {
+                  types: ['api'],
+                  enabled: true,
+                },
+              ],
+            },
+          }, {
+            version: '1.0',
+            logging: undefined,
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+        });
+
+        test('both version and logging defined and modify both of them', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            version: '2.0',
+            logging: {
+              clusterLogging: [
+                {
+                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+                  enabled: true,
+                },
+              ],
+            },
+          }, {
+            version: '1.0',
+            logging: {
+              clusterLogging: [
+                {
+                  types: ['api', 'audit', 'authenticator', 'controllerManager'],
+                  enabled: true,
+                },
+              ],
+            },
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
         });
       });
       describe('assessConfig change', () => {
@@ -672,7 +761,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
         });
         test('from undefined to both access and authenticationMode enabled', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -692,7 +781,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
         });
         test('update both EndpointAccessUpdate and AuthModeUpdate with accessConfig undefined', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -716,7 +805,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
         });
         test('update both EndpointAccessUpdate and AuthModeUpdate with accessConfig defined', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -740,7 +829,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
         });
       });
 
@@ -824,7 +913,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
         });
         test('both logging and access defined and modify both of them', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -862,7 +951,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
         });
         test('Given logging enabled and unchanged, updating the only publicAccessCidrs is allowed ', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {

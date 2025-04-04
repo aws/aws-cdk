@@ -264,6 +264,13 @@ export interface CodePipelineProps {
    * @default - no cross region replication buckets.
    */
   readonly crossRegionReplicationBuckets?: { [region: string]: s3.IBucket };
+
+  /**
+   * Use pipeline service role for actions if no action role configured
+   *
+   * @default - false
+   */
+  readonly usePipelineRoleForActions?: boolean;
 }
 
 /**
@@ -367,6 +374,12 @@ export class CodePipeline extends PipelineBase {
    */
   public readonly selfMutationEnabled: boolean;
 
+  /**
+   * Allow pipeline service role used for actions if no action role configured
+   * instead of creating a new role for each action
+   */
+  public readonly usePipelineRoleForActions: boolean;
+
   private _pipeline?: cp.Pipeline;
   private artifacts = new ArtifactMap();
   private _synthProject?: cb.IProject;
@@ -401,6 +414,7 @@ export class CodePipeline extends PipelineBase {
     this.cliVersion = props.cliVersion ?? preferredCliVersion();
     this.useChangeSets = props.useChangeSets ?? true;
     this.stackOutputs = new StackOutputsMap(this);
+    this.usePipelineRoleForActions = props.usePipelineRoleForActions ?? false;
   }
 
   /**
@@ -491,6 +505,7 @@ export class CodePipeline extends PipelineBase {
         role: this.props.role,
         enableKeyRotation: this.props.enableKeyRotation,
         artifactBucket: this.props.artifactBucket,
+        usePipelineRoleForActions: this.usePipelineRoleForActions,
       });
     }
 
@@ -543,7 +558,7 @@ export class CodePipeline extends PipelineBase {
         const sharedParent = new GraphNodeCollection(flatten(tranches)).commonAncestor();
 
         // If we produce the same action name for some actions, append a unique number
-        let namesCtrs = new Map<string, number>();
+        let namesUsed = new Set<string>();
 
         let runOrder = 1;
         for (const tranche of tranches) {
@@ -554,12 +569,16 @@ export class CodePipeline extends PipelineBase {
             const nodeType = this.nodeTypeFromNode(node);
 
             // Come up with a unique name for this action, incrementing a counter if necessary
-            let name = actionName(node, sharedParent);
-            const nameCount = namesCtrs.get(name) ?? 0;
-            if (nameCount > 0) {
-              name += `${nameCount + 1}`;
+            const baseName = actionName(node, sharedParent);
+            let name = baseName;
+            for (let ctr = 1; ; ctr++) {
+              const candidate = ctr > 1 ? `${name}${ctr}` : name;
+              if (!namesUsed.has(candidate)) {
+                name = candidate;
+                break;
+              }
             }
-            namesCtrs.set(name, nameCount + 1);
+            namesUsed.add(name);
 
             const variablesNamespace = node.data?.type === 'step'
               ? namespaceStepOutputs(node.data.step, pipelineStage, name)
