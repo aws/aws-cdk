@@ -10,6 +10,7 @@
 const { PRIORITIES, LABELS, STATUS, ...PROJECT_CONFIG } = require('./project-config');
 const {
   updateProjectField,
+  updateProjectDateField,
   addItemToProject,
   fetchProjectFields,
   fetchProjectItem,
@@ -129,7 +130,7 @@ module.exports = async ({ github, context }) => {
           (option) => option.name === STATUS.READY
         )?.id;
 
-        // Set both priority and Ready status for new items
+        // Set priority, Ready status and current date for new items
         await Promise.all([
           updateProjectField({
             github,
@@ -144,6 +145,13 @@ module.exports = async ({ github, context }) => {
             itemId: itemId,
             fieldId: PROJECT_CONFIG.statusFieldId,
             value: readyStatusId,
+          }),
+          updateProjectDateField({
+            github,
+            projectId: PROJECT_CONFIG.projectId,
+            itemId: itemId,
+            fieldId: PROJECT_CONFIG.addedOnFieldId,
+            date: new Date().toISOString(),
           })
         ]);
       }

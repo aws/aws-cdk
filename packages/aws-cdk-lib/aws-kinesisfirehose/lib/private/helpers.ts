@@ -69,6 +69,7 @@ export function createLoggingOptions(scope: Construct, props: DestinationLogging
 }
 
 export function createBufferingHints(
+  scope: Construct,
   interval?: cdk.Duration,
   size?: cdk.Size,
 ): CfnDeliveryStream.BufferingHintsProperty | undefined {
@@ -78,11 +79,11 @@ export function createBufferingHints(
 
   const intervalInSeconds = interval?.toSeconds() ?? 300;
   if (intervalInSeconds > 900) {
-    throw new Error(`Buffering interval must be less than 900 seconds. Buffering interval provided was ${intervalInSeconds} seconds.`);
+    throw new cdk.ValidationError(`Buffering interval must be less than 900 seconds. Buffering interval provided was ${intervalInSeconds} seconds.`, scope);
   }
   const sizeInMBs = size?.toMebibytes() ?? 5;
   if (sizeInMBs < 1 || sizeInMBs > 128) {
-    throw new Error(`Buffering size must be between 1 and 128 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`);
+    throw new cdk.ValidationError(`Buffering size must be between 1 and 128 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`, scope);
   }
   return { intervalInSeconds, sizeInMBs };
 }
@@ -153,7 +154,7 @@ export function createBackupConfig(scope: Construct, role: iam.IRole, props?: De
       roleArn: role.roleArn,
       prefix: props.dataOutputPrefix,
       errorOutputPrefix: props.errorOutputPrefix,
-      bufferingHints: createBufferingHints(props.bufferingInterval, props.bufferingSize),
+      bufferingHints: createBufferingHints(scope, props.bufferingInterval, props.bufferingSize),
       compressionFormat: props.compression?.value,
       encryptionConfiguration: createEncryptionConfig(role, props.encryptionKey),
       cloudWatchLoggingOptions: loggingOptions,
