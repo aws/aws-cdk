@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "ecs-fluentd-test/DefaultTest": {
+      "stacks": [
+        "ecs-fluentd"
+      ],
+      "assertionStack": "ecs-fluentd-test/DefaultTest/DeployAssert",
+      "assertionStackName": "ecsfluentdtestDefaultTestDeployAssert6E609EBD"
+    }
+  }
+}
