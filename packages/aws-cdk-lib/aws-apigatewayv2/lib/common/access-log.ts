@@ -1,4 +1,4 @@
-import { IHttpStage } from './stage';
+import { IStage } from './stage';
 import { ILogGroup } from '../../../aws-logs';
 
 /**
@@ -8,7 +8,7 @@ export interface IAccessLogDestination {
   /**
    * Binds this destination to the HttpApi Stage.
    */
-  bind(stage: IHttpStage): AccessLogDestinationConfig;
+  bind(stage: IStage): AccessLogDestinationConfig;
 }
 
 /**
@@ -31,7 +31,7 @@ export class LogGroupLogDestination implements IAccessLogDestination {
   /**
    * Binds this destination to the CloudWatch Logs.
    */
-  public bind(_stage: IHttpStage): AccessLogDestinationConfig {
+  public bind(_stage: IStage): AccessLogDestinationConfig {
     return {
       destinationArn: this.logGroup.logGroupArn,
     };

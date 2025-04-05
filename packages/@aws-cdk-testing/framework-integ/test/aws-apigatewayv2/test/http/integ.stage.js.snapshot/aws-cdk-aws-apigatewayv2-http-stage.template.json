@@ -25,7 +25,7 @@
        "Arn"
       ]
      },
-     "Format": "$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] \"$context.httpMethod $context.resourcePath $context.protocol\" $context.status $context.responseLength $context.requestId"
+     "Format": "{\"extendedRequestId\":\"$context.extendedRequestId\",\"requestTime\":\"$context.requestTime\"}"
     },
     "ApiId": {
      "Ref": "HttpApiF5A9A8A7"

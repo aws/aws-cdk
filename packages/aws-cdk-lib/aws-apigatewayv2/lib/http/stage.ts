@@ -1,10 +1,8 @@
 import { Construct } from 'constructs';
-import { IAccessLogDestination } from './access-log';
 import { IHttpApi } from './api';
 import { CfnStage } from '.././index';
-import { AccessLogFormat } from '../../../aws-apigateway/lib';
 import { Metric, MetricOptions } from '../../../aws-cloudwatch';
-import { Stack, Token } from '../../../core';
+import { Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { StageOptions, IStage, StageAttributes } from '../common';
@@ -82,24 +80,6 @@ export interface HttpStageOptions extends StageOptions {
    * @default '$default' the default stage of the API. This stage will have the URL at the root of the API endpoint.
    */
   readonly stageName?: string;
-
-  /**
-   * The CloudWatch Logs log group or Firehose delivery stream where to write access logs.
-   *
-   * @default - No destination
-   */
-  readonly accessLogDestination?: IAccessLogDestination;
-
-  /**
-   * A single line format of access logs of data, as specified by selected $context variables.
-   * The format must include either `AccessLogFormat.contextRequestId()`
-   * or `AccessLogFormat.contextExtendedRequestId()`.
-   *
-   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-logging-variables.html
-   *
-   * @default - Common Log Format
-   */
-  readonly accessLogFormat?: AccessLogFormat;
 }
 
 /**
@@ -187,32 +167,10 @@ export class HttpStage extends HttpStageBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    // custom access logging
-    let accessLogSettings: CfnStage.AccessLogSettingsProperty | undefined;
-    const accessLogDestination = props.accessLogDestination;
-    const accessLogFormat = props.accessLogFormat;
-    if (!accessLogDestination && !accessLogFormat) {
-      accessLogSettings = undefined;
-    } else {
-      if (accessLogFormat !== undefined &&
-        !Token.isUnresolved(accessLogFormat.toString()) &&
-        !/.*\$context.(requestId|extendedRequestId)\b.*/.test(accessLogFormat.toString())) {
-        throw new ValidationError('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`', this);
-      }
-      if (accessLogFormat !== undefined && accessLogDestination === undefined) {
-        throw new ValidationError('Access log format is specified without a destination', this);
-      }
-
-      accessLogSettings = {
-        destinationArn: accessLogDestination?.bind(this).destinationArn,
-        format: accessLogFormat?.toString() ? accessLogFormat?.toString() : AccessLogFormat.clf().toString(),
-      };
-    }
-
     new CfnStage(this, 'Resource', {
       apiId: props.httpApi.apiId,
       stageName: this.physicalName,
-      accessLogSettings,
+      accessLogSettings: this._validateAccessLogSettings(props.accessLogSettings),
       autoDeploy: props.autoDeploy,
       defaultRouteSettings: props.throttle || props.detailedMetricsEnabled ? {
         throttlingBurstLimit: props.throttle?.burstLimit,

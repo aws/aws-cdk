@@ -4,8 +4,7 @@ import { Certificate } from '../../../aws-certificatemanager';
 import { Metric } from '../../../aws-cloudwatch';
 import * as logs from '../../../aws-logs';
 import { Lazy, Stack } from '../../../core';
-import { DomainName, HttpApi, HttpStage } from '../../lib';
-import { LogGroupLogDestination } from '../../lib/http/access-log';
+import { DomainName, HttpApi, HttpStage, LogGroupLogDestination } from '../../lib';
 
 let stack: Stack;
 let api: HttpApi;
@@ -112,7 +111,9 @@ describe('HttpStage', () => {
     const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
     new HttpStage(stack, 'my-stage', {
       httpApi: api,
-      accessLogDestination: new LogGroupLogDestination(testLogGroup),
+      accessLogSettings: {
+        destination: new LogGroupLogDestination(testLogGroup),
+      },
     });
 
     // THEN
@@ -135,8 +136,10 @@ describe('HttpStage', () => {
     const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields();
     new HttpStage(stack, 'my-stage', {
       httpApi: api,
-      accessLogDestination: new LogGroupLogDestination(testLogGroup),
-      accessLogFormat: testFormat,
+      accessLogSettings: {
+        destination: new LogGroupLogDestination(testLogGroup),
+        format: testFormat,
+      },
     });
 
     // THEN
@@ -162,8 +165,10 @@ describe('HttpStage', () => {
       // THEN
       expect(() => new HttpStage(stack, 'my-stage', {
         httpApi: api,
-        accessLogDestination: new LogGroupLogDestination(testLogGroup),
-        accessLogFormat: testFormat,
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(testLogGroup),
+          format: testFormat,
+        },
       })).toThrow('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`');
     });
 
@@ -177,8 +182,10 @@ describe('HttpStage', () => {
       // THEN
       expect(() => new HttpStage(stack, 'my-stage', {
         httpApi: api,
-        accessLogDestination: new LogGroupLogDestination(testLogGroup),
-        accessLogFormat: testFormat,
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(testLogGroup),
+          format: testFormat,
+        },
       })).not.toThrow();
     });
 
@@ -192,8 +199,10 @@ describe('HttpStage', () => {
       // THEN
       expect(() => new HttpStage(stack, 'my-stage', {
         httpApi: api,
-        accessLogDestination: new LogGroupLogDestination(testLogGroup),
-        accessLogFormat: testFormat,
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(testLogGroup),
+          format: testFormat,
+        },
       })).not.toThrow();
     });
 
@@ -208,8 +217,10 @@ describe('HttpStage', () => {
       // THEN
       expect(() => new HttpStage(stack, 'my-stage', {
         httpApi: api,
-        accessLogDestination: new LogGroupLogDestination(testLogGroup),
-        accessLogFormat: testFormat,
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(testLogGroup),
+          format: testFormat,
+        },
       })).not.toThrow();
     });
 
@@ -223,8 +234,10 @@ describe('HttpStage', () => {
       // THEN
       expect(() => new HttpStage(stack, 'my-stage', {
         httpApi: api,
-        accessLogDestination: new LogGroupLogDestination(testLogGroup),
-        accessLogFormat: testFormat,
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(testLogGroup),
+          format: testFormat,
+        },
       })).toThrow('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`');
     });
 
@@ -236,20 +249,11 @@ describe('HttpStage', () => {
       // THEN
       expect(() => new HttpStage(stack, 'my-stage', {
         httpApi: api,
-        accessLogDestination: new LogGroupLogDestination(testLogGroup),
-        accessLogFormat: testFormat,
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(testLogGroup),
+          format: testFormat,
+        },
       })).not.toThrow();
-    });
-
-    test('fails when access log destination is empty', () => {
-      // WHEN
-      const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields();
-
-      // THEN
-      expect(() => new HttpStage(stack, 'my-stage', {
-        httpApi: api,
-        accessLogFormat: testFormat,
-      })).toThrow(/Access log format is specified without a destination/);
     });
   });
 });
