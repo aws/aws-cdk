@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ecs-fluentd/Vpc"
+      "Value": "cdk-ecs-fluentd/Vpc"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "ecs-fluentd/Vpc/PublicSubnet1"
+      "Value": "cdk-ecs-fluentd/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ecs-fluentd/Vpc/PublicSubnet1"
+      "Value": "cdk-ecs-fluentd/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ecs-fluentd/Vpc/PublicSubnet1"
+      "Value": "cdk-ecs-fluentd/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ecs-fluentd/Vpc/PublicSubnet1"
+      "Value": "cdk-ecs-fluentd/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "ecs-fluentd/Vpc/PrivateSubnet1"
+      "Value": "cdk-ecs-fluentd/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ecs-fluentd/Vpc/PrivateSubnet1"
+      "Value": "cdk-ecs-fluentd/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -198,7 +198,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ecs-fluentd/Vpc"
+      "Value": "cdk-ecs-fluentd/Vpc"
      }
     ]
    }
@@ -337,7 +337,7 @@
   "ASGInstanceSecurityGroup0525485D": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "ecs-fluentd/ASG/InstanceSecurityGroup",
+    "GroupDescription": "cdk-ecs-fluentd/ASG/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -348,7 +348,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ecs-fluentd/ASG"
+      "Value": "cdk-ecs-fluentd/ASG"
      }
     ],
     "VpcId": {
@@ -399,7 +399,7 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "ecs-fluentd/ASG/LaunchTemplate"
+         "Value": "cdk-ecs-fluentd/ASG/LaunchTemplate"
         }
        ]
       },
@@ -408,7 +408,7 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "ecs-fluentd/ASG/LaunchTemplate"
+         "Value": "cdk-ecs-fluentd/ASG/LaunchTemplate"
         }
        ]
       }
@@ -434,7 +434,7 @@
       "Tags": [
        {
         "Key": "Name",
-        "Value": "ecs-fluentd/ASG/LaunchTemplate"
+        "Value": "cdk-ecs-fluentd/ASG/LaunchTemplate"
        }
       ]
      }
@@ -465,7 +465,7 @@
      {
       "Key": "Name",
       "PropagateAtLaunch": true,
-      "Value": "ecs-fluentd/ASG"
+      "Value": "cdk-ecs-fluentd/ASG"
      }
     ],
     "VPCZoneIdentifier": [
@@ -512,7 +512,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ecs-fluentd/ASG"
+      "Value": "cdk-ecs-fluentd/ASG"
      }
     ]
    }
@@ -541,7 +541,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ecs-fluentd/ASG"
+      "Value": "cdk-ecs-fluentd/ASG"
      }
     ],
     "Timeout": 310
@@ -550,7 +550,7 @@
     "ASGDrainECSHookFunctionServiceRoleC12963BB"
    ]
   },
-  "ASGDrainECSHookFunctionAllowInvokeecsfluentdASGLifecycleHookDrainHookTopic5C9663D07AE37566": {
+  "ASGDrainECSHookFunctionAllowInvokecdkecsfluentdASGLifecycleHookDrainHookTopicB96C269B6488FA5B": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -754,7 +754,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ecs-fluentd/ASG"
+      "Value": "cdk-ecs-fluentd/ASG"
      }
     ]
    }
@@ -777,7 +777,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ecs-fluentd/ASG"
+      "Value": "cdk-ecs-fluentd/ASG"
      }
     ]
    }
@@ -841,8 +841,7 @@
       "TargetCapacity": 100
      },
      "ManagedTerminationProtection": "DISABLED"
-    },
-    "Name": "cp-ecs-fluentdEC2CapacityProviderA9275C67"
+    }
    }
   },
   "TaskDefTaskRole1EDB4A67": {
@@ -879,7 +878,7 @@
       "Name": "web"
      }
     ],
-    "Family": "ecsfluentdTaskDef828C36EE",
+    "Family": "cdkecsfluentdTaskDefE7475183",
     "NetworkMode": "bridge",
     "RequiresCompatibilities": [
      "EC2"
