@@ -362,7 +362,9 @@ declare const logGroup: logs.LogGroup;
 
 const stage = new apigwv2.HttpStage(this, 'Stage', {
   httpApi: api,
-  accessLogDestination: new apigwv2.LogGroupLogDestination(logGroup),
+  accessLogSettings: {
+    destination: new apigwv2.LogGroupLogDestination(logGroup),
+  },
 });
 ```
 
@@ -377,8 +379,10 @@ declare const logGroup: logs.LogGroup;
 
 const stage = new apigwv2.HttpStage(this, 'Stage', {
   httpApi: api,
-  accessLogDestination: new apigwv2.LogGroupLogDestination(logGroup),
-  accessLogFormat: apigw.AccessLogFormat.clf(),
+  accessLogSettings: {
+    destination: new apigwv2.LogGroupLogDestination(logGroup),
+    format: apigw.AccessLogFormat.clf(),
+  },
 });
 ```
 
@@ -394,11 +398,13 @@ declare const logGroup: logs.LogGroup;
 
 const stage = new apigwv2.HttpStage(this, 'Stage', {
   httpApi: api,
-  accessLogDestination: new apigwv2.LogGroupLogDestination(logGroup),
-  accessLogFormat: apigw.AccessLogFormat.custom(
-    `${apigw.AccessLogField.contextRequestId()} ${apigw.AccessLogField.contextErrorMessage()} ${apigw.AccessLogField.contextErrorMessageString()}
-    ${apigw.AccessLogField.contextAuthorizerError()} ${apigw.AccessLogField.contextAuthorizerIntegrationStatus()}`
-  ),
+  accessLogSettings: {
+    destination: new apigwv2.LogGroupLogDestination(logGroup),
+    format: apigw.AccessLogFormat.custom(
+      `${apigw.AccessLogField.contextRequestId()} ${apigw.AccessLogField.contextErrorMessage()} ${apigw.AccessLogField.contextErrorMessageString()}
+      ${apigw.AccessLogField.contextAuthorizerError()} ${apigw.AccessLogField.contextAuthorizerIntegrationStatus()}`
+    ),
+  },
 });
 ```
 
