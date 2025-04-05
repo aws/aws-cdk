@@ -39,7 +39,9 @@ class FeatureFlagStack extends cdk.Stack {
     this.bucketArn = this.exportValue(this.bucket.bucketArn);
     // Test lazy instance of the AwsCustomResource
     new cdk.CfnOutput(this, 'BootstrapBrokers', { value: cluster.bootstrapBrokersTls });
+    new cdk.CfnOutput(this, 'BootstrapBrokers1', { value: cluster.brokerEndpoints.bootstrapBrokersTls });
     new cdk.CfnOutput(this, 'BootstrapBrokers2', { value: cluster.bootstrapBrokersTls });
+    new cdk.CfnOutput(this, 'BootstrapBrokers21', { value: cluster.brokerEndpoints.bootstrapBrokersTls });
 
     // iam authenticated msk cluster integ test
     const cluster2 = new msk.Cluster(this, 'ClusterIAM', {
@@ -62,6 +64,7 @@ class FeatureFlagStack extends cdk.Stack {
 
     // Test lazy instance of the AwsCustomResource
     new cdk.CfnOutput(this, 'BootstrapBrokers3', { value: cluster2.bootstrapBrokersSaslIam });
+    new cdk.CfnOutput(this, 'BootstrapBrokers31', { value: cluster2.brokerEndpoints.bootstrapBrokersSaslIam });
 
     const certSigningAlgorithm = 'SHA256WITHRSA';
     const privateCA = new CfnCertificateAuthority(
@@ -142,7 +145,9 @@ class FeatureFlagStack extends cdk.Stack {
 
     // Test lazy instance of the AwsCustomResource
     new cdk.CfnOutput(this, 'BootstrapBrokers4', { value: cluster3.bootstrapBrokersTls });
+    new cdk.CfnOutput(this, 'BootstrapBrokers41', { value: cluster3.brokerEndpoints.bootstrapBrokersTls });
     new cdk.CfnOutput(this, 'BootstrapBrokers5', { value: cluster3.bootstrapBrokersSaslIam });
+    new cdk.CfnOutput(this, 'BootstrapBrokers51', { value: cluster3.brokerEndpoints.bootstrapBrokersSaslIam });
 
     const cluster4 = new msk.Cluster(this, 'Cluster_V3_1_1', {
       clusterName: 'integ-test-v3-1-1',
@@ -156,6 +161,7 @@ class FeatureFlagStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     new cdk.CfnOutput(this, 'BootstrapBrokers6', { value: cluster4.bootstrapBrokersTls });
+    new cdk.CfnOutput(this, 'BootstrapBrokers61', { value: cluster4.brokerEndpoints.bootstrapBrokersTls });
 
     const cluster5 = new msk.Cluster(this, 'Cluster_V3_2_0', {
       clusterName: 'integ-test-v3-2-0',
@@ -169,6 +175,7 @@ class FeatureFlagStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     new cdk.CfnOutput(this, 'BootstrapBrokers7', { value: cluster5.bootstrapBrokersTls });
+    new cdk.CfnOutput(this, 'BootstrapBrokers71', { value: cluster5.brokerEndpoints.bootstrapBrokersTls });
 
     const cluster6 = new msk.Cluster(this, 'Cluster_V3_3_1', {
       clusterName: 'integ-test-v3-3-1',
@@ -182,6 +189,7 @@ class FeatureFlagStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     new cdk.CfnOutput(this, 'BootstrapBrokers8', { value: cluster6.bootstrapBrokersTls });
+    new cdk.CfnOutput(this, 'BootstrapBrokers81', { value: cluster6.brokerEndpoints.bootstrapBrokersTls });
 
     const cluster7 = new msk.Cluster(this, 'Cluster_V3_3_2', {
       clusterName: 'integ-test-v3-3-2',
@@ -195,6 +203,7 @@ class FeatureFlagStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     new cdk.CfnOutput(this, 'BootstrapBrokers9', { value: cluster7.bootstrapBrokersTls });
+    new cdk.CfnOutput(this, 'BootstrapBrokers91', { value: cluster7.brokerEndpoints.bootstrapBrokersTls });
   }
 }
 
