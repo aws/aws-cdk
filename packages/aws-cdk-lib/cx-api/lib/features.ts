@@ -127,6 +127,8 @@ export const LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY = '@aws-cdk/aws-lam
 export const SET_UNIQUE_REPLICATION_ROLE_NAME = '@aws-cdk/aws-s3:setUniqueReplicationRoleName';
 export const PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceStageRoleTrustScope';
 export const EVENTBUS_POLICY_SID_REQUIRED = '@aws-cdk/aws-events:requireEventBusPolicySid';
+export const DYNAMODB_TABLE_RETAIN_TABLE_REPLICA = '@aws-cdk/aws-dynamodb:retainTableReplica';
+export const LOG_USER_POOL_CLIENT_SECRET_VALUE ='@aws-cdk/cognito:logUserPoolClientSecretValue';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1394,14 +1396,17 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: {
     type: FlagType.BugFix,
-    summary: 'When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement',
+    summary: '[Deprecated] When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement',
     detailsMd: `
-      When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+      [Deprecated default feature] When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
       The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
       This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
+      However in the current implementation, we have removed a dependency of the lambda function on the policy. In addition to this, a Role will be attached to the Policy instead of an inline policy being attached to the role. 
+      This will create a data race condition in the CloudFormation template because the creation of the Lambda function no longer waits for the policy to be created. Having said that, we are not deprecating the feature (we are defaulting the feature flag to false for new stacks) since this feature can still be used to get around the circular dependency issue (issue-7016) particularly in cases where the lambda resource creation doesnt need to depend on the policy resource creation. 
+      We recommend to unset the feature flag if already set which will restore the original behavior. 
     `,
     introducedIn: { v2: '2.180.0' },
-    recommendedValue: true,
+    recommendedValue: false,
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -1450,8 +1455,37 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       This fixes the issue where permissions were silently not being added for service principals.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.186.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, table replica will be default to the removal policy of source table unless specified otherwise.',
+    detailsMd: `
+      Currently, table replica will always be deleted when stack deletes regardless of source table's deletion policy.
+      When enabled, table replica will be default to the removal policy of source table unless specified otherwise.
+    `,
+    introducedIn: { v2: '2.187.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LOG_USER_POOL_CLIENT_SECRET_VALUE]: {
+    type: FlagType.ApiDefault,
+    summary: 'When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.',
+    detailsMd: `
+      When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom 
+      resource lambda function logs.
+      
+      When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom 
+      resource lambda function logs.
+    `,
+    introducedIn: { v2: '2.187.0' },
+    defaults: { v2: false },
+    recommendedValue: false,
+    compatibilityWithOldBehaviorMd: 'Enable the feature flag to keep the old behavior and log the client secret values',
   },
 };
 
