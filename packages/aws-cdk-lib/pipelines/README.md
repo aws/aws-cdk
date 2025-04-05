@@ -1743,7 +1743,8 @@ versions.
 By default, the AWS CDK will build and publish Docker image assets using the
 `docker` command. However, by specifying the `CDK_DOCKER` environment variable,
 you can override the command that will be used to build and publish your
-assets.
+assets. To learn more, see [How to replace Docker with another container management tool](https://docs.aws.amazon.com/cdk/v2/guide/build-containers.html#build-container-replace)
+in the _AWS CDK Developer Guide_.
 
 In CDK Pipelines, the drop-in replacement for the `docker` command must be
 included in the CodeBuild environment and configured for your pipeline.
