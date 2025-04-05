@@ -1,5 +1,6 @@
 import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as amplify from '../lib';
 
 class TestStack extends Stack {
@@ -30,6 +31,7 @@ class TestStack extends Stack {
 
     amplifyApp.addCustomRule({
       source: '/source',
+      status: amplify.RedirectStatus.PERMANENT_REDIRECT,
       target: '/target',
     });
 
@@ -39,5 +41,10 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cdk-amplify-app');
-app.synth();
+const stack = new TestStack(app, 'cdk-amplify-app');
+
+new IntegTest(app, 'cdk-amplify-app-integ', {
+  testCases: [stack],
+  enableLookups: true,
+  stackUpdateWorkflow: false,
+});
