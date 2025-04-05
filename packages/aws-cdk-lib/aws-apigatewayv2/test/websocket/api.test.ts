@@ -8,6 +8,7 @@ import {
   WebSocketIntegrationType,
   WebSocketRouteIntegrationBindOptions,
   WebSocketRouteIntegrationConfig,
+  IpAddressType,
 } from '../../lib';
 
 describe('WebSocketApi', () => {
@@ -291,6 +292,19 @@ describe('WebSocketApi', () => {
           }]),
         },
       });
+    });
+  });
+
+  test.each([IpAddressType.IPV4, IpAddressType.DUAL_STACK])('ipAddressType is set', (ipAddressType) => {
+    const stack = new Stack();
+    new WebSocketApi(stack, 'api', {
+      ipAddressType,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'WEBSOCKET',
+      IpAddressType: ipAddressType,
     });
   });
 });

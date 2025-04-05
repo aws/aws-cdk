@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "0fd9a31771f54e372b23445e08af158b275e587521f60e1c3e3615bdad5ecbd0": {
+      "displayName": "DualStackWebsocketApiStack Template",
+      "source": {
+        "path": "DualStackWebsocketApiStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0fd9a31771f54e372b23445e08af158b275e587521f60e1c3e3615bdad5ecbd0.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
