@@ -417,6 +417,9 @@ const subnetTypeMap: { [key in SubnetType | DeprecatedSubnetType]: (vpc: IVpcV2,
   ['Deprecated_Isolated']: (vpc: IVpcV2, subnet: SubnetV2) => vpc.isolatedSubnets.push(subnet),
   ['Deprecated_Private']: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
   [SubnetType.PRIVATE_WITH_NAT]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
+  [SubnetType.PUBLIC_OUTPOST]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.publicSubnets.push(subnet),
+  [SubnetType.PRIVATE_OUTPOST_WITH_EGRESS]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
+  [SubnetType.PRIVATE_OUTPOST_ISOLATED]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.isolatedSubnets.push(subnet),
 };
 
 /**
