@@ -1,51 +1,49 @@
-import { App, Fn, PhysicalName, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import { App, Fn, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
-import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
-import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as codepipeline_actions from 'aws-cdk-lib/aws-codepipeline-actions';
-import { AccountPrincipal, Role } from 'aws-cdk-lib/aws-iam';
-import { Key } from 'aws-cdk-lib/aws-kms';
 import * as path from 'path';
+import { Construct } from 'constructs';
+import { Key } from 'aws-cdk-lib/aws-kms';
+
+/**
+ * Notes on how to run this integ test
+ * Replace 123456789012 and 234567890123 with your own account numbers
+ *
+ * 1. Configure Accounts
+ *   a. Account A (123456789012) should be bootstrapped for us-east-1
+ *      and needs to set trust permissions for account B (234567890123)
+ *      - `cdk bootstrap --trust 234567890123 --cloudformation-execution-policies 'arn:aws:iam::aws:policy/AdministratorAccess'`
+ *      - assuming this is the default profile for aws credentials
+ *   b. Account B (234567890123) should be bootstrapped for us-east-1
+ *     - assuming this account is configured with the profile 'cross-account' for aws credentials
+ *
+ * 2. Set environment variables
+ *   a. `export CDK_INTEG_ACCOUNT=123456789012`
+ *   b. `export CDK_INTEG_CROSS_ACCOUNT=234567890123`
+ *
+ * 3. Run the integ test (from the @aws-cdk-testing/framework-integ/test directory)
+ *   a. Get temporary console access credentials for account B
+ *     - `yarn integ pipelines/test/integ.cross-account-pipeline-action.js`
+ *   b. Fall back if temp credentials do not work (account info may be in snapshot)
+ *     - `yarn integ pipelines/test/integ.cross-account-pipeline-action.js --profiles cross-account`
+ *
+ * 4. Before you commit, set both accounts to dummy values, run integ test in dry run mode, and then push the snapshot.
+ */
 
 const account = process.env.CDK_INTEG_ACCOUNT || '123456789012';
 const crossAccount = process.env.CDK_INTEG_CROSS_ACCOUNT || '234567890123';
 const region = process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION;
 
-class StepFunctionStack extends Stack {
-  public readonly stateMachine: sfn.StateMachine;
-  public readonly crossAccountRole: Role;
-
+class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // Create a simple Step Function
-    this.stateMachine = new sfn.StateMachine(this, 'CrossAccountStateMachine', {
-      definition: new sfn.Pass(this, 'PassState', {
-        result: sfn.Result.fromObject({ message: 'Hello from cross-account Step Function!' }),
-      }),
-      stateMachineName: 'CrossAccountStateMachine',
-    });
+    const sourceBucketKey = new Key(this, 'SourceBucketKey');
 
-    this.crossAccountRole = new Role(this, 'CrossAccountRole', {
-      roleName: PhysicalName.GENERATE_IF_NEEDED,
-      assumedBy: new AccountPrincipal(account),
-    });
-
-    this.stateMachine.grantStartExecution(this.crossAccountRole);
-  }
-}
-
-class PipelineStack extends Stack {
-  constructor(scope: Construct, id: string, stateMachine: sfn.IStateMachine, props?: StackProps) {
-    super(scope, id, props);
-
-    const sourceBucketKey = new Key(this, 'SourceBucketKey', {
-      description: 'SourceBucketKey',
-    });
     const bucket = new s3.Bucket(this, 'SourceBucket', {
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
@@ -54,7 +52,7 @@ class PipelineStack extends Stack {
     });
 
     const bucketDeployment = new s3deploy.BucketDeployment(this, 'BucketDeployment', {
-      sources: [s3deploy.Source.asset(path.join(__dirname, 'assets', 'nodejs.zip'))],
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'cloudformation', 'test-artifact'))],
       destinationBucket: bucket,
       extract: false,
     });
@@ -70,13 +68,14 @@ class PipelineStack extends Stack {
     const buildOutput = new codepipeline.Artifact('BuildOutput');
 
     // Create the pipeline
-    const pipeline = new codepipeline.Pipeline(this, 'CrossAccountStepFunctionsPipeline', {
-      pipelineName: 'cross-account-sfn-pipeline',
+    const pipeline = new codepipeline.Pipeline(this, 'CrossAccountCloudformationPipeline', {
+      pipelineName: 'cross-account-cfn-pipeline',
       crossAccountKeys: true,
       artifactBucket: new s3.Bucket(this, 'ArtifactBucket', {
         encryption: s3.BucketEncryption.KMS,
         removalPolicy: RemovalPolicy.DESTROY,
         autoDeleteObjects: true,
+        bucketName: 'integ-cross-account-pipeline-artifact-bucket',
       }),
     });
 
@@ -121,17 +120,16 @@ class PipelineStack extends Stack {
       ],
     });
 
-    // Add the Step Function invoke stage
+    // Add the CloudFormation deploy stage
     pipeline.addStage({
-      stageName: 'InvokeStepFunction',
+      stageName: 'CFN',
       actions: [
-        new codepipeline_actions.StepFunctionInvokeAction({
-          actionName: 'InvokeStateMachine',
-          stateMachine,
-          stateMachineInput: codepipeline_actions.StateMachineInput.literal({
-            source: 'codepipeline',
-            timestamp: new Date().toISOString(),
-          }),
+        new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+          actionName: 'CFNDeploy',
+          stackName: 'aws-cdk-codepipeline-cross-account-deploy-stack',
+          templatePath: sourceOutput.atPath('template.yaml'),
+          adminPermissions: false,
+          account: crossAccount,
         }),
       ],
     });
@@ -140,32 +138,20 @@ class PipelineStack extends Stack {
 
 const app = new App({
   postCliContext: {
-    '@aws-cdk/pipelines:reduceStageRoleTrustScope': true,
+    '@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope': true,
   },
 });
 
-// Create the Step Function stack in the cross account
-const stepFunctionStack = new StepFunctionStack(app, 'CrossAccountStepFunctionStack', {
+// Pipeline stack in source account
+const pipelineStack = new PipelineStack(app, 'CdkPipelineCfnActionStack', {
   env: {
-    account: crossAccount,
+    account: account,
     region,
   },
 });
 
-const pipelineStack = new PipelineStack(app, 'CdkPipelineStepFunctionsActionStack',
-  stepFunctionStack.stateMachine,
-  {
-    env: {
-      account: account,
-      region,
-    },
-  },
-);
-
-pipelineStack.addDependency(stepFunctionStack);
-
-new integ.IntegTest(app, 'integ-cross-account-pipeline-sfn-action', {
-  testCases: [stepFunctionStack, pipelineStack],
+new integ.IntegTest(app, 'integ-pipeline-cfn-cross-account', {
+  testCases: [pipelineStack],
   diffAssets: true,
 });
 
