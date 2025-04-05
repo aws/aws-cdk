@@ -512,6 +512,9 @@
     ],
     "SupportedIpAddressTypes": [
      "ipv4"
+    ],
+    "SupportedRegions": [
+     "us-east-2"
     ]
    }
   }
