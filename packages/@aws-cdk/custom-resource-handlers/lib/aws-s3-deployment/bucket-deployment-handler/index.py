@@ -65,6 +65,7 @@ def handler(event, context):
             include             = props.get('Include', [])
             sign_content        = props.get('SignContent', 'false').lower() == 'true'
             output_object_keys  = props.get('OutputObjectKeys', 'true') == 'true'
+            sync_with_size_only = props.get('SyncWithSizeOnly', 'false').lower() == 'true'
 
             # backwards compatibility - if "SourceMarkers" is not specified,
             # assume all sources have an empty market map
@@ -128,7 +129,7 @@ def handler(event, context):
             aws_command("s3", "rm", old_s3_dest, "--recursive")
 
         if request_type == "Update" or request_type == "Create":
-            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract)
+            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract, sync_with_size_only)
 
         if distribution_id:
             cloudfront_invalidate(distribution_id, distribution_paths)
@@ -160,7 +161,7 @@ def sanitize_message(message):
 
 #---------------------------------------------------------------------------------------------------
 # populate all files from s3_source_zips to a destination bucket
-def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract):
+def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract, sync_with_size_only):
     # list lengths are equal
     if len(s3_source_zips) != len(source_markers):
         raise Exception("'source_markers' and 's3_source_zips' must be the same length")
@@ -209,6 +210,9 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
         if include:
           for filter in include:
             s3_command.extend(["--include", filter])
+
+        if sync_with_size_only:
+            s3_command.append("--size-only")
 
         s3_command.extend([contents_dir, s3_dest])
         s3_command.extend(create_metadata_args(user_metadata, system_metadata))
