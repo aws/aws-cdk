@@ -10,6 +10,7 @@ import {
   CfnVPC,
   SubnetFilter,
   DefaultInstanceTenancy,
+  GatewayVpcEndpointAwsService,
   GenericLinuxImage,
   InstanceType,
   InterfaceVpcEndpoint,
@@ -1399,6 +1400,21 @@ describe('vpc', () => {
       Template.fromStack(stack).hasResource('AWS::EC2::Subnet', {
         DependsOn: ['TheVPCipv6cidrF3E84E30'],
       });
+    });
+
+    test('throws an error when availabilityZones is empty', () => {
+      const stack = new Stack();
+      expect(() => {
+        new Vpc(stack, 'Vpc', {
+          availabilityZones: [],
+          gatewayEndpoints: {
+            S3: {
+              service: GatewayVpcEndpointAwsService.S3,
+              subnets: [{ subnetType: SubnetType.PRIVATE_WITH_EGRESS }, { subnetType: SubnetType.PUBLIC }],
+            },
+          },
+        });
+      }).toThrow(/At least one availability zone must be configured to create subnets/);
     });
   });
 

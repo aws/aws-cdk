@@ -1594,6 +1594,11 @@ export class Vpc extends VpcBase {
     const defaultSubnet = props.natGateways === 0 ? Vpc.DEFAULT_SUBNETS_NO_NAT : Vpc.DEFAULT_SUBNETS;
     this.subnetConfiguration = ifUndefined(props.subnetConfiguration, defaultSubnet);
 
+    // Validate that at least one availability zone was provided if subnets are to be created
+    if (this.subnetConfiguration.length > 0 && this.availabilityZones.length == 0) {
+      throw new Error('At least one availability zone must be configured to create subnets');
+    }
+
     const natGatewayPlacement = props.natGatewaySubnets || { subnetType: SubnetType.PUBLIC };
     const natGatewayCount = determineNatGatewayCount(props.natGateways, this.subnetConfiguration, this.availabilityZones.length);
 
