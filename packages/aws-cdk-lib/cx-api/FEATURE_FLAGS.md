@@ -95,6 +95,7 @@ Flags come in three types:
 | [@aws-cdk/aws-events:requireEventBusPolicySid](#aws-cdkaws-eventsrequireeventbuspolicysid) | When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals. | 2.186.0 | (fix) |
 | [@aws-cdk/aws-dynamodb:retainTableReplica](#aws-cdkaws-dynamodbretaintablereplica) | When enabled, table replica will be default to the removal policy of source table unless specified otherwise. | 2.187.0 | (fix) |
 | [@aws-cdk/cognito:logUserPoolClientSecretValue](#aws-cdkcognitologuserpoolclientsecretvalue) | When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs. | 2.187.0 | (default) |
+| [@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions](#aws-cdks3-notificationsadds3trustkeypolicyforsnssubscriptions) | Add an S3 trust policy to a KMS key resource policy for SNS subscriptions. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -175,7 +176,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false,
     "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
     "@aws-cdk/aws-events:requireEventBusPolicySid": true,
-    "@aws-cdk/aws-dynamodb:retainTableReplica": true
+    "@aws-cdk/aws-dynamodb:retainTableReplica": true,
+    "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true
   }
 }
 ```
@@ -1752,8 +1754,8 @@ When this feature flag is disabled, it will keep the root account principal in t
 
 *When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals.* (fix)
 
-Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails 
-because service principals require resource policies with Statement IDs. 
+Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails
+because service principals require resource policies with Statement IDs.
 
 When this flag is enabled:
 - Resource policies will be created with Statement IDs for service principals
@@ -1805,5 +1807,17 @@ resource lambda function logs.
 
 **Compatibility with old behavior:** Enable the feature flag to keep the old behavior and log the client secret values
 
+
+### @aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions
+
+*Add an S3 trust policy to a KMS key resource policy for SNS subscriptions.* (fix)
+
+When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 <!-- END details -->
