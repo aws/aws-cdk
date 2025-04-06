@@ -45,6 +45,5 @@ const stack = new TestStack(app, 'cdk-amplify-app');
 
 new IntegTest(app, 'cdk-amplify-app-integ', {
   testCases: [stack],
-  enableLookups: true,
   stackUpdateWorkflow: false,
 });
