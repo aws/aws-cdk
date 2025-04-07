@@ -58,7 +58,7 @@ const bucket = new s3.Bucket(stack, 'ArtifactBucket', {
 instances.forEach((instance) => bucket.grantRead(instance));
 const deployment = new s3deployment.BucketDeployment(stack, 'ArtifactDeployment', {
   destinationBucket: bucket,
-  sources: [s3deployment.Source.asset(path.join(__dirname, 'assets', 'artifact.zip'))],
+  sources: [s3deployment.Source.asset(path.join(__dirname, 'ec2-deploy', 'artifact.zip'))],
   extract: false,
 });
 
