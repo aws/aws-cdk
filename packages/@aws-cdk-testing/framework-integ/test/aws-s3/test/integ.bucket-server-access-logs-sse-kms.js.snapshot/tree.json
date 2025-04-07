@@ -23,6 +23,7 @@
                       "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                       "aws:cdk:cloudformation:props": {
                         "description": "Created by aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket",
+                        "enableKeyRotation": true,
                         "keyPolicy": {
                           "Statement": [
                             {
@@ -347,7 +348,7 @@
                 "path": "ServerAccessLogsSseKmsTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -393,7 +394,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

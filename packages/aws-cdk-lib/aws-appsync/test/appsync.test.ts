@@ -63,7 +63,7 @@ test('appsync should error when creating pipeline resolver with data source', ()
       fieldName: 'test2',
       pipelineConfig: [test1, test2],
     });
-  }).toThrowError('Pipeline Resolver cannot have data source. Received: none');
+  }).toThrow('Pipeline Resolver cannot have data source. Received: none');
 });
 
 test('appsync should configure resolver as unit when pipelineConfig is empty', () => {
@@ -286,7 +286,7 @@ test('appsync fails when properties schema and definition are undefined', () => 
     new appsync.GraphqlApi(stack, 'apiWithoutSchemaAndDefinition', {
       name: 'api',
     });
-  }).toThrowError('You must specify a GraphQL schema or source APIs in property definition.');
+  }).toThrow('You must specify a GraphQL schema or source APIs in property definition.');
 });
 
 test('appsync fails when specifing schema and definition', () => {
@@ -297,7 +297,7 @@ test('appsync fails when specifing schema and definition', () => {
       schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
       definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
     });
-  }).toThrowError('You cannot specify both properties schema and definition.');
+  }).toThrow('You cannot specify both properties schema and definition.');
 });
 
 test('when introspectionConfig is set it should be used when creating the API', () => {
@@ -333,7 +333,6 @@ test('when query limits are set, they should be used on API', () => {
 });
 
 test('when query depth limit is out of range, it throws an error', () => {
-
   const errorString = 'You must specify a query depth limit between 0 and 75.';
 
   const buildWithLimit = (name, queryDepthLimit) => {
@@ -349,11 +348,9 @@ test('when query depth limit is out of range, it throws an error', () => {
   expect(() => buildWithLimit('query-limit-min', 0)).not.toThrow(errorString);
   expect(() => buildWithLimit('query-limit-max', 75)).not.toThrow(errorString);
   expect(() => buildWithLimit('query-limit-high', 76)).toThrow(errorString);
-
 });
 
 test('when resolver limit is out of range, it throws an error', () => {
-
   const errorString = 'You must specify a resolver count limit between 0 and 10000.';
 
   const buildWithLimit = (name, resolverCountLimit) => {
@@ -369,7 +366,6 @@ test('when resolver limit is out of range, it throws an error', () => {
   expect(() => buildWithLimit('resolver-limit-min', 0)).not.toThrow(errorString);
   expect(() => buildWithLimit('resolver-limit-max', 10000)).not.toThrow(errorString);
   expect(() => buildWithLimit('resolver-limit-high', 10001)).toThrow(errorString);
-
 });
 
 test.each([

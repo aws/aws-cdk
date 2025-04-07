@@ -11,7 +11,13 @@ import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
 const certArn = process.env.CDK_INTEG_CERT_ARN || process.env.CERT_ARN;
 if (!certArn) throw new Error('For this test you must provide your own Certificate as an env var "CERT_ARN". See framework-integ/README.md for details.');
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 const stack = new Stack(app, 'tls-network-load-balanced-ecs-service');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new Cluster(stack, 'Cluster', { vpc });

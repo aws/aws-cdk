@@ -81,7 +81,6 @@ export class ApiGatewayEnrichment implements IEnrichment {
   }
 
   bind(pipe: IPipe): EnrichmentParametersConfig {
-
     const httpParameters: CfnPipe.PipeEnrichmentHttpParametersProperty | undefined =
       this.headerParameters ??
         this.pathParameterValues ??

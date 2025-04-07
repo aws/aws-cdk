@@ -3,6 +3,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import { Lazy, Names } from 'aws-cdk-lib/core';
 import * as constructs from 'constructs';
 import { CfnSecurityConfiguration } from 'aws-cdk-lib/aws-glue';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Interface representing a created or an imported `SecurityConfiguration`.
@@ -149,7 +150,6 @@ export interface SecurityConfigurationProps {
  * - Attach a security configuration to a development endpoint to write encrypted Amazon S3 targets.
  */
 export class SecurityConfiguration extends cdk.Resource implements ISecurityConfiguration {
-
   /**
    * Creates a Connection construct that represents an external security configuration.
    *
@@ -159,7 +159,6 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
    */
   public static fromSecurityConfigurationName(scope: constructs.Construct, id: string,
     securityConfigurationName: string): ISecurityConfiguration {
-
     class Import extends cdk.Resource implements ISecurityConfiguration {
       public readonly securityConfigurationName = securityConfigurationName;
     }
@@ -194,6 +193,8 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
           produce: () => Names.uniqueResourceName(this, {}),
         }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!props.s3Encryption && !props.cloudWatchEncryption && !props.jobBookmarksEncryption) {
       throw new Error('One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined');

@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "38.0.1",
   "testCases": {
     "IntegTest-BatchDefaultEnvVarsStack/DefaultTest": {
       "stacks": [

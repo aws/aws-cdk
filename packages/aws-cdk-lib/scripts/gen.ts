@@ -20,6 +20,7 @@ async function main() {
   const generated = (await generateAll(awsCdkLibDir, {
     coreImport: '../../core',
     cloudwatchImport: '../../aws-cloudwatch',
+    skippedServices: [],
     scopeMapPath,
   }));
 

@@ -127,7 +127,7 @@ app_min="6.0.100"
 check_which $app $app_min
 app_v=$(${app} --list-sdks)
 echo -e "Checking dotnet version... \c"
-if [ $(echo $app_v | grep -c -E "[678]\.[0-9]+\.[0-9]+") -eq 1 ]
+if [ $(echo $app_v | grep -c -E "[6789]\.[0-9]+\.[0-9]+") -eq 1 ]
 then
     echo "Ok"
 else

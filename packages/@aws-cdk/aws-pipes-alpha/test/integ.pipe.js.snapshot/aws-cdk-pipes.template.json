@@ -60,14 +60,6 @@
     "EnrichmentLambdaServiceRole72330D97"
    ]
   },
-  "LogGroupF5B46931": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
-  },
   "PipeRole7D4AFC73": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -145,19 +137,6 @@
          "Arn"
         ]
        }
-      },
-      {
-       "Action": [
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "LogGroupF5B46931",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -181,20 +160,6 @@
     },
     "EnrichmentParameters": {
      "InputTemplate": "{\"body\":<$.body>,\"name\":<aws.pipes.pipe-name>,\"static\":\"static\"}"
-    },
-    "LogConfiguration": {
-     "CloudwatchLogsLogDestination": {
-      "LogGroupArn": {
-       "Fn::GetAtt": [
-        "LogGroupF5B46931",
-        "Arn"
-       ]
-      }
-     },
-     "IncludeExecutionData": [
-      "ALL"
-     ],
-     "Level": "TRACE"
     },
     "Name": "BaseTestPipe",
     "RoleArn": {

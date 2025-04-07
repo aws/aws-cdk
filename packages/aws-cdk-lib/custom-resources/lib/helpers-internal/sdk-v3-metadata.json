@@ -195,7 +195,7 @@
     "iamPrefix": "logs"
   },
   "cloudwatch": {
-    "iamPrefix": "monitoring"
+    "iamPrefix": "cloudwatch"
   },
   "codeartifact": {
     "iamPrefix": "codeartifact"
@@ -491,12 +491,6 @@
   },
   "internetmonitor": {
     "iamPrefix": "internetmonitor"
-  },
-  "iot-1click-devices-service": {
-    "iamPrefix": "iot1click"
-  },
-  "iot-1click-projects": {
-    "iamPrefix": "iot1click"
   },
   "iot-data-plane": {
     "iamPrefix": "iotdata"

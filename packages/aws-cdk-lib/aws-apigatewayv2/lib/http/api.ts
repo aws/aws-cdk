@@ -7,10 +7,11 @@ import { VpcLink, VpcLinkProps } from './vpc-link';
 import { CfnApi, CfnApiProps } from '.././index';
 import { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import { ArnFormat, Duration, Stack, Token } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
 import { DomainMappingOptions } from '../common/stage';
-
 /**
  * Represents an HTTP API
  */
@@ -31,6 +32,14 @@ export interface IHttpApi extends IApi {
    * @default - no default authorization scopes
    */
   readonly defaultAuthorizationScopes?: string[];
+
+  /**
+   * The default stage of this API
+   *
+   * @attribute
+   * @default - a stage will be created
+   */
+  readonly defaultStage?: IHttpStage;
 
   /**
    * Metric for the number of client-side errors captured in a given period.
@@ -270,7 +279,6 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
 }
 
 abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that this is not exported
-
   public abstract override readonly apiId: string;
   public abstract readonly httpApiId: string;
   public abstract override readonly apiEndpoint: string;
@@ -315,7 +323,7 @@ abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that th
 
   public arnForExecuteApi(method?: string, path?: string, stage?: string): string {
     if (path && !Token.isUnresolved(path) && !path.startsWith('/')) {
-      throw new Error(`Path must start with '/': ${path}`);
+      throw new ValidationError(`Path must start with '/': ${path}`, this);
     }
 
     if (method && method.toUpperCase() === 'ANY') {
@@ -364,7 +372,7 @@ export class HttpApi extends HttpApiBase {
 
       public get apiEndpoint(): string {
         if (!this._apiEndpoint) {
-          throw new Error('apiEndpoint is not configured on the imported HttpApi.');
+          throw new ValidationError('apiEndpoint is not configured on the imported HttpApi.', scope);
         }
         return this._apiEndpoint;
       }
@@ -409,6 +417,8 @@ export class HttpApi extends HttpApiBase {
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.httpApiName = props?.apiName ?? id;
     this.disableExecuteApiEndpoint = props?.disableExecuteApiEndpoint;
@@ -417,7 +427,7 @@ export class HttpApi extends HttpApiBase {
     if (props?.corsPreflight) {
       const cors = props.corsPreflight;
       if (cors.allowOrigins && cors.allowOrigins.includes('*') && cors.allowCredentials) {
-        throw new Error("CORS preflight - allowCredentials is not supported when allowOrigin is '*'");
+        throw new ValidationError("CORS preflight - allowCredentials is not supported when allowOrigin is '*'", scope);
       }
       const {
         allowCredentials,
@@ -477,8 +487,7 @@ export class HttpApi extends HttpApiBase {
     }
 
     if (props?.createDefaultStage === false && props.defaultDomainMapping) {
-      throw new Error('defaultDomainMapping not supported with createDefaultStage disabled',
-      );
+      throw new ValidationError('defaultDomainMapping not supported with createDefaultStage disabled', scope);
     }
   }
 
@@ -487,7 +496,7 @@ export class HttpApi extends HttpApiBase {
    */
   public get apiEndpoint(): string {
     if (this.disableExecuteApiEndpoint) {
-      throw new Error('apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true.');
+      throw new ValidationError('apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true.', this);
     }
     return this._apiEndpoint;
   }
@@ -503,6 +512,7 @@ export class HttpApi extends HttpApiBase {
   /**
    * Add a new stage.
    */
+  @MethodMetadata()
   public addStage(id: string, options: HttpStageOptions): HttpStage {
     const stage = new HttpStage(this, id, {
       httpApi: this,
@@ -515,6 +525,7 @@ export class HttpApi extends HttpApiBase {
    * Add multiple routes that uses the same configuration. The routes all go to the same path, but for different
    * methods.
    */
+  @MethodMetadata()
   public addRoutes(options: AddRoutesOptions): HttpRoute[] {
     const methods = options.methods ?? [HttpMethod.ANY];
     return methods.map((method) => {

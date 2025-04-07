@@ -1,4 +1,5 @@
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { App, Duration, Stack, StackProps } from 'aws-cdk-lib';
@@ -52,6 +53,22 @@ class TestStack extends Stack {
       };`),
       onFailure: new destinations.EventBridgeDestination(),
       onSuccess: new destinations.LambdaDestination(onSuccessLambda),
+    });
+
+    const successBucket = new s3.Bucket(this, 'OnSuccessBucket');
+    const failureBucket = new s3.Bucket(this, 'OnFailureBucket');
+
+    new lambda.Function(this, 'S3', {
+      runtime: STANDARD_NODEJS_RUNTIME,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline(`exports.handler = async (event) => {
+        if (event.status === 'OK') return 'success';
+        throw new Error('failure');
+      };`),
+      onFailure: new destinations.S3Destination(failureBucket),
+      onSuccess: new destinations.S3Destination(successBucket),
+      maxEventAge: Duration.hours(4),
+      retryAttempts: 2,
     });
 
     const version = this.fn.addVersion('MySpecialVersion');

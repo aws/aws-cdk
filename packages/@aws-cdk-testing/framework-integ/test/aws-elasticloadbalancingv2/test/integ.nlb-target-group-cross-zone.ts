@@ -14,7 +14,6 @@ class TargetGroupCrossZoneStack extends Stack {
       targetType: elbv2.TargetType.INSTANCE,
       crossZoneEnabled: true,
     });
-
   }
 }
 

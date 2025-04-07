@@ -14,6 +14,7 @@ import {
   PERMISSIONS_BOUNDARY_CONTEXT_KEY,
   Aspects,
   Stage,
+  Token,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -38,7 +39,37 @@ describe('stack', () => {
     }).toThrow(`Stack name must be <= 128 characters. Stack name: '${reallyLongStackName}'`);
   });
 
-  test('stack objects have some template-level propeties, such as Description, Version, Transform', () => {
+  test.each([
+    ['Has:Colon', 'Has_Colon'],
+    ['0startWithNumber', '0startWithNumber'],
+    ['Has-Dash', 'Has-Dash'],
+    [undefined, 'Default'],
+    ['With_Underscore', 'With_Underscore'],
+    ['with.dot', 'with.dot'],
+    ['with/slash', 'with--slash'],
+    ['with space', 'with_space'],
+    ['UPPERCASE', 'UPPERCASE'],
+    ['mixedCase123', 'mixedCase123'],
+    ['!@#$%^', '______'],
+    ['123456', '123456'],
+    ['a-b-c', 'a-b-c'],
+    ['x_y_z', 'x_y_z'],
+    ['abc.def.ghi', 'abc.def.ghi'],
+  ])('valid stack artifact id for construct id \'%s\'', (id, expected) => {
+    // GIVEN
+    const app = new App({});
+
+    // WHEN
+    const stack = new Stack(app, id, {
+      stackName: 'ValidStackName',
+    });
+
+    // THEN
+    expect(stack.stackName).toBe('ValidStackName');
+    expect(stack.artifactId).toBe(expected);
+  });
+
+  test('stack objects have some template-level properties, such as Description, Version, Transform', () => {
     const stack = new Stack();
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
     stack.templateOptions.description = 'This is my description';
@@ -166,7 +197,6 @@ describe('stack', () => {
   // We should come up with a proper solution that involved jsii callbacks (when they exist)
   // so this can be implemented by jsii languages as well.
   test('Overriding `Stack._toCloudFormation` allows arbitrary post-processing of the generated template during synthesis', () => {
-
     const stack = new StackWithPostProcessor();
 
     new CfnResource(stack, 'myResource', {
@@ -198,7 +228,6 @@ describe('stack', () => {
   });
 
   test('Stack.getByPath can be used to find any CloudFormation element (Parameter, Output, etc)', () => {
-
     const stack = new Stack();
 
     const p = new CfnParameter(stack, 'MyParam', { type: 'String' });
@@ -519,6 +548,64 @@ describe('stack', () => {
                 '||',
                 {
                   'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9',
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('cross-stack references of nested stack lists returned from Fn::GetAtt work', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Producer');
+    const nested = new NestedStack(producer, 'Nestor');
+    const exportResource = new CfnResource(nested, 'exportedResource', {
+      type: 'BLA',
+    });
+    const consumer = new Stack(app, 'Consumer');
+    // L1s represent attribute names with `attr${attributeName}`
+    (exportResource as any).attrList = ['magic-attr-value'];
+
+    // WHEN - used in another stack
+    new CfnResource(consumer, 'SomeResource', {
+      type: 'BLA',
+      properties: {
+        Prop: exportResource.getAtt('List', ResolutionTypeHint.STRING_LIST),
+      },
+    });
+
+    const assembly = app.synth();
+    const producerTemplate = assembly.getStackByName(producer.stackName).template;
+    const consumerTemplate = assembly.getStackByName(consumer.stackName).template;
+
+    // THEN
+    expect(producerTemplate).toMatchObject({
+      Outputs: {
+        ExportsOutputFnGetAttNestorNestedStackNestorNestedStackResourceAE182597OutputsProducerNestorexportedResource5B6DDAA1ListAF9B4148: {
+          Value: {
+            'Fn::GetAtt': [
+              'NestorNestedStackNestorNestedStackResourceAE182597',
+              'Outputs.ProducerNestorexportedResource5B6DDAA1List',
+            ],
+          },
+          Export: { Name: 'Producer:ExportsOutputFnGetAttNestorNestedStackNestorNestedStackResourceAE182597OutputsProducerNestorexportedResource5B6DDAA1ListAF9B4148' },
+        },
+      },
+    });
+
+    expect(consumerTemplate).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'BLA',
+          Properties: {
+            Prop: {
+              'Fn::Split': [
+                '||',
+                {
+                  'Fn::ImportValue': 'Producer:ExportsOutputFnGetAttNestorNestedStackNestorNestedStackResourceAE182597OutputsProducerNestorexportedResource5B6DDAA1ListAF9B4148',
                 },
               ],
             },
@@ -2097,6 +2184,20 @@ describe('stack', () => {
     ]);
   });
 
+  test('stack notification arns defaults to undefined', () => {
+    const app = new App({ stackTraces: false });
+    const stack1 = new Stack(app, 'stack1', {});
+
+    const asm = app.synth();
+
+    // It must be undefined and not [] because:
+    //
+    //  - undefined  =>  cdk ignores it entirely, as if it wasn't supported (allows external management).
+    //  - []:        =>  cdk manages it, and the user wants to wipe it out.
+    //  - ['arn-1']  =>  cdk manages it, and the user wants to set it to ['arn-1'].
+    expect(asm.getStackArtifact(stack1.artifactId).notificationArns).toBeUndefined();
+  });
+
   test('stack notification arns are reflected in the stack artifact properties', () => {
     // GIVEN
     const NOTIFICATION_ARNS = ['arn:aws:sns:bermuda-triangle-1337:123456789012:MyTopic'];
@@ -2237,7 +2338,7 @@ describe('stack', () => {
       new Stack(app, 'Stack', {
         env: envConfig,
       });
-    }).toThrowError('Account id of stack environment must be a \'string\' but received \'number\'');
+    }).toThrow('Account id of stack environment must be a \'string\' but received \'number\'');
   });
 
   test('region passed in stack environment must be a string', () => {
@@ -2254,7 +2355,7 @@ describe('stack', () => {
       new Stack(app, 'Stack', {
         env: envConfig,
       });
-    }).toThrowError('Region of stack environment must be a \'string\' but received \'number\'');
+    }).toThrow('Region of stack environment must be a \'string\' but received \'number\'');
   });
 
   test('indent templates when suppressTemplateIndentation is not set', () => {
@@ -2416,7 +2517,6 @@ describe('regionalFact', () => {
         },
       },
     });
-
   });
 
   test('regional facts generate a mapping if necessary', () => {
@@ -2462,9 +2562,6 @@ describe('regionalFact', () => {
 });
 
 class StackWithPostProcessor extends Stack {
-
-  // ...
-
   public _toCloudFormation() {
     const template = super._toCloudFormation();
 

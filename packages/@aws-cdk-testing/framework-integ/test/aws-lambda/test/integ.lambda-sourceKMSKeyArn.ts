@@ -103,7 +103,7 @@ class TestStack extends Stack {
       },
     });
     this.functionName3 = fnCustom.functionName;
-  };
+  }
 }
 
 new IntegTest(app, 'SourceKMSKeyArn', {

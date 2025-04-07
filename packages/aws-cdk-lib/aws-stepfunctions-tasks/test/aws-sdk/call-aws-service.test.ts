@@ -64,6 +64,59 @@ test('CallAwsService task', () => {
   });
 });
 
+test('CallAwsService task - using JSONata', () => {
+  // WHEN
+  const task = tasks.CallAwsService.jsonata(stack, 'GetObject', {
+    service: 's3',
+    action: 'getObject',
+    parameters: {
+      Bucket: 'my-bucket',
+      Key: '{% $states.input.key %}',
+    },
+    iamResources: ['*'],
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::aws-sdk:s3:getObject',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      Bucket: 'my-bucket',
+      Key: '{% $states.input.key %}',
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 's3:getObject',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
 test('with custom IAM action', () => {
   // WHEN
   const task = new tasks.CallAwsService(stack, 'ListBuckets', {
@@ -376,6 +429,34 @@ test('IAM policy for efs', () => {
           Action: 'elasticfilesystem:tagResource',
           Effect: 'Allow',
           Resource: '*',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('IAM policy for elasticloadbalancingv2', () => {
+  // WHEN
+  const task = new tasks.CallAwsService(stack, 'DescribeELBV2TargetGroups', {
+    service: 'elasticloadbalancingv2',
+    action: 'describeTargetGroups',
+    iamResources: ['*'],
+    resultPath: sfn.JsonPath.DISCARD,
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'elasticloadbalancing:describeTargetGroups',
+          Resource: '*',
+          Effect: 'Allow',
         },
       ],
       Version: '2012-10-17',

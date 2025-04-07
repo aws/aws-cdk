@@ -1,5 +1,6 @@
 import { Match, Template } from '../../assertions';
-import { Duration, Stack } from '../../core';
+import { App, Duration, Stack } from '../../core';
+import { BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT } from '../../cx-api';
 import { BastionHostLinux, BlockDeviceVolume, CloudFormationInit, InitCommand, InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from '../lib';
 
 describe('bastion host', () => {
@@ -18,7 +19,6 @@ describe('bastion host', () => {
       InstanceType: 't3.nano',
       SubnetId: { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
     });
-
   });
   test('default instance is created in isolated vpc', () => {
     // GIVEN
@@ -42,7 +42,6 @@ describe('bastion host', () => {
       InstanceType: 't3.nano',
       SubnetId: { Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6' },
     });
-
   });
   test('ebs volume is encrypted', () => {
     // GIVEN
@@ -79,7 +78,6 @@ describe('bastion host', () => {
         },
       ],
     });
-
   });
   test('x86-64 instances use x86-64 image by default', () => {
     // GIVEN
@@ -97,7 +95,6 @@ describe('bastion host', () => {
         Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
       },
     });
-
   });
   test('arm instances use arm image by default', () => {
     // GIVEN
@@ -116,7 +113,6 @@ describe('bastion host', () => {
         Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmarm64gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
       },
     });
-
   });
 
   test('add CloudFormation Init to instance', () => {
@@ -157,11 +153,11 @@ describe('bastion host', () => {
   });
 
   test('imdsv2 is required', () => {
-    //GIVEN
+    // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
 
-    //WHEN
+    // WHEN
     new BastionHostLinux(stack, 'Bastion', {
       vpc,
       requireImdsv2: true,
@@ -178,7 +174,7 @@ describe('bastion host', () => {
   });
 
   test('appends new hash digest to instance logical Id if userDataCausesReplacement is true', () => {
-    //GIVEN
+    // GIVEN
     const stackOld = new Stack();
     const stackNew = new Stack();
     const vpcOld = new Vpc(stackOld, 'VPC');
@@ -229,7 +225,7 @@ describe('bastion host', () => {
   });
 
   test('does not append new hash digest to instance logical Id if userDataCausesReplacement is false', () => {
-    //GIVEN
+    // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const sshKeys = ['foo', 'bar'];
@@ -253,5 +249,49 @@ describe('bastion host', () => {
         }),
       }),
     }));
+  });
+
+  test('uses Amazon Linux 2 by default if feature flag is disabled', () => {
+    // GIVEN
+    const featureFlags = { [BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT]: false };
+    const app = new App({
+      context: featureFlags,
+    });
+    const stack = new Stack(app);
+    const vpc = new Vpc(stack, 'VPC');
+
+    // WHEN
+    new BastionHostLinux(stack, 'Bastion', {
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      ImageId: {
+        Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
+      },
+    });
+  });
+
+  test('uses Amazon Linux 2023 by default if feature flag is enabled', () => {
+    // GIVEN
+    const featureFlags = { [BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT]: true };
+    const app = new App({
+      context: featureFlags,
+    });
+    const stack = new Stack(app);
+    const vpc = new Vpc(stack, 'VPC');
+
+    // WHEN
+    new BastionHostLinux(stack, 'Bastion', {
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      ImageId: {
+        Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter',
+      },
+    });
   });
 });

@@ -65,6 +65,13 @@ const node20xfn = new Function(stack, 'NODEJS_20_X', {
 });
 new CfnOutput(stack, 'NODEJS_20_X-functionName', { value: node20xfn.functionName });
 
+const node22xfn = new Function(stack, 'NODEJS_22_X', {
+  code: new InlineCode('exports.handler = async function(event) { return "success" }'),
+  handler: 'index.handler',
+  runtime: Runtime.NODEJS_22_X,
+});
+new CfnOutput(stack, 'NODEJS_22_X-functionName', { value: node22xfn.functionName });
+
 new integ.IntegTest(app, 'lambda-runtime-inlinecode', {
   testCases: [stack],
 });

@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "artifacts": {
     "aws-cdk-lambda-1.assets": {
       "type": "cdk:asset-manifest",
@@ -16,7 +16,6 @@
         "templateFile": "aws-cdk-lambda-1.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d5186e951f469ea8e615892ba5e275c8d10861c611945ad7f91447b00da5ad60.json",
@@ -35,10 +34,96 @@
         "aws-cdk-lambda-1.assets"
       ],
       "metadata": {
+        "/aws-cdk-lambda-1/MyLambda": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/aws-cdk-lambda-1/MyLambda/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-lambda-1/MyLambda/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-lambda-1/MyLambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdaServiceRole4539ECB6"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyLambda/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-lambda-1/MyLambda/ServiceRole/DefaultPolicy/Resource": [
@@ -53,10 +138,26 @@
             "data": "MyLambdaCCE802FB"
           }
         ],
+        "/aws-cdk-lambda-1/MyLambda/FunctionUrl": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "function": "*"
+            }
+          }
+        ],
         "/aws-cdk-lambda-1/MyLambda/FunctionUrl/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdaFunctionUrlC2055677"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyLambda/CurrentVersion": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "lambda": "*"
+            }
           }
         ],
         "/aws-cdk-lambda-1/MyLambda/CurrentVersion/Resource": [
@@ -65,16 +166,40 @@
             "data": "MyLambdaCurrentVersionE7A382CC9ce8e408346691aecad19aa25bc70350"
           }
         ],
+        "/aws-cdk-lambda-1/Alias": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "aliasName": "*",
+              "version": "*"
+            }
+          }
+        ],
         "/aws-cdk-lambda-1/Alias/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Alias325C5727"
           }
         ],
+        "/aws-cdk-lambda-1/Alias/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-lambda-1/Alias/AliasPermission": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AliasAliasPermissionAF30F9E8"
+          }
+        ],
+        "/aws-cdk-lambda-1/Alias/FunctionUrl": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "function": "*",
+              "authType": "NONE"
+            }
           }
         ],
         "/aws-cdk-lambda-1/Alias/FunctionUrl/Resource": [
@@ -91,8 +216,39 @@
         ],
         "/aws-cdk-lambda-1/MySnapStartLambda": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*",
+              "snapStart": "*"
+            }
+          },
+          {
             "type": "aws:cdk:warning",
-            "data": "SnapStart only support published Lambda versions. Ignore if function already have published versions [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
+            "data": "SnapStart only supports published Lambda versions. Ignore if function already has published versions. [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
+          }
+        ],
+        "/aws-cdk-lambda-1/MySnapStartLambda/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-lambda-1/MySnapStartLambda/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-lambda-1/MySnapStartLambda/ServiceRole/Resource": [
@@ -109,8 +265,40 @@
         ],
         "/aws-cdk-lambda-1/MySnapStartLambdaArm": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*",
+              "architecture": "*",
+              "snapStart": "*"
+            }
+          },
+          {
             "type": "aws:cdk:warning",
-            "data": "SnapStart only support published Lambda versions. Ignore if function already have published versions [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
+            "data": "SnapStart only supports published Lambda versions. Ignore if function already has published versions. [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
+          }
+        ],
+        "/aws-cdk-lambda-1/MySnapStartLambdaArm/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-lambda-1/MySnapStartLambdaArm/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-lambda-1/MySnapStartLambdaArm/ServiceRole/Resource": [
@@ -136,58 +324,18 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "MyLambdainlinePolicyAddedToExecutionRole0E0144580": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdainlinePolicyAddedToExecutionRole0E0144580",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-cdk-lambda-1"
-    },
-    "TestLambdaFunctionTestingDefaultTestDeployAssertE49CDD88.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "TestLambdaFunctionTestingDefaultTestDeployAssertE49CDD88.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "TestLambdaFunctionTestingDefaultTestDeployAssertE49CDD88": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "TestLambdaFunctionTestingDefaultTestDeployAssertE49CDD88.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "notificationArns": [],
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "TestLambdaFunctionTestingDefaultTestDeployAssertE49CDD88.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "TestLambdaFunctionTestingDefaultTestDeployAssertE49CDD88.assets"
-      ],
-      "metadata": {
-        "/TestLambdaFunctionTesting/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/TestLambdaFunctionTesting/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
-      "displayName": "TestLambdaFunctionTesting/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

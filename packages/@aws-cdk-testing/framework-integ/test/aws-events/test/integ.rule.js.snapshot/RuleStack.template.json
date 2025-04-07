@@ -148,6 +148,112 @@
     },
     "State": "ENABLED"
    }
+  },
+  "MyWildcardRule477FB0F9": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "wildcard": "account*"
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MyAnythingButPrefixRule756FC7C6": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "anything-but": {
+        "prefix": "prefix-"
+       }
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MyAnythingButSuffixRuleB1E496DF": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "anything-but": {
+        "suffix": "-suffix"
+       }
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MyAnythingButWildcardRuleEED7F44B": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "anything-but": {
+        "wildcard": "account*"
+       }
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MyAnythingButEqualsIgnoreCaseEBE7F91F": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "anything-but": {
+        "equals-ignore-case": [
+         "account1",
+         "account2"
+        ]
+       }
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MyPrefixEqualsIgnoreCaseC9726B40": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "prefix": {
+        "equals-ignore-case": "prefix-"
+       }
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MySuffixEqualsIgnoreCaseBE2DDE03": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "suffix": {
+        "equals-ignore-case": "-suffix"
+       }
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
   }
  },
  "Parameters": {

@@ -108,6 +108,23 @@ describe('DatabaseInstance', () => {
     });
   });
 
+  test.each([true, false])('instance with auto minor version upgrade', (autoMinorVersionUpgrade) => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new DatabaseInstance(stack, 'Instance', {
+      cluster: stack.cluster,
+      instanceType: InstanceType.R5_LARGE,
+      autoMinorVersionUpgrade,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
+      AutoMinorVersionUpgrade: autoMinorVersionUpgrade,
+    });
+  });
+
   test('instance type from CfnParameter', () => {
     // GIVEN
     const stack = testStack();
@@ -139,7 +156,7 @@ describe('DatabaseInstance', () => {
   });
 
   test('instance type from string throws if missing db prefix', () => {
-    expect(() => { InstanceType.of('r5.xlarge');}).toThrowError(/instance type must start with 'db.'/);
+    expect(() => { InstanceType.of('r5.xlarge');}).toThrow(/instance type must start with 'db.'/);
   });
 
   test('metric - constructs metric with correct namespace and dimension and inputs', () => {

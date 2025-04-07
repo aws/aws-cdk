@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "AutoMinorVersionUpgradeInstanceInteg/DefaultTest": {
+      "stacks": [
+        "AutoMinorVersionUpgradeInstanceStack"
+      ],
+      "assertionStack": "AutoMinorVersionUpgradeInstanceInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "AutoMinorVersionUpgradeInstanceIntegDefaultTestDeployAssert5F020D27"
+    }
+  }
+}

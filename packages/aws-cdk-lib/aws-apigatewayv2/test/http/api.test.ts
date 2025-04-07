@@ -139,7 +139,7 @@ describe('HttpApi', () => {
           allowCredentials: true,
           allowOrigins: ['*'],
         },
-      })).toThrowError(/allowCredentials is not supported/);
+      })).toThrow(/allowCredentials is not supported/);
     });
 
     test('get metric', () => {

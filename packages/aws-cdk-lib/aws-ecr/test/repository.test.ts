@@ -2,12 +2,146 @@ import { EOL } from 'os';
 import { Annotations, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import * as cxschema from '../../cloud-assembly-schema';
 import * as cdk from '../../core';
 import * as ecr from '../lib';
-
 /* eslint-disable quote-props */
 
 describe('repository', () => {
+  describe('lookup', () => {
+    test('return correct repository info by name', () => {
+      // GIVEN
+      const resultObjs = [
+        {
+          'Arn': 'arn:aws:ecr:us-east-1:123456789012:repository/my-repo',
+        },
+      ];
+      const value = {
+        value: resultObjs,
+      };
+      const mock = jest.spyOn(cdk.ContextProvider, 'getValue').mockReturnValue(value);
+
+      // WHEN
+      const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+      const repo = ecr.Repository.fromLookup(stack, 'MyRepo', {
+        repositoryName: 'my-repo',
+      });
+
+      // THEN
+      expect(repo.repositoryName).toEqual('my-repo');
+      expect(repo.repositoryArn).toEqual(cdk.Stack.of(repo).formatArn({
+        service: 'ecr',
+        partition: 'aws',
+        resource: 'repository',
+        resourceName: 'my-repo',
+      }));
+      expect(mock).toHaveBeenCalledWith(stack, {
+        provider: cxschema.ContextProvider.CC_API_PROVIDER,
+        props: {
+          typeName: 'AWS::ECR::Repository',
+          exactIdentifier: 'my-repo',
+          propertiesToReturn: [
+            'Arn',
+          ],
+        } as cxschema.CcApiContextQuery,
+        dummyValue: [
+          {
+            'Arn': ecr.Repository.arnForLocalRepository('DUMMY_ARN', stack),
+          },
+        ],
+      });
+
+      mock.mockRestore();
+    });
+
+    test('return correct repository info by arn', () => {
+      const repoArn = 'arn:aws:ecr:us-east-1:123456789012:repository/my-repo';
+      // GIVEN
+      const resultObjs = [
+        {
+          'Arn': repoArn,
+        },
+      ];
+      const value = {
+        value: resultObjs,
+      };
+      const mock = jest.spyOn(cdk.ContextProvider, 'getValue').mockReturnValue(value);
+
+      // WHEN
+      const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+      const repo = ecr.Repository.fromLookup(stack, 'MyRepo', {
+        repositoryArn: repoArn,
+      });
+
+      // THEN
+      expect(repo.repositoryName).toEqual('my-repo');
+      expect(repo.repositoryArn).toEqual(cdk.Stack.of(repo).formatArn({
+        service: 'ecr',
+        partition: 'aws',
+        resource: 'repository',
+        resourceName: 'my-repo',
+      }));
+      expect(mock).toHaveBeenCalledWith(stack, {
+        provider: cxschema.ContextProvider.CC_API_PROVIDER,
+        props: {
+          typeName: 'AWS::ECR::Repository',
+          exactIdentifier: 'my-repo',
+          propertiesToReturn: [
+            'Arn',
+          ],
+        } as cxschema.CcApiContextQuery,
+        dummyValue: [
+          {
+            'Arn': ecr.Repository.arnForLocalRepository('DUMMY_ARN', stack),
+          },
+        ],
+      });
+
+      mock.mockRestore();
+    });
+
+    test.each([
+      {
+        repositoryArn: 'arn:aws:ecr:us-east-1:123456789012:repository/does-not-exist-repo',
+      },
+      {
+        repositoryName: 'does-not-exist-repo',
+      },
+    ])('return dummy repository info if not found', (config) => {
+      // WHEN
+      const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+      const repo = ecr.Repository.fromLookup(stack, 'MyRepo', config);
+
+      // THEN
+      expect(repo.repositoryName).toEqual('DUMMY_ARN');
+      expect(repo.repositoryArn).toEqual(ecr.Repository.arnForLocalRepository('DUMMY_ARN', stack));
+    });
+
+    test('throw error if repository name is a token', () => {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+      const tokenName = new cdk.CfnParameter(stack, 'RepoName');
+      expect(() => ecr.Repository.fromLookup(stack, 'MyRepository', {
+        repositoryName: tokenName.valueAsString,
+      })).toThrow('Cannot look up a repository with a tokenized name or ARN.');
+    });
+
+    test('throw error if repository arn is a token', () => {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+      const tokenName = new cdk.CfnParameter(stack, 'RepoArn');
+      expect(() => ecr.Repository.fromLookup(stack, 'MyRepository', {
+        repositoryArn: tokenName.valueAsString,
+      })).toThrow('Cannot look up a repository with a tokenized name or ARN.');
+    });
+
+    test('throw error if neither repository name nor arn is provided', () => {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+      expect(() => ecr.Repository.fromLookup(stack, 'MyRepository', {})).toThrow('At least one of `repositoryName` or `repositoryArn` must be provided.');
+    });
+  });
+
   test('construct repository', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -308,6 +442,30 @@ describe('repository', () => {
     });
   });
 
+  test('calculate registry URI', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    new cdk.CfnOutput(stack, 'RegistryUri', {
+      value: repo.registryUri,
+    });
+
+    // THEN
+    const arnSplit = { 'Fn::Split': [':', { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] }] };
+    Template.fromStack(stack).hasOutput('*', {
+      'Value': {
+        'Fn::Join': ['', [
+          { 'Fn::Select': [4, arnSplit] },
+          '.dkr.ecr.',
+          { 'Fn::Select': [3, arnSplit] },
+          '.',
+          { Ref: 'AWS::URLSuffix' },
+        ]],
+      },
+    });
+  });
+
   test('import with concrete arn', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -330,7 +488,7 @@ describe('repository', () => {
     // THEN
     expect(() => {
       ecr.Repository.fromRepositoryArn(stack, 'repo', invalidArn);
-    }).toThrowError(`Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${invalidArn}.`);
+    }).toThrow(`Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${invalidArn}.`);
   });
 
   test('fails if importing with token arn and no name', () => {
@@ -1193,7 +1351,7 @@ describe('repository', () => {
           autoDeleteImages: true,
           removalPolicy: cdk.RemovalPolicy.RETAIN,
         });
-      }).toThrowError('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
+      }).toThrow('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
     });
   });
 
@@ -1213,100 +1371,5 @@ describe('repository', () => {
         ]],
       },
     });
-  });
-
-  test.each([
-    ['image digest', 'sha256:55d873154f78cd9a13487c9539ff380f396b887f4a815d84fd698ed872c74749', '@'],
-    ['image tag', 'testTag', ':'],
-  ])('repositoryUriForTagOrDigest returns correct uri with %s', (type, value, separator) => {
-    const stack = new cdk.Stack();
-    const repo = new ecr.Repository(stack, 'Repo');
-    const uri = repo.repositoryUriForTagOrDigest(value);
-    expect(uri).toMatch(new RegExp(`.+${separator}${value}`));
-  });
-
-  test.each([
-    ['image digest', 'sha256:55d873154f78cd9a13487c9539ff380f396b887f4a815d84fd698ed872c74749'],
-    ['image tag', 'testTag'],
-  ])('repositoryUriForTagOrDigest returns correct uri with %s for Token input', (type, value) => {
-    const stack = new cdk.Stack();
-    const param = new cdk.CfnParameter(stack, 'Param', {
-      default: value,
-    });
-    const repo = new ecr.Repository(stack, 'Repo');
-    const uri = repo.repositoryUriForTagOrDigest(param.valueAsString);
-    new cdk.CfnOutput(stack, 'Uri', {
-      value: uri,
-    });
-    const template = Template.fromStack(stack);
-    const condition = template.findConditions('*');
-    const conditionLogicalId = Object.keys(condition)[0];
-    expect(conditionLogicalId).toMatch(new RegExp('IsInputDigest1.+'));
-    expect(condition[conditionLogicalId]).toMatchObject({
-      'Fn::Equals': [
-        {
-          'Fn::Select': [
-            0,
-            {
-              'Fn::Split': [
-                ':',
-                {
-                  'Ref': 'Param',
-                },
-              ],
-            },
-          ],
-        },
-        'sha256',
-      ],
-    });
-    const output = template.findOutputs('Uri');
-    expect(output.Uri.Value['Fn::Join'][1][7]).toMatchObject({
-      'Fn::If': [
-        conditionLogicalId,
-        {
-          'Fn::Join': [
-            '',
-            [
-              '@',
-              {
-                'Ref': 'Param',
-              },
-            ],
-          ],
-        },
-        {
-          'Fn::Join': [
-            '',
-            [
-              ':',
-              {
-                'Ref': 'Param',
-              },
-            ],
-          ],
-        },
-      ],
-    });
-  });
-
-  test('repositoryUriForTagOrDigest add unique conditions', () => {
-    const stack = new cdk.Stack();
-    const tagParam = new cdk.CfnParameter(stack, 'tagParam', {
-      default: 'testingTag',
-    });
-    const digestParam = new cdk.CfnParameter(stack, 'digestParam', {
-      default: 'sha256:55d873154f78cd9a13487c9539ff380f396b887f4a815d84fd698ed872c74749',
-    });
-
-    const repo = new ecr.Repository(stack, 'Repo');
-    repo.repositoryUriForTagOrDigest(tagParam.valueAsString);
-    repo.repositoryUriForTagOrDigest(tagParam.valueAsString);
-    repo.repositoryUriForTagOrDigest(digestParam.valueAsString);
-    repo.repositoryUriForTagOrDigest(digestParam.valueAsString);
-    repo.repositoryUriForTagOrDigest(digestParam.valueAsString);
-    const template = Template.fromStack(stack);
-    const conditions = template.findConditions('*');
-    expect(Object.keys(conditions).length).toEqual(2);
   });
 });

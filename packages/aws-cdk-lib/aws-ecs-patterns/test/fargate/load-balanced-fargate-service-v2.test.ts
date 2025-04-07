@@ -516,7 +516,7 @@ describe('Application Load Balancer', () => {
             },
           ],
         });
-      }).toThrowError();
+      }).toThrow();
     });
 
     test('errors when idleTimeout is under 1 seconds for multiAlbService', () => {
@@ -586,7 +586,7 @@ describe('Application Load Balancer', () => {
             },
           ],
         });
-      }).toThrowError();
+      }).toThrow();
     });
 
     test('passes when idleTimeout is between 1 and 4000 seconds for multiAlbService', () => {
@@ -667,7 +667,7 @@ describe('Application Load Balancer', () => {
       // WHEN
       new ApplicationMultipleTargetGroupsFargateService(stack, 'myService', {
         cluster: new ecs.Cluster(stack, 'EcsCluster', { vpc }),
-        memoryLimitMiB: 256,
+        memoryLimitMiB: 512,
         taskImageOptions: {
           image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         },

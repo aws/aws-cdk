@@ -6,6 +6,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, RemovalPolicy, Resource, ResourceProps, Stack, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamSummary',
@@ -17,6 +18,12 @@ const READ_OPERATIONS = [
   'kinesis:ListStreams',
   'kinesis:DescribeStreamConsumer',
 ];
+
+const UNSUPPORTED_RESOURCE_POLICY_READ_OPERATIONS = new Set<string>([
+  'kinesis:DescribeStreamConsumer',
+  'kinesis:ListStreams',
+  'kinesis:SubscribeToShard',
+]);
 
 const WRITE_OPERATIONS = [
   'kinesis:ListShards',
@@ -357,7 +364,7 @@ abstract class StreamBase extends Resource implements IStream {
   /**
    * Adds a statement to the IAM resource policy associated with this stream.
    *
-   * If this stream was created in this stack (`new Strem`), a resource policy
+   * If this stream was created in this stack (`new Stream`), a resource policy
    * will be automatically created upon the first call to `addToResourcePolicy`. If
    * the stream is imported (`Stream.import`), then this is a no-op.
    */
@@ -422,11 +429,27 @@ abstract class StreamBase extends Resource implements IStream {
    * Grant the indicated permissions on this stream to the given IAM principal (Role/Group/User).
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.addToPrincipal({
+    return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,
       resourceArns: [this.streamArn],
-      scope: this,
+      resource: {
+        addToResourcePolicy: (statement) => {
+          // filter out actions not supported by stream resource policy (defined in {@link READ_OPERATIONS} and {@link WRITE_OPERATIONS})
+          const filteredActions = statement.actions.filter(action => !UNSUPPORTED_RESOURCE_POLICY_READ_OPERATIONS.has(action));
+          if (filteredActions.length > 0) {
+            const filteredActionsStatement = statement.copy({
+              actions: filteredActions,
+            });
+            return this.addToResourcePolicy(filteredActionsStatement);
+          }
+          return { statementAdded: false };
+        },
+        node: this.node,
+        stack: this.stack,
+        env: this.env,
+        applyRemovalPolicy: x => this.applyRemovalPolicy(x),
+      },
     });
   }
 
@@ -698,7 +721,6 @@ abstract class StreamBase extends Resource implements IStream {
       ...props,
     }).attachTo(this);
   }
-
 }
 
 /**
@@ -768,7 +790,6 @@ export interface StreamProps {
  * A Kinesis stream. Can be encrypted with a KMS key.
  */
 export class Stream extends StreamBase {
-
   /**
    * Import an existing Kinesis Stream provided an ARN
    *
@@ -813,6 +834,8 @@ export class Stream extends StreamBase {
     super(scope, id, {
       physicalName: props.streamName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     let shardCount = props.shardCount;
     const streamMode = props.streamMode;
@@ -864,10 +887,8 @@ export class Stream extends StreamBase {
     streamEncryption?: CfnStream.StreamEncryptionProperty | IResolvable;
     encryptionKey?: kms.IKey;
   } {
-
     // if encryption properties are not set, default to KMS in regions where KMS is available
     if (!props.encryption && !props.encryptionKey) {
-
       const conditionName = 'AwsCdkKinesisEncryptedStreamsUnsupportedRegions';
       const existing = Stack.of(this).node.tryFindChild(conditionName);
 

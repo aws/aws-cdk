@@ -1,5 +1,5 @@
 {
-  "version": "36.0.24",
+  "version": "38.0.1",
   "artifacts": {
     "integ-bastionhost-userdatacausesreplacement.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "integ-bastionhost-userdatacausesreplacement.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/500ab0cbc3e5f25aa40531fa4642888278c4bed1500e3cfaa1fdbe2964dcb42a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/32fd8858b9140d02b8445aa8bbbf65d96e50706683e26f5380b33fcf3fb1ede1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -199,7 +200,10 @@
         "/integ-bastionhost-userdatacausesreplacement/BastionHostUserDataReplacementEnabled/Resource/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BastionHostUserDataReplacementEnabled2AB683D8450c0dd0c96b2841"
+            "data": "BastionHostUserDataReplacementEnabled2AB683D8450c0dd0c96b2841",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-bastionhost-userdatacausesreplacement/BastionHostUserDataReplacementEnabled/BastionHostId": [
@@ -208,10 +212,10 @@
             "data": "BastionHostUserDataReplacementEnabledBastionHostId40E9D44C"
           }
         ],
-        "/integ-bastionhost-userdatacausesreplacement/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/integ-bastionhost-userdatacausesreplacement/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/integ-bastionhost-userdatacausesreplacement/BastionHostUserDataReplacementDisabled/Resource/InstanceSecurityGroup/Resource": [
@@ -241,7 +245,10 @@
         "/integ-bastionhost-userdatacausesreplacement/BastionHostUserDataReplacementDisabled/Resource/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BastionHostUserDataReplacementDisabled923BB343"
+            "data": "BastionHostUserDataReplacementDisabled923BB343",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-bastionhost-userdatacausesreplacement/BastionHostUserDataReplacementDisabled/BastionHostId": [
@@ -280,6 +287,7 @@
         "templateFile": "bastionhostuserdatacausesreplacementtestDefaultTestDeployAssert7991717B.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",

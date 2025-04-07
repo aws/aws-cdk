@@ -18,8 +18,9 @@
     "@types/madge": "^5.0.3",
     "@types/node": "^16",
     "@types/yargs": "^17",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
+    "@typescript-eslint/eslint-plugin": "^8",
+    "@stylistic/eslint-plugin": "^2",
+    "@typescript-eslint/parser": "^8",
     "eslint": "^8",
     "eslint-import-resolver-node": "^0.3.9",
     "eslint-import-resolver-typescript": "^2.7.1",
@@ -29,10 +30,10 @@
     "npm-check-updates": "^16",
     "standard-version": "^9",
     "ts-jest": "^29",
-    "typescript": "~5.5.2"
+    "typescript": "~5.5.4"
   },
   "dependencies": {
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.25.1",
     "fs-extra": "^10.1.0",
     "license-checker": "^25.0.1",
     "madge": "^5.0.2",

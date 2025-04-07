@@ -29,7 +29,6 @@ enum ClusterLoggingTypes {
 }
 
 describe('compareLoggingProps', () => {
-
   type Props = Partial<CreateClusterRequest>;
   const oldEnabledTypes: LogType[] = [ClusterLoggingTypes.API, ClusterLoggingTypes.AUDIT];
 
@@ -111,5 +110,4 @@ describe('compareLoggingProps', () => {
 
     expect(result.logging?.clusterLogging).toEqual([{ types: oldEnabledTypes, enabled: false }]);
   });
-
 });

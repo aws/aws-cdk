@@ -109,7 +109,6 @@ describe('gateway route', () => {
           },
         },
       });
-
     });
 
     test('should throw an exception if you start an http prefix match not with a /', () => {
@@ -129,7 +128,6 @@ describe('gateway route', () => {
           path: appmesh.HttpRoutePathMatch.startsWith('wrong'),
         },
       }).bind(stack)).toThrow(/Prefix Path for the match must start with \'\/\', got: wrong/);
-
     });
 
     describe('with shared service mesh', () => {
@@ -1260,7 +1258,6 @@ describe('gateway route', () => {
     expect(gatewayRoute.gatewayRouteName).toEqual(gatewayRouteName);
     expect(gatewayRoute.virtualGateway.virtualGatewayName).toEqual(virtualGatewayName);
     expect(gatewayRoute.virtualGateway.mesh.meshName).toEqual(meshName);
-
   });
   test('Can import Gateway Routes using attributes', () => {
     const app = new cdk.App();
@@ -1284,7 +1281,6 @@ describe('gateway route', () => {
     // THEN
     expect(gatewayRoute.gatewayRouteName).toEqual(gatewayRouteName);
     expect(gatewayRoute.virtualGateway.mesh.meshName).toEqual(meshName);
-
   });
 });
 

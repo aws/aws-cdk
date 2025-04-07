@@ -35,6 +35,7 @@ taskDefinition.addContainer('DefaultContainer', {
 const ecsService = new ecs.Ec2Service(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
 });
 ```
 
@@ -85,13 +86,14 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 });
 ```
 
-To encrypt the fargate ephemeral storage configure a KMS key. 
+By default, storage is encrypted with AWS-managed key. You can specify customer-managed key using:
 ```ts
 declare const key: kms.Key;
 
-const cluster = new ecs.Cluster(this, 'Cluster', { 
-  managedStorageConfiguration: { 
+const cluster = new ecs.Cluster(this, 'Cluster', {
+  managedStorageConfiguration: {
     fargateEphemeralStorageKmsKey: key,
+    kmsKey: key,
   },
 });
 ```
@@ -340,6 +342,17 @@ cluster.addCapacity('ASGEncryptedSNS', {
 });
 ```
 
+### Container Insights
+
+On a cluster, CloudWatch Container Insights can be enabled by setting the `containerInsightsV2` property. [Container Insights](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-container-insights.html) 
+can be disabled, enabled, or enhanced.
+
+```ts
+const cluster = new ecs.Cluster(this, 'Cluster', {
+  containerInsightsV2: ecs.ContainerInsights.ENHANCED
+});
+```
+
 ## Task definitions
 
 A task definition describes what a single copy of a **task** should look like.
@@ -516,7 +529,7 @@ To grant a principal permission to run your `TaskDefinition`, you can use the `T
 ```ts
 declare const role: iam.IGrantable;
 const taskDef = new ecs.TaskDefinition(this, 'TaskDef', {
-  cpu: '512',
+  cpu: '256',
   memoryMiB: '512',
   compatibility: ecs.Compatibility.EC2_AND_FARGATE,
 });
@@ -646,6 +659,22 @@ taskDefinition.addContainer('container', {
 });
 ```
 
+### Enable Fault Injection
+You can utilize fault injection with Amazon ECS on both Amazon EC2 and Fargate to test how their application responds to certain impairment scenarios. These tests provide information you can use to optimize your application's performance and resiliency.
+
+When fault injection is enabled, the Amazon ECS container agent allows tasks access to new fault injection endpoints.
+Fault injection only works with tasks using the `AWS_VPC` or `HOST` network modes.
+
+For more infomation, see [Use fault injection with your Amazon ECS and Fargate workloads](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fault-injection.html).
+
+To enable Fault Injection for the task definiton, set `enableFaultInjection` to true.
+
+```ts
+new ecs.Ec2TaskDefinition(this, 'Ec2TaskDefinition', {
+  enableFaultInjection: true,
+});
+```
+
 ## Docker labels
 
 You can add labels to the container with the `dockerLabels` property or with the `addDockerLabel` method:
@@ -761,6 +790,7 @@ const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5,
+  minHealthyPercent: 100,
 });
 ```
 
@@ -774,6 +804,7 @@ const service = new ecs.ExternalService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5,
+  minHealthyPercent: 100,
 });
 ```
 
@@ -794,14 +825,16 @@ new ecs.ExternalService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5,
-  taskDefinitionRevision: ecs.TaskDefinitionRevision.of(1)
+  minHealthyPercent: 100,
+  taskDefinitionRevision: ecs.TaskDefinitionRevision.of(1),
 });
 
 new ecs.ExternalService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5,
-  taskDefinitionRevision: ecs.TaskDefinitionRevision.LATEST
+  minHealthyPercent: 100,
+  taskDefinitionRevision: ecs.TaskDefinitionRevision.LATEST,
 });
 ```
 
@@ -822,6 +855,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   circuitBreaker: {
     enable: true,
     rollback: true
@@ -858,6 +892,7 @@ declare const elbAlarm: cw.Alarm;
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   deploymentAlarms: {
     alarmNames: [elbAlarm.alarmName],
     behavior: ecs.AlarmBehavior.ROLLBACK_ON_ALARM,
@@ -944,6 +979,7 @@ const service = new ecs.FargateService(this, 'Service', {
   serviceName,
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
 });
 
 const cpuMetric = new cw.Metric({
@@ -981,7 +1017,7 @@ on the service, there will be no restrictions on the alarm name.
 declare const vpc: ec2.Vpc;
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
-const service = new ecs.FargateService(this, 'Service', { cluster, taskDefinition });
+const service = new ecs.FargateService(this, 'Service', { cluster, taskDefinition, minHealthyPercent: 100 });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
 const listener = lb.addListener('Listener', { port: 80 });
@@ -1008,7 +1044,7 @@ Alternatively, you can also create all load balancer targets to be registered in
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
 declare const vpc: ec2.Vpc;
-const service = new ecs.FargateService(this, 'Service', { cluster, taskDefinition });
+const service = new ecs.FargateService(this, 'Service', { cluster, taskDefinition, minHealthyPercent: 100 });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
 const listener = lb.addListener('Listener', { port: 80 });
@@ -1047,7 +1083,7 @@ for the alternatives.
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
 declare const vpc: ec2.Vpc;
-const service = new ecs.Ec2Service(this, 'Service', { cluster, taskDefinition });
+const service = new ecs.Ec2Service(this, 'Service', { cluster, taskDefinition, minHealthyPercent: 100 });
 
 const lb = new elb.LoadBalancer(this, 'LB', { vpc });
 lb.addListener({ externalPort: 80 });
@@ -1060,7 +1096,7 @@ Similarly, if you want to have more control over load balancer targeting:
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
 declare const vpc: ec2.Vpc;
-const service = new ecs.Ec2Service(this, 'Service', { cluster, taskDefinition });
+const service = new ecs.Ec2Service(this, 'Service', { cluster, taskDefinition, minHealthyPercent: 100 });
 
 const lb = new elb.LoadBalancer(this, 'LB', { vpc });
 lb.addListener({ externalPort: 80 });
@@ -1106,6 +1142,69 @@ const service = ecs.FargateService.fromFargateServiceAttributes(this, 'EcsServic
 const service = ecs.FargateService.fromFargateServiceArn(this, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
 ```
 
+### Availability Zone rebalancing
+
+ECS services running in AWS can be launched in multiple VPC subnets that are
+each in different Availability Zones (AZs) to achieve high availability. Fargate
+services launched this way will automatically try to achieve an even spread of
+service tasks across AZs, and EC2 services can be instructed to do the same with
+placement strategies. This ensures that the service has equal availability in
+each AZ.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  // Fargate will try to ensure an even spread of newly launched tasks across
+  // all AZs corresponding to the public subnets of the VPC.
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+});
+```
+
+However, those approaches only affect how newly launched tasks are placed.
+Service tasks can still become unevenly spread across AZs if there is an
+infrastructure event, like an AZ outage or a lack of available compute capacity
+in an AZ. During such events, newly launched tasks may be placed in AZs in such
+a way that tasks are not evenly spread across all AZs. After the infrastructure
+event is over, the service will remain imbalanced until new tasks are launched
+for some other reason, such as a service deployment.
+
+Availability Zone rebalancing is a feature whereby ECS actively tries to correct
+service AZ imbalances whenever they exist, by moving service tasks from
+overbalanced AZs to underbalanced AZs. When an imbalance is detected, ECS will
+launch new tasks in underbalanced AZs, then stop existing tasks in overbalanced
+AZs, to ensure an even spread.
+
+You can enabled Availability Zone rebalancing when creating your service:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+});
+```
+
+Availability Zone rebalancing works in the following configurations:
+- Services that use the Replica strategy.
+- Services that specify Availability Zone spread as the first task placement
+  strategy, or do not specify a placement strategy.
+
+You can't use Availability Zone rebalancing with services that meet any of the
+following criteria:
+- Uses the Daemon strategy.
+- Uses the EXTERNAL launch type (ECSAnywhere).
+- Uses 100% for the maximumPercent value.
+- Uses a Classic Load Balancer.
+- Uses the `attribute:ecs.availability-zone` as a task placement constraint.
+
 ## Task Auto-Scaling
 
 You can configure the task count of a service to match demand. Task auto-scaling is
@@ -1145,7 +1244,7 @@ taskDefinition.addContainer('TheContainer', {
 
 // An Rule that describes the event trigger (in this case a scheduled run)
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.expression('rate(1 min)'),
+  schedule: events.Schedule.expression('rate(1 minute)'),
 });
 
 // Pass an environment variable to the container 'TheContainer' in the task
@@ -1396,6 +1495,7 @@ specificContainer.addPortMappings({
 new ecs.Ec2Service(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   cloudMapOptions: {
     // Create SRV records - useful for bridge networking
     dnsRecordType: cloudmap.DnsRecordType.SRV,
@@ -1453,6 +1553,7 @@ taskDefinition.addContainer('web', {
 new ecs.FargateService(this, 'FargateService', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   capacityProviderStrategies: [
     {
       capacityProvider: 'FARGATE_SPOT',
@@ -1530,6 +1631,7 @@ taskDefinition.addContainer('web', {
 new ecs.Ec2Service(this, 'EC2Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   capacityProviderStrategies: [
     {
       capacityProvider: capacityProvider.capacityProviderName,
@@ -1626,6 +1728,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 const service = new ecs.Ec2Service(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   enableExecuteCommand: true,
 });
 ```
@@ -1699,6 +1802,7 @@ cluster.addDefaultCloudMapNamespace({
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   serviceConnectConfiguration: {
     services: [
       {
@@ -1723,6 +1827,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
 });
 service.enableServiceConnect();
 ```
@@ -1736,6 +1841,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 const customService = new ecs.FargateService(this, 'CustomizedService', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   serviceConnectConfiguration: {
     logDriver: ecs.LogDrivers.awsLogs({
       streamPrefix: 'sc-traffic',
@@ -1765,6 +1871,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   serviceConnectConfiguration: {
     services: [
       {
@@ -1828,6 +1935,7 @@ taskDefinition.addVolume(volume);
 const service = new ecs.FargateService(this, 'FargateService', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
 });
 
 service.addVolume(volume);
@@ -1857,6 +1965,7 @@ taskDefinition.addVolume(volumeFromSnapshot);
 const service = new ecs.FargateService(this, 'FargateService', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
 });
 
 service.addVolume(volumeFromSnapshot);
@@ -1877,6 +1986,20 @@ taskDefinition.addContainer('TheContainer', {
 });
 ```
 
+## Disable service container image version consistency
+
+You can disable the
+[container image "version consistency"](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html#deployment-container-image-stability)
+feature of ECS service deployments on a per-container basis.
+
+```ts
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  versionConsistency: ecs.VersionConsistency.DISABLED,
+});
+```
+
 ## Specify a container ulimit
 
 You can specify a container `ulimits` by specifying them in the `ulimits` option while adding the container
@@ -1891,5 +2014,62 @@ taskDefinition.addContainer('TheContainer', {
     name: ecs.UlimitName.RSS,
     softLimit: 128,
   }],
+});
+```
+
+## Service Connect TLS
+
+Service Connect TLS is a feature that allows you to secure the communication between services using TLS.
+
+You can specify the `tls` option in the `services` array of the `serviceConnectConfiguration` property.
+
+The `tls` property is an object with the following properties:
+
+- `role`: The IAM role that's associated with the Service Connect TLS.
+- `awsPcaAuthorityArn`: The ARN of the certificate root authority that secures your service.
+- `kmsKey`: The KMS key used for encryption and decryption.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const kmsKey: kms.IKey;
+declare const role: iam.IRole;
+
+const service = new ecs.FargateService(this, 'FargateService', {
+  cluster,
+  taskDefinition,
+  serviceConnectConfiguration: {
+    services: [
+      {
+        tls: {
+          role,
+          kmsKey,
+          awsPcaAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
+        },
+        portMappingName: 'api',
+      },
+    ],
+    namespace: 'sample namespace',
+  },
+});
+```
+
+## Daemon scheduling strategy
+You can specify whether service use Daemon scheduling strategy by specifying `daemon` option in Service constructs. See [differences between Daemon and Replica scheduling strategy](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html)
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+new ecs.Ec2Service(this, 'Ec2Service', {
+  cluster,
+  taskDefinition,
+  daemon: true,
+});
+
+new ecs.ExternalService(this, 'ExternalService', {
+  cluster,
+  taskDefinition,
+  daemon: true,
 });
 ```

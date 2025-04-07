@@ -138,7 +138,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-vpcv2-alpha-integ-ipam/VPC-integ-test-1"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -268,6 +274,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "DefaultCDKRouteTable"
+                          }
+                        ],
                         "vpcId": {
                           "Fn::GetAtt": [
                             "VPCintegtest1EBA1CB75",
@@ -350,7 +362,7 @@
                 "path": "integtest-model/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -396,7 +408,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

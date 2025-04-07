@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "msk-serverless-integ/DefaultTest": {
+      "stacks": [
+        "msk-serverless-stack"
+      ],
+      "assertionStack": "msk-serverless-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "mskserverlessintegDefaultTestDeployAssertDD46F007"
+    }
+  }
+}

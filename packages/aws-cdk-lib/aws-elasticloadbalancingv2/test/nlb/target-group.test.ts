@@ -163,6 +163,24 @@ describe('tests', () => {
     }).toThrow('Health check interval must be greater than or equal to the timeout; received interval 10, timeout 20.');
   });
 
+  test.each([
+    elbv2.TargetGroupIpAddressType.IPV4,
+    elbv2.TargetGroupIpAddressType.IPV6,
+  ])('configure IP address type %s', (ipAddressType) => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      ipAddressType,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      IpAddressType: ipAddressType,
+    });
+  });
+
   // for backwards compatibility these can be equal, see discussion in https://github.com/aws/aws-cdk/pull/26031
   test('No error for health check interval == timeout', () => {
     const app = new cdk.App();
@@ -371,7 +389,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS, elbv2.Protocol.TCP])(
@@ -394,7 +412,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.TCP, elbv2.Protocol.HTTPS])(
@@ -419,7 +437,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.TCP, elbv2.Protocol.HTTPS])(
@@ -444,7 +462,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
@@ -516,7 +534,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
@@ -540,7 +558,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test('Throws error for invalid health check healthy threshold', () => {

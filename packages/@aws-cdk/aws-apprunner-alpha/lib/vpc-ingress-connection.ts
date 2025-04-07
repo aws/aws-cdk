@@ -3,6 +3,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IService } from './service';
 import { CfnVpcIngressConnection } from 'aws-cdk-lib/aws-apprunner';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties of the AppRunner VPC Ingress Connection
@@ -67,9 +68,9 @@ export interface IVpcIngressConnection extends cdk.IResource {
   readonly vpcIngressConnectionArn: string;
 
   /**
-    * The name of the VPC Ingress Connection.
-    * @attribute
-    */
+   * The name of the VPC Ingress Connection.
+   * @attribute
+   */
   readonly vpcIngressConnectionName: string;
 }
 
@@ -142,13 +143,21 @@ export class VpcIngressConnection extends cdk.Resource implements IVpcIngressCon
     super(scope, id, {
       physicalName: props.vpcIngressConnectionName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
-    if (
-      props.vpcIngressConnectionName !== undefined &&
-      !cdk.Token.isUnresolved(props.vpcIngressConnectionName) &&
-      !/^[A-Za-z0-9][A-Za-z0-9\-_]{3,39}$/.test(props.vpcIngressConnectionName)
-    ) {
-      throw new Error(`vpcIngressConnectionName must match the \`^[A-Za-z0-9][A-Za-z0-9\-_]{3,39}\` pattern, got ${props.vpcIngressConnectionName}`);
+    if (props.vpcIngressConnectionName !== undefined && !cdk.Token.isUnresolved(props.vpcIngressConnectionName)) {
+      if (props.vpcIngressConnectionName.length < 4 || props.vpcIngressConnectionName.length > 40) {
+        throw new cdk.ValidationError(
+          `\`vpcIngressConnectionName\` must be between 4 and 40 characters, got: ${props.vpcIngressConnectionName.length} characters.`, this,
+        );
+      }
+
+      if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.vpcIngressConnectionName)) {
+        throw new cdk.ValidationError(
+          `\`vpcIngressConnectionName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.vpcIngressConnectionName}.`, this,
+        );
+      }
     }
 
     const resource = new CfnVpcIngressConnection(this, 'Resource', {

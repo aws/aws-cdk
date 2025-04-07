@@ -1,3 +1,4 @@
+import { UnscopedValidationError } from '../../core';
 
 /**
  * Factory functions for standard statistics strings
@@ -197,7 +198,7 @@ export abstract class Stats {
 
 function assertPercentage(x?: number) {
   if (x !== undefined && (x < 0 || x > 100)) {
-    throw new Error(`Expecting a percentage, got: ${x}`);
+    throw new UnscopedValidationError(`Expecting a percentage, got: ${x}`);
   }
 }
 

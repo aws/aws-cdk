@@ -18,12 +18,11 @@ describe('IPAM Test', () => {
       env: envUSA,
     });
     ipam = new Ipam(stack, 'Ipam', {
-      operatingRegion: ['us-west-2'],
+      operatingRegions: ['us-west-2'],
     });
   });
 
   test('Creates IP Pool under Public Scope', () => {
-
     const pool = ipam.publicScope.addPool('Public', {
       addressFamily: AddressFamily.IP_V6,
       awsService: vpc.AwsServiceName.EC2,
@@ -48,11 +47,10 @@ describe('IPAM Test', () => {
         },
         Locale: 'us-west-2',
       },
-    ); //End Template
+    ); // End Template
   }); // End Test
 
   test('Creates IP Pool under Private Scope', () => {
-
     const pool = ipam.privateScope.addPool('Private', {
       addressFamily: vpc.AddressFamily.IP_V4,
       ipv4ProvisionedCidrs: ['10.2.0.0/16'],
@@ -76,13 +74,13 @@ describe('IPAM Test', () => {
         },
         Locale: 'us-west-2',
       },
-    ); //End Template
+    ); // End Template
   });
 
   test('Creates IPAM CIDR pool under public scope for IPv6', () => {
     // Create IPAM resources
     const ipamIpv6 = new Ipam(stack, 'TestIpam', {
-      operatingRegion: ['us-west-2'],
+      operatingRegions: ['us-west-2'],
     });
     const poolOptions: vpc.PoolOptions = {
       addressFamily: AddressFamily.IP_V6,
@@ -116,7 +114,7 @@ describe('IPAM Test', () => {
   test('Get region from stack env', () => {
     // Create IPAM resources
     const ipamRegion = new Ipam(stack, 'TestIpam', {
-      operatingRegion: ['us-west-2'],
+      operatingRegions: ['us-west-2'],
     });
     const poolOptions: vpc.PoolOptions = {
       addressFamily: AddressFamily.IP_V6,
@@ -155,4 +153,109 @@ describe('IPAM Test', () => {
     );
   });
 
+  test('IPAM throws error if awsService is not provided for IPv6 address', () => {
+    // Create IPAM resources
+    const ipamRegion = new Ipam(stack, 'TestIpam', {
+      operatingRegions: ['us-west-2'],
+    });
+    const poolOptions: vpc.PoolOptions = {
+      addressFamily: AddressFamily.IP_V6,
+      publicIpSource: IpamPoolPublicIpSource.AMAZON,
+      locale: 'us-west-2',
+    };
+    expect(() => ipamRegion.publicScope.addPool('TestPool', poolOptions)).toThrow('awsService is required when addressFamily is set to ipv6');
+  });
+
+  test('IPAM throws error if operating region is provided as an empty array', () => {
+    const app = new cdk.App();
+    const stack_new = new cdk.Stack(app, 'TestStack');
+    expect(() => new Ipam(stack_new, 'TestIpam', {
+      operatingRegions: [],
+    })).toThrow('Please provide at least one operating region');
+  });
+
+  test('IPAM infers region from provided operating region correctly', () => {
+    const app = new cdk.App();
+    const stack_new = new cdk.Stack(app, 'TestStack');
+    new Ipam(stack_new, 'TestIpam', {
+      operatingRegions: ['us-west-2'],
+    });
+    Template.fromStack(stack_new).hasResourceProperties(
+      'AWS::EC2::IPAM', {
+        OperatingRegions: [
+          {
+            RegionName: 'us-west-2',
+          },
+        ],
+      },
+    );
+  });
+
+  test('IPAM infers region from stack if not provided under IPAM class object', () => {
+    const app = new cdk.App();
+    const stack_new = new cdk.Stack(app, 'TestStack', {
+      env: {
+        region: 'us-west-2',
+      },
+    });
+    new Ipam(stack_new, 'TestIpam', {});
+    Template.fromStack(stack_new).hasResourceProperties(
+      'AWS::EC2::IPAM', {
+        OperatingRegions: [
+          {
+            RegionName: 'us-west-2',
+          },
+        ],
+      },
+    );
+  });
+
+  test('IPAM refers to stack region token', () => {
+    const app = new cdk.App();
+    const stack_new = new cdk.Stack(app, 'TestStack');
+    new Ipam(stack_new, 'TestIpam', {});
+    Template.fromStack(stack_new).hasResourceProperties(
+      'AWS::EC2::IPAM', {
+        OperatingRegions: [
+          {
+            RegionName: {
+              Ref: 'AWS::Region',
+            },
+          },
+        ],
+      },
+    );
+  });
+
+  test('IPAM throws error if locale(region) of pool is not one of the operating regions', () => {
+    const ipamRegion = new Ipam(stack, 'TestIpam', {
+      operatingRegions: ['us-west-2'],
+    });
+    const poolOptions: vpc.PoolOptions = {
+      addressFamily: AddressFamily.IP_V6,
+      awsService: vpc.AwsServiceName.EC2,
+      publicIpSource: IpamPoolPublicIpSource.AMAZON,
+      locale: 'us-west-1', // Incorrect Region
+    };
+    expect(() => ipamRegion.publicScope.addPool('TestPool', poolOptions)).toThrow("The provided locale 'us-west-1' is not in the operating regions.");
+  });
+
+  test('IPAM handles operating regions correctly', () => {
+    const new_app = new cdk.App();
+    const testStack = new cdk.Stack(new_app, 'TestStack', {
+      env: {
+        region: 'us-west-1',
+      },
+    });
+    new Ipam(testStack, 'TestIpamNew', {});
+    Template.fromStack(testStack).hasResourceProperties(
+      'AWS::EC2::IPAM', {
+        OperatingRegions: [
+          {
+            RegionName: 'us-west-1',
+          },
+        ],
+      },
+    );
+  });
 });// End Test

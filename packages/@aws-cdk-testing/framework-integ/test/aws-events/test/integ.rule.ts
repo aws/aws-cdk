@@ -41,6 +41,48 @@ new Rule(stack, 'MyRule', {
   },
 });
 
+new Rule(stack, 'MyWildcardRule', {
+  eventPattern: {
+    account: Match.wildcard('account*'),
+  },
+});
+
+new Rule(stack, 'MyAnythingButPrefixRule', {
+  eventPattern: {
+    account: Match.anythingButPrefix('prefix-'),
+  },
+});
+
+new Rule(stack, 'MyAnythingButSuffixRule', {
+  eventPattern: {
+    account: Match.anythingButSuffix('-suffix'),
+  },
+});
+
+new Rule(stack, 'MyAnythingButWildcardRule', {
+  eventPattern: {
+    account: Match.anythingButWildcard('account*'),
+  },
+});
+
+new Rule(stack, 'MyAnythingButEqualsIgnoreCase', {
+  eventPattern: {
+    account: Match.anythingButEqualsIgnoreCase('account1', 'account2'),
+  },
+});
+
+new Rule(stack, 'MyPrefixEqualsIgnoreCase', {
+  eventPattern: {
+    account: Match.prefixEqualsIgnoreCase('prefix-'),
+  },
+});
+
+new Rule(stack, 'MySuffixEqualsIgnoreCase', {
+  eventPattern: {
+    account: Match.suffixEqualsIgnoreCase('-suffix'),
+  },
+});
+
 new IntegTest(app, 'IntegTest-BatchDefaultEnvVarsStack', {
   testCases: [stack],
 });

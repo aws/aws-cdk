@@ -68,6 +68,14 @@ export interface SqsEventSourceProps {
    * @default - No specific limit.
    */
   readonly maxConcurrency?: number;
+
+  /**
+   * Configuration for enhanced monitoring metrics collection
+   * When specified, enables collection of additional metrics for the stream event source
+   *
+   * @default - Enhanced monitoring is disabled
+   */
+  readonly metricsConfig?: lambda.MetricsConfig;
 }
 
 /**
@@ -106,6 +114,7 @@ export class SqsEventSource implements lambda.IEventSource {
       eventSourceArn: this.queue.queueArn,
       filters: this.props.filters,
       filterEncryption: this.props.filterEncryption,
+      metricsConfig: this.props.metricsConfig,
     });
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
     this._eventSourceMappingArn = eventSourceMapping.eventSourceMappingArn;

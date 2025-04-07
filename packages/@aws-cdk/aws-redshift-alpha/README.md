@@ -472,6 +472,48 @@ cluster.addToParameterGroup('enable_user_activity_logging', 'true');
 cluster.enableRebootForParameterChanges()
 ```
 
+## Resource Action
+
+You can perform various actions on the Redshift resource by specifying the `resourceAction` property,
+including [pausing and resuming the cluster](https://docs.aws.amazon.com/redshift/latest/mgmt/rs-mgmt-pause-resume-cluster.html), as well as initiating [failover for Multi-AZ clusters](https://docs.aws.amazon.com/redshift/latest/mgmt/test-cluster-multi-az.html).
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { ResourceAction } from '@aws-cdk/aws-redshift-alpha';
+
+declare const vpc: ec2.IVpc;
+
+// Pause the cluster
+new Cluster(this, 'PausedCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  resourceAction: ResourceAction.PAUSE,
+});
+
+// Resume the cluster
+new Cluster(this, 'ResumedCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  resourceAction: ResourceAction.RESUME,
+});
+
+// Failover the cluster
+new Cluster(this, 'FailOverCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  // VPC must have 3 AZs for the cluster which executes failover action
+  vpc,
+  // Must be a multi-AZ cluster to failover
+  multiAz: true,
+  resourceAction: ResourceAction.FAILOVER_PRIMARY_COMPUTE,
+});
+```
+
 ## Elastic IP
 
 If you configure your cluster to be publicly accessible, you can optionally select an *elastic IP address* to use for the external IP address. An elastic IP address is a static IP address that is associated with your AWS account. You can use an elastic IP address to connect to your cluster from outside the VPC. An elastic IP address gives you the ability to change your underlying configuration without affecting the IP address that clients use to connect to your cluster. This approach can be helpful for situations such as recovery after a failure.
@@ -658,6 +700,7 @@ as it's a fast operation and typically completes in minutes. Elastic resize is o
   * dc2.8xlarge
   * ds2.xlarge
   * ds2.8xlarge
+  * ra3.large
   * ra3.xlplus
   * ra3.4xlarge
   * ra3.16xlarge
@@ -668,3 +711,26 @@ you can set the `classicResizing` flag when creating the cluster.
 
 There are other constraints to be aware of, for example, elastic resizing does not support single-node clusters and there are
 limits on the number of nodes you can add to a cluster. See the [AWS Redshift Documentation](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-operations.html#rs-resize-tutorial) and [AWS API Documentation](https://docs.aws.amazon.com/redshift/latest/APIReference/API_ResizeCluster.html) for more details.
+
+## Maintenance track name
+
+When Amazon Redshift releases a new cluster version, your cluster is updated during its maintenance window.
+You can control whether your cluster is updated to the most recent approved release or to the previous release.
+See the [AWS Redshift Documentation](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-considerations.html#rs-mgmt-maintenance-tracks) for more details.
+
+To control which cluster version is applied during a maintenance window, set the `maintenanceTrackName` property for the cluster.
+
+```ts
+new redshift.Cluster(stack, 'Cluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  maintenanceTrackName: redshift.MaintenanceTrackName.CURRENT,
+});
+```
+
+You can specify one of the following `MaintenanceTrackName` values:
+
+* `CURRENT`: Use the most current approved cluster version.
+* `TRAILING`: Use the cluster version before the current version.

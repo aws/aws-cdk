@@ -4,7 +4,6 @@ import * as cdk from '../../core';
 import * as sfn from '../lib';
 
 describeDeprecated('Task state', () => {
-
   let stack: cdk.Stack;
   let task: sfn.Task;
 
@@ -95,7 +94,6 @@ describeDeprecated('Task state', () => {
     // THEN
     verifyMetric(metric, 'TimedOut', 'Sum');
   });
-
 });
 
 function verifyMetric(metric: Metric, metricName: string, statistic: string) {

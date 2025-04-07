@@ -138,6 +138,17 @@ new neptune.DatabaseCluster(this, 'Cluster', {
 });
 ```
 
+You can also specify `autoMinorVersionUpgrade` to a database instance.
+Even within the same cluster, you can modify the `autoMinorVersionUpgrade` setting on a per-instance basis.
+
+```ts fixture=with-cluster
+new neptune.DatabaseInstance(this, 'Instance', {
+  cluster,
+  instanceType: neptune.InstanceType.R5_LARGE,
+  autoMinorVersionUpgrade: true,
+});
+```
+
 ## Port
 
 By default, Neptune uses port `8182`. You can override the default port by specifying the `port` property:

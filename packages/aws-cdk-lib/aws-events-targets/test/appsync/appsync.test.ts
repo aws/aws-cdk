@@ -141,7 +141,6 @@ describe('AppSync GraphQL API target', () => {
       }));
     }).toThrow('Your API visibility must be "GLOBAL"');
   });
-
 });
 
 describe('AppSync API with AWS_IAM auth', () => {
@@ -157,7 +156,6 @@ describe('AppSync API with AWS_IAM auth', () => {
   });
 
   test('use AppSync GraphQL API as an event rule target', () => {
-
     const rule = new events.Rule(stack, 'Rule', {
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
@@ -193,7 +191,6 @@ describe('AppSync API with AWS_IAM auth', () => {
   });
 
   test('use a Dead Letter Queue', () => {
-
     const rule = new events.Rule(stack, 'Rule', {
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
@@ -227,7 +224,6 @@ describe('AppSync API with AWS_IAM auth', () => {
   });
 
   test('when no mutation fields provided, grant access to Mutations only', () => {
-
     const rule = new events.Rule(stack, 'Rule', {
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
@@ -305,7 +301,6 @@ describe('AppSync API with AWS_IAM auth', () => {
   });
 
   test('a role is provided', () => {
-
     const rule = new events.Rule(stack, 'Rule', {
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
@@ -346,7 +341,6 @@ describe('AppSync API with AWS_IAM auth', () => {
   });
 
   test('a role is not provided', () => {
-
     const rule = new events.Rule(stack, 'Rule', {
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
@@ -389,7 +383,5 @@ describe('AppSync API with AWS_IAM auth', () => {
         ],
       },
     });
-
   });
-
 });

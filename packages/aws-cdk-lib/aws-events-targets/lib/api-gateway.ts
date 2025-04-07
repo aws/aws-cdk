@@ -145,6 +145,5 @@ export class ApiGateway implements events.IRuleTarget {
       },
     };
   }
-
 }
 

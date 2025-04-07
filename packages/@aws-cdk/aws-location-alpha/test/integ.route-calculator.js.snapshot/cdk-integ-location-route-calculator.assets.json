@@ -1,7 +1,7 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "files": {
-    "9c3ad46df5bdc598d0888e79b52076902e574e459c6c7be174d971890d175b88": {
+    "f895cd60b3477d2aec04bfda8881b277f2788f77f2a33e6fce6a9018093db055": {
       "source": {
         "path": "cdk-integ-location-route-calculator.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9c3ad46df5bdc598d0888e79b52076902e574e459c6c7be174d971890d175b88.json",
+          "objectKey": "f895cd60b3477d2aec04bfda8881b277f2788f77f2a33e6fce6a9018093db055.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -13,6 +13,7 @@
   "dependencies": {
     "@actions/core": "^1.11.1",
     "@actions/github": "^5.1.1",
+    "@octokit/rest": "^18",
     "@octokit/webhooks-definitions": "^3.68.1",
     "conventional-commits-parser": "^3.2.4",
     "fs-extra": "^9.1.0",
@@ -25,12 +26,12 @@
     "@types/jest": "^29.5.14",
     "jest": "^29.7.0",
     "make-runnable": "^1.4.1",
-    "typescript": "~5.5.2",
-    "eslint": "^7.32.0",
+    "typescript": "~5.5.4",
+    "eslint": "^8",
     "eslint-import-resolver-node": "^0.3.9",
     "eslint-import-resolver-typescript": "^2.7.1",
     "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-jest": "^24.7.0"
+    "eslint-plugin-jest": "^28"
   },
   "jest": {
     "testMatch": [

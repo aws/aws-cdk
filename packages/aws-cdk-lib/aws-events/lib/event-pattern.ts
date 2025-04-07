@@ -66,6 +66,27 @@ export class Match implements IResolvable {
   }
 
   /**
+   * Matches strings with the given prefix in the JSON of the event regardless of the casing
+   */
+  public static prefixEqualsIgnoreCase(value: string): string[] {
+    return this.fromObjects([{ prefix: { 'equals-ignore-case': value } }]);
+  }
+
+  /**
+   * Matches strings with the given suffix in the JSON of the event regardless of the casing
+   */
+  public static suffixEqualsIgnoreCase(value: string): string[] {
+    return this.fromObjects([{ suffix: { 'equals-ignore-case': value } }]);
+  }
+
+  /**
+   * Matches strings with the given wildcard pattern in the JSON of the event
+   */
+  public static wildcard(value: string): string[] {
+    return this.fromObjects([{ wildcard: value }]);
+  }
+
+  /**
    * Matches IPv4 and IPv6 network addresses using the Classless Inter-Domain Routing (CIDR) format
    */
   public static cidr(range: string): string[] {
@@ -109,8 +130,29 @@ export class Match implements IResolvable {
   /**
    * Matches any string that doesn't start with the given prefix.
    */
-  public static anythingButPrefix(prefix: string): string[] {
-    return this.fromObjects([{ 'anything-but': { prefix: prefix } }]);
+  public static anythingButPrefix(...values: string[]): string[] {
+    return this.anythingButConjunction('prefix', values);
+  }
+
+  /**
+   * Matches any string that doesn't end with the given suffix.
+   */
+  public static anythingButSuffix(...values: string[]): string[] {
+    return this.anythingButConjunction('suffix', values);
+  }
+
+  /**
+   * Matches any string that doesn't match with the given wildcard pattern.
+   */
+  public static anythingButWildcard(...values: string[]): string[] {
+    return this.anythingButConjunction('wildcard', values);
+  }
+
+  /**
+   * Matches any string that doesn't match with the given value regardless of character casing.
+   */
+  public static anythingButEqualsIgnoreCase(...values: string[]): string[] {
+    return this.anythingButConjunction('equals-ignore-case', values);
   }
 
   /**
@@ -183,6 +225,17 @@ export class Match implements IResolvable {
       throw new Error('A list of matchers must contain at least one element.');
     }
     return this.fromObjects(matchers);
+  }
+
+  private static anythingButConjunction(filterKey: string, values: string[]): string[] {
+    if (values.length === 0) {
+      throw new Error('anythingBut matchers must be non-empty lists');
+    }
+
+    // When there is a single value return it, otherwise return the array
+    const filterValue = values.length === 1 ? values[0] : values;
+
+    return this.fromObjects([{ 'anything-but': { [filterKey]: filterValue } }]);
   }
 
   private static numeric(operator: ComparisonOperator, value: number): string[] {

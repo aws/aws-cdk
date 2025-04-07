@@ -3,6 +3,7 @@ import { BaseInstanceProps, InstanceBase } from './instance';
 import { NamespaceType } from './namespace';
 import { DnsRecordType, IService } from './service';
 import { CfnInstance } from './servicediscovery.generated';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /*
  * Properties for a CnameInstance used for service#registerCnameInstance
@@ -48,6 +49,8 @@ export class CnameInstance extends InstanceBase {
 
   constructor(scope: Construct, id: string, props: CnameInstanceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.service.namespace.type === NamespaceType.HTTP) {
       throw new Error('Namespace associated with Service must be a DNS Namespace.');

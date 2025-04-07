@@ -1,0 +1,14 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "aws-cdk-customresources-service-timeout-integ-test/DefaultTest": {
+      "stacks": [
+        "CreateParameterServiceTimeoutStack",
+        "GetParameterServiceTimeoutStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "aws-cdk-customresources-service-timeout-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkcustomresourcesservicetimeoutintegtestDefaultTestDeployAssert593A6038"
+    }
+  }
+}

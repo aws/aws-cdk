@@ -1,0 +1,311 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "NlbEnablePrefixForIpv6NatStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "NlbEnablePrefixForIpv6NatStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "NlbEnablePrefixForIpv6NatStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "NlbEnablePrefixForIpv6NatStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fa46958bcb246c27c21906c9bf41a44bce7f9613a3d90335588eedc4daeb49dd.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "NlbEnablePrefixForIpv6NatStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "NlbEnablePrefixForIpv6NatStack.assets"
+      ],
+      "metadata": {
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/ipv6cidr": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpcipv6cidr40D3CB78"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1/DefaultRoute6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute6A21265FB"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2/DefaultRoute6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute63E63096C"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet1SubnetE48C5737"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet1RouteTable4771E3E5"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet2Subnet16364B91"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet2RouteTable1D30AF7D"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/EIGW6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcEIGW61416F369"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/DisabledLbSg/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DisabledLbSgB7154DC8"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/DisabledLb/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DisabledLbF70482DB"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/DisabledLb/TcpListener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DisabledLbTcpListener070B4D6E"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/TcpTargetGroup": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future). [ack: @aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup]"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/TcpTargetGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TcpTargetGroupD98C5CDB"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/EnabledLbSg/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnabledLbSg11D53248"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/EnabledLb/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnabledLb9F3E8D30"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/EnabledLb/UdpListener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnabledLbUdpListener550E1122"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/EnabledLb/TcpWithUdpListener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnabledLbTcpWithUdpListenerBBFA335D"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/UdpTargetGroup": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future). [ack: @aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup]"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/UdpTargetGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UdpTargetGroup5F89FEC0"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/TcpWithUdpTargetGroup": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future). [ack: @aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup]"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/TcpWithUdpTargetGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TcpWithUdpTargetGroup827EE6D7"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "NlbEnablePrefixForIpv6NatStack"
+    },
+    "NlbEnablePrefixForIpv6NatStackTestDefaultTestDeployAssert4C17D694.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "NlbEnablePrefixForIpv6NatStackTestDefaultTestDeployAssert4C17D694.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "NlbEnablePrefixForIpv6NatStackTestDefaultTestDeployAssert4C17D694": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "NlbEnablePrefixForIpv6NatStackTestDefaultTestDeployAssert4C17D694.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "NlbEnablePrefixForIpv6NatStackTestDefaultTestDeployAssert4C17D694.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "NlbEnablePrefixForIpv6NatStackTestDefaultTestDeployAssert4C17D694.assets"
+      ],
+      "metadata": {
+        "/NlbEnablePrefixForIpv6NatStackTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStackTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "NlbEnablePrefixForIpv6NatStackTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

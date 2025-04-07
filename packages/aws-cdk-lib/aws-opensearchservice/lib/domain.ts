@@ -15,6 +15,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -82,6 +83,13 @@ export interface CapacityConfig {
    * is true, no multi-az with standby otherwise
    */
   readonly multiAzWithStandbyEnabled?: boolean;
+
+  /**
+   * Additional node options for the domain
+   *
+   * @default - no additional node options
+   */
+  readonly nodeOptions?: NodeOptions[];
 }
 
 /**
@@ -380,7 +388,7 @@ export interface AdvancedSecurityOptions {
 
   /**
    * Container for information about the SAML configuration for OpenSearch Dashboards.
-   * If set, `samlAuthenticationEnabled` will be enabled.
+   * If set, `samlAuthenticationEnabled` will be enabled.
    *
    * @default - no SAML authentication options
    */
@@ -437,6 +445,58 @@ export enum IpAddressType {
    * IPv4 and IPv6 addresses
    */
   DUAL_STACK = 'dualstack',
+}
+
+/**
+ * Configuration for a specific node type in OpenSearch domain
+ */
+export interface NodeConfig {
+  /**
+   * Whether this node type is enabled
+   *
+   * @default - false
+   */
+  readonly enabled?: boolean;
+
+  /**
+   * The instance type for the nodes
+   *
+   * @default - m5.large.search
+   */
+  readonly type?: string;
+
+  /**
+   * The number of nodes of this type
+   *
+   * @default - 1
+   */
+  readonly count?: number;
+}
+
+/**
+ * NodeType is a string enum of the node types in OpenSearch domain
+ *
+ */
+export enum NodeType {
+  /**
+   * Coordinator node type
+   */
+  COORDINATOR = 'coordinator',
+}
+
+/**
+ * Configuration for node options in OpenSearch domain
+ */
+export interface NodeOptions {
+  /**
+   * The type of node. Currently only 'coordinator' is supported.
+   */
+  readonly nodeType: NodeType;
+
+  /**
+   * Configuration for the node type
+   */
+  readonly nodeConfig: NodeConfig;
 }
 
 /**
@@ -1380,9 +1440,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
   private readonly domain: CfnDomain;
 
-  private accessPolicy?: OpenSearchAccessPolicy
+  private accessPolicy?: OpenSearchAccessPolicy;
 
-  private encryptionAtRestOptions?: EncryptionAtRestOptions
+  private encryptionAtRestOptions?: EncryptionAtRestOptions;
 
   private readonly _connections: ec2.Connections | undefined;
 
@@ -1390,9 +1450,12 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     super(scope, id, {
       physicalName: props.domainName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const defaultInstanceType = 'r5.large.search';
     const warmDefaultInstanceType = 'ultrawarm1.medium.search';
+    const defaultCoordinatorInstanceType = 'm5.large.search';
 
     const dedicatedMasterType = initializeInstanceType(defaultInstanceType, props.capacity?.masterNodeInstanceType);
     const dedicatedMasterCount = props.capacity?.masterNodes ?? 0;
@@ -1513,21 +1576,20 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     function isInstanceType(t: string): Boolean {
       return dedicatedMasterType.startsWith(t) || instanceType.startsWith(t);
-    };
+    }
 
     function isSomeInstanceType(...instanceTypes: string[]): Boolean {
       return instanceTypes.some(isInstanceType);
-    };
+    }
 
     function isEveryDatanodeInstanceType(...instanceTypes: string[]): Boolean {
       return instanceTypes.some(t => instanceType.startsWith(t));
-    };
+    }
 
     // Validate feature support for the given Elasticsearch/OpenSearch version, per
     // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/features-by-version.html
     const { versionNum: versionNum, isElasticsearchVersion } = parseVersion(props.version);
     if (isElasticsearchVersion) {
-
       if (
         versionNum <= 7.7 &&
         ![
@@ -1574,14 +1636,39 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       }
     }
 
+    const unSupportEbsInstanceType = [
+      ec2.InstanceClass.I3,
+      ec2.InstanceClass.R6GD,
+      ec2.InstanceClass.I4G,
+      ec2.InstanceClass.I4I,
+      ec2.InstanceClass.IM4GN,
+      ec2.InstanceClass.R7GD,
+    ];
+
+    const supportInstanceStorageInstanceType = [
+      ec2.InstanceClass.R3,
+      ...unSupportEbsInstanceType,
+    ];
+
+    const unSupportEncryptionAtRestInstanceType=[
+      ec2.InstanceClass.M3,
+      ec2.InstanceClass.R3,
+      ec2.InstanceClass.T2,
+    ];
+
+    const unSupportUltraWarmInstanceType=[
+      ec2.InstanceClass.T2,
+      ec2.InstanceClass.T3,
+    ];
+
     // Validate against instance type restrictions, per
     // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html
-    if (isSomeInstanceType('i3', 'r6gd', 'i4g', 'im4gn') && ebsEnabled) {
-      throw new Error('I3, R6GD, I4G, and IM4GN instance types do not support EBS storage volumes.');
+    if (isSomeInstanceType(...unSupportEbsInstanceType) && ebsEnabled) {
+      throw new Error(`${formatInstanceTypesList(unSupportEbsInstanceType, 'and')} instance types do not support EBS storage volumes.`);
     }
 
     if (isSomeInstanceType('m3', 'r3', 't2') && encryptionAtRestEnabled) {
-      throw new Error('M3, R3, and T2 instance types do not support encryption of data at rest.');
+      throw new Error(`${formatInstanceTypesList(unSupportEncryptionAtRestInstanceType, 'and')} instance types do not support encryption of data at rest.`);
     }
 
     if (isInstanceType('t2.micro') && !(isElasticsearchVersion && versionNum <= 2.3)) {
@@ -1589,13 +1676,13 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
 
     if (isSomeInstanceType('t2', 't3') && warmEnabled) {
-      throw new Error('T2 and T3 instance types do not support UltraWarm storage.');
+      throw new Error(`${formatInstanceTypesList(unSupportUltraWarmInstanceType, 'and')} instance types do not support UltraWarm storage.`);
     }
 
-    // Only R3, I3, R6GD, I4G and IM4GN support instance storage, per
+    // Only R3, I3, R6GD, I4G, I4I, IM4GN and R7GD support instance storage, per
     // https://aws.amazon.com/opensearch-service/pricing/
-    if (!ebsEnabled && !isEveryDatanodeInstanceType('r3', 'i3', 'r6gd', 'i4g', 'im4gn')) {
-      throw new Error('EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, or IM4GN.');
+    if (!ebsEnabled && !isEveryDatanodeInstanceType(...supportInstanceStorageInstanceType)) {
+      throw new Error(`EBS volumes are required when using instance types other than ${formatInstanceTypesList(supportInstanceStorageInstanceType, 'or')}.`);
     }
 
     // Only for a valid ebs volume configuration, per
@@ -1630,16 +1717,6 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           throw new Error(
             '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`, `PROVISIONED_IOPS_SSD_IO2` or `GENERAL_PURPOSE_SSD_GP3`.',
           );
-        }
-        // Enforce minimum & maximum IOPS:
-        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
-        const iopsRanges: { [key: string]: { Min: number; Max: number } } = {};
-        iopsRanges[ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 3000, Max: 16000 };
-        iopsRanges[ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 100, Max: 64000 };
-        iopsRanges[ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 64000 };
-        const { Min, Max } = iopsRanges[volumeType];
-        if (props.ebs?.iops < Min || props.ebs?.iops > Max) {
-          throw new Error(`\`${volumeType}\` volumes iops must be between ${Min} and ${Max}.`);
         }
 
         // Enforce maximum ratio of IOPS/GiB:
@@ -1738,7 +1815,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.SEARCH_SLOW_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     if (props.logging?.slowIndexLogEnabled) {
       this.slowIndexLogGroup = props.logging.slowIndexLogGroup ??
@@ -1755,7 +1832,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.INDEX_SLOW_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     if (props.logging?.appLogEnabled) {
       this.appLogGroup = props.logging.appLogGroup ??
@@ -1772,7 +1849,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.ES_APPLICATION_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     if (props.logging?.auditLogEnabled) {
       this.auditLogGroup = props.logging.auditLogGroup ??
@@ -1789,7 +1866,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.AUDIT_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
     if (logGroups.length > 0 && !props.suppressLogsResourcePolicy) {
@@ -1846,6 +1923,20 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       this.validateSamlAuthenticationOptions(props.fineGrainedAccessControl?.samlAuthenticationOptions);
     }
 
+    if (props.capacity?.nodeOptions) {
+      // Validate coordinator node configuration
+      const coordinatorConfig = props.capacity.nodeOptions.find(opt => opt.nodeType === NodeType.COORDINATOR)?.nodeConfig;
+      if (coordinatorConfig?.enabled) {
+        const coordinatorType = initializeInstanceType(defaultCoordinatorInstanceType, coordinatorConfig.type);
+        if (!cdk.Token.isUnresolved(coordinatorType) && !coordinatorType.endsWith('.search')) {
+          throw new Error('Coordinator node instance type must end with ".search".');
+        }
+        if (coordinatorConfig.count !== undefined && coordinatorConfig.count < 1) {
+          throw new Error('Coordinator node count must be at least 1.');
+        }
+      }
+    }
+
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
       domainName: this.physicalName,
@@ -1877,6 +1968,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         zoneAwarenessConfig: zoneAwarenessEnabled
           ? { availabilityZoneCount }
           : undefined,
+        nodeOptions: props.capacity?.nodeOptions,
       },
       ebsOptions: {
         ebsEnabled,
@@ -1898,7 +1990,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         identityPoolId: props.cognitoDashboardsAuth?.identityPoolId,
         roleArn: props.cognitoDashboardsAuth?.role.roleArn,
         userPoolId: props.cognitoDashboardsAuth?.userPoolId,
-      }: undefined,
+      } : undefined,
       vpcOptions: cfnVpcOptions,
       snapshotOptions: props.automatedSnapshotStartHour
         ? { automatedSnapshotStartHour: props.automatedSnapshotStartHour }
@@ -2068,6 +2160,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
   /**
    * Add policy statements to the domain access policy
    */
+  @MethodMetadata()
   public addAccessPolicies(...accessPolicyStatements: iam.PolicyStatement[]) {
     if (accessPolicyStatements.length > 0) {
       if (!this.accessPolicy) {
@@ -2120,7 +2213,7 @@ function extractNameFromEndpoint(domainEndpoint: string) {
 }
 
 /**
- * Converts an engine version into a into a decimal number with major and minor version i.e x.y.
+ * Converts an engine version into a decimal number with major and minor version i.e x.y.
  *
  * @param version The engine version object
  */
@@ -2169,7 +2262,7 @@ function zoneAwarenessCheckShouldBeSkipped(vpc: ec2.IVpc, vpcSubnets: ec2.Subnet
   for (const selection of vpcSubnets) {
     if (vpc.selectSubnets(selection).isPendingLookup) {
       return true;
-    };
+    }
   }
   return false;
 }
@@ -2187,4 +2280,15 @@ function initializeInstanceType(defaultInstanceType: string, instanceType?: stri
   } else {
     return defaultInstanceType;
   }
+}
+
+/**
+ * Format instance types list for error messages.
+ *
+ * @param instanceTypes List of instance types to format
+ * @param conjunction Word to use as the conjunction (e.g., 'and', 'or')
+ * @returns Formatted instance types list for error messages
+ */
+function formatInstanceTypesList(instanceTypes: string[], conjunction: string): string {
+  return instanceTypes.map((type) => type.toUpperCase()).join(', ').replace(/, ([^,]*)$/, ` ${conjunction} $1`);
 }

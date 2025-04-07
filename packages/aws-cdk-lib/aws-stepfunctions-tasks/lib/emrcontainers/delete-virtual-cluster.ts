@@ -2,13 +2,9 @@ import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
+import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties to define a EMR Containers DeleteVirtualCluster Task
- */
-export interface EmrContainersDeleteVirtualClusterProps extends sfn.TaskStateBaseProps {
-
+interface EmrContainersDeleteVirtualClusterOptions {
   /**
    * The ID of the virtual cluster that will be deleted.
    */
@@ -16,11 +12,42 @@ export interface EmrContainersDeleteVirtualClusterProps extends sfn.TaskStateBas
 }
 
 /**
+ * Properties to define a EMR Containers DeleteVirtualCluster Task using JSONPath
+ */
+export interface EmrContainersDeleteVirtualClusterJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EmrContainersDeleteVirtualClusterOptions { }
+
+/**
+ * Properties to define a EMR Containers DeleteVirtualCluster Task using JSONata
+ */
+export interface EmrContainersDeleteVirtualClusterJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrContainersDeleteVirtualClusterOptions { }
+
+/**
+ * Properties to define a EMR Containers DeleteVirtualCluster Task
+ */
+export interface EmrContainersDeleteVirtualClusterProps extends sfn.TaskStateBaseProps, EmrContainersDeleteVirtualClusterOptions { }
+
+/**
  * Deletes an EMR Containers virtual cluster as a Task.
  *
  * @see https://docs.amazonaws.cn/en_us/step-functions/latest/dg/connect-emr-eks.html
  */
 export class EmrContainersDeleteVirtualCluster extends sfn.TaskStateBase {
+  /**
+   * Deletes an EMR Containers virtual cluster as a Task using JSONPath.
+   */
+  public static jsonPath(scope: Construct, id: string, props: EmrContainersDeleteVirtualClusterJsonPathProps) {
+    return new EmrContainersDeleteVirtualCluster(scope, id, props);
+  }
+
+  /**
+   * Deletes an EMR Containers virtual cluster as a Task using JSONata.
+   */
+  public static jsonata(scope: Construct, id: string, props: EmrContainersDeleteVirtualClusterJsonataProps) {
+    return new EmrContainersDeleteVirtualCluster(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
 
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
@@ -44,14 +71,15 @@ export class EmrContainersDeleteVirtualCluster extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('emr-containers', 'deleteVirtualCluster', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         Id: this.props.virtualClusterId.value,
-      }),
+      }, queryLanguage),
     };
-  };
+  }
 
   private createPolicyStatements(): iam.PolicyStatement[] {
     const actions = ['emr-containers:DeleteVirtualCluster'];
@@ -65,7 +93,7 @@ export class EmrContainersDeleteVirtualCluster extends sfn.TaskStateBase {
           arnFormat: cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME,
           service: 'emr-containers',
           resource: 'virtualclusters',
-          resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.virtualClusterId.value) ? '*' : this.props.virtualClusterId.value,
+          resourceName: isJsonPathOrJsonataExpression(this.props.virtualClusterId.value) ? '*' : this.props.virtualClusterId.value,
         }),
       ],
       actions: actions,

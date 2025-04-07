@@ -4,13 +4,7 @@ import * as sfn from '../../../aws-stepfunctions';
 import { Token } from '../../../core';
 import { integrationResourceArn } from '../private/task-utils';
 
-/**
- * Properties for calling an AWS service's API action from your
- * state machine.
- *
- * @see https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html
- */
-export interface CallAwsServiceProps extends sfn.TaskStateBaseProps {
+interface CallAwsServiceOptions {
   /**
    * The AWS service to call.
    *
@@ -67,9 +61,47 @@ export interface CallAwsServiceProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for calling an AWS service's API action using JSONPath from your
+ * state machine.
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html
+ */
+export interface CallAwsServiceJsonPathProps extends sfn.TaskStateJsonPathBaseProps, CallAwsServiceOptions {}
+
+/**
+ * Properties for calling an AWS service's API action using JSONata from your
+ * state machine.
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html
+ */
+export interface CallAwsServiceJsonataProps extends sfn.TaskStateJsonataBaseProps, CallAwsServiceOptions {}
+
+/**
+ * Properties for calling an AWS service's API action from your
+ * state machine.
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html
+ */
+export interface CallAwsServiceProps extends sfn.TaskStateBaseProps, CallAwsServiceOptions {}
+
+/**
  * A StepFunctions task to call an AWS service API
  */
 export class CallAwsService extends sfn.TaskStateBase {
+  /**
+   * A StepFunctions task using JSONPath to call an AWS service API
+   */
+  public static jsonPath(scope: Construct, id: string, props: CallAwsServiceJsonPathProps) {
+    return new CallAwsService(scope, id, props);
+  }
+
+  /**
+   * A StepFunctions task using JSONata to call an AWS service API
+   */
+  public static jsonata(scope: Construct, id: string, props: CallAwsServiceJsonataProps) {
+    return new CallAwsService(scope, id, { ...props, queryLanguage: sfn.QueryLanguage.JSONATA });
+  }
+
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
@@ -90,11 +122,12 @@ export class CallAwsService extends sfn.TaskStateBase {
     }
 
     const iamServiceMap: Record<string, string> = {
-      sfn: 'states',
       cloudwatchlogs: 'logs',
+      efs: 'elasticfilesystem',
+      elasticloadbalancingv2: 'elasticloadbalancing',
       mediapackagevod: 'mediapackage-vod',
       mwaa: 'airflow',
-      efs: 'elasticfilesystem',
+      sfn: 'states',
     };
     const iamService = iamServiceMap[props.service] ?? props.service;
 
@@ -112,7 +145,8 @@ export class CallAwsService extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     let service = this.props.service;
 
     if (!Token.isUnresolved(service)) {
@@ -128,7 +162,7 @@ export class CallAwsService extends sfn.TaskStateBase {
         `${service}:${this.props.action}`,
         this.props.integrationPattern,
       ),
-      Parameters: sfn.FieldUtils.renderObject(this.props.parameters) ?? {}, // Parameters is required for aws-sdk
+      ...this._renderParametersOrArguments(this.props.parameters ?? {}, queryLanguage), // Parameters is required for aws-sdk
     };
   }
 }

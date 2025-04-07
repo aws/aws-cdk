@@ -4,7 +4,8 @@ import { CfnConfigRule } from './config.generated';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
-import { IResource, Lazy, Resource, Stack } from '../../core';
+import { IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Interface representing an AWS Config rule
@@ -288,6 +289,8 @@ export class ManagedRule extends RuleNew {
     super(scope, id, {
       physicalName: props.configRuleName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.ruleScope = props.ruleScope;
 
@@ -417,9 +420,11 @@ export class CustomRule extends RuleNew {
     super(scope, id, {
       physicalName: props.configRuleName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!props.configurationChanges && !props.periodic) {
-      throw new Error('At least one of `configurationChanges` or `periodic` must be set to true.');
+      throw new ValidationError('At least one of `configurationChanges` or `periodic` must be set to true.', this);
     }
 
     const sourceDetails: SourceDetail[] = [];
@@ -444,6 +449,7 @@ export class CustomRule extends RuleNew {
     }
     const hash = createHash('sha256')
       .update(JSON.stringify({
+        /* eslint-disable-next-line @typescript-eslint/unbound-method *//* REMOVEME: this is a latent bug */
         fnName: props.lambdaFunction.functionName.toString,
         accountId: Stack.of(this).resolve(this.env.account),
         region: Stack.of(this).resolve(this.env.region),
@@ -455,7 +461,7 @@ export class CustomRule extends RuleNew {
         principal: new iam.ServicePrincipal('config.amazonaws.com'),
         sourceAccount: this.env.account,
       });
-    };
+    }
 
     if (props.lambdaFunction.role) {
       props.lambdaFunction.role.addManagedPolicy(
@@ -532,12 +538,14 @@ export class CustomPolicy extends RuleNew {
     super(scope, id, {
       physicalName: props.configRuleName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!props.policyText || [...props.policyText].length === 0) {
-      throw new Error('Policy Text cannot be empty.');
+      throw new ValidationError('Policy Text cannot be empty.', this);
     }
     if ([...props.policyText].length > 10000) {
-      throw new Error('Policy Text is limited to 10,000 characters or less.');
+      throw new ValidationError('Policy Text is limited to 10,000 characters or less.', this);
     }
 
     const sourceDetails: SourceDetail[] = [];
@@ -825,7 +833,7 @@ export class ManagedRuleIdentifiers {
    * greater for viewer connections.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-security-policy-check.html
    */
-  public static readonly CLOUDFRONT_SECURITY_POLICY_CHECK = 'CLOUDFRONT_SECURITY_POLICY_CHECK'
+  public static readonly CLOUDFRONT_SECURITY_POLICY_CHECK = 'CLOUDFRONT_SECURITY_POLICY_CHECK';
   /**
    * Checks if Amazon CloudFront distributions are using a custom SSL certificate and are configured
    * to use SNI to serve HTTPS requests.
@@ -2488,7 +2496,7 @@ export class ResourceType {
   /** AWS IoT mitigation action */
   public static readonly IOT_MITIGATION_ACTION = new ResourceType('AWS::IoT::MitigationAction');
   /** AWS IoT TwinMaker workspace */
-  public static readonly IOT_TWINMAKER_WORKSPACE = new ResourceType('AWS::IoTwinMaker::Workspace');
+  public static readonly IOT_TWINMAKER_WORKSPACE = new ResourceType('AWS::IoTTwinMaker::Workspace');
   /** AWS IoT TwinMaker entity */
   public static readonly IOT_TWINMAKER_ENTITY = new ResourceType('AWS::IoTTwinMaker::Entity');
   /** AWS IoT Analytics datastore */
@@ -2525,7 +2533,7 @@ export class ResourceType {
   public static readonly NETWORK_FIREWALL_RULE_GROUP = new ResourceType('AWS::NetworkFirewall::RuleGroup');
   /** AWS ResilienceHub resiliency policy */
   public static readonly RESILIENCEHUB_RESILIENCY_POLICY = new ResourceType('AWS::ResilienceHub::ResiliencyPolicy');
-  /**AWS Secrets Manager secret */
+  /** AWS Secrets Manager secret */
   public static readonly SECRETS_MANAGER_SECRET = new ResourceType('AWS::SecretsManager::Secret');
   /** AWS Service Catalog CloudFormation product */
   public static readonly SERVICE_CATALOG_CLOUDFORMATION_PRODUCT = new ResourceType('AWS::ServiceCatalog::CloudFormationProduct');
@@ -2746,7 +2754,7 @@ export class ResourceType {
   public static readonly IAM_SAML_PROVIDER = new ResourceType('AWS::IAM::SAMLProvider');
   /** AWS IAM ServerCertificate */
   public static readonly IAM_SERVER_CERTIFICATE = new ResourceType('AWS::IAM::ServerCertificate');
-  /** Amazon Kinesis Firehose DeliveryStream */
+  /** Amazon Data Firehose DeliveryStream */
   public static readonly KINESIS_FIREHOSE_DELIVERY_STREAM = new ResourceType('AWS::KinesisFirehose::DeliveryStream');
   /** Amazon Pinpoint Campaign */
   public static readonly PINPOINT_CAMPAIGN = new ResourceType('AWS::Pinpoint::Campaign');
@@ -2926,7 +2934,6 @@ export class ResourceType {
   private constructor(type: string) {
     this.complianceResourceType = type;
   }
-
 }
 
 function renderScope(ruleScope?: RuleScope): CfnConfigRule.ScopeProperty | undefined {

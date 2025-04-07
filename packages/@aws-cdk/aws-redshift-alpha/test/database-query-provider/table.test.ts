@@ -61,7 +61,7 @@ describe('create', () => {
     const event = baseEvent;
 
     await expect(manageTable(resourceProperties, event)).resolves.toEqual({
-      PhysicalResourceId: 'clusterName:databaseName:tableNamePrefix:111111111111',
+      PhysicalResourceId: 'clusterName:databaseName:tableNamePrefix111111111111:111111111111',
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `CREATE TABLE ${tableNamePrefix}${stackIdTruncated} (col1 varchar(1))`,

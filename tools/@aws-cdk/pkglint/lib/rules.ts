@@ -645,13 +645,6 @@ export class JSIIProjectReferences extends ValidationRule {
     if (!isJSII(pkg)) {
       return;
     }
-
-    expectJSON(
-      this.name,
-      pkg,
-      'jsii.projectReferences',
-      pkg.json.name !== 'aws-cdk-lib',
-    );
   }
 }
 
@@ -885,12 +878,12 @@ function cdkModuleName(name: string) {
     '@aws-cdk/assertions': 'assertions',
     '@aws-cdk/assertions-alpha': 'assertions-alpha',
   };
-  /* eslint-disable @typescript-eslint/indent */
+  /* eslint-disable @stylistic/indent */
   const mavenArtifactId =
     name in mavenIdMap ? mavenIdMap[name] :
     (suffix.startsWith('aws-') || suffix.startsWith('alexa-')) ? suffix.replace(/aws-/, '') :
     suffix.startsWith('cdk-') ? suffix : `cdk-${suffix}`;
-  /* eslint-enable @typescript-eslint/indent */
+  /* eslint-enable @stylistic/indent */
 
   return {
     javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${suffix.replace(/aws-/, 'services-').replace(/-/g, '.')}`}`,
@@ -1000,7 +993,9 @@ export class MustUseCDKBuild extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!shouldUseCDKBuildTools(pkg)) { return; }
 
-    expectJSON(this.name, pkg, 'scripts.build', 'cdk-build');
+    if (pkg.packageName !== '@aws-cdk/custom-resource-handlers') {
+      expectJSON(this.name, pkg, 'scripts.build', 'cdk-build');
+    }
 
     // cdk-build will write a hash file that we have to ignore.
     const merkleMarker = '.LAST_BUILD';
@@ -1181,7 +1176,9 @@ export class MustUseCDKTest extends ValidationRule {
     if (!shouldUseCDKBuildTools(pkg)) { return; }
     if (!hasTestDirectory(pkg)) { return; }
 
-    expectJSON(this.name, pkg, 'scripts.test', 'cdk-test');
+    if (pkg.packageName !== '@aws-cdk/custom-resource-handlers') {
+      expectJSON(this.name, pkg, 'scripts.test', 'cdk-test');
+    }
 
     // 'cdk-test' will calculate coverage, so have the appropriate
     // files in .gitignore.
@@ -1225,7 +1222,7 @@ export class MustHaveIntegCommand extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       '@aws-cdk/integ-runner',
-      `${PKGLINT_VERSION}`); // eslint-disable-line @typescript-eslint/no-require-imports
+      '*'); // eslint-disable-line @typescript-eslint/no-require-imports
   }
 }
 
@@ -1370,7 +1367,7 @@ export class AllVersionsTheSame extends ValidationRule {
 
   private validateDep(pkg: PackageJson, depField: string, dep: string) {
     if (dep in this.ourPackages) {
-      expectJSON(this.name, pkg, depField + '.' + dep, this.ourPackages[dep]);
+      expectJSON(this.name, pkg, [depField, dep], this.ourPackages[dep]);
       return;
     }
 
@@ -1380,7 +1377,7 @@ export class AllVersionsTheSame extends ValidationRule {
 
     const versions = this.usedDeps[dep];
     versions.sort((a, b) => b.count - a.count);
-    expectJSON(this.name, pkg, depField + '.' + dep, versions[0].version);
+    expectJSON(this.name, pkg, [depField, dep], versions[0].version);
   }
 }
 
@@ -1411,7 +1408,7 @@ export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
   public readonly name = 'lambda-packages-no-runtime-deps';
 
   public validate(pkg: PackageJson) {
-    if (!isJSII(pkg)) { return; }
+    if (!isJSII(pkg) || pkg.packageName === '@aws-cdk/cli-lib-alpha') { return; }
 
     for (const inner of findInnerPackages(pkg.packageRoot)) {
       const innerPkg = PackageJson.fromDirectory(inner);
@@ -1663,6 +1660,7 @@ export class UbergenPackageVisibility extends ValidationRule {
   // The ONLY (non-alpha) packages that should be published for v2.
   // These include dependencies of the CDK CLI (aws-cdk).
   private readonly v2PublicPackages = [
+    '@aws-cdk/cli-plugin-contract',
     '@aws-cdk/cloudformation-diff',
     '@aws-cdk/cx-api',
     '@aws-cdk/region-info',

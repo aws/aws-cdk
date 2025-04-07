@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as EKS from '@aws-sdk/client-eks';
-import { IsCompleteResponse, OnEventResponse } from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
 import { EksClient, ResourceEvent, ResourceHandler } from './common';
 import { compareLoggingProps } from './compareLogging';
+import { IsCompleteResponse, OnEventResponse } from '../../copied-from-aws-cdk-lib/provider-framework-types';
 
 const MAX_CLUSTER_NAME_LEN = 100;
 
@@ -128,21 +128,14 @@ export class ClusterResourceHandler extends ResourceHandler {
       return this.onCreate();
     }
 
-    // We can only update one type of the UpdateTypes:
-    type UpdateTypes = {
-      updateLogging: boolean;
-      updateAccess: boolean;
-      updateVpc: boolean;
-      updateAuthMode: boolean;
-    };
     // validate updates
-    const updateTypes = Object.keys(updates) as (keyof UpdateTypes)[];
+    const updateTypes = Object.keys(updates).filter(type => type !== 'updateTags') as (keyof UpdateMap)[];
     const enabledUpdateTypes = updateTypes.filter((type) => updates[type]);
     console.log(enabledUpdateTypes);
 
     if (enabledUpdateTypes.length > 1) {
       throw new Error(
-        'Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed',
+        `Only one type of update - ${updateTypes.join(', ')} can be allowed`,
       );
     }
 
@@ -208,16 +201,28 @@ export class ClusterResourceHandler extends ResourceHandler {
       };
       if (updates.updateLogging) {
         config.logging = this.newProps.logging;
-      };
+      }
       if (updates.updateAccess) {
         config.resourcesVpcConfig = {
           endpointPrivateAccess: this.newProps.resourcesVpcConfig?.endpointPrivateAccess,
           endpointPublicAccess: this.newProps.resourcesVpcConfig?.endpointPublicAccess,
           publicAccessCidrs: this.newProps.resourcesVpcConfig?.publicAccessCidrs,
         };
-      };
+      }
 
       if (updates.updateAuthMode) {
+        // update-authmode will fail if we try to update to the same mode,
+        // so skip in this case.
+        try {
+          const cluster = (await this.eks.describeCluster({ name: this.clusterName })).cluster;
+          if (cluster?.accessConfig?.authenticationMode === this.newProps.accessConfig?.authenticationMode) {
+            console.log(`cluster already at ${cluster?.accessConfig?.authenticationMode}, skipping authMode update`);
+            return;
+          }
+        } catch (e: any) {
+          throw e;
+        }
+
         // the update path must be
         // `undefined or CONFIG_MAP` -> `API_AND_CONFIG_MAP` -> `API`
         // and it's one way path.
@@ -247,19 +252,8 @@ export class ClusterResourceHandler extends ResourceHandler {
           this.newProps.accessConfig?.authenticationMode === 'API') {
           throw new Error('Cannot update from CONFIG_MAP to API');
         }
-        // update-authmode will fail if we try to update to the same mode,
-        // so skip in this case.
-        try {
-          const cluster = (await this.eks.describeCluster({ name: this.clusterName })).cluster;
-          if (cluster?.accessConfig?.authenticationMode === this.newProps.accessConfig?.authenticationMode) {
-            console.log(`cluster already at ${cluster?.accessConfig?.authenticationMode}, skipping authMode update`);
-            return;
-          }
-        } catch (e: any) {
-          throw e;
-        }
         config.accessConfig = this.newProps.accessConfig;
-      };
+      }
 
       if (updates.updateVpc) {
         config.resourcesVpcConfig = {
@@ -389,7 +383,6 @@ export class ClusterResourceHandler extends ResourceHandler {
 }
 
 function parseProps(props: any): EKS.CreateClusterCommandInput {
-
   const parsed = props?.Config ?? {};
 
   // this is weird but these boolean properties are passed by CFN as a string, and we need them to be booleanic for the SDK.
@@ -408,7 +401,6 @@ function parseProps(props: any): EKS.CreateClusterCommandInput {
   }
 
   return parsed;
-
 }
 
 interface UpdateMap {
@@ -481,7 +473,7 @@ function getTagsToUpdate<T extends Record<string, string>>(oldTags: T, newTags: 
 
 function getTagsToRemove<T extends Record<string, string>>(oldTags: T, newTags: T): string[] {
   const missingKeys: string[] = [];
-  //Get all tag keys to remove
+  // Get all tag keys to remove
   for (const key in oldTags) {
     if (oldTags.hasOwnProperty(key) && !newTags.hasOwnProperty(key)) {
       missingKeys.push(key);

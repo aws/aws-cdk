@@ -1,5 +1,6 @@
 import { Template } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
+import * as mediapackage from '../../aws-mediapackagev2';
 import * as s3 from '../../aws-s3';
 import { Stack } from '../../core';
 import * as origins from '../lib';
@@ -221,5 +222,95 @@ describe('Origin Groups', () => {
         defaultBehavior: { origin: originGroup },
       });
     }).toThrow(/fallbackStatusCodes cannot be empty/);
+  });
+});
+
+test('Selection criteria does set Media Quality Based failover for Origin Group', () => {
+  const channelGroup = new mediapackage.CfnChannelGroup(stack, 'cg1', {
+    channelGroupName: 'channelGroup1',
+  });
+  const channelGroup2 = new mediapackage.CfnChannelGroup(stack, 'cg2', {
+    channelGroupName: 'channelGroup2',
+  });
+
+  const originGroup = new origins.OriginGroup({
+    primaryOrigin: new origins.HttpOrigin(channelGroup.attrEgressDomain),
+    fallbackOrigin: new origins.HttpOrigin(channelGroup2.attrEgressDomain),
+    fallbackStatusCodes: [404],
+    selectionCriteria: cloudfront.OriginSelectionCriteria.MEDIA_QUALITY_BASED,
+  });
+
+  new cloudfront.Distribution(stack, 'dist', {
+    defaultBehavior: {
+      origin: originGroup,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        TargetOriginId: 'distOriginGroup1CE86FDB8',
+      },
+      OriginGroups: {
+        Items: [{
+          FailoverCriteria: {
+            StatusCodes: {
+              Items: [404],
+            },
+          },
+          Id: 'distOriginGroup1CE86FDB8',
+          Members: {
+            Items: [
+              { OriginId: 'distOrigin175AC3CB4' },
+              { OriginId: 'distOrigin203EDB784' },
+            ],
+          },
+          SelectionCriteria: 'media-quality-based',
+        }],
+      },
+    },
+  });
+});
+
+test('Selection criteria does set default for Origin Group', () => {
+  const url1 = new origins.HttpOrigin('myurl.com');
+  const url2 = new origins.HttpOrigin('myurl1.com');
+
+  const og = new origins.OriginGroup({
+    primaryOrigin: url1,
+    fallbackOrigin: url2,
+    fallbackStatusCodes: [404],
+    selectionCriteria: cloudfront.OriginSelectionCriteria.DEFAULT,
+  });
+
+  new cloudfront.Distribution(stack, 'dist', {
+    defaultBehavior: {
+      origin: og,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        TargetOriginId: 'distOriginGroup1CE86FDB8',
+      },
+      OriginGroups: {
+        Items: [{
+          FailoverCriteria: {
+            StatusCodes: {
+              Items: [404],
+            },
+          },
+          Id: 'distOriginGroup1CE86FDB8',
+          Members: {
+            Items: [
+              { OriginId: 'distOrigin175AC3CB4' },
+              { OriginId: 'distOrigin203EDB784' },
+            ],
+          },
+          SelectionCriteria: 'default',
+        }],
+      },
+    },
   });
 });

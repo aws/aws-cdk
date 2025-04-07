@@ -110,7 +110,7 @@ function sameEnv(env1: ResourceEnvironment, env2: ResourceEnvironment) {
  * Whether two string probably contain the same environment dimension (region or account)
  *
  * Used to compare either accounts or regions, and also returns true if both
- * are unresolved (in which case both are expted to be "current region" or "current account").
+ * are unresolved (in which case both are expected to be "current region" or "current account").
  */
 function sameEnvDimension(dim1: string, dim2: string) {
   return [TokenComparison.SAME, TokenComparison.BOTH_UNRESOLVED].includes(Token.compareStrings(dim1, dim2));

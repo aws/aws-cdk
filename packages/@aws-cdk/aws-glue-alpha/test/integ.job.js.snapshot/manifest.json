@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "36.0.0",
   "artifacts": {
     "aws-glue-job.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "aws-glue-job.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bbfa96ff49629391347bf6f622ed288ee10ced63216750a5a1805dc22b3bcb5a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd8261e4900491c4aaaec8bcd31c57b1f30085f1d579f19089bd55a4bdb023b7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -267,24 +266,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EtlJobWithFLEX928B4212"
-          }
-        ],
-        "/aws-glue-job/EtlJobWithRunQueuing/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EtlJobWithRunQueuingServiceRole33547334"
-          }
-        ],
-        "/aws-glue-job/EtlJobWithRunQueuing/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EtlJobWithRunQueuingServiceRoleDefaultPolicy5725F511"
-          }
-        ],
-        "/aws-glue-job/EtlJobWithRunQueuing/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EtlJobWithRunQueuingA1B098B5"
           }
         ],
         "/aws-glue-job/BootstrapVersion": [

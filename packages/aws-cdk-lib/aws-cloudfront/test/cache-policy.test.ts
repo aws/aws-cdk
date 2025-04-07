@@ -239,7 +239,6 @@ describe.each([
   test('denyList() throws if list is empty', () => {
     expect(() => clazz.denyList()).toThrow(new RegExp(`At least one ${type} to deny must be provided`));
   });
-
 });
 
 describe('HeaderBehavior', () => {

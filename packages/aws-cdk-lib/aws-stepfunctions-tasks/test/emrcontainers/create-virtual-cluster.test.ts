@@ -1,3 +1,4 @@
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template } from '../../../assertions';
 import * as eks from '../../../aws-eks';
 import * as sfn from '../../../aws-stepfunctions';
@@ -43,6 +44,48 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
       Parameters: {
         'Name.$': "States.Format('{}/{}', $$.Execution.Name, $$.State.Name)",
         'ContainerProvider': {
+          Id: clusterId,
+          Info: {
+            EksInfo: {
+              Namespace: 'default',
+            },
+          },
+          Type: 'EKS',
+        },
+      },
+    });
+  });
+
+  test('only required properties - using JSONata', () => {
+  // WHEN
+    const task = EmrContainersCreateVirtualCluster.jsonata(stack, 'Task', {
+      eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
+    });
+
+    new sfn.StateMachine(stack, 'SM', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      QueryLanguage: 'JSONata',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::emr-containers:createVirtualCluster',
+          ],
+        ],
+      },
+      End: true,
+      Arguments: {
+        Name: "{% States.Format('{}/{}', $states.context.Execution.Name, $states.context.State.Name) %}",
+        ContainerProvider: {
           Id: clusterId,
           Info: {
             EksInfo: {
@@ -104,6 +147,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     // WHEN
     const eksCluster = new eks.Cluster(stack, 'EKS Cluster', {
       version: eks.KubernetesVersion.V1_20,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
     const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {

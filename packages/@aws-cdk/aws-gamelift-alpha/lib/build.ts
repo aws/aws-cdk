@@ -5,6 +5,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Content } from './content';
 import { CfnBuild } from 'aws-cdk-lib/aws-gamelift';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Your custom-built game server software that runs on GameLift and hosts game sessions for your players.
@@ -273,6 +274,8 @@ export class Build extends BuildBase {
     super(scope, id, {
       physicalName: props.buildName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.buildName && !cdk.Token.isUnresolved(props.buildName)) {
       if (props.buildName.length > 1024) {

@@ -1,5 +1,6 @@
 import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
+import { FeatureFlags } from './feature-flags';
 import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
 import { IPolicyValidationPluginBeta1 } from './validation';
@@ -105,7 +106,7 @@ export class Stage extends Construct {
    * Test whether the given construct is a stage.
    *
    */
-  public static isStage(x: any ): x is Stage {
+  public static isStage(this: void, x: any): x is Stage {
     return x !== null && typeof(x) === 'object' && STAGE_SYMBOL in x;
   }
 
@@ -162,7 +163,7 @@ export class Stage extends Construct {
   constructor(scope: Construct, id: string, props: StageProps = {}) {
     super(scope, id);
 
-    if (id !== '' && !/^[a-z][a-z0-9\-\_\.]+$/i.test(id)) {
+    if (id !== '' && !/^[a-z][a-z0-9\-\_\.]*$/i.test(id)) {
       throw new Error(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`);
     }
 
@@ -216,7 +217,6 @@ export class Stage extends Construct {
    * calls will return the same assembly.
    */
   public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
-
     let newConstructPaths = this.listAllConstructPaths(this);
 
     // If the assembly cache is uninitiazed, run synthesize and reset construct paths cache
@@ -224,6 +224,7 @@ export class Stage extends Construct {
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
         validateOnSynthesis: options.validateOnSynthesis,
+        aspectStabilization: options.aspectStabilization ?? FeatureFlags.of(this).isEnabled(cxapi.ASPECT_STABILIZATION) ?? false,
       });
       newConstructPaths = this.listAllConstructPaths(this);
       this.constructPathsCache = newConstructPaths;
@@ -318,4 +319,15 @@ export interface StageSynthesisOptions {
    * @default true
    */
   readonly errorOnDuplicateSynth?: boolean;
+
+  /**
+   * Whether or not run the stabilization loop while invoking Aspects.
+   *
+   * The stabilization loop runs multiple passes of the construct tree when invoking
+   * Aspects. Without the stabilization loop, Aspects that are created by other Aspects
+   * are not run and new nodes that are created at higher points on the construct tree by
+   * an Aspect will not inherit their parent aspects.
+   * @default false
+   */
+  readonly aspectStabilization?: boolean;
 }

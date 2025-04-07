@@ -68,6 +68,15 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
+### VPC origins
+
+You can use CloudFront to deliver content from applications that are hosted in your virtual private cloud (VPC) private subnets.
+You can use Application Load Balancers (ALBs), Network Load Balancers (NLBs), and EC2 instances in private subnets as VPC origins.
+
+Learn more about [Restrict access with VPC origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-vpc-origins.html).
+
+See the README of the `aws-cdk-lib/aws-cloudfront-origins` module for more information on setting up VPC origins.
+
 ### Domain Names and Certificates
 
 When you create a distribution, CloudFront assigns a domain name for the distribution, for example: `d111111abcdef8.cloudfront.net`; this value can
@@ -215,6 +224,37 @@ new cloudfront.Distribution(this, 'myDist', {
     },
   },
 });
+```
+
+### Attaching WAF Web Acls
+
+You can attach the AWS WAF web ACL to a CloudFront distribution.
+
+To specify a web ACL created using the latest version of AWS WAF, use the ACL ARN, for example
+`arn:aws:wafv2:us-east-1:123456789012:global/webacl/ExampleWebACL/473e64fd-f30b-4765-81a0-62ad96dd167a`.
+The web ACL must be in the `us-east-1` region.
+
+To specify a web ACL created using AWS WAF Classic, use the ACL ID, for example `473e64fd-f30b-4765-81a0-62ad96dd167a`.
+
+```ts
+declare const bucketOrigin: origins.S3Origin;
+declare const webAcl: wafv2.CfnWebACL;
+const distribution = new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin: bucketOrigin },
+  webAclId: webAcl.attrArn,
+});
+```
+
+You can also attach a web ACL to a distribution after creation.
+
+```ts
+declare const bucketOrigin: origins.S3Origin;
+declare const webAcl: wafv2.CfnWebACL;
+const distribution = new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin: bucketOrigin },
+});
+
+distribution.attachWebAclId(webAcl.attrArn);
 ```
 
 ### Customizing Cache Keys and TTLs with Cache Policies
@@ -757,6 +797,29 @@ new cloudfront.Distribution(this, 'myCdn', {
   defaultBehavior: {
     origin: new origins.HttpOrigin('www.example.com'),
     realtimeLogConfig: realTimeConfig,
+  },
+});
+```
+
+### gRPC
+
+CloudFront supports gRPC, an open-source remote procedure call (RPC) framework built on HTTP/2. gRPC offers bi-directional streaming and
+binary protocol that buffers payloads, making it suitable for applications that require low latency communications.
+
+To enable your distribution to handle gRPC requests, you must include HTTP/2 as one of the supported HTTP versions and allow HTTP methods,
+including POST.
+
+See [Using gRPC with CloudFront distributions](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-using-grpc.html)
+in the CloudFront User Guide.
+
+Example:
+
+```ts
+new cloudfront.Distribution(this, 'myCdn', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin('www.example.com'),
+    allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL, // `AllowedMethods.ALLOW_ALL` is required if `enableGrpc` is true
+    enableGrpc: true,
   },
 });
 ```
