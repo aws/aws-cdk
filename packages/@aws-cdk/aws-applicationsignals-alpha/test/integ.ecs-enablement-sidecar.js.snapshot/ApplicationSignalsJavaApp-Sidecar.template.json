@@ -1,38 +1,6 @@
 {
  "Resources": {
-  "TestRole6C9272DF": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "ecs-tasks.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/CloudWatchAgentServerPolicy"
-       ]
-      ]
-     }
-    ],
-    "RoleName": "TestRole"
-   }
-  },
-  "FargateTaskDefinition8E3B365E": {
+  "JavaTaskDefinition93F96919": {
    "Type": "AWS::ECS::TaskDefinition",
    "Properties": {
     "ContainerDefinitions": [
@@ -85,55 +53,19 @@
         "Value": "tracecontext,baggage,b3,xray"
        },
        {
-        "Name": "OTEL_DOTNET_DISTRO",
-        "Value": "aws_distro"
-       },
-       {
-        "Name": "OTEL_DOTNET_CONFIGURATOR",
-        "Value": "aws_configurator"
-       },
-       {
-        "Name": "OTEL_DOTNET_AUTO_PLUGINS",
-        "Value": "AWS.Distro.OpenTelemetry.AutoInstrumentation.Plugin, AWS.Distro.OpenTelemetry.AutoInstrumentation"
-       },
-       {
-        "Name": "CORECLR_ENABLE_PROFILING",
-        "Value": "1"
-       },
-       {
-        "Name": "CORECLR_PROFILER",
-        "Value": "{918728DD-259F-4A6A-AC2B-B85E1B658318}"
-       },
-       {
-        "Name": "CORECLR_PROFILER_PATH",
-        "Value": "C:\\otel-auto-instrumentation-dotnet\\win-x64\\OpenTelemetry.AutoInstrumentation.Native.dll"
-       },
-       {
-        "Name": "DOTNET_STARTUP_HOOKS",
-        "Value": "C:\\otel-auto-instrumentation-dotnet\\net\\OpenTelemetry.AutoInstrumentation.StartupHook.dll"
-       },
-       {
-        "Name": "DOTNET_ADDITIONAL_DEPS",
-        "Value": "C:\\otel-auto-instrumentation-dotnet\\AdditionalDeps"
-       },
-       {
-        "Name": "OTEL_DOTNET_AUTO_HOME",
-        "Value": "C:\\otel-auto-instrumentation-dotnet"
-       },
-       {
-        "Name": "DOTNET_SHARED_STORE",
-        "Value": "C:\\otel-auto-instrumentation-dotnet\\store"
+        "Name": "JAVA_TOOL_OPTIONS",
+        "Value": " -javaagent:/otel-auto-instrumentation/javaagent.jar"
        },
        {
         "Name": "OTEL_SERVICE_NAME",
-        "Value": "demo"
+        "Value": "java-demo"
        }
       ],
       "Essential": true,
-      "Image": "nathanpeck/name",
+      "Image": "public.ecr.aws/aws-containers/retail-store-sample-cart:1.1.0",
       "MountPoints": [
        {
-        "ContainerPath": "C:\\otel-auto-instrumentation-dotnet",
+        "ContainerPath": "/otel-auto-instrumentation",
         "ReadOnly": false,
         "SourceVolume": "opentelemetry-auto-instrumentation"
        }
@@ -142,26 +74,17 @@
      },
      {
       "Command": [
-       "CMD",
-       "/c",
-       "xcopy",
-       "/e",
-       "C:\\autoinstrumentation\\*",
-       "C:\\otel-auto-instrumentation-dotnet",
-       "&&",
-       "icacls",
-       "C:\\otel-auto-instrumentation-dotnet",
-       "/grant",
-       "*S-1-1-0:R",
-       "/T"
+       "cp",
+       "/javaagent.jar",
+       "/otel-auto-instrumentation/javaagent.jar"
       ],
       "Cpu": 0,
       "Essential": false,
-      "Image": "public.ecr.aws/aws-observability/adot-autoinstrumentation-dotnet:v1.6.0-windows2019",
-      "Memory": 128,
+      "Image": "public.ecr.aws/aws-observability/adot-autoinstrumentation-java:v2.10.0",
+      "Memory": 64,
       "MountPoints": [
        {
-        "ContainerPath": "C:\\otel-auto-instrumentation-dotnet",
+        "ContainerPath": "/otel-auto-instrumentation",
         "ReadOnly": false,
         "SourceVolume": "opentelemetry-auto-instrumentation"
        }
@@ -183,21 +106,18 @@
       "User": "0:1338"
      }
     ],
-    "Cpu": "2048",
-    "Family": "ecsenablementintegrationFargateTaskDefinition0E588E5D",
-    "Memory": "4096",
+    "Cpu": "1024",
+    "ExecutionRoleArn": {
+     "Fn::ImportValue": "ApplicationSignalsInfra-Sidecar:ExportsOutputFnGetAttECSTaskExecutionRole911F5A4FArn90EDA8DE"
+    },
+    "Family": "ApplicationSignalsJavaAppSidecarJavaTaskDefinitionD1B2093F",
+    "Memory": "2048",
     "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
      "FARGATE"
     ],
-    "RuntimePlatform": {
-     "OperatingSystemFamily": "WINDOWS_SERVER_2019_CORE"
-    },
     "TaskRoleArn": {
-     "Fn::GetAtt": [
-      "TestRole6C9272DF",
-      "Arn"
-     ]
+     "Fn::ImportValue": "ApplicationSignalsInfra-Sidecar:ExportsOutputFnGetAttECSTaskRoleF2ADB362Arn397CEC35"
     },
     "Volumes": [
      {

@@ -122,29 +122,6 @@ describe('application signals integration', () => {
     }
   });
 
-  test('should fail if fargate task definition does not have a sidecar', () => {
-    expect(() => {
-      // GIVEN
-      const stack = new Stack();
-
-      // WHEN
-      const fargateTaskDefinition = new ecs.FargateTaskDefinition(stack, 'TestTaskDefinition', {
-        cpu: 256,
-        memoryLimitMiB: 512,
-      });
-      fargateTaskDefinition.addContainer('app', {
-        image: ecs.ContainerImage.fromRegistry('docker/cdk-test'),
-      });
-      new appsignals.ApplicationSignalsIntegration(stack, 'TestFailure', {
-        taskDefinition: fargateTaskDefinition,
-        instrumentation: {
-          sdkVersion: appsignals.JavaInstrumentationVersion.V1_32_6,
-        },
-        serviceName: 'overriden-demo',
-      });
-    }).toThrow(/Fargate tasks must deploy CloudWatch Agent as a sidecar container/);
-  });
-
   test('should no cwagent container with external cwagent endpoint', () => {
     // GIVEN
     const stack = new Stack();

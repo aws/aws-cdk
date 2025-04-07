@@ -1,15 +1,15 @@
 {
   "version": "40.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "4791e255147093397aad917b75d90f40c5638d64df77621772f4fc86db423099": {
       "source": {
-        "path": "ApplicationSignalsIntegrationECSDaemonDefaultTestDeployAssert0A2A622F.template.json",
+        "path": "ApplicationSignalsPythonApp-Replica.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "4791e255147093397aad917b75d90f40c5638d64df77621772f4fc86db423099.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

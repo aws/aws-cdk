@@ -1,15 +1,15 @@
 {
   "version": "40.0.0",
   "files": {
-    "551949daf6dce89b020b2c06956d07b68772c67de2f994cc5b77c97934a10ca7": {
+    "1b94200f5619eaed3efe22e69ba29da2803b62aa6b0f7cfacb52a6d015d0f1b1": {
       "source": {
-        "path": "ecs-enablement-integration.template.json",
+        "path": "ApplicationSignalsJavaApp-Daemon.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "551949daf6dce89b020b2c06956d07b68772c67de2f994cc5b77c97934a10ca7.json",
+          "objectKey": "1b94200f5619eaed3efe22e69ba29da2803b62aa6b0f7cfacb52a6d015d0f1b1.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
