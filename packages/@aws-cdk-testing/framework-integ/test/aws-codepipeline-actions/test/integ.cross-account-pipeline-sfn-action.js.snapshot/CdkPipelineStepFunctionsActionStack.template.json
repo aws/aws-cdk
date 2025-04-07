@@ -771,7 +771,7 @@
            ]
           ]
          },
-         "Input": "{\"source\":\"codepipeline\",\"timestamp\":\"2025-04-04T21:42:13.403Z\"}",
+         "Input": "{\"source\":\"codepipeline\"}",
          "InputType": "Literal"
         },
         "Name": "InvokeStateMachine",

@@ -28,7 +28,7 @@ import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
  *     - `yarn integ pipelines/test/integ.cross-account-pipeline-action.js`
  *   b. Fall back if temp credentials do not work (account info may be in snapshot)
  *     - `yarn integ pipelines/test/integ.cross-account-pipeline-action.js --profiles cross-account`
- * 
+ *
  * 4. Before you commit, set both accounts to dummy values, run integ test in dry run mode, and then push the snapshot.
  */
 
@@ -108,6 +108,7 @@ class PipelineStack extends Stack {
 
 const app = new App({
   postCliContext: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
     '@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope': true,
   },
 });

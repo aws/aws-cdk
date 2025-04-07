@@ -130,7 +130,6 @@ class PipelineStack extends Stack {
           stateMachine,
           stateMachineInput: codepipeline_actions.StateMachineInput.literal({
             source: 'codepipeline',
-            timestamp: new Date().toISOString(),
           }),
         }),
       ],

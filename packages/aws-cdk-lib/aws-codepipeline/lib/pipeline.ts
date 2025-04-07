@@ -647,7 +647,7 @@ export class Pipeline extends PipelineBase {
     this.artifactBucket = propsBucket;
 
     // If a role has been provided, use it - otherwise, create a role.
-    const isRemoveRootPrincipal = FeatureFlags.of(this).isEnabled(cxapi.PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE);
+    const isRemoveRootPrincipal = FeatureFlags.of(this).isEnabled(cxapi.PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE);
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
@@ -1104,7 +1104,7 @@ export class Pipeline extends PipelineBase {
             ArnEquals: {
               'aws:PrincipalArn': this.role.roleArn,
             },
-          }
+          },
         )
         : basePrincipal,
     };

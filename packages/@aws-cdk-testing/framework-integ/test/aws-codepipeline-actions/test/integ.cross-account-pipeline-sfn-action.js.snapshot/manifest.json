@@ -226,10 +226,7 @@
         "/CrossAccountStepFunctionStack/CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5-InvokeStepFunction-InvokeStateMachine-ActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5InvokeStepFunctionInvokeStateMachineActionRoleA1EF4B34",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5InvokeStepFunctionInvokeStateMachineActionRoleA1EF4B34"
           }
         ],
         "/CrossAccountStepFunctionStack/CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5-InvokeStepFunction-InvokeStateMachine-ActionRole/DefaultPolicy": [
@@ -308,7 +305,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/021ca5a7dd7d86f010e1cecbae6436a28761c35b070131eafccef598783f0e9a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/3480981ae483c4aa2bbfd649297c843b0a81b3ce02e1ba37eef1f8162bbc0d6c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -409,10 +406,7 @@
         "/CdkPipelineStepFunctionsActionStack/BucketDeployment/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BucketDeploymentAwsCliLayerB018DCE1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "BucketDeploymentAwsCliLayerB018DCE1"
           }
         ],
         "/CdkPipelineStepFunctionsActionStack/BucketDeployment/CustomResourceHandler": [
@@ -798,10 +792,7 @@
         "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CrossAccountStepFunctionsPipelineRoleD362C1BB",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "CrossAccountStepFunctionsPipelineRoleD362C1BB"
           }
         ],
         "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline/Role/DefaultPolicy": [
