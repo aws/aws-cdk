@@ -95,6 +95,7 @@ Flags come in three types:
 | [@aws-cdk/aws-events:requireEventBusPolicySid](#aws-cdkaws-eventsrequireeventbuspolicysid) | When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals. | 2.186.0 | (fix) |
 | [@aws-cdk/aws-dynamodb:retainTableReplica](#aws-cdkaws-dynamodbretaintablereplica) | When enabled, table replica will be default to the removal policy of source table unless specified otherwise. | 2.187.0 | (fix) |
 | [@aws-cdk/cognito:logUserPoolClientSecretValue](#aws-cdkcognitologuserpoolclientsecretvalue) | When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs. | 2.187.0 | (default) |
+| [@aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue](#aws-cdkaws-s3blockpublicaccessoptionautotrue) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -175,7 +176,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false,
     "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
     "@aws-cdk/aws-events:requireEventBusPolicySid": true,
-    "@aws-cdk/aws-dynamodb:retainTableReplica": true
+    "@aws-cdk/aws-dynamodb:retainTableReplica": true,
+    "@aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue": true
   }
 }
 ```
@@ -1804,6 +1806,22 @@ resource lambda function logs.
 | 2.187.0 | `false` | `false` |
 
 **Compatibility with old behavior:** Enable the feature flag to keep the old behavior and log the client secret values
+
+
+### @aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue
+
+*When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined.* (fix)
+
+When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console. 
+The previous behavior in cdk before this feature was; if only some of the BlockPublicAccessOptions were set (not all 4), then the ones undefined would default to false.
+This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
+The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
