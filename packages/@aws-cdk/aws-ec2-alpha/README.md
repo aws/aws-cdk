@@ -43,6 +43,7 @@ new VpcV2(this, 'Vpc', {
 `SubnetV2` is a re-write of the [`ec2.Subnet`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Subnet.html) construct.
 This new construct can be used to add subnets to a `VpcV2` instance:
 Note: When defining a subnet with `SubnetV2`, CDK automatically creates a new route table, unless a route table is explicitly provided as an input to the construct.
+To enable the `mapPublicIpOnLaunch` feature (which is `false` by default), set the property to `true` when creating the subnet.
 
 ```ts
 const stack = new Stack();
@@ -57,7 +58,8 @@ new SubnetV2(this, 'subnetA', {
   availabilityZone: 'us-east-1a',
   ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
   ipv6CidrBlock: new IpCidr('2a05:d02c:25:4000::/60'),
-  subnetType: SubnetType.PRIVATE_ISOLATED,
+  subnetType: SubnetType.PUBLIC,
+  mapPublicIpOnLaunch: true,
 })
 ```
 
