@@ -3,7 +3,7 @@ import { CfnDeploymentConfig } from './codedeploy.generated';
 import { MinimumHealthyHosts, MinimumHealthyHostsPerZone } from './host-health-config';
 import { arnForDeploymentConfig, validateName } from './private/utils';
 import { TrafficRouting } from './traffic-routing-config';
-import { ArnFormat, Duration, Resource, Stack } from '../../core';
+import { ArnFormat, Duration, Resource, Stack, ValidationError } from '../../core';
 
 /**
  * The base class for ServerDeploymentConfig, EcsDeploymentConfig,
@@ -174,12 +174,12 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
 
     // Traffic routing is not applicable to Server-based deployment configs
     if (props?.trafficRouting && (props?.computePlatform === undefined || props?.computePlatform === ComputePlatform.SERVER)) {
-      throw new Error('Traffic routing config must not be specified for a Server-base deployment configuration');
+      throw new ValidationError('Traffic routing config must not be specified for a Server-base deployment configuration', this);
     }
 
     // Minimum healthy hosts is only applicable to Server-based deployment configs
     if (props?.minimumHealthyHosts && props?.computePlatform && props?.computePlatform !== ComputePlatform.SERVER) {
-      throw new Error('Minimum healthy hosts config must only be specified for a Server-base deployment configuration');
+      throw new ValidationError('Minimum healthy hosts config must only be specified for a Server-base deployment configuration', this);
     }
 
     if (props?.zonalConfig) {
@@ -217,7 +217,7 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
   private validateMinimumDuration(duration: Duration, name: string) {
     const milliseconds = duration.toMilliseconds();
     if (milliseconds > 0 && milliseconds < 1000) {
-      throw new Error(`${name} must be greater than or equal to 1 second or be equal to 0, got ${milliseconds}ms`);
+      throw new ValidationError(`${name} must be greater than or equal to 1 second or be equal to 0, got ${milliseconds}ms`, this);
     }
   }
 }

@@ -1,0 +1,32 @@
+{
+  "version": "40.0.0",
+  "files": {
+    "0acfb8b82ec08d04586e08042e05f891132765064e748fcf23768859eb02f3ea": {
+      "source": {
+        "path": "cdk-submit-job-queue-json-path.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0acfb8b82ec08d04586e08042e05f891132765064e748fcf23768859eb02f3ea.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {
+    "6b18aed490b9a0c682c4729d8e5955650709955e8275dcbe68d5defa39c43bda": {
+      "source": {
+        "directory": "asset.6b18aed490b9a0c682c4729d8e5955650709955e8275dcbe68d5defa39c43bda"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
+          "imageTag": "6b18aed490b9a0c682c4729d8e5955650709955e8275dcbe68d5defa39c43bda",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  }
+}

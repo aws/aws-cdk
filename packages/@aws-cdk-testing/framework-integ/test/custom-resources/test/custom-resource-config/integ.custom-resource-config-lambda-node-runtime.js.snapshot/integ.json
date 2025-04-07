@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "testCases": {
     "integ-test-custom-resource-config-lambda-node-runtime/DefaultTest": {
       "stacks": [

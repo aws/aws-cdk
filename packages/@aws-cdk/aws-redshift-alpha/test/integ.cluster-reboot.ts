@@ -14,7 +14,11 @@ import * as redshift from '../lib';
  * The diff assets flag (used when testing custom resources) has been commented out due to snapshots not properly verifying in CodeBuild.
  */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 
 interface RedshiftRebootStackProps extends cdk.StackProps {
   parameterGroupParams: { [name: string]: string };

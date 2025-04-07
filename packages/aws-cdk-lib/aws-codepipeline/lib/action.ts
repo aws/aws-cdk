@@ -4,7 +4,7 @@ import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
-import { Duration, IResource, Lazy } from '../../core';
+import { Duration, IResource, Lazy, UnscopedValidationError } from '../../core';
 
 export enum ActionCategory {
   SOURCE = 'Source',
@@ -398,8 +398,7 @@ export abstract class Action implements IAction {
       produce: () => {
         // make sure the action was bound (= added to a pipeline)
         if (this._actualNamespace === undefined) {
-          throw new Error(`Cannot reference variables of action '${this.actionProperties.actionName}', ` +
-            'as that action was never added to a pipeline');
+          throw new UnscopedValidationError(`Cannot reference variables of action '${this.actionProperties.actionName}', as that action was never added to a pipeline`);
         } else {
           return this._customerProvidedNamespace !== undefined
             // if a customer passed a namespace explicitly, always use that
@@ -467,7 +466,7 @@ export abstract class Action implements IAction {
     if (this.__pipeline) {
       return this.__pipeline;
     } else {
-      throw new Error('Action must be added to a stage that is part of a pipeline before using onStateChange');
+      throw new UnscopedValidationError('Action must be added to a stage that is part of a pipeline before using onStateChange');
     }
   }
 
@@ -475,7 +474,7 @@ export abstract class Action implements IAction {
     if (this.__stage) {
       return this.__stage;
     } else {
-      throw new Error('Action must be added to a stage that is part of a pipeline before using onStateChange');
+      throw new UnscopedValidationError('Action must be added to a stage that is part of a pipeline before using onStateChange');
     }
   }
 
@@ -488,7 +487,7 @@ export abstract class Action implements IAction {
     if (this.__scope) {
       return this.__scope;
     } else {
-      throw new Error('Action must be added to a stage that is part of a pipeline first');
+      throw new UnscopedValidationError('Action must be added to a stage that is part of a pipeline first');
     }
   }
 }

@@ -1,7 +1,7 @@
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import { TargetBaseProps, bindBaseTargetConfig } from './util';
 import * as events from '../../aws-events';
-import { RuleTargetInputProperties, RuleTargetInput, EventField, IRule } from '../../aws-events';
+import { RuleTargetInputProperties, RuleTargetInput, EventField, IRule, InputType } from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
@@ -41,12 +41,27 @@ export abstract class LogGroupTargetInput {
    *
    * May contain strings returned by `EventField.from()` to substitute in parts of the
    * matched event.
+   *
+   * @deprecated use fromObjectV2
    */
   public static fromObject(options?: LogGroupTargetInputOptions): RuleTargetInput {
     return RuleTargetInput.fromObject({
       timestamp: options?.timestamp ?? EventField.time,
       message: options?.message ?? EventField.detailType,
     });
+  }
+
+  /**
+   * Pass a JSON object to the the log group event target
+   *
+   * May contain strings returned by `EventField.from()` to substitute in parts of the
+   * matched event.
+   */
+  public static fromObjectV2(options?: LogGroupTargetInputOptions): LogGroupTargetInput {
+    return new events.FieldAwareEventInput({
+      timestamp: options?.timestamp ?? EventField.time,
+      message: options?.message ?? EventField.detailType,
+    }, InputType.Object);
   }
 
   /**

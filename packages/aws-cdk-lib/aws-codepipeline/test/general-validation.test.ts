@@ -22,7 +22,7 @@ describe('general validation', () => {
 
     cases.forEach(testCase => {
       const name = testCase.name;
-      const validationBlock = () => { validateName('test thing', name); };
+      const validationBlock = () => { validateName(new cdk.Stack(), 'test thing', name); };
       if (testCase.shouldPassValidation) {
         expect(validationBlock).not.toThrow();
       } else {

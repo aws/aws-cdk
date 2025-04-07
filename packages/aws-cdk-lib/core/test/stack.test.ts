@@ -14,6 +14,7 @@ import {
   PERMISSIONS_BOUNDARY_CONTEXT_KEY,
   Aspects,
   Stage,
+  Token,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -38,7 +39,37 @@ describe('stack', () => {
     }).toThrow(`Stack name must be <= 128 characters. Stack name: '${reallyLongStackName}'`);
   });
 
-  test('stack objects have some template-level propeties, such as Description, Version, Transform', () => {
+  test.each([
+    ['Has:Colon', 'Has_Colon'],
+    ['0startWithNumber', '0startWithNumber'],
+    ['Has-Dash', 'Has-Dash'],
+    [undefined, 'Default'],
+    ['With_Underscore', 'With_Underscore'],
+    ['with.dot', 'with.dot'],
+    ['with/slash', 'with--slash'],
+    ['with space', 'with_space'],
+    ['UPPERCASE', 'UPPERCASE'],
+    ['mixedCase123', 'mixedCase123'],
+    ['!@#$%^', '______'],
+    ['123456', '123456'],
+    ['a-b-c', 'a-b-c'],
+    ['x_y_z', 'x_y_z'],
+    ['abc.def.ghi', 'abc.def.ghi'],
+  ])('valid stack artifact id for construct id \'%s\'', (id, expected) => {
+    // GIVEN
+    const app = new App({});
+
+    // WHEN
+    const stack = new Stack(app, id, {
+      stackName: 'ValidStackName',
+    });
+
+    // THEN
+    expect(stack.stackName).toBe('ValidStackName');
+    expect(stack.artifactId).toBe(expected);
+  });
+
+  test('stack objects have some template-level properties, such as Description, Version, Transform', () => {
     const stack = new Stack();
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
     stack.templateOptions.description = 'This is my description';
@@ -517,6 +548,64 @@ describe('stack', () => {
                 '||',
                 {
                   'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9',
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('cross-stack references of nested stack lists returned from Fn::GetAtt work', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Producer');
+    const nested = new NestedStack(producer, 'Nestor');
+    const exportResource = new CfnResource(nested, 'exportedResource', {
+      type: 'BLA',
+    });
+    const consumer = new Stack(app, 'Consumer');
+    // L1s represent attribute names with `attr${attributeName}`
+    (exportResource as any).attrList = ['magic-attr-value'];
+
+    // WHEN - used in another stack
+    new CfnResource(consumer, 'SomeResource', {
+      type: 'BLA',
+      properties: {
+        Prop: exportResource.getAtt('List', ResolutionTypeHint.STRING_LIST),
+      },
+    });
+
+    const assembly = app.synth();
+    const producerTemplate = assembly.getStackByName(producer.stackName).template;
+    const consumerTemplate = assembly.getStackByName(consumer.stackName).template;
+
+    // THEN
+    expect(producerTemplate).toMatchObject({
+      Outputs: {
+        ExportsOutputFnGetAttNestorNestedStackNestorNestedStackResourceAE182597OutputsProducerNestorexportedResource5B6DDAA1ListAF9B4148: {
+          Value: {
+            'Fn::GetAtt': [
+              'NestorNestedStackNestorNestedStackResourceAE182597',
+              'Outputs.ProducerNestorexportedResource5B6DDAA1List',
+            ],
+          },
+          Export: { Name: 'Producer:ExportsOutputFnGetAttNestorNestedStackNestorNestedStackResourceAE182597OutputsProducerNestorexportedResource5B6DDAA1ListAF9B4148' },
+        },
+      },
+    });
+
+    expect(consumerTemplate).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'BLA',
+          Properties: {
+            Prop: {
+              'Fn::Split': [
+                '||',
+                {
+                  'Fn::ImportValue': 'Producer:ExportsOutputFnGetAttNestorNestedStackNestorNestedStackResourceAE182597OutputsProducerNestorexportedResource5B6DDAA1ListAF9B4148',
                 },
               ],
             },
