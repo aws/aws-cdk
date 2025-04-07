@@ -1,0 +1,19 @@
+{
+  "version": "40.0.0",
+  "files": {
+    "760ba6b127c631f1b056b0ce1115a8decc6c1fc79d1123bedf629c7633f5701f": {
+      "source": {
+        "path": "ApplicationSignalsInfra-Sidecar.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "760ba6b127c631f1b056b0ce1115a8decc6c1fc79d1123bedf629c7633f5701f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

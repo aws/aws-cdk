@@ -74,9 +74,6 @@ export class ApplicationSignalsIntegration extends Construct {
     id: string,
     props: ApplicationSignalsIntegrationProps) {
     super(scope, id);
-    if (props.taskDefinition.compatibility === ecs.Compatibility.FARGATE && !props.cloudWatchAgentSidecar) {
-      throw new Error('Fargate tasks must deploy CloudWatch Agent as a sidecar container');
-    }
     this.cloudWatchAgentSidecar = props.cloudWatchAgentSidecar;
 
     let runtimePlatformObj = props.instrumentation.runtimePlatform ?? (props.taskDefinition as any).runtimePlatform;
