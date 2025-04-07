@@ -1,0 +1,76 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "ExampleResourceIntegTestStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ExampleResourceIntegTestStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ExampleResourceIntegTestStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ExampleResourceIntegTestStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/30b7d861ff59f91e3fa8f3f81084e16f9204797ffe9c775adf0bbbfa36b769b5.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ExampleResourceIntegTestStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ExampleResourceIntegTestStack.assets"
+      ],
+      "metadata": {
+        "/ExampleResourceIntegTestStack/ExampleResource/WaitConditionHandle": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExampleResourceWaitConditionHandle9C53A8D3"
+          }
+        ],
+        "/ExampleResourceIntegTestStack/ExampleResource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExampleResourceAC53F4AE"
+          }
+        ],
+        "/ExampleResourceIntegTestStack/ExampleResource/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExampleResourceRole0533653E"
+          }
+        ],
+        "/ExampleResourceIntegTestStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ExampleResourceIntegTestStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ExampleResourceIntegTestStack"
+    }
+  }
+}
