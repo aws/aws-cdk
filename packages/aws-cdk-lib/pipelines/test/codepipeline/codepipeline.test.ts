@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { Template, Annotations, Match } from '../../../assertions';
 import * as ccommit from '../../../aws-codecommit';
-import { Pipeline } from '../../../aws-codepipeline';
+import { Pipeline, PipelineType } from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as sqs from '../../../aws-sqs';
@@ -176,7 +176,37 @@ test('Policy sizes do not exceed the maximum size', () => {
   const annotations = Annotations.fromStack(pipelineStack);
   annotations.hasWarning('*', Match.stringLikeRegexp('^Template size is approaching limit'));
   const warnings = annotations.findWarning('*', Match.anyValue());
-  expect(warnings.length).toEqual(1);
+  expect(warnings.length).toEqual(2);
+});
+
+test.each([
+  [PipelineType.V1, 'V1'],
+  [PipelineType.V2, 'V2'],
+  [undefined, 'V1'],
+])('can specify pipeline type %s when feature flag is not set', (type, expected) => {
+  const stack = new cdk.Stack();
+  const repo = new ccommit.Repository(stack, 'Repo', {
+    repositoryName: 'MyRepo',
+  });
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(
+    repo,
+    'main',
+  );
+  new CodePipeline(stack, 'Pipeline', {
+    synth: new cdkp.ShellStep('Synth', {
+      input: cdkInput,
+      installCommands: ['npm ci'],
+      commands: [
+        'npm run build',
+        'npx cdk synth',
+      ],
+    }),
+    pipelineType: type,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    PipelineType: expected,
+  });
 });
 
 test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
