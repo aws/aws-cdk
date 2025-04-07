@@ -451,8 +451,9 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     }
 
     props.retryAttempts !== undefined && cdk.withResolved(props.retryAttempts, (attempts) => {
-      if (attempts < 0 || attempts > 10000) {
-        throw new ValidationError(`retryAttempts must be between 0 and 10000 inclusive, got ${attempts}`, this);
+      // Allow -1 for infinite retries, otherwise validate the 0-10000 range
+      if (!(attempts === -1 || (attempts >= 0 && attempts <= 10000))) {
+        throw new ValidationError(`retryAttempts must be -1 (for infinite) or between 0 and 10000 inclusive, got ${attempts}`, this);
       }
     });
 

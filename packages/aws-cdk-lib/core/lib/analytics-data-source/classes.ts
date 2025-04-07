@@ -514,186 +514,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'description': '*'
     }
   },
-  '@aws-cdk.aws-cognito-identitypool-alpha': {
-    'IdentityPool': {
-      'identityPoolName': '*',
-      'authenticatedRole': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'unauthenticatedRole': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'allowUnauthenticatedIdentities': 'boolean',
-      'roleMappings': {
-        'providerUrl': '*',
-        'mappingKey': '*',
-        'useToken': 'boolean',
-        'resolveAmbiguousRoles': 'boolean',
-        'rules': {
-          'claim': '*',
-          'mappedRole': {
-            'roleArn': '*',
-            'roleName': '*',
-            'assumeRoleAction': '*',
-            'policyFragment': '*',
-            'principalAccount': '*',
-            'grantPrincipal': {
-              'assumeRoleAction': '*',
-              'principalAccount': '*'
-            },
-            'stack': '*',
-            'env': {
-              'account': '*',
-              'region': '*'
-            },
-            'node': '*'
-          },
-          'claimValue': '*',
-          'matchType': 'RoleMappingMatchType'
-        }
-      },
-      'allowClassicFlow': 'boolean',
-      'authenticationProviders': {
-        'facebook': {
-          'appId': '*'
-        },
-        'google': {
-          'clientId': '*'
-        },
-        'amazon': {
-          'appId': '*'
-        },
-        'apple': {
-          'servicesId': '*'
-        },
-        'twitter': {
-          'consumerKey': '*',
-          'consumerSecret': '*'
-        },
-        'userPools': '*',
-        'openIdConnectProviders': {
-          'openIdConnectProviderArn': '*',
-          'openIdConnectProviderIssuer': '*',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        },
-        'samlProviders': {
-          'samlProviderArn': '*'
-        },
-        'customProvider': '*'
-      },
-      'addUserPoolAuthentication': [
-        '*'
-      ]
-    },
-    'IdentityPoolRoleAttachment': {
-      'identityPool': {
-        'identityPoolId': '*',
-        'identityPoolArn': '*',
-        'identityPoolName': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'authenticatedRole': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'unauthenticatedRole': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'roleMappings': {
-        'providerUrl': '*',
-        'mappingKey': '*',
-        'useToken': 'boolean',
-        'resolveAmbiguousRoles': 'boolean',
-        'rules': {
-          'claim': '*',
-          'mappedRole': {
-            'roleArn': '*',
-            'roleName': '*',
-            'assumeRoleAction': '*',
-            'policyFragment': '*',
-            'principalAccount': '*',
-            'grantPrincipal': {
-              'assumeRoleAction': '*',
-              'principalAccount': '*'
-            },
-            'stack': '*',
-            'env': {
-              'account': '*',
-              'region': '*'
-            },
-            'node': '*'
-          },
-          'claimValue': '*',
-          'matchType': 'RoleMappingMatchType'
-        }
-      }
-    }
-  },
   '@aws-cdk.aws-ec2-alpha': {
     'IpamPool': {
       'ipamScopeId': '*',
@@ -2229,31 +2049,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'uniqueId': '*',
         'connections': '*'
       }
-    }
-  },
-  '@aws-cdk.aws-kinesisfirehose-alpha': {
-    'DeliveryStream': {
-      'destination': '*',
-      'deliveryStreamName': '*',
-      'source': '*',
-      'role': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'encryption': '*'
     }
   },
   '@aws-cdk.aws-lambda-go-alpha': {
@@ -4160,50 +3955,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ]
     }
   },
-  '@aws-cdk.aws-scheduler-alpha': {
-    'Group': {},
-    'ScheduleGroup': {},
-    'Schedule': {
-      'schedule': '*',
-      'target': '*',
-      'scheduleName': '*',
-      'description': '*',
-      'group': {
-        'groupName': '*',
-        'groupArn': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'scheduleGroup': {
-        'scheduleGroupName': '*',
-        'scheduleGroupArn': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'enabled': 'boolean',
-      'key': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'timeWindow': '*',
-      'start': '*',
-      'end': '*'
-    }
-  },
   '@aws-cdk.aws-servicecatalogappregistry-alpha': {
     'Application': {
       'applicationName': '*',
@@ -4858,7 +4609,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           },
           'capacityType': 'CapacityType',
           'maxUnavailable': '*',
-          'maxUnavailablePercentage': '*'
+          'maxUnavailablePercentage': '*',
+          'enableNodeAutoRepair': 'boolean'
         }
       ],
       'addFargateProfile': [
@@ -5378,7 +5130,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'capacityType': 'CapacityType',
       'maxUnavailable': '*',
-      'maxUnavailablePercentage': '*'
+      'maxUnavailablePercentage': '*',
+      'enableNodeAutoRepair': 'boolean'
     },
     'OpenIdConnectProvider': {
       'url': '*'
@@ -11790,6 +11543,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       },
       'executionMode': 'ExecutionMode',
+      'usePipelineRoleForActions': 'boolean',
       'addStage': [
         {
           'placement': {
@@ -13103,6 +12857,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'timeToLiveAttribute': '*',
       'stream': 'StreamViewType',
       'removalPolicy': 'RemovalPolicy',
+      'replicaRemovalPolicy': 'RemovalPolicy',
       'replicationRegions': '*',
       'replicationTimeout': '*',
       'waitForReplicationToFinish': 'boolean',
@@ -13754,6 +13509,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'node': '*'
         }
       },
+      'placementGroup': {
+        'placementGroupName': '*',
+        'partitions': '*',
+        'spreadLevel': 'PlacementGroupSpreadLevel',
+        'strategy': 'PlacementGroupStrategy',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
       'addSecurityGroup': [
         {
           'securityGroupId': '*',
@@ -13971,7 +13738,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'contributorInsights': 'boolean',
       'whitelistedPrincipals': '*',
       'allowedPrincipals': '*',
-      'supportedIpAddressTypes': 'IpAddressType'
+      'supportedIpAddressTypes': 'IpAddressType',
+      'allowedRegions': '*'
     },
     'GatewayVpcEndpoint': {
       'vpc': {
@@ -15695,7 +15463,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           },
           'capacityType': 'CapacityType',
           'maxUnavailable': '*',
-          'maxUnavailablePercentage': '*'
+          'maxUnavailablePercentage': '*',
+          'enableNodeAutoRepair': 'boolean'
         }
       ],
       'addFargateProfile': [
@@ -16243,7 +16012,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'capacityType': 'CapacityType',
       'maxUnavailable': '*',
-      'maxUnavailablePercentage': '*'
+      'maxUnavailablePercentage': '*',
+      'enableNodeAutoRepair': 'boolean'
     },
     'OpenIdConnectProvider': {
       'url': '*'
@@ -19932,7 +19702,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'databaseInsightsMode': 'DatabaseInsightsMode',
       'autoMinorVersionUpgrade': 'boolean',
       'clusterScalabilityType': 'ClusterScalabilityType',
-      'clusterScailabilityType': 'ClusterScailabilityType'
+      'clusterScailabilityType': 'ClusterScailabilityType',
+      'engineLifecycleSupport': 'EngineLifecycleSupport'
     },
     'DatabaseClusterFromSnapshot': {
       'snapshotIdentifier': '*',
@@ -20264,7 +20035,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'databaseInsightsMode': 'DatabaseInsightsMode',
       'autoMinorVersionUpgrade': 'boolean',
       'clusterScalabilityType': 'ClusterScalabilityType',
-      'clusterScailabilityType': 'ClusterScailabilityType'
+      'clusterScailabilityType': 'ClusterScailabilityType',
+      'engineLifecycleSupport': 'EngineLifecycleSupport'
     },
     'DatabaseSecret': {
       'username': '*',
@@ -25397,14 +25169,19 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'httpApi': {
         'defaultAuthorizer': '*',
         'defaultAuthorizationScopes': '*',
-        'apiId': '*',
-        'apiEndpoint': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'defaultStage': {
+          'domainUrl': '*',
+          'stageName': '*',
+          'url': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'apiId': '*',
+        'apiEndpoint': '*'
       },
       'type': 'HttpAuthorizerType',
       'identitySource': '*',
@@ -25419,14 +25196,19 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'httpApi': {
         'defaultAuthorizer': '*',
         'defaultAuthorizationScopes': '*',
-        'apiId': '*',
-        'apiEndpoint': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'defaultStage': {
+          'domainUrl': '*',
+          'stageName': '*',
+          'url': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'apiId': '*',
+        'apiEndpoint': '*'
       },
       'integrationType': 'HttpIntegrationType',
       'integrationSubtype': 'HttpIntegrationSubtype',
@@ -25444,14 +25226,19 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'httpApi': {
         'defaultAuthorizer': '*',
         'defaultAuthorizationScopes': '*',
-        'apiId': '*',
-        'apiEndpoint': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'defaultStage': {
+          'domainUrl': '*',
+          'stageName': '*',
+          'url': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'apiId': '*',
+        'apiEndpoint': '*'
       },
       'routeKey': '*',
       'authorizer': '*',
@@ -25474,14 +25261,19 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'httpApi': {
         'defaultAuthorizer': '*',
         'defaultAuthorizationScopes': '*',
-        'apiId': '*',
-        'apiEndpoint': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'defaultStage': {
+          'domainUrl': '*',
+          'stageName': '*',
+          'url': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'apiId': '*',
+        'apiEndpoint': '*'
       },
       'stageName': '*',
       'autoDeploy': 'boolean',
