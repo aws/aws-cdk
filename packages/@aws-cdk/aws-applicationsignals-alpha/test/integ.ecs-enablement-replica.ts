@@ -58,7 +58,7 @@ class CloudWatchAgentStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: ApplicationSignalsStackProps) {
     super(scope, id, props);
 
-    // Define Task Definition for CloudWatch agent (Daemon)
+    // Define Task Definition for CloudWatch agent (Replica)
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'CloudWatchAgentTaskDefinition', {
       taskRole: props.taskRole,
       executionRole: props.taskExecutionRole,
