@@ -43,33 +43,44 @@ ECS, with plans to potentially extend support to other platforms in the future.
 import { Construct } from 'constructs';
 import * as appsignals from '@aws-cdk/aws-applicationsignals-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 
 class MyStack extends cdk.Stack {
-    public constructor(scope?: Construct, id?: string, props: cdk.StackProps = {}) {
-        super();
-        const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'FargateTaskDefinition', {
-            cpu: 2048,
-            memoryLimitMiB: 4096
-        });
+  public constructor(scope?: Construct, id?: string, props: cdk.StackProps = {}) {
+    super();
+    const vpc = new ec2.Vpc(this, 'TestVpc', {});
+    const cluster = new ecs.Cluster(this, 'TestCluster', { vpc });
 
-        fargateTaskDefinition.addContainer('app', {
-            image: ecs.ContainerImage.fromRegistry('test/sample-app'),
-        });
+    const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'SampleAppTaskDefinition', {
+      cpu: 2048,
+      memoryLimitMiB: 4096,
+    });
 
-        new appsignals.ApplicationSignalsIntegration(this, 'ApplicationSignalsIntegration', {
-            taskDefinition: fargateTaskDefinition,
-            instrumentation: {
-                sdkVersion: appsignals.JavaInstrumentationVersion.V1_32_6
-            },
-            serviceName: 'sample-app',
-            cloudWatchAgentSidecar: {
-              containerName: 'cloudwatch-agent',
-              cpu: 256,
-              memoryLimitMiB: 512
-          }
-        });
-    }
+    fargateTaskDefinition.addContainer('app', {
+      image: ecs.ContainerImage.fromRegistry('test/sample-app'),
+    });
+
+    new appsignals.ApplicationSignalsIntegration(this, 'ApplicationSignalsIntegration', {
+      taskDefinition: fargateTaskDefinition,
+      instrumentation: {
+        sdkVersion: appsignals.JavaInstrumentationVersion.V2_10_0,
+      },
+      serviceName: 'sample-app',
+      cloudWatchAgentSidecar: {
+        containerName: 'cloudwatch-agent',
+        enableLogging: true,
+        cpu: 256,
+        memoryLimitMiB: 512,
+      }
+    });
+
+    new ecs.FargateService(this, 'MySampleApp', {
+      cluster: cluster,
+      taskDefinition: fargateTaskDefinition,
+      desiredCount: 1,
+    });
+  }
 }
 ```
 
@@ -77,7 +88,7 @@ class MyStack extends cdk.Stack {
 
 Note: Since the daemon deployment strategy is not supported on ECS Fargate, this mode is only supported on ECS on EC2.
 
-1. Run CloudWatch Agent as a daemon service with service connect.
+1. Run CloudWatch Agent as a daemon service with HOST network mode.
 1. Configure `instrumentation` to instrument the application with the ADOT Python Agent.
 1. Override environment variables by configuring `overrideEnvironments` to use service connect endpoints to communicate to the CloudWatch agent server
 
@@ -87,7 +98,6 @@ import * as appsignals from '@aws-cdk/aws-applicationsignals-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-import * as logs from 'aws-cdk-lib/aws-logs';
 
 class MyStack extends cdk.Stack {
   public constructor(scope?: Construct, id?: string, props: cdk.StackProps = {}) {
@@ -95,82 +105,178 @@ class MyStack extends cdk.Stack {
 
     const vpc = new ec2.Vpc(this, 'TestVpc', {});
     const cluster = new ecs.Cluster(this, 'TestCluster', { vpc });
-    // Create a task definition for CloudWatch agent
-    const cwAgentTaskDefinition = new ecs.Ec2TaskDefinition(this, 'CloudWatchAgentTaskDefinition');
 
-    new appsignals.CloudWatchAgentIntegration(this, 'CloudWatchAgent',
-      {
-        taskDefinition: cwAgentTaskDefinition,
-        containerName: 'ecs-cwagent',
-        enableLogging: true,
-        cpu: 128,
-        memoryLimitMiB: 64,
-        portMappings: [
-          {
-            name: 'cwagent-4316',
-            containerPort: 4316,
-            hostPort: 4316,
-          },
-          {
-            name: 'cwagent-2000',
-            containerPort: 2000,
-            hostPort: 2000,
-          },  
-        ],
-      }
-    )
+    // Define Task Definition for CloudWatch agent (Daemon)
+    const cwAgentTaskDefinition = new ecs.Ec2TaskDefinition(this, 'CloudWatchAgentTaskDefinition', {
+      networkMode: ecs.NetworkMode.HOST,
+    });
 
-    // Create the CloudWatch agent daemon service
+    new appsignals.CloudWatchAgentIntegration(this, 'CloudWatchAgentIntegration', {
+      taskDefinition: cwAgentTaskDefinition,
+      containerName: 'ecs-cwagent',
+      enableLogging: false,
+      cpu: 128,
+      memoryLimitMiB: 64,
+      portMappings: [
+        {
+          containerPort: 4316,
+          hostPort: 4316,
+        },
+        {
+          containerPort: 2000,
+          hostPort: 2000,
+        },
+      ],
+    });
+
+    // Create the CloudWatch Agent daemon service
     new ecs.Ec2Service(this, 'CloudWatchAgentDaemon', {
       cluster,
       taskDefinition: cwAgentTaskDefinition,
       daemon: true,  // Runs one container per EC2 instance
-      serviceConnectConfiguration: {
-        namespace: 'namespace-arn',
-        services: [
-          {
-              portMappingName: 'cwagent-4316',
-              dnsName: 'cwagent-4316-http',
-              port: 4316
-          },
-          {
-              portMappingName: 'cwagent-2000',
-              dnsName: 'cwagent-2000-http',
-              port: 2000
-          }
-        ]
-      }
     });
 
-    const ec2TaskDefinition = new ecs.Ec2TaskDefinition(this, 'Ec2TaskDefinition', {
+    // Define Task Definition for user application
+    const sampleAppTaskDefinition = new ecs.Ec2TaskDefinition(this, 'SampleAppTaskDefinition', {
       networkMode: ecs.NetworkMode.HOST,
     });
 
-    ec2TaskDefinition.addContainer('app', {
+    sampleAppTaskDefinition.addContainer('app', {
       image: ecs.ContainerImage.fromRegistry('test/sample-app'),
       cpu: 0,
       memoryLimitMiB: 512,
     });
 
+    // No CloudWatch Agent side car is needed as application container communicates to CloudWatch Agent daemon through host network
     new appsignals.ApplicationSignalsIntegration(this, 'ApplicationSignalsIntegration', {
-      taskDefinition: ec2TaskDefinition,
+      taskDefinition: sampleAppTaskDefinition,
       instrumentation: {
         sdkVersion: appsignals.PythonInstrumentationVersion.V0_8_0
       },
-      overrideEnvironments: [{
-        name: appsignals.CommonExporting.OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT,
-        // overwrite the endpoint to point to the created Service Connect
-        value: "http://cwagent-4316-http:4316/v1/metrics"
-      }, {
-        name: appsignals.TraceExporting.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT,
-        // overwrite the endpoint to point to the created Service Connect
-        value: "http://cwagent-4316-http:4316/v1/traces"
-      }, {
-        name: appsignals.TraceExporting.OTEL_TRACES_SAMPLER_ARG,
-        // overwrite the endpoint to point to the created Service Connect
-        value: "endpoint=http://cwagent-2000-http:2000"
-      }],
       serviceName: 'sample-app'
+    });
+
+    new ecs.Ec2Service(this, 'MySampleApp', {
+      cluster,
+      taskDefinition: sampleAppTaskDefinition,
+      desiredCount: 1,
+    });
+  }
+}
+```
+
+#### Enable Application Signals on ECS with replica mode
+
+Note: Since the daemon deployment strategy is not supported on ECS Fargate, this mode is only supported on ECS on EC2.
+
+1. Run CloudWatch Agent as a replica service with service connect.
+1. Configure `instrumentation` to instrument the application with the ADOT Python Agent.
+1. Override environment variables by configuring `overrideEnvironments` to use service connect endpoints to communicate to the CloudWatch agent server
+
+```ts
+import { Construct } from 'constructs';
+import * as appsignals from '@aws-cdk/aws-applicationsignals-alpha';
+import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { PrivateDnsNamespace } from 'aws-cdk-lib/aws-servicediscovery';
+
+class MyStack extends cdk.Stack {
+  public constructor(scope?: Construct, id?: string, props: cdk.StackProps = {}) {
+    super(scope, id, props);
+
+    const vpc = new ec2.Vpc(this, 'TestVpc', {});
+    const cluster = new ecs.Cluster(this, 'TestCluster', { vpc });
+    const dnsNamespace = new PrivateDnsNamespace(this, 'Namespace', {
+      vpc,
+      name: 'local',
+    });
+
+    // Define Task Definition for CloudWatch agent (Replica)
+    const cwAgentTaskDefinition = new ecs.FargateTaskDefinition(this, 'CloudWatchAgentTaskDefinition', {});
+
+    new appsignals.CloudWatchAgentIntegration(this, 'CloudWatchAgentIntegration', {
+      taskDefinition: cwAgentTaskDefinition,
+      containerName: 'ecs-cwagent',
+      enableLogging: false,
+      cpu: 128,
+      memoryLimitMiB: 64,
+      portMappings: [
+        {
+          name: 'cwagent-4316',
+          containerPort: 4316,
+          hostPort: 4316,
+        },
+        {
+          name: 'cwagent-2000',
+          containerPort: 2000,
+          hostPort: 2000,
+        },
+      ],
+    });
+
+    // Create the CloudWatch Agent replica service with service connect
+    new ecs.FargateService(this, 'CloudWatchAgentService', {
+      cluster: cluster,
+      taskDefinition: cwAgentTaskDefinition,
+      serviceConnectConfiguration: {
+        namespace: dnsNamespace.namespaceArn,
+        services: [
+          {
+            portMappingName: 'cwagent-4316',
+            dnsName: 'cwagent-4316-http',
+            port: 4316,
+          },
+          {
+            portMappingName: 'cwagent-2000',
+            dnsName: 'cwagent-2000-http',
+            port: 2000,
+          },
+        ],
+      },
+      desiredCount: 1,
+    });
+
+    // Define Task Definition for user application
+    const sampleAppTaskDefinition = new ecs.FargateTaskDefinition(this, 'SampleAppTaskDefinition', {});
+
+    sampleAppTaskDefinition.addContainer('app', {
+      image: ecs.ContainerImage.fromRegistry('test/sample-app'),
+      cpu: 0,
+      memoryLimitMiB: 512,
+    });
+
+    // Overwrite environment variables to connect to the CloudWatch Agent service just created
+    new appsignals.ApplicationSignalsIntegration(this, 'ApplicationSignalsIntegration', {
+      taskDefinition: sampleAppTaskDefinition,
+      instrumentation: {
+        sdkVersion: appsignals.PythonInstrumentationVersion.V0_8_0,
+      },
+      serviceName: 'sample-app',
+      overrideEnvironments: [
+        {
+          name: appsignals.CommonExporting.OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT,
+          value: 'http://cwagent-4316-http:4316/v1/metrics',
+        },
+        {
+          name: appsignals.TraceExporting.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT,
+          value: 'http://cwagent-4316-http:4316/v1/traces',
+        },
+        {
+          name: appsignals.TraceExporting.OTEL_TRACES_SAMPLER_ARG,
+          value: 'endpoint=http://cwagent-2000-http:2000',
+        },
+      ],
+    });
+
+    // Create ECS Service with service connect configuration
+    new ecs.FargateService(this, 'MySampleApp', {
+      cluster: cluster,
+      taskDefinition: sampleAppTaskDefinition,
+      serviceConnectConfiguration: {
+        namespace: dnsNamespace.namespaceArn,
+      },
+      desiredCount: 1,
     });
   }
 }
