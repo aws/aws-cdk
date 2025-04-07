@@ -1,7 +1,9 @@
 import contextlib
 import json
 import logging
+import mmap
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -65,6 +67,7 @@ def handler(event, context):
             include             = props.get('Include', [])
             sign_content        = props.get('SignContent', 'false').lower() == 'true'
             output_object_keys  = props.get('OutputObjectKeys', 'true') == 'true'
+            json_aware_source_processing  = props.get('JsonAwareSourceProcessing', 'false').lower() == 'true'
 
             # backwards compatibility - if "SourceMarkers" is not specified,
             # assume all sources have an empty market map
@@ -128,7 +131,7 @@ def handler(event, context):
             aws_command("s3", "rm", old_s3_dest, "--recursive")
 
         if request_type == "Update" or request_type == "Create":
-            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract)
+            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract, json_aware_source_processing)
 
         if distribution_id:
             cloudfront_invalidate(distribution_id, distribution_paths)
@@ -160,7 +163,7 @@ def sanitize_message(message):
 
 #---------------------------------------------------------------------------------------------------
 # populate all files from s3_source_zips to a destination bucket
-def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract):
+def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract, json_aware_source_processing):
     # list lengths are equal
     if len(s3_source_zips) != len(source_markers):
         raise Exception("'source_markers' and 's3_source_zips' must be the same length")
@@ -190,7 +193,7 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
                 aws_command("s3", "cp", s3_source_zip, archive)
                 logger.info("| extracting archive to: %s\n" % contents_dir)
                 logger.info("| markers: %s" % markers)
-                extract_and_replace_markers(archive, contents_dir, markers)
+                extract_and_replace_markers(archive, contents_dir, markers, json_aware_source_processing)
             else:
                 logger.info("| copying archive to: %s\n" % contents_dir)
                 aws_command("s3", "cp", s3_source_zip, contents_dir)
@@ -310,7 +313,7 @@ def bucket_owned(bucketName, keyPrefix):
         return False
 
 # extract archive and replace markers in output files
-def extract_and_replace_markers(archive, contents_dir, markers):
+def extract_and_replace_markers(archive, contents_dir, markers, json_aware_source_processing):
     with ZipFile(archive, "r") as zip:
         zip.extractall(contents_dir)
 
@@ -318,45 +321,95 @@ def extract_and_replace_markers(archive, contents_dir, markers):
         for file in zip.namelist():
             file_path = os.path.join(contents_dir, file)
             if os.path.isdir(file_path): continue
-            replace_markers(file_path, markers)
+            replace_markers(file_path, markers, json_aware_source_processing)
 
 def is_json_content(content):
     try:
-        json.loads(content)
-        return True
+        result = json.loads(content)
+        return True, result
     except json.JSONDecodeError:
+        return False, None
+
+def check_for_markers_in_file(filename, markers):
+    """
+    Check if the file contains any markers using both pattern matching and direct key search.
+    Returns True if any marker is found, False otherwise.
+    
+    Args:
+        filename: Path to the file to search
+        markers: Dictionary of markers to search for
+    """
+    if not markers:
+        return False
+    
+    # Check if file is empty
+    if os.path.getsize(filename) == 0:
         return False
 
-def replace_markers(filename, markers):
+    # Standard CDK marker pattern
+    standard_pattern = r'<<marker:0xbaba:\d+>>'
+    standard_pattern_str = re.compile(standard_pattern)  # For string matching
+    standard_pattern_bin = re.compile(standard_pattern.encode('utf-8'))  # For binary file searching
+    
+    # Build a list of marker keys that don't match the standard pattern
+    custom_marker_keys = []
+    for marker_key in markers.keys():
+        # Check if this marker key doesn't match our standard pattern
+        if not standard_pattern_str.match(marker_key):
+            custom_marker_keys.append(marker_key.encode('utf-8'))
+
+    try:
+        # Read the entire file content
+        with open(filename, 'rb') as file:
+            for line in file:
+                # Check for standard markers in each line
+                if standard_pattern_bin.search(line):
+                    return True
+                
+                # Check for custom markers in each line
+                for marker in custom_marker_keys:
+                    if marker in line:
+                        return True
+
+            return False
+    except (IOError, ValueError) as e:
+        logger.error(f"Error checking for markers in file {filename}: {e}")
+        return False
+
+
+def replace_markers(filename, markers, json_aware_source_processing):
     """Replace markers in a file, with special handling for JSON files."""
     # if there are no markers, skip
     if not markers:
         return
     
     outfile = filename + '.new'
-    # We need to handle a special replacement in the case where the file content is JSON and
-    # if one of the marker's value contain a double quote
-    marker_contains_double_quote = any('"' in v for v in markers.values())
     replace_tokens = dict([(k.encode('utf-8'), v.encode('utf-8')) for k, v in markers.items()])
+    processed = False
+    if json_aware_source_processing:
+        has_marker_in_content = check_for_markers_in_file(filename, markers)        
+        # If no marker then we can return early
+        if not has_marker_in_content:
+            return
+        else:
+            # First try to read as text to check if it's JSON
+            try:
+                with open(filename, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    is_json, json_object = is_json_content(content)
+            except UnicodeDecodeError:
+                # If we can't read as text, it's definitely not JSON
+                is_json = False
 
-    # If no marker values contain a double quote, there is no need to check if the content format is JSON
-    if marker_contains_double_quote:
-        # First try to read as text to check if it's JSON
-        try:
-            with open(filename, 'r', encoding='utf-8') as f:
-                content = f.read()
-                is_json = is_json_content(content)
-        except UnicodeDecodeError:
-            # If we can't read as text, it's definitely not JSON
-            is_json = False
+        if has_marker_in_content and is_json:
+            # Handle JSON content with proper structure parsing
+            new_content = replace_markers_in_json(json_object, replace_tokens)
+            # Write JSON in text mode
+            with open(outfile, 'w', encoding='utf-8') as fo:
+                fo.write(new_content)
+            processed = True
 
-    if marker_contains_double_quote and is_json:
-        # Handle JSON content with proper structure parsing
-        new_content = replace_markers_in_json(content, replace_tokens)
-        # Write JSON in text mode
-        with open(outfile, 'w', encoding='utf-8') as fo:
-            fo.write(new_content)
-    else:
+    if not processed:
         # Handle non-JSON content with line-by-line binary replacement
         with open(filename, 'rb') as fi, open(outfile, 'wb') as fo:
             # Process line by line to handle large files
@@ -369,12 +422,9 @@ def replace_markers(filename, markers):
     os.remove(filename)
     os.rename(outfile, filename)
 
-def replace_markers_in_json(content, replace_tokens):
+def replace_markers_in_json(json_object, replace_tokens):
     """Replace markers in JSON content with proper escaping."""
     try:
-        # Parse the JSON structure
-        data = json.loads(content)
-
         def replace_in_structure(obj):
             if isinstance(obj, str):
                 # Convert string to bytes for consistent replacement
@@ -390,9 +440,9 @@ def replace_markers_in_json(content, replace_tokens):
             return obj
 
         # Process the whole structure
-        processed = replace_in_structure(data)
+        processed = replace_in_structure(json_object)
         return json.dumps(processed)
     except Exception as e:
         logger.error(f'Error processing JSON: {e}')
         logger.exception(e)
-        return content
+        return json_object

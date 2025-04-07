@@ -19,6 +19,7 @@ TEST_DIR = None
 SMALL_JSON_FILE = None
 LARGE_JSON_FILE = None
 COMPLEX_JSON_FILE = None
+COMPLEX_JSON_FILE_WITH_MARKER = None
 SMALL_TEXT_FILE = None
 LARGE_TEXT_FILE = None
 
@@ -47,7 +48,7 @@ def create_json_file(filename, size_kb):
         f.write("  ]\n}")
 
 
-def create_complex_json_file(filename, target_size_kb):
+def create_complex_json_file(filename, target_size_kb, include_marker=None):
     """Create a complex JSON file with nested structure of specified size in KB"""
 
     # Generate random string of specified length
@@ -76,8 +77,12 @@ def create_complex_json_file(filename, target_size_kb):
             root_object[root_key][sub_key] = []
 
             for k in range(initial_array_size):
+                value = ""
+                if include_marker:
+                    value = random.choice(include_marker)
+                value = random_string(20 - len(value)) + value
                 root_object[root_key][sub_key].append(
-                    {"id": f"item_{k}", "value": random_string(20), "description": random_string(50)}
+                    {"id": f"item_{k}", "value": value, "description": random_string(50)}
                 )
 
     # Convert to JSON to check size
@@ -109,6 +114,9 @@ def create_complex_json_file(filename, target_size_kb):
                             },
                         }
                     )
+            current_size = len(json.dumps(root_object)) / 1024
+            if current_size >= target_size_kb:
+                break
 
     # Write the final JSON to file
     with open(filename, "w") as f:
@@ -135,6 +143,7 @@ def initialize_test_files():
     SMALL_JSON_FILE = os.path.join(TEST_DIR, "small.json")
     LARGE_JSON_FILE = os.path.join(TEST_DIR, "large.json")
     COMPLEX_JSON_FILE = os.path.join(TEST_DIR, "complex.json")
+    COMPLEX_JSON_FILE_WITH_MARKER = os.path.join(TEST_DIR, "complex_marker.json")
     SMALL_TEXT_FILE = os.path.join(TEST_DIR, "small.txt")
     LARGE_TEXT_FILE = os.path.join(TEST_DIR, "large.txt")
 
@@ -152,6 +161,11 @@ def initialize_test_files():
     create_complex_json_file(COMPLEX_JSON_FILE, 10 * 1024)
     complex_size = os.path.getsize(COMPLEX_JSON_FILE) / 1024
     print(f"Complex JSON file created: {complex_size:.2f} KB")
+
+    # Create a complex JSON file with marker (10MB)
+    create_complex_json_file(COMPLEX_JSON_FILE_WITH_MARKER, 10 * 1024, ["_marker1_", "<<marker:0xbaba:42>>", "_TOKEN_"])
+    complex_size = os.path.getsize(COMPLEX_JSON_FILE_WITH_MARKER) / 1024
+    print(f"Complex JSON file with marker created: {complex_size:.2f} KB")
 
     # Create a small text file (1KB)
     create_text_file(SMALL_TEXT_FILE, 1)
@@ -202,7 +216,7 @@ class TestLargeFiles(unittest.TestCase):
         """Test performance with a small JSON file"""
         file_size = os.path.getsize(SMALL_JSON_FILE) / 1024
         markers = {"_TOKEN_": "replacement"}
-        _, execution_time, memory_used = measure_performance(index.replace_markers, SMALL_JSON_FILE, markers)
+        _, execution_time, memory_used = measure_performance(index.replace_markers, SMALL_JSON_FILE, markers, True)
 
         print(f"Small JSON file ({file_size:.2f} KB):")
         print(f"  Execution time: {execution_time:.4f} seconds")
@@ -222,7 +236,7 @@ class TestLargeFiles(unittest.TestCase):
         """Test performance with a large JSON file"""
         file_size = os.path.getsize(LARGE_JSON_FILE) / 1024
         markers = {"_TOKEN_": "replacement"}
-        _, execution_time, memory_used = measure_performance(index.replace_markers, LARGE_JSON_FILE, markers)
+        _, execution_time, memory_used = measure_performance(index.replace_markers, LARGE_JSON_FILE, markers, True)
 
         print(f"Large JSON file ({file_size:.2f} KB):")
         print(f"  Execution time: {execution_time:.4f} seconds")
@@ -242,7 +256,7 @@ class TestLargeFiles(unittest.TestCase):
         """Test performance with a complex JSON file"""
         file_size = os.path.getsize(COMPLEX_JSON_FILE) / 1024
         markers = {"_TOKEN_": "replacement"}
-        _, execution_time, memory_used = measure_performance(index.replace_markers, COMPLEX_JSON_FILE, markers)
+        _, execution_time, memory_used = measure_performance(index.replace_markers, COMPLEX_JSON_FILE, markers, True)
 
         print(f"Complex JSON file ({file_size:.2f} KB):")
         print(f"  Execution time: {execution_time:.4f} seconds")
@@ -262,7 +276,7 @@ class TestLargeFiles(unittest.TestCase):
         """Test performance with a complex JSON file"""
         file_size = os.path.getsize(COMPLEX_JSON_FILE) / 1024
         markers = {}
-        _, execution_time, memory_used = measure_performance(index.replace_markers, COMPLEX_JSON_FILE, markers)
+        _, execution_time, memory_used = measure_performance(index.replace_markers, COMPLEX_JSON_FILE, markers, True)
 
         print(f"Complex JSON file ({file_size:.2f} KB):")
         print(f"  Execution time: {execution_time:.4f} seconds")
@@ -282,7 +296,7 @@ class TestLargeFiles(unittest.TestCase):
         """Test performance with a complex JSON file with double quotes in markers"""
         file_size = os.path.getsize(COMPLEX_JSON_FILE) / 1024
         markers = {"_TOKEN_": 'rep"lacem"ent'}
-        _, execution_time, memory_used = measure_performance(index.replace_markers, COMPLEX_JSON_FILE, markers)
+        _, execution_time, memory_used = measure_performance(index.replace_markers, COMPLEX_JSON_FILE, markers, True)
 
         print(f"Complex JSON file ({file_size:.2f} KB):")
         print(f"  Execution time: {execution_time:.4f} seconds")
@@ -298,11 +312,33 @@ class TestLargeFiles(unittest.TestCase):
             f"Memory usage ({memory_used} KB) exceeds limit ({MEMORY_LIMIT_COMPLEX} KB)",
         )
 
+    def test_complex_json_file_with_marker_double_quote_marker_performance(self):
+        """Test performance with a complex JSON file with double quotes in markers"""
+        file_size = os.path.getsize(COMPLEX_JSON_FILE_WITH_MARKER) / 1024
+        markers = {"_TOKEN_": 'rep"lacem"ent'}
+        _, execution_time, memory_used = measure_performance(
+            index.replace_markers, COMPLEX_JSON_FILE_WITH_MARKER, markers, True
+        )
+
+        print(f"Complex JSON file ({file_size:.2f} KB):")
+        print(f"  Execution time: {execution_time:.4f} seconds")
+        print(f"  Memory used: {memory_used} KB")
+
+        # Verify the file still exists and was processed
+        self.assertTrue(os.path.exists(COMPLEX_JSON_FILE_WITH_MARKER))
+
+        # Verify memory usage is within limits - this test has a higher limit due to JSON parsing
+        self.assertLessEqual(
+            memory_used,
+            MEMORY_LIMIT_COMPLEX,
+            f"Memory usage ({memory_used} KB) exceeds limit ({MEMORY_LIMIT_COMPLEX} KB)",
+        )
+
     def test_small_text_file_performance(self):
         """Test performance with a small text file"""
         file_size = os.path.getsize(SMALL_TEXT_FILE) / 1024
         markers = {"_TOKEN_": "replacement"}
-        _, execution_time, memory_used = measure_performance(index.replace_markers, SMALL_TEXT_FILE, markers)
+        _, execution_time, memory_used = measure_performance(index.replace_markers, SMALL_TEXT_FILE, markers, True)
 
         print(f"Small text file ({file_size:.2f} KB):")
         print(f"  Execution time: {execution_time:.4f} seconds")
@@ -322,7 +358,7 @@ class TestLargeFiles(unittest.TestCase):
         """Test performance with a large text file"""
         file_size = os.path.getsize(LARGE_TEXT_FILE) / 1024
         markers = {"_TOKEN_": "replacement"}
-        _, execution_time, memory_used = measure_performance(index.replace_markers, LARGE_TEXT_FILE, markers)
+        _, execution_time, memory_used = measure_performance(index.replace_markers, LARGE_TEXT_FILE, markers, True)
 
         print(f"Large text file ({file_size:.2f} KB):")
         print(f"  Execution time: {execution_time:.4f} seconds")
@@ -346,6 +382,7 @@ def run_init():
     print(f"SMALL_JSON_FILE={SMALL_JSON_FILE}")
     print(f"LARGE_JSON_FILE={LARGE_JSON_FILE}")
     print(f"COMPLEX_JSON_FILE={COMPLEX_JSON_FILE}")
+    print(f"COMPLEX_JSON_FILE_WITH_MARKER={COMPLEX_JSON_FILE_WITH_MARKER}")
     print(f"SMALL_TEXT_FILE={SMALL_TEXT_FILE}")
     print(f"LARGE_TEXT_FILE={LARGE_TEXT_FILE}")
 
@@ -376,6 +413,7 @@ if __name__ == "__main__":
             SMALL_JSON_FILE = os.path.join(TEST_DIR, "small.json")
             LARGE_JSON_FILE = os.path.join(TEST_DIR, "large.json")
             COMPLEX_JSON_FILE = os.path.join(TEST_DIR, "complex.json")
+            COMPLEX_JSON_FILE_WITH_MARKER = os.path.join(TEST_DIR, "complex_marker.json")
             SMALL_TEXT_FILE = os.path.join(TEST_DIR, "small.txt")
             LARGE_TEXT_FILE = os.path.join(TEST_DIR, "large.txt")
 

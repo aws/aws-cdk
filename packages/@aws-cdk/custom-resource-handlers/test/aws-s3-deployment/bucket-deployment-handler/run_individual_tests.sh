@@ -30,6 +30,9 @@ python3 -m test_large_files --test test_complex_json_file_no_marker_performance 
 echo -e "\n\n=== Complex JSON File with double quote markers Test ==="
 python3 -m test_large_files --test test_complex_json_file_double_quote_marker_performance --test-dir "$TEST_DIR"
 
+echo -e "\n\n=== Complex JSON File with markers with double quote markers Test ==="
+python3 -m test_large_files --test test_complex_json_file_with_marker_double_quote_marker_performance --test-dir "$TEST_DIR"
+
 echo -e "\n\nAll tests completed."
 
 # Clean up test files
