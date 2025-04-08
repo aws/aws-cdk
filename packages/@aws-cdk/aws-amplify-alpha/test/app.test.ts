@@ -480,7 +480,7 @@ test.each([amplify.CacheConfigType.AMPLIFY_MANAGED, amplify.CacheConfigType.AMPL
   });
 });
 
-test('create a SSR app with default compute role', () => {
+test('create a SSR app with auto-generate compute role', () => {
   // WHEN
   new amplify.App(stack, 'App', {
     platform: amplify.Platform.WEB_COMPUTE,
@@ -515,7 +515,7 @@ test('create a SSR app with compute role', () => {
   });
 });
 
-test('create a SSR app with compute role', () => {
+test('throws when compute role is set with a non SSR app', () => {
   // WHEN
   const computeRole = new iam.Role(stack, 'ComputeRole', {
     assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
