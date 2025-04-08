@@ -252,6 +252,8 @@ This integration, enables you to assign an IAM role to the Amplify SSR Compute s
 
 For example, you can allow your app's SSR compute functions to securely access other AWS services or resources, such as Amazon Bedrock or an Amazon S3 bucket, based on the permissions defined in the assigned IAM role.
 
+For more information, see [Adding an SSR Compute role to allow access to AWS resources](https://docs.aws.amazon.com/amplify/latest/userguide/amplify-SSR-compute-role.html).
+
 By default, a new role is created when `platform` is `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.
 If you want to assign an IAM role to the APP, set `compute` to the role:
 
