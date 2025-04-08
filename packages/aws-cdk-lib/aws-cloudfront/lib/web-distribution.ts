@@ -821,7 +821,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     [SSLMethod.VIP]: [SecurityPolicyProtocol.SSL_V3, SecurityPolicyProtocol.TLS_V1],
     [SSLMethod.STATIC_IP]: [
       SecurityPolicyProtocol.TLS_V1_2_2018, SecurityPolicyProtocol.TLS_V1_2_2019,
-      SecurityPolicyProtocol.TLS_V1_2_2021,
+      SecurityPolicyProtocol.TLS_V1_2_2021
     ]
   };
 
