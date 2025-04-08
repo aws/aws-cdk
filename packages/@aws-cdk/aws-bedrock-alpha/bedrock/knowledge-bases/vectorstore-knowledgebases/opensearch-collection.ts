@@ -317,7 +317,8 @@ export class VectorCollection extends VectorCollectionBase {
         });
 
         this.dataAccessPolicy = new oss.CfnAccessPolicy(this, 'ImportedDataAccessPolicy', {
-          name: this.generatePhysicalName() + '-DataAccessPolicy-agent',
+          name: (this.physicalName.length > 32 ?  this.physicalName.substring(0, 29) + 'dpa' : 
+                            this.physicalName + '-dpagent'),          
           type: 'data',
           policy: '[]',
         });
@@ -352,6 +353,7 @@ export class VectorCollection extends VectorCollectionBase {
 
     // Ensure collection name stays within 32 chars while maintaining uniqueness
     const physicalName = this.generatePhysicalName();
+
     this.collectionName = props?.collectionName ?? 
       (physicalName.length > 22 ? 
         physicalName.substring(0, 22) + '-vec' : // truncate long names
@@ -360,7 +362,10 @@ export class VectorCollection extends VectorCollectionBase {
     this.standbyReplicas = props?.standbyReplicas ?? VectorCollectionStandbyReplicas.ENABLED;
     this.collectionType = props?.collectionType ?? VectorCollectionType.VECTORSEARCH;
 
-    const encryptionPolicyName =  this.generatePhysicalName() + '-EncryptionPolicy';
+    const encryptionPolicyName =  (physicalName.length > 32 ? 
+      physicalName.substring(0, 30) + 'ep' : 
+      physicalName + '-encryptpolicy'); 
+
     const encryptionPolicy = new oss.CfnSecurityPolicy(this, 'EncryptionPolicy', {
       name: encryptionPolicyName,
       type: 'encryption',
@@ -375,7 +380,10 @@ export class VectorCollection extends VectorCollectionBase {
       }),
     });
 
-    const networkPolicyName = this.generatePhysicalName() + '-NetworkPolicy';
+    const networkPolicyName = (physicalName.length > 32 ? 
+      physicalName.substring(0, 30) + 'np' : 
+      physicalName + '-networkpolicy'); 
+    
 
     const networkPolicy = new oss.CfnSecurityPolicy(this, 'NetworkPolicy', {
       name: networkPolicyName,
@@ -421,6 +429,15 @@ export class VectorCollection extends VectorCollectionBase {
               effect: iam.Effect.ALLOW,
               actions: [
                 'aoss:APIAccessAll',
+                'aoss:CreateIndex',
+                'aoss:DeleteIndex',
+                'aoss:UpdateIndex',
+                'aoss:DescribeIndex',
+                'aoss:ReadDocument',
+                'aoss:WriteDocument',
+                'aoss:DescribeCollectionItems',
+                'aoss:CreateCollectionItems',
+                'aoss:UpdateCollectionItems'
               ],
               resources: [this._resource.attrArn],
             }),
@@ -432,23 +449,50 @@ export class VectorCollection extends VectorCollectionBase {
     this._resource.node.addDependency(encryptionPolicy);
     this._resource.node.addDependency(networkPolicy);
 
-    const isDataAccessPolicyNotEmpty = new cdk.CfnCondition(this, 'IsDataAccessPolicyNotEmpty', {
-      expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(0, cdk.Lazy.number({
-        produce: () => this.dataAccessPolicyDocument.length,
-      }))),
-    });
-
-    const dataAccessPolicyName = this.generatePhysicalName() + '-DataAccessPolicy';
-   
+    
+    const dataAccessPolicyName = (physicalName.length > 32 ? physicalName.substring(0, 30) + 'dp' : 
+                                  physicalName + 'dataaccesspolicy'); 
+       
     this.dataAccessPolicy = new oss.CfnAccessPolicy(this, 'DataAccessPolicy', {
       name: dataAccessPolicyName,
       type: 'data',
       policy: cdk.Lazy.string({
-        produce: () => JSON.stringify(this.dataAccessPolicyDocument),
+        produce: () => JSON.stringify(this.dataAccessPolicyDocument.length > 0 ? 
+          this.dataAccessPolicyDocument : 
+          [{
+            Rules: [
+              {
+                Resource: [`collection/${this.collectionName}`],
+                Permission: [
+                  'aoss:DescribeCollectionItems',
+                  'aoss:CreateCollectionItems',
+                  'aoss:UpdateCollectionItems',
+                ],
+                ResourceType: 'collection',
+              },
+              {
+                Resource: [
+                  `index/${this.collectionName}/*`,
+                  `index/${this.collectionName}/bedrock-knowledge-base-default-index`,
+                  `index/${this.collectionName}/${this.collectionName}-*`
+                ],
+                Permission: [
+                  'aoss:UpdateIndex',
+                  'aoss:DescribeIndex',
+                  'aoss:ReadDocument',
+                  'aoss:WriteDocument',
+                  'aoss:CreateIndex',
+                  'aoss:DeleteIndex',
+                ],
+                ResourceType: 'index',
+              }
+            ],
+            Principal: ['*'],
+            Description: 'Default policy',
+          }]
+        ),
       }),
     });
-
-    this.dataAccessPolicy.cfnOptions.condition = isDataAccessPolicyNotEmpty;
 
     this.node.addValidation({
       validate: () => {
@@ -475,6 +519,7 @@ export class VectorCollection extends VectorCollectionBase {
      * @param grantee The role to grant access to.
      */
   grantDataAccess(grantee: iam.IRole) {
+    // Update data access policy
     this.dataAccessPolicyDocument.push({
       Rules: [
         {
@@ -487,7 +532,10 @@ export class VectorCollection extends VectorCollectionBase {
           ResourceType: 'collection',
         },
         {
-          Resource: [`index/${this.collectionName}/*`],
+          Resource: [
+            `index/${this.collectionName}/*`,
+            `index/${this.collectionName}/bedrock-knowledge-base-default-index`
+          ],
           Permission: [
             'aoss:UpdateIndex',
             'aoss:DescribeIndex',
@@ -503,6 +551,8 @@ export class VectorCollection extends VectorCollectionBase {
       ],
       Description: '',
     });
+  
+    // Add IAM policy
     grantee.addManagedPolicy(this.aossPolicy);
   }
 }

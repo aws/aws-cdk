@@ -457,6 +457,26 @@ export class VectorKnowledgeBase extends VectorKnowledgeBaseBase {
         this.handleOpenSearchDefaultVectorCollection());
     }
 
+    // Grant necessary permissions for vector operations
+    this.role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: [
+          'aoss:CreateIndex',
+          'aoss:DeleteIndex',
+          'aoss:UpdateIndex',
+          'aoss:DescribeIndex',
+          'aoss:ReadDocument',
+          'aoss:WriteDocument',
+          'aoss:DescribeCollectionItems',
+        ],
+        resources: [
+          this.vectorStore.collectionArn,
+          `${this.vectorStore.collectionArn}/index/*`,
+          `${this.vectorStore.collectionArn}/index/${indexName}`
+        ],
+      })
+    );
+
     // perform this validation after the vector store is handled since if the user
     // doesn't provide one, the method above will create it
     validateVectorType(this.vectorStore, vectorType);
@@ -471,20 +491,23 @@ export class VectorKnowledgeBase extends VectorKnowledgeBaseBase {
         this.vectorIndex = new VectorIndex(this, 'KBIndex', {
           collection: this.vectorStore as VectorCollection,
           indexName,
+          role: this.role,
           settings: {
             knn: true,
           },
           mappings: {
             properties: {
-              vectorField: {
+              [vectorField]: {
                 type: OpensearchFieldType.KNN_VECTOR,
                 dimension: embeddingsModel.vectorDimensions!,
-                //data_type: props.vectorType === VectorType.BINARY ? 'Binary' : 'float', <- This is missing in L1 CfnIndex props
                 method: {
                   engine: EngineType.FAISS,
                   spaceType: props.vectorType === VectorType.BINARY ? SpaceType.HAMMING : SpaceType.L2,
                   name: AlgorithmNameType.HNSW,
-                  parameters: {},
+                  parameters: {
+                    efConstruction: 512,
+                    m: 16
+                  },
                 },
               },
               AMAZON_BEDROCK_TEXT_CHUNK: {

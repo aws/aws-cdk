@@ -15,6 +15,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as oss from 'aws-cdk-lib/aws-opensearchserverless';
 import { Construct } from 'constructs';
 import { VectorCollection } from './opensearch-collection';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 /**
  * The field data type. Must be a valid OpenSearch field type.
@@ -166,10 +167,15 @@ export interface VectorIndexProps {
    * The metadata management fields.
    */
   readonly mappings?: MappingsProperty;
-  /**
+  /*
    * The settings for the index.
    */
   readonly settings?: IndexSettings;
+
+  /*
+   * The role for the vector index.
+   */
+  readonly role: iam.IRole;
 }
 
 export interface VectorIndexAttributes {
@@ -195,6 +201,7 @@ export interface IVectorIndex extends cdk.IResource {
    * The name of the index
    */
   readonly indexName: string;
+
 }
 
 /**
@@ -203,6 +210,7 @@ export interface IVectorIndex extends cdk.IResource {
 abstract class VectorIndexBase extends cdk.Resource implements IVectorIndex {
   public abstract readonly collectionEndpoint: string;
   public abstract readonly indexName: string;
+  public principalArn: string | undefined
 
   public static fromVectorIndexAttributes(
     scope: Construct,
@@ -215,6 +223,7 @@ abstract class VectorIndexBase extends cdk.Resource implements IVectorIndex {
     }
     return new Import(scope, constructId);
   }
+
 }
 
 /**
@@ -235,6 +244,8 @@ export class VectorIndex extends VectorIndexBase {
    */
   private readonly _resource: oss.CfnIndex;
 
+  
+
 
   constructor(scope: Construct, id: string, props: VectorIndexProps) {
     super(scope, id);
@@ -243,8 +254,16 @@ export class VectorIndex extends VectorIndexBase {
     // Set attributes or defaults
     // ------------------------------------------------------
     this.indexName = props.indexName;
+    const physicalName = this.generatePhysicalName();
 
-    const manageIndexPolicyName = this.generatePhysicalName() + '-ManageIndexPolicy';
+    // Grant data access to the role first
+    props.collection.grantDataAccess(props.role);
+    
+    
+    const manageIndexPolicyName = physicalName.length > 29 ? 
+      physicalName.substring(0, 29) + 'vip' : // vector-index-policy shortened to vip
+      physicalName + '-vip';
+    
     const manageIndexPolicy = new oss.CfnAccessPolicy(
       this,
       'ManageIndexPolicy',
@@ -255,12 +274,17 @@ export class VectorIndex extends VectorIndexBase {
           {
             Rules: [
               {
-                Resource: [`index/${props.collection.collectionName}/*`],
+                Resource: [
+                  `index/${props.collection.collectionName}/*`,
+                  `index/${props.collection.collectionName}/${props.indexName}`
+                ],
                 Permission: [
                   'aoss:DescribeIndex',
                   'aoss:CreateIndex',
                   'aoss:DeleteIndex',
                   'aoss:UpdateIndex',
+                  'aoss:ReadDocument',
+                  'aoss:WriteDocument'
                 ],
                 ResourceType: 'index',
               },
@@ -270,27 +294,35 @@ export class VectorIndex extends VectorIndexBase {
                 ResourceType: 'collection',
               },
             ],
-            Principal: ['*'],
+            Principal: [props.role.roleArn],
             Description: '',
           },
         ]),
       },
     );
+    
 
     // ------------------------------------------------------
     // L1 Instantiation
     // ------------------------------------------------------
+    
+    // Add explicit dependency on collection's endpoint
+    const collectionEndpoint = cdk.Token.asString(props.collection.collectionEndpoint);
+    
     this._resource = new oss.CfnIndex(this, 'VectorIndex', {
       indexName: props.indexName,
-      collectionEndpoint: props.collection.collectionEndpoint,
+      collectionEndpoint: collectionEndpoint,
       mappings: this._renderMappings(props.mappings),
       settings: this._renderIndexSettings(props.settings),
     });
 
     this.collectionEndpoint = this._resource.collectionEndpoint;
 
-    this._resource.addDependency(manageIndexPolicy);
-    this._resource.addDependency(props.collection.dataAccessPolicy);
+    // Add explicit dependencies in correct order
+    this._resource.node.addDependency(manageIndexPolicy); 
+    this._resource.node.addDependency(props.collection);
+    this._resource.node.addDependency(props.collection.dataAccessPolicy);
+    
   }
 
   /**
