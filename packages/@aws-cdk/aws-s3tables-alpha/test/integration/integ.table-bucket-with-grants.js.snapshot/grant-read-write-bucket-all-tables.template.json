@@ -1,0 +1,116 @@
+{
+ "Resources": {
+  "grantreadwritebucketalltables77FAB610": {
+   "Type": "AWS::S3Tables::TableBucket",
+   "Properties": {
+    "TableBucketName": "grant-read-write-bucket-all-tables",
+    "UnreferencedFileRemoval": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "grantreadwritebucketalltablesDefaultPolicyA12127D7": {
+   "Type": "AWS::S3Tables::TableBucketPolicy",
+   "Properties": {
+    "ResourcePolicy": {
+     "Statement": [
+      {
+       "Action": [
+        "s3tables:CreateNamespace",
+        "s3tables:CreateTable",
+        "s3tables:DeleteNamespace",
+        "s3tables:Get*",
+        "s3tables:ListNamespace",
+        "s3tables:ListTables",
+        "s3tables:PutTableBucketMaintenanceConfiguration",
+        "s3tables:PutTableData",
+        "s3tables:RenameTable",
+        "s3tables:UpdateTableMetadataLocation"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "grantreadwritebucketalltables77FAB610",
+          "TableBucketARN"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "grantreadwritebucketalltables77FAB610",
+             "TableBucketARN"
+            ]
+           },
+           "/table/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "TableBucketARN": {
+     "Fn::GetAtt": [
+      "grantreadwritebucketalltables77FAB610",
+      "TableBucketARN"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttgrantreadwritebucketalltables77FAB610TableBucketARN2F7F937E": {
+   "Value": {
+    "Fn::GetAtt": [
+     "grantreadwritebucketalltables77FAB610",
+     "TableBucketARN"
+    ]
+   },
+   "Export": {
+    "Name": "grant-read-write-bucket-all-tables:ExportsOutputFnGetAttgrantreadwritebucketalltables77FAB610TableBucketARN2F7F937E"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

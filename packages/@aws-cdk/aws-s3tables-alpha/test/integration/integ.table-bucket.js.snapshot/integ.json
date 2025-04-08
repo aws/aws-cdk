@@ -1,0 +1,13 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "TableBucketIntegTest/DefaultTest": {
+      "stacks": [
+        "DefaultTestStack",
+        "UnreferencedFileRemovalTestStack"
+      ],
+      "assertionStack": "TableBucketIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "TableBucketIntegTestDefaultTestDeployAssertA1204D2E"
+    }
+  }
+}
