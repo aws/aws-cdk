@@ -129,6 +129,7 @@ export const PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduce
 export const EVENTBUS_POLICY_SID_REQUIRED = '@aws-cdk/aws-events:requireEventBusPolicySid';
 export const DYNAMODB_TABLE_RETAIN_TABLE_REPLICA = '@aws-cdk/aws-dynamodb:retainTableReplica';
 export const LOG_USER_POOL_CLIENT_SECRET_VALUE ='@aws-cdk/cognito:logUserPoolClientSecretValue';
+export const S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS = '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1441,13 +1442,13 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals.',
     detailsMd: `
-      Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails 
-      because service principals require resource policies with Statement IDs. 
+      Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails
+      because service principals require resource policies with Statement IDs.
 
       When this flag is enabled:
       - Resource policies will be created with Statement IDs for service principals
       - The operation will succeed as expected
-      
+
       When this flag is disabled:
       - A warning will be emitted
       - The grant operation will be dropped
@@ -1456,6 +1457,17 @@ export const FLAGS: Record<string, FlagInfo> = {
       This fixes the issue where permissions were silently not being added for service principals.
     `,
     introducedIn: { v2: '2.186.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS]: {
+    type: FlagType.BugFix,
+    summary: 'Add an S3 trust policy to a KMS key resource policy for SNS subscriptions.',
+    detailsMd: `
+      When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
+          `,
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
 
@@ -1478,7 +1490,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom 
       resource lambda function logs.
-      
+
       When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom 
       resource lambda function logs.
     `,
