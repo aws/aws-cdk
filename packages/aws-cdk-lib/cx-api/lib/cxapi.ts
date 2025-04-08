@@ -20,7 +20,9 @@ export const DEFAULT_ACCOUNT_ENV = 'CDK_DEFAULT_ACCOUNT';
 export const DEFAULT_REGION_ENV = 'CDK_DEFAULT_REGION';
 
 /**
- * Version of Cloud Assembly expected by CDK CLI.
+ * Version of Cloud Assembly expected by CDK Toolkit.
+ *
+ * Despite it's name, this value applies to all version of the CDK Toolkit, not just the CLI.
  *
  * CLI started emitting this at 1.10.1
  */
@@ -30,8 +32,16 @@ export const CLI_ASM_VERSION_ENV = 'CDK_CLI_ASM_VERSION';
  * Version of the CLI currently running.
  *
  * CLI started emitting this at 1.10.1
+ * Will not be present if the CDK app is run by any Toolkit variation other than the CLI.
  */
 export const CLI_VERSION_ENV = 'CDK_CLI_VERSION';
+
+/**
+ * Package & version of the CDK Toolkit running the app.
+ *
+ * In the format "<package>@x.y.z", e.g  "aws-cdk@2.1006.0" or "@aws-cdk/toolkit-lib@1.0.0"
+ */
+export const TOOLKIT_VERSION_ENV = 'CDK_TOOLKIT_VERSION';
 
 /**
  * If a context value is an object with this key, it indicates an error

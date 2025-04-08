@@ -1,0 +1,13 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "codepipeline-source-code-scan-action-test/DefaultTest": {
+      "stacks": [
+        "codepipeline-source-code-scan-action"
+      ],
+      "diffAssets": true,
+      "assertionStack": "codepipeline-source-code-scan-action-test/DefaultTest/DeployAssert",
+      "assertionStackName": "codepipelinesourcecodescanactiontestDefaultTestDeployAssert2A960817"
+    }
+  }
+}

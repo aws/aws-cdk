@@ -1,0 +1,23 @@
+{
+  "Resources": {
+    "ASG": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MinSize": "1",
+        "MaxSize": "10",
+        "DesiredCapacity": "2"
+      },
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "MaxBatchSize": 2,
+          "MinInstancesInService": 1,
+          "MinSuccessfulInstancesPercent": 75,
+          "MinActiveInstancesPercent": 50,
+          "PauseTime": "PT5M",
+          "SuspendProcesses": ["HealthCheck", "ReplaceUnhealthy"],
+          "WaitOnResourceSignals": true
+        }
+      }
+    }
+  }
+}
