@@ -11,7 +11,7 @@
  *  and limitations under the License.
  */
 
-import { ArnFormat, aws_bedrock as bedrock, Stack } from 'aws-cdk-lib';
+import { ArnFormat, aws_bedrock as bedrock, CfnOutput, Stack } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import {
@@ -422,21 +422,28 @@ export class VectorKnowledgeBase extends VectorKnowledgeBaseBase {
       const roleName = this.generatePhysicalName() + 'knowledgebaserole';
       this.role = new iam.Role(this, 'Role', {
         roleName: roleName,
-        assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com', {
-          conditions: {
-            StringEquals: { 'aws:SourceAccount': Stack.of(this).account },
-            ArnLike: {
-              'aws:SourceArn': Stack.of(this).formatArn({
-                service: 'bedrock',
-                resource: 'knowledge-base',
-                resourceName: '*',
-                arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-              }),
+        assumedBy: new iam.CompositePrincipal(
+          new iam.ServicePrincipal('bedrock.amazonaws.com', {
+            conditions: {
+              StringEquals: { 'aws:SourceAccount': Stack.of(this).account },
+              ArnLike: {
+                'aws:SourceArn': Stack.of(this).formatArn({
+                  service: 'bedrock',
+                  resource: 'knowledge-base',
+                  resourceName: '*',
+                  arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+                }),
+              },
             },
-          },
-        }),
+          }),
+          new iam.ServicePrincipal('aoss.amazonaws.com'),
+          new iam.ServicePrincipal('cloudformation.amazonaws.com'),
+          
+        ),
       });
 
+      
+      // Add required permissions for the embeddings model
       this.role.addToPrincipalPolicy(
         new iam.PolicyStatement({
           actions: ['bedrock:InvokeModel'],
@@ -457,26 +464,6 @@ export class VectorKnowledgeBase extends VectorKnowledgeBaseBase {
         this.handleOpenSearchDefaultVectorCollection());
     }
 
-    // Grant necessary permissions for vector operations
-    this.role.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        actions: [
-          'aoss:CreateIndex',
-          'aoss:DeleteIndex',
-          'aoss:UpdateIndex',
-          'aoss:DescribeIndex',
-          'aoss:ReadDocument',
-          'aoss:WriteDocument',
-          'aoss:DescribeCollectionItems',
-        ],
-        resources: [
-          this.vectorStore.collectionArn,
-          `${this.vectorStore.collectionArn}/index/*`,
-          `${this.vectorStore.collectionArn}/index/${indexName}`
-        ],
-      })
-    );
-
     // perform this validation after the vector store is handled since if the user
     // doesn't provide one, the method above will create it
     validateVectorType(this.vectorStore, vectorType);
@@ -488,6 +475,10 @@ export class VectorKnowledgeBase extends VectorKnowledgeBaseBase {
      */
     if (this.vectorStoreType === VectorStoreType.OPENSEARCH_SERVERLESS) {
       if (!props.vectorIndex) {
+        // Create vector index with the knowledge base role
+        new CfnOutput(this, 'CreatingIndexWithRole', {
+          value: `Creating index with role: ${this.role.roleArn} (${this.role.roleName})`,
+        });
         this.vectorIndex = new VectorIndex(this, 'KBIndex', {
           collection: this.vectorStore as VectorCollection,
           indexName,
@@ -637,6 +628,9 @@ export class VectorKnowledgeBase extends VectorKnowledgeBaseBase {
     vectorStoreType: VectorStoreType;
   } {
     const vectorStore = props.vectorStore as VectorCollection;
+    new CfnOutput(this, 'GrantingCollectionAccess', {
+      value: `Granting collection access to role: ${this.role.roleName}`,
+    });
     vectorStore.grantDataAccess(this.role);
     return {
       vectorStore: vectorStore,
@@ -655,7 +649,12 @@ export class VectorKnowledgeBase extends VectorKnowledgeBaseBase {
     vectorStoreType: VectorStoreType;
   } {
     const vectorStore = new VectorCollection(this, 'KBVectors');
+    // Grant access to the CloudFormation role (which is this.role)
+    new CfnOutput(this, 'HandlingDefaultCollection', {
+      value: 'Creating default OpenSearch vector collection',
+    });
     vectorStore.grantDataAccess(this.role);
+
     return {
       vectorStore: vectorStore,
       vectorStoreType: VectorStoreType.OPENSEARCH_SERVERLESS,

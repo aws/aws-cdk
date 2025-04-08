@@ -257,7 +257,14 @@ export class VectorIndex extends VectorIndexBase {
     const physicalName = this.generatePhysicalName();
 
     // Grant data access to the role first
-    props.collection.grantDataAccess(props.role);
+   // props.collection.grantDataAccess(props.role);
+    props.role.addManagedPolicy(props.collection.aossPolicy)
+
+    // logging, cfnoutput the role name
+    new cdk.CfnOutput(this, 'RoleName', {
+      value: props.role.roleName,
+    });
+
     
     
     const manageIndexPolicyName = physicalName.length > 29 ? 
@@ -294,14 +301,20 @@ export class VectorIndex extends VectorIndexBase {
                 ResourceType: 'collection',
               },
             ],
-            Principal: [props.role.roleArn],
+            Principal: [
+              props.role.roleArn,
+              `arn:aws:sts::${cdk.Stack.of(this).account}:assumed-role/cdk-${cdk.Stack.of(this).synthesizer.bootstrapQualifier}-cfn-exec-role-${cdk.Stack.of(this).account}-${cdk.Stack.of(this).region}/AWSCloudFormation`
+             
+            ],
             Description: '',
           },
         ]),
       },
     );
     
-
+    new cdk.CfnOutput(this, 'PoliciesCreated', {
+      value: 'All policies created, now creating index',
+    });
     // ------------------------------------------------------
     // L1 Instantiation
     // ------------------------------------------------------
@@ -316,6 +329,10 @@ export class VectorIndex extends VectorIndexBase {
       settings: this._renderIndexSettings(props.settings),
     });
 
+    new cdk.CfnOutput(this, 'IndexCreated', {
+      value: 'Index created successfully',
+    });
+    
     this.collectionEndpoint = this._resource.collectionEndpoint;
 
     // Add explicit dependencies in correct order

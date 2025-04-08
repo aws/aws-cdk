@@ -428,17 +428,7 @@ export class VectorCollection extends VectorCollectionBase {
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
               actions: [
-                'aoss:APIAccessAll',
-                'aoss:CreateIndex',
-                'aoss:DeleteIndex',
-                'aoss:UpdateIndex',
-                'aoss:DescribeIndex',
-                'aoss:ReadDocument',
-                'aoss:WriteDocument',
-                'aoss:DescribeCollectionItems',
-                'aoss:CreateCollectionItems',
-                'aoss:UpdateCollectionItems'
-              ],
+                'aoss:APIAccessAll'],
               resources: [this._resource.attrArn],
             }),
           ],
@@ -457,40 +447,7 @@ export class VectorCollection extends VectorCollectionBase {
       name: dataAccessPolicyName,
       type: 'data',
       policy: cdk.Lazy.string({
-        produce: () => JSON.stringify(this.dataAccessPolicyDocument.length > 0 ? 
-          this.dataAccessPolicyDocument : 
-          [{
-            Rules: [
-              {
-                Resource: [`collection/${this.collectionName}`],
-                Permission: [
-                  'aoss:DescribeCollectionItems',
-                  'aoss:CreateCollectionItems',
-                  'aoss:UpdateCollectionItems',
-                ],
-                ResourceType: 'collection',
-              },
-              {
-                Resource: [
-                  `index/${this.collectionName}/*`,
-                  `index/${this.collectionName}/bedrock-knowledge-base-default-index`,
-                  `index/${this.collectionName}/${this.collectionName}-*`
-                ],
-                Permission: [
-                  'aoss:UpdateIndex',
-                  'aoss:DescribeIndex',
-                  'aoss:ReadDocument',
-                  'aoss:WriteDocument',
-                  'aoss:CreateIndex',
-                  'aoss:DeleteIndex',
-                ],
-                ResourceType: 'index',
-              }
-            ],
-            Principal: ['*'],
-            Description: 'Default policy',
-          }]
-        ),
+        produce: () => JSON.stringify(this.dataAccessPolicyDocument),
       }),
     });
 
@@ -537,22 +494,25 @@ export class VectorCollection extends VectorCollectionBase {
             `index/${this.collectionName}/bedrock-knowledge-base-default-index`
           ],
           Permission: [
+            'aoss:CreateIndex',
             'aoss:UpdateIndex',
             'aoss:DescribeIndex',
             'aoss:ReadDocument',
             'aoss:WriteDocument',
-            'aoss:CreateIndex',
           ],
           ResourceType: 'index',
         },
       ],
       Principal: [
         grantee.roleArn,
+        `arn:aws:sts::${cdk.Stack.of(this).account}:assumed-role/cdk-${cdk.Stack.of(this).synthesizer.bootstrapQualifier}-cfn-exec-role-${cdk.Stack.of(this).account}-${cdk.Stack.of(this).region}/AWSCloudFormation`
+        
       ],
       Description: '',
     });
   
     // Add IAM policy
     grantee.addManagedPolicy(this.aossPolicy);
+   
   }
 }
