@@ -1,4 +1,4 @@
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib/vpc-v2';
 import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
@@ -539,6 +539,50 @@ describe('Vpc V2 with full control', () => {
       },
       PeerOwnerId: { Ref: 'AWS::AccountId' },
       PeerRegion: { Ref: 'AWS::Region' },
+    });
+  });
+
+  test('can add multiple NAT gateways to different subnets', () => {
+    // Add Internet Gateway first since public NAT gateways require it
+    myVpc.addInternetGateway();
+
+    // Add first NAT gateway
+    myVpc.addNatGateway({
+      subnet: mySubnet,
+      natGatewayName: 'FirstNatGateway',
+      connectivityType: route.NatConnectivityType.PUBLIC,
+    });
+
+    // Add second NAT gateway
+    myVpc.addNatGateway({
+      subnet: testSubnet1,
+      natGatewayName: 'SecondNatGateway',
+      connectivityType: route.NatConnectivityType.PUBLIC,
+    });
+
+    const template = Template.fromStack(stack);
+
+    // Verify that two NAT gateways are created
+    template.resourceCountIs('AWS::EC2::NatGateway', 2);
+
+    // Verify NAT Gateway 1 properties
+    template.hasResourceProperties('AWS::EC2::NatGateway', {
+      Tags: Match.arrayWith([
+        {
+          Key: 'Name',
+          Value: 'FirstNatGateway',
+        },
+      ]),
+    });
+
+    // Verify NAT Gateway 2 properties
+    template.hasResourceProperties('AWS::EC2::NatGateway', {
+      Tags: Match.arrayWith([
+        {
+          Key: 'Name',
+          Value: 'SecondNatGateway',
+        },
+      ]),
     });
   });
 });
