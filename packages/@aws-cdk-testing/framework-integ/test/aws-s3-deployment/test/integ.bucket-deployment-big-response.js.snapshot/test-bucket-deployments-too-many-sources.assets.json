@@ -1,7 +1,8 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+      "displayName": "test-bucket-deployments-too-many-sources/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
         "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
         "packaging": "zip"
@@ -15,6 +16,7 @@
       }
     },
     "12157b27d30ab71eb24ae65825f672ba5cc2c09dbb1703cd7adfcff3aeaca136": {
+      "displayName": "DeployMe/AwsCliLayer/Code",
       "source": {
         "path": "asset.12157b27d30ab71eb24ae65825f672ba5cc2c09dbb1703cd7adfcff3aeaca136.zip",
         "packaging": "file"
@@ -27,20 +29,22 @@
         }
       }
     },
-    "4fe0aba5e672b596d0f72505a9eec502f98d46906bb30fae2511fbdc1df4956f": {
+    "fff91faeb6c447ba94737eff19d28ce6deaee8786cd747de869b5a5eb631cfb8": {
+      "displayName": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C2048MiB/Code",
       "source": {
-        "path": "asset.4fe0aba5e672b596d0f72505a9eec502f98d46906bb30fae2511fbdc1df4956f",
+        "path": "asset.fff91faeb6c447ba94737eff19d28ce6deaee8786cd747de869b5a5eb631cfb8",
         "packaging": "zip"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4fe0aba5e672b596d0f72505a9eec502f98d46906bb30fae2511fbdc1df4956f.zip",
+          "objectKey": "fff91faeb6c447ba94737eff19d28ce6deaee8786cd747de869b5a5eb631cfb8.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
     "73f86aa7eb3d81b60e0ee9e9ce0e1dc4dac63be82d67111b47bd85aba11ce40a": {
+      "displayName": "DeployMe/Asset1",
       "source": {
         "path": "asset.73f86aa7eb3d81b60e0ee9e9ce0e1dc4dac63be82d67111b47bd85aba11ce40a",
         "packaging": "zip"
@@ -54,6 +58,7 @@
       }
     },
     "07dfbf4fcf440cb1d7c6de75abac711753afd9af55d75ebfde439ef23b57bfac": {
+      "displayName": "DeployMe/Asset2",
       "source": {
         "path": "asset.07dfbf4fcf440cb1d7c6de75abac711753afd9af55d75ebfde439ef23b57bfac",
         "packaging": "zip"
@@ -67,6 +72,7 @@
       }
     },
     "12530751bd2fac880f01272dc7b5cb234eb82ca8747ee6e3460b5a744ed5b4a4": {
+      "displayName": "DeployMe/Asset3",
       "source": {
         "path": "asset.12530751bd2fac880f01272dc7b5cb234eb82ca8747ee6e3460b5a744ed5b4a4",
         "packaging": "zip"
@@ -80,6 +86,7 @@
       }
     },
     "dfd1eadd600d51e8582efb125449e09ff21cba44e8a18f83ce25e77e9cf4abff": {
+      "displayName": "DeployMe/Asset4",
       "source": {
         "path": "asset.dfd1eadd600d51e8582efb125449e09ff21cba44e8a18f83ce25e77e9cf4abff",
         "packaging": "zip"
@@ -93,6 +100,7 @@
       }
     },
     "b488abb6606733a7c0f29ea3a9f0b4514b766911c1f19495635481e8f4948ed9": {
+      "displayName": "DeployMe/Asset5",
       "source": {
         "path": "asset.b488abb6606733a7c0f29ea3a9f0b4514b766911c1f19495635481e8f4948ed9",
         "packaging": "zip"
@@ -106,6 +114,7 @@
       }
     },
     "5736c5df173b596921bb4091760644195a52612926d2e2cd6ab562e55d615c86": {
+      "displayName": "DeployMe/Asset6",
       "source": {
         "path": "asset.5736c5df173b596921bb4091760644195a52612926d2e2cd6ab562e55d615c86",
         "packaging": "zip"
@@ -119,6 +128,7 @@
       }
     },
     "9e8b49247e467887cc8025a0272ce075c2d4d9afa6afc0158183a0b4ee69dfb0": {
+      "displayName": "DeployMe/Asset7",
       "source": {
         "path": "asset.9e8b49247e467887cc8025a0272ce075c2d4d9afa6afc0158183a0b4ee69dfb0",
         "packaging": "zip"
@@ -132,6 +142,7 @@
       }
     },
     "107e81d1e364de6d65688b6fa96a1c7efdab9ec551d36badff1f53a5046fbca9": {
+      "displayName": "DeployMe/Asset8",
       "source": {
         "path": "asset.107e81d1e364de6d65688b6fa96a1c7efdab9ec551d36badff1f53a5046fbca9",
         "packaging": "zip"
@@ -145,6 +156,7 @@
       }
     },
     "8d5bdca039a2e3753c4df4f2064a37769c977df43eee029a7c56fa328ab0d1b8": {
+      "displayName": "DeployMe/Asset9",
       "source": {
         "path": "asset.8d5bdca039a2e3753c4df4f2064a37769c977df43eee029a7c56fa328ab0d1b8",
         "packaging": "zip"
@@ -158,6 +170,7 @@
       }
     },
     "8b54bec5b8dd36280c588e88b2fcd9e267d6d61f4fae8a65fd20ef30413afd57": {
+      "displayName": "DeployMe/Asset10",
       "source": {
         "path": "asset.8b54bec5b8dd36280c588e88b2fcd9e267d6d61f4fae8a65fd20ef30413afd57",
         "packaging": "zip"
@@ -171,6 +184,7 @@
       }
     },
     "a972b58e31e7de649870ac384b05c637f8858a3316f4f85d9c3907b631aabe72": {
+      "displayName": "DeployMe/Asset11",
       "source": {
         "path": "asset.a972b58e31e7de649870ac384b05c637f8858a3316f4f85d9c3907b631aabe72",
         "packaging": "zip"
@@ -184,6 +198,7 @@
       }
     },
     "e1de282448357a52ea7bc9d7e68708dba9875348175f1d68f37b3fbf0a736675": {
+      "displayName": "DeployMe/Asset12",
       "source": {
         "path": "asset.e1de282448357a52ea7bc9d7e68708dba9875348175f1d68f37b3fbf0a736675",
         "packaging": "zip"
@@ -197,6 +212,7 @@
       }
     },
     "32f4cf597d64a006334babe84cb0b9ad24033c2efd1fdd0128952f0f5483dbce": {
+      "displayName": "DeployMe/Asset13",
       "source": {
         "path": "asset.32f4cf597d64a006334babe84cb0b9ad24033c2efd1fdd0128952f0f5483dbce",
         "packaging": "zip"
@@ -210,6 +226,7 @@
       }
     },
     "252620d5dafa452ff86502f6f06b4ababa72b3caebf7276e5b52b0a945e2e4cf": {
+      "displayName": "DeployMe/Asset14",
       "source": {
         "path": "asset.252620d5dafa452ff86502f6f06b4ababa72b3caebf7276e5b52b0a945e2e4cf",
         "packaging": "zip"
@@ -223,6 +240,7 @@
       }
     },
     "dcc96c19e5472de79bc64947c74e024737143b0253f1c9c26e22d0234fad30e5": {
+      "displayName": "DeployMe/Asset15",
       "source": {
         "path": "asset.dcc96c19e5472de79bc64947c74e024737143b0253f1c9c26e22d0234fad30e5",
         "packaging": "zip"
@@ -236,6 +254,7 @@
       }
     },
     "18e0bbd5252b2514e6427e2bdc1b776d9aa335e55cb1023d3247cda4d14dc15c": {
+      "displayName": "DeployMe/Asset16",
       "source": {
         "path": "asset.18e0bbd5252b2514e6427e2bdc1b776d9aa335e55cb1023d3247cda4d14dc15c",
         "packaging": "zip"
@@ -249,6 +268,7 @@
       }
     },
     "551d14fc32afbd74289d1cf236681a2b733c8ff2bd48166fe2855bc5758255f9": {
+      "displayName": "DeployMe/Asset17",
       "source": {
         "path": "asset.551d14fc32afbd74289d1cf236681a2b733c8ff2bd48166fe2855bc5758255f9",
         "packaging": "zip"
@@ -262,6 +282,7 @@
       }
     },
     "a011cf62534ea3b658a3a586a5963855de992e6503e5a0a00cbbe2ffe040cd84": {
+      "displayName": "DeployMe/Asset18",
       "source": {
         "path": "asset.a011cf62534ea3b658a3a586a5963855de992e6503e5a0a00cbbe2ffe040cd84",
         "packaging": "zip"
@@ -275,6 +296,7 @@
       }
     },
     "0ca2de8e991b711cfa5e899a65075c4729bb7019db5a32255b5e408f5d748efb": {
+      "displayName": "DeployMe/Asset19",
       "source": {
         "path": "asset.0ca2de8e991b711cfa5e899a65075c4729bb7019db5a32255b5e408f5d748efb",
         "packaging": "zip"
@@ -288,6 +310,7 @@
       }
     },
     "a787513e4f5583e7c43a55bcbdcd0627e6be1e6ecd9a7da582d6f7886870183a": {
+      "displayName": "DeployMe/Asset20",
       "source": {
         "path": "asset.a787513e4f5583e7c43a55bcbdcd0627e6be1e6ecd9a7da582d6f7886870183a",
         "packaging": "zip"
@@ -301,6 +324,7 @@
       }
     },
     "9dff2eca26cbc61880da37aa7d0dc2531736ef772ba5f59c0a602f0a5d3df9c7": {
+      "displayName": "DeployMe/Asset21",
       "source": {
         "path": "asset.9dff2eca26cbc61880da37aa7d0dc2531736ef772ba5f59c0a602f0a5d3df9c7",
         "packaging": "zip"
@@ -314,6 +338,7 @@
       }
     },
     "d61ef51d8bb7af4146f2425578159e088df53a6ede9b37079925c62500075e45": {
+      "displayName": "DeployMe/Asset22",
       "source": {
         "path": "asset.d61ef51d8bb7af4146f2425578159e088df53a6ede9b37079925c62500075e45",
         "packaging": "zip"
@@ -327,6 +352,7 @@
       }
     },
     "3be1da765346d37400276a92ce384cdc9ebaeb12f9facb5502fa39daa10849b7": {
+      "displayName": "DeployMe/Asset23",
       "source": {
         "path": "asset.3be1da765346d37400276a92ce384cdc9ebaeb12f9facb5502fa39daa10849b7",
         "packaging": "zip"
@@ -340,6 +366,7 @@
       }
     },
     "0564ad568eba7fdab6f2a3593c1835a92870a61a1e0646384675e24ea613ddae": {
+      "displayName": "DeployMe/Asset24",
       "source": {
         "path": "asset.0564ad568eba7fdab6f2a3593c1835a92870a61a1e0646384675e24ea613ddae",
         "packaging": "zip"
@@ -353,6 +380,7 @@
       }
     },
     "7bdc59b9aece8d747d933cf7cbd977052826ce662c1a7cf8561f264286a9e5bd": {
+      "displayName": "DeployMe/Asset25",
       "source": {
         "path": "asset.7bdc59b9aece8d747d933cf7cbd977052826ce662c1a7cf8561f264286a9e5bd",
         "packaging": "zip"
@@ -366,6 +394,7 @@
       }
     },
     "bdb6c00e76d3f9da7352ca8c71628095b3d7ebbb636f4cbaa3ab5366518978d8": {
+      "displayName": "DeployMe/Asset26",
       "source": {
         "path": "asset.bdb6c00e76d3f9da7352ca8c71628095b3d7ebbb636f4cbaa3ab5366518978d8",
         "packaging": "zip"
@@ -379,6 +408,7 @@
       }
     },
     "e630695e67ab492cf2158b4e8456b0379dfe471ec8f83de02976ef80ef21b0e5": {
+      "displayName": "DeployMe/Asset27",
       "source": {
         "path": "asset.e630695e67ab492cf2158b4e8456b0379dfe471ec8f83de02976ef80ef21b0e5",
         "packaging": "zip"
@@ -392,6 +422,7 @@
       }
     },
     "34059fbe8e0df61e413f3044d2196ae60c0524bfd72f89d8d9b01ce79d8ce744": {
+      "displayName": "DeployMe/Asset28",
       "source": {
         "path": "asset.34059fbe8e0df61e413f3044d2196ae60c0524bfd72f89d8d9b01ce79d8ce744",
         "packaging": "zip"
@@ -405,6 +436,7 @@
       }
     },
     "a53cf673413136beadfde88d2cd151b909bad417835c3d0752046b22c509f616": {
+      "displayName": "DeployMe/Asset29",
       "source": {
         "path": "asset.a53cf673413136beadfde88d2cd151b909bad417835c3d0752046b22c509f616",
         "packaging": "zip"
@@ -418,6 +450,7 @@
       }
     },
     "8363e945d242da6deebd48eed07a1f8624360580b8c873c68e84077ee60e7aa8": {
+      "displayName": "DeployMe/Asset30",
       "source": {
         "path": "asset.8363e945d242da6deebd48eed07a1f8624360580b8c873c68e84077ee60e7aa8",
         "packaging": "zip"
@@ -431,6 +464,7 @@
       }
     },
     "c42e72dd1c7370a6af59cf3c5577c84aca57dbd0bbdcbb6d3a08cc44f6fb4eb8": {
+      "displayName": "DeployMe/Asset31",
       "source": {
         "path": "asset.c42e72dd1c7370a6af59cf3c5577c84aca57dbd0bbdcbb6d3a08cc44f6fb4eb8",
         "packaging": "zip"
@@ -444,6 +478,7 @@
       }
     },
     "e964ed84a34610dbc179c43f4f264d4386837acd54957a25bd87fa99fba1e4cb": {
+      "displayName": "DeployMe/Asset32",
       "source": {
         "path": "asset.e964ed84a34610dbc179c43f4f264d4386837acd54957a25bd87fa99fba1e4cb",
         "packaging": "zip"
@@ -457,6 +492,7 @@
       }
     },
     "075e193a0230af53ff6474032a7f979000579ba35c027c15081cd520b4a9eb87": {
+      "displayName": "DeployMe/Asset33",
       "source": {
         "path": "asset.075e193a0230af53ff6474032a7f979000579ba35c027c15081cd520b4a9eb87",
         "packaging": "zip"
@@ -470,6 +506,7 @@
       }
     },
     "88b4daf21384fdeab10fe7c9779088c46cea15f03fa2191452486e1d769b75db": {
+      "displayName": "DeployMe/Asset34",
       "source": {
         "path": "asset.88b4daf21384fdeab10fe7c9779088c46cea15f03fa2191452486e1d769b75db",
         "packaging": "zip"
@@ -483,6 +520,7 @@
       }
     },
     "5d4e6c86b8c14ce885cfd90eade4a5a84a65dfdd5cd33993146012677b65193b": {
+      "displayName": "DeployMe/Asset35",
       "source": {
         "path": "asset.5d4e6c86b8c14ce885cfd90eade4a5a84a65dfdd5cd33993146012677b65193b",
         "packaging": "zip"
@@ -496,6 +534,7 @@
       }
     },
     "4fe6bf8f3968f66c8ee076dc8b87c1fdfc9cd864591d6c75ff2ac0db26dd708d": {
+      "displayName": "DeployMe/Asset36",
       "source": {
         "path": "asset.4fe6bf8f3968f66c8ee076dc8b87c1fdfc9cd864591d6c75ff2ac0db26dd708d",
         "packaging": "zip"
@@ -509,6 +548,7 @@
       }
     },
     "6d1e3b42249dff8eebfc552fa71618701ae698ead889b707b8e59bade4a0f80e": {
+      "displayName": "DeployMe/Asset37",
       "source": {
         "path": "asset.6d1e3b42249dff8eebfc552fa71618701ae698ead889b707b8e59bade4a0f80e",
         "packaging": "zip"
@@ -522,6 +562,7 @@
       }
     },
     "3b81d40bfb20a136233c09b2bffce262dda58f41f3dfaa31cd7a626ac03b8ab2": {
+      "displayName": "DeployMe/Asset38",
       "source": {
         "path": "asset.3b81d40bfb20a136233c09b2bffce262dda58f41f3dfaa31cd7a626ac03b8ab2",
         "packaging": "zip"
@@ -535,6 +576,7 @@
       }
     },
     "7537e49347dc4f245c932ed13154f07a3c89f6007fa0c8f0e1de6df70067d811": {
+      "displayName": "DeployMe/Asset39",
       "source": {
         "path": "asset.7537e49347dc4f245c932ed13154f07a3c89f6007fa0c8f0e1de6df70067d811",
         "packaging": "zip"
@@ -548,6 +590,7 @@
       }
     },
     "2896589b5d4454527377cf85089a065c72da1a0996936ffa82a73373669cda86": {
+      "displayName": "DeployMe/Asset40",
       "source": {
         "path": "asset.2896589b5d4454527377cf85089a065c72da1a0996936ffa82a73373669cda86",
         "packaging": "zip"
@@ -561,6 +604,7 @@
       }
     },
     "077e533ec3885d8d9ec2eae142424483de2d689fafafc89b574215fe0bc4e031": {
+      "displayName": "DeployMe/Asset41",
       "source": {
         "path": "asset.077e533ec3885d8d9ec2eae142424483de2d689fafafc89b574215fe0bc4e031",
         "packaging": "zip"
@@ -574,6 +618,7 @@
       }
     },
     "fdd2f63b849537b15121f409c14a32457b79bd66658d068ada01b881b22cb76c": {
+      "displayName": "DeployMe/Asset42",
       "source": {
         "path": "asset.fdd2f63b849537b15121f409c14a32457b79bd66658d068ada01b881b22cb76c",
         "packaging": "zip"
@@ -587,6 +632,7 @@
       }
     },
     "4c829179cfef0070bc94654aee7ec80f2d8e481108afeb964cee5d12ac4369f3": {
+      "displayName": "DeployMe/Asset43",
       "source": {
         "path": "asset.4c829179cfef0070bc94654aee7ec80f2d8e481108afeb964cee5d12ac4369f3",
         "packaging": "zip"
@@ -600,6 +646,7 @@
       }
     },
     "5e89d45edca30c8f10c3be08c0761d727ee63a5bebba67c2da31c03fce8589af": {
+      "displayName": "DeployMe/Asset44",
       "source": {
         "path": "asset.5e89d45edca30c8f10c3be08c0761d727ee63a5bebba67c2da31c03fce8589af",
         "packaging": "zip"
@@ -613,6 +660,7 @@
       }
     },
     "85afff3f4683c6c3068a966108b7219277777924364401740abde4cc79f494f5": {
+      "displayName": "DeployMe/Asset45",
       "source": {
         "path": "asset.85afff3f4683c6c3068a966108b7219277777924364401740abde4cc79f494f5",
         "packaging": "zip"
@@ -626,6 +674,7 @@
       }
     },
     "e01e107b5bd904d26919ff9dbb6abd7f656b10b5da1e0efd362eedfccb5adac4": {
+      "displayName": "DeployMe/Asset46",
       "source": {
         "path": "asset.e01e107b5bd904d26919ff9dbb6abd7f656b10b5da1e0efd362eedfccb5adac4",
         "packaging": "zip"
@@ -639,6 +688,7 @@
       }
     },
     "9cfd9367e969f8621bf6352507aa1425fd63ee77fc93eceb5efc2ca603bf3898": {
+      "displayName": "DeployMe/Asset47",
       "source": {
         "path": "asset.9cfd9367e969f8621bf6352507aa1425fd63ee77fc93eceb5efc2ca603bf3898",
         "packaging": "zip"
@@ -652,6 +702,7 @@
       }
     },
     "68e8aed3b67b74cc3522eda6dde006978ae347b518f8574d4fea1b87c92138eb": {
+      "displayName": "DeployMe/Asset48",
       "source": {
         "path": "asset.68e8aed3b67b74cc3522eda6dde006978ae347b518f8574d4fea1b87c92138eb",
         "packaging": "zip"
@@ -665,6 +716,7 @@
       }
     },
     "f5a3c1c6454d4415c1ba17d9ca2430484eb0066c7b2b67c8e6955068cf07404a": {
+      "displayName": "DeployMe/Asset49",
       "source": {
         "path": "asset.f5a3c1c6454d4415c1ba17d9ca2430484eb0066c7b2b67c8e6955068cf07404a",
         "packaging": "zip"
@@ -678,6 +730,7 @@
       }
     },
     "c444cf9caec7a5eb656db3d4c2391eb4463aec4ad7e277d9ae3253b019ccdcb1": {
+      "displayName": "DeployMe/Asset50",
       "source": {
         "path": "asset.c444cf9caec7a5eb656db3d4c2391eb4463aec4ad7e277d9ae3253b019ccdcb1",
         "packaging": "zip"
@@ -690,7 +743,8 @@
         }
       }
     },
-    "5ea0a8150f13e1b66f50e734fdc465e999519ef10de5341545bf642920686ff3": {
+    "e54e4d68c0c9499840d89c6eeedc5114efaf140de2a05ab61461e20b594066b3": {
+      "displayName": "test-bucket-deployments-too-many-sources Template",
       "source": {
         "path": "test-bucket-deployments-too-many-sources.template.json",
         "packaging": "file"
@@ -698,7 +752,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5ea0a8150f13e1b66f50e734fdc465e999519ef10de5341545bf642920686ff3.json",
+          "objectKey": "e54e4d68c0c9499840d89c6eeedc5114efaf140de2a05ab61461e20b594066b3.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
