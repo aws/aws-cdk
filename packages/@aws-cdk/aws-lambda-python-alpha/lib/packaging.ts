@@ -88,7 +88,7 @@ export class Packaging {
       dependenciesFile: DependenciesFile.UV,
       // By default, uv creates a virtualenv in `/.venv`
       // At the end, we remove the virtualenv to avoid creating a duplicate copy in the Lambda package.
-      exportCommand: `uv sync --frozen --no-managed-python --no-python-downloads && uv pip freeze > ${DependenciesFile.PIP} && rm -rf .venv`,
+      exportCommand: `uv export --frozen --no-emit-workspace --no-dev --no-editable -o ${DependenciesFile.PIP}`,
     });
   }
 

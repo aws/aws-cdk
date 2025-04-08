@@ -136,7 +136,7 @@ export class Bundling implements CdkBundlingOptions {
     bundlingCommands.push(packaging.exportCommand ?? '');
 
     if (packaging.dependenciesFile == DependenciesFile.UV) {
-      bundlingCommands.push(`uv pip sync --target ${options.outputDir} ${DependenciesFile.PIP}`);
+      bundlingCommands.push(`uv pip install -r ${DependenciesFile.PIP} --target ${options.outputDir}`);
     } else if (packaging.dependenciesFile) {
       bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${options.outputDir}`);
     }
