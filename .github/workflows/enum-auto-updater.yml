@@ -1,6 +1,8 @@
 name: CDK Enums Auto Updater
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 1'
 
 jobs:
   update-l2-enums:
