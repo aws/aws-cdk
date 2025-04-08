@@ -4,7 +4,7 @@ import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token, ValidationError } from '../../core';
+import { ArnFormat, FeatureFlags, Lazy, Names, RemovalPolicy, Resource, Size, Stack, Tags, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
@@ -860,11 +860,14 @@ export class FileSystem extends FileSystemBase {
 
     // we explicitly use FeatureFlags to maintain backwards compatibility
     const useMountTargetOrderInsensitiveLogicalID = FeatureFlags.of(this).isEnabled(cxapi.EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID);
+    const useMountTargetImportedSubnetAwareLogicalID = FeatureFlags.of(this).isEnabled(cxapi.EFS_MOUNTTARGET_IMPORTED_SUBNET_AWARE_LOGICAL_ID);
+
     this.mountTargetsAvailable = [];
-    if (useMountTargetOrderInsensitiveLogicalID) {
+    if (useMountTargetOrderInsensitiveLogicalID || useMountTargetImportedSubnetAwareLogicalID) {
       subnets.subnets.forEach((subnet) => {
+        const subnetUniqueId = useMountTargetImportedSubnetAwareLogicalID ? Names.uniqueResourceName(subnet, { maxLength: 16 }) : subnet.node.id;
         const mountTarget = new CfnMountTarget(this,
-          `EfsMountTarget-${subnet.node.id}`,
+          `EfsMountTarget-${subnetUniqueId}`,
           {
             fileSystemId: this.fileSystemId,
             securityGroups: Array.of(securityGroup.securityGroupId),
