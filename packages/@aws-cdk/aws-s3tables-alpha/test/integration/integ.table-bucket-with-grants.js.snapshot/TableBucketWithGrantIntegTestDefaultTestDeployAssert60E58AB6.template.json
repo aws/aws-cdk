@@ -31,7 +31,7 @@
        {
         "Ref": "AWS::AccountId"
        },
-       ":bucket/grant-read-bucket/table/s3.amazonaws.com\"}]}]}}}}"
+       ":bucket/grant-read-bucket/table/example-table-uuid\"}]}]}}}}"
       ]
      ]
     },
@@ -50,7 +50,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1743551501542"
+    "salt": "1744076104311"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -219,7 +219,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1743551501543"
+    "salt": "1744076104313"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -255,7 +255,7 @@
        {
         "Ref": "AWS::AccountId"
        },
-       ":bucket/grant-write-bucket/table/s3.amazonaws.com\"}]}]}}}}"
+       ":bucket/grant-write-bucket/table/example-table-uuid\"}]}]}}}}"
       ]
      ]
     },
@@ -274,7 +274,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1743551501543"
+    "salt": "1744076104313"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -329,7 +329,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1743551501544"
+    "salt": "1744076104313"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -365,7 +365,7 @@
        {
         "Ref": "AWS::AccountId"
        },
-       ":bucket/grant-read-write-bucket/table/s3.amazonaws.com\"}]}]}}}}"
+       ":bucket/grant-read-write-bucket/table/example-table-uuid\"}]}]}}}}"
       ]
      ]
     },
@@ -384,7 +384,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1743551501544"
+    "salt": "1744076104314"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -439,7 +439,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1743551501544"
+    "salt": "1744076104314"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

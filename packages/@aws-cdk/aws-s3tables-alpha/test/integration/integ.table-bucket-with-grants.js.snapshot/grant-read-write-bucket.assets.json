@@ -1,7 +1,7 @@
 {
   "version": "41.0.0",
   "files": {
-    "5bce076983647813565f48eee9d14b3a7725022449bad4980804e8921dfe447f": {
+    "e0d8c899969a5679ccf87ceb31d73c3c2e2e45e81194ca3cbc812d7338276f9a": {
       "displayName": "grant-read-write-bucket Template",
       "source": {
         "path": "grant-read-write-bucket.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5bce076983647813565f48eee9d14b3a7725022449bad4980804e8921dfe447f.json",
+          "objectKey": "e0d8c899969a5679ccf87ceb31d73c3c2e2e45e81194ca3cbc812d7338276f9a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

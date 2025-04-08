@@ -41,7 +41,7 @@
              "TableBucketARN"
             ]
            },
-           "/table/s3.amazonaws.com"
+           "/table/example-table-uuid"
           ]
          ]
         }

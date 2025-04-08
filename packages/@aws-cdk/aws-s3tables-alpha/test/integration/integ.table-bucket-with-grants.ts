@@ -6,7 +6,7 @@ import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as perms from '../../lib/permissions';
 
 const PRINCIPAL = 's3.amazonaws.com';
-const TABLE_ID = 's3.amazonaws.com';
+const TABLE_ID = 'example-table-uuid';
 const WILDCARD = '*';
 
 enum TestType {
