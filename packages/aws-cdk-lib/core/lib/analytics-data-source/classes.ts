@@ -918,6 +918,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'subnetType': 'SubnetType',
       'subnetName': '*',
       'assignIpv6AddressOnCreation': 'boolean',
+      'mapPublicIpOnLaunch': 'boolean',
       'associateNetworkAcl': [
         '*',
         {
@@ -3765,6 +3766,35 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'supportsGetObjectRange': 'boolean',
       'supportsGetObjectPartNumber': 'boolean',
       'payload': '*'
+    }
+  },
+  '@aws-cdk.aws-s3tables-alpha': {
+    'TableBucketPolicy': {
+      'tableBucket': {
+        'tableBucketArn': '*',
+        'tableBucketName': '*',
+        'account': '*',
+        'region': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'resourcePolicy': '*',
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'TableBucket': {
+      'tableBucketName': '*',
+      'unreferencedFileRemoval': {
+        'noncurrentDays': '*',
+        'status': 'UnreferencedFileRemovalStatus',
+        'unreferencedDays': '*'
+      },
+      'region': '*',
+      'account': '*',
+      'removalPolicy': 'RemovalPolicy'
     }
   },
   '@aws-cdk.aws-sagemaker-alpha': {
@@ -11543,6 +11573,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       },
       'executionMode': 'ExecutionMode',
+      'usePipelineRoleForActions': 'boolean',
       'addStage': [
         {
           'placement': {
@@ -12856,6 +12887,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'timeToLiveAttribute': '*',
       'stream': 'StreamViewType',
       'removalPolicy': 'RemovalPolicy',
+      'replicaRemovalPolicy': 'RemovalPolicy',
       'replicationRegions': '*',
       'replicationTimeout': '*',
       'waitForReplicationToFinish': 'boolean',
@@ -13507,6 +13539,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'node': '*'
         }
       },
+      'placementGroup': {
+        'placementGroupName': '*',
+        'partitions': '*',
+        'spreadLevel': 'PlacementGroupSpreadLevel',
+        'strategy': 'PlacementGroupStrategy',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
       'addSecurityGroup': [
         {
           'securityGroupId': '*',
@@ -13724,7 +13768,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'contributorInsights': 'boolean',
       'whitelistedPrincipals': '*',
       'allowedPrincipals': '*',
-      'supportedIpAddressTypes': 'IpAddressType'
+      'supportedIpAddressTypes': 'IpAddressType',
+      'allowedRegions': '*'
     },
     'GatewayVpcEndpoint': {
       'vpc': {
@@ -19687,7 +19732,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'databaseInsightsMode': 'DatabaseInsightsMode',
       'autoMinorVersionUpgrade': 'boolean',
       'clusterScalabilityType': 'ClusterScalabilityType',
-      'clusterScailabilityType': 'ClusterScailabilityType'
+      'clusterScailabilityType': 'ClusterScailabilityType',
+      'engineLifecycleSupport': 'EngineLifecycleSupport'
     },
     'DatabaseClusterFromSnapshot': {
       'snapshotIdentifier': '*',
@@ -20019,7 +20065,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'databaseInsightsMode': 'DatabaseInsightsMode',
       'autoMinorVersionUpgrade': 'boolean',
       'clusterScalabilityType': 'ClusterScalabilityType',
-      'clusterScailabilityType': 'ClusterScailabilityType'
+      'clusterScailabilityType': 'ClusterScailabilityType',
+      'engineLifecycleSupport': 'EngineLifecycleSupport'
     },
     'DatabaseSecret': {
       'username': '*',
@@ -25152,14 +25199,19 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'httpApi': {
         'defaultAuthorizer': '*',
         'defaultAuthorizationScopes': '*',
-        'apiId': '*',
-        'apiEndpoint': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'defaultStage': {
+          'domainUrl': '*',
+          'stageName': '*',
+          'url': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'apiId': '*',
+        'apiEndpoint': '*'
       },
       'type': 'HttpAuthorizerType',
       'identitySource': '*',
@@ -25174,14 +25226,19 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'httpApi': {
         'defaultAuthorizer': '*',
         'defaultAuthorizationScopes': '*',
-        'apiId': '*',
-        'apiEndpoint': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'defaultStage': {
+          'domainUrl': '*',
+          'stageName': '*',
+          'url': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'apiId': '*',
+        'apiEndpoint': '*'
       },
       'integrationType': 'HttpIntegrationType',
       'integrationSubtype': 'HttpIntegrationSubtype',
@@ -25199,14 +25256,19 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'httpApi': {
         'defaultAuthorizer': '*',
         'defaultAuthorizationScopes': '*',
-        'apiId': '*',
-        'apiEndpoint': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'defaultStage': {
+          'domainUrl': '*',
+          'stageName': '*',
+          'url': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'apiId': '*',
+        'apiEndpoint': '*'
       },
       'routeKey': '*',
       'authorizer': '*',
@@ -25229,14 +25291,19 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'httpApi': {
         'defaultAuthorizer': '*',
         'defaultAuthorizationScopes': '*',
-        'apiId': '*',
-        'apiEndpoint': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'defaultStage': {
+          'domainUrl': '*',
+          'stageName': '*',
+          'url': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'apiId': '*',
+        'apiEndpoint': '*'
       },
       'stageName': '*',
       'autoDeploy': 'boolean',

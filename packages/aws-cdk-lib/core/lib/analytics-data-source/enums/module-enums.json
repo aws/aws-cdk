@@ -157,6 +157,8 @@
       "BOTTLEROCKET_x86_64",
       "BOTTLEROCKET_ARM_64_NVIDIA",
       "BOTTLEROCKET_x86_64_NVIDIA",
+      "BOTTLEROCKET_ARM_64_FIPS",
+      "BOTTLEROCKET_x86_64_FIPS",
       "WINDOWS_CORE_2019_x86_64",
       "WINDOWS_CORE_2022_x86_64",
       "WINDOWS_FULL_2019_x86_64",
@@ -436,7 +438,8 @@
       "WED",
       "THU",
       "FRI",
-      "SAT"
+      "SAT",
+      "UNSET_VALUE"
     ],
     "Frequency": [
       "DAILY",
@@ -736,6 +739,12 @@
       "ZSTD"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.ts": {
+    "UnreferencedFileRemovalStatus": [
+      "Enabled",
+      "Disabled"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts": {
     "InvocationHttpResponseCode": [
       "Invocation4XXErrors",
@@ -881,6 +890,12 @@
     "HttpLambdaResponseType": [
       0,
       1
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/common/api.ts": {
+    "IpAddressType": [
+      "ipv4",
+      "dualstack"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/common/domain-name.ts": {
@@ -1986,6 +2001,12 @@
       "Events"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ecr/build-and-publish-action.ts": {
+    "RegistryType": [
+      "private",
+      "public"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/github/source-action.ts": {
     "GitHubTrigger": [
       "None",
@@ -2121,7 +2142,8 @@
     ],
     "LambdaVersion": [
       "V1_0",
-      "V2_0"
+      "V2_0",
+      "V3_0"
     ],
     "Mfa": [
       "OFF",
@@ -3759,6 +3781,8 @@
       "BOTTLEROCKET_x86_64",
       "BOTTLEROCKET_ARM_64_NVIDIA",
       "BOTTLEROCKET_x86_64_NVIDIA",
+      "BOTTLEROCKET_ARM_64_FIPS",
+      "BOTTLEROCKET_x86_64_FIPS",
       "WINDOWS_CORE_2019_x86_64",
       "WINDOWS_CORE_2022_x86_64",
       "WINDOWS_FULL_2019_x86_64",
@@ -4301,6 +4325,10 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts": {
+    "EngineLifecycleSupport": [
+      "open-source-rds-extended-support",
+      "open-source-rds-extended-support-disabled"
+    ],
     "DBClusterStorageType": [
       "aurora",
       "aurora-iopt1"

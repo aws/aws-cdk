@@ -2,6 +2,54 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.189.0](https://github.com/aws/aws-cdk/compare/v2.188.0...v2.189.0) (2025-04-09)
+
+
+### Features
+
+* **apigatewayv2:** dualstack HTTP and WebSocket API ([#34054](https://github.com/aws/aws-cdk/issues/34054)) ([eec900e](https://github.com/aws/aws-cdk/commit/eec900e90f38f34f896b22cf36cb225fc9c13cc8))
+* update L1 CloudFormation resource definitions ([#34064](https://github.com/aws/aws-cdk/issues/34064)) ([9cb2602](https://github.com/aws/aws-cdk/commit/9cb260266e92f45e40a19667e29ccf2decb3d2b8))
+* **bedrock:** support Amazon Nova Reel 1.1 ([#34070](https://github.com/aws/aws-cdk/issues/34070)) ([3da0c4d](https://github.com/aws/aws-cdk/commit/3da0c4d267dbb693ffc01b9fae69cebcb180cdec))
+* support L2 constructs for Amazon S3 Tables ([#33599](https://github.com/aws/aws-cdk/issues/33599)) ([2e95252](https://github.com/aws/aws-cdk/commit/2e95252fecbb1fec9874fd5af4b4bd6449d50471))
+* **pipelines:** add `V2` pipeline type support in L3 construct ([#34005](https://github.com/aws/aws-cdk/issues/34005)) ([994e952](https://github.com/aws/aws-cdk/commit/994e95289b589596179553a5b9d7201155bd9ed1)), closes [#33995](https://github.com/aws/aws-cdk/issues/33995)
+
+
+### Bug Fixes
+
+* **codepipeline:** replace account root principal with pipeline role in trust policy for cross-account actions (under feature flag) ([#34074](https://github.com/aws/aws-cdk/issues/34074)) ([2d901f4](https://github.com/aws/aws-cdk/commit/2d901f4e7bb982221e1a48a13666939140109d5a))
+* **custom-resources:** `AwsCustomResource` assumed role session name may contain invalid characters ([#34016](https://github.com/aws/aws-cdk/issues/34016)) ([32b6b4d](https://github.com/aws/aws-cdk/commit/32b6b4d7fa99723efb667239fbe455ede43b92c6)), closes [#23260](https://github.com/aws/aws-cdk/issues/23260) [#34011](https://github.com/aws/aws-cdk/issues/34011)
+
+## [2.188.0](https://github.com/aws/aws-cdk/compare/v2.187.0...v2.188.0) (2025-04-03)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#33980](https://github.com/aws/aws-cdk/issues/33980)) ([0923b5e](https://github.com/aws/aws-cdk/commit/0923b5e82dd0c8da864f0c806f295fae270c22c1))
+* update L1 CloudFormation resource definitions ([#34029](https://github.com/aws/aws-cdk/issues/34029)) ([be6210f](https://github.com/aws/aws-cdk/commit/be6210f246b97befcdc9446862e991071738008d))
+* **codepipeline:** add usePipelineRoleForActions field support in L2 ([#33961](https://github.com/aws/aws-cdk/issues/33961)) ([d8bbc1c](https://github.com/aws/aws-cdk/commit/d8bbc1c3f8479ab5031b8684364735b9a6c31fa2))
+* **codepipeline-actions:** support `ECRBuildAndPublish` action ([#33375](https://github.com/aws/aws-cdk/issues/33375)) ([c5cd679](https://github.com/aws/aws-cdk/commit/c5cd679b2f979b9e51c7a071b18d930d3a475129)), closes [#33376](https://github.com/aws/aws-cdk/issues/33376)
+* **codepipeline-actions:** support `InspectorEcrImageScanAction` and `InspectorSourceCodeScanAction` actions ([#33378](https://github.com/aws/aws-cdk/issues/33378)) ([2dc8cc7](https://github.com/aws/aws-cdk/commit/2dc8cc7f703ebcd61f2b5f4d20401a1ade788e7a)), closes [#33377](https://github.com/aws/aws-cdk/issues/33377)
+* **cognito:** v3.0 pre token generation trigger event ([#33778](https://github.com/aws/aws-cdk/issues/33778)) ([ea1436f](https://github.com/aws/aws-cdk/commit/ea1436f85d036bddb9a96dd54f02a639c3aab212)), closes [#33733](https://github.com/aws/aws-cdk/issues/33733)
+* **events-targets:** support ApiGatewayV2 HttpApi ([#33864](https://github.com/aws/aws-cdk/issues/33864)) ([91a3076](https://github.com/aws/aws-cdk/commit/91a3076fb16369629a710ebc560c103a91c2ea20)), closes [#26649](https://github.com/aws/aws-cdk/issues/26649)
+* **kinesisfirehose:** support S3 file extension format ([#33776](https://github.com/aws/aws-cdk/issues/33776)) ([e314a9a](https://github.com/aws/aws-cdk/commit/e314a9aa5d149704cc2abd30927a41d317a3ce6c)), closes [#32154](https://github.com/aws/aws-cdk/issues/32154)
+* **logs-destinations:** support Amazon Data Firehose logs destination ([#33683](https://github.com/aws/aws-cdk/issues/33683)) ([a8edf69](https://github.com/aws/aws-cdk/commit/a8edf696e91c44cbda286889896464960dd03266)), closes [#32038](https://github.com/aws/aws-cdk/issues/32038) [#24766](https://github.com/aws/aws-cdk/issues/24766)
+* **pipelines:** actions can default to the pipeline service role instead of a newly created role ([#33991](https://github.com/aws/aws-cdk/issues/33991)) ([2ebc51e](https://github.com/aws/aws-cdk/commit/2ebc51e694e85aa0d8e0401dbb1fc1037298eda5))
+* **rds:** engine lifecycle support ([#33902](https://github.com/aws/aws-cdk/issues/33902)) ([c0f8d29](https://github.com/aws/aws-cdk/commit/c0f8d293df157cd196e2bd9fb569374d0535f471)), closes [#33859](https://github.com/aws/aws-cdk/issues/33859)
+
+
+### Bug Fixes
+
+* **cloudformation-include:** parse MinActiveInstancesPercent in AutoScalingRollingUpdate policy ([#33852](https://github.com/aws/aws-cdk/issues/33852)) ([89d2d5c](https://github.com/aws/aws-cdk/commit/89d2d5c561860c1a9b55e1660efeec068fc4e6a3)), closes [#33810](https://github.com/aws/aws-cdk/issues/33810) [#33810](https://github.com/aws/aws-cdk/issues/33810)
+* **cx-api:** adding missing readme ([#34003](https://github.com/aws/aws-cdk/issues/34003)) ([1c5cbfa](https://github.com/aws/aws-cdk/commit/1c5cbfa2798a68c99ce58dd8164c1aa01e7bd885)), closes [#34006](https://github.com/aws/aws-cdk/issues/34006) [1#L698-L714](https://github.com/aws/1/issues/L698-L714)
+* **ecr-assets:** handle Docker 27.4+ output format in TarballImageAsset ([#33967](https://github.com/aws/aws-cdk/issues/33967)) ([009680d](https://github.com/aws/aws-cdk/commit/009680dc758c62843e06005d6b0172c0c2f95bdb)), closes [#33428](https://github.com/aws/aws-cdk/issues/33428)
+* **eks:** Only one type of update can be allowed with updateVersion ([#33975](https://github.com/aws/aws-cdk/issues/33975)) ([95c06e2](https://github.com/aws/aws-cdk/commit/95c06e268025ca947254ee2e931b8546333cd065)), closes [#33452](https://github.com/aws/aws-cdk/issues/33452)
+* **iam:** add validation for OrganizationPrincipal IDs ([#33968](https://github.com/aws/aws-cdk/issues/33968)) ([217d75f](https://github.com/aws/aws-cdk/commit/217d75f28b48778777ebe218cd71386b79dcc74b)), closes [#32756](https://github.com/aws/aws-cdk/issues/32756) [#33555](https://github.com/aws/aws-cdk/issues/33555) [#33773](https://github.com/aws/aws-cdk/issues/33773)
+* **lambda:** allow retryAttempts = -1 for infinite retries in EventSourceMapping ([#34009](https://github.com/aws/aws-cdk/issues/34009)) ([88e04f0](https://github.com/aws/aws-cdk/commit/88e04f02251baa1604c3d613499984101f96d4df)), closes [#34007](https://github.com/aws/aws-cdk/issues/34007)
+* **lambda:** deprecate default feature flag @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy ([#34010](https://github.com/aws/aws-cdk/issues/34010)) ([242091a](https://github.com/aws/aws-cdk/commit/242091ae2edacc90017919b52d4461790c587de9)), closes [#33688](https://github.com/aws/aws-cdk/issues/33688)
+* **pipelines:** can't have the same asset display name 3 times ([#34017](https://github.com/aws/aws-cdk/issues/34017)) ([1418277](https://github.com/aws/aws-cdk/commit/1418277cb80f1340e9c0d4f36905d805d95ad5ec)), closes [#33844](https://github.com/aws/aws-cdk/issues/33844) [#34004](https://github.com/aws/aws-cdk/issues/34004)
+* **stepfunctions-tasks:** associateWithParent when using JSONata ([#33972](https://github.com/aws/aws-cdk/issues/33972)) ([e839d45](https://github.com/aws/aws-cdk/commit/e839d451f323293a26d321db1885bfa41070fcf8)), closes [#33850](https://github.com/aws/aws-cdk/issues/33850)
+* customer aspect cannot add Tags if a BucketNotifications construct is present ([#33979](https://github.com/aws/aws-cdk/issues/33979)) ([2cff67e](https://github.com/aws/aws-cdk/commit/2cff67e53dd67725ac9f5b12d5374a2803361e84)), closes [#33943](https://github.com/aws/aws-cdk/issues/33943)
+
 ## [2.187.0](https://github.com/aws/aws-cdk/compare/v2.186.0...v2.187.0) (2025-03-31)
 
 
