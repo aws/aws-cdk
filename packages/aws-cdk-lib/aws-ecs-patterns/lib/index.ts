@@ -22,3 +22,5 @@ export * from './fargate/application-multiple-target-groups-fargate-service';
 export * from './base/network-multiple-target-groups-service-base';
 export * from './ecs/network-multiple-target-groups-ecs-service';
 export * from './fargate/network-multiple-target-groups-fargate-service';
+
+export * from './availability-zone-rebalancing';
