@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.189.0](https://github.com/aws/aws-cdk/compare/v2.188.0...v2.189.0) (2025-04-09)
+
+
+### Features
+
+* **apigatewayv2:** dualstack HTTP and WebSocket API ([#34054](https://github.com/aws/aws-cdk/issues/34054)) ([eec900e](https://github.com/aws/aws-cdk/commit/eec900e90f38f34f896b22cf36cb225fc9c13cc8)), closes [/docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-api.html#cfn-apigatewayv2](https://github.com/aws//docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-api.html/issues/cfn-apigatewayv2)
+* update L1 CloudFormation resource definitions ([#34064](https://github.com/aws/aws-cdk/issues/34064)) ([9cb2602](https://github.com/aws/aws-cdk/commit/9cb260266e92f45e40a19667e29ccf2decb3d2b8))
+* **bedrock:** support Amazon Nova Reel 1.1 ([#34070](https://github.com/aws/aws-cdk/issues/34070)) ([3da0c4d](https://github.com/aws/aws-cdk/commit/3da0c4d267dbb693ffc01b9fae69cebcb180cdec))
+* support L2 constructs for Amazon S3 Tables ([#33599](https://github.com/aws/aws-cdk/issues/33599)) ([2e95252](https://github.com/aws/aws-cdk/commit/2e95252fecbb1fec9874fd5af4b4bd6449d50471))
+* **pipelines:** add `V2` pipeline type support in L3 construct ([#34005](https://github.com/aws/aws-cdk/issues/34005)) ([994e952](https://github.com/aws/aws-cdk/commit/994e95289b589596179553a5b9d7201155bd9ed1)), closes [#33995](https://github.com/aws/aws-cdk/issues/33995)
+
+
+### Bug Fixes
+
+* **codepipeline:** replace account root principal with pipeline role in trust policy for cross-account actions (under feature flag) ([#34074](https://github.com/aws/aws-cdk/issues/34074)) ([2d901f4](https://github.com/aws/aws-cdk/commit/2d901f4e7bb982221e1a48a13666939140109d5a))
+* **custom-resources:** `AwsCustomResource` assumed role session name may contain invalid characters ([#34016](https://github.com/aws/aws-cdk/issues/34016)) ([32b6b4d](https://github.com/aws/aws-cdk/commit/32b6b4d7fa99723efb667239fbe455ede43b92c6)), closes [#23260](https://github.com/aws/aws-cdk/issues/23260) [#34011](https://github.com/aws/aws-cdk/issues/34011)
+
 ## [2.188.0](https://github.com/aws/aws-cdk/compare/v2.187.0...v2.188.0) (2025-04-03)
 
 
