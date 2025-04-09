@@ -95,6 +95,7 @@ Flags come in three types:
 | [@aws-cdk/aws-events:requireEventBusPolicySid](#aws-cdkaws-eventsrequireeventbuspolicysid) | When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals. | 2.186.0 | (fix) |
 | [@aws-cdk/aws-dynamodb:retainTableReplica](#aws-cdkaws-dynamodbretaintablereplica) | When enabled, table replica will be default to the removal policy of source table unless specified otherwise. | 2.187.0 | (fix) |
 | [@aws-cdk/cognito:logUserPoolClientSecretValue](#aws-cdkcognitologuserpoolclientsecretvalue) | When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs. | 2.187.0 | (default) |
+| [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | 2.189.0 | (default) |
 
 <!-- END table -->
 
@@ -222,6 +223,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | (fix) |  | `false` | `true` |
 | [@aws-cdk/core:aspectStabilization](#aws-cdkcoreaspectstabilization) | When enabled, a stabilization loop will be run when invoking Aspects during synthesis. | (config) |  | `false` | `true` |
 | [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | (default) |  | `false` | `true` |
+| [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | (default) |  | `false` | `true` |
 
 <!-- END diff -->
 
@@ -1739,6 +1741,9 @@ When disabled, 'CDKReplicationRole' is always specified.
 When this feature flag is enabled, the root account principal will not be added to the trust policy of stage role.
 When this feature flag is disabled, it will keep the root account principal in the trust policy.
 
+For cross-account cases, when this feature flag is enabled the trust policy will be scoped to the role only.
+If you are providing a custom role, you will need to ensure 'roleName' is specified or set to PhysicalName.GENERATE_IF_NEEDED.
+
 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
@@ -1804,6 +1809,23 @@ resource lambda function logs.
 | 2.187.0 | `false` | `false` |
 
 **Compatibility with old behavior:** Enable the feature flag to keep the old behavior and log the client secret values
+
+
+### @aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope
+
+*When enabled, scopes down the trust policy for the cross-account action role* (default)
+
+When this feature flag is enabled, the trust policy of the cross-account action role will be scoped to the pipeline role.
+If you are providing a custom role, you will need to ensure 'roleName' is specified or set to PhysicalName.GENERATE_IF_NEEDED.
+When this feature flag is disabled, it will keep the root account principal in the trust policy.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.189.0 | `true` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to add the root account principal back
 
 
 <!-- END details -->

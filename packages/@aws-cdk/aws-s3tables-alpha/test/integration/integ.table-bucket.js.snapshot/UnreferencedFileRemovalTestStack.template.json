@@ -1,0 +1,64 @@
+{
+ "Resources": {
+  "DefaultBucket62385A75": {
+   "Type": "AWS::S3Tables::TableBucket",
+   "Properties": {
+    "TableBucketName": "unreferenced-file-removal-test-bucket",
+    "UnreferencedFileRemoval": {
+     "NoncurrentDays": 20,
+     "Status": "Disabled",
+     "UnreferencedDays": 20
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttDefaultBucket62385A75TableBucketARN40A5C30D": {
+   "Value": {
+    "Fn::GetAtt": [
+     "DefaultBucket62385A75",
+     "TableBucketARN"
+    ]
+   },
+   "Export": {
+    "Name": "UnreferencedFileRemovalTestStack:ExportsOutputFnGetAttDefaultBucket62385A75TableBucketARN40A5C30D"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

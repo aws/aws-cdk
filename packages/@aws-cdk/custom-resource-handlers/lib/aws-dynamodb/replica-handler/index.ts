@@ -10,7 +10,7 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
 
   const tableName = event.ResourceProperties.TableName;
   const region = event.ResourceProperties.Region;
-  const skipReplicaDeletion = event.ResourceProperties.SkipReplicaDeletion;
+  const skipReplicaDeletion = event.ResourceProperties.SkipReplicaDeletion === 'true';
 
   let updateTableAction: 'Create' | 'Update' | 'Delete' | undefined;
   if (event.RequestType === 'Create' || event.RequestType === 'Delete') {
@@ -70,6 +70,7 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
   const regionReplica = replicas.find(r => r.RegionName === event.ResourceProperties.Region);
   const replicaActive = regionReplica?.ReplicaStatus === 'ACTIVE';
   const skipReplicationCompletedWait = event.ResourceProperties.SkipReplicationCompletedWait === 'true';
+  const skipReplicaDeletion = event.ResourceProperties.SkipReplicaDeletion === 'true';
 
   switch (event.RequestType) {
     case 'Create':
@@ -77,7 +78,7 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
       // Complete when replica is reported as ACTIVE
       return { IsComplete: tableActive && (replicaActive || skipReplicationCompletedWait) };
     case 'Delete':
-      if (event.ResourceProperties.SkipReplicaDeletion === true) {
+      if (skipReplicaDeletion) {
         console.log('Skipping replica deletion check since replica is set to retain.');
         return { IsComplete: true };
       }

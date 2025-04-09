@@ -13,7 +13,7 @@ import * as cpa from '../../../aws-codepipeline-actions';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
-import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names, FeatureFlags, UnscopedValidationError, ValidationError } from '../../../core';
+import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names, FeatureFlags, UnscopedValidationError, ValidationError, Annotations } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
@@ -33,6 +33,16 @@ import { writeTemplateConfiguration } from '../private/template-configuration';
  * Properties for a `CodePipeline`
  */
 export interface CodePipelineProps {
+  /**
+   * Type of the pipeline.
+   *
+   * @default - PipelineType.V2 if the feature flag `CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2`
+   * is true, PipelineType.V1 otherwise
+   *
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/pipeline-types-planning.html
+   */
+  readonly pipelineType?: cp.PipelineType;
+
   /**
    * The build step that produces the CDK Cloud Assembly
    *
@@ -479,9 +489,13 @@ export class CodePipeline extends PipelineBase {
 
       this._pipeline = this.props.codePipeline;
     } else {
+      const isDefaultV2 = FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2);
+      if (!isDefaultV2 && this.props.pipelineType === undefined) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-codepipeline:unspecifiedPipelineType', 'V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`.');
+      }
       this._pipeline = new cp.Pipeline(this, 'Pipeline', {
         pipelineName: this.props.pipelineName,
-        pipelineType: cp.PipelineType.V1,
+        pipelineType: this.props.pipelineType ?? (isDefaultV2 ? cp.PipelineType.V2 : cp.PipelineType.V1),
         crossAccountKeys: this.props.crossAccountKeys ?? false,
         crossRegionReplicationBuckets: this.props.crossRegionReplicationBuckets,
         reuseCrossRegionSupportStacks: this.props.reuseCrossRegionSupportStacks,

@@ -50,6 +50,8 @@ and only applies to `ManagedEc2EcsComputeEnvironment`s.
 The following code configures a Compute Environment to only use spot instances that
 are at most 20% the price of the on-demand instance price:
 
+_Note_: For `FargateComputeEnvironment`, while the `FargateComputeEnvironmentProps` interface includes properties like `replaceComputeEnvironment`, `terminateOnUpdate`, `updateTimeout`, and `updateToLatestImageVersion`, these specific properties are **not applicable** when configuring AWS Batch Fargate compute environments. They primarily apply to EC2-based compute environments. Please refer to the official [AWS Batch UpdateComputeEnvironment API documentation](https://docs.aws.amazon.com/batch/latest/APIReference/API_UpdateComputeEnvironment.html) and [User Guide](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) for details on updating Fargate compute environments.
+
 ```ts
 const vpc = new ec2.Vpc(this, 'VPC');
 new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {

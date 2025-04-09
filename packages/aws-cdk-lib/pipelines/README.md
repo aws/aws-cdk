@@ -1743,7 +1743,8 @@ versions.
 By default, the AWS CDK will build and publish Docker image assets using the
 `docker` command. However, by specifying the `CDK_DOCKER` environment variable,
 you can override the command that will be used to build and publish your
-assets.
+assets. To learn more, see [How to replace Docker with another container management tool](https://docs.aws.amazon.com/cdk/v2/guide/build-containers.html#build-container-replace)
+in the _AWS CDK Developer Guide_.
 
 In CDK Pipelines, the drop-in replacement for the `docker` command must be
 included in the CodeBuild environment and configured for your pipeline.
@@ -1826,6 +1827,17 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
   },
 });
 ```
+
+## Migrating a pipeline type from V1 to V2
+
+To migrate your pipeline type from V1 to V2, you just need to update the `pipelineType` property to `PipelineType.V2`.
+This migration does not cause replacement of your pipeline.
+
+When the `@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2` feature flag is set to `true` (default for new projects),
+the V2 type is selected by default if you do not specify a value for `pipelineType` property. Otherwise, the V1 type is selected.
+
+See the [CodePipeline documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/pipeline-types-planning.html)
+for more details on the differences between each type.
 
 ## Known Issues
 
