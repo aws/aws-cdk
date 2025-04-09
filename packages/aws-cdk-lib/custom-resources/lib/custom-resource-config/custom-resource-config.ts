@@ -31,8 +31,10 @@ export class CustomResourceConfig {
    *
    * This feature is currently experimental.
    */
-  public addLogRetentionLifetime(rentention: logs.RetentionDays) {
-    Aspects.of(this.scope).add(new CustomResourceLogRetention(rentention), { priority: AspectPriority.MUTATING });
+  public addLogRetentionLifetime(retention: logs.RetentionDays) {
+    Aspects.of(this.scope).add(new CustomResourceLogRetention(retention), {
+      priority: AspectPriority.MUTATING,
+    });
   }
 
   /**
