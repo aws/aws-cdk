@@ -188,6 +188,13 @@ export interface CfnAutoScalingRollingUpdate {
   readonly minSuccessfulInstancesPercent?: number;
 
   /**
+   * Specifies the percentage of instances in an Auto Scaling group that must remain in service while AWS CloudFormation
+   * updates old instances. You can specify a value from 0 to 100. AWS CloudFormation rounds to the nearest tenth of a percent.
+   * For example, if you update five instances with a minimum active percentage of 50, three instances must remain in service.
+   */
+  readonly minActiveInstancesPercent?: number;
+
+  /**
    * The amount of time that AWS CloudFormation pauses after making a change to a batch of instances to give those instances
    * time to start software applications. For example, you might need to specify PauseTime when scaling up the number of
    * instances in an Auto Scaling group.

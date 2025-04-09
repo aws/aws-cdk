@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ManagedRule, ManagedRuleIdentifiers, ResourceType, RuleProps, RuleScope } from './rule';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
-import { Duration, Lazy, Stack } from '../../core';
+import { Duration, Lazy, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -121,7 +121,7 @@ export interface CloudFormationStackNotificationCheckProps extends RuleProps {
 export class CloudFormationStackNotificationCheck extends ManagedRule {
   constructor(scope: Construct, id: string, props: CloudFormationStackNotificationCheckProps = {}) {
     if (props.topics && props.topics.length > 5) {
-      throw new Error('At most 5 topics can be specified.');
+      throw new ValidationError('At most 5 topics can be specified.', scope);
     }
 
     super(scope, id, {

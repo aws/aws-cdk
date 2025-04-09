@@ -278,6 +278,13 @@ export interface StackAsset {
   readonly assetType: AssetType;
 
   /**
+   * The display name of this asset
+   *
+   * @default - Use some generated string as display name
+   */
+  readonly displayName?: string;
+
+  /**
    * Role ARN to assume to publish
    *
    * @default - No need to assume any role
@@ -319,6 +326,7 @@ function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): S
         assetType,
         assetPublishingRoleArn: entry.destination.assumeRoleArn,
         isTemplate,
+        displayName: entry.displayName,
       });
     }
   }

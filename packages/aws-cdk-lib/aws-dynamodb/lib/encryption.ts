@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { CfnGlobalTable } from './dynamodb.generated';
 import { TableEncryption } from './shared';
 import { IKey } from '../../aws-kms';
-import { Stack, Token } from '../../core';
+import { Stack, Token, ValidationError } from '../../core';
 
 /**
  * Represents server-side encryption for a DynamoDB table.
@@ -61,11 +61,11 @@ export abstract class TableEncryptionV2 {
       public _renderReplicaSseSpecification(scope: Construct, replicaRegion: string) {
         const stackRegion = Stack.of(scope).region;
         if (Token.isUnresolved(stackRegion)) {
-          throw new Error('Replica SSE specification cannot be rendered in a region agnostic stack');
+          throw new ValidationError('Replica SSE specification cannot be rendered in a region agnostic stack', scope);
         }
 
         if (replicaKeyArns.hasOwnProperty(stackRegion)) {
-          throw new Error(`KMS key for deployment region ${stackRegion} cannot be defined in 'replicaKeyArns'`);
+          throw new ValidationError(`KMS key for deployment region ${stackRegion} cannot be defined in 'replicaKeyArns'`, scope);
         }
 
         if (replicaRegion === stackRegion) {
@@ -76,7 +76,7 @@ export abstract class TableEncryptionV2 {
 
         const regionInReplicaKeyArns = replicaKeyArns.hasOwnProperty(replicaRegion);
         if (!regionInReplicaKeyArns) {
-          throw new Error(`KMS key for ${replicaRegion} was not found in 'replicaKeyArns'`);
+          throw new ValidationError(`KMS key for ${replicaRegion} was not found in 'replicaKeyArns'`, scope);
         }
 
         return {

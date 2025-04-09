@@ -4,7 +4,7 @@ import { Operation, SystemErrorsForOperationsMetricOptions, OperationsMetricOpti
 import { IMetric, MathExpression, Metric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
 import { AddToResourcePolicyResult, Grant, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
-import { Resource } from '../../core';
+import { Resource, ValidationError } from '../../core';
 
 /**
  * Represents an instance of a DynamoDB table.
@@ -95,7 +95,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public grantStream(grantee: IGrantable, ...actions: string[]): Grant {
     if (!this.tableStreamArn) {
-      throw new Error(`No stream ARN found on the table ${this.node.path}`);
+      throw new ValidationError(`No stream ARN found on the table ${this.node.path}`, this);
     }
 
     return Grant.addToPrincipal({
@@ -131,7 +131,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public grantTableListStreams(grantee: IGrantable): Grant {
     if (!this.tableStreamArn) {
-      throw new Error(`No stream ARN found on the table ${this.node.path}`);
+      throw new ValidationError(`No stream ARN found on the table ${this.node.path}`, this);
     }
 
     return Grant.addToPrincipal({
@@ -257,7 +257,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public metricUserErrors(props?: MetricOptions): Metric {
     if (props?.dimensions) {
-      throw new Error('`dimensions` is not supported for the `UserErrors` metric');
+      throw new ValidationError('`dimensions` is not supported for the `UserErrors` metric', this);
     }
 
     return this.metric('UserErrors', { statistic: 'sum', ...props, dimensionsMap: {} });
@@ -281,7 +281,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public metricSuccessfulRequestLatency(props?: MetricOptions): Metric {
     if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
-      throw new Error('`Operation` dimension must be passed for the `SuccessfulRequestLatency` metric');
+      throw new ValidationError('`Operation` dimension must be passed for the `SuccessfulRequestLatency` metric', this);
     }
 
     const dimensionsMap = {
@@ -351,7 +351,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   public metricSystemErrors(props?: MetricOptions): Metric {
     if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
       // 'Operation' must be passed because its an operational metric.
-      throw new Error("'Operation' dimension must be passed for the 'SystemErrors' metric.");
+      throw new ValidationError("'Operation' dimension must be passed for the 'SystemErrors' metric.", this);
     }
 
     const dimensionsMap = {
@@ -368,7 +368,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   private sumMetricsForOperations(metricName: string, expressionLabel: string, props?: OperationsMetricOptions) {
     if (props?.dimensions?.Operation) {
-      throw new Error('The Operation dimension is not supported. Use the `operations` property');
+      throw new ValidationError('The Operation dimension is not supported. Use the `operations` property', this);
     }
 
     const operations = props?.operations ?? Object.values(Operation);
@@ -396,7 +396,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
     const mapper = metricNameMapper ?? (op => op.toLowerCase());
 
     if (props?.dimensions?.Operation) {
-      throw new Error('Invalid properties. Operation dimension is not supported when calculating operational metrics');
+      throw new ValidationError('Invalid properties. Operation dimension is not supported when calculating operational metrics', this);
     }
 
     for (const operation of operations) {
@@ -408,7 +408,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
       const operationMetricName = mapper(operation);
       const firstChar = operationMetricName.charAt(0);
       if (firstChar === firstChar.toUpperCase()) {
-        throw new Error(`Mapper generated an illegal operation metric name: ${operationMetricName}. Must start with a lowercase letter`);
+        throw new ValidationError(`Mapper generated an illegal operation metric name: ${operationMetricName}. Must start with a lowercase letter`, this);
       }
 
       metrics[operationMetricName] = metric;
@@ -441,7 +441,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
 
     if (options.streamActions) {
       if (!this.tableStreamArn) {
-        throw new Error(`No stream ARNs found on the table ${this.node.path}`);
+        throw new ValidationError(`No stream ARNs found on the table ${this.node.path}`, this);
       }
 
       return Grant.addToPrincipal({
@@ -452,7 +452,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
       });
     }
 
-    throw new Error(`Unexpected 'action', ${options.tableActions || options.streamActions}`);
+    throw new ValidationError(`Unexpected 'action', ${options.tableActions || options.streamActions}`, this);
   }
 
   private configureMetric(props: MetricProps) {

@@ -4,7 +4,7 @@ import { CfnConfigRule } from './config.generated';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
-import { IResource, Lazy, Resource, Stack } from '../../core';
+import { IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -424,7 +424,7 @@ export class CustomRule extends RuleNew {
     addConstructMetadata(this, props);
 
     if (!props.configurationChanges && !props.periodic) {
-      throw new Error('At least one of `configurationChanges` or `periodic` must be set to true.');
+      throw new ValidationError('At least one of `configurationChanges` or `periodic` must be set to true.', this);
     }
 
     const sourceDetails: SourceDetail[] = [];
@@ -542,10 +542,10 @@ export class CustomPolicy extends RuleNew {
     addConstructMetadata(this, props);
 
     if (!props.policyText || [...props.policyText].length === 0) {
-      throw new Error('Policy Text cannot be empty.');
+      throw new ValidationError('Policy Text cannot be empty.', this);
     }
     if ([...props.policyText].length > 10000) {
-      throw new Error('Policy Text is limited to 10,000 characters or less.');
+      throw new ValidationError('Policy Text is limited to 10,000 characters or less.', this);
     }
 
     const sourceDetails: SourceDetail[] = [];

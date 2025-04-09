@@ -678,8 +678,10 @@ You can allow the traffic from the CloudFront managed prefix list named **com.am
 ``` ts
 declare const alb: elbv2.ApplicationLoadBalancer;
 
-const peer = ec2.Peer.prefixList('pl-xxxxxxxx'); // See the management console to find actual PrefixList Id.
-alb.connections.allowFrom(peer, ec2.Port.HTTP);
+const cfOriginFacing = ec2.PrefixList.fromLookup(this, 'CloudFrontOriginFacing', {
+  prefixListName: 'com.amazonaws.global.cloudfront.origin-facing',
+});
+alb.connections.allowFrom(ec2.Peer.prefixList(cfOriginFacing.prefixListId), ec2.Port.HTTP);
 ```
 
 #### The VPC origin service security group

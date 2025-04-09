@@ -1,10 +1,9 @@
 import { Construct, IConstruct } from 'constructs';
-import { getWarnings } from './util';
 import { Template } from '../../assertions';
 import { Bucket, CfnBucket } from '../../aws-s3';
 import * as cxschema from '../../cloud-assembly-schema';
 import { App, CfnResource, Stack, Tag, Tags } from '../lib';
-import { IAspect, Aspects, AspectPriority } from '../lib/aspect';
+import { IAspect, Aspects, AspectPriority, _aspectTreeRevisionReader } from '../lib/aspect';
 import { MissingRemovalPolicies, RemovalPolicies } from '../lib/removal-policies';
 import { RemovalPolicy } from '../lib/removal-policy';
 
@@ -298,7 +297,7 @@ describe('aspect', () => {
 
     expect(() => {
       app.synth();
-    }).toThrow('Cannot invoke Aspect Tag with priority 0 on node My-Stack: an Aspect Tag with a lower priority (10) was already invoked on this node.');
+    }).toThrow('an Aspect Tag with a lower priority');
   });
 
   test('Infinitely recursing Aspect is caught with error', () => {
@@ -338,14 +337,13 @@ describe('aspect', () => {
     Aspects.of(root).add(new Tag('AspectA', 'Visited'));
 
     // "Monkey patching" - Override `applied` to simulate its absence
-    Object.defineProperty(Aspects.prototype, 'applied', {
-      value: undefined,
-      configurable: true,
-    });
+    const appliedGetter = jest.spyOn(Aspects.prototype, 'applied', 'get').mockReturnValue(undefined as any);
 
     expect(() => {
       app.synth();
     }).not.toThrow();
+
+    appliedGetter.mockRestore();
   });
 
   test('RemovalPolicy: higher priority wins', () => {
@@ -455,5 +453,72 @@ describe('aspect', () => {
       UpdateReplacePolicy: 'Retain',
       DeletionPolicy: 'Retain',
     });
+  });
+
+  test.each([
+    'on self',
+    'on parent',
+  ] as const)('aspect can insert another aspect %s in between other ones', (addWhere) => {
+    // Test that between two pre-existing aspects with LOW and HIGH priorities,
+    // the LOW aspect can add one in the middle, when stabilization is enabled.
+    //
+    // With stabilization (Aspects V2), we are stricter about the ordering and we would
+    // throw if something doesn't work.
+
+    // GIVEN
+    const app = new App();
+    const root = new MyConstruct(app, 'Root');
+    const aspectTarget = new MyConstruct(root, 'MyConstruct');
+
+    // WHEN
+    // - Aspect with prio 100 adds an Aspect with prio 500
+    // - An Aspect with prio 700 also exists
+    // We should execute all and in the right order.
+    const executed = new Array<string>();
+
+    class TestAspect implements IAspect {
+      constructor(private readonly name: string, private readonly block?: () => void) {
+      }
+
+      visit(node: IConstruct): void {
+        // Only do something for the target node
+        if (node.node.path === 'Root/MyConstruct') {
+          executed.push(this.name);
+          this.block?.();
+        }
+      }
+    }
+
+    Aspects.of(aspectTarget).add(new TestAspect('one', () => {
+      // We either add the new aspect on ourselves, or on an ancestor.
+      //
+      // In either case, it should execute next, before the 700 executes.
+      const addHere = addWhere === 'on self' ? aspectTarget : root;
+
+      Aspects.of(addHere).add(new TestAspect('two'), { priority: 500 });
+    }), { priority: 100 });
+    Aspects.of(aspectTarget).add(new TestAspect('three'), { priority: 700 });
+
+    // THEN: should not throw and execute in the right order
+    app.synth({ aspectStabilization: true });
+
+    expect(executed).toEqual(['one', 'two', 'three']);
+  });
+
+  test('changing an aspect\'s priority invalidates the aspect tree', () => {
+    const app = new App();
+    const ctr = new MyConstruct(app, 'Root');
+
+    // GIVEN
+    const aspect = new MyAspect();
+    Aspects.of(ctr).add(aspect);
+    const currentRevision = _aspectTreeRevisionReader(ctr);
+    const initialRevision = currentRevision();
+
+    // WHEN
+    Aspects.of(ctr).applied[0].priority = 500;
+
+    // THEN
+    expect(currentRevision()).not.toEqual(initialRevision);
   });
 });

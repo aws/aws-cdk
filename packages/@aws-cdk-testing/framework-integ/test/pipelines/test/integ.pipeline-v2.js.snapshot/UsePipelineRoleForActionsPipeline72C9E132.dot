@@ -1,0 +1,26 @@
+digraph G {
+  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen
+  # because the layout looks more natural that way.
+  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.
+  # To render: `dot -Tsvg UsePipelineRoleForActionsPipeline72C9E132.dot > graph.svg`, open in a browser.
+  node [shape="box"];
+"BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth";
+"Source.c8b9720474aae65e79d5246d0d38babc2ba553a031" -> "Build.Synth";
+"BEGIN Build" -> "Build.Synth";
+"Build.Synth" -> "END Build";
+"BEGIN MyWave" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END MyWave" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth" -> "BEGIN MyWave";
+"MyWave.Consume";
+"MyWave.Produce" -> "MyWave.Consume";
+"MyWave.Produce";
+"BEGIN MyWave" -> "MyWave.Produce";
+"MyWave.Consume" -> "END MyWave";
+"BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Source.c8b9720474aae65e79d5246d0d38babc2ba553a031";
+"BEGIN Source" -> "Source.c8b9720474aae65e79d5246d0d38babc2ba553a031";
+"Source.c8b9720474aae65e79d5246d0d38babc2ba553a031" -> "END Source";
+}

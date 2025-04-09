@@ -44,6 +44,14 @@ new ec2.LaunchTemplate(stack, 'LTWithMachineImage', {
   }),
 });
 
+const pg = new ec2.PlacementGroup(stack, 'pg', {
+  strategy: ec2.PlacementGroupStrategy.SPREAD,
+});
+
+new ec2.LaunchTemplate(stack, 'LTWithPlacementGroup', {
+  placementGroup: pg,
+});
+
 new integ.IntegTest(app, 'LambdaTest', {
   testCases: [stack],
   diffAssets: true,

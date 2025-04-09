@@ -233,6 +233,9 @@
   "aws-docdbelastic": [
     "AWS::DocDBElastic"
   ],
+  "aws-dsql": [
+    "AWS::DSQL"
+  ],
   "aws-dynamodb": [
     "AWS::DynamoDB"
   ],

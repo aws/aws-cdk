@@ -1,0 +1,12 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "RdsClusterEngineLifecycleSupportInteg/DefaultTest": {
+      "stacks": [
+        "RdsClusterEngineLifecycleSupportStack"
+      ],
+      "assertionStack": "RdsClusterEngineLifecycleSupportInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "RdsClusterEngineLifecycleSupportIntegDefaultTestDeployAssert6F5E7AEF"
+    }
+  }
+}

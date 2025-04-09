@@ -23,7 +23,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
       - [Code Verification](#code-verification)
       - [Link Verification](#link-verification)
     - [Sign In](#sign-in)
-      - [Choise-based authentication](#choice-based-authentication-passwordless-sign-in--passkey-sign-in)
+      - [Choice-based authentication](#choice-based-authentication-passwordless-sign-in--passkey-sign-in)
     - [Attributes](#attributes)
     - [Attribute verification](#attribute-verification)
     - [Security](#security)
@@ -613,7 +613,8 @@ userpool.addTrigger(cognito.UserPoolOperation.USER_MIGRATION, new lambda.Functio
 }));
 ```
 
-Additionally, only the pre token generation Lambda trigger supports trigger events with lambda version V2.0:
+Additionally, only the pre token generation Lambda trigger supports trigger events with lambda version V2.0 or V3.0.
+For details, see [Pre Token Generation Lambda Trigger](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html).
 
 ```ts
 declare const userpool: cognito.UserPool;

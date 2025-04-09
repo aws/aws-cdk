@@ -9,7 +9,7 @@ export function hash<A>(obj: A) {
 }
 
 export function actionName<A>(node: GraphNode<A>, parent: GraphNode<A>) {
-  const names = node.ancestorPath(parent).map(n => n.id).map(sanitizeName);
+  const names = node.ancestorPath(parent).map(n => n.displayName ?? n.id).map(sanitizeName);
 
   // Something slightly complicated here:
   //
@@ -34,7 +34,8 @@ export function actionName<A>(node: GraphNode<A>, parent: GraphNode<A>) {
   const maxLength = Math.max(componentMin, Math.floor((totalMax - dots) / names.length));
   const trimmedNames = names.map(name => limitIdentifierLength(name, maxLength));
 
-  return limitIdentifierLength(trimmedNames.join('.'), totalMax); // Final trim in case we couldn't make it
+  // Final trim in case we couldn't make it. Allow room for some digits
+  return limitIdentifierLength(trimmedNames.join('.'), totalMax - 2);
 }
 
 export function stackVariableNamespace(stack: StackDeployment) {
@@ -42,7 +43,7 @@ export function stackVariableNamespace(stack: StackDeployment) {
 }
 
 function sanitizeName(x: string): string {
-  return x.replace(/[^A-Za-z0-9.@\-_]/g, '_');
+  return x.replace(/[^A-Za-z0-9.@\-_]+/g, '_');
 }
 
 /**

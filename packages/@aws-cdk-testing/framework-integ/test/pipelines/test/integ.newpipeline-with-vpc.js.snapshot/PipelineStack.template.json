@@ -753,7 +753,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "FileAsset1",
+        "Name": "Asset",
         "RoleArn": {
          "Fn::GetAtt": [
           "PipelineCodeBuildActionRole226DB0CB",
@@ -779,7 +779,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "FileAsset2",
+        "Name": "Asset2",
         "RoleArn": {
          "Fn::GetAtt": [
           "PipelineCodeBuildActionRole226DB0CB",
@@ -1957,7 +1957,7 @@
     "Cache": {
      "Type": "NO_CACHE"
     },
-    "Description": "Pipeline step PipelineStack/Pipeline/Assets/FileAsset1",
+    "Description": "Pipeline step PipelineStack/Pipeline/Assets/Asset",
     "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
@@ -2056,7 +2056,7 @@
     "Cache": {
      "Type": "NO_CACHE"
     },
-    "Description": "Pipeline step PipelineStack/Pipeline/Assets/FileAsset2",
+    "Description": "Pipeline step PipelineStack/Pipeline/Assets/Asset2",
     "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",

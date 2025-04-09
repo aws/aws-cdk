@@ -1000,6 +1000,8 @@
     "events-generic:aws-cdk-lib.aws_appconfig.HostedConfiguration",
     "events-generic:aws-cdk-lib.aws_appconfig.SourcedConfiguration",
     "construct-ctor-props-type:aws-cdk-lib.aws_inspector.AssessmentTemplate",
-    "props-physical-name:aws-cdk-lib.aws_inspector.AssessmentTemplateProps"
+    "props-physical-name:aws-cdk-lib.aws_inspector.AssessmentTemplateProps",
+    "attribute-tag:aws-cdk-lib.aws_scheduler.Schedule.scheduleGroup",
+    "docs-public-apis:aws-cdk-lib.aws_scheduler.ContextAttribute.name"
   ]
 }

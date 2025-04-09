@@ -39,7 +39,37 @@ describe('stack', () => {
     }).toThrow(`Stack name must be <= 128 characters. Stack name: '${reallyLongStackName}'`);
   });
 
-  test('stack objects have some template-level propeties, such as Description, Version, Transform', () => {
+  test.each([
+    ['Has:Colon', 'Has_Colon'],
+    ['0startWithNumber', '0startWithNumber'],
+    ['Has-Dash', 'Has-Dash'],
+    [undefined, 'Default'],
+    ['With_Underscore', 'With_Underscore'],
+    ['with.dot', 'with.dot'],
+    ['with/slash', 'with--slash'],
+    ['with space', 'with_space'],
+    ['UPPERCASE', 'UPPERCASE'],
+    ['mixedCase123', 'mixedCase123'],
+    ['!@#$%^', '______'],
+    ['123456', '123456'],
+    ['a-b-c', 'a-b-c'],
+    ['x_y_z', 'x_y_z'],
+    ['abc.def.ghi', 'abc.def.ghi'],
+  ])('valid stack artifact id for construct id \'%s\'', (id, expected) => {
+    // GIVEN
+    const app = new App({});
+
+    // WHEN
+    const stack = new Stack(app, id, {
+      stackName: 'ValidStackName',
+    });
+
+    // THEN
+    expect(stack.stackName).toBe('ValidStackName');
+    expect(stack.artifactId).toBe(expected);
+  });
+
+  test('stack objects have some template-level properties, such as Description, Version, Transform', () => {
     const stack = new Stack();
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
     stack.templateOptions.description = 'This is my description';

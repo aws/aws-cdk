@@ -12,7 +12,7 @@ body:
 
         **⚠️ Please read this before filling out the form below:**  
         If the bug you are reporting is a security-related issue or a security vulnerability,
-        please report it via [Report a security vulnerability](https://github.com/aws/aws-cdk/security/advisories/new) instead of this template.
+        please report it via [Report a security vulnerability](https://github.com/aws/aws-cdk/security/policy) instead of this template.
   - type: textarea
     id: description
     attributes:

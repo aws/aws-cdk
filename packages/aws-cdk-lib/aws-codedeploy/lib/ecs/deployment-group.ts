@@ -6,6 +6,7 @@ import * as ecs from '../../../aws-ecs';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
+import { ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
@@ -239,15 +240,11 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
       const cfnSvc = (props.service as ecs.BaseService).node.defaultChild as ecs.CfnService;
       if (cfnSvc.deploymentController === undefined ||
         (cfnSvc.deploymentController! as ecs.CfnService.DeploymentControllerProperty).type !== ecs.DeploymentControllerType.CODE_DEPLOY) {
-        throw new Error(
-          'The ECS service associated with the deployment group must use the CODE_DEPLOY deployment controller type',
-        );
+        throw new ValidationError('The ECS service associated with the deployment group must use the CODE_DEPLOY deployment controller type', this);
       }
 
       if (cfnSvc.taskDefinition !== (props.service as ecs.BaseService).taskDefinition.family) {
-        throw new Error(
-          'The ECS service associated with the deployment group must specify the task definition using the task definition family name only. Otherwise, the task definition cannot be updated in the stack',
-        );
+        throw new ValidationError('The ECS service associated with the deployment group must specify the task definition using the task definition family name only. Otherwise, the task definition cannot be updated in the stack', this);
       }
     }
 
@@ -278,7 +275,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
           ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
         }),
       }),
-      autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
+      autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this, this.alarms, props.autoRollback) }),
     });
 
     this._setNameAndArn(resource, this.application);

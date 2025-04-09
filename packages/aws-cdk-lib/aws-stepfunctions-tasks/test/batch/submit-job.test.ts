@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { Template } from '../../../assertions';
 import * as batch from '../../../aws-batch';
 import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
@@ -511,4 +512,81 @@ test('throws if tags has invalid value', () => {
   }).toThrow(
     /Tag value maximum size is 256/,
   );
+});
+
+test('supports passing jobQueueArn as JsonPath or JSONata', () => {
+  // WHEN
+  const task = new BatchSubmitJob(stack, 'Task', {
+    jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
+    jobQueueArn: sfn.JsonPath.stringAt('$.jobQueueArn'),
+    jobName: sfn.JsonPath.stringAt('$.jobName'),
+  });
+
+  new sfn.StateMachine(stack, 'ParentStateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::batch:submitJob.sync',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      'JobDefinition': { Ref: 'JobDefinition24FFE3ED' },
+      'JobName.$': '$.jobName',
+      'JobQueue.$': '$.jobQueueArn',
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'batch:SubmitJob',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: [
+            'events:PutTargets',
+            'events:PutRule',
+            'events:DescribeRule',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':events:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':rule/StepFunctionsGetEventsForBatchJobsRule',
+              ],
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
 });
