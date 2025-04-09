@@ -5,7 +5,7 @@ import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import { Aws, Annotations, Duration, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { propertyInjectionDecorator } from '../../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../../core/lib/prop-injectors';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
@@ -292,7 +292,7 @@ class ApplicationTargetGroupMetrics implements IApplicationTargetGroupMetrics {
 /**
  * Define an Application Target Group
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class ApplicationTargetGroup extends TargetGroupBase implements IApplicationTargetGroup {
   /**
    * Uniquely identifies this class.

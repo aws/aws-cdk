@@ -5,7 +5,7 @@ import { Code, Function, Runtime } from '../../aws-lambda';
 import { BlockPublicAccess, Bucket, BucketEncryption, BucketProps } from '../../aws-s3';
 import { Annotations, RemovalPolicy, Stack, Stage } from '../lib';
 import { App } from '../lib/app';
-import { applyInjectors, InjectionContext, IPropertyInjector, PropertyInjectors } from '../lib/prop-injectors';
+import { applyInjectors, findInjectorFromConstruct, InjectionContext, IPropertyInjector, PropertyInjectors } from '../lib/prop-injectors';
 
 // Define Injectors for our testing
 class DoNothingInjector implements IPropertyInjector {
@@ -624,5 +624,57 @@ describe('DynamoDB Table Injector', () => {
     Template.fromStack(stack2).templateMatches(
       Match.exact(template),
     );
+  });
+});
+
+describe('Test findInjectorsFromConstruct', () => {
+  test('Has Injectors in app', () => {
+    // GIVEN
+    const app = new App({
+      propertyInjectors: [dnBucket],
+    });
+    const stack = new Stack(app, 'MyStack', {
+      propertyInjectors: [
+        dnFunction,
+        dnKey,
+      ],
+    });
+
+    // WHEN
+    const injector = findInjectorFromConstruct(stack, Bucket.PROPERTY_INJECTION_ID);
+
+    // THEN
+    expect(injector?.constructUniqueId).toEqual(Bucket.PROPERTY_INJECTION_ID);
+  });
+
+  test('Has Injectors in stack', () => {
+    // GIVEN
+    const app = new App({
+      propertyInjectors: [dnBucket],
+    });
+    const stack = new Stack(app, 'MyStack', {
+      propertyInjectors: [
+        dnFunction,
+        dnKey,
+      ],
+    });
+
+    // WHEN
+    const injector = findInjectorFromConstruct(stack, Function.PROPERTY_INJECTION_ID);
+
+    // THEN
+    expect(injector?.constructUniqueId).toEqual(Function.PROPERTY_INJECTION_ID);
+  });
+
+  test('No Injectors', () => {
+    // GIVEN
+    const app = new App({});
+    const stack = new Stack(app, 'MyStack', {});
+
+    // WHEN
+    const injector = findInjectorFromConstruct(stack, TableV2.PROPERTY_INJECTION_ID);
+
+    // THEN
+    expect(injector).toBeUndefined();
   });
 });

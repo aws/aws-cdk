@@ -6,7 +6,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, FeatureFlags, Fn, IResolveContext, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretValue, Stack, Token, TokenComparison } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 import * as cxapi from '../../cx-api';
 
 const SECRET_SYMBOL = Symbol.for('@aws-cdk/secretsmanager.Secret');
@@ -491,7 +491,7 @@ abstract class SecretBase extends Resource implements ISecret {
 /**
  * Creates a new secret in AWS SecretsManager.
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class Secret extends SecretBase {
   /**
    * Uniquely identifies this class.

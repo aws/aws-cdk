@@ -12,7 +12,7 @@ import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * HTTP status code to failover to second origin
@@ -745,7 +745,7 @@ export interface CloudFrontWebDistributionAttributes {
  * @resource AWS::CloudFront::Distribution
  * @deprecated Use `Distribution` instead
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class CloudFrontWebDistribution extends cdk.Resource implements IDistribution {
   /**
    * Uniquely identifies this class.

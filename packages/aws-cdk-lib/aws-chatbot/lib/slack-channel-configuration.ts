@@ -7,7 +7,7 @@ import * as logs from '../../aws-logs';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Properties for a new Slack channel configuration
@@ -206,7 +206,7 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
 /**
  * A new Slack channel configuration
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
   /**
    * Uniquely identifies this class.

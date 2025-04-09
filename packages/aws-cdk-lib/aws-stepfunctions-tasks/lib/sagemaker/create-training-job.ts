@@ -5,7 +5,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Duration, Lazy, Size, Stack, Token } from '../../../core';
-import { propertyInjectionDecorator } from '../../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../../core/lib/prop-injectors';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
 interface SageMakerCreateTrainingJobOptions {
@@ -111,7 +111,7 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps,
 /**
  * Class representing the SageMaker Create Training Job task.
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam.IGrantable, ec2.IConnectable {
   /**
    * Uniquely identifies this class.

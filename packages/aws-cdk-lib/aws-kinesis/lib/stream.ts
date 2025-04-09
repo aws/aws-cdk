@@ -7,7 +7,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, RemovalPolicy, Resource, ResourceProps, Stack, Token } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamSummary',
@@ -790,7 +790,7 @@ export interface StreamProps {
 /**
  * A Kinesis stream. Can be encrypted with a KMS key.
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class Stream extends StreamBase {
   /**
    * Uniquely identifies this class.

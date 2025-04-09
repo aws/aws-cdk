@@ -3,7 +3,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as elb from '../../../aws-elasticloadbalancing';
 import { Lazy, Resource, Stack, Annotations, Token } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../../core/lib/prop-injectors';
 import { AvailabilityZoneRebalancing } from '../availability-zone-rebalancing';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
@@ -137,7 +137,7 @@ export interface Ec2ServiceAttributes {
  *
  * @resource AWS::ECS::Service
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class Ec2Service extends BaseService implements IEc2Service {
   /**
    * Uniquely identifies this class.

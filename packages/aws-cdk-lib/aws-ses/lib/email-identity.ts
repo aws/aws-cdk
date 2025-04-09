@@ -7,7 +7,7 @@ import { IPublicHostedZone } from '../../aws-route53';
 import * as route53 from '../../aws-route53';
 import { IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * An email identity
@@ -383,7 +383,7 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
 /**
  * An email identity
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class EmailIdentity extends EmailIdentityBase {
   /**
    * Uniquely identifies this class.

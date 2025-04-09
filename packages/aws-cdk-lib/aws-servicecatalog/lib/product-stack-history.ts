@@ -6,7 +6,7 @@ import { DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY } from './common';
 import { CloudFormationProductVersion } from './product';
 import { ProductStack } from './product-stack';
 import { Names } from '../../core';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Properties for a ProductStackHistory.
@@ -50,7 +50,7 @@ export interface ProductStackHistoryProps {
 /**
  * A Construct that contains a Service Catalog product stack with its previous deployments maintained.
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class ProductStackHistory extends Construct {
   /**
    * Uniquely identifies this class.

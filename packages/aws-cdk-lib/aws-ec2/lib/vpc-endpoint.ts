@@ -10,7 +10,7 @@ import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * A VPC endpoint.
@@ -845,7 +845,7 @@ export interface IInterfaceVpcEndpoint extends IVpcEndpoint, IConnectable {
  * A interface VPC endpoint.
  * @resource AWS::EC2::VPCEndpoint
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEndpoint {
   /**
    * Uniquely identifies this class.

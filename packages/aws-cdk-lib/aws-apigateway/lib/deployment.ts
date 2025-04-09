@@ -6,7 +6,7 @@ import { Lazy, RemovalPolicy, Resource, CfnResource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 export interface DeploymentProps {
   /**
@@ -70,7 +70,7 @@ export interface DeploymentProps {
  * model. Use the `node.addDependency(dep)` method to circumvent that. This is done
  * automatically for the `restApi.latestDeployment` deployment.
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class Deployment extends Resource {
   /**
    * Uniquely identifies this class.

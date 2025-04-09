@@ -19,7 +19,7 @@ import {
   IResource, Fn, Lazy, Resource, Stack, Token, Tags, Names, CustomResource, FeatureFlags,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 import { RestrictDefaultSgProvider } from '../../custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated';
 import * as cxapi from '../../cx-api';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
@@ -1251,7 +1251,7 @@ export interface SubnetConfiguration {
  *
  * @resource AWS::EC2::VPC
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class Vpc extends VpcBase {
   /**
    * Uniquely identifies this class.
@@ -2017,7 +2017,7 @@ export interface SubnetProps {
  *
  * @resource AWS::EC2::Subnet
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class Subnet extends Resource implements ISubnet {
   /**
    * Uniquely identifies this class.
@@ -2392,7 +2392,7 @@ export interface PublicSubnetAttributes extends SubnetAttributes { }
 /**
  * Represents a public VPC subnet resource
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class PublicSubnet extends Subnet implements IPublicSubnet {
   /**
    * Uniquely identifies this class.
@@ -2439,7 +2439,7 @@ export interface PrivateSubnetAttributes extends SubnetAttributes { }
 /**
  * Represents a private VPC subnet resource
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class PrivateSubnet extends Subnet implements IPrivateSubnet {
   /**
    * Uniquely identifies this class.

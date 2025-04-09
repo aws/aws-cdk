@@ -5,7 +5,7 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import { Aws, Names } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Construction properties for a DatabaseSecret.
@@ -76,7 +76,7 @@ export interface DatabaseSecretProps {
  *
  * @resource AWS::SecretsManager::Secret
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class DatabaseSecret extends secretsmanager.Secret {
   /**
    * Uniquely identifies this class.

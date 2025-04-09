@@ -9,7 +9,7 @@ import { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import { ArnFormat, Duration, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../../core/lib/prop-injectors';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
 import { DomainMappingOptions } from '../common/stage';
@@ -353,7 +353,7 @@ export interface HttpApiAttributes {
  * Create a new API Gateway HTTP API endpoint.
  * @resource AWS::ApiGatewayV2::Api
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class HttpApi extends HttpApiBase {
   /**
    * Uniquely identifies this class.

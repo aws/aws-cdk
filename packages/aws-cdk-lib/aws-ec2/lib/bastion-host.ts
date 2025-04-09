@@ -12,7 +12,7 @@ import { IVpc, SubnetSelection } from './vpc';
 import { IPrincipal, IRole, PolicyStatement } from '../../aws-iam';
 import { CfnOutput, FeatureFlags, Resource, Stack } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 import { BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT } from '../../cx-api';
 
 /**
@@ -139,7 +139,7 @@ export interface BastionHostLinuxProps {
  *
  * @resource AWS::EC2::Instance
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class BastionHostLinux extends Resource implements IInstance {
   /**
    * Uniquely identifies this class.

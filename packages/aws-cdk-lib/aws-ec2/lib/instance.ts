@@ -18,7 +18,7 @@ import * as iam from '../../aws-iam';
 import { Annotations, AspectPriority, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Resource, Stack, Tags, Token } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -403,7 +403,7 @@ export interface InstanceProps {
 /**
  * This represents a single EC2 instance
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class Instance extends Resource implements IInstance {
   /**
    * Uniquely identifies this class.

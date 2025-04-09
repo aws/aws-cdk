@@ -7,7 +7,7 @@ import { RestApi, RestApiProps } from './restapi';
 import * as lambda from '../../aws-lambda';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 export interface LambdaRestApiProps extends RestApiProps {
   /**
@@ -52,7 +52,7 @@ export interface LambdaRestApiProps extends RestApiProps {
  * method from the specified path. If not defined, you will need to explicity
  * add resources and methods to the API.
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class LambdaRestApi extends RestApi {
   /**
    * Uniquely identifies this class.

@@ -4,7 +4,7 @@ import { ISigningProfile } from '../../aws-signer';
 import { ArnFormat, IResource, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Code signing configuration policy for deployment validation failure.
@@ -73,7 +73,7 @@ export interface CodeSigningConfigProps {
  *
  * @resource AWS::Lambda::CodeSigningConfig
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
   /**
    * Uniquely identifies this class.

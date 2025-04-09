@@ -20,7 +20,7 @@ import {
   Token,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -596,7 +596,7 @@ export interface KeyProps {
  *
  * @resource AWS::KMS::Key
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class Key extends KeyBase {
   /**
    * Uniquely identifies this class.

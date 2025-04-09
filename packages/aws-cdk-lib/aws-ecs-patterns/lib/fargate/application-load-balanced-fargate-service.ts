@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ISecurityGroup, SubnetSelection } from '../../../aws-ec2';
 import { FargateService, FargateTaskDefinition, HealthCheck } from '../../../aws-ecs';
 import { FeatureFlags, Token } from '../../../core';
-import { propertyInjectionDecorator } from '../../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../../core/lib/prop-injectors';
 import * as cxapi from '../../../cx-api';
 import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
@@ -59,7 +59,7 @@ export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationL
 /**
  * A Fargate service running on an ECS cluster fronted by an application load balancer.
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalancedServiceBase {
   /**
    * Uniquely identifies this class.

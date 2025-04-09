@@ -5,7 +5,7 @@ import { CfnAuthorizer } from '.././index';
 import { Duration, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../../core/lib/prop-injectors';
 import { IAuthorizer } from '../common';
 
 /**
@@ -136,7 +136,7 @@ export interface HttpAuthorizerAttributes {
  * An authorizer for Http Apis
  * @resource AWS::ApiGatewayV2::Authorizer
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
   /**
    * Uniquely identifies this class.

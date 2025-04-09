@@ -7,7 +7,7 @@ import * as kms from '../../aws-kms';
 import { Duration, RemovalPolicy, Stack, Token, ArnFormat, Annotations } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Properties for creating a new Queue
@@ -283,7 +283,7 @@ export enum RedrivePermission {
 /**
  * A new Amazon SQS queue
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class Queue extends QueueBase {
   /**
    * Uniquely identifies this class.

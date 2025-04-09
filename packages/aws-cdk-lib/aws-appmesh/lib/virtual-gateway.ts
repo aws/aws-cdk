@@ -8,7 +8,7 @@ import { VirtualGatewayListener, VirtualGatewayListenerConfig } from './virtual-
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Interface which all Virtual Gateway based classes must implement
@@ -130,7 +130,7 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_gateways.html
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class VirtualGateway extends VirtualGatewayBase {
   /**
    * Uniquely identifies this class.

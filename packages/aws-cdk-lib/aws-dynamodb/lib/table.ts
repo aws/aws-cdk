@@ -23,7 +23,7 @@ import {
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -1051,7 +1051,7 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
 /**
  * Provides a DynamoDB table.
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class Table extends TableBase {
   /**
    * Uniquely identifies this class.

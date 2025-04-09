@@ -5,7 +5,7 @@ import { SubscriptionFilter } from './subscription-filter';
 import { ITopic } from './topic-base';
 import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
 import { IQueue } from '../../aws-sqs';
-import { propertyInjectionDecorator, Resource } from '../../core';
+import { propertyInjectable, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
@@ -94,7 +94,7 @@ export interface SubscriptionProps extends SubscriptionOptions {
  * Prefer to use the `ITopic.addSubscription()` methods to create instances of
  * this class.
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class Subscription extends Resource {
   /**
    * Uniquely identifies this class.

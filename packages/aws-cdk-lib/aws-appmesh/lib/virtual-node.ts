@@ -8,7 +8,7 @@ import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-l
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Interface which all VirtualNode based classes must implement
@@ -134,7 +134,7 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_nodes.html
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class VirtualNode extends VirtualNodeBase {
   /**
    * Uniquely identifies this class.

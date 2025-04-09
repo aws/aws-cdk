@@ -7,7 +7,7 @@ import * as iam from '../../aws-iam';
 import { Duration, IResource, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * The auth types for a function url
@@ -201,7 +201,7 @@ export interface FunctionUrlProps extends FunctionUrlOptions {
  *
  * @resource AWS::Lambda::Url
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class FunctionUrl extends Resource implements IFunctionUrl {
   /**
    * Uniquely identifies this class.

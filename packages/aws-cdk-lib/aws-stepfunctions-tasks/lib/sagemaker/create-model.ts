@@ -4,7 +4,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { propertyInjectionDecorator } from '../../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../../core/lib/prop-injectors';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
 interface SageMakerCreateModelOptions {
@@ -86,7 +86,7 @@ export interface SageMakerCreateModelProps extends sfn.TaskStateBaseProps, SageM
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGrantable, ec2.IConnectable {
   /**
    * Uniquely identifies this class.

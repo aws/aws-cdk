@@ -3,7 +3,7 @@ import { INetworkListener } from './network-listener';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { propertyInjectionDecorator } from '../../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../../core/lib/prop-injectors';
 import {
   BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
@@ -131,7 +131,7 @@ class NetworkTargetGroupMetrics implements INetworkTargetGroupMetrics {
 /**
  * Define a Network Target Group
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class NetworkTargetGroup extends TargetGroupBase implements INetworkTargetGroup {
   /**
    * Uniquely identifies this class.

@@ -30,7 +30,7 @@ import {
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
 import * as cxapi from '../../cx-api';
 import * as regionInformation from '../../region-info';
@@ -1966,7 +1966,7 @@ export interface Tag {
  * });
  *
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class Bucket extends BucketBase {
   /**
    * Uniquely identifies this class.

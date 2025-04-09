@@ -34,7 +34,7 @@ import {
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 import * as cxapi from '../../cx-api';
 
 const HASH_KEY_TYPE = 'HASH';
@@ -406,7 +406,7 @@ export interface TableAttributesV2 {
 /**
  * A DynamoDB Table.
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class TableV2 extends TableBaseV2 {
   /**
    * Uniquely identifies this class.

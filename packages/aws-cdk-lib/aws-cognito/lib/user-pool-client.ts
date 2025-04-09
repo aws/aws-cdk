@@ -8,7 +8,7 @@ import { CfnApp } from '../../aws-pinpoint';
 import { IResource, Resource, Duration, Stack, SecretValue, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
 
 /**
@@ -427,7 +427,7 @@ export interface IUserPoolClient extends IResource {
 /**
  * Define a UserPool App Client
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class UserPoolClient extends Resource implements IUserPoolClient {
   /**
    * Uniquely identifies this class.

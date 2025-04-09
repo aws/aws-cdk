@@ -4,7 +4,7 @@ import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { Names, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../../core/lib/prop-injectors';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 
 /**
@@ -118,7 +118,7 @@ export class UserPoolIdentityProviderSamlMetadata {
  * Represents an identity provider that integrates with SAML.
  * @resource AWS::Cognito::UserPoolIdentityProvider
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
   /**
    * Uniquely identifies this class.

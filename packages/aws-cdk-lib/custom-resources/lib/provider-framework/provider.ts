@@ -10,7 +10,7 @@ import * as kms from '../../../aws-kms';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import { Duration, ValidationError } from '../../../core';
-import { propertyInjectionDecorator } from '../../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../../core/lib/prop-injectors';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
 const FRAMEWORK_HANDLER_TIMEOUT = Duration.minutes(15); // keep it simple for now
@@ -183,7 +183,7 @@ export interface ProviderProps {
 /**
  * Defines an AWS CloudFormation custom resource provider.
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class Provider extends Construct implements ICustomResourceProvider {
   /**
    * Uniquely identifies this class.

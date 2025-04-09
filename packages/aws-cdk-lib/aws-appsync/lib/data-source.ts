@@ -12,7 +12,7 @@ import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
 import { IServerlessCluster, IDatabaseCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
 import { IResolvable, Lazy, Stack, Token } from '../../core';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Base properties for an AppSync datasource
@@ -220,7 +220,7 @@ export interface DynamoDbDataSourceProps extends BackedDataSourceProps {
 /**
  * An AppSync datasource backed by a DynamoDB table
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class DynamoDbDataSource extends BackedDataSource {
   /**
    * Uniquely identifies this class.
@@ -280,7 +280,7 @@ export interface HttpDataSourceProps extends BackedDataSourceProps {
 /**
  * An AppSync datasource backed by a http endpoint
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class HttpDataSource extends BackedDataSource {
   /**
    * Uniquely identifies this class.
@@ -315,7 +315,7 @@ export interface EventBridgeDataSourceProps extends BackedDataSourceProps {
 /**
  * An AppSync datasource backed by EventBridge
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class EventBridgeDataSource extends BackedDataSource {
   /**
    * Uniquely identifies this class.
@@ -346,7 +346,7 @@ export interface LambdaDataSourceProps extends BackedDataSourceProps {
 /**
  * An AppSync datasource backed by a Lambda function
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class LambdaDataSource extends BackedDataSource {
   /**
    * Uniquely identifies this class.
@@ -407,7 +407,7 @@ export interface RdsDataSourcePropsV2 extends BackedDataSourceProps {
 /**
  * An AppSync datasource backed by RDS
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class RdsDataSource extends BackedDataSource {
   /**
    * Uniquely identifies this class.
@@ -504,7 +504,7 @@ export interface OpenSearchDataSourceProps extends BackedDataSourceProps {
 /**
  * An Appsync datasource backed by OpenSearch
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class OpenSearchDataSource extends BackedDataSource {
   /**
    * Uniquely identifies this class.

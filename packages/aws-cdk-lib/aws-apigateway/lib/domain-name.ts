@@ -9,7 +9,7 @@ import { IBucket } from '../../aws-s3';
 import { IResource, Names, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Options for creating an api mapping
@@ -117,7 +117,7 @@ export interface IDomainName extends IResource {
   readonly domainNameAliasHostedZoneId: string;
 }
 
-@propertyInjectionDecorator
+@propertyInjectable
 export class DomainName extends Resource implements IDomainName {
   /**
    * Uniquely identifies this class.

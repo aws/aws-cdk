@@ -26,7 +26,7 @@ import {
   Tokenization, UnscopedValidationError, ValidationError, withResolved,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 
 /**
@@ -1277,7 +1277,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
  * The ASG spans the availability zones specified by vpcSubnets, falling back to
  * the Vpc default strategy if not specified.
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class AutoScalingGroup extends AutoScalingGroupBase implements
   elb.ILoadBalancerTarget,
   ec2.IConnectable,

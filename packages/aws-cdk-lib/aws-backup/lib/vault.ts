@@ -5,7 +5,7 @@ import * as kms from '../../aws-kms';
 import * as sns from '../../aws-sns';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * A backup vault
@@ -225,7 +225,7 @@ abstract class BackupVaultBase extends Resource implements IBackupVault {
 /**
  * A backup vault
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class BackupVault extends BackupVaultBase {
   /**
    * Uniquely identifies this class.

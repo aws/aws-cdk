@@ -7,7 +7,7 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, Resource, Lazy, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../../core/lib/prop-injectors';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
@@ -124,7 +124,7 @@ export interface NetworkListenerLookupOptions extends BaseListenerLookupOptions 
  *
  * @resource AWS::ElasticLoadBalancingV2::Listener
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * Uniquely identifies this class.

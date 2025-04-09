@@ -6,7 +6,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -692,7 +692,7 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
  *
  * @resource AWS::EFS::FileSystem
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class FileSystem extends FileSystemBase {
   /**
    * Uniquely identifies this class.

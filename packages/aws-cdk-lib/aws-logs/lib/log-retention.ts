@@ -5,7 +5,7 @@ import * as iam from '../../aws-iam';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
 import { ArnFormat } from '../../core';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Construction properties for a LogRetention.
@@ -74,7 +74,7 @@ export interface LogRetentionRetryOptions {
  * Log group can be created in the region that is different from stack region by
  * specifying `logGroupRegion`
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class LogRetention extends Construct {
   /**
    * Uniquely identifies this class.

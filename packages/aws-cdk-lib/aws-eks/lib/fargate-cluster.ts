@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { Cluster, ClusterOptions, CoreDnsComputeType } from './cluster';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Configuration props for EKS Fargate.
@@ -24,7 +24,7 @@ export interface FargateClusterProps extends ClusterOptions {
  * "default" and "kube-system" namespaces. You can add additional profiles using
  * `addFargateProfile`.
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class FargateCluster extends Cluster {
   /**
    * Uniquely identifies this class.

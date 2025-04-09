@@ -3,7 +3,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as elb from '../../../aws-elasticloadbalancing';
 import * as cdk from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../../core/lib/prop-injectors';
 import { AvailabilityZoneRebalancing } from '../availability-zone-rebalancing';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
@@ -111,7 +111,7 @@ export interface FargateServiceAttributes {
  *
  * @resource AWS::ECS::Service
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class FargateService extends BaseService implements IFargateService {
   /**
    * Uniquely identifies this class.

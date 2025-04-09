@@ -32,7 +32,7 @@ import * as sqs from '../../aws-sqs';
 import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
 
 /**
@@ -641,7 +641,7 @@ export interface FunctionProps extends FunctionOptions {
  * This construct does not yet reproduce all features from the underlying resource
  * library.
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class Function extends FunctionBase {
   /**
    * Uniquely identifies this class.

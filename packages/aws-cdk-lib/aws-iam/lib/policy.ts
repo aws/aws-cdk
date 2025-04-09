@@ -9,7 +9,7 @@ import { IRole } from './role';
 import { IUser } from './user';
 import { IResource, Lazy, Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Represents an IAM Policy
@@ -104,7 +104,7 @@ export interface PolicyProps {
  * [Overview of IAM Policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/policies_overview.html)
  * in the IAM User Guide guide.
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class Policy extends Resource implements IPolicy, IGrantable {
   /**
    * Uniquely identifies this class.

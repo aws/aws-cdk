@@ -20,7 +20,7 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import { ArnComponents, ArnFormat, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -1182,7 +1182,7 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
  *
  * @resource AWS::RDS::DBInstance
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class DatabaseInstance extends DatabaseInstanceSource implements IDatabaseInstance {
   /**
    * Uniquely identifies this class.
@@ -1259,7 +1259,7 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
  *
  * @resource AWS::RDS::DBInstance
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource implements IDatabaseInstance {
   /**
    * Uniquely identifies this class.
@@ -1363,7 +1363,7 @@ export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceNewPro
  *
  * @resource AWS::RDS::DBInstance
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements IDatabaseInstance {
   /**
    * Uniquely identifies this class.

@@ -7,7 +7,7 @@ import * as iam from '../../../aws-iam';
 import { Aws, Resource } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../../core/lib/prop-injectors';
 import { IRoute } from '../common';
 
 /**
@@ -174,7 +174,7 @@ enum HttpRouteAuthorizationType {
  * Route class that creates the Route for API Gateway HTTP API
  * @resource AWS::ApiGatewayV2::Route
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class HttpRoute extends Resource implements IHttpRoute {
   /**
    * Uniquely identifies this class.

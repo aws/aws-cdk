@@ -4,7 +4,7 @@ import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated
 import { IResource, Lazy, RemovalPolicy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Options for `IParameterGroup.bindToCluster`.
@@ -110,7 +110,7 @@ export interface ParameterGroupProps {
  *
  * @resource AWS::RDS::DBParameterGroup
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class ParameterGroup extends Resource implements IParameterGroup {
   /**
    * Uniquely identifies this class.

@@ -43,16 +43,17 @@ export interface IPropertyInjector {
  */
 export class PropertyInjectors {
   /**
-   * Return whether the given object is a PropertyInjectors.
+   * Return whether the given object has a PropertyInjectors property.
    *
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
-  public static isPropertyInjectors(x: any): x is PropertyInjectors {
+  public static hasPropertyInjectors(x: any): x is PropertyInjectors {
     return x !== null && typeof(x) === 'object' && PROPERTY_INJECTORS_SYMBOL in x;
   }
 
   /**
    * Returns the `PropertyInjectors` object associated with a construct scope.
+   * If `PropertyInjectors` object doesn't exist on this scope, then it creates one and attaches it to scope.
    * @param scope The scope for which these PropertyInjectors will apply.
    */
   public static of(scope: IConstruct): PropertyInjectors {
@@ -62,19 +63,23 @@ export class PropertyInjectors {
 
       Object.defineProperty(scope, PROPERTY_INJECTORS_SYMBOL, {
         value: propInjectors,
-        configurable: true,
-        enumerable: true,
+        configurable: false,
+        enumerable: false,
       });
     }
     return propInjectors;
   }
 
-  private readonly _scope: IConstruct;
+  /**
+   * The scope attached to Injectors.
+   */
+  public readonly scope: IConstruct;
+
   private readonly _injectors: Map<string, IPropertyInjector>;
 
   private constructor(scope: IConstruct) {
     this._injectors = new Map<string, IPropertyInjector>();
-    this._scope = scope;
+    this.scope = scope;
   }
 
   /**
@@ -100,14 +105,6 @@ export class PropertyInjectors {
   }
 
   /**
-   * Returns the scope attached to Injectors.
-   * @returns the scope
-   */
-  public scope() {
-    return this._scope;
-  }
-
-  /**
    * This returns a list of the Constructs that are supporting by this PropertyInjectors.
    * @returns a list of string showing the supported Constructs.
    */
@@ -124,45 +121,37 @@ export class PropertyInjectors {
  * @returns a new props with default values.
  */
 export function applyInjectors(uniqueId: string, originalProps: any, context: InjectionContext): any {
-  // find the PropertyInjectors from scope
-  let injectors;
-  try {
-    injectors = findInjectorsFromConstruct(context.scope, uniqueId);
-  } catch (err) {
-    // this happens when no PropertyInjector is found in the scope tree
+  const injector = findInjectorFromConstruct(context.scope, uniqueId);
+  if (injector === undefined) {
+    // no injector found
     return originalProps;
   }
-
-  // Find the injector for the Construct and apply it.
-  const propsInjector = injectors.for(uniqueId);
-  if (propsInjector) {
-    // Any errors that inject throws will be surfaced.
-    return propsInjector.inject(originalProps, {
-      scope: context.scope,
-      id: context.id,
-    });
-  }
-
-  return originalProps;
+  return injector.inject(originalProps, {
+    scope: context.scope,
+    id: context.id,
+  });
 }
 
 /**
  * This function finds the PropertyInjectors in the scope by walking up the scope tree.
+ * It then returns the Injector associated with uniqueId, or undefined if it is not found.
  * Borrowed logic from Stack.of.
  */
-function findInjectorsFromConstruct(scope: IConstruct, uniqueId: string): PropertyInjectors {
-  // c is really a Construct
+export function findInjectorFromConstruct(scope: IConstruct, uniqueId: string): IPropertyInjector | undefined {
   const result = _lookup(scope);
+  if (result === undefined) {
+    return undefined;
+  }
   const injectors = _getInjectorsFromConstruct(result) as unknown as PropertyInjectors;
 
   const propsInjector = injectors.for(uniqueId);
   if (!propsInjector) {
     const parent = Node.of(scope).scope;
     if (parent) {
-      return findInjectorsFromConstruct(parent, uniqueId);
+      return findInjectorFromConstruct(parent, uniqueId);
     }
   }
-  return injectors;
+  return propsInjector;
 
   function _getInjectorsFromConstruct(c: any): any {
     type ObjKey = keyof typeof c;
@@ -170,14 +159,19 @@ function findInjectorsFromConstruct(scope: IConstruct, uniqueId: string): Proper
     return c[k];
   }
 
-  function _lookup(c: Construct): PropertyInjectors {
-    if (PropertyInjectors.isPropertyInjectors(c)) {
+  function _lookup(c: Construct): PropertyInjectors | undefined {
+    if (PropertyInjectors.hasPropertyInjectors(c)) {
       return c;
     }
 
-    const _scope = Node.of(c).scope;
+    const n = Node.of(c);
+    if (n === undefined) {
+      return undefined;
+    }
+    const _scope = n.scope;
     if (!_scope) {
-      throw new Error(`${scope.constructor?.name ?? 'Construct'} at '${Node.of(scope).path}'. no PropertyInjectors found`);
+      // not more scope to check, so return undefined
+      return undefined;
     }
 
     return _lookup(_scope);
@@ -193,10 +187,13 @@ type Constructor = { new (...args: any[]): {} };
 
 /**
  * This decorator applies property injection before calling the Construct's constructor.
+ *
+ * ** Please make sure the Construct has PROPERTY_INJECTION_ID property.**
+ *
  * @param constructor constructor of the Construct
  * @returns an instance of the class with Property Injection applied.
  */
-export function propertyInjectionDecorator<T extends Constructor>(constructor: T) {
+export function propertyInjectable<T extends Constructor>(constructor: T) {
   return class extends constructor {
     constructor(...args: any[]) {
       const scope = args[0];

@@ -9,7 +9,7 @@ import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import { Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Properties for an AWS CloudTrail trail
@@ -201,7 +201,7 @@ export class InsightType {
  * const cloudTrail = new CloudTrail(this, 'MyTrail');
  *
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class Trail extends Resource {
   /**
    * Uniquely identifies this class.

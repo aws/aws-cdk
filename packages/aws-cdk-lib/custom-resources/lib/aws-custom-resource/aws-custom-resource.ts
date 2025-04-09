@@ -5,7 +5,7 @@ import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { Annotations } from '../../../core';
-import { propertyInjectionDecorator } from '../../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../../core/lib/prop-injectors';
 import { AwsCustomResourceSingletonFunction } from '../../../custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated';
 import * as cxapi from '../../../cx-api';
 import { awsSdkToIamAction } from '../helpers-internal/sdk-info';
@@ -440,7 +440,7 @@ export interface AwsCustomResourceProps {
  * You can specify exactly which calls are invoked for the 'CREATE', 'UPDATE' and 'DELETE' life cycle events.
  *
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class AwsCustomResource extends Construct implements iam.IGrantable {
   /**
    * Uniquely identifies this class.

@@ -9,7 +9,7 @@ import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFr
 import { AttachedPolicies, undefinedIfEmpty } from './private/util';
 import { Arn, ArnFormat, Lazy, Resource, SecretValue, Stack } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Represents an IAM user
@@ -136,7 +136,7 @@ export interface UserAttributes {
 /**
  * Define a new IAM user
  */
-@propertyInjectionDecorator
+@propertyInjectable
 export class User extends Resource implements IIdentity, IUser {
   /**
    * Uniquely identifies this class.
