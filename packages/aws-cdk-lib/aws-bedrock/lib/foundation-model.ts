@@ -392,6 +392,9 @@ export class FoundationModelIdentifier {
   /** Base model "mistral.mistral-large-2407-v1:0". */
   public static readonly MISTRAL_LARGE_2_V0_1 = new FoundationModelIdentifier('mistral.mistral-large-2407-v1:0');
 
+  /** Base model "mistral.pixtral-large-2502-v1:0". */
+  public static readonly MISTRAL_PIXTRAL_LARGE_2502_V1_0 = new FoundationModelIdentifier('mistral.pixtral-large-2502-v1:0');
+
   /**
    * Base model "stability.stable-diffusion-xl".
    * @deprecated use latest version of the model
