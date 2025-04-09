@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* **apigatewayv2:** dualstack HTTP and WebSocket API ([#34054](https://github.com/aws/aws-cdk/issues/34054)) ([eec900e](https://github.com/aws/aws-cdk/commit/eec900e90f38f34f896b22cf36cb225fc9c13cc8)), closes [/docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-api.html#cfn-apigatewayv2](https://github.com/aws//docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-api.html/issues/cfn-apigatewayv2)
+* **apigatewayv2:** dualstack HTTP and WebSocket API ([#34054](https://github.com/aws/aws-cdk/issues/34054)) ([eec900e](https://github.com/aws/aws-cdk/commit/eec900e90f38f34f896b22cf36cb225fc9c13cc8))
 * update L1 CloudFormation resource definitions ([#34064](https://github.com/aws/aws-cdk/issues/34064)) ([9cb2602](https://github.com/aws/aws-cdk/commit/9cb260266e92f45e40a19667e29ccf2decb3d2b8))
 * **bedrock:** support Amazon Nova Reel 1.1 ([#34070](https://github.com/aws/aws-cdk/issues/34070)) ([3da0c4d](https://github.com/aws/aws-cdk/commit/3da0c4d267dbb693ffc01b9fae69cebcb180cdec))
 * support L2 constructs for Amazon S3 Tables ([#33599](https://github.com/aws/aws-cdk/issues/33599)) ([2e95252](https://github.com/aws/aws-cdk/commit/2e95252fecbb1fec9874fd5af4b4bd6449d50471))
