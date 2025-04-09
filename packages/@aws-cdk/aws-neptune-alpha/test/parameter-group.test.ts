@@ -73,7 +73,7 @@ describe('ClusterParameterGroup', () => {
   });
 
   test.each([
-    ['neptune1', ParameterGroupFamily.NEPTUNE_1], ['neptune1.2', ParameterGroupFamily.NEPTUNE_1_2], ['neptune1.3', ParameterGroupFamily.NEPTUNE_1_3],  ['neptune1.4', ParameterGroupFamily.NEPTUNE_1_4],
+    ['neptune1', ParameterGroupFamily.NEPTUNE_1], ['neptune1.2', ParameterGroupFamily.NEPTUNE_1_2], ['neptune1.3', ParameterGroupFamily.NEPTUNE_1_3], ['neptune1.4', ParameterGroupFamily.NEPTUNE_1_4],
   ])('create a a instance/db parameter group with family %s', (expectedFamily, family) => {
     // GIVEN
     const stack = new Stack();
