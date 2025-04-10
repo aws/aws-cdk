@@ -92,6 +92,17 @@ interface DatabaseClusterBaseProps {
   readonly serverlessV2MinCapacity?: number;
 
   /**
+   * The number of seconds until a serverless cluster is paused.
+   *
+   * This setting specifies the duration of inactivity in seconds after which the serverless cluster will be paused.
+   * The value must be between 300 (5 minutes) and 86400 (24 hours).
+   *
+   * @default undefined - RDS default setting is 300 seconds (five minutes).
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html
+   */
+  readonly secondsUntilAutoPause?: Duration;
+
+  /**
    * What subnets to run the RDS instances in.
    *
    * Must be at least 2 subnets in two different AZs.
@@ -781,6 +792,10 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   protected readonly serverlessV2MinCapacity: number;
   protected readonly serverlessV2MaxCapacity: number;
+  /**
+   * The number of seconds until a serverless cluster is paused.
+   */
+  protected readonly secondsUntilAutoPause?: number;
 
   protected hasServerlessInstance?: boolean;
   protected enableDataApi?: boolean;
@@ -808,6 +823,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     this.serverlessV2MaxCapacity = props.serverlessV2MaxCapacity ?? 2;
     this.serverlessV2MinCapacity = props.serverlessV2MinCapacity ?? 0.5;
+    this.secondsUntilAutoPause = props.secondsUntilAutoPause?.toSeconds();
+
     this.validateServerlessScalingConfig();
 
     this.enableDataApi = props.enableDataApi;
@@ -941,6 +958,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
             return {
               minCapacity: this.serverlessV2MinCapacity,
               maxCapacity: this.serverlessV2MaxCapacity,
+              secondsUntilAutoPause: this.secondsUntilAutoPause,
             };
           }
           return undefined;
@@ -1162,6 +1180,12 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     if (!regexp.test(this.serverlessV2MaxCapacity.toString()) || !regexp.test(this.serverlessV2MinCapacity.toString())) {
       throw new ValidationError('serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments, received '+
       `min: ${this.serverlessV2MaxCapacity}, max: ${this.serverlessV2MaxCapacity}`, this);
+    }
+
+    const autoPauseSeconds = this.secondsUntilAutoPause;
+    if (autoPauseSeconds && (autoPauseSeconds < 300 || autoPauseSeconds > 86400)) {
+      throw new ValidationError(`The auto-pause duration must be between 300 seconds (5 minutes) and 86400 seconds (24 hours). 
+        Received: ${autoPauseSeconds} seconds`, this);
     }
   }
 

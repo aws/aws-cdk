@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "integ-test-auto-pause/DefaultTest": {
+      "stacks": [
+        "integ-aurora-serverlessv2-cluster-auto-pause"
+      ],
+      "assertionStack": "integ-test-auto-pause/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestautopauseDefaultTestDeployAssertD3014119"
+    }
+  }
+}
