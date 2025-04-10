@@ -65,29 +65,21 @@ export abstract class StageBase extends Resource implements IStage {
    * @internal
    */
   protected _validateAccessLogSettings(props?: IAccessLogSettings): CfnStage.AccessLogSettingsProperty | undefined {
-    let accessLogSettings: CfnStage.AccessLogSettingsProperty | undefined;
-    const accessLogDestination = props?.destination;
-    const accessLogFormat = props?.format;
+    if (!props) return;
 
-    if (!accessLogDestination && !accessLogFormat) {
-      accessLogSettings = undefined;
-    } else {
-      if (accessLogFormat !== undefined &&
-        !Token.isUnresolved(accessLogFormat.toString()) &&
-        !/.*\$context.(requestId|extendedRequestId)\b.*/.test(accessLogFormat.toString())) {
-        throw new ValidationError('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`', this);
-      }
-      if (accessLogFormat !== undefined && accessLogDestination === undefined) {
-        throw new ValidationError('Access log format is specified without a destination', this);
-      }
-
-      accessLogSettings = {
-        destinationArn: accessLogDestination?.bind(this).destinationArn,
-        format: accessLogFormat?.toString() ? accessLogFormat?.toString() : AccessLogFormat.clf().toString(),
-      };
+    const format = props.format;
+    if (
+      format &&
+      !Token.isUnresolved(format.toString()) &&
+      !/\$context\.(?:requestId|extendedRequestId)\b/.test(format.toString())
+    ) {
+      throw new ValidationError('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`', this);
     }
 
-    return accessLogSettings;
+    return {
+      destinationArn: props.destination.bind(this).destinationArn,
+      format: format ? format.toString() : AccessLogFormat.clf().toString(),
+    };
   }
 
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
