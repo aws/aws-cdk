@@ -1432,6 +1432,18 @@ describe('attachWebAclId', () => {
         });
       }).toThrow(/WebACL for CloudFront distributions must be created in the us-east-1 region; received ap-northeast-1/);
     });
+
+    test('does not validate unresolved token webAclId', () => {
+      const origin = defaultOrigin();
+
+      const distribution = new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin },
+        webAclId: Stack.of(stack).resolve({ Ref: 'SomeWebAcl' }) as any, // unresolved token
+      });
+
+      // Should synthesize without error
+      Template.fromStack(stack);
+    });
   });
 });
 

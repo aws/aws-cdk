@@ -663,6 +663,10 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private validateWebAclId(webAclId: string) {
+    if (Token.isUnresolved(webAclId) || typeof webAclId !== 'string') {
+      // Cannot validate unresolved tokens or non-string values at synth-time.
+      return;
+    }
     if (webAclId.startsWith('arn:')) {
       const webAclRegion = Stack.of(this).splitArn(webAclId, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(webAclRegion) && webAclRegion !== 'us-east-1') {
