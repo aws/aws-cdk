@@ -1050,33 +1050,6 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       throw new Error('Configure the ipAddressType to use in the VPC endpoint');
     }
 
-    /**
-     * Checks to see if dnsRecordIpType and ipAddressType are compatible, throw error if not
-     * @see https://docs.aws.amazon.com/vpc/latest/privatelink/create-endpoint-service.html#connect-to-endpoint-service
-     */
-    switch (props.dnsRecordIpType) {
-      case VpcEndpointDnsRecordIpType.IPV4:
-        if (props.ipAddressType === VpcEndpointIpAddressType.IPV6) {
-          throw new Error('Cannot create a VPC endpoint with ipAddressType of IPv6 with DNS Records for IPv4');
-        }
-        break;
-      case VpcEndpointDnsRecordIpType.IPV6:
-        if (props.ipAddressType === VpcEndpointIpAddressType.IPV4) {
-          throw new Error('Cannot create a VPC endpoint with ipAddressType of IPv4 with DNS Records for IPv6');
-        }
-        break;
-      case VpcEndpointDnsRecordIpType.DUALSTACK:
-        if (props.ipAddressType !== VpcEndpointIpAddressType.DUALSTACK) {
-          throw new Error('VPC endpoints with dualstack ipAddressType should set dnsRecordIpType to dualstack');
-        }
-        break;
-      case VpcEndpointDnsRecordIpType.SERVICE_DEFINED:
-        if (props.ipAddressType !== VpcEndpointIpAddressType.DUALSTACK) {
-          throw new Error('VPC endpoints with service defined configuration should set dnsRecordIpType to dualstack');
-        }
-        break;
-    }
-
     return {
       privateDnsOnlyForInboundResolverEndpoint: props.privateDnsOnlyForInboundResolverEndpoint,
       dnsRecordIpType: props.dnsRecordIpType,

@@ -211,60 +211,6 @@ describe('vpc endpoint', () => {
       }).toThrow();
     });
 
-    test.each([
-      [VpcEndpointIpAddressType.IPV4, VpcEndpointDnsRecordIpType.IPV4],
-      [VpcEndpointIpAddressType.DUALSTACK, VpcEndpointDnsRecordIpType.IPV4],
-      [VpcEndpointIpAddressType.IPV6, VpcEndpointDnsRecordIpType.IPV6],
-      [VpcEndpointIpAddressType.DUALSTACK, VpcEndpointDnsRecordIpType.IPV6],
-      [VpcEndpointIpAddressType.DUALSTACK, VpcEndpointDnsRecordIpType.DUALSTACK],
-      [VpcEndpointIpAddressType.DUALSTACK, VpcEndpointDnsRecordIpType.SERVICE_DEFINED],
-    ])('add an endpoint to a vpc with various matching IP address types', (
-      ipAddressType: VpcEndpointIpAddressType,
-      dnsRecordIpType: VpcEndpointDnsRecordIpType) => {
-      // GIVEN
-      const stack = new Stack();
-      const vpc = new Vpc(stack, 'VpcNetwork');
-
-      // WHEN
-      vpc.addInterfaceEndpoint('EcrDocker', {
-        service: InterfaceVpcEndpointAwsService.ECR_DOCKER,
-        ipAddressType: ipAddressType,
-        dnsRecordIpType: dnsRecordIpType,
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
-        IpAddressType: ipAddressType,
-        DnsOptions: { DnsRecordIpType: dnsRecordIpType },
-      });
-    });
-
-    test.each([
-      [VpcEndpointIpAddressType.IPV6, VpcEndpointDnsRecordIpType.IPV4],
-      [VpcEndpointIpAddressType.IPV4, VpcEndpointDnsRecordIpType.IPV6],
-      [VpcEndpointIpAddressType.IPV4, VpcEndpointDnsRecordIpType.DUALSTACK],
-      [VpcEndpointIpAddressType.IPV6, VpcEndpointDnsRecordIpType.DUALSTACK],
-      [VpcEndpointIpAddressType.IPV4, VpcEndpointDnsRecordIpType.SERVICE_DEFINED],
-      [VpcEndpointIpAddressType.IPV6, VpcEndpointDnsRecordIpType.SERVICE_DEFINED],
-    ])('add an endpoint to a vpc with mismatched ipAddressType and dnsRecordIpType, which throws error', (
-      ipAddressType: VpcEndpointIpAddressType,
-      dnsRecordIpType: VpcEndpointDnsRecordIpType,
-    ) => {
-      // GIVEN
-      const stack = new Stack();
-      const vpc = new Vpc(stack, 'VpcNetwork');
-
-      // WHEN
-      expect(() => {
-        vpc.addInterfaceEndpoint('EcrDocker', {
-          service: InterfaceVpcEndpointAwsService.ECR_DOCKER,
-          ipAddressType: ipAddressType,
-          dnsRecordIpType: dnsRecordIpType,
-        });
-        // THEN
-      }).toThrow();
-    });
-
     test('import/export', () => {
       // GIVEN
       const stack2 = new Stack();
