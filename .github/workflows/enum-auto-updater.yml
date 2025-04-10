@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: cd tools/@aws-cdk/enum-updater && yarn install --frozen-lockfile && yarn build
 
-            - name: Update enum static mapping
+      - name: Update enum static mapping
         run: |
           cd tools/@aws-cdk/enum-updater
           ./bin/update-static-enum-mapping
