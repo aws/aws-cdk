@@ -153,7 +153,6 @@ new BucketDeployment(stack, 'DeployLargeFiles', {
   destinationBucket: bucket,
   sources: [largeJsonSource, largeTextSource, fileWithMarker],
   retainOnDelete: false,
-  jsonAwareSourceProcessing: true,
 });
 
 new CfnOutput(stack, 'BucketName', { value: bucket.bucketName });

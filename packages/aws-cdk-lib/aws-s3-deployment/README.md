@@ -356,13 +356,8 @@ resource handler.
 > NOTE: a new AWS Lambda handler will be created in your stack for each combination
 > of memory and storage size.
 
-### Memory Requirements for JSON Files with CDK Tokens
-
-When using `Source.jsonData` with CDK Tokens (references to construct properties), you may need to enable the `jsonAwareSourceProcessing` option and increase the memory limit. This is particularly important when the referenced properties might contain special characters that require proper JSON escaping (like double quotes, line breaks, etc.).
-
-#### JSON-Aware Source Processing
-
-The `jsonAwareSourceProcessing` option ensures proper JSON structure is maintained when CDK Tokens are resolved:
+## JSON-Aware Source Processing
+When using `Source.jsonData` with CDK Tokens (references to construct properties), you may need to enable the escaping option. This is particularly important when the referenced properties might contain special characters that require proper JSON escaping (like double quotes, line breaks, etc.).
 
 ```ts
 declare const bucket: s3.Bucket;
@@ -378,11 +373,12 @@ const deployment = new s3deploy.BucketDeployment(this, 'JsonDeployment', {
         enabled: true,
         features: ['feature1', 'feature2']
       }
-    })
+    },
+    // Enable escaping at deployment time
+    true,
+    )
   ],
   destinationBucket: bucket,
-  jsonAwareSourceProcessing: true,
-  memoryLimit: 1024, // Increase memory limit for large JSON (few MB or more) with replacement values containing double quotes
 });
 ```
 

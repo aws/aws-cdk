@@ -282,25 +282,6 @@ export interface BucketDeploymentProps {
    * @default true
    */
   readonly outputObjectKeys?: boolean;
-
-  /**
-   * Whether to use JSON-aware processing for source files.
-   *
-   * When enabled, the deployment process will use special handling for JSON files
-   * that contain replacements, which ensures proper JSON structure is maintained.
-   * This is useful when the replaced values may include special characters which
-   * may break format of a JSON string (e.g. double quotes, line breaks) when
-   * not properly escaped.
-   *
-   * Note that enabling this option may significantly increase memory usage when
-   * processing large JSON files (10MB+) that contain replacements. If you're
-   * deploying large JSON files and experiencing memory (or timeout) issues,
-   * consider keeping this option disabled (if you trust the content of the replacements)
-   * or increase the memory limit, by using the property `memoryLimit`.
-   *
-   * @default false - Use standard text-based replacement for all files
-   */
-  readonly jsonAwareSourceProcessing?: boolean;
 }
 
 /**
@@ -471,7 +452,6 @@ export class BucketDeployment extends Construct {
         DistributionPaths: props.distributionPaths,
         SignContent: props.signContent,
         OutputObjectKeys: props.outputObjectKeys ?? true,
-        JsonAwareSourceProcessing: props.jsonAwareSourceProcessing,
         // Passing through the ARN sequences dependency on the deployment
         DestinationBucketArn: cdk.Lazy.string({ produce: () => this.requestDestinationArn ? this.destinationBucket.bucketArn : undefined }),
       },
