@@ -7,7 +7,7 @@ import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { SubnetV2, IpCidr } from '../lib/subnet-v2';
-import { RouteTable } from '../lib';
+import { NatConnectivityType, RouteTable } from '../lib';
 
 const app = new cdk.App();
 
@@ -65,6 +65,26 @@ vpc.addEgressOnlyInternetGateway({
   egressOnlyInternetGatewayName: 'CDKIntegTestTagEIGW',
   destination: '2600:1f00::/24',
   subnets: [subnet1, subnet2],
+});
+
+const subnet3 = new SubnetV2(stack, 'testsubnet2', {
+  vpc,
+  availabilityZone: 'us-west-2c',
+  ipv4CidrBlock: new IpCidr('10.1.3.0/28'),
+  subnetType: SubnetType.PUBLIC,
+  subnetName: 'CDKIntegTestSubnet2',
+  routeTable: routeTable2,
+});
+
+// Add multiple NatGateways
+vpc.addNatGateway({
+  subnet: subnet3,
+  connectivityType: NatConnectivityType.PUBLIC,
+});
+
+vpc.addNatGateway({
+  subnet: subnet2,
+  connectivityType: NatConnectivityType.PUBLIC,
 });
 
 const integ = new IntegTest(app, 'VpcSameAccountInteg', {

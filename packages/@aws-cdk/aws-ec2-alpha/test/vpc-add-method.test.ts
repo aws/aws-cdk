@@ -207,6 +207,18 @@ describe('Vpc V2 with full control', () => {
     });
   });
 
+  test('EIP created for NAT Gateway has domain set to vpc', () => {
+    myVpc.addNatGateway({
+      subnet: mySubnet,
+    });
+    const template = Template.fromStack(stack);
+
+    // Verify that the EIP has domain set to 'vpc'
+    template.hasResourceProperties('AWS::EC2::EIP', {
+      Domain: 'vpc',
+    });
+  });
+
   test('addNatGateway defines public gateway with provided EIP', () => {
     const eip = new CfnEIP(stack, 'MyEIP', {
       domain: myVpc.vpcId,
