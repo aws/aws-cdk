@@ -294,13 +294,14 @@ export interface TableBucketAttributes {
  * This bucket may not yet have all features that exposed by the underlying CfnTableBucket.
  *
  * @stateful
+ * @exampleMetadata fixture=with-table-bucket
  * @example
  * const tableBucket = new TableBucket(scope, 'ExampleTableBucket', {
  *   tableBucketName: 'example-bucket',
  *   // Optional fields:
  *   unreferencedFileRemoval: {
  *     noncurrentDays: 123,
- *     status: 'status',
+ *     status: UnreferencedFileRemovalStatus.ENABLED,
  *     unreferencedDays: 123,
  *   },
  * });
