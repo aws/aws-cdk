@@ -489,6 +489,22 @@ new cdk.CfnOutput(this, 'ObjectKey', {
 });
 ```
 
+## Sync with Size Only
+
+By default, the `BucketDeployment` construct synchronizes files based on both size and timestamp. You can use the option `syncWithSizeOnly: true` to enable synchronization based only on size changes, ignoring the timestamp.
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+declare const destinationBucket: s3.Bucket;
+
+const myBucketDeployment = new s3deploy.BucketDeployment(this, 'DeployWithSizeOnlySync', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  destinationBucket,
+  syncWithSizeOnly: true,
+});
+```
+
 ## Notes
 
 - This library uses an AWS CloudFormation custom resource which is about 10MiB in

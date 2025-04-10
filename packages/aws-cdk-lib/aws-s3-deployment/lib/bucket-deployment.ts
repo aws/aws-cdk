@@ -282,6 +282,13 @@ export interface BucketDeploymentProps {
    * @default true
    */
   readonly outputObjectKeys?: boolean;
+
+  /**
+   * If set to true, the `aws s3 sync` command will include the `--size-only` flag.
+   *
+   * @default false
+   */
+  readonly syncWithSizeOnly?: boolean;
 }
 
 /**
@@ -440,6 +447,7 @@ export class BucketDeployment extends Construct {
         DistributionPaths: props.distributionPaths,
         SignContent: props.signContent,
         OutputObjectKeys: props.outputObjectKeys ?? true,
+        SyncWithSizeOnly: props.syncWithSizeOnly ?? false,
         // Passing through the ARN sequences dependency on the deployment
         DestinationBucketArn: cdk.Lazy.string({ produce: () => this.requestDestinationArn ? this.destinationBucket.bucketArn : undefined }),
       },
