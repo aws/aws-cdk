@@ -649,11 +649,14 @@ class TestHandler(unittest.TestCase):
     def test_replace_markers(self):
         for json_aware_source_processing in [True, False]:
             with self.subTest(json_aware_source_processing=json_aware_source_processing):
+                marker_config = {}
+                if json_aware_source_processing:
+                    marker_config = {"jsonEscape": "true"}
                 index.extract_and_replace_markers("test.zip", "/tmp/out", {
                     "_marker3_": "value\"with\"quotes",
                     "_marker2_": "boom-marker2-replaced",
                     "_marker1_": "<<foo>>",
-                }, json_aware_source_processing)
+                }, marker_config)
 
                 # assert that markers were replaced in the output
                 with open("/tmp/out/subfolder/boom.txt", "r") as file:
@@ -666,13 +669,17 @@ class TestHandler(unittest.TestCase):
                     import yaml
                     content = file.read().rstrip()
                     yamlObject = yaml.safe_load(content) # valid yaml
-                    self.assertEqual(content, "root:\n    key_with_quote: prefixvalue\"with\"quotessuffix\n    key_without_quote: prefixboom-marker2-replacedsuffix")
+                    if json_aware_source_processing:
+                        self.assertEqual(content, "root:\n    key_with_quote: prefixvalue\\\"with\\\"quotessuffix\n    key_without_quote: prefixboom-marker2-replacedsuffix")
+                    else:
+                        self.assertEqual(content, "root:\n    key_with_quote: prefixvalue\"with\"quotessuffix\n    key_without_quote: prefixboom-marker2-replacedsuffix")
 
                 with open("/tmp/out/test.json") as file:
                     content = file.read().rstrip()
                     if json_aware_source_processing:
+                        # self.assertEqual(content, '{"root": {"key_with_quote": "prefixvalue\\"with\\"quotessuffix", "key_without_quote": "prefixboom-marker2-replacedsuffix"}}')
+                        self.assertEqual(content, '{\n    "root": {\n        "key_with_quote": "prefixvalue\\"with\\"quotessuffix",\n        "key_without_quote": "prefixboom-marker2-replacedsuffix"\n    }\n}')
                         jsonObject = json.loads(content) # valid json
-                        self.assertEqual(content, '{"root": {"key_with_quote": "prefixvalue\\"with\\"quotessuffix", "key_without_quote": "prefixboom-marker2-replacedsuffix"}}')
                     else:
                         self.assertEqual(content, '{\n    "root": {\n        "key_with_quote": "prefixvalue"with"quotessuffix",\n        "key_without_quote": "prefixboom-marker2-replacedsuffix"\n    }\n}')
 

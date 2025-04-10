@@ -146,7 +146,7 @@ const param = new ssm.StringParameter(stack, 'SecretParam', {
 
 const fileWithMarker = Source.jsonData('my-json/secret-config.json', {
   secret_value: param.stringValue, // Using a tokenized value
-});
+}, true);
 
 // Deploy the large files
 new BucketDeployment(stack, 'DeployLargeFiles', {
@@ -171,7 +171,7 @@ const assertionProvider = integ.assertions.awsApiCall('S3', 'getObject', {
 // Verify the content is valid JSON and properly escaped
 assertionProvider.expect(ExpectedResult.objectLike({
   // Properly escaped JSON.
-  Body: '{"secret_value": "test\\"with\\"quotes"}',
+  Body: '{"secret_value":"test\\"with\\"quotes"}',
 }));
 
 // Verify the large JSON file was deployed successfully

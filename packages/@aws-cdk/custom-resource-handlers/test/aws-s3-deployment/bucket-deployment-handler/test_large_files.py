@@ -20,12 +20,16 @@ SMALL_JSON_FILE = None
 LARGE_JSON_FILE = None
 COMPLEX_JSON_FILE = None
 COMPLEX_JSON_FILE_WITH_MARKER = None
+SMALL_COMPLEX_JSON_FILE_WITH_MARKER = None
 SMALL_TEXT_FILE = None
 LARGE_TEXT_FILE = None
 
 # Memory limits for tests
 MEMORY_LIMIT_STANDARD = 32 * 1024  # 32MB
 MEMORY_LIMIT_COMPLEX = 256 * 1024  # 256MB
+
+MARKER_CONFIG_EMPTY = {}
+MARKER_CONFIG_JSON_ESCAPE = {"jsonEscape": "true"}
 
 
 def create_json_file(filename, size_kb):
@@ -144,38 +148,44 @@ def initialize_test_files():
     LARGE_JSON_FILE = os.path.join(TEST_DIR, "large.json")
     COMPLEX_JSON_FILE = os.path.join(TEST_DIR, "complex.json")
     COMPLEX_JSON_FILE_WITH_MARKER = os.path.join(TEST_DIR, "complex_marker.json")
+    SMALL_COMPLEX_JSON_FILE_WITH_MARKER = os.path.join(TEST_DIR, "small_complex_marker.json")
     SMALL_TEXT_FILE = os.path.join(TEST_DIR, "small.txt")
     LARGE_TEXT_FILE = os.path.join(TEST_DIR, "large.txt")
 
     # Create a small JSON file (1KB)
     create_json_file(SMALL_JSON_FILE, 1)
-    small_size = os.path.getsize(SMALL_JSON_FILE) / 1024
-    print(f"Small JSON file created: {small_size:.2f} KB")
+    file_size = os.path.getsize(SMALL_JSON_FILE) / 1024
+    print(f"Small JSON file created: {file_size:.2f} KB")
 
     # Create a large JSON file (10MB)
     create_json_file(LARGE_JSON_FILE, 10 * 1024)
-    large_size = os.path.getsize(LARGE_JSON_FILE) / 1024
-    print(f"Large JSON file created: {large_size:.2f} KB")
+    file_size = os.path.getsize(LARGE_JSON_FILE) / 1024
+    print(f"Large JSON file created: {file_size:.2f} KB")
 
     # Create a complex JSON file (10MB)
     create_complex_json_file(COMPLEX_JSON_FILE, 10 * 1024)
-    complex_size = os.path.getsize(COMPLEX_JSON_FILE) / 1024
-    print(f"Complex JSON file created: {complex_size:.2f} KB")
+    file_size = os.path.getsize(COMPLEX_JSON_FILE) / 1024
+    print(f"Complex JSON file created: {file_size:.2f} KB")
 
     # Create a complex JSON file with marker (10MB)
     create_complex_json_file(COMPLEX_JSON_FILE_WITH_MARKER, 10 * 1024, ["_marker1_", "<<marker:0xbaba:42>>", "_TOKEN_"])
-    complex_size = os.path.getsize(COMPLEX_JSON_FILE_WITH_MARKER) / 1024
-    print(f"Complex JSON file with marker created: {complex_size:.2f} KB")
+    file_size = os.path.getsize(COMPLEX_JSON_FILE_WITH_MARKER) / 1024
+    print(f"Complex JSON file with marker created: {file_size:.2f} KB")
+
+    # Create a small complex JSON file with marker (1KB)
+    create_complex_json_file(SMALL_COMPLEX_JSON_FILE_WITH_MARKER, 1, ["_marker1_", "<<marker:0xbaba:42>>", "_TOKEN_"])
+    file_size = os.path.getsize(SMALL_COMPLEX_JSON_FILE_WITH_MARKER) / 1024
+    print(f"Complex small JSON file with marker created: {file_size:.2f} KB")
 
     # Create a small text file (1KB)
     create_text_file(SMALL_TEXT_FILE, 1)
-    small_text_size = os.path.getsize(SMALL_TEXT_FILE) / 1024
-    print(f"Small text file created: {small_text_size:.2f} KB")
+    file_size = os.path.getsize(SMALL_TEXT_FILE) / 1024
+    print(f"Small text file created: {file_size:.2f} KB")
 
     # Create a large text file (10MB)
     create_text_file(LARGE_TEXT_FILE, 10 * 1024)
-    large_text_size = os.path.getsize(LARGE_TEXT_FILE) / 1024
-    print(f"Large text file created: {large_text_size:.2f} KB")
+    file_size = os.path.getsize(LARGE_TEXT_FILE) / 1024
+    print(f"Large text file created: {file_size:.2f} KB")
 
     # Return the test directory
     return TEST_DIR
@@ -214,164 +224,73 @@ def measure_performance(func, *args, **kwargs):
 class TestLargeFiles(unittest.TestCase):
     def test_small_json_file_performance(self):
         """Test performance with a small JSON file"""
-        file_size = os.path.getsize(SMALL_JSON_FILE) / 1024
         markers = {"_TOKEN_": "replacement"}
-        _, execution_time, memory_used = measure_performance(index.replace_markers, SMALL_JSON_FILE, markers, True)
-
-        print(f"Small JSON file ({file_size:.2f} KB):")
-        print(f"  Execution time: {execution_time:.4f} seconds")
-        print(f"  Memory used: {memory_used} KB")
-
-        # Verify the file still exists and was processed
-        self.assertTrue(os.path.exists(SMALL_JSON_FILE))
-
-        # Verify memory usage is within limits
-        self.assertLessEqual(
-            memory_used,
-            MEMORY_LIMIT_STANDARD,
-            f"Memory usage ({memory_used} KB) exceeds limit ({MEMORY_LIMIT_STANDARD} KB)",
-        )
+        self.performance_test(SMALL_JSON_FILE, "Small JSON", markers, MARKER_CONFIG_EMPTY, MEMORY_LIMIT_STANDARD)
 
     def test_large_json_file_performance(self):
         """Test performance with a large JSON file"""
-        file_size = os.path.getsize(LARGE_JSON_FILE) / 1024
         markers = {"_TOKEN_": "replacement"}
-        _, execution_time, memory_used = measure_performance(index.replace_markers, LARGE_JSON_FILE, markers, True)
-
-        print(f"Large JSON file ({file_size:.2f} KB):")
-        print(f"  Execution time: {execution_time:.4f} seconds")
-        print(f"  Memory used: {memory_used} KB")
-
-        # Verify the file still exists and was processed
-        self.assertTrue(os.path.exists(LARGE_JSON_FILE))
-
-        # Verify memory usage is within limits
-        self.assertLessEqual(
-            memory_used,
-            MEMORY_LIMIT_STANDARD,
-            f"Memory usage ({memory_used} KB) exceeds limit ({MEMORY_LIMIT_STANDARD} KB)",
-        )
+        self.performance_test(LARGE_JSON_FILE, "Large JSON", markers, MARKER_CONFIG_EMPTY, MEMORY_LIMIT_STANDARD)
 
     def test_complex_json_file_performance(self):
         """Test performance with a complex JSON file"""
-        file_size = os.path.getsize(COMPLEX_JSON_FILE) / 1024
         markers = {"_TOKEN_": "replacement"}
-        _, execution_time, memory_used = measure_performance(index.replace_markers, COMPLEX_JSON_FILE, markers, True)
-
-        print(f"Complex JSON file ({file_size:.2f} KB):")
-        print(f"  Execution time: {execution_time:.4f} seconds")
-        print(f"  Memory used: {memory_used} KB")
-
-        # Verify the file still exists and was processed
-        self.assertTrue(os.path.exists(COMPLEX_JSON_FILE))
-
-        # Verify memory usage is within limits
-        self.assertLessEqual(
-            memory_used,
-            MEMORY_LIMIT_STANDARD,
-            f"Memory usage ({memory_used} KB) exceeds limit ({MEMORY_LIMIT_STANDARD} KB)",
-        )
+        self.performance_test(COMPLEX_JSON_FILE, "Complex JSON", markers, MARKER_CONFIG_EMPTY, MEMORY_LIMIT_STANDARD)
 
     def test_complex_json_file_no_marker_performance(self):
         """Test performance with a complex JSON file"""
-        file_size = os.path.getsize(COMPLEX_JSON_FILE) / 1024
         markers = {}
-        _, execution_time, memory_used = measure_performance(index.replace_markers, COMPLEX_JSON_FILE, markers, True)
-
-        print(f"Complex JSON file ({file_size:.2f} KB):")
-        print(f"  Execution time: {execution_time:.4f} seconds")
-        print(f"  Memory used: {memory_used} KB")
-
-        # Verify the file still exists and was processed
-        self.assertTrue(os.path.exists(COMPLEX_JSON_FILE))
-
-        # Verify memory usage is within limits
-        self.assertLessEqual(
-            memory_used,
-            MEMORY_LIMIT_STANDARD,
-            f"Memory usage ({memory_used} KB) exceeds limit ({MEMORY_LIMIT_STANDARD} KB)",
-        )
-
-    def test_complex_json_file_double_quote_marker_performance(self):
-        """Test performance with a complex JSON file with double quotes in markers"""
-        file_size = os.path.getsize(COMPLEX_JSON_FILE) / 1024
-        markers = {"_TOKEN_": 'rep"lacem"ent'}
-        _, execution_time, memory_used = measure_performance(index.replace_markers, COMPLEX_JSON_FILE, markers, True)
-
-        print(f"Complex JSON file ({file_size:.2f} KB):")
-        print(f"  Execution time: {execution_time:.4f} seconds")
-        print(f"  Memory used: {memory_used} KB")
-
-        # Verify the file still exists and was processed
-        self.assertTrue(os.path.exists(COMPLEX_JSON_FILE))
-
-        # Verify memory usage is within limits - this test has a higher limit due to JSON parsing
-        self.assertLessEqual(
-            memory_used,
-            MEMORY_LIMIT_COMPLEX,
-            f"Memory usage ({memory_used} KB) exceeds limit ({MEMORY_LIMIT_COMPLEX} KB)",
-        )
+        self.performance_test(COMPLEX_JSON_FILE, "Complex JSON", markers, MARKER_CONFIG_EMPTY, MEMORY_LIMIT_STANDARD)
 
     def test_complex_json_file_with_marker_double_quote_marker_performance(self):
         """Test performance with a complex JSON file with double quotes in markers"""
-        file_size = os.path.getsize(COMPLEX_JSON_FILE_WITH_MARKER) / 1024
         markers = {"_TOKEN_": 'rep"lacem"ent'}
-        _, execution_time, memory_used = measure_performance(
-            index.replace_markers, COMPLEX_JSON_FILE_WITH_MARKER, markers, True
+        self.performance_test(
+            COMPLEX_JSON_FILE_WITH_MARKER,
+            "Complex JSON (with markers)",
+            markers,
+            MARKER_CONFIG_JSON_ESCAPE,
+            MEMORY_LIMIT_COMPLEX,
         )
 
-        print(f"Complex JSON file ({file_size:.2f} KB):")
-        print(f"  Execution time: {execution_time:.4f} seconds")
-        print(f"  Memory used: {memory_used} KB")
-
-        # Verify the file still exists and was processed
-        self.assertTrue(os.path.exists(COMPLEX_JSON_FILE_WITH_MARKER))
-
-        # Verify memory usage is within limits - this test has a higher limit due to JSON parsing
-        self.assertLessEqual(
-            memory_used,
-            MEMORY_LIMIT_COMPLEX,
-            f"Memory usage ({memory_used} KB) exceeds limit ({MEMORY_LIMIT_COMPLEX} KB)",
+    def test_small_complex_json_file_with_marker_double_quote_marker_performance(self):
+        """Test performance with a complex small JSON file with double quotes in markers"""
+        markers = {"_TOKEN_": 'rep"lacem"ent'}
+        self.performance_test(
+            SMALL_COMPLEX_JSON_FILE_WITH_MARKER,
+            "Complex small JSON (with markers)",
+            markers,
+            MARKER_CONFIG_JSON_ESCAPE,
+            MEMORY_LIMIT_STANDARD,
         )
 
     def test_small_text_file_performance(self):
         """Test performance with a small text file"""
-        file_size = os.path.getsize(SMALL_TEXT_FILE) / 1024
         markers = {"_TOKEN_": "replacement"}
-        _, execution_time, memory_used = measure_performance(index.replace_markers, SMALL_TEXT_FILE, markers, True)
-
-        print(f"Small text file ({file_size:.2f} KB):")
-        print(f"  Execution time: {execution_time:.4f} seconds")
-        print(f"  Memory used: {memory_used} KB")
-
-        # Verify the file still exists and was processed
-        self.assertTrue(os.path.exists(SMALL_TEXT_FILE))
-
-        # Verify memory usage is within limits
-        self.assertLessEqual(
-            memory_used,
-            MEMORY_LIMIT_STANDARD,
-            f"Memory usage ({memory_used} KB) exceeds limit ({MEMORY_LIMIT_STANDARD} KB)",
-        )
+        self.performance_test(SMALL_TEXT_FILE, "Small text", markers, MARKER_CONFIG_EMPTY, MEMORY_LIMIT_STANDARD)
 
     def test_large_text_file_performance(self):
         """Test performance with a large text file"""
-        file_size = os.path.getsize(LARGE_TEXT_FILE) / 1024
         markers = {"_TOKEN_": "replacement"}
-        _, execution_time, memory_used = measure_performance(index.replace_markers, LARGE_TEXT_FILE, markers, True)
+        self.performance_test(LARGE_TEXT_FILE, "Large text", markers, MARKER_CONFIG_EMPTY, MEMORY_LIMIT_STANDARD)
 
-        print(f"Large text file ({file_size:.2f} KB):")
+    def performance_test(self, filename, file_description, markers, marker_config, memory_limit):
+        """Test performance"""
+        file_size = os.path.getsize(filename) / 1024
+        _, execution_time, memory_used = measure_performance(index.replace_markers, filename, markers, marker_config)
+
+        print(f"{file_description} file ({file_size:.2f} KB):")
         print(f"  Execution time: {execution_time:.4f} seconds")
         print(f"  Memory used: {memory_used} KB")
 
         # Verify the file still exists and was processed
-        self.assertTrue(os.path.exists(LARGE_TEXT_FILE))
+        self.assertTrue(os.path.exists(filename))
 
         # Verify memory usage is within limits
         self.assertLessEqual(
             memory_used,
-            MEMORY_LIMIT_STANDARD,
-            f"Memory usage ({memory_used} KB) exceeds limit ({MEMORY_LIMIT_STANDARD} KB)",
+            memory_limit,
+            f"Memory usage ({memory_used} KB) exceeds limit ({memory_limit} KB)",
         )
 
 
@@ -383,6 +302,7 @@ def run_init():
     print(f"LARGE_JSON_FILE={LARGE_JSON_FILE}")
     print(f"COMPLEX_JSON_FILE={COMPLEX_JSON_FILE}")
     print(f"COMPLEX_JSON_FILE_WITH_MARKER={COMPLEX_JSON_FILE_WITH_MARKER}")
+    print(f"SMALL_COMPLEX_JSON_FILE_WITH_MARKER={SMALL_COMPLEX_JSON_FILE_WITH_MARKER}")
     print(f"SMALL_TEXT_FILE={SMALL_TEXT_FILE}")
     print(f"LARGE_TEXT_FILE={LARGE_TEXT_FILE}")
 
@@ -414,6 +334,7 @@ if __name__ == "__main__":
             LARGE_JSON_FILE = os.path.join(TEST_DIR, "large.json")
             COMPLEX_JSON_FILE = os.path.join(TEST_DIR, "complex.json")
             COMPLEX_JSON_FILE_WITH_MARKER = os.path.join(TEST_DIR, "complex_marker.json")
+            SMALL_COMPLEX_JSON_FILE_WITH_MARKER = os.path.join(TEST_DIR, "small_complex_marker.json")
             SMALL_TEXT_FILE = os.path.join(TEST_DIR, "small.txt")
             LARGE_TEXT_FILE = os.path.join(TEST_DIR, "large.txt")
 
