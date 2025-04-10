@@ -47,6 +47,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-codepipeline',
   'aws-codepipeline-actions',
   'aws-cognito',
+  'aws-cognito-identitypool',
   'aws-config',
   'aws-docdb',
   'aws-dynamodb',
