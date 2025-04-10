@@ -79,7 +79,7 @@
     "TransitGatewayFeatureStatus": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/util.ts",
       "sdk_service": "ec2",
-      "sdk_enum_name": "ApplianceModeSupport",
+      "sdk_enum_name": "PersistRoutes",
       "match_percentage": 1
     },
     "KeyPairFormat": {
@@ -140,6 +140,12 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/volume.ts",
       "sdk_service": "ec2",
       "sdk_enum_name": "VolumeType",
+      "match_percentage": 1
+    },
+    "IpAddressType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint-service.ts",
+      "sdk_service": "ec2",
+      "sdk_enum_name": "IpAddressType",
       "match_percentage": 1
     },
     "VpcEndpointType": {
@@ -212,12 +218,6 @@
       "sdk_enum_name": "BalancingStrategy",
       "match_percentage": 1
     },
-    "PriorityType": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-gamelift-alpha/lib/game-session-queue.ts",
-      "sdk_service": "gamelift",
-      "sdk_enum_name": "PriorityOrder",
-      "match_percentage": 1
-    },
     "Protocol": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-gamelift-alpha/lib/ingress-rule.ts",
       "sdk_service": "gamelift",
@@ -264,6 +264,12 @@
     }
   },
   "iot-actions": {
+    "FirehoseRecordSeparator": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/firehose-put-record-action.ts",
+      "sdk_service": "iot",
+      "sdk_enum_name": "SbomValidationStatus",
+      "match_percentage": 1
+    },
     "SnsActionMessageFormat": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/sns-topic-action.ts",
       "sdk_service": "iot",
@@ -346,12 +352,6 @@
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ivs-alpha/lib/thumbnail-configuration.ts",
       "sdk_service": "ivs",
       "sdk_enum_name": "RecordingMode",
-      "match_percentage": 1
-    },
-    "Storage": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ivs-alpha/lib/thumbnail-configuration.ts",
-      "sdk_service": "ivs",
-      "sdk_enum_name": "Storage",
       "match_percentage": 1
     },
     "Resolution": {
@@ -657,12 +657,6 @@
       "sdk_service": "cloudfront",
       "sdk_enum_name": "ErrorCode",
       "match_percentage": 1
-    },
-    "OriginSslPolicy": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/web-distribution.ts",
-      "sdk_service": "cloudfront",
-      "sdk_enum_name": "OriginSSLProtocols",
-      "match_percentage": 1
     }
   },
   "cloudtrail": {
@@ -700,12 +694,6 @@
     }
   },
   "codebuild": {
-    "ComputeType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/compute-type.ts",
-      "sdk_service": "codebuild",
-      "sdk_enum_name": "ComputeType",
-      "match_percentage": 1
-    },
     "EnvironmentType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/environment-type.ts",
       "sdk_service": "codebuild",
@@ -731,25 +719,11 @@
       "match_percentage": 1
     }
   },
-  "codecommit": {
-    "RepositoryEventTrigger": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codecommit/lib/repository.ts",
-      "sdk_service": "codecommit",
-      "sdk_enum_name": "Events",
-      "match_percentage": 1
-    }
-  },
   "codedeploy": {
     "ComputePlatform": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codedeploy/lib/base-deployment-config.ts",
       "sdk_service": "codedeploy",
       "sdk_enum_name": "ComputePlatform",
-      "match_percentage": 1
-    },
-    "AutoRollbackEvent": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codedeploy/lib/private/utils.ts",
-      "sdk_service": "codedeploy",
-      "sdk_enum_name": "Events",
       "match_percentage": 1
     }
   },
@@ -758,6 +732,12 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/action.ts",
       "sdk_service": "codepipeline",
       "sdk_enum_name": "Category",
+      "match_percentage": 1
+    },
+    "RetryMode": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.ts",
+      "sdk_service": "codepipeline",
+      "sdk_enum_name": "RetryMode",
       "match_percentage": 1
     },
     "PipelineType": {
@@ -822,12 +802,6 @@
       "sdk_enum_name": "AvailabilityZoneRebalancing",
       "match_percentage": 1
     },
-    "LaunchType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts",
-      "sdk_service": "ecs",
-      "sdk_enum_name": "RequiresCompatibilities",
-      "match_percentage": 1
-    },
     "FileSystemType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/service-managed-volume.ts",
       "sdk_service": "ecs",
@@ -886,12 +860,6 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts",
       "sdk_service": "ecs",
       "sdk_enum_name": "VersionConsistency",
-      "match_percentage": 1
-    },
-    "DevicePermission": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/linux-parameters.ts",
-      "sdk_service": "ecs",
-      "sdk_enum_name": "Permissions",
       "match_percentage": 1
     },
     "CpuArchitecture": {
@@ -1080,12 +1048,6 @@
       "sdk_enum_name": "UntrustedArtifactOnDeployment",
       "match_percentage": 1
     },
-    "MetricType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-source-mapping.ts",
-      "sdk_service": "lambda",
-      "sdk_enum_name": "Metrics",
-      "match_percentage": 1
-    },
     "FunctionUrlAuthType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-url.ts",
       "sdk_service": "lambda",
@@ -1126,12 +1088,6 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts",
       "sdk_service": "lambda",
       "sdk_enum_name": "RecursiveLoop",
-      "match_percentage": 1
-    },
-    "Architecture": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/architecture.ts",
-      "sdk_service": "lambda",
-      "sdk_enum_name": "Architectures",
       "match_percentage": 1
     },
     "SourceAccessConfigurationType": {
@@ -1214,12 +1170,6 @@
     }
   },
   "s3": {
-    "HttpMethods": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts",
-      "sdk_service": "s3",
-      "sdk_enum_name": "AllowedMethods",
-      "match_percentage": 1
-    },
     "RedirectProtocol": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts",
       "sdk_service": "s3",

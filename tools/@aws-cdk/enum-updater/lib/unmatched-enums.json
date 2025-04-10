@@ -28,17 +28,6 @@
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-codestar-alpha/lib/github-repository.ts"
     }
   },
-  "cognito-identitypool": {
-    "IdentityPoolProviderType": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-cognito-identitypool-alpha/lib/identitypool.ts"
-    },
-    "RoleMappingMatchType": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-cognito-identitypool-alpha/lib/identitypool.ts"
-    },
-    "IdentityPoolProviderUrl": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-cognito-identitypool-alpha/lib/identitypool.ts"
-    }
-  },
   "ec2": {
     "IpamScopeType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/ipam.ts"
@@ -196,6 +185,9 @@
   "gamelift": {
     "OperatingSystem": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-gamelift-alpha/lib/build.ts"
+    },
+    "PriorityType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-gamelift-alpha/lib/game-session-queue.ts"
     }
   },
   "glue": {
@@ -279,9 +271,6 @@
     }
   },
   "iot-actions": {
-    "FirehoseRecordSeparator": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/firehose-put-record-action.ts"
-    },
     "MqttQualityOfService": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/iot-republish-action.ts"
     }
@@ -294,23 +283,9 @@
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-iot-alpha/lib/scheduled-audit.ts"
     }
   },
-  "kinesisfirehose": {
-    "StreamEncryptionType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/delivery-stream.ts"
-    },
-    "BackupMode": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/common.ts"
-    },
-    "Compression": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/common.ts"
-    }
-  },
-  "kinesisfirehose-destinations": {
-    "BackupMode": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-kinesisfirehose-destinations-alpha/lib/common.ts"
-    },
-    "Compression": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-kinesisfirehose-destinations-alpha/lib/common.ts"
+  "ivs": {
+    "Storage": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ivs-alpha/lib/thumbnail-configuration.ts"
     }
   },
   "lambda-python": {
@@ -420,6 +395,11 @@
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.ts"
     }
   },
+  "s3tables": {
+    "UnreferencedFileRemovalStatus": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.ts"
+    }
+  },
   "sagemaker": {
     "InvocationHttpResponseCode": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts"
@@ -436,17 +416,6 @@
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-servicecatalogappregistry-alpha/lib/common.ts"
     }
   },
-  "cdk-cli-wrapper": {
-    "RequireApproval": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/cdk-cli-wrapper/lib/commands/common.ts"
-    },
-    "HotswapMode": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/cdk-cli-wrapper/lib/commands/deploy.ts"
-    },
-    "StackActivityProgress": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/cdk-cli-wrapper/lib/commands/deploy.ts"
-    }
-  },
   "custom-resource-handlers": {
     "CfnUtilsResourceType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/custom-resource-handlers/lib/core/cfn-utils-provider/index.ts"
@@ -456,11 +425,6 @@
     },
     "ComponentType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/custom-resource-handlers/lib/custom-resources-framework/config.ts"
-    }
-  },
-  "integ-runner": {
-    "DiagnosticReason": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/integ-runner/lib/workers/common.ts"
     }
   },
   "integ-tests": {
@@ -514,6 +478,9 @@
     }
   },
   "apigatewayv2": {
+    "IpAddressType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/common/api.ts"
+    },
     "SecurityPolicy": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/common/domain-name.ts"
     },
@@ -749,6 +716,9 @@
     "HeadersReferrerPolicy": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/response-headers-policy.ts"
     },
+    "OriginSslPolicy": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/web-distribution.ts"
+    },
     "CloudFrontAllowedMethods": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/web-distribution.ts"
     },
@@ -850,6 +820,9 @@
     "LocalCacheMode": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/cache.ts"
     },
+    "ComputeType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/compute-type.ts"
+    },
     "WindowsImageType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.ts"
     },
@@ -894,6 +867,9 @@
     }
   },
   "codecommit": {
+    "RepositoryEventTrigger": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codecommit/lib/repository.ts"
+    },
     "RepositoryNotificationEvents": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codecommit/lib/repository.ts"
     }
@@ -901,6 +877,9 @@
   "codedeploy": {
     "CustomLambdaDeploymentConfigType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codedeploy/lib/lambda/custom-deployment-config.ts"
+    },
+    "AutoRollbackEvent": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codedeploy/lib/private/utils.ts"
     },
     "LoadBalancerGeneration": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codedeploy/lib/server/load-balancer.ts"
@@ -930,6 +909,9 @@
     "CodeCommitTrigger": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/codecommit/source-action.ts"
     },
+    "RegistryType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ecr/build-and-publish-action.ts"
+    },
     "GitHubTrigger": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/github/source-action.ts"
     },
@@ -944,8 +926,22 @@
     "PipelineNotificationEvents": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/action.ts"
     },
+    "Result": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.ts"
+    },
     "GitPullRequestEvent": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/trigger.ts"
+    }
+  },
+  "cognito-identitypool": {
+    "IdentityPoolProviderType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cognito-identitypool/lib/identitypool.ts"
+    },
+    "RoleMappingMatchType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cognito-identitypool/lib/identitypool.ts"
+    },
+    "IdentityPoolProviderUrl": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cognito-identitypool/lib/identitypool.ts"
     }
   },
   "cognito": {
@@ -1078,6 +1074,9 @@
     "AlarmBehavior": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts"
     },
+    "LaunchType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts"
+    },
     "DeploymentControllerType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts"
     },
@@ -1109,6 +1108,9 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/firelens-log-router.ts"
     },
     "Capability": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/linux-parameters.ts"
+    },
+    "DevicePermission": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/linux-parameters.ts"
     },
     "TmpfsMountOption": {
@@ -1280,6 +1282,17 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesis/lib/stream.ts"
     }
   },
+  "kinesisfirehose": {
+    "BackupMode": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/common.ts"
+    },
+    "StreamEncryptionType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/delivery-stream.ts"
+    },
+    "Compression": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/common.ts"
+    }
+  },
   "lambda-nodejs": {
     "LockFile": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/package-manager.ts"
@@ -1306,6 +1319,9 @@
     },
     "DestinationType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/destination.ts"
+    },
+    "MetricType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-source-mapping.ts"
     },
     "StartingPosition": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-source-mapping.ts"
@@ -1339,6 +1355,9 @@
     },
     "AdotLambdaLayerGenericVersion": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/adot-layers.ts"
+    },
+    "Architecture": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/architecture.ts"
     },
     "LambdaInsightsVersion": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/lambda-insights.ts"
@@ -1381,6 +1400,9 @@
   "rds": {
     "InstanceType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.ts"
+    },
+    "EngineLifecycleSupport": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts"
     },
     "DBClusterStorageType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts"
@@ -1457,6 +1479,9 @@
     }
   },
   "s3": {
+    "HttpMethods": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts"
+    },
     "InventoryFormat": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts"
     },
