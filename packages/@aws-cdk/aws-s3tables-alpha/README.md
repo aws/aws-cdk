@@ -26,7 +26,7 @@ Amazon S3 Tables deliver the first cloud object store with built-in Apache Icebe
 
 ### Define an S3 Table Bucket
 
-```ts
+```ts fixture=with-table-bucket
 // Build a Table bucket
 const tableBucket = new TableBucket(scope, 'ExampleTableBucket', {
     tableBucketName: 'example-bucket-1',
@@ -43,12 +43,13 @@ Learn more about table buckets maintenance operations and default behavior from 
 
 ### Controlling Table Bucket Permissions
 
-```ts
+```ts fixture=with-iam-and-table-bucket
 // Grant the principal read permissions to the bucket and all tables within
 const accountId = '123456789012'
 tableBucket.grantRead(new iam.AccountPrincipal(accountId), '*');
 // Grant the role write permissions to the bucket and all tables within
-tableBucket.grantWrite(new iam.Role(stack, 'MyRole'), '*');
+const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('sample') });
+tableBucket.grantWrite(role, '*');
 // Grant the user read and write permissions to the bucket and all tables within 
 tableBucket.grantReadWrite(new iam.User(stack, 'MyUser'), '*');
 
@@ -58,7 +59,7 @@ tableBucket.grantReadWrite(new iam.AccountPrincipal(accountId), tableId);
 
 // Add custom resource policy statements
 const permissions = new iam.PolicyStatement({
-    effect: Effect.ALLOW,
+    effect: iam.Effect.ALLOW,
     actions: ['s3tables:*'],
     principals: [ new iam.ServicePrincipal('example.aws.internal') ],
     resources: ['*']

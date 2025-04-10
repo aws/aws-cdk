@@ -1,0 +1,10 @@
+import { Construct } from 'constructs';
+import { Stack } from 'aws-cdk-lib';
+import { TableBucket, UnreferencedFileRemovalStatus } from '@aws-cdk/aws-s3tables-alpha';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    /// here
+  }
+}
