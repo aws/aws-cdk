@@ -83,4 +83,5 @@ body:
         * [ ] Add region and ARN in [ADOT_LAMBDA_LAYER_PYTHON_SDK_ARNS](https://github.com/aws/aws-cdk/blob/v2.65.0/packages/@aws-cdk/region-info/build-tools/fact-tables.ts#L768) for most recent version in `x86_64` and `arm64`.
         * [ ] Add region and ARN in [ADOT_LAMBDA_LAYER_GENERIC_ARNS](https://github.com/aws/aws-cdk/blob/v2.65.0/packages/@aws-cdk/region-info/build-tools/fact-tables.ts#L847) for most recent version in `x86_64` and `arm64`.
         * [ ] Add region in [AWS_REGIONS_AND_RULES](https://github.com/aws/aws-cdk/blob/v2.65.0/packages/@aws-cdk/region-info/lib/aws-entities.ts).
+        * [ ] Add partition info if the region is also a new partition in [PARTITION_MAP](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L88)
         * [ ] Run integ tests and update snapshots
