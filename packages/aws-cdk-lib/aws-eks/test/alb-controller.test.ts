@@ -174,7 +174,7 @@ test.each([
   new AlbController(stack, 'AlbController', {
     cluster,
     version: AlbControllerVersion.V2_4_1,
-    additionalhelmChartValues: {
+    additionalHelmChartValues: {
       [setting]: value,
     },
   });

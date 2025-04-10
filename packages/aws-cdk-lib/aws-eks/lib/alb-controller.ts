@@ -295,7 +295,7 @@ export interface AlbControllerOptions {
    * Additional helm chart values for ALB controller
    * @default - no additional helm chart values
    */
-  readonly additionalhelmChartValues?: AlbControllerHelmChartOptions;
+  readonly additionalHelmChartValues?: AlbControllerHelmChartOptions;
 }
 
 /**
@@ -377,7 +377,7 @@ export class AlbController extends Construct {
           repository: props.repository ?? '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller',
           tag: props.version.version,
         },
-        ...props.additionalhelmChartValues, // additional helm chart options for ALB controller chart
+        ...props.additionalHelmChartValues, // additional helm chart options for ALB controller chart
       },
     });
 
