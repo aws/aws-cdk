@@ -62,6 +62,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-logs',
   'aws-rds',
   'aws-s3',
+  'aws-ses',
   'aws-sns',
   'aws-sqs',
   'aws-ssm',

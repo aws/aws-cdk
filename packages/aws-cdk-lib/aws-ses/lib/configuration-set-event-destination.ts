@@ -5,7 +5,7 @@ import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as firehose from '../../aws-kinesisfirehose';
 import * as sns from '../../aws-sns';
-import { Aws, IResource, Resource, Stack } from '../../core';
+import { Aws, IResource, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -296,7 +296,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
         resourceName: 'default',
       })
     ) {
-      throw new Error(`Only the default bus can be used as an event destination. Got ${props.destination.bus.eventBusArn}`);
+      throw new ValidationError(`Only the default bus can be used as an event destination. Got ${props.destination.bus.eventBusArn}`, this);
     }
 
     let firehoseDeliveryStreamIamRoleArn = '';
