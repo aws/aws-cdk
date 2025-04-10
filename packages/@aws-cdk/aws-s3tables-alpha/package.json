@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-s3tables-alpha",
-  "private": true,
+  "private": false,
   "version": "0.0.0",
   "description": "CDK Constructs for S3 Tables",
   "main": "lib/index.js",
@@ -102,6 +102,9 @@
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
+  },
+  "publishConfig": {
+    "tag": "latest"
   },
   "awslint": {
     "exclude": [
