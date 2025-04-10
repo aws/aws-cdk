@@ -6,7 +6,7 @@ import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { App, Aws, Duration, Stack } from '../../core';
+import { App, Aws, Duration, Stack, Token } from '../../core';
 import {
   AllowedMethods,
   CfnDistribution,
@@ -1438,7 +1438,7 @@ describe('attachWebAclId', () => {
 
       const distribution = new Distribution(stack, 'MyDist', {
         defaultBehavior: { origin },
-        webAclId: Stack.of(stack).resolve({ Ref: 'SomeWebAcl' }) as any, // unresolved token
+        webAclId: Token.asString({ Ref: 'SomeWebAcl' }), // unresolved token
       });
 
       // Should synthesize without error
