@@ -918,6 +918,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'subnetType': 'SubnetType',
       'subnetName': '*',
       'assignIpv6AddressOnCreation': 'boolean',
+      'mapPublicIpOnLaunch': 'boolean',
       'associateNetworkAcl': [
         '*',
         {
@@ -3765,6 +3766,35 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'supportsGetObjectRange': 'boolean',
       'supportsGetObjectPartNumber': 'boolean',
       'payload': '*'
+    }
+  },
+  '@aws-cdk.aws-s3tables-alpha': {
+    'TableBucketPolicy': {
+      'tableBucket': {
+        'tableBucketArn': '*',
+        'tableBucketName': '*',
+        'account': '*',
+        'region': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'resourcePolicy': '*',
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'TableBucket': {
+      'tableBucketName': '*',
+      'unreferencedFileRemoval': {
+        'noncurrentDays': '*',
+        'status': 'UnreferencedFileRemovalStatus',
+        'unreferencedDays': '*'
+      },
+      'region': '*',
+      'account': '*',
+      'removalPolicy': 'RemovalPolicy'
     }
   },
   '@aws-cdk.aws-sagemaker-alpha': {

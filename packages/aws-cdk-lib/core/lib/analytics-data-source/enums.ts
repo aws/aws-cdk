@@ -3519,6 +3519,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Count/Second',
     'None'
   ],
+  'UnreferencedFileRemovalStatus': [
+    'Enabled',
+    'Disabled'
+  ],
   'UntrustedArtifactOnDeployment': [
     'Enforce',
     'Warn'

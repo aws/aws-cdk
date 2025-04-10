@@ -24,3 +24,18 @@ export interface IApi extends IResource {
    */
   metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
+
+/**
+ * Supported IP Address Types
+ */
+export enum IpAddressType {
+  /**
+   * IPv4 address type
+   */
+  IPV4 = 'ipv4',
+
+  /**
+   * IPv4 and IPv6 address type
+   */
+  DUAL_STACK = 'dualstack',
+}
