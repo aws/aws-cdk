@@ -1925,6 +1925,14 @@ export interface BucketProps {
   readonly minimumTLSVersion?: number;
 
   /**
+   * Role used to set up permissions on this bucket for replication.
+   *
+   * @default Creates a new role with a unique role name or CDKReplicationRole, depending on
+   * the SET_UNIQUE_REPLICATION_ROLE_NAME feature flag.
+   */
+  readonly replicationRole?: iam.IRole;
+
+  /**
    * A container for one or more replication rules.
    *
    * @default - No replication
@@ -2802,7 +2810,7 @@ export class Bucket extends BucketBase {
     const destinationBuckets = props.replicationRules.map(rule => rule.destination);
     const kmsKeys = props.replicationRules.map(rule => rule.kmsKey).filter(kmsKey => kmsKey !== undefined) as kms.IKey[];
 
-    const replicationRole = new iam.Role(this, 'ReplicationRole', {
+    const replicationRole = props.replicationRole || new iam.Role(this, 'ReplicationRole', {
       assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
       roleName: FeatureFlags.of(this).isEnabled(cxapi.SET_UNIQUE_REPLICATION_ROLE_NAME) ? PhysicalName.GENERATE_IF_NEEDED : 'CDKReplicationRole',
     });
