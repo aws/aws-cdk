@@ -11,7 +11,7 @@
     },
     "service": "S3",
     "api": "getObject",
-    "expected": "{\"$ObjectLike\":{\"Body\":\"{\\\"secret_value\\\": \\\"test\\\\\\\"with\\\\\\\"quotes\\\"}\"}}",
+    "expected": "{\"$ObjectLike\":{\"Body\":\"{\\\"secret_value\\\":\\\"test\\\\\\\"with\\\\\\\"quotes\\\"}\"}}",
     "parameters": {
      "Bucket": {
       "Fn::Join": [
@@ -28,7 +28,7 @@
      "Key": "\"my-json/secret-config.json\""
     },
     "flattenResponse": "false",
-    "salt": "1744045307275"
+    "salt": "1744263844145"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -170,7 +170,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1744045307276"
+    "salt": "1744263844145"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -472,7 +472,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1744045307280"
+    "salt": "1744263844147"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

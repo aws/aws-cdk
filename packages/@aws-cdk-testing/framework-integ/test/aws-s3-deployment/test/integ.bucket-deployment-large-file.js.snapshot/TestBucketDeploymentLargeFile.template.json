@@ -216,7 +216,7 @@
      }
     ],
     "SourceObjectKeys": [
-     "c6eababd2eff33418f92d8a724ae14d9181a3961d36bcbcbc4327260e7b89bca.zip",
+     "8ac1f2b690a4765f545b6df853e439a522aa8499c6abfced9de057758aab13ee.zip",
      "cbc7dae5477d6aa98463e36140d5833273cc3caca06c731d848799f30237fefe.zip",
      "1175d01d4ddecbd7be39bdc306dabe248b6ada0281089ae680473c5ca7e13e67.zip"
     ],
@@ -230,6 +230,13 @@
         "Value"
        ]
       }
+     }
+    ],
+    "SourceMarkersConfig": [
+     {},
+     {},
+     {
+      "jsonEscape": true
      }
     ],
     "DestinationBucketName": {
@@ -375,7 +382,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "fff91faeb6c447ba94737eff19d28ce6deaee8786cd747de869b5a5eb631cfb8.zip"
+     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
     },
     "Environment": {
      "Variables": {
