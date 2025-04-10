@@ -102,6 +102,15 @@ new apigwv2.HttpApi(this, 'HttpProxyApi', {
 });
 ```
 
+You can configure IP address type for the API endpoint using `ipAddressType` property.
+Valid values are `IPV4` (default) and `DUAL_STACK`.
+
+```ts
+new apigwv2.HttpApi(this, 'HttpApi', {
+  ipAddressType: apigwv2.IpAddressType.DUAL_STACK,
+});
+```
+
 ### Cross Origin Resource Sharing (CORS)
 
 [Cross-origin resource sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is a browser security
@@ -186,7 +195,7 @@ const api = new apigwv2.HttpApi(this, 'HttpProxyProdApi', {
 ```
 
 To migrate a domain endpoint from one type to another, you can add a new endpoint configuration via `addEndpoint()`
-and then configure DNS records to route traffic to the new endpoint. After that, you can remove the previous endpoint configuration. 
+and then configure DNS records to route traffic to the new endpoint. After that, you can remove the previous endpoint configuration.
 Learn more at [Migrating a custom domain name](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-regional-api-custom-domain-migrate.html)
 
 To associate a specific `Stage` to a custom domain mapping -
@@ -410,13 +419,13 @@ const stage = new apigwv2.HttpStage(this, 'Stage', {
 
 ## WebSocket API
 
-A WebSocket API in API Gateway is a collection of WebSocket routes that are integrated with backend HTTP endpoints, 
-Lambda functions, or other AWS services. You can use API Gateway features to help you with all aspects of the API 
+A WebSocket API in API Gateway is a collection of WebSocket routes that are integrated with backend HTTP endpoints,
+Lambda functions, or other AWS services. You can use API Gateway features to help you with all aspects of the API
 lifecycle, from creation through monitoring your production APIs. [Read more](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-overview.html)
 
 WebSocket APIs have two fundamental concepts - Routes and Integrations.
 
-WebSocket APIs direct JSON messages to backend integrations based on configured routes. (Non-JSON messages are directed 
+WebSocket APIs direct JSON messages to backend integrations based on configured routes. (Non-JSON messages are directed
 to the configured `$default` route.)
 
 Integrations define how the WebSocket API behaves when a client reaches a specific Route. Learn more at
@@ -498,6 +507,14 @@ const arn = api.arnForExecuteApiV2('$connect', 'dev');
 
 For a detailed explanation of this function, including usage and examples, please refer to the [Generating ARN for Execute API](#generating-arn-for-execute-api) section under HTTP API.
 
+You can configure IP address type for the API endpoint using `ipAddressType` property.
+Valid values are `IPV4` (default) and `DUAL_STACK`.
+
+```ts
+new apigwv2.WebSocketApi(this, 'WebSocketApi', {
+  ipAddressType: apigwv2.IpAddressType.DUAL_STACK,
+});
+```
 
 ### Manage Connections Permission
 
@@ -537,9 +554,11 @@ const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi',{
 ```
 
 ## Common Config
+
 Common config for both HTTP API and WebSocket API
 
 ### Route Settings
+
 Represents a collection of route settings.
 
 ```ts
