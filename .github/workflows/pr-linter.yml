@@ -59,7 +59,6 @@ jobs:
           echo "pr_sha=$(cat pr/pr_sha)" >> "$GITHUB_OUTPUT"
 
   validate-pr:
-    # Necessary to have sufficient permissions to write to the PR
     permissions:
       contents: read
       pull-requests: write
@@ -68,9 +67,13 @@ jobs:
       checks: read
     runs-on: ubuntu-latest
     needs: download-if-workflow-run
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.download-if-workflow-run.outputs.pr_sha }}
 
       - name: Install & Build prlint
         run: yarn install --frozen-lockfile && cd tools/@aws-cdk/prlint && yarn build+test
@@ -83,3 +86,46 @@ jobs:
           PR_SHA: ${{ needs.download-if-workflow-run.outputs.pr_sha }}
           LINTER_LOGIN: ${{ vars.LINTER_LOGIN }}
           REPO_ROOT: ${{ github.workspace }}
+
+      # ---------- Your Custom cfn-guard Integration ----------
+      - name: Get list of changed .template.json files
+        id: filter_files
+        run: |
+          echo "Getting changed CloudFormation templates..."
+          mkdir -p changed_templates
+
+          git fetch origin main --depth=1
+
+          base_sha="${{ github.event.pull_request.base.sha }}"
+          head_sha="${{ github.event.pull_request.head.sha }}"
+          if [[ -z "$base_sha" ]]; then base_sha=$(git merge-base origin/main HEAD); fi
+          if [[ -z "$head_sha" ]]; then head_sha=HEAD; fi
+
+          git diff --name-status "$base_sha" "$head_sha" \
+            | grep -E '^(A|M)\s+.*\.template\.json$' \
+            | awk '{print $2}' > changed_files.txt || true
+
+          while IFS= read -r file; do
+            if [ -f "$file" ]; then
+              safe_name=$(echo "$file" | sed 's|/|_|g')
+              cp "$file" "changed_templates/$safe_name"
+            else
+              echo "::warning::Changed file not found in workspace: $file"
+            fi
+          done < changed_files.txt
+
+          if [ -s changed_files.txt ]; then
+            echo "files_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "files_changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run cfn-guard if templates changed
+        if: steps.filter_files.outputs.files_changed == 'true'
+        uses: ./tools/@aws-cdk/cfn-guard-custom-rules-tool
+        with:
+          data_directory: './changed_templates'
+          rule_file_path: './tools/@aws-cdk/cfn-guard-custom-rules-tool/rules/trust_scope_rules.guard'
+          show_summary: 'fail'
+          output_format: 'single-line-summary'
+            

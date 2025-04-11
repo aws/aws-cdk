@@ -1,0 +1,27 @@
+name: 'cfn-guard-custom-rules-tool'
+description: 'CFN Guard for custom or granular guard rules'
+author: QuantumNeuralCoder
+
+inputs:
+  data_directory:
+    description: "Path to CloudFormation templates"
+    required: true
+  rule_set_url:
+    description: "URL to a single .guard file on GitHub"
+    required: true
+  show_summary:
+    description: "cfn-guard summary output. Options are all, pass, fail, skip or none"
+    required: false
+    default: "fail"
+  output_format:
+    description: "cfn-guard output format. Options: json, yaml, single-line-summary"
+    required: false
+    default: "single-line-summary"
+
+runs:
+  using: node20
+  main: dist/index.js
+
+branding:
+  icon: shield
+  color: red
