@@ -1047,19 +1047,22 @@ subnets changes.
 
 Set this flag to false for existing mount targets.
 
+
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.93.0 | `false` | `true` |
+
 
 ### @aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion
 
 *Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default* (default)
 
 If this is set, and a `runtime` prop is not passed to, Lambda NodeJs
-functions will us the latest version of the runtime provided by the Lambda
+functions will us the v18 version of the runtime provided by the Lambda
 service. Do not use this if you your lambda function is reliant on dependencies
 shipped as part of the runtime environment.
+
 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |

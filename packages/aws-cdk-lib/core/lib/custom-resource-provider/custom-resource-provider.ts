@@ -58,6 +58,11 @@ export enum CustomResourceProviderRuntime {
    * Node.js 20.x
    */
   NODEJS_20_X = 'nodejs20.x',
+
+  /**
+   * Nodejs 22.x
+   */
+  NODEJS_22_X = 'nodejs22.x',
 }
 
 /**
@@ -140,6 +145,8 @@ function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime)
       return 'nodejs18.x';
     case CustomResourceProviderRuntime.NODEJS_20_X:
       return 'nodejs20.x';
+    case CustomResourceProviderRuntime.NODEJS_22_X:
+      return 'nodejs22.x';
   }
 }
 

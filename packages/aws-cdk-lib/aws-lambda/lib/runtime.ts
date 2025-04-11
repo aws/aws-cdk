@@ -104,17 +104,20 @@ export class Runtime {
 
   /**
    * The NodeJS 18.x runtime (nodejs18.x)
+   * @deprecated Upstream no longer in maintenance https://nodejs.org/en/about/previous-releases. Deprecated by AWS on 2025 Sept 1 https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
    */
   public static readonly NODEJS_18_X = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 20.x runtime (nodejs20.x)
+   * Deprecated by AWS on 2026 April 30 https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
    */
   public static readonly NODEJS_20_X = new Runtime('nodejs20.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The latest NodeJS version currently available in ALL regions (not necessarily the latest NodeJS version
    * available in YOUR region).
+   * @deprecated use determineLatestNodeRuntime() to have CDK dynamically adopt the latest nodejs runtime.
    */
   public static readonly NODEJS_LATEST = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
 
