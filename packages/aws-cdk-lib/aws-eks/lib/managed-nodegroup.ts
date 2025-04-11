@@ -58,6 +58,14 @@ export enum NodegroupAmiType {
    */
   BOTTLEROCKET_X86_64_NVIDIA = 'BOTTLEROCKET_x86_64_NVIDIA',
   /**
+   * Bottlerocket Linux (ARM-64) with FIPS enabled
+   */
+  BOTTLEROCKET_ARM_64_FIPS = 'BOTTLEROCKET_ARM_64_FIPS',
+  /**
+   * Bottlerocket (x86-64) with FIPS enabled
+   */
+  BOTTLEROCKET_X86_64_FIPS = 'BOTTLEROCKET_x86_64_FIPS',
+  /**
    * Windows Core 2019 (x86-64)
    */
   WINDOWS_CORE_2019_X86_64 = 'WINDOWS_CORE_2019_x86_64',
@@ -103,6 +111,10 @@ export enum CapacityType {
    * on-demand instances
    */
   ON_DEMAND = 'ON_DEMAND',
+  /**
+   * capacity block instances
+   */
+  CAPACITY_BLOCK = 'CAPACITY_BLOCK',
 }
 
 /**
@@ -335,6 +347,14 @@ export interface NodegroupOptions {
    * @default undefined - node groups will update instances one at a time
    */
   readonly maxUnavailablePercentage?: number;
+
+  /**
+   * Specifies whether to enable node auto repair for the node group. Node auto repair is disabled by default.
+   *
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/node-health.html#node-auto-repair
+   * @default - disabled
+   */
+  readonly enableNodeAutoRepair?: boolean;
 }
 
 /**
@@ -524,6 +544,9 @@ export class Nodegroup extends Resource implements INodegroup {
         maxUnavailable: props.maxUnavailable,
         maxUnavailablePercentage: props.maxUnavailablePercentage,
       } : undefined,
+      nodeRepairConfig: props.enableNodeAutoRepair ? {
+        enabled: props.enableNodeAutoRepair,
+      } : undefined,
     });
 
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
@@ -646,7 +669,7 @@ function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] 
   const architectures: Set<AmiArchitecture> = new Set(instanceTypes.map(typeToArch));
 
   if (architectures.size === 0) { // protective code, the current implementation will never result in this.
-    throw new Error(`Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString).join(', ')}`);
+    throw new Error(`Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString()).join(', ')}`);
   }
 
   if (architectures.size > 1) {

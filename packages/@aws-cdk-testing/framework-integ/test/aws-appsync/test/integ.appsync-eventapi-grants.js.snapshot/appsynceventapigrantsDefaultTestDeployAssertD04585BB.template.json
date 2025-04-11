@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "LambdaInvoke646f073b90fc2b95987262c73a80a234": {
+  "LambdaInvoke8006c7b031e80be4861a1f247548571b": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -25,15 +25,15 @@
        ]
       ]
      },
-     "Payload": "\"{\\\"action\\\":\\\"subscribe\\\",\\\"channel\\\":\\\"default\\\"}\""
+     "Payload": "\"{\\\"action\\\":\\\"subscribe\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1736631400618"
+    "salt": "1740448207022"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke646f073b90fc2b95987262c73a80a234Invoke1E751E59": {
+  "LambdaInvoke8006c7b031e80be4861a1f247548571bInvoke3AE64FC8": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -336,7 +336,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "bfcf4228d6660f50e81f19efdb64c6388dda6796296eb239decdff1dbc2f4981.zip"
+     "S3Key": "4a8b2d1ae3fba266ef36adae459ae53392d074ee550352d271d073f06413f06b.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -348,7 +348,7 @@
     }
    }
   },
-  "LambdaInvoke48cb09c92f8cbcf916c7196f0ad6ed74": {
+  "LambdaInvokec34f920450dfc6f8bcd12360d5e438b1": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -373,15 +373,15 @@
        ]
       ]
      },
-     "Payload": "\"{\\\"action\\\":\\\"publish\\\",\\\"channel\\\":\\\"default\\\"}\""
+     "Payload": "\"{\\\"action\\\":\\\"publish\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1736631400619"
+    "salt": "1740448207023"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke48cb09c92f8cbcf916c7196f0ad6ed74Invoke5A984952": {
+  "LambdaInvokec34f920450dfc6f8bcd12360d5e438b1Invoke36E757E9": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -396,7 +396,7 @@
     }
    }
   },
-  "LambdaInvokebc77de78ff36d1eb544a17a548a8d556": {
+  "LambdaInvokec29811996c72ae76bcc2a12cfc2fb858": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -421,15 +421,15 @@
        ]
       ]
      },
-     "Payload": "\"{\\\"action\\\":\\\"pubSub\\\",\\\"channel\\\":\\\"pubsub\\\"}\""
+     "Payload": "\"{\\\"action\\\":\\\"pubSub\\\",\\\"channel\\\":\\\"pubsub\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1736631400619"
+    "salt": "1740448207023"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvokebc77de78ff36d1eb544a17a548a8d556InvokeEF8B1E6D": {
+  "LambdaInvokec29811996c72ae76bcc2a12cfc2fb858Invoke71E884C6": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -444,7 +444,7 @@
     }
    }
   },
-  "LambdaInvoke683e463feeb9c25a7a0d516e742635e6": {
+  "LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -469,15 +469,15 @@
        ]
       ]
      },
-     "Payload": "\"{\\\"action\\\":\\\"publish\\\",\\\"channel\\\":\\\"test1\\\"}\""
+     "Payload": "\"{\\\"action\\\":\\\"publish\\\",\\\"channel\\\":\\\"test1\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1736631400620"
+    "salt": "1740448207023"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke683e463feeb9c25a7a0d516e742635e6Invoke15425190": {
+  "LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2Invoke6088310E": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -492,7 +492,7 @@
     }
    }
   },
-  "LambdaInvoke5170bf0557b16cd3ed2e63dd5396f05f": {
+  "LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -517,15 +517,15 @@
        ]
       ]
      },
-     "Payload": "\"{\\\"action\\\":\\\"subscribe\\\",\\\"channel\\\":\\\"test1\\\"}\""
+     "Payload": "\"{\\\"action\\\":\\\"subscribe\\\",\\\"channel\\\":\\\"test1\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1736631400620"
+    "salt": "1740448207024"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke5170bf0557b16cd3ed2e63dd5396f05fInvoke6211A5AE": {
+  "LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053Invoke4173F8E7": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -540,7 +540,7 @@
     }
    }
   },
-  "LambdaInvokef4d20230e1076fb8964cd9d0c720700f": {
+  "LambdaInvokea2c0736db95d14edddf4cf00800f9c11": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -565,15 +565,15 @@
        ]
       ]
      },
-     "Payload": "\"{\\\"action\\\":\\\"pubSub\\\",\\\"channel\\\":\\\"test1/subtest\\\"}\""
+     "Payload": "\"{\\\"action\\\":\\\"pubSub\\\",\\\"channel\\\":\\\"test1/subtest\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1736631400620"
+    "salt": "1740448207024"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvokef4d20230e1076fb8964cd9d0c720700fInvoke5AFE1CF3": {
+  "LambdaInvokea2c0736db95d14edddf4cf00800f9c11InvokeC15326AD": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -590,50 +590,50 @@
   }
  },
  "Outputs": {
-  "AssertionResultsLambdaInvoke646f073b90fc2b95987262c73a80a234": {
+  "AssertionResultsLambdaInvoke8006c7b031e80be4861a1f247548571b": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke646f073b90fc2b95987262c73a80a234",
+     "LambdaInvoke8006c7b031e80be4861a1f247548571b",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke48cb09c92f8cbcf916c7196f0ad6ed74": {
+  "AssertionResultsLambdaInvokec34f920450dfc6f8bcd12360d5e438b1": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke48cb09c92f8cbcf916c7196f0ad6ed74",
+     "LambdaInvokec34f920450dfc6f8bcd12360d5e438b1",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvokebc77de78ff36d1eb544a17a548a8d556": {
+  "AssertionResultsLambdaInvokec29811996c72ae76bcc2a12cfc2fb858": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvokebc77de78ff36d1eb544a17a548a8d556",
+     "LambdaInvokec29811996c72ae76bcc2a12cfc2fb858",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke683e463feeb9c25a7a0d516e742635e6": {
+  "AssertionResultsLambdaInvokea7c50a5db339100aa5a0c50ad72e12e2": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke683e463feeb9c25a7a0d516e742635e6",
+     "LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke5170bf0557b16cd3ed2e63dd5396f05f": {
+  "AssertionResultsLambdaInvokecb9ef40c8ac7aed4dfd60060aa942053": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke5170bf0557b16cd3ed2e63dd5396f05f",
+     "LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvokef4d20230e1076fb8964cd9d0c720700f": {
+  "AssertionResultsLambdaInvokea2c0736db95d14edddf4cf00800f9c11": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvokef4d20230e1076fb8964cd9d0c720700f",
+     "LambdaInvokea2c0736db95d14edddf4cf00800f9c11",
      "assertion"
     ]
    }
@@ -687,10 +687,10 @@
     "value": "nodejs20.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "eu-central-1": {
     "value": "nodejs20.x"
@@ -741,10 +741,10 @@
     "value": "nodejs20.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"

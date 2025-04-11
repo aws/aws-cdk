@@ -96,6 +96,14 @@ export interface SubnetV2Props {
    */
   readonly assignIpv6AddressOnCreation?: boolean;
 
+  /**
+   * Controls if instances launched into the subnet should be assigned a public IP address.
+   * This property can only be set for public subnets.
+   *
+   * @default - undefined in case not provided as an input
+   */
+  readonly mapPublicIpOnLaunch?: boolean;
+
 }
 
 /**
@@ -276,12 +284,17 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
       throw new Error('IPv6 CIDR block is required when assigning IPv6 address on creation');
     }
 
+    if (props.mapPublicIpOnLaunch === true && props.subnetType !== SubnetType.PUBLIC) {
+      throw new Error('mapPublicIpOnLaunch can only be set to true for public subnets');
+    }
+
     const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpc.vpcId,
       cidrBlock: ipv4CidrBlock,
       ipv6CidrBlock: ipv6CidrBlock,
       availabilityZone: props.availabilityZone,
       assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation ?? false,
+      mapPublicIpOnLaunch: props.mapPublicIpOnLaunch ?? undefined,
     });
 
     this.node.defaultChild = subnet;

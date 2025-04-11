@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as autoscaling from '../../aws-autoscaling';
@@ -2074,6 +2075,25 @@ describe('cluster', () => {
             },
           },
         ],
+      },
+    });
+  });
+
+  test('enable managed storage encryption on cluster', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const key = new kms.Key(stack, 'key', { policy: new iam.PolicyDocument() });
+    new ecs.Cluster(stack, 'EcsCluster', { managedStorageConfiguration: { kmsKey: key } });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+      Configuration: {
+        ManagedStorageConfiguration: {
+          KmsKeyId: {
+            Ref: 'keyFEDD6EC0',
+          },
+        },
       },
     });
   });

@@ -53,7 +53,8 @@
                 "path": "EventApiApiGrantStack/EventApiApiGrant/LogGroup",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               },
               "default": {
@@ -83,7 +84,23 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appsync.ChannelNamespace",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "api": "*",
+                      "channelNamespaceName": "*"
+                    },
+                    {
+                      "grantSubscribe": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "grantPublish": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "pubsub": {
@@ -113,7 +130,18 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appsync.ChannelNamespace",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "api": "*",
+                      "channelNamespaceName": "*"
+                    },
+                    {
+                      "grantPublishAndSubscribe": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "test1": {
@@ -143,7 +171,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appsync.ChannelNamespace",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "api": "*",
+                      "channelNamespaceName": "*"
+                    }
+                  ]
                 }
               },
               "test2": {
@@ -173,13 +207,31 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appsync.ChannelNamespace",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "api": "*",
+                      "channelNamespaceName": "*"
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_appsync.EventApi",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "apiName": "*",
+                  "authorizationConfig": {
+                    "authProviders": [
+                      {
+                        "authorizationType": "AWS_IAM"
+                      }
+                    ]
+                  }
+                }
+              ]
             }
           },
           "SubscribeFunction": {
@@ -195,7 +247,10 @@
                     "path": "EventApiApiGrantStack/SubscribeFunction/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -329,13 +384,69 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -355,7 +466,8 @@
                     "path": "EventApiApiGrantStack/SubscribeFunction/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -374,20 +486,38 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "279231bfd143911647f5f97345b4e6df26bb23f1d5f9078ac65fbf68c94e7ba3.zip"
+                      "s3Key": "86c1f810188044ee5131336e9c4bd0c97bf5110181d112dfa5de98163adc8a8d.zip"
                     },
                     "environment": {
                       "variables": {
                         "EVENT_API_REALTIME_URL": {
-                          "Fn::GetAtt": [
-                            "EventApiApiGrantBFB2D6A9",
-                            "Dns.Realtime"
+                          "Fn::Join": [
+                            "",
+                            [
+                              "wss://",
+                              {
+                                "Fn::GetAtt": [
+                                  "EventApiApiGrantBFB2D6A9",
+                                  "Dns.Realtime"
+                                ]
+                              },
+                              "/event/realtime"
+                            ]
                           ]
                         },
                         "EVENT_API_HTTP_URL": {
-                          "Fn::GetAtt": [
-                            "EventApiApiGrantBFB2D6A9",
-                            "Dns.Http"
+                          "Fn::Join": [
+                            "",
+                            [
+                              "https://",
+                              {
+                                "Fn::GetAtt": [
+                                  "EventApiApiGrantBFB2D6A9",
+                                  "Dns.Http"
+                                ]
+                              },
+                              "/event"
+                            ]
                           ]
                         }
                       }
@@ -411,7 +541,32 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "runtime": "*",
+                  "environment": "*",
+                  "bundling": {
+                    "bundleAwsSDK": true
+                  },
+                  "entry": "*",
+                  "handler": "*",
+                  "timeout": "*",
+                  "code": "*"
+                },
+                {},
+                {},
+                {
+                  "runtime": "*",
+                  "environment": "*",
+                  "bundling": {
+                    "bundleAwsSDK": true
+                  },
+                  "entry": "*",
+                  "handler": "*",
+                  "timeout": "*"
+                }
+              ]
             }
           },
           "PublishFunction": {
@@ -427,7 +582,10 @@
                     "path": "EventApiApiGrantStack/PublishFunction/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -531,13 +689,59 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -557,7 +761,8 @@
                     "path": "EventApiApiGrantStack/PublishFunction/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -576,20 +781,38 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "279231bfd143911647f5f97345b4e6df26bb23f1d5f9078ac65fbf68c94e7ba3.zip"
+                      "s3Key": "86c1f810188044ee5131336e9c4bd0c97bf5110181d112dfa5de98163adc8a8d.zip"
                     },
                     "environment": {
                       "variables": {
                         "EVENT_API_REALTIME_URL": {
-                          "Fn::GetAtt": [
-                            "EventApiApiGrantBFB2D6A9",
-                            "Dns.Realtime"
+                          "Fn::Join": [
+                            "",
+                            [
+                              "wss://",
+                              {
+                                "Fn::GetAtt": [
+                                  "EventApiApiGrantBFB2D6A9",
+                                  "Dns.Realtime"
+                                ]
+                              },
+                              "/event/realtime"
+                            ]
                           ]
                         },
                         "EVENT_API_HTTP_URL": {
-                          "Fn::GetAtt": [
-                            "EventApiApiGrantBFB2D6A9",
-                            "Dns.Http"
+                          "Fn::Join": [
+                            "",
+                            [
+                              "https://",
+                              {
+                                "Fn::GetAtt": [
+                                  "EventApiApiGrantBFB2D6A9",
+                                  "Dns.Http"
+                                ]
+                              },
+                              "/event"
+                            ]
                           ]
                         }
                       }
@@ -613,7 +836,32 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "runtime": "*",
+                  "environment": "*",
+                  "bundling": {
+                    "bundleAwsSDK": true
+                  },
+                  "entry": "*",
+                  "handler": "*",
+                  "timeout": "*",
+                  "code": "*"
+                },
+                {},
+                {},
+                {
+                  "runtime": "*",
+                  "environment": "*",
+                  "bundling": {
+                    "bundleAwsSDK": true
+                  },
+                  "entry": "*",
+                  "handler": "*",
+                  "timeout": "*"
+                }
+              ]
             }
           },
           "PubSubFunction": {
@@ -629,7 +877,10 @@
                     "path": "EventApiApiGrantStack/PubSubFunction/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -766,13 +1017,69 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -792,7 +1099,8 @@
                     "path": "EventApiApiGrantStack/PubSubFunction/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -811,20 +1119,38 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "279231bfd143911647f5f97345b4e6df26bb23f1d5f9078ac65fbf68c94e7ba3.zip"
+                      "s3Key": "86c1f810188044ee5131336e9c4bd0c97bf5110181d112dfa5de98163adc8a8d.zip"
                     },
                     "environment": {
                       "variables": {
                         "EVENT_API_REALTIME_URL": {
-                          "Fn::GetAtt": [
-                            "EventApiApiGrantBFB2D6A9",
-                            "Dns.Realtime"
+                          "Fn::Join": [
+                            "",
+                            [
+                              "wss://",
+                              {
+                                "Fn::GetAtt": [
+                                  "EventApiApiGrantBFB2D6A9",
+                                  "Dns.Realtime"
+                                ]
+                              },
+                              "/event/realtime"
+                            ]
                           ]
                         },
                         "EVENT_API_HTTP_URL": {
-                          "Fn::GetAtt": [
-                            "EventApiApiGrantBFB2D6A9",
-                            "Dns.Http"
+                          "Fn::Join": [
+                            "",
+                            [
+                              "https://",
+                              {
+                                "Fn::GetAtt": [
+                                  "EventApiApiGrantBFB2D6A9",
+                                  "Dns.Http"
+                                ]
+                              },
+                              "/event"
+                            ]
                           ]
                         }
                       }
@@ -848,7 +1174,32 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "runtime": "*",
+                  "environment": "*",
+                  "bundling": {
+                    "bundleAwsSDK": true
+                  },
+                  "entry": "*",
+                  "handler": "*",
+                  "timeout": "*",
+                  "code": "*"
+                },
+                {},
+                {},
+                {
+                  "runtime": "*",
+                  "environment": "*",
+                  "bundling": {
+                    "bundleAwsSDK": true
+                  },
+                  "entry": "*",
+                  "handler": "*",
+                  "timeout": "*"
+                }
+              ]
             }
           },
           "PubSubAllChannelsFunction": {
@@ -864,7 +1215,10 @@
                     "path": "EventApiApiGrantStack/PubSubAllChannelsFunction/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -1001,13 +1355,69 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -1027,7 +1437,8 @@
                     "path": "EventApiApiGrantStack/PubSubAllChannelsFunction/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -1046,20 +1457,38 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "279231bfd143911647f5f97345b4e6df26bb23f1d5f9078ac65fbf68c94e7ba3.zip"
+                      "s3Key": "86c1f810188044ee5131336e9c4bd0c97bf5110181d112dfa5de98163adc8a8d.zip"
                     },
                     "environment": {
                       "variables": {
                         "EVENT_API_REALTIME_URL": {
-                          "Fn::GetAtt": [
-                            "EventApiApiGrantBFB2D6A9",
-                            "Dns.Realtime"
+                          "Fn::Join": [
+                            "",
+                            [
+                              "wss://",
+                              {
+                                "Fn::GetAtt": [
+                                  "EventApiApiGrantBFB2D6A9",
+                                  "Dns.Realtime"
+                                ]
+                              },
+                              "/event/realtime"
+                            ]
                           ]
                         },
                         "EVENT_API_HTTP_URL": {
-                          "Fn::GetAtt": [
-                            "EventApiApiGrantBFB2D6A9",
-                            "Dns.Http"
+                          "Fn::Join": [
+                            "",
+                            [
+                              "https://",
+                              {
+                                "Fn::GetAtt": [
+                                  "EventApiApiGrantBFB2D6A9",
+                                  "Dns.Http"
+                                ]
+                              },
+                              "/event"
+                            ]
                           ]
                         }
                       }
@@ -1083,7 +1512,32 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "runtime": "*",
+                  "environment": "*",
+                  "bundling": {
+                    "bundleAwsSDK": true
+                  },
+                  "entry": "*",
+                  "handler": "*",
+                  "timeout": "*",
+                  "code": "*"
+                },
+                {},
+                {},
+                {
+                  "runtime": "*",
+                  "environment": "*",
+                  "bundling": {
+                    "bundleAwsSDK": true
+                  },
+                  "entry": "*",
+                  "handler": "*",
+                  "timeout": "*"
+                }
+              ]
             }
           },
           "AWS AppSync Events HTTP endpoint": {
@@ -1186,17 +1640,17 @@
                 "id": "DeployAssert",
                 "path": "appsync-event-api-grants/DefaultTest/DeployAssert",
                 "children": {
-                  "LambdaInvoke646f073b90fc2b95987262c73a80a234": {
-                    "id": "LambdaInvoke646f073b90fc2b95987262c73a80a234",
-                    "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke646f073b90fc2b95987262c73a80a234",
+                  "LambdaInvoke8006c7b031e80be4861a1f247548571b": {
+                    "id": "LambdaInvoke8006c7b031e80be4861a1f247548571b",
+                    "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke8006c7b031e80be4861a1f247548571b",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke646f073b90fc2b95987262c73a80a234/SdkProvider",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke8006c7b031e80be4861a1f247548571b/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke646f073b90fc2b95987262c73a80a234/SdkProvider/AssertionsProvider",
+                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke8006c7b031e80be4861a1f247548571b/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -1210,11 +1664,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke646f073b90fc2b95987262c73a80a234/Default",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke8006c7b031e80be4861a1f247548571b/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke646f073b90fc2b95987262c73a80a234/Default/Default",
+                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke8006c7b031e80be4861a1f247548571b/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1223,12 +1677,17 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
                         }
                       },
                       "Invoke": {
                         "id": "Invoke",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke646f073b90fc2b95987262c73a80a234/Invoke",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke8006c7b031e80be4861a1f247548571b/Invoke",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1236,7 +1695,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke646f073b90fc2b95987262c73a80a234/AssertionResults",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke8006c7b031e80be4861a1f247548571b/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -1290,17 +1749,17 @@
                       "version": "0.0.0"
                     }
                   },
-                  "LambdaInvoke48cb09c92f8cbcf916c7196f0ad6ed74": {
-                    "id": "LambdaInvoke48cb09c92f8cbcf916c7196f0ad6ed74",
-                    "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke48cb09c92f8cbcf916c7196f0ad6ed74",
+                  "LambdaInvokec34f920450dfc6f8bcd12360d5e438b1": {
+                    "id": "LambdaInvokec34f920450dfc6f8bcd12360d5e438b1",
+                    "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec34f920450dfc6f8bcd12360d5e438b1",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke48cb09c92f8cbcf916c7196f0ad6ed74/SdkProvider",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec34f920450dfc6f8bcd12360d5e438b1/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke48cb09c92f8cbcf916c7196f0ad6ed74/SdkProvider/AssertionsProvider",
+                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec34f920450dfc6f8bcd12360d5e438b1/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -1314,11 +1773,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke48cb09c92f8cbcf916c7196f0ad6ed74/Default",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec34f920450dfc6f8bcd12360d5e438b1/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke48cb09c92f8cbcf916c7196f0ad6ed74/Default/Default",
+                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec34f920450dfc6f8bcd12360d5e438b1/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1327,12 +1786,17 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
                         }
                       },
                       "Invoke": {
                         "id": "Invoke",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke48cb09c92f8cbcf916c7196f0ad6ed74/Invoke",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec34f920450dfc6f8bcd12360d5e438b1/Invoke",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1340,7 +1804,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke48cb09c92f8cbcf916c7196f0ad6ed74/AssertionResults",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec34f920450dfc6f8bcd12360d5e438b1/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -1352,17 +1816,17 @@
                       "version": "0.0.0"
                     }
                   },
-                  "LambdaInvokebc77de78ff36d1eb544a17a548a8d556": {
-                    "id": "LambdaInvokebc77de78ff36d1eb544a17a548a8d556",
-                    "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokebc77de78ff36d1eb544a17a548a8d556",
+                  "LambdaInvokec29811996c72ae76bcc2a12cfc2fb858": {
+                    "id": "LambdaInvokec29811996c72ae76bcc2a12cfc2fb858",
+                    "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec29811996c72ae76bcc2a12cfc2fb858",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokebc77de78ff36d1eb544a17a548a8d556/SdkProvider",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec29811996c72ae76bcc2a12cfc2fb858/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokebc77de78ff36d1eb544a17a548a8d556/SdkProvider/AssertionsProvider",
+                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec29811996c72ae76bcc2a12cfc2fb858/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -1376,11 +1840,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokebc77de78ff36d1eb544a17a548a8d556/Default",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec29811996c72ae76bcc2a12cfc2fb858/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokebc77de78ff36d1eb544a17a548a8d556/Default/Default",
+                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec29811996c72ae76bcc2a12cfc2fb858/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1389,12 +1853,17 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
                         }
                       },
                       "Invoke": {
                         "id": "Invoke",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokebc77de78ff36d1eb544a17a548a8d556/Invoke",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec29811996c72ae76bcc2a12cfc2fb858/Invoke",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1402,7 +1871,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokebc77de78ff36d1eb544a17a548a8d556/AssertionResults",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec29811996c72ae76bcc2a12cfc2fb858/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -1414,17 +1883,17 @@
                       "version": "0.0.0"
                     }
                   },
-                  "LambdaInvoke683e463feeb9c25a7a0d516e742635e6": {
-                    "id": "LambdaInvoke683e463feeb9c25a7a0d516e742635e6",
-                    "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke683e463feeb9c25a7a0d516e742635e6",
+                  "LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2": {
+                    "id": "LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2",
+                    "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke683e463feeb9c25a7a0d516e742635e6/SdkProvider",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke683e463feeb9c25a7a0d516e742635e6/SdkProvider/AssertionsProvider",
+                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -1438,11 +1907,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke683e463feeb9c25a7a0d516e742635e6/Default",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke683e463feeb9c25a7a0d516e742635e6/Default/Default",
+                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1451,12 +1920,17 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
                         }
                       },
                       "Invoke": {
                         "id": "Invoke",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke683e463feeb9c25a7a0d516e742635e6/Invoke",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2/Invoke",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1464,7 +1938,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke683e463feeb9c25a7a0d516e742635e6/AssertionResults",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -1476,17 +1950,17 @@
                       "version": "0.0.0"
                     }
                   },
-                  "LambdaInvoke5170bf0557b16cd3ed2e63dd5396f05f": {
-                    "id": "LambdaInvoke5170bf0557b16cd3ed2e63dd5396f05f",
-                    "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke5170bf0557b16cd3ed2e63dd5396f05f",
+                  "LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053": {
+                    "id": "LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053",
+                    "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke5170bf0557b16cd3ed2e63dd5396f05f/SdkProvider",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke5170bf0557b16cd3ed2e63dd5396f05f/SdkProvider/AssertionsProvider",
+                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -1500,11 +1974,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke5170bf0557b16cd3ed2e63dd5396f05f/Default",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke5170bf0557b16cd3ed2e63dd5396f05f/Default/Default",
+                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1513,12 +1987,17 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
                         }
                       },
                       "Invoke": {
                         "id": "Invoke",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke5170bf0557b16cd3ed2e63dd5396f05f/Invoke",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053/Invoke",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1526,7 +2005,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke5170bf0557b16cd3ed2e63dd5396f05f/AssertionResults",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -1538,17 +2017,17 @@
                       "version": "0.0.0"
                     }
                   },
-                  "LambdaInvokef4d20230e1076fb8964cd9d0c720700f": {
-                    "id": "LambdaInvokef4d20230e1076fb8964cd9d0c720700f",
-                    "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokef4d20230e1076fb8964cd9d0c720700f",
+                  "LambdaInvokea2c0736db95d14edddf4cf00800f9c11": {
+                    "id": "LambdaInvokea2c0736db95d14edddf4cf00800f9c11",
+                    "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea2c0736db95d14edddf4cf00800f9c11",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokef4d20230e1076fb8964cd9d0c720700f/SdkProvider",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea2c0736db95d14edddf4cf00800f9c11/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokef4d20230e1076fb8964cd9d0c720700f/SdkProvider/AssertionsProvider",
+                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea2c0736db95d14edddf4cf00800f9c11/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -1562,11 +2041,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokef4d20230e1076fb8964cd9d0c720700f/Default",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea2c0736db95d14edddf4cf00800f9c11/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokef4d20230e1076fb8964cd9d0c720700f/Default/Default",
+                            "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea2c0736db95d14edddf4cf00800f9c11/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1575,12 +2054,17 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
                         }
                       },
                       "Invoke": {
                         "id": "Invoke",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokef4d20230e1076fb8964cd9d0c720700f/Invoke",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea2c0736db95d14edddf4cf00800f9c11/Invoke",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1588,7 +2072,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokef4d20230e1076fb8964cd9d0c720700f/AssertionResults",
+                        "path": "appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea2c0736db95d14edddf4cf00800f9c11/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
