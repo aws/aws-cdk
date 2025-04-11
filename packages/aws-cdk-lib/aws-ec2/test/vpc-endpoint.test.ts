@@ -3,7 +3,18 @@ import { AnyPrincipal, PolicyStatement } from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import { ContextProvider, Fn, Stack } from '../../core';
 // eslint-disable-next-line max-len
-import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, InterfaceVpcEndpointService, SecurityGroup, SubnetFilter, SubnetType, Vpc } from '../lib';
+import {
+  GatewayVpcEndpoint,
+  GatewayVpcEndpointAwsService,
+  InterfaceVpcEndpoint,
+  InterfaceVpcEndpointAwsService,
+  InterfaceVpcEndpointService,
+  SecurityGroup,
+  SubnetFilter,
+  SubnetType,
+  Vpc,
+  VpcEndpointDnsRecordIpType, VpcEndpointIpAddressType,
+} from '../lib';
 
 describe('vpc endpoint', () => {
   describe('gateway endpoint', () => {
@@ -150,6 +161,54 @@ describe('vpc endpoint', () => {
         actions: ['s3:GetObject', 's3:ListBucket'],
         resources: ['*'],
       }))).toThrow(/`Principal`/);
+    });
+
+    test('add an endpoint to a vpc and check that by default the properties are absent', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('EcrDocker', {
+        service: InterfaceVpcEndpointAwsService.ECR_DOCKER,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        IpAddressType: Match.absent(),
+        DnsOptions: { DnsRecordIpType: Match.absent() },
+      });
+    });
+
+    test('throws when adding dnsRecordIpType without private dns enabled', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      expect(() => {
+        vpc.addInterfaceEndpoint('EcrDocker', {
+          privateDnsEnabled: false,
+          service: InterfaceVpcEndpointAwsService.ECR_DOCKER,
+          dnsRecordIpType: VpcEndpointDnsRecordIpType.DUALSTACK,
+        });
+        // THEN
+      }).toThrow();
+    });
+
+    test('throws when adding dnsRecordIpType without ipAddressType', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      expect(() => {
+        vpc.addInterfaceEndpoint('EcrDocker', {
+          service: InterfaceVpcEndpointAwsService.ECR_DOCKER,
+          dnsRecordIpType: VpcEndpointDnsRecordIpType.DUALSTACK,
+        });
+        // THEN
+      }).toThrow();
     });
 
     test('import/export', () => {
