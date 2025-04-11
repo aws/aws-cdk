@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "cdk-integ-bundling-lambda-nodejs.assets": {
       "type": "cdk:asset-manifest",
@@ -163,5 +163,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }
