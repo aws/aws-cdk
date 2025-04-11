@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IUserPoolAuthenticationProvider } from './identitypool-user-pool-authentication-provider';
 import { CfnIdentityPool, CfnIdentityPoolRoleAttachment, IUserPool, IUserPoolClient } from '../../aws-cognito';
 import { IOpenIdConnectProvider, ISamlProvider, Role, FederatedPrincipal, IRole } from '../../aws-iam';
-import { Resource, IResource, Stack, ArnFormat, Lazy, Token } from '../../core';
+import { Resource, IResource, Stack, ArnFormat, Lazy, Token, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -383,15 +383,15 @@ export class IdentityPool extends Resource implements IIdentityPool {
     const pool = Stack.of(scope).splitArn(identityPoolArn, ArnFormat.SLASH_RESOURCE_NAME);
     const res = pool.resourceName || '';
     if (!res) {
-      throw new Error('Invalid Identity Pool ARN');
+      throw new ValidationError('Invalid Identity Pool ARN', scope);
     }
     if (!Token.isUnresolved(res)) {
       const idParts = res.split(':');
       if (!(idParts.length === 2)) {
-        throw new Error('Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>');
+        throw new ValidationError('Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>', scope);
       }
       if (!Token.isUnresolved(pool.region) && idParts[0] !== pool.region) {
-        throw new Error('Invalid Identity Pool Id: Region in Identity Pool Id must match stack region');
+        throw new ValidationError('Invalid Identity Pool Id: Region in Identity Pool Id must match stack region', scope);
       }
     }
     class ImportedIdentityPool extends Resource implements IIdentityPool {
@@ -625,7 +625,7 @@ class IdentityPoolRoleAttachment extends Resource implements IIdentityPoolRoleAt
       } else {
         const providerUrl = prop.providerUrl.value;
         if (Token.isUnresolved(providerUrl)) {
-          throw new Error('mappingKey must be provided when providerUrl.value is a token');
+          throw new UnscopedValidationError('mappingKey must be provided when providerUrl.value is a token');
         }
         mappingKey = providerUrl;
       }
@@ -637,7 +637,7 @@ class IdentityPoolRoleAttachment extends Resource implements IIdentityPoolRoleAt
       };
       if (roleMapping.type === 'Rules') {
         if (!prop.rules) {
-          throw new Error('IdentityPoolRoleMapping.rules is required when useToken is false');
+          throw new UnscopedValidationError('IdentityPoolRoleMapping.rules is required when useToken is false');
         }
         roleMapping.rulesConfiguration = {
           rules: prop.rules.map(rule => {
