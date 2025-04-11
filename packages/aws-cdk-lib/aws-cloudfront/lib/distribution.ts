@@ -663,7 +663,7 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private validateWebAclId(webAclId: string) {
-    if (Token.isUnresolved(webAclId) || typeof webAclId !== 'string') {
+    if (Token.isUnresolved(webAclId)) {
       // Cannot validate unresolved tokens or non-string values at synth-time.
       return;
     }
