@@ -147,6 +147,19 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
 });
 ```
 
+To configure [the life cycle type of the cluster](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/extended-support.html), use the `engineLifecycleSupport` property:
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_0 }),
+  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
+  vpc,
+  engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
+});
+```
+
 ### Updating the database instances in a cluster
 
 Database cluster instances may be updated in bulk or on a rolling basis.
@@ -1538,6 +1551,25 @@ new rds.DatabaseCluster(this, 'Cluster', {
   monitoringInterval: Duration.seconds(5),
   monitoringRole,
 });
+```
+
+## Importing existing DatabaseInstance
+
+### Lookup DatabaseInstance by instanceIdentifier
+
+You can lookup an existing DatabaseInstance by its instanceIdentifier using `DatabaseInstance.fromLookup()`.  This method returns an `IDatabaseInstance`.
+
+Here's how `DatabaseInstance.fromLookup()` can be used:
+
+```ts
+declare const myUserRole: iam.Role;
+
+const dbFromLookup = rds.DatabaseInstance.fromLookup(this, 'dbFromLookup', {
+  instanceIdentifier: 'instanceId',
+});
+
+// Grant a connection
+dbFromLookup.grantConnect(myUserRole, 'my-user-id');
 ```
 
 ## Limitless Database Cluster
