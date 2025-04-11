@@ -3970,8 +3970,13 @@ describe('bucket', () => {
       const dstBucket = new s3.Bucket(stack, 'DstBucket');
       const kmsKey = new kms.Key(stack, 'Key');
 
+      const replicationRole = new iam.Role(stack, 'ReplicationRole', {
+        assumedBy: new iam.AccountRootPrincipal(),
+      });
+
       new s3.Bucket(stack, 'SrcBucket', {
         versioned: true,
+        replicationRole,
         replicationRules: [
           {
             destination: dstBucket,
@@ -3996,7 +4001,7 @@ describe('bucket', () => {
         VersioningConfiguration: { Status: 'Enabled' },
         ReplicationConfiguration: {
           Role: {
-            'Fn::GetAtt': ['SrcBucketReplicationRole5B31865A', 'Arn'],
+            'Fn::GetAtt': ['ReplicationRoleCE149CEC', 'Arn'],
           },
           Rules: [
             {
@@ -4125,7 +4130,7 @@ describe('bucket', () => {
         },
         Roles: [
           {
-            'Ref': 'SrcBucketReplicationRole5B31865A',
+            'Ref': 'ReplicationRoleCE149CEC',
           },
         ],
       });

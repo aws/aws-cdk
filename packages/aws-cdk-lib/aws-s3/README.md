@@ -996,6 +996,33 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
 });
 ```
 
+### Cross-Stack Replication
+
+You must specify a `replicationRole` if you wish to replicate a source bucket to a destination bucket that has been
+defined in a separate stack in order to avoid a circular dependency. This role may be created in the stack belonging
+to the destination bucket, or in any mutual dependency of the stacks containing the source and destination buckets.
+This applies to the case where you are deploying multiple stacks, regardless of whether these are intra-account or
+cross-account.
+
+Example:
+
+```ts
+const app = new App();
+
+const destStack = new Stack(app, 'DestStack');
+const replicationRole = new Role(destStack, 'ReplicationRole', {
+  assumedBy: new ServicePrincipal('s3.amazonaws.com'),
+});
+const destination = new Bucket(destStack, 'DestBucket');
+destination.addReplicationPolicy(role.roleArn);
+
+const sourceStack = new Stack(app, 'SourceStack');
+new Bucket(sourceStack, 'SourceBucket', {
+  replicationRole,
+  replicationRules: [{ destination }],
+});
+```
+
 ### Cross Account Replication
 
 You can also set a destination bucket from a different account as the replication destination.

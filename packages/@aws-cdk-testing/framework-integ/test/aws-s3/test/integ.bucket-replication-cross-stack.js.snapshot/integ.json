@@ -1,0 +1,13 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "Integ/DefaultTest": {
+      "stacks": [
+        "DestStack",
+        "SourceStack"
+      ],
+      "assertionStack": "Integ/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegDefaultTestDeployAssert4E6713E1"
+    }
+  }
+}
