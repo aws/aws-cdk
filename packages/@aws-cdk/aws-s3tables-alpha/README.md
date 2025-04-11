@@ -26,9 +26,9 @@ Amazon S3 Tables deliver the first cloud object store with built-in Apache Icebe
 
 ### Define an S3 Table Bucket
 
-```ts fixture=with-table-bucket
+```ts
 // Build a Table bucket
-const tableBucket = new TableBucket(scope, 'ExampleTableBucket', {
+const sampleTableBucket = new TableBucket(scope, 'ExampleTableBucket', {
     tableBucketName: 'example-bucket-1',
     // optional fields:
     unreferencedFileRemoval: {
@@ -43,7 +43,7 @@ Learn more about table buckets maintenance operations and default behavior from 
 
 ### Controlling Table Bucket Permissions
 
-```ts fixture=with-iam-and-table-bucket
+```ts
 // Grant the principal read permissions to the bucket and all tables within
 const accountId = '123456789012'
 tableBucket.grantRead(new iam.AccountPrincipal(accountId), '*');
