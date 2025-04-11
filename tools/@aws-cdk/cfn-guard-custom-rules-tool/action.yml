@@ -6,9 +6,12 @@ inputs:
   data_directory:
     description: "Path to CloudFormation templates"
     required: true
+  rule_set_path:
+    description: "Path to a single .guard file locally"
+    required: false
   rule_set_url:
     description: "URL to a single .guard file on GitHub"
-    required: true
+    required: false
   show_summary:
     description: "cfn-guard summary output. Options are all, pass, fail, skip or none"
     required: false
