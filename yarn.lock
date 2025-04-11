@@ -58,6 +58,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.1.0.tgz#6d3c7860354d4856a7e75375f2f0ecab313b4989"
   integrity sha512-7bY3J8GCVxLupn/kNmpPc5VJz8grx+4RKfnnJiO1LG+uxkZfANZG3RMHhE+qQxxwkyQ9/MfPtTpf748UhR425A==
 
+"@aws-cdk/aws-bedrock-alpha@file:packages/@aws-cdk/aws-bedrock-alpha":
+  version "0.0.0"
+
+"@aws-cdk/aws-lambda-python-alpha@file:packages/@aws-cdk/aws-lambda-python-alpha":
+  version "0.0.0"
+
 "@aws-cdk/aws-service-spec@0.1.62":
   version "0.1.62"
   resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.62.tgz#7cb5f186f9805206ac7718f75d4c537d7727dc0d"
@@ -4488,6 +4494,11 @@
   dependencies:
     tslib "^2.4.0"
 
+"@types/aws-lambda@^8.10.136":
+  version "8.10.149"
+  resolved "https://registry.npmjs.org/@types/aws-lambda/-/aws-lambda-8.10.149.tgz#77c7bde809425546d03626e51bab8181bc5d24c9"
+  integrity sha512-NXSZIhfJjnXqJgtS7IwutqIF/SOy1Wz5Px4gUY1RWITp3AYTyuJS4xaXr/bIJY1v15XMzrJ5soGnPM+7uigZjA==
+
 "@types/aws-lambda@^8.10.148":
   version "8.10.148"
   resolved "https://registry.npmjs.org/@types/aws-lambda/-/aws-lambda-8.10.148.tgz#3a31fc720670473c4d7de4b03d074e8bd97e36a3"
@@ -4692,6 +4703,13 @@
   version "18.19.83"
   resolved "https://registry.npmjs.org/@types/node/-/node-18.19.83.tgz#44d302cd09364640bdd45d001bc75e596f7da920"
   integrity sha512-D69JeR5SfFS5H6FLbUaS0vE4r1dGhmMBbG4Ed6BNS4wkDK8GZjsdCShT5LCN59vOHEUHnFCY9J4aclXlIphMkA==
+  dependencies:
+    undici-types "~5.26.4"
+
+"@types/node@^18.11.19":
+  version "18.19.86"
+  resolved "https://registry.npmjs.org/@types/node/-/node-18.19.86.tgz#a7e1785289c343155578b9d84a0e3e924deb948b"
+  integrity sha512-fifKayi175wLyKyc5qUfyENhQ1dCNI1UNjp653d8kuYcPQN5JhX3dGuP/XmvPTg/xRBn1VTLpbmi+H/Mr7tLfQ==
   dependencies:
     undici-types "~5.26.4"
 
@@ -5331,10 +5349,37 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
+aws-cdk-lib@^2.188.0:
+  version "2.189.0"
+  resolved "https://registry.npmjs.org/aws-cdk-lib/-/aws-cdk-lib-2.189.0.tgz#b5964f1686215834b9f8497c131901c120355147"
+  integrity sha512-B5Uha7uRntOAyuKfU0eFtxij3ZVTzGAbetw5qaXlURa68wsWpKlU72/OyKugB6JYkhjCZkSTVVBxd1pVTosxEw==
+  dependencies:
+    "@aws-cdk/asset-awscli-v1" "^2.2.229"
+    "@aws-cdk/asset-node-proxy-agent-v6" "^2.1.0"
+    "@aws-cdk/cloud-assembly-schema" "^41.0.0"
+    "@balena/dockerignore" "^1.0.2"
+    case "1.6.3"
+    fs-extra "^11.3.0"
+    ignore "^5.3.2"
+    jsonschema "^1.5.0"
+    mime-types "^2.1.35"
+    minimatch "^3.1.2"
+    punycode "^2.3.1"
+    semver "^7.7.1"
+    table "^6.9.0"
+    yaml "1.10.2"
+
 aws-cdk@2.1006.0:
   version "2.1006.0"
   resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1006.0.tgz#21fd99184c5b0eea3c5c384fd5c5209e78569508"
   integrity sha512-6qYnCt4mBN+3i/5F+FC2yMETkDHY/IL7gt3EuqKVPcaAO4jU7oXfVSlR60CYRkZWL4fnAurUV14RkJuJyVG/IA==
+  optionalDependencies:
+    fsevents "2.3.2"
+
+aws-cdk@2.1007.0:
+  version "2.1007.0"
+  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1007.0.tgz#cdeca2bd3a4a628c73c9dab3ac37f29d3f63b223"
+  integrity sha512-/UOYOTGWUm+pP9qxg03tID5tL6euC+pb+xo0RBue+xhnUWwj/Bbsw6DbqbpOPMrNzTUxmM723/uMEQmM6S26dw==
   optionalDependencies:
     fsevents "2.3.2"
 
@@ -5813,6 +5858,11 @@ cdk-generate-synthetic-examples@^0.2.24:
     "@jsii/spec" "^1.110.0"
     jsii-reflect "^1.110.0"
     yargs "^17.7.2"
+
+cdk-nag@2.28.13:
+  version "2.28.13"
+  resolved "https://registry.npmjs.org/cdk-nag/-/cdk-nag-2.28.13.tgz#bef1b6c65496d99ef2e110f1a28f5260f9efef80"
+  integrity sha512-f+fteEq09+N7H2heqls0NcTC+MFcXl6fztEjjpKK0qTo5eFAKmDekEHLRGY5LX8v/JlueoVyhttsjaULNwnoSg==
 
 cdk8s-plus-27@2.9.5:
   version "2.9.5"
@@ -13738,6 +13788,22 @@ ts-jest@^29, ts-jest@^29.3.0:
     type-fest "^4.37.0"
     yargs-parser "^21.1.1"
 
+ts-jest@^29.2.5:
+  version "29.3.1"
+  resolved "https://registry.npmjs.org/ts-jest/-/ts-jest-29.3.1.tgz#2e459e1f94a833bd8216ba4b045fac948e265937"
+  integrity sha512-FT2PIRtZABwl6+ZCry8IY7JZ3xMuppsEV9qFVHOVe8jDzggwUZ9TsM4chyJxL9yi6LvkqcZYU3LmapEE454zBQ==
+  dependencies:
+    bs-logger "^0.2.6"
+    ejs "^3.1.10"
+    fast-json-stable-stringify "^2.1.0"
+    jest-util "^29.0.0"
+    json5 "^2.2.3"
+    lodash.memoize "^4.1.2"
+    make-error "^1.3.6"
+    semver "^7.7.1"
+    type-fest "^4.38.0"
+    yargs-parser "^21.1.1"
+
 ts-mock-imports@^1.3.16:
   version "1.3.16"
   resolved "https://registry.npmjs.org/ts-mock-imports/-/ts-mock-imports-1.3.16.tgz#7d817cf9694daafffaae8592172b128af709cfae"
@@ -13891,6 +13957,11 @@ type-fest@^4.37.0:
   resolved "https://registry.npmjs.org/type-fest/-/type-fest-4.38.0.tgz#659fa14d1a71c2811400aa3b5272627e0c1e6b96"
   integrity sha512-2dBz5D5ycHIoliLYLi0Q2V7KRaDlH0uWIvmk7TYlAg5slqwiPv1ezJdZm1QEM0xgk29oYWMCbIG7E6gHpvChlg==
 
+type-fest@^4.38.0:
+  version "4.39.1"
+  resolved "https://registry.npmjs.org/type-fest/-/type-fest-4.39.1.tgz#7521f6944e279abaf79cf60cfbc4823f4858083e"
+  integrity sha512-uW9qzd66uyHYxwyVBYiwS4Oi0qZyUqwjU+Oevr6ZogYiXt99EOYtwvzMSLw1c3lYo2HzJsep/NB23iEVEgjG/w==
+
 typed-array-buffer@^1.0.3:
   version "1.0.3"
   resolved "https://registry.npmjs.org/typed-array-buffer/-/typed-array-buffer-1.0.3.tgz#a72395450a4869ec033fd549371b47af3a2ee536"
@@ -13986,6 +14057,11 @@ typescript@~5.5.0, typescript@~5.5.4:
   version "5.5.4"
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.5.4.tgz#d9852d6c82bad2d2eda4fd74a5762a8f5909e9ba"
   integrity sha512-Mtq29sKDAEYP7aljRgtPOpTvOfbwRWlS6dPRzwjdE+C0R4brX/GUyhHSecbHMFLNBLcJIPt9nl9yG5TZ1weH+Q==
+
+typescript@~5.6.3:
+  version "5.6.3"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-5.6.3.tgz#5f3449e31c9d94febb17de03cc081dd56d81db5b"
+  integrity sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==
 
 typescript@~5.7:
   version "5.7.3"
