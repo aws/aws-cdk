@@ -316,7 +316,7 @@ export abstract class BaseLoadBalancer extends Resource {
     const internetFacing = ifUndefined(baseProps.internetFacing, false);
 
     if (baseProps.vpcSubnets && additionalProps.subnetMappings) {
-      throw new ValidationError('`vpcSubnets` and `subnetMappings` cannot be specified at the same time.', this);
+      throw new ValidationError('You can specify either `vpcSubnets` or `subnetMappings`, not both.', this);
     }
 
     let subnetIds: string[] | undefined;
