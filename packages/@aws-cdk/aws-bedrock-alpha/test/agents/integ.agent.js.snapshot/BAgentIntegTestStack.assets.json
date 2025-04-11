@@ -1,0 +1,21 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "8b171be8e5dd66448f95cef724af4bc7332c3faafdfd670e394412d2830a97c2": {
+      "displayName": "BAgentIntegTestStack Template",
+      "source": {
+        "path": "BAgentIntegTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "551246883740-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-551246883740-us-east-1",
+          "objectKey": "8b171be8e5dd66448f95cef724af4bc7332c3faafdfd670e394412d2830a97c2.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::551246883740:role/cdk-hnb659fds-file-publishing-role-551246883740-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

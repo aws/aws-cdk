@@ -11,20 +11,22 @@
  *  and limitations under the License.
  */
 
-import { Arn, ArnFormat, Duration, IResource, Lazy, Resource, Stack } from 'aws-cdk-lib';
+import { Arn, ArnFormat, Duration, IResource, Lazy, Names, Resource, Stack, Token } from 'aws-cdk-lib';
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 // Internal Libs
 import { AgentActionGroup } from './action-group';
 import { AgentAlias, IAgentAlias } from './agent-alias';
 import { AgentCollaborator, AgentCollaboratorType } from './agent-collaborator';
 import { PromptOverrideConfiguration } from './prompt-override';
 import * as validation from './validation-helpers';
-import { IGuardrail } from '../guardrails/guardrails';
-import { IKnowledgeBase } from '../knowledge-bases/knowledge-base';
-import { IInvokable } from '../models';
+//import { IGuardrail } from '../guardrails/guardrails';
+//import { IKnowledgeBase } from '../knowledge-bases/knowledge-base';
+import { IInvokable } from '.././models';
 import { Memory } from './memory';
 import { OrchestrationType, CustomOrchestration } from './orchestration';
 
@@ -34,7 +36,7 @@ import { OrchestrationType, CustomOrchestration } from './orchestration';
 /**
  * Represents an Agent, either created with CDK or imported.
  */
-export interface IAgent extends IResource {
+export interface IAgent extends IResource, iam.IGrantable {
   /**
    * The ARN of the agent.
    * @example "arn:aws:bedrock:us-east-1:123456789012:agent/OKDSJOGKMO"
@@ -59,6 +61,21 @@ export interface IAgent extends IResource {
    * When this agent was last updated.
    */
   readonly lastUpdated?: string;
+
+  /**
+   * Grant invoke permissions on this agent to an IAM principal.
+   */
+  grantInvoke(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Defines a CloudWatch event rule triggered by agent events.
+   */
+  onEvent(id: string, options?: events.OnEventOptions): events.Rule;
+
+  /**
+   * Return the CloudWatch metric for agent count.
+   */
+  metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 /******************************************************************************
  *                        ABSTRACT BASE CLASS
@@ -74,6 +91,38 @@ export abstract class AgentBase extends Resource implements IAgent {
   public abstract readonly kmsKey?: kms.IKey;
   public abstract readonly lastUpdated?: string;
   public abstract agentVersion: string;
+  public abstract readonly grantPrincipal: iam.IPrincipal;
+
+  public grantInvoke(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['bedrock:InvokeAgent'],
+      resourceArns: [this.agentArn],
+    });
+  }
+
+  public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.bedrock'],
+      detail: {
+        'agent-id': [this.agentId],
+      },
+    });
+    return rule;
+  }
+
+  public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/Bedrock',
+      metricName: 'Invocations',
+      dimensionsMap: {
+        AgentId: this.agentId,
+      },
+      ...props,
+    }).attachTo(this);
+  }
 }
 
 /******************************************************************************
@@ -134,17 +183,10 @@ export interface AgentProps {
    */
   readonly description?: string;
   /**
-   * The KnowledgeBases associated with the agent.
-   */
-  readonly knowledgeBases?: IKnowledgeBase[];
-  /**
    * The Action Groups associated with the agent.
    */
   readonly actionGroups?: AgentActionGroup[];
-  /**
-   * The guardrail that will be associated with the agent.
-   */
-  readonly guardrail?: IGuardrail;
+
   /**
    * Overrides some prompt templates in different parts of an agent sequence configuration.
    *
@@ -257,6 +299,7 @@ export class Agent extends AgentBase {
       public readonly kmsKey = attrs.kmsKeyArn ? kms.Key.fromKeyArn(scope, `${id}Key`, attrs.kmsKeyArn) : undefined;
       public readonly lastUpdated = attrs.lastUpdated;
       public readonly agentVersion = attrs.agentVersion ?? 'DRAFT';
+      public readonly grantPrincipal = this.role;
     }
 
     // Return new Agent
@@ -289,6 +332,10 @@ export class Agent extends AgentBase {
    * When this agent was last updated.
    */
   public readonly lastUpdated?: string;
+  /**
+   * The principal to grant permissions to
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
   // ------------------------------------------------------
   // CDK-only attributes
   // ------------------------------------------------------
@@ -371,14 +418,6 @@ export class Agent extends AgentBase {
    * The action groups associated with the agent.
    */
   public actionGroups: AgentActionGroup[];
-  /**
-   * The KnowledgeBases associated with the agent.
-   */
-  public knowledgeBases: IKnowledgeBase[];
-  /**
-   * The guardrail associated with the agent.
-   */
-  public guardrail?: IGuardrail;
   // ------------------------------------------------------
   // Internal Only
   // ------------------------------------------------------
@@ -387,6 +426,10 @@ export class Agent extends AgentBase {
    */
   private readonly __resource: bedrock.CfnAgent;
 
+  private readonly ROLE_NAME_SUFFIX = '-bedrockagent';
+
+  private readonly MAXLENGTH_FOR_ROLE_NAME = 64;
+
   // ------------------------------------------------------
   // CONSTRUCTOR
   // ------------------------------------------------------
@@ -394,10 +437,19 @@ export class Agent extends AgentBase {
     super(scope, id);
 
     // ------------------------------------------------------
+    // Validate props
+    // ------------------------------------------------------
+    if (props.instruction !== undefined && 
+        !Token.isUnresolved(props.instruction) && 
+        props.instruction.length < 40) {
+      throw new Error('instruction must be at least 40 characters');
+    }
+
+    // ------------------------------------------------------
     // Set properties and defaults
     // ------------------------------------------------------
     this.name =
-      props.name ??  this.generatePhysicalName() + '-bedrock-agent';
+      props.name ??  this.generatePhysicalName() + this.ROLE_NAME_SUFFIX;
     this.idleSessionTTL = props.idleSessionTTL ?? Duration.hours(1);
     this.shouldPrepareAgent = props.shouldPrepareAgent ?? false;
     this.userInputEnabled = props.userInputEnabled ?? false;
@@ -421,15 +473,16 @@ export class Agent extends AgentBase {
     // If existing role is provided, use it.
     if (props.existingRole) {
       this.role = props.existingRole;
+    this.grantPrincipal = this.role;
       // Otherwise, create a new one
     } else {
       this.role = new iam.Role(this, 'Role', {
         // generate a role name
-        roleName: this.generatePhysicalName() + 'bedrockagentrole',
+        roleName: this.generatePhysicalName() + this.ROLE_NAME_SUFFIX,
         // ensure the role has a trust policy that allows the Bedrock service to assume the role
         assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com').withConditions({
           StringEquals: {
-            'aws:SourceAccount': Stack.of(this).account,
+            'aws:SourceAccount': { 'Ref': 'AWS::AccountId' },
           },
           ArnLike: {
             'aws:SourceArn': Stack.of(this).formatArn({
@@ -441,11 +494,11 @@ export class Agent extends AgentBase {
           },
         }),
       });
+      this.grantPrincipal = this.role;
     }
     // ------------------------------------------------------
     // Set Lazy Props initial values
     // ------------------------------------------------------
-    this.knowledgeBases = [];
     this.actionGroups = [];
     this.agentCollaborators = [];
     // Add Default Action Groups
@@ -454,18 +507,12 @@ export class Agent extends AgentBase {
 
     // Add specified elems through methods to handle permissions
     // this needs to happen after role creation / assignment
-    props.knowledgeBases?.forEach(kb => {
-      this.addKnowledgeBase(kb);
-    });
     props.actionGroups?.forEach(ag => {
       this.addActionGroup(ag);
     });
     props.agentCollaborators?.forEach(ac => {
       this.addAgentCollaborator(ac);
     });
-    if (props.guardrail) {
-      this.addGuardrail(props.guardrail);
-    }
 
     // Grant permissions for custom orchestration if provided
     if (this.customOrchestration?.executor?.lambdaFunction) {
@@ -480,9 +527,6 @@ export class Agent extends AgentBase {
     // ------------------------------------------------------
     // Set Lazy Validations
     // ------------------------------------------------------
-    this.node.addValidation({
-      validate: () => this.validateKnowledgeBaseAssocations(),
-    });
 
     // ------------------------------------------------------
     // CFN Props - With Lazy support
@@ -495,10 +539,8 @@ export class Agent extends AgentBase {
       customerEncryptionKeyArn: props.kmsKey?.keyArn,
       description: props.description,
       foundationModel: this.foundationModel.invokableArn,
-      guardrailConfiguration: Lazy.any({ produce: () => this.renderGuardrail() }),
       idleSessionTtlInSeconds: this.idleSessionTTL.toSeconds(),
       instruction: props.instruction,
-      knowledgeBases: Lazy.any({ produce: () => this.renderKnowledgeBases() }, { omitEmptyArray: true }),
       memoryConfiguration: props.memory,
       promptOverrideConfiguration: this.promptOverrideConfiguration?._render(),
       skipResourceInUseCheckOnDelete: this.forceDelete,
@@ -513,8 +555,13 @@ export class Agent extends AgentBase {
     // ------------------------------------------------------
     this.__resource = new bedrock.CfnAgent(this, 'AgentResource', cfnProps);
 
-    this.agentId = this.__resource.attrAgentId;
-    this.agentArn = this.__resource.attrAgentArn;
+    this.agentId = this.getResourceNameAttribute(this.__resource.attrAgentId);
+    this.agentArn = this.getResourceArnAttribute(this.__resource.attrAgentArn, {
+      service: 'bedrock',
+      resource: 'agent',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+    });
     this.agentVersion = this.__resource.attrAgentVersion;
     this.lastUpdated = this.__resource.attrUpdatedAt;
 
@@ -537,30 +584,7 @@ export class Agent extends AgentBase {
   // ------------------------------------------------------
   // HELPER METHODS - addX()
   // ------------------------------------------------------
-  /**
-   * Add knowledge base to the agent.
-   */
-  public addKnowledgeBase(knowledgeBase: IKnowledgeBase) {
-    // Do some checks
-    validation.throwIfInvalid(this.validateKnowledgeBase, knowledgeBase);
-    // Add it to the array
-    this.knowledgeBases.push(knowledgeBase);
-    // Add the appropriate Permissions to query the Knowledge Base
-    knowledgeBase.grantQuery(this.role);
-  }
-
-  /**
-   * Add guardrail to the agent.
-   */
-  public addGuardrail(guardrail: IGuardrail) {
-    // Do some checks
-    validation.throwIfInvalid(this.validateGuardrail, guardrail);
-    // Add it to the construct
-    this.guardrail = guardrail;
-    // Handle permissions
-    guardrail.grantApply(this.role);
-  }
-
+  
   /**
    * Add an action group to the agent.
    */
@@ -596,38 +620,6 @@ export class Agent extends AgentBase {
   // ------------------------------------------------------
   // Lazy Renderers
   // ------------------------------------------------------
-  /**
-   * Render the guardrail configuration.
-   *
-   * @internal This is an internal core function and should not be called directly.
-   */
-  private renderGuardrail(): bedrock.CfnAgent.GuardrailConfigurationProperty | undefined {
-    return this.guardrail
-      ? {
-        guardrailIdentifier: this.guardrail.guardrailId,
-        guardrailVersion: this.guardrail.guardrailVersion,
-      }
-      : undefined;
-  }
-
-  /**
-   * Render the knowledge base associations.
-   *
-   * @internal This is an internal core function and should not be called directly.
-   */
-  private renderKnowledgeBases(): bedrock.CfnAgent.AgentKnowledgeBaseProperty[] {
-    const knowledgeBaseAssociationsCfn: bedrock.CfnAgent.AgentKnowledgeBaseProperty[] = [];
-    // Build the associations in the CFN format
-    this.knowledgeBases.forEach(kb => {
-      knowledgeBaseAssociationsCfn.push({
-        knowledgeBaseId: kb.knowledgeBaseId,
-        knowledgeBaseState: 'ENABLED',
-        // at least one is defined as it has been validated when adding the kb
-        description: kb.instruction ?? kb.description!,
-      });
-    });
-    return knowledgeBaseAssociationsCfn;
-  }
 
   /**
    * Render the action groups
@@ -682,65 +674,6 @@ export class Agent extends AgentBase {
   // Validators
   // ------------------------------------------------------
   /**
-   * Checks if the KB Association is valid
-   *
-   * @internal This is an internal core function and should not be called directly.
-   */
-  private validateKnowledgeBase = (knowledgeBase: IKnowledgeBase): string[] => {
-    const MAX_LENGTH = 200;
-    const description = knowledgeBase.instruction ?? knowledgeBase.description;
-    const errors: string[] = [];
-    // If at least one of the previous has been defined
-    if (description) {
-      errors.push(
-        ...validation.validateStringFieldLength({
-          value: description,
-          fieldName: 'description',
-          minLength: 0,
-          maxLength: MAX_LENGTH,
-        }),
-      );
-    } else {
-      errors.push(
-        'If instructionForAgents is not provided, the description property of the KnowledgeBase ' +
-          `${knowledgeBase.knowledgeBaseId} must be provided.`,
-      );
-    }
-    return errors;
-  };
-  /**
-   * Checks if the KB Associations are valid
-   *
-   * @internal This is an internal core function and should not be called directly.
-   */
-  private validateKnowledgeBaseAssocations = (): string[] => {
-    const MAX_KB_ASSOCIATIONS = 10;
-    const errors: string[] = [];
-    if (this.knowledgeBases.length > MAX_KB_ASSOCIATIONS) {
-      errors.push(`The maximum number of knowledge bases associations is ${MAX_KB_ASSOCIATIONS}.`);
-    }
-    for (const kb of this.knowledgeBases) {
-      this.validateKnowledgeBase(kb);
-    }
-    return errors;
-  };
-  /**
-   * Checks if the Guardrail is valid
-   *
-   * @internal This is an internal core function and should not be called directly.
-   */
-  private validateGuardrail = (guardrail: IGuardrail): string[] => {
-    const errors: string[] = [];
-    if (this.guardrail) {
-      errors.push(
-        `Cannot add Guardrail ${guardrail.guardrailId}. ` +
-          `Guardrail ${this.guardrail.guardrailId} has already been specified for this agent.`,
-      );
-    }
-    errors.push(...validation.validateFieldPattern(guardrail.guardrailVersion, 'version', /^(([0-9]{1,8})|(DRAFT))$/));
-    return errors;
-  };
-  /**
    * Check if the action group is valid
    */
   private validateActionGroup = (actionGroup: AgentActionGroup) => {
@@ -753,7 +686,56 @@ export class Agent extends AgentBase {
     return errors;
   };
 
+  
+
+  private generatePhysicalNameHash(
+    scope: IConstruct,
+    prefix: string,
+    options?: {
+      maxLength?: number;
+      lower?: boolean;
+      separator?: string;
+      allowedSpecialCharacters?: string;
+      destroyCreate?: any;
+    },
+  ): string {
+    const objectToHash = (obj: any): string => {
+      if (obj === undefined) { return ''; }
+      const jsonString = JSON.stringify(obj);
+      const hash = require('crypto').createHash('sha256');
+      return hash.update(jsonString).digest('hex').slice(0, 7);
+    };
+
+    const {
+      maxLength = 256,
+      lower = false,
+      separator = '',
+      allowedSpecialCharacters = undefined,
+      destroyCreate = undefined,
+    } = options ?? {};
+
+    const hash = objectToHash(destroyCreate);
+    if (maxLength < (prefix + hash + separator).length) {
+      throw new Error('The prefix is longer than the maximum length.');
+    }
+
+    const uniqueName = Names.uniqueResourceName(
+      scope,
+      { maxLength: maxLength - (prefix + hash + separator).length, separator, allowedSpecialCharacters },
+    );
+    const name = `${prefix}${hash}${separator}${uniqueName}`;
+    if (name.length > maxLength) {
+      throw new Error(`The generated name is longer than the maximum length of ${maxLength}`);
+    }
+    return lower ? name.toLowerCase() : name;
+  }
+
   protected generatePhysicalName(): string {
-    return super.generatePhysicalName().toLowerCase();
+    const maxLength = this.MAXLENGTH_FOR_ROLE_NAME - this.ROLE_NAME_SUFFIX.length;
+    return this.generatePhysicalNameHash(this, 'agent-', {
+      maxLength,
+      lower: true,
+      separator: '-',
+    });
   }
 }
