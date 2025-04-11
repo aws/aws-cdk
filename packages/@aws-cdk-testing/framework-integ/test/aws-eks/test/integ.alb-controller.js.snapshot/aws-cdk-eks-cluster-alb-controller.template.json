@@ -1057,7 +1057,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/c9cdf01f890a866404919f787fe0a70a5e6913eb6f72bb9c69baff82183e6bab.json"
+       "/96b51fa93dc2eb7873e91e072890ef32724bd20c285be8a867fd4a051247221d.json"
       ]
      ]
     }
@@ -1107,7 +1107,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/b1a684da44eeae79555ab141827ff30a78fd480ac4ef2a24545d081c16ca6a38.json"
+       "/949038a5701197baedd07578beeb473a0349afba0b8ca3961302d191617f3931.json"
       ]
      ]
     }
@@ -1642,7 +1642,7 @@
        {
         "Ref": "Vpc8378EB38"
        },
-       "\",\"image\":{\"repository\":\"602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller\",\"tag\":\"v2.8.2\"}}"
+       "\",\"image\":{\"repository\":\"602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller\",\"tag\":\"v2.8.2\"},\"enableWafv2\":false}"
       ]
      ]
     },
