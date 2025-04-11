@@ -1,6 +1,6 @@
 {
  "Description": "This stack includes resources needed to deploy the AWS CDK app default-resourcesmax into this environment",
- "Resources": {
+ "Resources": { 
   "CdkFileRoleE26CEABA": {
    "Type": "AWS::IAM::Role",
    "Properties": {

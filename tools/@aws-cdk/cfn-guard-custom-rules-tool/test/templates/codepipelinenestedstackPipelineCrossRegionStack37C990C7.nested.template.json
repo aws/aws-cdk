@@ -1,5 +1,5 @@
 {
- "Resources": {
+ "Resources": { 
   "Role1ABCC5F0": {
    "Type": "AWS::IAM::Role",
    "Properties": {
