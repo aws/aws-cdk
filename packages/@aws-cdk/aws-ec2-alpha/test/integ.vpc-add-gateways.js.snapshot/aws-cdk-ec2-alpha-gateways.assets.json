@@ -1,7 +1,8 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "files": {
-    "c53a85dd3bcc1a5e9ae5a014f79b2ae2f8d8c0a5822aa8af10becb72b86e265e": {
+    "8fa61d1f6b2b0e26428711434b27da2751390c5ae3a29542b34c670f6a28455c": {
+      "displayName": "aws-cdk-ec2-alpha-gateways Template",
       "source": {
         "path": "aws-cdk-ec2-alpha-gateways.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c53a85dd3bcc1a5e9ae5a014f79b2ae2f8d8c0a5822aa8af10becb72b86e265e.json",
+          "objectKey": "8fa61d1f6b2b0e26428711434b27da2751390c5ae3a29542b34c670f6a28455c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

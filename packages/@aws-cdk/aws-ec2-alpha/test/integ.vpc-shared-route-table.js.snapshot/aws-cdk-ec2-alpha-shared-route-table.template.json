@@ -129,7 +129,6 @@
   "PublicSubnet1Subnet03067927": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.1.1.0/24",
     "Tags": [
@@ -173,7 +172,6 @@
   "PublicSubnet2Subnet78B4B4BD": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2b",
     "CidrBlock": "10.1.2.0/24",
     "Tags": [

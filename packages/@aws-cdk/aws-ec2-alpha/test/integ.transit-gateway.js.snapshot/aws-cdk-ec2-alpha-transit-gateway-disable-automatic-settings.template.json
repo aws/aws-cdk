@@ -30,7 +30,6 @@
   "testSubnet1Subnet72087287": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-east-1a",
     "CidrBlock": "10.1.0.0/20",
     "VpcId": {

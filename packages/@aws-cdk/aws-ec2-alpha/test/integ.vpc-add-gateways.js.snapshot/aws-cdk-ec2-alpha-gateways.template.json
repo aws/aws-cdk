@@ -172,7 +172,6 @@
   "testsubnetSubnetDD417829": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2b",
     "CidrBlock": "10.1.1.0/28",
     "Tags": [
@@ -233,7 +232,6 @@
   "testsubnet2SubnetDA462F5A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2b",
     "CidrBlock": "10.1.2.0/28",
     "Tags": [
