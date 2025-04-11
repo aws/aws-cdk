@@ -747,6 +747,7 @@ describe('cluster new api', () => {
             node.serverlessV2ScalingConfiguration = {
               minCapacity: 1,
               maxCapacity: 12,
+              secondsUntilAutoPause: 300,
             };
           }
         },
@@ -772,6 +773,7 @@ describe('cluster new api', () => {
         iamAuthentication: true,
         serverlessV2MinCapacity: 1,
         serverlessV2MaxCapacity: 12,
+        serverlessV2DurationUntilAutoPause: cdk.Duration.seconds(300),
       });
 
       // THEN
@@ -5677,6 +5679,27 @@ test.each([
     DeletionPolicy: subnetValue,
     UpdateReplacePolicy: subnetValue,
   });
+});
+
+test.each([
+  [59, 'serverlessV2AutoPause must be between 1 and 10 minutes'],
+  [601, 'serverlessV2AutoPause must be between 1 and 10 minutes'],
+])('when serverless capacity is incorrect', (duration, errorMessage) => {
+  // GIVEN
+  const stack = testStack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+
+  expect(() => {
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      vpcSubnets: vpc.selectSubnets( { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } ),
+      serverlessV2DurationUntilAutoPause: cdk.Duration.seconds(duration),
+      iamAuthentication: true,
+    });
+    // THEN
+  }).toThrow(errorMessage);
 });
 
 function testStack(app?: cdk.App, stackId?: string) {

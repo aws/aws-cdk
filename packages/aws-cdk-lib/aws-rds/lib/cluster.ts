@@ -92,6 +92,13 @@ interface DatabaseClusterBaseProps {
   readonly serverlessV2MinCapacity?: number;
 
   /**
+   * Specifies the duration an Aurora Serverless v2 instance must be idle before Aurora attempts to automatically pause it.
+   *
+   * @default - 5 minutes
+   */
+  readonly serverlessV2DurationUntilAutoPause?: Duration;
+
+  /**
    * What subnets to run the RDS instances in.
    *
    * Must be at least 2 subnets in two different AZs.
@@ -781,6 +788,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   protected readonly serverlessV2MinCapacity: number;
   protected readonly serverlessV2MaxCapacity: number;
+  protected readonly serverlessV2SecondsUntilAutoPause: Duration;
 
   protected hasServerlessInstance?: boolean;
   protected enableDataApi?: boolean;
@@ -808,6 +816,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     this.serverlessV2MaxCapacity = props.serverlessV2MaxCapacity ?? 2;
     this.serverlessV2MinCapacity = props.serverlessV2MinCapacity ?? 0.5;
+    this.serverlessV2SecondsUntilAutoPause = props.serverlessV2DurationUntilAutoPause ?? Duration.minutes(5);
+
     this.validateServerlessScalingConfig();
 
     this.enableDataApi = props.enableDataApi;
@@ -941,6 +951,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
             return {
               minCapacity: this.serverlessV2MinCapacity,
               maxCapacity: this.serverlessV2MaxCapacity,
+              secondsUntilAutoPause: this.serverlessV2SecondsUntilAutoPause.toSeconds(),
             };
           }
           return undefined;
@@ -1156,6 +1167,14 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     if (this.serverlessV2MaxCapacity < this.serverlessV2MinCapacity) {
       throw new ValidationError('serverlessV2MaxCapacity must be greater than serverlessV2MinCapacity', this);
+    }
+
+    if (this.serverlessV2SecondsUntilAutoPause.toSeconds() < 60) {
+      throw new ValidationError('serverlessV2AutoPause must be between 1 and 10 minutes', this);
+    }
+
+    if (this.serverlessV2SecondsUntilAutoPause.toSeconds() > 600) {
+      throw new ValidationError('serverlessV2AutoPause must be between 1 and 10 minutes', this);
     }
 
     const regexp = new RegExp(/^[0-9]+\.?5?$/);
