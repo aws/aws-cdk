@@ -1,0 +1,800 @@
+{
+  "version": "40.0.0",
+  "artifacts": {
+    "ApplicationSignalsInfra-Replica.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ApplicationSignalsInfra-Replica.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ApplicationSignalsInfra-Replica": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ApplicationSignalsInfra-Replica.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/10d823ae5072ba3b4324ec00f2cc2c2c488382c293685ec672627d0b354770e4.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ApplicationSignalsInfra-Replica.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ApplicationSignalsInfra-Replica.assets"
+      ],
+      "metadata": {
+        "/ApplicationSignalsInfra-Replica/ECSTaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSTaskRole/ImportECSTaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSTaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSTaskRoleF2ADB362"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSTaskRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSTaskRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSTaskRoleDefaultPolicy82FC9293"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSTaskExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSTaskExecutionRole/ImportECSTaskExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSTaskExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSTaskExecutionRole911F5A4F"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCB65D497F"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPublicSubnet1SubnetF687C8BC"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPublicSubnet1RouteTable08125A7E"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPublicSubnet1RouteTableAssociation05712F96"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPublicSubnet1DefaultRouteE3BABCF5"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPublicSubnet1EIP5508CF3B"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPublicSubnet1NATGateway3F55CBA0"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPublicSubnet2Subnet65EAA6C3"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPublicSubnet2RouteTable3903EDDF"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPublicSubnet2RouteTableAssociationB2369E99"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPublicSubnet2DefaultRoute4839A28E"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPublicSubnet2EIP7688D464"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPublicSubnet2NATGateway6CF45DA2"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPrivateSubnet1Subnet47127919"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPrivateSubnet1RouteTable6DDD0E2A"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPrivateSubnet1RouteTableAssociationFF4079C4"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPrivateSubnet1DefaultRoute796C9E0B"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPrivateSubnet2Subnet3DDEA4A1"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPrivateSubnet2RouteTable6C7BC896"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPrivateSubnet2RouteTableAssociation3172EDC5"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCPrivateSubnet2DefaultRouteDC044AA2"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCIGWA5DF967D"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCVPCGWBBCD282B"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSVPC/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSVPCRestrictDefaultSecurityGroupCustomResourceB6CA0A9F"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/TestCluster": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/TestCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestClusterE0095054"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/Namespace": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "name": "*"
+            }
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/Namespace/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Namespace9B63B8C8"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSSG": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {}
+              ]
+            }
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSSG/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSSG6D882F29"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/ECSSG/from ApplicationSignalsInfraReplicaECSSG4E03F621:0-65535": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSSGfromApplicationSignalsInfraReplicaECSSG4E03F621065535C290991E"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/Exports/Output{\"Fn::GetAtt\":[\"ECSTaskExecutionRole911F5A4F\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttECSTaskExecutionRole911F5A4FArn90EDA8DE"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/Exports/Output{\"Fn::GetAtt\":[\"ECSTaskRoleF2ADB362\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttECSTaskRoleF2ADB362Arn397CEC35"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/Exports/Output{\"Ref\":\"TestClusterE0095054\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefTestClusterE00950540C50D0A5"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/Exports/Output{\"Ref\":\"ECSVPCPrivateSubnet1Subnet47127919\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefECSVPCPrivateSubnet1Subnet47127919A0DA97A7"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/Exports/Output{\"Ref\":\"ECSVPCPrivateSubnet2Subnet3DDEA4A1\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefECSVPCPrivateSubnet2Subnet3DDEA4A1B9FACCA0"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/Exports/Output{\"Fn::GetAtt\":[\"ECSSG6D882F29\",\"GroupId\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttECSSG6D882F29GroupId3205927F"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/Exports/Output{\"Fn::GetAtt\":[\"Namespace9B63B8C8\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttNamespace9B63B8C8ArnC7278E2B"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ApplicationSignalsInfra-Replica/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ApplicationSignalsInfra-Replica"
+    },
+    "ApplicationSignalsCloudWatchAgent-Replica.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ApplicationSignalsCloudWatchAgent-Replica.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ApplicationSignalsCloudWatchAgent-Replica": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ApplicationSignalsCloudWatchAgent-Replica.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5730bea116ff2f9738600530cfdc36b878c3210ca7c1cdeed1fff92b436b1b6f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ApplicationSignalsCloudWatchAgent-Replica.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ApplicationSignalsInfra-Replica",
+        "ApplicationSignalsCloudWatchAgent-Replica.assets"
+      ],
+      "metadata": {
+        "/ApplicationSignalsCloudWatchAgent-Replica/CloudWatchAgentTaskDefinition": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/ApplicationSignalsCloudWatchAgent-Replica/CloudWatchAgentTaskDefinition/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudWatchAgentTaskDefinition6DFFEF0D"
+          }
+        ],
+        "/ApplicationSignalsCloudWatchAgent-Replica/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ApplicationSignalsCloudWatchAgent-Replica/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ApplicationSignalsCloudWatchAgent-Replica"
+    },
+    "ApplicationSignalsPythonApp-Replica.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ApplicationSignalsPythonApp-Replica.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ApplicationSignalsPythonApp-Replica": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ApplicationSignalsPythonApp-Replica.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4791e255147093397aad917b75d90f40c5638d64df77621772f4fc86db423099.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ApplicationSignalsPythonApp-Replica.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ApplicationSignalsCloudWatchAgent-Replica",
+        "ApplicationSignalsInfra-Replica",
+        "ApplicationSignalsPythonApp-Replica.assets"
+      ],
+      "metadata": {
+        "/ApplicationSignalsPythonApp-Replica/PythonTaskDefinition": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/ApplicationSignalsPythonApp-Replica/PythonTaskDefinition/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PythonTaskDefinition2F79666C"
+          }
+        ],
+        "/ApplicationSignalsPythonApp-Replica/PythonApp": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/ApplicationSignalsPythonApp-Replica/PythonApp/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PythonAppServiceF84D7198"
+          }
+        ],
+        "/ApplicationSignalsPythonApp-Replica/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ApplicationSignalsPythonApp-Replica/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ApplicationSignalsPythonApp-Replica"
+    },
+    "ApplicationSignalsIntegrationECSReplicaTestDefaultTestDeployAssert818A098D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ApplicationSignalsIntegrationECSReplicaTestDefaultTestDeployAssert818A098D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ApplicationSignalsIntegrationECSReplicaTestDefaultTestDeployAssert818A098D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ApplicationSignalsIntegrationECSReplicaTestDefaultTestDeployAssert818A098D.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ApplicationSignalsIntegrationECSReplicaTestDefaultTestDeployAssert818A098D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ApplicationSignalsIntegrationECSReplicaTestDefaultTestDeployAssert818A098D.assets"
+      ],
+      "metadata": {
+        "/ApplicationSignalsIntegrationECSReplicaTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ApplicationSignalsIntegrationECSReplicaTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ApplicationSignalsIntegrationECSReplicaTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
