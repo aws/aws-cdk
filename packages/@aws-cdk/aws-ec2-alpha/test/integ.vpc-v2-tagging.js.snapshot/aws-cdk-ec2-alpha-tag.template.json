@@ -109,12 +109,7 @@
   "VPCintegtesttagNATGatewaytestsubnetEIP03F9A44C": {
    "Type": "AWS::EC2::EIP",
    "Properties": {
-    "Domain": {
-     "Fn::GetAtt": [
-      "VPCintegtesttag58C3A45F",
-      "VpcId"
-     ]
-    },
+    "Domain": "vpc",
     "Tags": [
      {
       "Key": "Name",

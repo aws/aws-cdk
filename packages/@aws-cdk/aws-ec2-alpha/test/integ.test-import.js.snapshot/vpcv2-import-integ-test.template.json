@@ -79,7 +79,7 @@
   "ImportedNewVPCNATGatewayIsolatedSubnet1EIP439F54BA": {
    "Type": "AWS::EC2::EIP",
    "Properties": {
-    "Domain": "vpc-08193db3ccc4f909f"
+    "Domain": "vpc"
    }
   },
   "ImportedNewVPCNATGatewayIsolatedSubnet1NATGatewayC32B9442": {

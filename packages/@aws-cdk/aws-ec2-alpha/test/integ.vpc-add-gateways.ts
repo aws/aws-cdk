@@ -67,12 +67,12 @@ vpc.addEgressOnlyInternetGateway({
   subnets: [subnet1, subnet2],
 });
 
-const subnet3 = new SubnetV2(stack, 'testsubnet2', {
+const subnet3 = new SubnetV2(stack, 'testsubnet3', {
   vpc,
   availabilityZone: 'us-west-2c',
   ipv4CidrBlock: new IpCidr('10.1.3.0/28'),
   subnetType: SubnetType.PUBLIC,
-  subnetName: 'CDKIntegTestSubnet2',
+  subnetName: 'CDKIntegTestSubnet3',
   routeTable: routeTable2,
 });
 

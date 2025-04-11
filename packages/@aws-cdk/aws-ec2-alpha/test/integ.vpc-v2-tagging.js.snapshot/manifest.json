@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/edebbe9c7de04ae524709bd7dc890d5ee394c3c9ab3b6506c3df8f65ebc7efe8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4631d4bee8c8fbb6ec81aae918819bb28152233d1d16303cbfdf4437456d6c5c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -109,13 +109,19 @@
         "/aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/NATGateway-testsubnet/EIP": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtesttagNATGatewaytestsubnetEIP03F9A44C"
+            "data": "VPCintegtesttagNATGatewaytestsubnetEIP03F9A44C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/NATGateway-testsubnet/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtesttagNATGatewaytestsubnetNATGateway36D56DBF"
+            "data": "VPCintegtesttagNATGatewaytestsubnetNATGateway36D56DBF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-ec2-alpha-tag/TestRouteTable": [
@@ -223,24 +229,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "VPCintegtesttagNATGatewayEIP485980AA": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCintegtesttagNATGatewayEIP485980AA",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "VPCintegtesttagNATGatewayCE05D4D3": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCintegtesttagNATGatewayCE05D4D3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-cdk-ec2-alpha-tag"
@@ -262,7 +250,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9668425dfbaf695ea643cadb1b936cba1b120580c1873e008d76de7cce58bce6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9577a139697070d7f997c303bfa60e7de652ef487860a1952a6fcc7c88e87919.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
