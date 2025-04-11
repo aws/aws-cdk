@@ -3,8 +3,9 @@ import { InitBindOptions, InitElementConfig, InitElementType, InitPlatform } fro
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
-import { Duration } from '../../core';
+import { Duration, UnscopedValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import { ValidationError } from 'jsonschema';
 
 /**
  * An object that represents reasons to restart an InitService
@@ -220,7 +221,7 @@ export class InitCommand extends InitElement {
    */
   public static argvCommand(argv: string[], options: InitCommandOptions = {}): InitCommand {
     if (argv.length === 0) {
-      throw new Error('Cannot define argvCommand with an empty arguments');
+      throw new UnscopedValidationError('Cannot define argvCommand with an empty arguments');
     }
     return new InitCommand(argv, options);
   }
@@ -236,7 +237,7 @@ export class InitCommand extends InitElement {
     const commandKey = this.options.key || `${options.index}`.padStart(3, '0'); // 001, 005, etc.
 
     if (options.platform !== InitPlatform.WINDOWS && this.options.waitAfterCompletion !== undefined) {
-      throw new Error(`Command '${this.command}': 'waitAfterCompletion' is only valid for Windows systems.`);
+      throw new ValidationError(`Command '${this.command}': 'waitAfterCompletion' is only valid for Windows systems.`, options.scope);
     }
 
     for (const handle of this.options.serviceRestartHandles ?? []) {
@@ -325,7 +326,7 @@ export abstract class InitFile extends InitElement {
    */
   public static fromString(fileName: string, content: string, options: InitFileOptions = {}): InitFile {
     if (!content) {
-      throw new Error(`InitFile ${fileName}: cannot create empty file. Please supply at least one character of content.`);
+      throw new UnscopedValidationError(`InitFile ${fileName}: cannot create empty file. Please supply at least one character of content.`);
     }
     return new class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
@@ -345,7 +346,7 @@ export abstract class InitFile extends InitElement {
   public static symlink(fileName: string, target: string, options: InitFileOptions = {}): InitFile {
     const { mode, ...otherOptions } = options;
     if (mode && mode.slice(0, 3) !== '120') {
-      throw new Error('File mode for symlinks must begin with 120XXX');
+      throw new UnscopedValidationError('File mode for symlinks must begin with 120XXX');
     }
     return InitFile.fromString(fileName, target, { mode: (mode || '120644'), ...otherOptions });
   }
@@ -489,7 +490,7 @@ export abstract class InitFile extends InitElement {
   protected _standardConfig(fileOptions: InitFileOptions, platform: InitPlatform, contentVars: Record<string, any>): Record<string, any> {
     if (platform === InitPlatform.WINDOWS) {
       if (fileOptions.group || fileOptions.owner || fileOptions.mode) {
-        throw new Error('Owner, group, and mode options not supported for Windows.');
+        throw new UnscopedValidationError('Owner, group, and mode options not supported for Windows.');
       }
       return {
         [this.fileName]: { ...contentVars },
@@ -529,7 +530,7 @@ export class InitGroup extends InitElement {
   /** @internal */
   public _bind(options: InitBindOptions): InitElementConfig {
     if (options.platform === InitPlatform.WINDOWS) {
-      throw new Error('Init groups are not supported on Windows');
+      throw new UnscopedValidationError('Init groups are not supported on Windows');
     }
 
     return {
@@ -593,7 +594,7 @@ export class InitUser extends InitElement {
   /** @internal */
   public _bind(options: InitBindOptions): InitElementConfig {
     if (options.platform === InitPlatform.WINDOWS) {
-      throw new Error('Init users are not supported on Windows');
+      throw new UnscopedValidationError('Init users are not supported on Windows');
     }
 
     return {
@@ -712,14 +713,14 @@ export class InitPackage extends InitElement {
   public _bind(options: InitBindOptions): InitElementConfig {
     if ((this.type === 'msi') !== (options.platform === InitPlatform.WINDOWS)) {
       if (this.type === 'msi') {
-        throw new Error('MSI installers are only supported on Windows systems.');
+        throw new UnscopedValidationError('MSI installers are only supported on Windows systems.');
       } else {
-        throw new Error('Windows only supports the MSI package type');
+        throw new UnscopedValidationError('Windows only supports the MSI package type');
       }
     }
 
     if (!this.packageName && !['rpm', 'msi'].includes(this.type)) {
-      throw new Error('Package name must be specified for all package types besides RPM and MSI.');
+      throw new UnscopedValidationError('Package name must be specified for all package types besides RPM and MSI.');
     }
 
     const packageName = this.packageName || `${options.index}`.padStart(3, '0');
@@ -826,11 +827,11 @@ export class InitService extends InitElement {
    */
   public static systemdConfigFile(serviceName: string, options: SystemdConfigFileOptions): InitFile {
     if (!options.command.startsWith('/')) {
-      throw new Error(`SystemD executables must use an absolute path, got '${options.command}'`);
+      throw new UnscopedValidationError(`SystemD executables must use an absolute path, got '${options.command}'`);
     }
 
     if (options.environmentFiles?.some(file => !file.startsWith('/'))) {
-      throw new Error('SystemD environment files must use absolute paths');
+      throw new UnscopedValidationError('SystemD environment files must use absolute paths');
     }
 
     const lines = [
