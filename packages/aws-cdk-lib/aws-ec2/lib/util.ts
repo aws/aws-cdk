@@ -23,6 +23,9 @@ export function defaultSubnetName(type: SubnetType) {
     case SubnetType.PRIVATE_ISOLATED:
     case SubnetType.ISOLATED:
       return 'Isolated';
+    case SubnetType.PUBLIC_OUTPOST: return 'PublicOutpost';
+    case SubnetType.PRIVATE_OUTPOST_WITH_EGRESS: return 'PrivateOutpost';
+    case SubnetType.PRIVATE_OUTPOST_ISOLATED: return 'IsolatedOutpost';
   }
 }
 
