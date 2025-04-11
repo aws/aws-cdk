@@ -10,10 +10,12 @@ const CFN_LINT_URL = "https://github.com/aws-cloudformation/cfn-lint/archive/ref
 const MODULE_MAPPING = path.join(__dirname, "module-mapping.json");
 const STATIC_MAPPING_FILE_NAME = "static-enum-mapping.json";
 const PARSED_CDK_ENUMS_FILE_NAME = "cdk-enums.json";
+const EXCLUDE_FILE = "exclude_values.json";
 export const PARSED_SDK_ENUMS_FILE_NAME = "sdk-enums.json";
 export const STATIC_MAPPING = path.join(__dirname, STATIC_MAPPING_FILE_NAME);
 export const CDK_ENUMS = path.join(__dirname, PARSED_CDK_ENUMS_FILE_NAME);
 export const SDK_ENUMS = path.join(__dirname, PARSED_SDK_ENUMS_FILE_NAME);
+export const EXCLUDE_ENUMS = path.join(__dirname, EXCLUDE_FILE);
 
 // Set up cleanup handlers for process termination
 tmp.setGracefulCleanup();
@@ -30,33 +32,13 @@ export interface SdkEnums {
 }
 
 
-function extractEnums(schema: Record<string, any>, enums: { [enumName: string]: (string | number)[] }, excludeDict: Record<string, any>) {
+function extractEnums(schema: Record<string, any>, enums: { [enumName: string]: (string | number)[] }) {
   // Helper function to process a property and its potential enum values
   function processProperty(propertyName: string, property: any) {
       if (property.enum) {
-        if (propertyName in excludeDict) {
-          const excludeList = excludeDict[propertyName] as string[];
-          if (excludeList && excludeList.length > 0) {
-            // if property.enum include a value in excludeList, ignore the value
-            const filteredEnum = property.enum.filter((value: string) => !excludeList.includes(value));
-            enums[propertyName] = filteredEnum;
-          }
-        }
-        else {
-          enums[propertyName] = property.enum;
-        }
+        enums[propertyName] = property.enum;
       } else if (property.items?.enum) {
-          if (propertyName in excludeDict) {
-            const excludeList = excludeDict[propertyName] as string[];
-            if (excludeList) {
-              // if property.enum include a value in excludeList, ignore the value
-              const filteredEnum = property.item.enum.filter((value: string) => !excludeList.includes(value));
-              enums[propertyName] = filteredEnum;
-            }
-          }
-          else {
-            enums[propertyName] = property.enum;
-          }
+        enums[propertyName] = property.items.enum;
       }
 
       // Process nested properties
@@ -232,8 +214,6 @@ export async function parseAwsSdkEnums(sdkModelsPath: string): Promise<void> {
 
   try {
     const jsonFiles = getJsonFiles(sdkModelsPath);
-
-    const excludeEnums = readJsonFile(path.join(__dirname, 'exclude-values.json'));
     
     for (const file of jsonFiles) {
       try {
@@ -246,10 +226,8 @@ export async function parseAwsSdkEnums(sdkModelsPath: string): Promise<void> {
 
         const enumMap = sdkEnums[service] ?? {};
 
-        const excludeList = excludeEnums[service] ?? [];
-
         // Extract enums
-        extractEnums(jsonData, enumMap, excludeList);
+        extractEnums(jsonData, enumMap);
 
         sdkEnums[service] = enumMap;
       } catch (error) {
@@ -477,7 +455,7 @@ function isValidMatch(cdkValues: Set<string>, sdkValues: Set<string>): boolean {
 export async function generateAndSaveStaticMapping(
   cdkEnums: CdkEnums,
   sdkEnums: SdkEnums,
-  manualMappings: Record<string, string[]>
+  manualMappings: Record<string, string[]>,
 ): Promise<void> {
   const staticMapping: StaticMapping = {};
   const unmatchedEnums: UnmatchedEnums = {};
