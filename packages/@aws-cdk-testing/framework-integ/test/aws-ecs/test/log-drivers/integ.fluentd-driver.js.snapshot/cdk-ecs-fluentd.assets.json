@@ -1,16 +1,16 @@
 {
   "version": "41.0.0",
   "files": {
-    "e061f5a6d916014651daeef51dd06d34c84e734e619b1cae27e78b998029a70a": {
-      "displayName": "aws-cdk-aws-apigatewayv2-http-stage Template",
+    "59179314dfa9c134b986343028b80b20f752b62b4bd39cc7c0128805341ba041": {
+      "displayName": "cdk-ecs-fluentd Template",
       "source": {
-        "path": "aws-cdk-aws-apigatewayv2-http-stage.template.json",
+        "path": "cdk-ecs-fluentd.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e061f5a6d916014651daeef51dd06d34c84e734e619b1cae27e78b998029a70a.json",
+          "objectKey": "59179314dfa9c134b986343028b80b20f752b62b4bd39cc7c0128805341ba041.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
