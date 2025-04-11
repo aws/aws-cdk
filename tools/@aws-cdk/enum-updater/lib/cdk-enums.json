@@ -3116,6 +3116,16 @@
       ]
     }
   },
+  "s3tables": {
+    "UnreferencedFileRemovalStatus": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.ts",
+      "enumLike": false,
+      "values": [
+        "Enabled",
+        "Disabled"
+      ]
+    }
+  },
   "sagemaker": {
     "InvocationHttpResponseCode": {
       "path": "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts",
@@ -3493,6 +3503,14 @@
     }
   },
   "apigatewayv2": {
+    "IpAddressType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/common/api.ts",
+      "enumLike": false,
+      "values": [
+        "ipv4",
+        "dualstack"
+      ]
+    },
     "SecurityPolicy": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/common/domain-name.ts",
       "enumLike": false,
@@ -11266,6 +11284,7 @@
         "AMAZON_NOVA_PRO_V1_0",
         "AMAZON_NOVA_PRO_V1_0_300_K",
         "AMAZON_NOVA_REEL_V1_0",
+        "AMAZON_NOVA_REEL_V1_1",
         "AI21_J2_MID",
         "AI21_LABS_JURASSIC_2_MID_V1",
         "AI21_J2_ULTRA",

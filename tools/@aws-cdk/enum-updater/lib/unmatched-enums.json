@@ -387,6 +387,11 @@
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.ts"
     }
   },
+  "s3tables": {
+    "UnreferencedFileRemovalStatus": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.ts"
+    }
+  },
   "sagemaker": {
     "InvocationHttpResponseCode": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts"
@@ -465,6 +470,9 @@
     }
   },
   "apigatewayv2": {
+    "IpAddressType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/common/api.ts"
+    },
     "SecurityPolicy": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/common/domain-name.ts"
     },

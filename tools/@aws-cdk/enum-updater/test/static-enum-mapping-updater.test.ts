@@ -172,12 +172,6 @@ describe('Static Mapping Generation', () => {
     const mockManualMappings = {
       'service1': ['service1']
     };
-
-    const mockExclude = {
-      'service2': {
-        "enum2": "xxxx"
-      }
-    }
   
     beforeEach(() => {
       jest.clearAllMocks();
@@ -188,7 +182,6 @@ describe('Static Mapping Generation', () => {
         mockCdkEnums,
         mockSdkEnums,
         mockManualMappings,
-        mockExclude
       );
   
       // Verify the file write operation
@@ -205,7 +198,6 @@ describe('Static Mapping Generation', () => {
         mockCdkEnums,
         mockSdkEnums,
         {},
-        mockExclude
       );
   
       // Verify the file write operation

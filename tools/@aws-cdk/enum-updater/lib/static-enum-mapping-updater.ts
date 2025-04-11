@@ -456,7 +456,6 @@ export async function generateAndSaveStaticMapping(
   cdkEnums: CdkEnums,
   sdkEnums: SdkEnums,
   manualMappings: Record<string, string[]>,
-  exclusions: Record<string, any>
 ): Promise<void> {
   const staticMapping: StaticMapping = {};
   const unmatchedEnums: UnmatchedEnums = {};
@@ -476,9 +475,6 @@ export async function generateAndSaveStaticMapping(
     const sdkServices = manualMappings[module];
 
     for (const [enumName, enumData] of Object.entries(enums)) {
-      if (module in exclusions && enumName in exclusions[module]) {
-        continue;
-      }
       const match = findMatchingEnum(
         enumName,
         enumData.values,
@@ -546,11 +542,10 @@ export async function entryMethod(): Promise<void> {
     // Read the files
     const cdkEnums: CdkEnums = JSON.parse(fs.readFileSync(CDK_ENUMS, 'utf8'));
     const sdkEnums: SdkEnums = JSON.parse(fs.readFileSync(SDK_ENUMS, 'utf8'));
-    const exclusions: Record<string, any> = JSON.parse(fs.readFileSync(EXCLUDE_ENUMS, 'utf8'));
     const manualMappings: Record<string, string[]> = JSON.parse(fs.readFileSync(MODULE_MAPPING, 'utf8'));
 
     // Generate and save static mapping
-    await generateAndSaveStaticMapping(cdkEnums, sdkEnums, manualMappings, exclusions);
+    await generateAndSaveStaticMapping(cdkEnums, sdkEnums, manualMappings);
 
     console.log("Static mapping and missing values analysis completed.");
 

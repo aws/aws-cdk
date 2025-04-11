@@ -26,6 +26,7 @@
     },
     "autoscaling": {
         "EbsDeviceVolumeType": {
+            "values": ["IO2"],
             "comment": "io2 is not supported in CFN https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfiguration-blockdevice.html#cfn-autoscaling-launchconfiguration-blockdevice-volumetype"
         },
         "HealthCheckType": {
