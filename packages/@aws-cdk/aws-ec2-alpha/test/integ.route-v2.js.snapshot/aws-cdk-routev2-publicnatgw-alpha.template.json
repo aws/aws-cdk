@@ -85,7 +85,6 @@
   "natgwpubSubnet79D316E5": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-east-1a",
     "CidrBlock": "10.0.0.0/24",
     "Ipv6CidrBlock": {
