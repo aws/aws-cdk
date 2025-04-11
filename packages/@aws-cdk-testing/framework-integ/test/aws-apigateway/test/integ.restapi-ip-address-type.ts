@@ -1,10 +1,20 @@
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'restapi-ip-address-type-test-stack');
+
+const vpc = new ec2.Vpc(stack, 'Vpc', {
+  restrictDefaultSecurityGroup: false,
+  natGateways: 0,
+});
+const vpcEndpoint = vpc.addInterfaceEndpoint('VpcEndpoint', {
+  service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY,
+  privateDnsEnabled: true,
+});
 
 const edgeIpv4Api = new apigateway.RestApi(stack, 'EdgeIpv4Api', {
   endpointConfiguration: {
@@ -45,6 +55,7 @@ const privateDualstackApi = new apigateway.RestApi(stack, 'PrivateDualStackApi',
   },
 });
 privateDualstackApi.root.addMethod('GET');
+privateDualstackApi.grantInvokeFromVpcEndpointsOnly([vpcEndpoint]);
 
 new IntegTest(app, 'restapi-ip-address-type-test-integ', {
   testCases: [stack],

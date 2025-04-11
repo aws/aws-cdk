@@ -691,6 +691,10 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
       throw new ValidationError('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed', this);
     }
     if (props.endpointConfiguration) {
+      const endpointConfiguration = props.endpointConfiguration;
+      if (endpointConfiguration.types.includes(EndpointType.PRIVATE) && endpointConfiguration.ipAddressType === IpAddressType.IPV4) {
+        throw new ValidationError('Private APIs can only have a dualstack IP address type.', this);
+      }
       return {
         ipAddressType: props.endpointConfiguration.ipAddressType,
         types: props.endpointConfiguration.types,
