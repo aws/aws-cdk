@@ -5,6 +5,7 @@ import * as cxapi from '../../../cx-api';
 import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack, NestedStack, DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource, SynthesizeStackArtifactOptions } from '../../lib';
 import { ISynthesisSession } from '../../lib/stack-synthesizers/types';
 import { evaluateCFN } from '../evaluate-cfn';
+import { getAssetManifest, isAssetManifest, readAssetManifest } from './_helpers';
 
 const CFN_CONTEXT = {
   'AWS::Region': 'the_region',
@@ -50,6 +51,7 @@ describe('new style synthesis', () => {
     const firstFile = (manifest.files ? manifest.files[Object.keys(manifest.files)[0]] : undefined) ?? {};
 
     expect(firstFile).toEqual({
+      displayName: 'Stack Template',
       source: { path: 'Stack.template.json', packaging: 'file' },
       destinations: {
         'current_account-current_region': {
@@ -570,20 +572,6 @@ test('get an exception when using tokens for parameters', () => {
     });
   }).toThrow(/cannot contain tokens/);
 });
-
-function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifact {
-  return x instanceof cxapi.AssetManifestArtifact;
-}
-
-function getAssetManifest(asm: cxapi.CloudAssembly): cxapi.AssetManifestArtifact {
-  const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
-  if (!manifestArtifact) { throw new Error('no asset manifest in assembly'); }
-  return manifestArtifact;
-}
-
-function readAssetManifest(manifestArtifact: cxapi.AssetManifestArtifact): cxschema.AssetManifest {
-  return JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
-}
 
 function last<A>(xs?: A[]): A | undefined {
   return xs ? xs[xs.length - 1] : undefined;

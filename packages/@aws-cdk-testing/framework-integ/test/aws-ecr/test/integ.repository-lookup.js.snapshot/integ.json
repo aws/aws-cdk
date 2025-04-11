@@ -1,0 +1,22 @@
+{
+  "enableLookups": true,
+  "version": "40.0.0",
+  "testCases": {
+    "EcrRepoLookupTest/DefaultTest": {
+      "stacks": [
+        "EcrRepoLookupStack"
+      ],
+      "hooks": {
+        "preDeploy": [
+          "aws ecr create-repository --repository-name my-repo"
+        ],
+        "postDeploy": [
+          "aws ecr delete-repository --repository-name my-repo --force"
+        ]
+      },
+      "stackUpdateWorkflow": false,
+      "assertionStack": "EcrRepoLookupTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EcrRepoLookupTestDefaultTestDeployAssert7F088AF3"
+    }
+  }
+}

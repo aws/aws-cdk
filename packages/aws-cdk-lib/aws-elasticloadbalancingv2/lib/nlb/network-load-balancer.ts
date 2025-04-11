@@ -8,7 +8,7 @@ import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import * as cxapi from '../../../cx-api';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
-import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
+import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2, SubnetMapping } from '../shared/base-load-balancer';
 import { IpAddressType, Protocol } from '../shared/enums';
 import { parseLoadBalancerFullName } from '../shared/util';
 
@@ -86,6 +86,13 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    * @default undefined - NLB default behavior is false
    */
   readonly enablePrefixForIpv6SourceNat?: boolean;
+
+  /**
+   * Subnet information for the load balancer.
+   *
+   * @default undefined - The VPC default strategy for subnets is used
+   */
+  readonly subnetMappings?: SubnetMapping[];
 }
 
 /**
@@ -275,9 +282,22 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
         produce: () => this.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic,
       }),
       enablePrefixForIpv6SourceNat: props.enablePrefixForIpv6SourceNat === true ? 'on': props.enablePrefixForIpv6SourceNat === false ? 'off' : undefined,
+      subnetMappings: props.subnetMappings,
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    if (props.subnetMappings && props.subnetMappings.length > 0) {
+      if (props.internetFacing && props.subnetMappings.some(sm => sm.privateIpv4Address !== undefined)) {
+        throw new ValidationError('Cannot specify `privateIpv4Address` for a internet facing load balancer.', this);
+      }
+      if (props.internetFacing !== true && props.subnetMappings.some(sm => sm.allocationId !== undefined)) {
+        throw new ValidationError('Cannot specify `allocationId` for a internal load balancer.', this);
+      }
+      if (props.enablePrefixForIpv6SourceNat !== true && props.subnetMappings.some(sm => sm.sourceNatIpv6Prefix !== undefined)) {
+        throw new ValidationError('Cannot specify `sourceNatIpv6Prefix` for a load balancer that does not have `enablePrefixForIpv6SourceNat` enabled.', this);
+      }
+    }
 
     const minimumCapacityUnit = props.minimumCapacityUnit;
 

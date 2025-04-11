@@ -1,0 +1,483 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "UserPoolPreTokenGenerationStack": {
+        "id": "UserPoolPreTokenGenerationStack",
+        "path": "UserPoolPreTokenGenerationStack",
+        "children": {
+          "PreTokenGenerationLambda": {
+            "id": "PreTokenGenerationLambda",
+            "path": "UserPoolPreTokenGenerationStack/PreTokenGenerationLambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "UserPoolPreTokenGenerationStack/PreTokenGenerationLambda/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "UserPoolPreTokenGenerationStack/PreTokenGenerationLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "UserPoolPreTokenGenerationStack/PreTokenGenerationLambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "UserPoolPreTokenGenerationStack/PreTokenGenerationLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = function(event, ctx, cb) { console.log(\"Mocked pre token generation\");return cb(null, \"success\"); }"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "PreTokenGenerationLambdaServiceRole9DEA7D8A",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "UserPoolV2": {
+            "id": "UserPoolV2",
+            "path": "UserPoolPreTokenGenerationStack/UserPoolV2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "UserPoolPreTokenGenerationStack/UserPoolV2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": true
+                    },
+                    "emailVerificationMessage": "The verification code to your new account is {####}",
+                    "emailVerificationSubject": "Verify your new account",
+                    "lambdaConfig": {
+                      "preTokenGenerationConfig": {
+                        "lambdaArn": {
+                          "Fn::GetAtt": [
+                            "PreTokenGenerationLambda1F82A453",
+                            "Arn"
+                          ]
+                        },
+                        "lambdaVersion": "V2_0"
+                      }
+                    },
+                    "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "userPoolTier": "PLUS",
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_CODE",
+                      "emailMessage": "The verification code to your new account is {####}",
+                      "emailSubject": "Verify your new account",
+                      "smsMessage": "The verification code to your new account is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "PreTokenGenerationConfigCognito": {
+                "id": "PreTokenGenerationConfigCognito",
+                "path": "UserPoolPreTokenGenerationStack/UserPoolV2/PreTokenGenerationConfigCognito",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "PreTokenGenerationLambda1F82A453",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "cognito-idp.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "UserPoolV2AAED3EE9",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Client": {
+                "id": "Client",
+                "path": "UserPoolPreTokenGenerationStack/UserPoolV2/Client",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "UserPoolPreTokenGenerationStack/UserPoolV2/Client/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
+                      "aws:cdk:cloudformation:props": {
+                        "allowedOAuthFlows": [
+                          "implicit",
+                          "code"
+                        ],
+                        "allowedOAuthFlowsUserPoolClient": true,
+                        "allowedOAuthScopes": [
+                          "profile",
+                          "phone",
+                          "email",
+                          "openid",
+                          "aws.cognito.signin.user.admin"
+                        ],
+                        "callbackUrLs": [
+                          "https://example.com"
+                        ],
+                        "explicitAuthFlows": [
+                          "ALLOW_USER_SRP_AUTH",
+                          "ALLOW_REFRESH_TOKEN_AUTH"
+                        ],
+                        "supportedIdentityProviders": [
+                          "COGNITO"
+                        ],
+                        "userPoolId": {
+                          "Ref": "UserPoolV2AAED3EE9"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
+              "metadata": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          "UserPoolV3": {
+            "id": "UserPoolV3",
+            "path": "UserPoolPreTokenGenerationStack/UserPoolV3",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "UserPoolPreTokenGenerationStack/UserPoolV3/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": true
+                    },
+                    "emailVerificationMessage": "The verification code to your new account is {####}",
+                    "emailVerificationSubject": "Verify your new account",
+                    "lambdaConfig": {
+                      "preTokenGenerationConfig": {
+                        "lambdaArn": {
+                          "Fn::GetAtt": [
+                            "PreTokenGenerationLambda1F82A453",
+                            "Arn"
+                          ]
+                        },
+                        "lambdaVersion": "V3_0"
+                      }
+                    },
+                    "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "userPoolTier": "PLUS",
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_CODE",
+                      "emailMessage": "The verification code to your new account is {####}",
+                      "emailSubject": "Verify your new account",
+                      "smsMessage": "The verification code to your new account is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "PreTokenGenerationConfigCognito": {
+                "id": "PreTokenGenerationConfigCognito",
+                "path": "UserPoolPreTokenGenerationStack/UserPoolV3/PreTokenGenerationConfigCognito",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "PreTokenGenerationLambda1F82A453",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "cognito-idp.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "UserPoolV32089E007",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Client": {
+                "id": "Client",
+                "path": "UserPoolPreTokenGenerationStack/UserPoolV3/Client",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "UserPoolPreTokenGenerationStack/UserPoolV3/Client/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
+                      "aws:cdk:cloudformation:props": {
+                        "allowedOAuthFlows": [
+                          "implicit",
+                          "code"
+                        ],
+                        "allowedOAuthFlowsUserPoolClient": true,
+                        "allowedOAuthScopes": [
+                          "profile",
+                          "phone",
+                          "email",
+                          "openid",
+                          "aws.cognito.signin.user.admin"
+                        ],
+                        "callbackUrLs": [
+                          "https://example.com"
+                        ],
+                        "explicitAuthFlows": [
+                          "ALLOW_USER_SRP_AUTH",
+                          "ALLOW_REFRESH_TOKEN_AUTH"
+                        ],
+                        "supportedIdentityProviders": [
+                          "COGNITO"
+                        ],
+                        "userPoolId": {
+                          "Ref": "UserPoolV32089E007"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
+              "metadata": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "UserPoolPreTokenGenerationStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "UserPoolPreTokenGenerationStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      },
+      "PreTokenGenerationIntegTest": {
+        "id": "PreTokenGenerationIntegTest",
+        "path": "PreTokenGenerationIntegTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "PreTokenGenerationIntegTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "PreTokenGenerationIntegTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "PreTokenGenerationIntegTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "PreTokenGenerationIntegTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "PreTokenGenerationIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.4.2"
+    }
+  }
+}

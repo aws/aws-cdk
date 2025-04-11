@@ -1,0 +1,14 @@
+{
+    "codebuild": {
+        "ComputeType": ["BUILD_LAMBDA_10GB"]
+    },
+    "eks": {
+        "AmiType": ["CUSTOM"]
+    },
+    "lambda": {
+        "UpdateRuntimeOn": ["Manual"]
+    },
+    "autoscaling": {
+        "VolumeType": ["io2"]
+    }
+}

@@ -1656,22 +1656,30 @@ export class Cluster extends ClusterBase {
       && this.endpointAccess._config.publicCidrs
       && this.endpointAccess._config.publicCidrs.length !== 0;
 
+    // Check if any subnet selection is pending lookup
+    const hasPendingLookup = this.vpcSubnets.some(placement =>
+      this.vpc.selectSubnets(placement).isPendingLookup,
+    );
+
     // validate endpoint access configuration
+    if (!hasPendingLookup) {
+      if (privateSubnets.length === 0 && publicAccessDisabled) {
+        // no private subnets and no public access at all, no good.
+        throw new Error('Vpc must contain private subnets when public endpoint access is disabled');
+      }
 
-    if (privateSubnets.length === 0 && publicAccessDisabled) {
-      // no private subnets and no public access at all, no good.
-      throw new Error('Vpc must contain private subnets when public endpoint access is disabled');
-    }
-
-    if (privateSubnets.length === 0 && publicAccessRestricted) {
+      if (privateSubnets.length === 0 && publicAccessRestricted) {
       // no private subnets and public access is restricted, no good.
-      throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
+        throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
+      }
     }
 
     const placeClusterHandlerInVpc = props.placeClusterHandlerInVpc ?? false;
 
-    if (placeClusterHandlerInVpc && privateSubnets.length === 0) {
-      throw new Error('Cannot place cluster handler in the VPC since no private subnets could be selected');
+    if (!hasPendingLookup) {
+      if (placeClusterHandlerInVpc && privateSubnets.length === 0) {
+        throw new Error('Cannot place cluster handler in the VPC since no private subnets could be selected');
+      }
     }
 
     if (props.clusterHandlerSecurityGroup && !placeClusterHandlerInVpc) {

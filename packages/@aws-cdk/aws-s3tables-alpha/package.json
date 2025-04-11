@@ -1,0 +1,116 @@
+{
+  "name": "@aws-cdk/aws-s3tables-alpha",
+  "private": true,
+  "version": "0.0.0",
+  "description": "CDK Constructs for S3 Tables",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.s3tables.alpha",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "s3tables-alpha"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.S3Tables.Alpha",
+        "packageId": "Amazon.CDK.AWS.S3Tables.Alpha",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-s3tables-alpha",
+        "module": "aws_cdk.aws_s3tables_alpha",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
+        ]
+      }
+    },
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-s3tables-alpha"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "integ-runner --language javascript",
+    "build+integ": "yarn build && integ-runner --language javascript --verbose --update-on-failed",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "build+test": "yarn build && yarn test",
+    "build+lint": "yarn build && cdk-lint",
+    "build+test+package": "yarn build+test && yarn package",
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "s3",
+    "tables",
+    "construct",
+    "library"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "aws-cdk-lib": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^29.5.14",
+    "constructs": "^10.0.0",
+    "jest": "^29.7.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "aws-cdk-lib": "^0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "separate-module": false,
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "awscdkio": {
+    "announce": false
+  },
+  "cdk-build": {
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-s3tables-alpha.TableBucketPolicyProps",
+      "duration-prop-type:@aws-cdk/aws-s3tables-alpha.UnreferencedFileRemoval.noncurrentDays",
+      "duration-prop-name:@aws-cdk/aws-s3tables-alpha.UnreferencedFileRemoval.noncurrentDays",
+      "duration-prop-type:@aws-cdk/aws-s3tables-alpha.UnreferencedFileRemoval.unreferencedDays",
+      "duration-prop-name:@aws-cdk/aws-s3tables-alpha.UnreferencedFileRemoval.unreferencedDays",
+      "attribute-tag:@aws-cdk/aws-s3tables-alpha.TableBucket.tableBucketPolicy"
+    ]
+  }
+}

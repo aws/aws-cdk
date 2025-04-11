@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "aws-cdk-eks-import-cluster-test.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/85e7725b11ca471a23e4fe02fb493626b812189816f8aabbe977befdfe25c50e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/709558586e325bd0e3dc04945205d405e5d72bb0a7cba0c5a1c3060cb65778f9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -323,10 +323,7 @@
         "/aws-cdk-eks-import-cluster-test/kubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "kubectlLayer44321E08",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "kubectlLayer44321E08"
           }
         ],
         "/aws-cdk-eks-import-cluster-test/Cluster": [
@@ -1239,5 +1236,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

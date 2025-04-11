@@ -1,0 +1,369 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "integ-sfn-start-execution-jsonata.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-sfn-start-execution-jsonata.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-sfn-start-execution-jsonata": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-sfn-start-execution-jsonata.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f544cfe9f587a4eb7533be999940f88948fe5abf0316902e641d7983b4d23f2d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-sfn-start-execution-jsonata.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-sfn-start-execution-jsonata.assets"
+      ],
+      "metadata": {
+        "/integ-sfn-start-execution-jsonata/Child": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "definition": "*"
+            }
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata/Child/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata/Child/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata/Child/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChildRole1E3E0EF5"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata/Child/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChildDAB30558"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata/Parent": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "definition": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata/Parent/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata/Parent/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata/Parent/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParentRole5F0C366C"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata/Parent/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata/Parent/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParentRoleDefaultPolicy9BDC56DC"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata/Parent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Parent8B210403"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata/Exports/Output{\"Ref\":\"Parent8B210403\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefParent8B210403B455DBC1"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-sfn-start-execution-jsonata"
+    },
+    "integsfnstartexecutionjsonataintegDefaultTestDeployAssert66319094.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integsfnstartexecutionjsonataintegDefaultTestDeployAssert66319094.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integsfnstartexecutionjsonataintegDefaultTestDeployAssert66319094": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integsfnstartexecutionjsonataintegDefaultTestDeployAssert66319094.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0d96ece233286334d55487ac0e3dbf2e1003b89e11998c924151bd574a81581e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integsfnstartexecutionjsonataintegDefaultTestDeployAssert66319094.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-sfn-start-execution-jsonata",
+        "integsfnstartexecutionjsonataintegDefaultTestDeployAssert66319094.assets"
+      ],
+      "metadata": {
+        "/integ-sfn-start-execution-jsonata-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionb09fc771caca1e8222fac330c82408f5/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionb09fc771caca1e8222fac330c82408f5/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsstartExecutionb09fc771caca1e8222fac330c82408f5"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata-integ/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecutionff53b19b022f821991d604f634248339/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecutionff53b19b022f821991d604f634248339/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeExecutionff53b19b022f821991d604f634248339"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecutionff53b19b022f821991d604f634248339/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeExecutionff53b19b022f821991d604f634248339"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-sfn-start-execution-jsonata-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-sfn-start-execution-jsonata-integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}

@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "cdk-dynamodb-skip-replica-deletion-test/DefaultTest": {
+      "stacks": [
+        "cdk-dynamodb-skip-replica-deletion"
+      ],
+      "assertionStack": "cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkdynamodbskipreplicadeletiontestDefaultTestDeployAssert2E817006"
+    }
+  }
+}

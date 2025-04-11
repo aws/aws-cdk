@@ -867,7 +867,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'WED',
     'THU',
     'FRI',
-    'SAT'
+    'SAT',
+    'UNSET_VALUE'
   ],
   'DeduplicationScope': [
     'messageGroup',
@@ -879,7 +880,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   'DefaultInstanceTenancy': [
     'default',
-    'dedicated'
+    'dedicated',
+    'host'
   ],
   'DefaultResult': [
     'CONTINUE',
@@ -931,16 +933,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'read',
     'write',
     'mknod'
-  ],
-  'DiagnosticReason': [
-    'NO_SNAPSHOT',
-    'TEST_FAILED',
-    'TEST_ERROR',
-    'SNAPSHOT_FAILED',
-    'SNAPSHOT_ERROR',
-    'SNAPSHOT_SUCCESS',
-    'TEST_SUCCESS',
-    'ASSERTION_FAILED'
   ],
   'DiscoveryType': [
     'API',
@@ -1077,6 +1069,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'EndpointType': [
     'EDGE',
     'REGIONAL'
+  ],
+  'EngineLifecycleSupport': [
+    'open-source-rds-extended-support',
+    'open-source-rds-extended-support-disabled'
   ],
   'EnvironmentFileType': [
     's3'
@@ -1348,11 +1344,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'HTTP',
     'HTTPS',
     'TCP'
-  ],
-  'HotswapMode': [
-    'fall-back',
-    'hotswap-only',
-    'full-deployment'
   ],
   'HttpAuthorizerType': [
     'AWS_IAM',
@@ -2047,7 +2038,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   'LambdaVersion': [
     'V1_0',
-    'V2_0'
+    'V2_0',
+    'V3_0'
   ],
   'LatencyMode': [
     'LOW',
@@ -2330,6 +2322,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'BOTTLEROCKET_x86_64',
     'BOTTLEROCKET_ARM_64_NVIDIA',
     'BOTTLEROCKET_x86_64_NVIDIA',
+    'BOTTLEROCKET_ARM_64_FIPS',
+    'BOTTLEROCKET_x86_64_FIPS',
     'WINDOWS_CORE_2019_x86_64',
     'WINDOWS_CORE_2022_x86_64',
     'WINDOWS_FULL_2019_x86_64',
@@ -2762,6 +2756,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
+  'RegistryType': [
+    'private',
+    'public'
+  ],
   'RemovalPolicy': [
     'destroy',
     'retain',
@@ -2804,11 +2802,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
-  'RequireApproval': [
-    'never',
-    'any-change',
-    'broadening'
-  ],
   'Resolution': [
     'FULL_HD',
     'HD',
@@ -2824,6 +2817,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'pause-cluster',
     'resume-cluster',
     'failover-primary-compute'
+  ],
+  'Result': [
+    'ROLLBACK',
+    'FAIL',
+    'RETRY',
+    'SKIP'
   ],
   'RetentionDays': [
     1,
@@ -2849,6 +2848,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     3288,
     3653,
     9999
+  ],
+  'RetryMode': [
+    'ALL_ACTIONS',
+    'FAILED_ACTIONS'
   ],
   'RevocationType': [
     'CRL'
@@ -3077,10 +3080,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'ELBSecurityPolicy-TLS-1-2-Ext-2018-06',
     'ELBSecurityPolicy-TLS-1-1-2017-01',
     'ELBSecurityPolicy-TLS-1-0-2015-04'
-  ],
-  'StackActivityProgress': [
-    'bar',
-    'events'
   ],
   'StackSetOrganizationsAutoDeployment': [
     'Enabled',
@@ -3520,6 +3519,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Count/Second',
     'None'
   ],
+  'UnreferencedFileRemovalStatus': [
+    'Enabled',
+    'Disabled'
+  ],
   'UntrustedArtifactOnDeployment': [
     'Enforce',
     'Warn'
@@ -3581,7 +3584,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   'VpcEndpointType': [
     'Interface',
-    'Gateway'
+    'Gateway',
+    'GatewayLoadBalancer',
+    'ServiceNetwork',
+    'Resource'
   ],
   'VpcSubnetGroupType': [
     'Public',

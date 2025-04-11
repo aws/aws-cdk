@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "cdk-integ-elasticsearch-unsignedbasicauth.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/76551859fa2212e03ea5fa1e22ba2827938fec3c1b093e5b27ee23ec4fe1cc0d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e6a77d2ac941c6396687105f189b683429047a8249d4f81e6d0128054c11944b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,36 @@
         "cdk-integ-elasticsearch-unsignedbasicauth.assets"
       ],
       "metadata": {
+        "/cdk-integ-elasticsearch-unsignedbasicauth/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "version": "*",
+              "useUnsignedBasicAuth": true
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAccessPolicies": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/Domain/MasterUser": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "generateSecretString": {
+                "secretStringTemplate": "*",
+                "generateStringKey": "*",
+                "excludeCharacters": "*"
+              }
+            }
+          }
+        ],
         "/cdk-integ-elasticsearch-unsignedbasicauth/Domain/MasterUser/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -46,10 +76,85 @@
             "data": "Domain66AC69E0"
           }
         ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/Domain/ESAccessPolicy/Provider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/Domain/ESAccessPolicy/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-integ-elasticsearch-unsignedbasicauth/Domain/ESAccessPolicy/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DomainESAccessPolicy89986F33"
+          }
+        ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/Domain/ESAccessPolicy/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
         "/cdk-integ-elasticsearch-unsignedbasicauth/Domain/ESAccessPolicy/CustomResourcePolicy/Resource": [
@@ -66,12 +171,57 @@
         ],
         "/cdk-integ-elasticsearch-unsignedbasicauth/AWS679f53fac002430cb0da5b7982bd2287": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
           },
           {
             "type": "aws:cdk:is-custom-resource-handler-runtime-family",
             "data": 0
+          }
+        ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cdk-integ-elasticsearch-unsignedbasicauth/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -155,5 +305,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

@@ -1,7 +1,8 @@
 {
-  "version": "36.0.24",
+  "version": "41.0.0",
   "files": {
     "8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5": {
+      "displayName": "Asset",
       "source": {
         "path": "../asset.8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5.txt",
         "packaging": "file"
@@ -15,6 +16,7 @@
       }
     },
     "ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e": {
+      "displayName": "Asset2",
       "source": {
         "path": "../asset.ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e.txt",
         "packaging": "file"
@@ -28,6 +30,7 @@
       }
     },
     "9b0251342ce12f30650bbf24424c57aba9857cc654420b1deff1533588801ceb": {
+      "displayName": "Beta-Stack1 Template",
       "source": {
         "path": "PipelineStackBetaStack1E6541489.template.json",
         "packaging": "file"

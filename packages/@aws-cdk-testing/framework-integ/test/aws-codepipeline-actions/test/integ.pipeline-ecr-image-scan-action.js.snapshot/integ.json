@@ -1,0 +1,13 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "codepipeline-ecr-image-scan-action-test/DefaultTest": {
+      "stacks": [
+        "codepipeline-ecr-image-scan-action"
+      ],
+      "diffAssets": true,
+      "assertionStack": "codepipeline-ecr-image-scan-action-test/DefaultTest/DeployAssert",
+      "assertionStackName": "codepipelineecrimagescanactiontestDefaultTestDeployAssertD4D5DC63"
+    }
+  }
+}

@@ -17,7 +17,8 @@ class TestStack extends cdk.Stack {
       vpcEndpointServiceLoadBalancers: [loadBalancer],
       acceptanceRequired: true,
       contributorInsights: true,
-      supportedIpAddressTypes: [ec2.IpAddressType.IPV4], // change to ipv4 and re-run
+      supportedIpAddressTypes: [ec2.IpAddressType.IPV4],
+      allowedRegions: ['us-east-2'],
     });
   }
 }

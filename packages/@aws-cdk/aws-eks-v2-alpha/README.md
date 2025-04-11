@@ -148,6 +148,22 @@ const cluster = new eks.Cluster(this, 'EksAutoCluster', {
 
 For more information, see [Create a Node Pool for EKS Auto Mode](https://docs.aws.amazon.com/eks/latest/userguide/create-node-pool.html).
 
+### Disabling Default Node Pools
+
+You can disable the default node pools entirely by setting an empty array for `nodePools`. This is useful when you want to use Auto Mode features but manage your compute resources separately:
+
+```ts
+const cluster = new eks.Cluster(this, 'EksAutoCluster', {
+  version: eks.KubernetesVersion.V1_32,
+  defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
+  compute: {
+    nodePools: [], // Disable default node pools
+  },
+});
+```
+
+When node pools are disabled this way, no IAM role will be created for the node pools, preventing deployment failures that would otherwise occur when a role is created without any node pools.
+
 ### Node Groups as the default capacity type
 
 If you prefer to manage your own node groups instead of using Auto Mode, you can use the traditional node group approach by specifying `defaultCapacityType` as `NODEGROUP`:
@@ -1132,5 +1148,18 @@ const cluster = new eks.Cluster(this, 'Cluster', {
     eks.ClusterLoggingTypes.AUTHENTICATOR,
     eks.ClusterLoggingTypes.SCHEDULER,
   ],
+});
+```
+
+## NodeGroup Repair Config
+
+You can enable Managed Node Group [auto-repair config](https://docs.aws.amazon.com/eks/latest/userguide/node-health.html#node-auto-repair) using `enableNodeAutoRepair`
+property. For example:
+
+```ts
+declare const cluster: eks.Cluster;
+
+cluster.addNodegroupCapacity('NodeGroup', {
+  enableNodeAutoRepair:true,
 });
 ```

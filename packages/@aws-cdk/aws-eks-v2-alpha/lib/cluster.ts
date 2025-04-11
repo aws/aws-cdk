@@ -1184,8 +1184,11 @@ export class Cluster extends ClusterBase {
         enabled: autoModeEnabled,
         // If the computeConfig enabled flag is set to false when creating a cluster with Auto Mode,
         // the request must not include values for the nodeRoleArn or nodePools fields.
+        // Also, if nodePools is empty, nodeRoleArn should not be included to prevent deployment failures
         nodePools: !autoModeEnabled ? undefined : props.compute?.nodePools ?? ['system', 'general-purpose'],
-        nodeRoleArn: !autoModeEnabled ? undefined : props.compute?.nodeRole?.roleArn ?? this.addNodePoolRole(`${id}nodePoolRole`).roleArn,
+        nodeRoleArn: !autoModeEnabled || (props.compute?.nodePools && props.compute.nodePools.length === 0) ?
+          undefined :
+          props.compute?.nodeRole?.roleArn ?? this.addNodePoolRole(`${id}nodePoolRole`).roleArn,
       },
       storageConfig: {
         blockStorage: {
