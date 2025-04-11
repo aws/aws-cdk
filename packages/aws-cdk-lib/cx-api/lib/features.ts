@@ -1501,7 +1501,7 @@ export const FLAGS: Record<string, FlagInfo> = {
         If you are providing a custom role, you will need to ensure 'roleName' is specified or set to PhysicalName.GENERATE_IF_NEEDED.
         When this feature flag is disabled, it will keep the root account principal in the trust policy.
       `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.189.0' },
     defaults: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
