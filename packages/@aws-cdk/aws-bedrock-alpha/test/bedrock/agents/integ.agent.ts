@@ -9,7 +9,7 @@
 
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import * as bedrock from '../../lib';
+import * as bedrock from '../../../lib';
 
 const app = new cdk.App();
 
@@ -28,7 +28,7 @@ class TestStack extends cdk.Stack {
   }
 }
 
-const stack = new TestStack(app, 'BAgentIntegTestStack', {
+const stack = new TestStack(app, 'agentIntegTestStack', {
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_DEFAULT_REGION ,

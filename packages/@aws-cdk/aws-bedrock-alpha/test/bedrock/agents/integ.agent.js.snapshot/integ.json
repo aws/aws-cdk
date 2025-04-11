@@ -3,7 +3,7 @@
   "testCases": {
     "BedrockAgentIntegTest/DefaultTest": {
       "stacks": [
-        "BAgentIntegTestStack"
+        "agentIntegTestStack"
       ],
       "assertionStack": "BedrockAgentIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "BedrockAgentIntegTestDefaultTestDeployAssertE6F8548D"

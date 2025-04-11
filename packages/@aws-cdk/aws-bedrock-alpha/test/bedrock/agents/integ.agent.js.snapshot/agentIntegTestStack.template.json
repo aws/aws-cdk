@@ -25,7 +25,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "RoleName": "agent--bagentintegteststack-testagent-98576594-bedrockagent"
+    "RoleName": "agent--agentintegteststack-testagent-ba71f531-bedrockagent"
    }
   },
   "TestAgentRoleDefaultPolicy0A38CDBA": {

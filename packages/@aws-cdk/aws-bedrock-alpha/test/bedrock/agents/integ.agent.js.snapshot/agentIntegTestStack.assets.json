@@ -1,16 +1,16 @@
 {
   "version": "41.0.0",
   "files": {
-    "8b171be8e5dd66448f95cef724af4bc7332c3faafdfd670e394412d2830a97c2": {
-      "displayName": "BAgentIntegTestStack Template",
+    "8f3aa2d8186452954031b889b726fb27222b71cc657457e00acc2687de173832": {
+      "displayName": "agentIntegTestStack Template",
       "source": {
-        "path": "BAgentIntegTestStack.template.json",
+        "path": "agentIntegTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
         "551246883740-us-east-1": {
           "bucketName": "cdk-hnb659fds-assets-551246883740-us-east-1",
-          "objectKey": "8b171be8e5dd66448f95cef724af4bc7332c3faafdfd670e394412d2830a97c2.json",
+          "objectKey": "8f3aa2d8186452954031b889b726fb27222b71cc657457e00acc2687de173832.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::551246883740:role/cdk-hnb659fds-file-publishing-role-551246883740-us-east-1"
         }

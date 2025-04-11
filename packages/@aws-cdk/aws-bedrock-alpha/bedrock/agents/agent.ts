@@ -445,6 +445,15 @@ export class Agent extends AgentBase {
       throw new Error('instruction must be at least 40 characters');
     }
 
+    // Validate orchestration configuration
+    if (props.orchestrationType === OrchestrationType.CUSTOM_ORCHESTRATION && !props.customOrchestration) {
+      throw new Error('customOrchestration must be provided when orchestrationType is CUSTOM_ORCHESTRATION');
+    }
+
+    if (props.customOrchestration && props.orchestrationType !== OrchestrationType.CUSTOM_ORCHESTRATION) {
+      throw new Error('customOrchestration can only be provided when orchestrationType is CUSTOM_ORCHESTRATION');
+    }
+
     // ------------------------------------------------------
     // Set properties and defaults
     // ------------------------------------------------------
