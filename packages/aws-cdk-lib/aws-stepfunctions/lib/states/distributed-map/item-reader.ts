@@ -328,6 +328,13 @@ export class S3JsonItemReader extends S3FileItemReader {
 }
 
 /**
+ * Item Reader configuration for iterating over the rows of the JSONL file stored in S3
+ */
+export class S3JsonLItemReader extends S3FileItemReader {
+  protected readonly inputType: string = 'JSONL';
+}
+
+/**
  * CSV header location options
  */
 export enum CsvHeaderLocation {

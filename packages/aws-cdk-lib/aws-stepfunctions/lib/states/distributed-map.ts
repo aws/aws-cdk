@@ -1,14 +1,15 @@
 import { Construct } from 'constructs';
 import { ItemBatcher } from './distributed-map/item-batcher';
 import { IItemReader } from './distributed-map/item-reader';
-import { ResultWriter } from './distributed-map/result-writer';
+import { ResultWriter, ResultWriterV2 } from './distributed-map/result-writer';
 import { MapBase, MapBaseJsonataOptions, MapBaseJsonPathOptions, MapBaseOptions, MapBaseProps } from './map-base';
-import { Annotations } from '../../../core';
+import { Annotations, FeatureFlags } from '../../../core';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { StateMachineType } from '../state-machine';
 import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, QueryLanguage, RetryProps } from '../types';
 import { StateBaseProps } from './state';
+import { STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2 } from '../../../cx-api';
 
 const DISTRIBUTED_MAP_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.DistributedMap');
 
@@ -63,9 +64,19 @@ interface DistributedMapBaseOptions extends MapBaseOptions {
   /**
    * Configuration for S3 location in which to save Map Run results
    *
+   * @deprecated Use {@link resultWriterV2}
    * @default - No resultWriter
    */
   readonly resultWriter?: ResultWriter;
+
+  /**
+   * Configuration for S3 location in which to save Map Run results
+   * Enable "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2" feature in the context to use resultWriterV2
+   * Example: stack.node.setContext("@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2", true);
+   *
+   * @default - No resultWriterV2
+   */
+  readonly resultWriterV2?: ResultWriterV2;
 
   /**
    * Specifies to process a group of items in a single child workflow execution
@@ -174,6 +185,7 @@ export class DistributedMap extends MapBase implements INextable {
   private readonly toleratedFailureCountPath?: string;
   private readonly label?: string;
   private readonly resultWriter?: ResultWriter;
+  private readonly resultWriterV2?: ResultWriterV2;
   private readonly itemBatcher?: ItemBatcher;
 
   constructor(scope: Construct, id: string, props: DistributedMapProps = {}) {
@@ -187,7 +199,14 @@ export class DistributedMap extends MapBase implements INextable {
     this.label = props.label;
     this.itemBatcher = props.itemBatcher;
     this.resultWriter = props.resultWriter;
+    this.resultWriterV2 = props.resultWriterV2;
     this.processorMode = ProcessorMode.DISTRIBUTED;
+  }
+
+  private getResultWriter(): ResultWriterV2 | ResultWriter | undefined {
+    return FeatureFlags.of(this).isEnabled(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2)
+      ? this.resultWriterV2
+      : this.resultWriter;
   }
 
   /**
@@ -240,8 +259,9 @@ export class DistributedMap extends MapBase implements INextable {
 
   protected whenBoundToGraph(graph: StateGraph) {
     super.whenBoundToGraph(graph);
-    if (this.resultWriter) {
-      this.resultWriter.providePolicyStatements().forEach(policyStatement => {
+    const resultWriter = this.getResultWriter();
+    if (resultWriter && resultWriter.bucket) {
+      resultWriter.providePolicyStatements().forEach(policyStatement => {
         graph.registerPolicyStatement(policyStatement);
       });
     }
@@ -294,8 +314,10 @@ export class DistributedMap extends MapBase implements INextable {
     if (rendered.ItemProcessor.ProcessorConfig.ExecutionType) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-stepfunctions:propertyIgnored', 'Property \'ProcessorConfig.executionType\' is ignored, use the \'mapExecutionType\' in the \'DistributedMap\' class instead.');
     }
-    rendered.ItemProcessor.ProcessorConfig.ExecutionType = this.mapExecutionType;
 
+    rendered.ItemProcessor.ProcessorConfig.ExecutionType = this.mapExecutionType;
+    const renderedResultWriter = this.renderResultWriter(stateMachineQueryLanguage);
+    this.addWarningIfResultWriterIsEmpty(renderedResultWriter);
     // ItemReader and ResultWriter configuration will base on the Map's query language.
     // If Map's query language is not specified, then use state machine's query language.
     const stateQueryLanguage = this.queryLanguage ?? stateMachineQueryLanguage;
@@ -308,8 +330,24 @@ export class DistributedMap extends MapBase implements INextable {
       ...(this.toleratedFailureCount && { ToleratedFailureCount: this.toleratedFailureCount }),
       ...(this.toleratedFailureCountPath && { ToleratedFailureCountPath: this.toleratedFailureCountPath }),
       ...(this.label && { Label: this.label }),
-      ...this.renderResultWriter(stateQueryLanguage),
+      ...renderedResultWriter,
     };
+  }
+
+  private addWarningIfResultWriterIsEmpty(renderedResultWriter: any) {
+    // Step Functions currently allows saving empty ResultWriter object but it fails while executing the State Machine.
+    // This will now be possible when using resultWriterV2.
+    // Integ tessts cannot cover this test case as it the test will start failing if Step Functions service
+    // starts validating empty ResultWriter objects in future.
+    // https://docs.aws.amazon.com/step-functions/latest/dg/input-output-resultwriter.html#input-output-resultwriter-field-contents
+    if (
+      renderedResultWriter &&
+      renderedResultWriter.ResultWriter &&
+      renderedResultWriter.ResultWriter.Resource === undefined &&
+      renderedResultWriter.ResultWriter.WriterConfig === undefined
+    ) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-stepfunctions:emptyResultWriter', 'ResultWriter should specify at least the WriterConfig or the Bucket and Prefix');
+    }
   }
 
   /**
@@ -327,10 +365,11 @@ export class DistributedMap extends MapBase implements INextable {
    * Render ResultWriter in ASL JSON format
    */
   private renderResultWriter(queryLanguage?: QueryLanguage): any {
-    if (!this.resultWriter) { return undefined; }
+    const resultWriter = this.getResultWriter();
+    if (!resultWriter) { return undefined; }
 
     return FieldUtils.renderObject({
-      ResultWriter: this.resultWriter.render(queryLanguage),
+      ResultWriter: resultWriter.render(queryLanguage),
     });
   }
 

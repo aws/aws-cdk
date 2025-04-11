@@ -1,4 +1,3 @@
-"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -10380,15 +10379,10 @@ var require_DocTypeReader = __commonJS({
 var require_strnum = __commonJS({
   "../../../node_modules/strnum/strnum.js"(exports2, module2) {
     var hexRegex = /^[-+]?0x[a-fA-F0-9]+$/;
-    var numRegex = /^([\-\+])?(0*)(\.[0-9]+([eE]\-?[0-9]+)?|[0-9]+(\.[0-9]+([eE]\-?[0-9]+)?)?)$/;
-    if (!Number.parseInt && window.parseInt) {
-      Number.parseInt = window.parseInt;
-    }
-    if (!Number.parseFloat && window.parseFloat) {
-      Number.parseFloat = window.parseFloat;
-    }
+    var numRegex = /^([\-\+])?(0*)([0-9]*(\.[0-9]*)?)$/;
     var consider = {
       hex: true,
+      // oct: false,
       leadingZeros: true,
       decimalPoint: ".",
       eNotation: true
@@ -10399,24 +10393,37 @@ var require_strnum = __commonJS({
       if (!str || typeof str !== "string") return str;
       let trimmedStr = str.trim();
       if (options.skipLike !== void 0 && options.skipLike.test(trimmedStr)) return str;
+      else if (str === "0") return 0;
       else if (options.hex && hexRegex.test(trimmedStr)) {
-        return Number.parseInt(trimmedStr, 16);
+        return parse_int(trimmedStr, 16);
+      } else if (trimmedStr.search(/[eE]/) !== -1) {
+        const notation = trimmedStr.match(/^([-\+])?(0*)([0-9]*(\.[0-9]*)?[eE][-\+]?[0-9]+)$/);
+        if (notation) {
+          if (options.leadingZeros) {
+            trimmedStr = (notation[1] || "") + notation[3];
+          } else {
+            if (notation[2] === "0" && notation[3][0] === ".") {
+            } else {
+              return str;
+            }
+          }
+          return options.eNotation ? Number(trimmedStr) : str;
+        } else {
+          return str;
+        }
       } else {
         const match = numRegex.exec(trimmedStr);
         if (match) {
           const sign = match[1];
           const leadingZeros = match[2];
           let numTrimmedByZeros = trimZeros(match[3]);
-          const eNotation = match[4] || match[6];
           if (!options.leadingZeros && leadingZeros.length > 0 && sign && trimmedStr[2] !== ".") return str;
           else if (!options.leadingZeros && leadingZeros.length > 0 && !sign && trimmedStr[1] !== ".") return str;
+          else if (options.leadingZeros && leadingZeros === str) return 0;
           else {
             const num = Number(trimmedStr);
             const numStr = "" + num;
             if (numStr.search(/[eE]/) !== -1) {
-              if (options.eNotation) return num;
-              else return str;
-            } else if (eNotation) {
               if (options.eNotation) return num;
               else return str;
             } else if (trimmedStr.indexOf(".") !== -1) {
@@ -10426,13 +10433,10 @@ var require_strnum = __commonJS({
               else return str;
             }
             if (leadingZeros) {
-              if (numTrimmedByZeros === numStr) return num;
-              else if (sign + numTrimmedByZeros === numStr) return num;
-              else return str;
+              return numTrimmedByZeros === numStr || sign + numTrimmedByZeros === numStr ? num : str;
+            } else {
+              return trimmedStr === numStr || trimmedStr === sign + numStr ? num : str;
             }
-            if (trimmedStr === numStr) return num;
-            else if (trimmedStr === sign + numStr) return num;
-            return str;
           }
         } else {
           return str;
@@ -10448,6 +10452,12 @@ var require_strnum = __commonJS({
         return numStr;
       }
       return numStr;
+    }
+    function parse_int(numStr, base) {
+      if (parseInt) return parseInt(numStr, base);
+      else if (Number.parseInt) return Number.parseInt(numStr, base);
+      else if (window && window.parseInt) return window.parseInt(numStr, base);
+      else throw new Error("parseInt, Number.parseInt, window.parseInt are not supported");
     }
     module2.exports = toNumber;
   }
@@ -23661,9 +23671,9 @@ var require_safer = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/lib/bom-handling.js
+// ../../../node_modules/iconv-lite/lib/bom-handling.js
 var require_bom_handling = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/lib/bom-handling.js"(exports2) {
+  "../../../node_modules/iconv-lite/lib/bom-handling.js"(exports2) {
     "use strict";
     var BOMChar = "\uFEFF";
     exports2.PrependBOM = PrependBOMWrapper;
@@ -23705,9 +23715,9 @@ var require_bom_handling = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/internal.js
+// ../../../node_modules/iconv-lite/encodings/internal.js
 var require_internal = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/internal.js"(exports2, module2) {
+  "../../../node_modules/iconv-lite/encodings/internal.js"(exports2, module2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     module2.exports = {
@@ -23857,9 +23867,9 @@ var require_internal = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf32.js
+// ../../../node_modules/iconv-lite/encodings/utf32.js
 var require_utf32 = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf32.js"(exports2) {
+  "../../../node_modules/iconv-lite/encodings/utf32.js"(exports2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports2._utf32 = Utf32Codec;
@@ -24076,9 +24086,9 @@ var require_utf32 = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf16.js
+// ../../../node_modules/iconv-lite/encodings/utf16.js
 var require_utf16 = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf16.js"(exports2) {
+  "../../../node_modules/iconv-lite/encodings/utf16.js"(exports2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports2.utf16be = Utf16BECodec;
@@ -24210,9 +24220,9 @@ var require_utf16 = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf7.js
+// ../../../node_modules/iconv-lite/encodings/utf7.js
 var require_utf7 = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf7.js"(exports2) {
+  "../../../node_modules/iconv-lite/encodings/utf7.js"(exports2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports2.utf7 = Utf7Codec;
@@ -24411,9 +24421,9 @@ var require_utf7 = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-codec.js
+// ../../../node_modules/iconv-lite/encodings/sbcs-codec.js
 var require_sbcs_codec = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-codec.js"(exports2) {
+  "../../../node_modules/iconv-lite/encodings/sbcs-codec.js"(exports2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports2._sbcs = SBCSCodec;
@@ -24467,9 +24477,9 @@ var require_sbcs_codec = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-data.js
+// ../../../node_modules/iconv-lite/encodings/sbcs-data.js
 var require_sbcs_data = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-data.js"(exports2, module2) {
+  "../../../node_modules/iconv-lite/encodings/sbcs-data.js"(exports2, module2) {
     "use strict";
     module2.exports = {
       // Not supported by iconv, not sure why.
@@ -24620,9 +24630,9 @@ var require_sbcs_data = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-data-generated.js
+// ../../../node_modules/iconv-lite/encodings/sbcs-data-generated.js
 var require_sbcs_data_generated = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-data-generated.js"(exports2, module2) {
+  "../../../node_modules/iconv-lite/encodings/sbcs-data-generated.js"(exports2, module2) {
     "use strict";
     module2.exports = {
       "437": "cp437",
@@ -25075,9 +25085,9 @@ var require_sbcs_data_generated = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/dbcs-codec.js
+// ../../../node_modules/iconv-lite/encodings/dbcs-codec.js
 var require_dbcs_codec = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/dbcs-codec.js"(exports2) {
+  "../../../node_modules/iconv-lite/encodings/dbcs-codec.js"(exports2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports2._dbcs = DBCSCodec;
@@ -25492,9 +25502,9 @@ var require_dbcs_codec = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/shiftjis.json
+// ../../../node_modules/iconv-lite/encodings/tables/shiftjis.json
 var require_shiftjis = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/shiftjis.json"(exports2, module2) {
+  "../../../node_modules/iconv-lite/encodings/tables/shiftjis.json"(exports2, module2) {
     module2.exports = [
       ["0", "\0", 128],
       ["a1", "\uFF61", 62],
@@ -25623,9 +25633,9 @@ var require_shiftjis = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/eucjp.json
+// ../../../node_modules/iconv-lite/encodings/tables/eucjp.json
 var require_eucjp = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/eucjp.json"(exports2, module2) {
+  "../../../node_modules/iconv-lite/encodings/tables/eucjp.json"(exports2, module2) {
     module2.exports = [
       ["0", "\0", 127],
       ["8ea1", "\uFF61", 62],
@@ -25811,9 +25821,9 @@ var require_eucjp = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp936.json
+// ../../../node_modules/iconv-lite/encodings/tables/cp936.json
 var require_cp936 = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp936.json"(exports2, module2) {
+  "../../../node_modules/iconv-lite/encodings/tables/cp936.json"(exports2, module2) {
     module2.exports = [
       ["0", "\0", 127, "\u20AC"],
       ["8140", "\u4E02\u4E04\u4E05\u4E06\u4E0F\u4E12\u4E17\u4E1F\u4E20\u4E21\u4E23\u4E26\u4E29\u4E2E\u4E2F\u4E31\u4E33\u4E35\u4E37\u4E3C\u4E40\u4E41\u4E42\u4E44\u4E46\u4E4A\u4E51\u4E55\u4E57\u4E5A\u4E5B\u4E62\u4E63\u4E64\u4E65\u4E67\u4E68\u4E6A", 5, "\u4E72\u4E74", 9, "\u4E7F", 6, "\u4E87\u4E8A"],
@@ -26081,9 +26091,9 @@ var require_cp936 = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/gbk-added.json
+// ../../../node_modules/iconv-lite/encodings/tables/gbk-added.json
 var require_gbk_added = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/gbk-added.json"(exports2, module2) {
+  "../../../node_modules/iconv-lite/encodings/tables/gbk-added.json"(exports2, module2) {
     module2.exports = [
       ["a140", "\uE4C6", 62],
       ["a180", "\uE505", 32],
@@ -26143,16 +26153,16 @@ var require_gbk_added = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/gb18030-ranges.json
+// ../../../node_modules/iconv-lite/encodings/tables/gb18030-ranges.json
 var require_gb18030_ranges = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/gb18030-ranges.json"(exports2, module2) {
+  "../../../node_modules/iconv-lite/encodings/tables/gb18030-ranges.json"(exports2, module2) {
     module2.exports = { uChars: [128, 165, 169, 178, 184, 216, 226, 235, 238, 244, 248, 251, 253, 258, 276, 284, 300, 325, 329, 334, 364, 463, 465, 467, 469, 471, 473, 475, 477, 506, 594, 610, 712, 716, 730, 930, 938, 962, 970, 1026, 1104, 1106, 8209, 8215, 8218, 8222, 8231, 8241, 8244, 8246, 8252, 8365, 8452, 8454, 8458, 8471, 8482, 8556, 8570, 8596, 8602, 8713, 8720, 8722, 8726, 8731, 8737, 8740, 8742, 8748, 8751, 8760, 8766, 8777, 8781, 8787, 8802, 8808, 8816, 8854, 8858, 8870, 8896, 8979, 9322, 9372, 9548, 9588, 9616, 9622, 9634, 9652, 9662, 9672, 9676, 9680, 9702, 9735, 9738, 9793, 9795, 11906, 11909, 11913, 11917, 11928, 11944, 11947, 11951, 11956, 11960, 11964, 11979, 12284, 12292, 12312, 12319, 12330, 12351, 12436, 12447, 12535, 12543, 12586, 12842, 12850, 12964, 13200, 13215, 13218, 13253, 13263, 13267, 13270, 13384, 13428, 13727, 13839, 13851, 14617, 14703, 14801, 14816, 14964, 15183, 15471, 15585, 16471, 16736, 17208, 17325, 17330, 17374, 17623, 17997, 18018, 18212, 18218, 18301, 18318, 18760, 18811, 18814, 18820, 18823, 18844, 18848, 18872, 19576, 19620, 19738, 19887, 40870, 59244, 59336, 59367, 59413, 59417, 59423, 59431, 59437, 59443, 59452, 59460, 59478, 59493, 63789, 63866, 63894, 63976, 63986, 64016, 64018, 64021, 64025, 64034, 64037, 64042, 65074, 65093, 65107, 65112, 65127, 65132, 65375, 65510, 65536], gbChars: [0, 36, 38, 45, 50, 81, 89, 95, 96, 100, 103, 104, 105, 109, 126, 133, 148, 172, 175, 179, 208, 306, 307, 308, 309, 310, 311, 312, 313, 341, 428, 443, 544, 545, 558, 741, 742, 749, 750, 805, 819, 820, 7922, 7924, 7925, 7927, 7934, 7943, 7944, 7945, 7950, 8062, 8148, 8149, 8152, 8164, 8174, 8236, 8240, 8262, 8264, 8374, 8380, 8381, 8384, 8388, 8390, 8392, 8393, 8394, 8396, 8401, 8406, 8416, 8419, 8424, 8437, 8439, 8445, 8482, 8485, 8496, 8521, 8603, 8936, 8946, 9046, 9050, 9063, 9066, 9076, 9092, 9100, 9108, 9111, 9113, 9131, 9162, 9164, 9218, 9219, 11329, 11331, 11334, 11336, 11346, 11361, 11363, 11366, 11370, 11372, 11375, 11389, 11682, 11686, 11687, 11692, 11694, 11714, 11716, 11723, 11725, 11730, 11736, 11982, 11989, 12102, 12336, 12348, 12350, 12384, 12393, 12395, 12397, 12510, 12553, 12851, 12962, 12973, 13738, 13823, 13919, 13933, 14080, 14298, 14585, 14698, 15583, 15847, 16318, 16434, 16438, 16481, 16729, 17102, 17122, 17315, 17320, 17402, 17418, 17859, 17909, 17911, 17915, 17916, 17936, 17939, 17961, 18664, 18703, 18814, 18962, 19043, 33469, 33470, 33471, 33484, 33485, 33490, 33497, 33501, 33505, 33513, 33520, 33536, 33550, 37845, 37921, 37948, 38029, 38038, 38064, 38065, 38066, 38069, 38075, 38076, 38078, 39108, 39109, 39113, 39114, 39115, 39116, 39265, 39394, 189e3] };
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp949.json
+// ../../../node_modules/iconv-lite/encodings/tables/cp949.json
 var require_cp949 = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp949.json"(exports2, module2) {
+  "../../../node_modules/iconv-lite/encodings/tables/cp949.json"(exports2, module2) {
     module2.exports = [
       ["0", "\0", 127],
       ["8141", "\uAC02\uAC03\uAC05\uAC06\uAC0B", 4, "\uAC18\uAC1E\uAC1F\uAC21\uAC22\uAC23\uAC25", 6, "\uAC2E\uAC32\uAC33\uAC34"],
@@ -26429,9 +26439,9 @@ var require_cp949 = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp950.json
+// ../../../node_modules/iconv-lite/encodings/tables/cp950.json
 var require_cp950 = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp950.json"(exports2, module2) {
+  "../../../node_modules/iconv-lite/encodings/tables/cp950.json"(exports2, module2) {
     module2.exports = [
       ["0", "\0", 127],
       ["a140", "\u3000\uFF0C\u3001\u3002\uFF0E\u2027\uFF1B\uFF1A\uFF1F\uFF01\uFE30\u2026\u2025\uFE50\uFE51\uFE52\xB7\uFE54\uFE55\uFE56\uFE57\uFF5C\u2013\uFE31\u2014\uFE33\u2574\uFE34\uFE4F\uFF08\uFF09\uFE35\uFE36\uFF5B\uFF5D\uFE37\uFE38\u3014\u3015\uFE39\uFE3A\u3010\u3011\uFE3B\uFE3C\u300A\u300B\uFE3D\uFE3E\u3008\u3009\uFE3F\uFE40\u300C\u300D\uFE41\uFE42\u300E\u300F\uFE43\uFE44\uFE59\uFE5A"],
@@ -26612,9 +26622,9 @@ var require_cp950 = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/big5-added.json
+// ../../../node_modules/iconv-lite/encodings/tables/big5-added.json
 var require_big5_added = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/big5-added.json"(exports2, module2) {
+  "../../../node_modules/iconv-lite/encodings/tables/big5-added.json"(exports2, module2) {
     module2.exports = [
       ["8740", "\u43F0\u4C32\u4603\u45A6\u4578\u{27267}\u4D77\u45B3\u{27CB1}\u4CE2\u{27CC5}\u3B95\u4736\u4744\u4C47\u4C40\u{242BF}\u{23617}\u{27352}\u{26E8B}\u{270D2}\u4C57\u{2A351}\u474F\u45DA\u4C85\u{27C6C}\u4D07\u4AA4\u46A1\u{26B23}\u7225\u{25A54}\u{21A63}\u{23E06}\u{23F61}\u664D\u56FB"],
       ["8767", "\u7D95\u591D\u{28BB9}\u3DF4\u9734\u{27BEF}\u5BDB\u{21D5E}\u5AA4\u3625\u{29EB0}\u5AD1\u5BB7\u5CFC\u676E\u8593\u{29945}\u7461\u749D\u3875\u{21D53}\u{2369E}\u{26021}\u3EEC"],
@@ -26740,9 +26750,9 @@ var require_big5_added = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/dbcs-data.js
+// ../../../node_modules/iconv-lite/encodings/dbcs-data.js
 var require_dbcs_data = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/dbcs-data.js"(exports2, module2) {
+  "../../../node_modules/iconv-lite/encodings/dbcs-data.js"(exports2, module2) {
     "use strict";
     module2.exports = {
       // == Japanese/ShiftJIS ====================================================
@@ -26987,9 +26997,9 @@ var require_dbcs_data = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/index.js
+// ../../../node_modules/iconv-lite/encodings/index.js
 var require_encodings = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/index.js"(exports2, module2) {
+  "../../../node_modules/iconv-lite/encodings/index.js"(exports2, module2) {
     "use strict";
     var modules = [
       require_internal(),
@@ -27014,9 +27024,9 @@ var require_encodings = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/lib/streams.js
+// ../../../node_modules/iconv-lite/lib/streams.js
 var require_streams = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/lib/streams.js"(exports2, module2) {
+  "../../../node_modules/iconv-lite/lib/streams.js"(exports2, module2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     module2.exports = function(stream_module) {
@@ -27109,9 +27119,9 @@ var require_streams = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/lib/index.js
+// ../../../node_modules/iconv-lite/lib/index.js
 var require_lib2 = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/lib/index.js"(exports2, module2) {
+  "../../../node_modules/iconv-lite/lib/index.js"(exports2, module2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     var bomHandling = require_bom_handling();
@@ -27277,9 +27287,9 @@ var require_encoding = __commonJS({
   }
 });
 
-// ../../../node_modules/node-fetch/lib/index.js
+// node_modules/node-fetch/lib/index.js
 var require_lib3 = __commonJS({
-  "../../../node_modules/node-fetch/lib/index.js"(exports2, module2) {
+  "node_modules/node-fetch/lib/index.js"(exports2, module2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     function _interopDefault(ex) {
@@ -30164,7 +30174,6 @@ var CustomResourceHandler = class {
   constructor(event, context) {
     this.event = event;
     this.context = context;
-    this.timedOut = false;
     this.timeout = setTimeout(async () => {
       await this.respond({
         status: "FAILED",
@@ -30176,6 +30185,9 @@ var CustomResourceHandler = class {
     this.event = event;
     this.physicalResourceId = extractPhysicalResourceId(event);
   }
+  physicalResourceId;
+  timeout;
+  timedOut = false;
   /**
    * Handles executing the custom resource event. If `stateMachineArn` is present
    * in the props then trigger the waiter statemachine
@@ -30309,6 +30321,7 @@ var AssertionHandler = class extends CustomResourceHandler {
   }
 };
 var MatchCreator = class {
+  parsedObj;
   constructor(obj) {
     this.parsedObj = {
       matcher: obj
