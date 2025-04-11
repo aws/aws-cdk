@@ -139,7 +139,7 @@ describe('tests', () => {
             { subnet: vpc.publicSubnets[0] },
           ],
         });
-      }).toThrow('`vpcSubnets` and `subnetMappings` cannot be specified at the same time.');
+      }).toThrow('You can specify either `vpcSubnets` or `subnetMappings`, not both.');
     });
 
     test('throw error for configuring private ipv4 address for internet-facing load balancer', () => {

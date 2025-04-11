@@ -321,7 +321,7 @@ export abstract class BaseLoadBalancer extends Resource {
 
     let subnetIds: string[] | undefined;
     let subnetMappings: SubnetMapping[] | undefined = additionalProps.subnetMappings;
-    let internetConnectivityEstablished: IDependable | undefined;
+    let internetConnectivityEstablishedSubnets: IDependable | undefined;
 
     if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 &&
         additionalProps.type !== cxschema.LoadBalancerType.APPLICATION) {
@@ -333,7 +333,7 @@ export abstract class BaseLoadBalancer extends Resource {
     if (subnetMappings) {
       if (internetFacing) {
         const mappedSubnetIds = subnetMappings.map(mapping => mapping.subnet.subnetId);
-        internetConnectivityEstablished = baseProps.vpc.selectSubnets(
+        internetConnectivityEstablishedSubnets = baseProps.vpc.selectSubnets(
           { subnetFilters: [ec2.SubnetFilter.byIds(mappedSubnetIds)] },
         ).internetConnectivityEstablished;
       }
@@ -346,7 +346,7 @@ export abstract class BaseLoadBalancer extends Resource {
 
       const result = baseProps.vpc.selectSubnets(vpcSubnets);
       subnetIds = result.subnetIds;
-      internetConnectivityEstablished = result.internetConnectivityEstablished;
+      internetConnectivityEstablishedSubnets = result.internetConnectivityEstablished;
     }
 
     const resource = new CfnLoadBalancer(this, 'Resource', {
@@ -369,8 +369,8 @@ export abstract class BaseLoadBalancer extends Resource {
       ...additionalProps,
     });
 
-    if (internetFacing && internetConnectivityEstablished) {
-      resource.node.addDependency(internetConnectivityEstablished);
+    if (internetFacing && internetConnectivityEstablishedSubnets) {
+      resource.node.addDependency(internetConnectivityEstablishedSubnets);
     }
 
     this.setAttribute('deletion_protection.enabled', baseProps.deletionProtection ? 'true' : 'false');
