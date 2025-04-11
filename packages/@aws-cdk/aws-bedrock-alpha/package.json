@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-bedrock-alpha",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "An example CDK Construct Library for aws-bedrock-alpha",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -69,13 +69,14 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "aws-cdk-lib": "^2.187.0",
+    "aws-cdk-lib": "0.0.0",
     "@types/jest": "^29.5.14",
+    "constructs": "10.0.0",
     "jest": "^29.7.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "aws-cdk-lib": "^2.187.0",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "separate-module": false,

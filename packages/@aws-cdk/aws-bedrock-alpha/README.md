@@ -1,92 +1,255 @@
-# An example Construct Library module
+# Amazon Bedrock Construct Library
 
 <!--BEGIN STABILITY BANNER-->
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> All classes are under active development and subject to non-backward compatible changes or removal in any
+> future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 
 <!--END STABILITY BANNER-->
 
-This package contains an example CDK construct library
-for an imaginary resource called ExampleResource.
-Its target audience are construct library authors -
-both when contributing to the core CDK codebase,
-or when writing your own construct library.
+| **Language**                                                                                   | **Package**                             |
+| :--------------------------------------------------------------------------------------------- | --------------------------------------- |
+| ![Typescript Logo](https://docs.aws.amazon.com/cdk/api/latest/img/typescript32.png) TypeScript | `@aws-cdk/aws-bedrock-alpha` |
 
-Even though different construct libraries model vastly different services,
-a large percentage of the structure of the construct libraries
-(what we often call Layer 2 constructs, or L2s for short)
-is actually strikingly similar between all of them.
-This module hopes to present a skeleton of that structure,
-that you can literally copy&paste to your own construct library,
-and then edit to suit your needs.
-It also attempts to explain the elements of that skeleton as best as it can,
-through inline comments on the code itself.
+[Amazon Bedrock](https://aws.amazon.com/bedrock/) is a fully managed service that offers a choice of high-performing foundation models (FMs) from leading AI companies and Amazon through a single API, along with a broad set of capabilities you need to build generative AI applications with security, privacy, and responsible AI.
 
-## Using when contributing to the CDK codebase
+This construct library facilitates the deployment of Bedrock Agents, enabling you to create sophisticated AI applications that can interact with your systems and data sources.
 
-If you're creating a completely new module,
-feel free to copy&paste this entire directory,
-and then edit the `package.json` and `README.md`
-files as necessary (see the "Package structure" section below).
-Make sure to remove the `"private": true` line from `package.json`
-after copying, as otherwise your package will not be published!
+## Table of contents
 
-If you're contributing a new resource to an existing package,
-feel free to copy&paste the following files,
-instead of the entire package:
+- [API](#api)
+- [Agents](#agents)
+  - [Create an Agent](#create-an-agent)
+  - [Action groups](#action-groups)
+  - [Prepare the Agent](#prepare-the-agent)
+  - [Prompt Override Configuration](#prompt-override-configuration)
+  - [Memory Configuration](#memory-configuration)
+  - [Agent Collaboration](#agent-collaboration)
+  - [Custom Orchestration](#custom-orchestration)
+  - [Agent Alias](#agent-alias)
 
-* [`lib/example-resource.ts`](lib/example-resource.ts)
-* [`lib/private/example-resource-common.ts`](lib/private/example-resource-common.ts)
-* [`test/example-resource.test.ts`](test/example-resource.test.ts)
-* [`test/integ.example-resource.ts`](test/integ.example-resource.ts)
-* [`test/integ.example-resource.expected.json`](test/integ.example-resource.expected.json)
+## API
 
-And proceed to edit and rename them from there.
+See the [API documentation](../../../apidocs/namespaces/bedrock/README.md).
 
-## Using for your own construct libraries
+## Agents
 
-Feel free to use this package as the basis of your own construct library;
-note, however, that you will have to change a few things in `package.json` to get it to build:
+Amazon Bedrock Agents allow generative AI applications to automate complex, multistep tasks by seamlessly integrating with your company's systems, APIs, and data sources.
 
-* Remove the `"private": true` flag if you intend to publish your package to npmjs.org
-  (see https://docs.npmjs.com/files/package.json#private for details).
-* Remove the `devDependencies` on `cdk-build-tools`, `cdk-integ-tools` and `pkglint`.
-* Remove the `lint`, `integ`, `pkglint`, `package`, `build+test+package`, `awslint`, and `compat` entries in the `scripts` section.
-* The `build` script should be just `tsc`, `watch` just `tsc -w`, and `test` just `jest`.
-* Finally, the `awscdkio` key should be completely removed.
+### Agent Properties
 
-You will also have to get rid of the integration test files,
-[`test/integ.example-resource.ts`](test/integ.example-resource.ts) and
-[`test/integ.example-resource.expected.json`](test/integ.example-resource.expected.json),
-as those styles of integration tests are not available outside the CDK main repo.
+| Name | Type | Required | Description |
+|---|---|---|---|
+| name | string | No | The name of the agent. Defaults to a name generated by CDK |
+| instruction | string | Yes | The instruction used by the agent that determines how it will perform its task. Must have a minimum of 40 characters |
+| foundationModel | IInvokable | Yes | The foundation model used for orchestration by the agent |
+| existingRole | iam.IRole | No | The existing IAM Role for the agent to use. Must have a trust policy allowing Bedrock service to assume the role. Defaults to a new created role |
+| shouldPrepareAgent | boolean | No | Specifies whether to automatically update the `DRAFT` version of the agent after making changes. Defaults to false |
+| idleSessionTTL | Duration | No | How long sessions should be kept open for the agent. Session expires if no conversation occurs during this time. Defaults to 1 hour |
+| kmsKey | kms.IKey | No | The KMS key of the agent if custom encryption is configured. Defaults to AWS managed key |
+| description | string | No | A description of the agent. Defaults to no description |
+| actionGroups | AgentActionGroup[] | No | The Action Groups associated with the agent |
+| promptOverrideConfiguration | PromptOverrideConfiguration | No | Overrides some prompt templates in different parts of an agent sequence configuration |
+| userInputEnabled | boolean | No | Select whether the agent can prompt additional information from the user when it lacks enough information. Defaults to false |
+| codeInterpreterEnabled | boolean | No | Select whether the agent can generate, run, and troubleshoot code when trying to complete a task. Defaults to false |
+| forceDelete | boolean | No | Whether to delete the resource even if it's in use. Defaults to true |
 
-## Code structure
+### Create an Agent
 
-The code structure is explained through inline comments in the files themselves.
-Probably [`lib/example-resource.ts`](lib/example-resource.ts) is a good place to start reading.
+The following example creates an Agent with a simple instruction and default prompts:
 
-### Tests
+```ts
+const agent = new bedrock.Agent(this, 'Agent', {
+  foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_HAIKU_V1_0,
+  instruction: 'You are a helpful and friendly agent that answers questions about literature.',
+});
+```
 
-The package contains examples of unit tests in the [`test/example-resource.test.ts`](test/example-resource.test.ts)
-file.
+### Action Groups
 
-It also contains an example integration test in [`test/integ.example-resource.ts`](test/integ.example-resource.ts).
-For more information on CDK integ tests, see the
-[main `Contributing.md` file](../../../CONTRIBUTING.md#integration-tests).
+An action group defines functions your agent can call. The functions are Lambda functions. The action group uses an OpenAPI schema to tell the agent what your functions do and how to call them.
 
-## Package structure
+Example:
 
-The package uses the standard build and test tools available in the CDK repo.
-Even though it's not published,
-it also uses [JSII](https://github.com/aws/jsii),
-the technology that allows CDK logic to be written once,
-but used from multiple programming languages.
-Its configuration lives the `jsii` key in `package.json`.
-It's mainly used as a validation tool in this package,
-as JSII places some constraints on the TypeScript code that you can write.
+```ts
+const actionGroupFunction = new lambda_python.PythonFunction(this, 'ActionGroupFunction', {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  entry: path.join(__dirname, '../lambda/action-group'),
+});
+
+const actionGroup = new AgentActionGroup({
+  name: 'query-library',
+  description: 'Use these functions to get information about the books in the library.',
+  executor: bedrock.ActionGroupExecutor.fromlambdaFunction(actionGroupFunction),
+  enabled: true,
+  apiSchema: bedrock.ApiSchema.fromLocalAsset(path.join(__dirname, 'action-group.yaml')),
+});
+
+agent.addActionGroup(actionGroup);
+```
+
+### Prepare the Agent
+
+The `Agent` constructs take an optional parameter `shouldPrepareAgent` to indicate that the Agent should be prepared after any updates to an agent or action group. This may increase the time to create and update those resources. By default, this value is false.
+
+Creating an agent alias will not prepare the agent, so if you create an alias using the `AgentAlias` resource then you should set `shouldPrepareAgent` to **_true_**.
+
+### Prompt Override Configuration
+
+Bedrock Agents allows you to customize the prompts and LLM configuration for different steps in the agent sequence. You can disable steps or create a new prompt template. The following steps can be configured:
+
+- PRE_PROCESSING
+- ORCHESTRATION
+- POST_PROCESSING
+- ROUTING_CLASSIFIER
+- MEMORY_SUMMARIZATION
+- KNOWLEDGE_BASE_RESPONSE_GENERATION
+
+Example:
+
+```ts
+const agent = new bedrock.Agent(this, 'Agent', {
+  foundationModel: bedrock.BedrockFoundationModel.AMAZON_NOVA_LITE_V1,
+  instruction: 'You are a helpful assistant.',
+  promptOverrideConfiguration: bedrock.PromptOverrideConfiguration.fromSteps([
+    {
+      stepType: bedrock.AgentStepType.PRE_PROCESSING,
+      stepEnabled: true,
+      customPromptTemplate: 'Your custom prompt template here',
+      inferenceConfig: {
+        temperature: 0.0,
+        topP: 1,
+        topK: 250,
+        maximumLength: 1,
+        stopSequences: ["\n\nHuman:"],
+      },
+    }
+  ])
+});
+```
+
+You can also use a custom Lambda parser to process the model's output:
+
+```ts
+const parserFunction = new lambda.Function(this, 'ParserFunction', {
+  runtime: lambda.Runtime.PYTHON_3_10,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset('lambda'),
+});
+
+const agent = new bedrock.Agent(this, 'Agent', {
+  foundationModel: bedrock.BedrockFoundationModel.AMAZON_NOVA_LITE_V1,
+  instruction: 'You are a helpful assistant.',
+  promptOverrideConfiguration: bedrock.PromptOverrideConfiguration.withCustomParser({
+    parser: parserFunction,
+    steps: [
+      {
+        stepType: bedrock.AgentStepType.PRE_PROCESSING,
+        useCustomParser: true,
+        customPromptTemplate: 'Your custom prompt template here',
+      }
+    ]
+  })
+});
+```
+
+### Memory Configuration
+
+Agents can maintain context across multiple sessions and recall past interactions using memory. This feature is useful for creating a more coherent conversational experience.
+
+Example:
+
+```typescript
+const agent = new Agent(this, 'MyAgent', {
+  name: 'MyAgent',
+  instruction: 'Your instruction here',
+  foundationModel: bedrock.BedrockFoundationModel.AMAZON_NOVA_LITE_V1,
+  memory: Memory.sessionSummary({
+    maxRecentSessions: 10, // Keep the last 10 session summaries
+    memoryDurationDays: 20, // Retain summaries for 20 days
+  }),
+});
+```
+
+### Agent Collaboration
+
+Agent Collaboration enables multiple Bedrock Agents to work together on complex tasks. This feature allows agents to specialize in different areas and collaborate to provide more comprehensive responses to user queries.
+
+Example:
+
+```typescript
+// Create a specialized agent
+const customerSupportAgent = new Agent(this, 'CustomerSupportAgent', {
+  name: 'CustomerSupportAgent',
+  instruction: 'You specialize in answering customer support questions.',
+  foundationModel: bedrock.BedrockFoundationModel.AMAZON_NOVA_LITE_V1,
+});
+
+// Create an agent alias
+const customerSupportAlias = new AgentAlias(this, 'CustomerSupportAlias', {
+  agent: customerSupportAgent,
+  aliasName: 'production',
+});
+
+// Create a main agent that collaborates with the specialized agent
+const mainAgent = new Agent(this, 'MainAgent', {
+  name: 'MainAgent',
+  instruction: 'You route specialized questions to other agents.',
+  foundationModel: bedrock.BedrockFoundationModel.AMAZON_NOVA_LITE_V1,
+  agentCollaboration: AgentCollaboratorType.SUPERVISOR,
+  agentCollaborators: [
+    new bedrock.AgentCollaborator({
+      agentAlias: customerSupportAlias,
+      collaborationInstruction: 'Route customer support questions to this agent.',
+      collaboratorName: 'CustomerSupport',
+      relayConversationHistory: true,
+    }),
+  ],
+});
+```
+
+### Custom Orchestration
+
+Custom Orchestration allows you to override the default agent orchestration flow with your own Lambda function. This enables more control over how the agent processes user inputs and invokes action groups.
+
+Example:
+
+```typescript
+const orchestrationFunction = new lambda.Function(this, 'OrchestrationFunction', {
+  runtime: lambda.Runtime.PYTHON_3_10,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset('lambda/orchestration'),
+});
+
+const agent = new Agent(this, 'CustomOrchestrationAgent', {
+  name: 'CustomOrchestrationAgent',
+  instruction: 'You are a helpful assistant with custom orchestration logic.',
+  foundationModel: bedrock.BedrockFoundationModel.AMAZON_NOVA_LITE_V1,
+  orchestrationType: OrchestrationType.CUSTOM_ORCHESTRATION,
+  customOrchestration: {
+    executor: OrchestrationExecutor.fromlambdaFunction(orchestrationFunction),
+  },
+});
+```
+
+### Agent Alias
+
+After you have sufficiently iterated on your working draft and are satisfied with the behavior of your agent, you can set it up for deployment and integration into your application by creating aliases.
+
+Example:
+
+```ts
+const agentAlias = new bedrock.AgentAlias(this, 'myalias', {
+  aliasName: 'production',
+  agent: agent,
+  agentVersion: '1', // optional
+  description: 'Production version of my agent'
+});
+```

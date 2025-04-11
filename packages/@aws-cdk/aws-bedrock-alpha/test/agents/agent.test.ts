@@ -1,7 +1,10 @@
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
+import { App, CfnParameter, Duration, Fn, Token } from 'aws-cdk-lib/core';
+import * as core from 'aws-cdk-lib/core';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as kms from 'aws-cdk-lib/aws-kms';
 
 // Import the module qualified
 import * as bedrock from '../../lib';
@@ -10,12 +13,12 @@ import { Memory } from '../../bedrock/agents/memory';
 /* eslint-disable quote-props */
 
 describe('Bedrock Agent', () => {
-  let stack: cdk.Stack;
+  let stack: core.Stack;
   let foundationModel: bedrock.IInvokable;
 
   beforeEach(() => {
-    const app = new cdk.App();
-    stack = new cdk.Stack(app, 'agent', {
+    const app = new App();
+    stack = new core.Stack(app, 'agent', {
       env: {
         account: process.env.CDK_DEFAULT_ACCOUNT,
         region: process.env.CDK_DEFAULT_REGION ,
@@ -39,7 +42,7 @@ describe('Bedrock Agent', () => {
     beforeEach(() => {
       // Log stack region value for debugging
       console.log('Stack region:', stack.region);
-      console.log('Is region token unresolved:', cdk.Token.isUnresolved(stack.region));
+      console.log('Is region token unresolved:', Token.isUnresolved(stack.region));
       console.log('Environment:', stack.environment);
       
       agent = new bedrock.Agent(stack, 'TestAgent', {
@@ -188,7 +191,7 @@ describe('Bedrock Agent', () => {
         name: 'MyTestAgent',
         description: 'Test agent description',
         shouldPrepareAgent: true,
-        idleSessionTTL: cdk.Duration.minutes(30),
+        idleSessionTTL: Duration.minutes(30),
         userInputEnabled: true,
         codeInterpreterEnabled: true,
         forceDelete: true,
@@ -226,9 +229,9 @@ describe('Bedrock Agent', () => {
     beforeEach(() => {
       agent = bedrock.Agent.fromAgentAttrs(stack, 'ImportedAgent', {
         agentArn: 'arn:aws:bedrock:us-east-1:123456789012:agent/OKDSJOGKMO',
-        roleArn: cdk.Fn.join('', [
+        roleArn: Fn.join('', [
           'arn:',
-          cdk.Fn.ref('AWS::Partition'),
+          Fn.ref('AWS::Partition'),
           ':iam::',
           stack.account,
           ':role/TestRole'
@@ -263,7 +266,7 @@ describe('Bedrock Agent', () => {
   });
 
   test('does not fail validation if instruction is a late-bound value', () => {
-    const parameter = new cdk.CfnParameter(stack, 'Parameter');
+    const parameter = new CfnParameter(stack, 'Parameter');
 
     new bedrock.Agent(stack, 'TestAgent', {
       instruction: parameter.valueAsString,
@@ -424,10 +427,10 @@ describe('Bedrock Agent', () => {
 
   describe('created with custom orchestration', () => {
     test('sets custom orchestration correctly', () => {
-      const fn = new cdk.aws_lambda.Function(stack, 'TestFunction', {
-        runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
+      const fn = new lambda.Function(stack, 'TestFunction', {
+        runtime: lambda.Runtime.NODEJS_18_X,
         handler: 'index.handler',
-        code: cdk.aws_lambda.Code.fromInline('exports.handler = async () => {};'),
+        code: lambda.Code.fromInline('exports.handler = async () => {};'),
       });
 
       new bedrock.Agent(stack, 'TestAgent', {
@@ -454,7 +457,7 @@ describe('Bedrock Agent', () => {
 
   describe('created with KMS key', () => {
     test('sets KMS key correctly', () => {
-      const key = new cdk.aws_kms.Key(stack, 'TestKey');
+      const key = new kms.Key(stack, 'TestKey');
 
       new bedrock.Agent(stack, 'TestAgent', {
         instruction: 'This is a test instruction that must be at least 40 characters long to be valid',

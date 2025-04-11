@@ -11,7 +11,7 @@
  *  and limitations under the License.
  */
 
-import { Arn, ArnFormat, Duration, IResource, Lazy, Names, Resource, Stack, Token } from 'aws-cdk-lib';
+import { Arn, ArnFormat, Duration, IResource, Lazy, Names, Resource, Stack, Token } from 'aws-cdk-lib/core';
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as events from 'aws-cdk-lib/aws-events';
