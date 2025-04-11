@@ -152,6 +152,84 @@
     "VPCintegtestgatewayEgressOnlyGWEIGW686FDB04"
    ]
   },
+  "VPCintegtestgatewayNATGatewaytestsubnet3EIP396C3DBA": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "CDKintegTestVPC"
+     }
+    ]
+   },
+   "DependsOn": [
+    "testsubnet3RouteTableAssociation97F126C9"
+   ]
+  },
+  "VPCintegtestgatewayNATGatewaytestsubnet3NATGateway4198D6F2": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VPCintegtestgatewayNATGatewaytestsubnet3EIP396C3DBA",
+      "AllocationId"
+     ]
+    },
+    "ConnectivityType": "public",
+    "SubnetId": {
+     "Ref": "testsubnet3Subnet09F1B369"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "CDKintegTestVPC"
+     }
+    ]
+   },
+   "DependsOn": [
+    "testsubnet3RouteTableAssociation97F126C9"
+   ]
+  },
+  "VPCintegtestgatewayNATGatewaytestsubnet2EIPC21D31FA": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "CDKintegTestVPC"
+     }
+    ]
+   },
+   "DependsOn": [
+    "testsubnet2RouteTableAssociation2ABEB97D"
+   ]
+  },
+  "VPCintegtestgatewayNATGatewaytestsubnet2NATGateway27C66096": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VPCintegtestgatewayNATGatewaytestsubnet2EIPC21D31FA",
+      "AllocationId"
+     ]
+    },
+    "ConnectivityType": "public",
+    "SubnetId": {
+     "Ref": "testsubnet2SubnetDA462F5A"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "CDKintegTestVPC"
+     }
+    ]
+   },
+   "DependsOn": [
+    "testsubnet2RouteTableAssociation2ABEB97D"
+   ]
+  },
   "TestRouteTableC34C2E1C": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
@@ -268,6 +346,50 @@
     },
     "SubnetId": {
      "Ref": "testsubnet2SubnetDA462F5A"
+    }
+   },
+   "DependsOn": [
+    "VPCintegtestgatewayAmazonProvided7EC73953"
+   ]
+  },
+  "testsubnet3Subnet09F1B369": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": false,
+    "AvailabilityZone": "us-west-2c",
+    "CidrBlock": "10.1.3.0/28",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "CDKIntegTestSubnet3"
+     },
+     {
+      "Key": "VpcName",
+      "Value": "CDKintegTestVPC"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtestgateway2BE01D01",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCintegtestgatewayAmazonProvided7EC73953"
+   ]
+  },
+  "testsubnet3RouteTableAssociation97F126C9": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRouteTable2RouteTableB32AE314",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "testsubnet3Subnet09F1B369"
     }
    },
    "DependsOn": [

@@ -1,4 +1,4 @@
-import { Resource, Names, Lazy, Tags } from 'aws-cdk-lib';
+import { Resource, Names, Lazy, Tags, Token, ValidationError, UnscopedValidationError } from 'aws-cdk-lib';
 import { CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
@@ -262,30 +262,32 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     const ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
 
     if (!checkCidrRanges(props.vpc, props.ipv4CidrBlock.cidr)) {
-      throw new Error('CIDR block should be within the range of VPC');
+      throw new ValidationError('CIDR block should be within the range of VPC', this);
     }
 
     let overlap: boolean = false;
     let overlapIpv6: boolean = false;
 
-    overlap = validateOverlappingCidrRanges(props.vpc, props.ipv4CidrBlock.cidr);
+    if (!Token.isUnresolved(props.ipv4CidrBlock)) {
+      overlap = validateOverlappingCidrRanges(props.vpc, props.ipv4CidrBlock.cidr);
+    }
 
     // check whether VPC supports ipv6
-    if (props.ipv6CidrBlock?.cidr) {
+    if (props.ipv6CidrBlock?.cidr && !Token.isUnresolved(props.ipv6CidrBlock?.cidr)) {
       validateSupportIpv6(props.vpc);
       overlapIpv6 = validateOverlappingCidrRangesipv6(props.vpc, props.ipv6CidrBlock?.cidr);
     }
 
     if (overlap || overlapIpv6) {
-      throw new Error('CIDR block should not overlap with existing subnet blocks');
+      throw new ValidationError('CIDR block should not overlap with existing subnet blocks', this);
     }
 
     if (props.assignIpv6AddressOnCreation && !props.ipv6CidrBlock) {
-      throw new Error('IPv6 CIDR block is required when assigning IPv6 address on creation');
+      throw new ValidationError('IPv6 CIDR block is required when assigning IPv6 address on creation', this);
     }
 
     if (props.mapPublicIpOnLaunch === true && props.subnetType !== SubnetType.PUBLIC) {
-      throw new Error('mapPublicIpOnLaunch can only be set to true for public subnets');
+      throw new ValidationError('mapPublicIpOnLaunch can only be set to true for public subnets', this);
     }
 
     const subnet = new CfnSubnet(this, 'Subnet', {
@@ -445,7 +447,7 @@ function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType)
   if (findFunctionType) {
     findFunctionType(vpc, subnet);
   } else {
-    throw new Error(`Unsupported subnet type: ${type}`);
+    throw new UnscopedValidationError(`Unsupported subnet type: ${type}`);
   }
 
   /**
@@ -463,7 +465,7 @@ function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType)
  * Validates whether the provided VPC supports IPv6 addresses.
  *
  * @param vpc The VPC instance to be validated.
- * @throws Error if the VPC does not support IPv6 addresses.
+ * @throws ValidationError if the VPC does not support IPv6 addresses.
  * @returns True if the VPC supports IPv6 addresses, false otherwise.
  * @internal
  */
@@ -473,7 +475,7 @@ function validateSupportIpv6(vpc: IVpcV2) {
   secondaryAddress.ipv6IpamPoolId !== undefined || secondaryAddress.ipv6Pool !== undefined)) {
       return true;
     } else {
-      throw new Error('To use IPv6, the VPC must enable IPv6 support.');
+      throw new UnscopedValidationError('To use IPv6, the VPC must enable IPv6 support.');
     }
   } else {return false;}
 }
@@ -510,7 +512,7 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
 
   // If no IPv4 is assigned as secondary address
   if (allCidrs.length === 0) {
-    throw new Error('No secondary IP address attached to VPC');
+    throw new UnscopedValidationError('No secondary IP address attached to VPC');
   }
 
   return allCidrs.some(c => c.containsCidr(subnetCidrBlock));
@@ -560,7 +562,7 @@ function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): bool
  * @param vpc The VPC instance to check against.
  * @param ipv6CidrBlock The IPv6 CIDR block to be validated.
  * @returns True if the IPv6 CIDR block overlaps with existing subnet CIDR blocks, false otherwise.
- * @throws Error if no subnets are found in the VPC.
+ * @throws ValidationError if no subnets are found in the VPC.
  * @internal
  */
 function validateOverlappingCidrRangesipv6(vpc: IVpcV2, ipv6CidrBlock: string): boolean {
