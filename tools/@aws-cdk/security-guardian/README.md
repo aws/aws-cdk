@@ -1,4 +1,4 @@
-# CFN Guard Custom Rules Validator
+# Security Guardian
 
 A GitHub Action tool designed to validate changed AWS CloudFormation templates against custom [cfn-guard](https://github.com/aws-cloudformation/cloudformation-guard) rules. Supports both local paths and remote URLs for rule sets.
 
@@ -31,10 +31,10 @@ A GitHub Action tool designed to validate changed AWS CloudFormation templates a
 
 ```yaml
 - name: Run CFN Guard
-  uses: ./tools/@aws-cdk/cfn-guard-custom-rules-tool
+  uses: ./tools/@aws-cdk/security-guardian
   with:
     data_directory: './changed_templates'
-    rule_set_path: './tools/@aws-cdk/cfn-guard-custom-rules-tool/rules/trust_scope_rules.guard'
+    rule_set_path: './tools/@aws-cdk/security-guardian/rules/trust_scope_rules.guard'
     show_summary: 'fail'
     output_format: 'single-line-summary'
 ```

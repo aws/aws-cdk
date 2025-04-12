@@ -1,5 +1,5 @@
 {
-  "name": "cfn-guard-custom-rules-tool",
+  "name": "security-guardian",
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {

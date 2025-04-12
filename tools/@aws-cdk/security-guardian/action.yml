@@ -1,6 +1,5 @@
-name: 'cfn-guard-custom-rules-tool'
-description: 'CFN Guard for custom or granular guard rules'
-author: QuantumNeuralCoder
+name: 'Security Guardian'
+description: 'Security Guardian for custom or granular guard rules'
 
 inputs:
   data_directory:
@@ -8,10 +7,7 @@ inputs:
     required: true
   rule_set_path:
     description: "Path to a single .guard file locally"
-    required: false
-  rule_set_url:
-    description: "URL to a single .guard file on GitHub"
-    required: false
+    required: true
   show_summary:
     description: "cfn-guard summary output. Options are all, pass, fail, skip or none"
     required: false
