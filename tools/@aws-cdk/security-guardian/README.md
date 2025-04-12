@@ -18,12 +18,11 @@ A GitHub Action tool designed to validate changed AWS CloudFormation templates a
 | Name             | Description                                                       | Required | Default |
 |------------------|-------------------------------------------------------------------|----------|---------|
 | `data_directory` | Directory containing templates to validate                        | ✅ Yes   |         |
-| `rule_file_path` | Local path to the rules file                                     | ❌ No    |         |
-| `rule_set_url`   | Remote URL pointing to rules file                                | ❌ No    |         |
+| `rule_file_path` | Local path to the rules file                                     | ✅ Yes    |         |
 | `show_summary`   | Whether to show summary output (`fail`, `warn`, `none`)          | ❌ No    | `fail`  |
 | `output_format`  | Output format (`single-line-summary`, `json`, etc.)              | ❌ No    | `single-line-summary` |
 
-> Either `rule_file_path` or `rule_set_url` must be set.
+> `data_directory` and `rule_file_path` must be set.
 
 ---
 
