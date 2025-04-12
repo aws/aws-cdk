@@ -1479,7 +1479,7 @@ The default value is `IpAddressType.DUAL_STACK` for private API, and `IpAddressT
 const api = new apigateway.RestApi(this, 'api', {
   endpointConfiguration: {
     types: [ apigateway.EndpointType.REGIONAL ],
-    addressTypes: apigateway.IpAddressType.DUAL_STACK,
+    ipAddressType: apigateway.IpAddressType.DUAL_STACK,
   }
 });
 ```
