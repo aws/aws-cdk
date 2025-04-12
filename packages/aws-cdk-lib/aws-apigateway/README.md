@@ -1484,7 +1484,7 @@ const api = new apigateway.RestApi(this, 'api', {
 });
 ```
 
-**Note**: The private API can only have a `DUAL_STACK` IP address type.
+**Note**: If creating a private API, the `IPV4` IP address type is not supported.
 
 You can also create an association between your Rest API and a VPC endpoint. By doing so,
 API Gateway will generate a new
