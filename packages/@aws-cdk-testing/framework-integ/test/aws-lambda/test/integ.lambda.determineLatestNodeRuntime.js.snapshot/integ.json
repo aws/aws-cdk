@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "lambda-determine-latest-runtime/DefaultTest": {
+      "stacks": [
+        "aws-cdk-lambda-determine-latest-runtime"
+      ],
+      "assertionStack": "lambda-determine-latest-runtime/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdadeterminelatestruntimeDefaultTestDeployAssert3BB1B0B1"
+    }
+  }
+}
