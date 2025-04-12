@@ -9,8 +9,9 @@ import { ISecurityGroup, SecurityGroup } from './security-group';
 import { IVpc, SubnetSelection } from './vpc';
 import { ISamlProvider } from '../../aws-iam';
 import * as logs from '../../aws-logs';
-import { CfnOutput, Resource, Token } from '../../core';
+import { CfnOutput, Resource, Token, UnscopedValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { ValidationError } from 'jsonschema';
 
 /**
  * Options for a client VPN endpoint
@@ -300,28 +301,28 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       const clientCidr = new CidrBlock(props.cidr);
       const vpcCidr = new CidrBlock(props.vpc.vpcCidrBlock);
       if (vpcCidr.containsCidr(clientCidr)) {
-        throw new Error('The client CIDR cannot overlap with the local CIDR of the VPC');
+        throw new ValidationError('The client CIDR cannot overlap with the local CIDR of the VPC', this);
       }
     }
 
     if (props.dnsServers && props.dnsServers.length > 2) {
-      throw new Error('A client VPN endpoint can have up to two DNS servers');
+      throw new ValidationError('A client VPN endpoint can have up to two DNS servers', this);
     }
 
     if (props.logging == false && (props.logGroup || props.logStream)) {
-      throw new Error('Cannot specify `logGroup` or `logStream` when logging is disabled');
+      throw new ValidationError('Cannot specify `logGroup` or `logStream` when logging is disabled', this);
     }
 
     if (props.clientConnectionHandler
       && !Token.isUnresolved(props.clientConnectionHandler.functionName)
       && !props.clientConnectionHandler.functionName.startsWith('AWSClientVPN-')) {
-      throw new Error('The name of the Lambda function must begin with the `AWSClientVPN-` prefix');
+      throw new ValidationError('The name of the Lambda function must begin with the `AWSClientVPN-` prefix', this);
     }
 
     if (props.clientLoginBanner
       && !Token.isUnresolved(props.clientLoginBanner)
       && props.clientLoginBanner.length > 1400) {
-      throw new Error(`The maximum length for the client login banner is 1400, got ${props.clientLoginBanner.length}`);
+      throw new ValidationError(`The maximum length for the client login banner is 1400, got ${props.clientLoginBanner.length}`, this);
     }
 
     const logging = props.logging ?? true;
@@ -379,7 +380,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
     const subnetIds = props.vpc.selectSubnets(props.vpcSubnets).subnetIds;
 
     if (Token.isUnresolved(subnetIds)) {
-      throw new Error('Cannot associate subnets when VPC are imported from parameters or exports containing lists of subnet IDs.');
+      throw new ValidationError('Cannot associate subnets when VPC are imported from parameters or exports containing lists of subnet IDs.', this);
     }
 
     for (const [idx, subnetId] of Object.entries(subnetIds)) {
@@ -439,7 +440,7 @@ function renderAuthenticationOptions(
   }
 
   if (authenticationOptions.length === 0) {
-    throw new Error('A client VPN endpoint must use at least one authentication option');
+    throw new UnscopedValidationError('A client VPN endpoint must use at least one authentication option');
   }
   return authenticationOptions;
 }

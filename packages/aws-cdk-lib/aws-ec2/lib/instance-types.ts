@@ -1,3 +1,5 @@
+import { UnscopedValidationError } from "../../core";
+
 /**
  * What class and generation of instance to use
  *
@@ -1954,7 +1956,7 @@ export class InstanceType {
     // capture the family, generation, capabilities, and size portions of the instance type id
     const instanceTypeComponents = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z\-]*)\.([a-z0-9\-]+)$/);
     if (instanceTypeComponents == null) {
-      throw new Error('Malformed instance type identifier');
+      throw new UnscopedValidationError('Malformed instance type identifier');
     }
 
     const family = instanceTypeComponents[1];
@@ -1974,7 +1976,7 @@ export class InstanceType {
     const instanceClassId = this.instanceTypeIdentifier.match(instanceClass);
     const otherInstanceClassId = other.instanceTypeIdentifier.match(instanceClass);
     if (instanceClassId == null || otherInstanceClassId == null) {
-      throw new Error('Malformed instance type identifier');
+      throw new UnscopedValidationError('Malformed instance type identifier');
     }
     return instanceClassId[1] === otherInstanceClassId[1];
   }

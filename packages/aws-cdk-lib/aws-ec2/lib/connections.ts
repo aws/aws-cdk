@@ -1,3 +1,4 @@
+import { UnscopedValidationError } from '../../core';
 import { IPeer, Peer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup } from './security-group';
@@ -201,7 +202,7 @@ export class Connections implements IConnectable {
    */
   public allowDefaultPortFrom(other: IConnectable, description?: string) {
     if (!this.defaultPort) {
-      throw new Error('Cannot call allowDefaultPortFrom(): this resource has no default port');
+      throw new UnscopedValidationError('Cannot call allowDefaultPortFrom(): this resource has no default port');
     }
     this.allowFrom(other, this.defaultPort, description);
   }
@@ -211,7 +212,7 @@ export class Connections implements IConnectable {
    */
   public allowDefaultPortInternally(description?: string) {
     if (!this.defaultPort) {
-      throw new Error('Cannot call allowDefaultPortInternally(): this resource has no default port');
+      throw new UnscopedValidationError('Cannot call allowDefaultPortInternally(): this resource has no default port');
     }
     this.allowInternally(this.defaultPort, description);
   }
@@ -221,7 +222,7 @@ export class Connections implements IConnectable {
    */
   public allowDefaultPortFromAnyIpv4(description?: string) {
     if (!this.defaultPort) {
-      throw new Error('Cannot call allowDefaultPortFromAnyIpv4(): this resource has no default port');
+      throw new UnscopedValidationError('Cannot call allowDefaultPortFromAnyIpv4(): this resource has no default port');
     }
     this.allowFromAnyIpv4(this.defaultPort, description);
   }
@@ -231,7 +232,7 @@ export class Connections implements IConnectable {
    */
   public allowToDefaultPort(other: IConnectable, description?: string) {
     if (other.connections.defaultPort === undefined) {
-      throw new Error('Cannot call allowToDefaultPort(): other resource has no default port');
+      throw new UnscopedValidationError('Cannot call allowToDefaultPort(): other resource has no default port');
     }
 
     this.allowTo(other, other.connections.defaultPort, description);
@@ -244,7 +245,7 @@ export class Connections implements IConnectable {
    */
   public allowDefaultPortTo(other: IConnectable, description?: string) {
     if (!this.defaultPort) {
-      throw new Error('Cannot call allowDefaultPortTo(): this resource has no default port');
+      throw new UnscopedValidationError('Cannot call allowDefaultPortTo(): this resource has no default port');
     }
     this.allowTo(other, this.defaultPort, description);
   }

@@ -19,6 +19,7 @@ import { Annotations, AspectPriority, Aspects, Duration, FeatureFlags, Fn, IReso
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
+import { ValidationError } from 'jsonschema';
 
 /**
  * Name tag constant
@@ -466,16 +467,16 @@ export class Instance extends Resource implements IInstance {
     addConstructMetadata(this, props);
 
     if (props.initOptions && !props.init) {
-      throw new Error('Setting \'initOptions\' requires that \'init\' is also set');
+      throw new ValidationError('Setting \'initOptions\' requires that \'init\' is also set', this);
     }
 
     if (props.keyName && props.keyPair) {
-      throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+      throw new ValidationError('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'', this);
     }
 
     // if credit specification is set, then the instance type must be burstable
     if (props.creditSpecification && !props.instanceType.isBurstable()) {
-      throw new Error(`creditSpecification is supported only for T4g, T3a, T3, T2 instance type, got: ${props.instanceType.toString()}`);
+      throw new ValidationError(`creditSpecification is supported only for T4g, T3a, T3, T2 instance type, got: ${props.instanceType.toString()}`, this);
     }
 
     if (props.securityGroup) {
@@ -492,7 +493,7 @@ export class Instance extends Resource implements IInstance {
     Tags.of(this).add(NAME_TAG, props.instanceName || this.node.path);
 
     if (props.instanceProfile && props.role) {
-      throw new Error('You cannot provide both instanceProfile and role');
+      throw new ValidationError('You cannot provide both instanceProfile and role', this);
     }
 
     let iamInstanceProfile: string | undefined = undefined;
@@ -558,11 +559,11 @@ export class Instance extends Resource implements IInstance {
       }] : undefined;
 
     if (props.keyPair && !props.keyPair._isOsCompatible(imageConfig.osType)) {
-      throw new Error(`${props.keyPair.type} keys are not compatible with the chosen AMI`);
+      throw new ValidationError(`${props.keyPair.type} keys are not compatible with the chosen AMI`, this);
     }
 
     if (props.enclaveEnabled && props.hibernationEnabled) {
-      throw new Error('You can\'t set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance');
+      throw new ValidationError('You can\'t set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance', this);
     }
 
     if (
@@ -570,13 +571,13 @@ export class Instance extends Resource implements IInstance {
       !Token.isUnresolved(props.ipv6AddressCount) &&
       (props.ipv6AddressCount < 0 || !Number.isInteger(props.ipv6AddressCount))
     ) {
-      throw new Error(`\'ipv6AddressCount\' must be a non-negative integer, got: ${props.ipv6AddressCount}`);
+      throw new ValidationError(`\'ipv6AddressCount\' must be a non-negative integer, got: ${props.ipv6AddressCount}`, this);
     }
 
     if (
       props.ipv6AddressCount !== undefined &&
       props.associatePublicIpAddress !== undefined) {
-      throw new Error('You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'');
+      throw new ValidationError('You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'', this);
     }
 
     // if network interfaces array is configured then subnetId, securityGroupIds,
@@ -615,7 +616,7 @@ export class Instance extends Resource implements IInstance {
     }
 
     if (!hasPublic && props.associatePublicIpAddress) {
-      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })");
+      throw new ValidationError("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })", this);
     }
 
     this.osType = imageConfig.osType;
