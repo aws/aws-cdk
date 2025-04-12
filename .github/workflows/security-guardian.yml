@@ -53,7 +53,7 @@ jobs:
           echo "pr_number=$(cat pr/pr_number)" >> "$GITHUB_OUTPUT"
           echo "pr_sha=$(cat pr/pr_sha)" >> "$GITHUB_OUTPUT"
 
-  validate-pr:
+  run-security-guardian:
     # Necessary to have sufficient permissions to write to the PR
     permissions:
       contents: read
