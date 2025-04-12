@@ -200,7 +200,9 @@ describe('import', () => {
   });
 
   test('import email identity by ARN fails with invalid ARN', () => {
-    expect(() => EmailIdentity.fromEmailIdentityArn(stack, 'Identity', 'arn:aws:s3:us-west-2:123456789012:bucket/cdk.dev')).toThrow();
+    expect(
+      () => EmailIdentity.fromEmailIdentityArn(stack, 'Identity', 'arn:aws:s3:us-west-2:123456789012:bucket/cdk.dev')
+    ).toThrow('Invalid email identity ARN: arn:aws:s3:us-west-2:123456789012:bucket/cdk.dev');
   });
 });
 
