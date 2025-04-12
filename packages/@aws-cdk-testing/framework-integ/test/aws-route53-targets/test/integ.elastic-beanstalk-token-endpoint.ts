@@ -81,10 +81,10 @@ const getEnvironmentUrl = new custom.AwsCustomResource(stack, 'GetEnvironmentUrl
 });
 getEnvironmentUrl.node.addDependency(ebsEnv);
 
-new route53.ARecord(stack, "AliasRecord", {
+new route53.ARecord(stack, 'AliasRecord', {
   zone,
   recordName: 'test',
-  target: route53.RecordTarget.fromAlias(new targets.ElasticBeanstalkEnvironmentEndpointTarget(getEnvironmentUrl.getResponseField('Environments.0.CNAME')))
+  target: route53.RecordTarget.fromAlias(new targets.ElasticBeanstalkEnvironmentEndpointTarget(getEnvironmentUrl.getResponseField('Environments.0.CNAME'))),
 });
 
 new IntegTest(app, 'cdk-route53-ebs-token-endpoint-integ-test', {
