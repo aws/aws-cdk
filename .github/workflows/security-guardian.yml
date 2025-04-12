@@ -14,6 +14,8 @@ jobs:
         run: |
           echo "Getting changed CloudFormation templates..."
           mkdir -p changed_templates
+          
+          git fetch origin main --depth=1
 
           base_sha="${{ github.event.pull_request.base.sha }}"
           head_sha="${{ github.event.pull_request.head.sha }}"
