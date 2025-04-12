@@ -747,7 +747,6 @@ describe('cluster new api', () => {
             node.serverlessV2ScalingConfiguration = {
               minCapacity: 1,
               maxCapacity: 12,
-              secondsUntilAutoPause: 300,
             };
           }
         },
@@ -773,7 +772,6 @@ describe('cluster new api', () => {
         iamAuthentication: true,
         serverlessV2MinCapacity: 1,
         serverlessV2MaxCapacity: 12,
-        serverlessV2DurationUntilAutoPause: cdk.Duration.seconds(300),
       });
 
       // THEN
@@ -5697,6 +5695,8 @@ test.each([
       vpcSubnets: vpc.selectSubnets( { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } ),
       serverlessV2DurationUntilAutoPause: cdk.Duration.seconds(duration),
       iamAuthentication: true,
+      serverlessV2MinCapacity: 0,
+      serverlessV2MaxCapacity: 1,
     });
     // THEN
   }).toThrow(errorMessage);
@@ -5713,12 +5713,39 @@ test('serverlessV2AutoPause can only be set when serverlessV2MinCapacity is zero
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       vpc,
       vpcSubnets: vpc.selectSubnets( { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } ),
-      serverlessV2DurationUntilAutoPause: cdk.Duration.seconds(0),
-      serverlessV2MinCapacity: 0.5,
+      serverlessV2DurationUntilAutoPause: cdk.Duration.seconds(120),
       iamAuthentication: true,
+      serverlessV2MinCapacity: 1,
+      serverlessV2MaxCapacity: 1,
     });
     // THEN
   }).toThrow('serverlessV2AutoPause can only be set when serverlessV2MinCapacity is zero');
+});
+
+test.each([
+  [AuroraMysqlEngineVersion.VER_3_08_0, true],
+  [AuroraMysqlEngineVersion.VER_2_11_1, true],
+])('serverlessV2AutoPause supported engines', (version, supported) => {
+  // GIVEN
+  const stack = testStack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+
+  // WHEN
+  expect(() => {
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraMysql({
+        version: version,
+      }),
+      vpc,
+      vpcSubnets: vpc.selectSubnets( { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } ),
+      serverlessV2DurationUntilAutoPause: cdk.Duration.seconds(0),
+      iamAuthentication: true,
+      serverlessV2MinCapacity: 0,
+      serverlessV2MaxCapacity: 1,
+    });
+    // THEN
+  });
 });
 
 function testStack(app?: cdk.App, stackId?: string) {

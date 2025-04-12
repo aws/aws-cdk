@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IAuroraClusterInstance, IClusterInstance, InstanceType } from './aurora-cluster-instance';
-import { IClusterEngine } from './cluster-engine';
+import { AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseClusterEngine, IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { Endpoint } from './endpoint';
 import { NetworkType } from './instance';
@@ -788,7 +788,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   protected readonly serverlessV2MinCapacity: number;
   protected readonly serverlessV2MaxCapacity: number;
-  protected readonly serverlessV2SecondsUntilAutoPause: Duration;
+  protected readonly serverlessV2SecondsUntilAutoPause?: number | undefined;
 
   protected hasServerlessInstance?: boolean;
   protected enableDataApi?: boolean;
@@ -816,7 +816,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     this.serverlessV2MaxCapacity = props.serverlessV2MaxCapacity ?? 2;
     this.serverlessV2MinCapacity = props.serverlessV2MinCapacity ?? 0.5;
-    this.serverlessV2SecondsUntilAutoPause = props.serverlessV2DurationUntilAutoPause ?? Duration.minutes(5);
+    this.serverlessV2SecondsUntilAutoPause = props.serverlessV2DurationUntilAutoPause?.toSeconds() ?? undefined;
 
     this.validateServerlessScalingConfig();
 
@@ -898,7 +898,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     }
 
     validateDatabaseClusterProps(this, props);
-
     const enablePerformanceInsights = props.enablePerformanceInsights
       || props.performanceInsightRetention !== undefined
       || props.performanceInsightEncryptionKey !== undefined
@@ -951,7 +950,9 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
             return {
               minCapacity: this.serverlessV2MinCapacity,
               maxCapacity: this.serverlessV2MaxCapacity,
-              secondsUntilAutoPause: this.serverlessV2SecondsUntilAutoPause.toSeconds(),
+              ...(this.serverlessV2MinCapacity === 0 && this.serverlessV2SecondsUntilAutoPause && {
+                secondsUntilAutoPause: this.serverlessV2SecondsUntilAutoPause,
+              }),
             };
           }
           return undefined;
@@ -1169,16 +1170,20 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       throw new ValidationError('serverlessV2MaxCapacity must be greater than serverlessV2MinCapacity', this);
     }
 
-    if (this.serverlessV2MinCapacity >= 0 && this.serverlessV2SecondsUntilAutoPause.toSeconds() === 0) {
-      throw new ValidationError('serverlessV2AutoPause can only be set when serverlessV2MinCapacity is zero', this);
-    }
+    if (this.serverlessV2SecondsUntilAutoPause) {
+      validateAutoPauseCompatibility(this, this.engine);
 
-    if (this.serverlessV2SecondsUntilAutoPause.toSeconds() < 60) {
-      throw new ValidationError('serverlessV2AutoPause must be between 1 and 10 minutes', this);
-    }
+      if (this.serverlessV2MinCapacity > 0) {
+        throw new ValidationError('serverlessV2AutoPause can only be set when serverlessV2MinCapacity is zero', this);
+      }
 
-    if (this.serverlessV2SecondsUntilAutoPause.toSeconds() > 600) {
-      throw new ValidationError('serverlessV2AutoPause must be between 1 and 10 minutes', this);
+      if (this.serverlessV2SecondsUntilAutoPause < 60) {
+        throw new ValidationError('serverlessV2AutoPause must be between 1 and 10 minutes', this);
+      }
+
+      if (this.serverlessV2SecondsUntilAutoPause > 600) {
+        throw new ValidationError('serverlessV2AutoPause must be between 1 and 10 minutes', this);
+      }
     }
 
     const regexp = new RegExp(/^[0-9]+\.?5?$/);
@@ -1802,5 +1807,41 @@ function validatePerformanceInsightsSettings(
     if (compared === TokenComparison.BOTH_UNRESOLVED && clusterKeyArn !== instanceKeyArn) {
       throw new ValidationError('`performanceInsightEncryptionKey` for each instance must be the same as the one at cluster level', cluster);
     }
+  }
+}
+function validateAutoPauseCompatibility(scope: Construct, engine?: IClusterEngine) : void {
+  // How do we do this right?
+  // Any input is appreciated.
+  return;
+
+  if (! engine?.engineVersion) {
+    throw new ValidationError('Engine version must be specified to configure auto pause', scope);
+  }
+
+  if (engine.engineType === 'aurora-mysql') {
+    if (engine.engineVersion.toString() > AuroraMysqlEngineVersion.VER_3_08_0.toString()) {
+      return;
+    }
+    throw new ValidationError('Aurora MySQL engine version must be greater than 3.08.0 to use serverlessV2AutoPause', scope);
+  }
+
+  if ( engine.engineType === 'aurora-postgresql') {
+    const pgVersion = engine.engineVersion.toString();
+    if (pgVersion >= AuroraPostgresEngineVersion.VER_13_15.toString()
+      && pgVersion < AuroraPostgresEngineVersion.VER_14_10.toString()) {
+      return;
+    }
+    if (pgVersion >= AuroraPostgresEngineVersion.VER_14_12.toString()
+      && pgVersion < AuroraPostgresEngineVersion.VER_15_2.toString()) {
+      return;
+    }
+    if (pgVersion > AuroraPostgresEngineVersion.VER_15_7.toString()
+    && pgVersion < AuroraPostgresEngineVersion.VER_16_1.toString()) {
+      return;
+    }
+    if (pgVersion > AuroraPostgresEngineVersion.VER_16_3.toString()) {
+      return;
+    }
+    throw new ValidationError ('Aurora PostgreSQL engine version must be greater than 13.15, 14.12, 15.7 or 16.3 to use serverlessV2AutoPause', scope);
   }
 }
