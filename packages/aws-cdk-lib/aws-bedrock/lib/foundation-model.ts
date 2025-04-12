@@ -86,6 +86,9 @@ export class FoundationModelIdentifier {
   /** Base model "amazon.nova-reel-v1:0". */
   public static readonly AMAZON_NOVA_REEL_V1_0 = new FoundationModelIdentifier('amazon.nova-reel-v1:0');
 
+  /** Base model "amazon.nova-reel-v1:1". */
+  public static readonly AMAZON_NOVA_REEL_V1_1 = new FoundationModelIdentifier('amazon.nova-reel-v1:1');
+
   /**
    * Base model "ai21.j2-mid".
    * @deprecated use latest version of the model
@@ -388,6 +391,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "mistral.mistral-large-2407-v1:0". */
   public static readonly MISTRAL_LARGE_2_V0_1 = new FoundationModelIdentifier('mistral.mistral-large-2407-v1:0');
+
+  /** Base model "mistral.pixtral-large-2502-v1:0". */
+  public static readonly MISTRAL_PIXTRAL_LARGE_2502_V1_0 = new FoundationModelIdentifier('mistral.pixtral-large-2502-v1:0');
 
   /**
    * Base model "stability.stable-diffusion-xl".
