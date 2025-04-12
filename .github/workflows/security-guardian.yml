@@ -67,9 +67,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install & Build prlint
-        run: yarn install --frozen-lockfile && cd tools/@aws-cdk/prlint && yarn build+test
-
       - name: Get list of changed .template.json files
         id: filter_files
         run: |
