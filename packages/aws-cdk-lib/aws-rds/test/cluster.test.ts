@@ -5702,6 +5702,25 @@ test.each([
   }).toThrow(errorMessage);
 });
 
+test('serverlessV2AutoPause can only be set when serverlessV2MinCapacity is zero', () => {
+  // GIVEN
+  const stack = testStack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+
+  expect(() => {
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      vpcSubnets: vpc.selectSubnets( { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } ),
+      serverlessV2DurationUntilAutoPause: cdk.Duration.seconds(0),
+      serverlessV2MinCapacity: 0.5,
+      iamAuthentication: true,
+    });
+    // THEN
+  }).toThrow('serverlessV2AutoPause can only be set when serverlessV2MinCapacity is zero');
+});
+
 function testStack(app?: cdk.App, stackId?: string) {
   const stack = new cdk.Stack(app, stackId, { env: { account: '12345', region: 'us-test-1' } });
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);

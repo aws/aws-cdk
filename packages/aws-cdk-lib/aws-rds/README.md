@@ -247,7 +247,7 @@ cluster.metricACUUtilization({
 There are some things to take into consideration with Aurora Serverless v2.
 
 To create a cluster that can support serverless v2 instances you configure a
-minimum and maximum capacity range on the cluster. This is an example showing
+minimum and maximum capacity range on the cluster along with the duration before it auto pause when RCU is 0. This is an example showing
 the default values:
 
 ```ts
@@ -257,6 +257,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   writer: rds.ClusterInstance.serverlessV2('writer'),
   serverlessV2MinCapacity: 0.5,
   serverlessV2MaxCapacity: 2,
+  serverlessV2DurationUntilAutoPause: cdk.Duration.seconds(300),
   vpc,
 });
 ```

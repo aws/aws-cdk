@@ -1169,6 +1169,10 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       throw new ValidationError('serverlessV2MaxCapacity must be greater than serverlessV2MinCapacity', this);
     }
 
+    if (this.serverlessV2MinCapacity >= 0 && this.serverlessV2SecondsUntilAutoPause.toSeconds() === 0) {
+      throw new ValidationError('serverlessV2AutoPause can only be set when serverlessV2MinCapacity is zero', this);
+    }
+
     if (this.serverlessV2SecondsUntilAutoPause.toSeconds() < 60) {
       throw new ValidationError('serverlessV2AutoPause must be between 1 and 10 minutes', this);
     }
