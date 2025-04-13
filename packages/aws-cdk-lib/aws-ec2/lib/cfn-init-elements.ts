@@ -3,9 +3,8 @@ import { InitBindOptions, InitElementConfig, InitElementType, InitPlatform } fro
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
-import { Duration, UnscopedValidationError } from '../../core';
+import { Duration, UnscopedValidationError, ValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
-import { ValidationError } from 'jsonschema';
 
 /**
  * An object that represents reasons to restart an InitService

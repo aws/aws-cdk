@@ -1,4 +1,4 @@
-import { UnscopedValidationError } from "../../core";
+import { UnscopedValidationError } from '../../core';
 
 /**
  * InvalidCidrRangeError is thrown when attempting to perform operations on a CIDR

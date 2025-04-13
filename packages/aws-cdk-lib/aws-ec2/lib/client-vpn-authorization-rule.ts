@@ -56,14 +56,14 @@ export class ClientVpnAuthorizationRule extends Resource {
     if (!props.clientVpnEndoint && !props.clientVpnEndpoint) {
       throw new ValidationError(
         'ClientVpnAuthorizationRule: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified',
-        scope
+        scope,
       );
     }
     if (props.clientVpnEndoint && props.clientVpnEndpoint) {
       throw new ValidationError(
         'ClientVpnAuthorizationRule: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified' +
           ', but not both',
-        scope
+        scope,
       );
     }
     const clientVpnEndpoint = props.clientVpnEndoint || props.clientVpnEndpoint;

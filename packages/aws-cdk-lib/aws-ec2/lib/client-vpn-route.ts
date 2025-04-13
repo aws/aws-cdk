@@ -84,14 +84,14 @@ export class ClientVpnRoute extends Resource {
   constructor(scope: Construct, id: string, props: ClientVpnRouteProps) {
     if (!props.clientVpnEndoint && !props.clientVpnEndpoint) {
       throw new ValidationError(
-        'ClientVpnRoute: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified', scope
+        'ClientVpnRoute: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified', scope,
       );
     }
     if (props.clientVpnEndoint && props.clientVpnEndpoint) {
       throw new ValidationError(
         'ClientVpnRoute: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified' +
           ', but not both',
-        scope
+        scope,
       );
     }
     const clientVpnEndpoint = props.clientVpnEndoint || props.clientVpnEndpoint;

@@ -1,7 +1,7 @@
-import { UnscopedValidationError } from '../../core';
 import { IPeer, Peer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup } from './security-group';
+import { UnscopedValidationError } from '../../core';
 
 /**
  * The goal of this module is to make possible to write statements like this:

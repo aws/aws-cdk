@@ -1,4 +1,4 @@
-import { UnscopedValidationError } from "../../core";
+import { UnscopedValidationError } from '../../core';
 
 /**
  * Return the splits necessary to allocate the given sequence of cidrs in the given order

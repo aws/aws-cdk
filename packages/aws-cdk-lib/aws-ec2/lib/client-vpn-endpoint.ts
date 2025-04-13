@@ -9,9 +9,8 @@ import { ISecurityGroup, SecurityGroup } from './security-group';
 import { IVpc, SubnetSelection } from './vpc';
 import { ISamlProvider } from '../../aws-iam';
 import * as logs from '../../aws-logs';
-import { CfnOutput, Resource, Token, UnscopedValidationError } from '../../core';
+import { CfnOutput, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { ValidationError } from 'jsonschema';
 
 /**
  * Options for a client VPN endpoint

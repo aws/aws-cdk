@@ -15,11 +15,10 @@ import { UserData } from './user-data';
 import { BlockDevice } from './volume';
 import { IVpc, Subnet, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
-import { Annotations, AspectPriority, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Resource, Stack, Tags, Token } from '../../core';
+import { Annotations, AspectPriority, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Resource, Stack, Tags, Token, ValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
-import { ValidationError } from 'jsonschema';
 
 /**
  * Name tag constant

@@ -1,4 +1,4 @@
-import { UnscopedValidationError } from "../../core";
+import { UnscopedValidationError } from '../../core';
 
 /**
  * What class and generation of instance to use

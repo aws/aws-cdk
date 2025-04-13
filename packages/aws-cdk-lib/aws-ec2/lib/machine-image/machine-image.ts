@@ -6,11 +6,10 @@ import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLi
 import { lookupImage } from './utils';
 import * as ssm from '../../../aws-ssm';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { ContextProvider, CfnMapping, Aws, Stack, Token, UnscopedValidationError } from '../../../core';
+import { ContextProvider, CfnMapping, Aws, Stack, Token, UnscopedValidationError, ValidationError } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { UserData } from '../user-data';
 import { WindowsVersion } from '../windows-versions';
-import { ValidationError } from 'jsonschema';
 
 /**
  * Factory functions for standard Amazon Machine Image objects.
