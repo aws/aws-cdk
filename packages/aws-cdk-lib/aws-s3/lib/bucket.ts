@@ -266,6 +266,17 @@ export interface IBucket extends IResource {
   grantReadWrite(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
   /**
+   * Allows permissions for replication operation to bucket replication role.
+   *
+   * If an encryption key is used, permission to use the key for
+   * encrypt/decrypt will also be granted.
+   *
+   * @param identity The principal
+   * @param props The properties of the replication source and destination buckets.
+   */
+  grantReplicationPermission(identity: iam.IGrantable, props: GrantReplicationPermissionProps): void;
+
+  /**
    * Allows unrestricted access to objects from this bucket.
    *
    * IMPORTANT: This permission allows anyone to perform actions on S3 objects
@@ -494,6 +505,30 @@ export interface BucketAttributes {
    * @default - a new role will be created.
    */
   readonly notificationsHandlerRole?: iam.IRole;
+}
+
+export interface GrantReplicationPermissionDestinationProps {
+  bucket: IBucket;
+  encryptionKey?: kms.IKey;
+}
+
+export interface GrantReplicationPermissionProps {
+  /**
+   * The KMS key used to decrypt objects in the source bucket for replication.
+   * **Required if** the source bucket is encrypted with a customer-managed KMS key.
+   *
+   * @default - it's assumed the source bucket is not encrypted with a customer-managed KMS key.
+   */
+  sourceDecryptionKey?: kms.IKey;
+
+  /**
+   * The destination buckets for replication.
+   * Specify the KMS key to use for encryption if a destination bucket needs to be encrypted with a customer-managed KMS key.
+   * Required one or more destination buckets.
+   *
+   * @default - empty array
+   */
+  destinations: GrantReplicationPermissionDestinationProps[];
 }
 
 /**
@@ -843,6 +878,71 @@ export abstract class BucketBase extends Resource implements IBucket {
       keyActions,
       this.bucketArn,
       this.arnForObjects(objectsKeyPattern));
+  }
+
+  /**
+   * Grant replication permission to a principal.
+   * This method allows the principal to perform replication operations on this bucket.
+   *
+   * Note that when calling this function for source or destination buckets that support KMS encryption,
+   * you need to specify the KMS key for encryption and the KMS key for decryption, respectively.
+   *
+   * @param identity The principal to grant replication permission to.
+   * @param props The properties of the replication source and destination buckets.
+   */
+  public grantReplicationPermission(identity: iam.IGrantable, props: GrantReplicationPermissionProps): void {
+    if (props.destinations.length === 0) {
+      throw new ValidationError('destinations must be specified', this);
+    }
+
+    // add permissions to the role
+    // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
+    // identity.addToPrincipalPolicy(new iam.PolicyStatement({
+    //   actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
+    //   resources: [Lazy.string({ produce: () => this.bucketArn })],
+    //   effect: iam.Effect.ALLOW,
+    // }));
+    iam.Grant.addToPrincipalOrResource({
+      grantee: identity,
+      actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
+      resourceArns: [Lazy.string({ produce: () => this.bucketArn })],
+      resource: this
+    });
+
+    // identity.addToPrincipalPolicy(new iam.PolicyStatement({
+    //   actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
+    //   resources: [Lazy.string({ produce: () => this.arnForObjects('*') })],
+    //   effect: iam.Effect.ALLOW,
+    // }));
+    iam.Grant.addToPrincipalOrResource({
+      grantee: identity,
+      actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
+      resourceArns: [Lazy.string({ produce: () => this.arnForObjects('*') })],
+      resource: this
+    });
+
+    const destinationBuckets = props.destinations.map(destination => destination.bucket);
+    if (destinationBuckets.length > 0) {
+      // identity.addToPrincipalPolicy(new iam.PolicyStatement({
+      //   actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
+      //   resources: destinationBuckets.map(bucket => bucket.arnForObjects('*')),
+      //   effect: iam.Effect.ALLOW,
+      // }));
+      iam.Grant.addToPrincipalOrResource({
+        grantee: identity,
+        actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
+        resourceArns: destinationBuckets.map(bucket => Lazy.string({ produce: () => bucket.arnForObjects('*') })),
+        resource: this
+      });
+    }
+
+    console.warn(props);
+    props.destinations.forEach(destination => {
+      destination.encryptionKey?.grantEncrypt(identity);
+    });
+
+    // If KMS key encryption is enabled on the source bucket, configure the decrypt permissions.
+    this.encryptionKey?.grantDecrypt(identity);
   }
 
   /**
@@ -2811,8 +2911,8 @@ export class Bucket extends BucketBase {
       }
     });
 
-    const destinationBuckets = props.replicationRules.map(rule => rule.destination);
-    const kmsKeys = props.replicationRules.map(rule => rule.kmsKey).filter(kmsKey => kmsKey !== undefined) as kms.IKey[];
+    // const destinationBuckets = props.replicationRules.map(rule => rule.destination);
+    // const kmsKeys = props.replicationRules.map(rule => rule.kmsKey).filter(kmsKey => kmsKey !== undefined) as kms.IKey[];
 
     let replicationRole: iam.IRole;
     if (!props.replicationRole) {
@@ -2821,32 +2921,40 @@ export class Bucket extends BucketBase {
         roleName: FeatureFlags.of(this).isEnabled(cxapi.SET_UNIQUE_REPLICATION_ROLE_NAME) ? PhysicalName.GENERATE_IF_NEEDED : 'CDKReplicationRole',
       });
 
-      // add permissions to the role
-      // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
-      replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
-        resources: [Lazy.string({ produce: () => this.bucketArn })],
-        effect: iam.Effect.ALLOW,
-      }));
-      replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
-        resources: [Lazy.string({ produce: () => this.arnForObjects('*') })],
-        effect: iam.Effect.ALLOW,
-      }));
-      if (destinationBuckets.length > 0) {
-        replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-          actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
-          resources: destinationBuckets.map(bucket => bucket.arnForObjects('*')),
-          effect: iam.Effect.ALLOW,
-        }));
-      }
-
-      kmsKeys.forEach(kmsKey => {
-        kmsKey.grantEncrypt(replicationRole);
+      this.grantReplicationPermission(replicationRole, {
+        sourceDecryptionKey: props.encryptionKey,
+        destinations: props.replicationRules.map(rule => ({
+          encryptionKey: rule.kmsKey,
+          bucket: rule.destination,
+        })),
       });
 
-      // If KMS key encryption is enabled on the source bucket, configure the decrypt permissions.
-      this.encryptionKey?.grantDecrypt(replicationRole);
+      // // add permissions to the role
+      // // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
+      // replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      //   actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
+      //   resources: [Lazy.string({ produce: () => this.bucketArn })],
+      //   effect: iam.Effect.ALLOW,
+      // }));
+      // replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      //   actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
+      //   resources: [Lazy.string({ produce: () => this.arnForObjects('*') })],
+      //   effect: iam.Effect.ALLOW,
+      // }));
+      // if (destinationBuckets.length > 0) {
+      //   replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      //     actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
+      //     resources: destinationBuckets.map(bucket => bucket.arnForObjects('*')),
+      //     effect: iam.Effect.ALLOW,
+      //   }));
+      // }
+
+      // kmsKeys.forEach(kmsKey => {
+      //   kmsKey.grantEncrypt(replicationRole);
+      // });
+
+      // // If KMS key encryption is enabled on the source bucket, configure the decrypt permissions.
+      // this.encryptionKey?.grantDecrypt(replicationRole);
     } else {
       replicationRole = props.replicationRole;
     }
