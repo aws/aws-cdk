@@ -909,42 +909,27 @@ export abstract class BucketBase extends Resource implements IBucket {
 
     // add permissions to the role
     // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
-    // identity.addToPrincipalPolicy(new iam.PolicyStatement({
-    //   actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
-    //   resources: [Lazy.string({ produce: () => this.bucketArn })],
-    //   effect: iam.Effect.ALLOW,
-    // }));
     iam.Grant.addToPrincipalOrResource({
       grantee: identity,
       actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
       resourceArns: [Lazy.string({ produce: () => this.bucketArn })],
-      resource: this
+      resource: this,
     });
 
-    // identity.addToPrincipalPolicy(new iam.PolicyStatement({
-    //   actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
-    //   resources: [Lazy.string({ produce: () => this.arnForObjects('*') })],
-    //   effect: iam.Effect.ALLOW,
-    // }));
     iam.Grant.addToPrincipalOrResource({
       grantee: identity,
       actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
       resourceArns: [Lazy.string({ produce: () => this.arnForObjects('*') })],
-      resource: this
+      resource: this,
     });
 
     const destinationBuckets = props.destinations.map(destination => destination.bucket);
     if (destinationBuckets.length > 0) {
-      // identity.addToPrincipalPolicy(new iam.PolicyStatement({
-      //   actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
-      //   resources: destinationBuckets.map(bucket => bucket.arnForObjects('*')),
-      //   effect: iam.Effect.ALLOW,
-      // }));
       iam.Grant.addToPrincipalOrResource({
         grantee: identity,
         actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
         resourceArns: destinationBuckets.map(bucket => Lazy.string({ produce: () => bucket.arnForObjects('*') })),
-        resource: this
+        resource: this,
       });
     }
 
@@ -2923,9 +2908,6 @@ export class Bucket extends BucketBase {
       }
     });
 
-    // const destinationBuckets = props.replicationRules.map(rule => rule.destination);
-    // const kmsKeys = props.replicationRules.map(rule => rule.kmsKey).filter(kmsKey => kmsKey !== undefined) as kms.IKey[];
-
     let replicationRole: iam.IRole;
     if (!props.replicationRole) {
       replicationRole = new iam.Role(this, 'ReplicationRole', {
@@ -2940,33 +2922,6 @@ export class Bucket extends BucketBase {
           bucket: rule.destination,
         })),
       });
-
-      // // add permissions to the role
-      // // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
-      // replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      //   actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
-      //   resources: [Lazy.string({ produce: () => this.bucketArn })],
-      //   effect: iam.Effect.ALLOW,
-      // }));
-      // replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      //   actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
-      //   resources: [Lazy.string({ produce: () => this.arnForObjects('*') })],
-      //   effect: iam.Effect.ALLOW,
-      // }));
-      // if (destinationBuckets.length > 0) {
-      //   replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      //     actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
-      //     resources: destinationBuckets.map(bucket => bucket.arnForObjects('*')),
-      //     effect: iam.Effect.ALLOW,
-      //   }));
-      // }
-
-      // kmsKeys.forEach(kmsKey => {
-      //   kmsKey.grantEncrypt(replicationRole);
-      // });
-
-      // // If KMS key encryption is enabled on the source bucket, configure the decrypt permissions.
-      // this.encryptionKey?.grantDecrypt(replicationRole);
     } else {
       replicationRole = props.replicationRole;
     }
