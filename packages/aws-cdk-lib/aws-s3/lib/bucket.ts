@@ -507,8 +507,20 @@ export interface BucketAttributes {
   readonly notificationsHandlerRole?: iam.IRole;
 }
 
+/**
+ * The properties for the destination bucket for granting replication permission.
+ */
 export interface GrantReplicationPermissionDestinationProps {
+  /**
+   * The destination bucket
+   */
   bucket: IBucket;
+
+  /**
+   * The KMS key to use for encryption if a destination bucket needs to be encrypted with a customer-managed KMS key.
+   *
+   * @default - no KMS key is used for replication.
+   */
   encryptionKey?: kms.IKey;
 }
 
