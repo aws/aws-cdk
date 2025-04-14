@@ -755,6 +755,8 @@
       "RequestBased"
     ],
     "DurationUnit": [
+      "MINUTE",
+      "HOUR",
       "DAY",
       "MONTH"
     ],
@@ -1009,10 +1011,22 @@
       "FAILED",
       "UPDATE_PENDING"
     ],
+    "Status": [
+      "CREATE_IN_PROGRESS",
+      "CREATE_COMPLETE",
+      "CREATE_FAILED",
+      "CREATE_FAILED_CLEANUP_IN_PROGRESS",
+      "CREATE_FAILED_CLEANUP_COMPLETE",
+      "CREATE_FAILED_CLEANUP_FAILED",
+      "DELETE_IN_PROGRESS",
+      "DELETE_COMPLETE",
+      "DELETE_FAILED"
+    ],
     "Type": [
       "LAMBDA",
       "GLUE",
-      "HIVE"
+      "HIVE",
+      "FEDERATED"
     ],
     "State": [
       "ENABLED",
@@ -1803,10 +1817,14 @@
       "SEMANTIC"
     ],
     "AuthType": [
-      "OAUTH2_CLIENT_CREDENTIALS"
+      "OAUTH2_CLIENT_CREDENTIALS",
+      "OAUTH2_SHAREPOINT_APP_ONLY_CLIENT_CREDENTIALS"
     ],
     "HostType": [
       "ONLINE"
+    ],
+    "ContextEnrichmentType": [
+      "BEDROCK_FOUNDATION_MODEL"
     ],
     "DataDeletionPolicy": [
       "RETAIN",
@@ -1825,6 +1843,9 @@
       "WEB",
       "CUSTOM",
       "REDSHIFT_METADATA"
+    ],
+    "EnrichmentStrategyMethod": [
+      "CHUNK_ENTITY_EXTRACTION"
     ],
     "ParsingModality": [
       "MULTIMODAL"
@@ -1904,6 +1925,10 @@
     "ManagedWordsType": [
       "PROFANITY"
     ],
+    "Modality": [
+      "TEXT",
+      "IMAGE"
+    ],
     "PiiEntityType": [
       "ADDRESS",
       "AGE",
@@ -1964,7 +1989,8 @@
       "OPENSEARCH_SERVERLESS",
       "PINECONE",
       "RDS",
-      "MONGO_DB_ATLAS"
+      "MONGO_DB_ATLAS",
+      "NEPTUNE_ANALYTICS"
     ],
     "KnowledgeBaseType": [
       "VECTOR",
@@ -3917,6 +3943,26 @@
     ]
   },
   "datazone": {
+    "AuthenticationType": [
+      "BASIC",
+      "OAUTH2",
+      "CUSTOM"
+    ],
+    "ConnectionStatus": [
+      "CREATING",
+      "CREATE_FAILED",
+      "DELETING",
+      "DELETE_FAILED",
+      "READY",
+      "UPDATING",
+      "UPDATE_FAILED",
+      "DELETED"
+    ],
+    "OAuth2GrantType": [
+      "AUTHORIZATION_CODE",
+      "CLIENT_CREDENTIALS",
+      "JWT_BEARER"
+    ],
     "DataSourceStatus": [
       "CREATING",
       "FAILED_CREATION",
@@ -4248,6 +4294,7 @@
       "SECRET_ARN"
     ]
   },
+  "dsql": {},
   "dynamodb": {
     "AttributeType": [
       "B",
@@ -4263,6 +4310,10 @@
     ]
   },
   "ec2": {
+    "DeliveryPreference": [
+      "fixed",
+      "incremental"
+    ],
     "EndDateType": [
       "limited",
       "unlimited"
@@ -5449,6 +5500,11 @@
       "disabled",
       "enabled"
     ],
+    "BandwidthWeighting": [
+      "default",
+      "ebs-1",
+      "vpc-1"
+    ],
     "SpotInstanceType": [
       "one-time",
       "persistent"
@@ -5498,6 +5554,14 @@
       "cluster",
       "partition",
       "spread"
+    ],
+    "PersistRoutes": [
+      "enable",
+      "disable"
+    ],
+    "PeerLivenessDetection": [
+      "bfd",
+      "bgp-keepalive"
     ],
     "SecurityGroupVpcAssociationState": [
       "associating",
@@ -5572,9 +5636,7 @@
     ],
     "IpAddressType": [
       "ipv4",
-      "ipv6",
-      "dualstack",
-      "not-specified"
+      "ipv6"
     ],
     "VpcEndpointType": [
       "Interface",
@@ -5619,6 +5681,7 @@
     "UpstreamRegistry": [
       "azure-container-registry",
       "docker-hub",
+      "ecr",
       "ecr-public",
       "github-container-registry",
       "gitlab-container-registry",
@@ -5858,8 +5921,10 @@
       "AL2_x86_64",
       "AL2_x86_64_GPU",
       "BOTTLEROCKET_ARM_64",
+      "BOTTLEROCKET_ARM_64_FIPS",
       "BOTTLEROCKET_ARM_64_NVIDIA",
       "BOTTLEROCKET_x86_64",
+      "BOTTLEROCKET_x86_64_FIPS",
       "BOTTLEROCKET_x86_64_NVIDIA",
       "CUSTOM",
       "WINDOWS_CORE_2019_x86_64",
@@ -6813,6 +6878,10 @@
     "Status": [
       "Active",
       "Inactive"
+    ],
+    "AssertionEncryptionMode": [
+      "Allowed",
+      "Required"
     ]
   },
   "identitystore": {},
@@ -7128,6 +7197,12 @@
       "PUBLISHED",
       "DEPRECATED"
     ],
+    "SbomValidationStatus": [
+      "IN_PROGRESS",
+      "FAILED",
+      "SUCCEEDED",
+      ""
+    ],
     "ConnectionAttribute": [
       "iot:ClientId",
       "iot:Thing.ThingName"
@@ -7315,6 +7390,12 @@
       "Attribute",
       "Transform",
       "Metric"
+    ],
+    "SourceFormat": [
+      "KNOWLEDGE_BASE"
+    ],
+    "SourceType": [
+      "KENDRA"
     ],
     "CoreDeviceOperatingSystem": [
       "LINUX_AARCH64",
@@ -7681,6 +7762,16 @@
   },
   "kendraranking": {},
   "kinesis": {
+    "EnhancedMetric": [
+      "IncomingBytes",
+      "IncomingRecords",
+      "OutgoingBytes",
+      "OutgoingRecords",
+      "WriteProvisionedThroughputExceeded",
+      "ReadProvisionedThroughputExceeded",
+      "IteratorAgeMilliseconds",
+      "ALL"
+    ],
     "EncryptionType": [
       "KMS"
     ],
@@ -7968,7 +8059,8 @@
       "ruby2.5",
       "ruby2.7",
       "ruby3.2",
-      "ruby3.3"
+      "ruby3.3",
+      "ruby3.4"
     ],
     "ApplicationLogLevel": [
       "TRACE",
@@ -8047,6 +8139,10 @@
     "AudioRecognitionStrategy": [
       "UseSlotValuesAsCustomVocabulary"
     ],
+    "BedrockTraceStatus": [
+      "ENABLED",
+      "DISABLED"
+    ],
     "DialogActionType": [
       "CloseIntent",
       "ConfirmIntent",
@@ -8080,7 +8176,9 @@
     ],
     "Engine": [
       "standard",
-      "neural"
+      "neural",
+      "long-form",
+      "generative"
     ],
     "BotAliasStatus": [
       "Creating",
@@ -8481,6 +8579,10 @@
       "srt-listener",
       "srt-caller"
     ],
+    "FlowSize": [
+      "MEDIUM",
+      "LARGE"
+    ],
     "State": [
       "ENABLED",
       "DISABLED"
@@ -8555,6 +8657,10 @@
       "raw",
       "smpte291",
       "pcm"
+    ],
+    "NdiState": [
+      "ENABLED",
+      "DISABLED"
     ],
     "ContentQualityAnalysisState": [
       "ENABLED",
@@ -9216,6 +9322,18 @@
       "ACTIVE",
       "FAILED"
     ],
+    "ETagAlgorithmFamily": [
+      "MD5up",
+      "SHA256up",
+      "SHA512up"
+    ],
+    "SequenceStoreStatus": [
+      "CREATING",
+      "ACTIVE",
+      "UPDATING",
+      "DELETING",
+      "FAILED"
+    ],
     "Accelerators": [
       "GPU"
     ],
@@ -9247,6 +9365,27 @@
     "StandbyReplicas": [
       "ENABLED",
       "DISABLED"
+    ],
+    "Engine": [
+      "nmslib",
+      "faiss",
+      "lucene"
+    ],
+    "Name": [
+      "hnsw",
+      "ivf"
+    ],
+    "SpaceType": [
+      "l2",
+      "l1",
+      "linf",
+      "cosinesimil",
+      "innerproduct",
+      "hamming"
+    ],
+    "Type": [
+      "text",
+      "knn_vector"
     ],
     "LifecyclePolicyType": [
       "retention"
@@ -9369,11 +9508,16 @@
       "AES_128",
       "AES_192",
       "AES_256",
+      "HMAC_SHA256",
+      "HMAC_SHA384",
+      "HMAC_SHA512",
+      "HMAC_SHA224",
       "RSA_2048",
       "RSA_3072",
       "RSA_4096",
       "ECC_NIST_P256",
-      "ECC_NIST_P384"
+      "ECC_NIST_P384",
+      "ECC_NIST_P521"
     ],
     "KeyCheckValueAlgorithm": [
       "CMAC",
@@ -10589,6 +10733,9 @@
       "SPICE",
       "DIRECT_QUERY"
     ],
+    "DataSetUseAs": [
+      "RLS_RULES"
+    ],
     "DatasetParameterValueType": [
       "MULTI_VALUED",
       "SINGLE_VALUED"
@@ -10636,6 +10783,10 @@
       "HOUR",
       "DAY",
       "WEEK"
+    ],
+    "RefreshFailureAlertStatus": [
+      "ENABLED",
+      "DISABLED"
     ],
     "RowLevelPermissionFormatVersion": [
       "VERSION_1",
@@ -11382,6 +11533,8 @@
       "us-iso-east-1",
       "us-iso-west-1",
       "us-isob-east-1",
+      "us-isof-east-1",
+      "us-isof-south-1",
       "us-west-1",
       "us-west-2"
     ],
@@ -11396,6 +11549,10 @@
   },
   "route53profiles": {},
   "route53recoverycontrol": {
+    "NetworkType": [
+      "IPV4",
+      "DUALSTACK"
+    ],
     "Status": [
       "PENDING",
       "DEPLOYED",
@@ -11489,6 +11646,10 @@
   },
   "rum": {
     "CustomEventsStatus": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "Status": [
       "ENABLED",
       "DISABLED"
     ],
@@ -11875,6 +12036,10 @@
       "STABLE",
       "TO_BE_ARCHIVED",
       "ARCHIVED"
+    ],
+    "InferenceComponentCapacitySizeType": [
+      "COPY_COUNT",
+      "CAPACITY_PERCENT"
     ],
     "InferenceComponentStatus": [
       "InService",
@@ -12949,6 +13114,16 @@
       "HANA",
       "SAP_ABAP"
     ],
+    "ComponentType": [
+      "HANA",
+      "HANA_NODE",
+      "ABAP",
+      "ASCS",
+      "DIALOG",
+      "WEBDISP",
+      "WD",
+      "ERS"
+    ],
     "CredentialType": [
       "ADMIN"
     ]
@@ -13616,6 +13791,17 @@
     "InspectionLevel": [
       "COMMON",
       "TARGETED"
+    ],
+    "DataProtectionAction": [
+      "SUBSTITUTION",
+      "HASH"
+    ],
+    "FieldType": [
+      "SINGLE_HEADER",
+      "SINGLE_COOKIE",
+      "SINGLE_QUERY_ARGUMENT",
+      "QUERY_STRING",
+      "BODY"
     ],
     "PayloadType": [
       "JSON",
