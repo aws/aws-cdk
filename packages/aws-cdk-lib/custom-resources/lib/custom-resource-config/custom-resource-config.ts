@@ -32,8 +32,8 @@ export class CustomResourceConfig {
    *
    * This feature is currently experimental.
    */
-  public addLogRetentionLifetime(rentention: logs.RetentionDays) {
-    Aspects.of(this.scope).add(new CustomResourceLogRetention(rentention), {
+  public addLogRetentionLifetime(retention: logs.RetentionDays) {
+    Aspects.of(this.scope).add(new CustomResourceLogRetention(retention), {
       priority: FeatureFlags.of(this.scope).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined,
     });
   }
@@ -44,7 +44,9 @@ export class CustomResourceConfig {
    * This feature is currently experimental.
    */
   public addRemovalPolicy(removalPolicy: RemovalPolicy) {
-    Aspects.of(this.scope).add(new CustomResourceRemovalPolicy(removalPolicy), { priority: AspectPriority.MUTATING });
+    Aspects.of(this.scope).add(new CustomResourceRemovalPolicy(removalPolicy), {
+      priority: FeatureFlags.of(this.scope).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined,
+    });
   }
 
   /**
@@ -53,7 +55,9 @@ export class CustomResourceConfig {
    * This feature is currently experimental.
    */
   public addLambdaRuntime(lambdaRuntime: lambda.Runtime) {
-    Aspects.of(this.scope).add(new CustomResourceLambdaRuntime(lambdaRuntime), { priority: AspectPriority.MUTATING });
+    Aspects.of(this.scope).add(new CustomResourceLambdaRuntime(lambdaRuntime), {
+      priority: FeatureFlags.of(this.scope).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined,
+    });
   }
 }
 

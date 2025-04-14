@@ -168,11 +168,12 @@ test('unapply inherited boundary from a user: order 2', () => {
 });
 
 test.each([
-  [undefined, false],
-  /* [undefined, true], -- this case doesn't work, that expected */
-  [AspectPriority.MUTATING, false],
-  [AspectPriority.MUTATING, true],
-])('overriding works if base PB is applied using Aspect with prio %p (feature flag %p)', (basePrio, featureFlag) => {
+  [undefined, false, 'OVERRIDDEN'],
+  [AspectPriority.MUTATING, false, 'OVERRIDDEN'],
+  [AspectPriority.MUTATING, true, 'OVERRIDDEN'],
+  // custom DEFAULT, builtin MUTATING: custom wins and override is not applied
+  [undefined, true, 'BASE'],
+])('overriding works if base PB is applied using Aspect with prio %p (feature flag %p)', (basePrio, featureFlag, winner) => {
   // When a custom aspect is used to apply a permissions boundary, and the built-in APIs to override it,
   // the override still works.
 
@@ -203,6 +204,6 @@ test.each([
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-    PermissionsBoundary: 'OVERRIDDEN',
+    PermissionsBoundary: winner,
   });
 });

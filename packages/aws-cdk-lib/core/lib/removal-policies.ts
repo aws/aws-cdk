@@ -1,8 +1,10 @@
 import { IConstruct } from 'constructs';
+import * as cxapi from '../../cx-api';
 import { Annotations } from './annotations';
 import { Aspects, IAspect, AspectPriority } from './aspect';
 import { CfnResource } from './cfn-resource';
 import { RemovalPolicy } from './removal-policy';
+import { FeatureFlags } from './feature-flags';
 
 /**
  * Properties for applying a removal policy
@@ -137,7 +139,8 @@ export class RemovalPolicies {
    */
   public apply(policy: RemovalPolicy, props: RemovalPolicyProps = {}) {
     Aspects.of(this.scope).add(new RemovalPolicyAspect(policy, props), {
-      priority: props.priority ?? AspectPriority.MUTATING,
+      priority: props.priority ??
+      (FeatureFlags.of(this.scope).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined),
     });
   }
 
