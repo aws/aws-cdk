@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.189.1](https://github.com/aws/aws-cdk/compare/v2.189.0...v2.189.1) (2025-04-14)
+
+
+### Bug Fixes
+
+* **core:** implicit Aspect applications do not override custom Aspect applications ([#34132](https://github.com/aws/aws-cdk/issues/34132)) ([b7f4bc7](https://github.com/aws/aws-cdk/commit/b7f4bc7aee1d99b70e4d9d3cedea53e910ee37ef))
+
 ## [2.189.0](https://github.com/aws/aws-cdk/compare/v2.188.0...v2.189.0) (2025-04-09)
 
 

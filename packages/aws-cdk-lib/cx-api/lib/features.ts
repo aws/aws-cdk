@@ -1493,7 +1493,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       before version 2.172.0. Aspects introduced since that version will always
       be added with a priority of MUTATING, independent of this feature flag.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.189.1' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: `
       To add mutating Aspects controlling construct values that can be overridden
