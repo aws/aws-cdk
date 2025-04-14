@@ -3,7 +3,15 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { IAsset } from '../../assets';
 import * as ecr from '../../aws-ecr';
-import { AssetStaging, Stack, Stage, ValidationError } from '../../core';
+import { AssetStaging, Names, Stack, Stage, ValidationError } from '../../core';
+
+/**
+ * The sed pattern used to extract the image ID from docker load output
+ * Works with both formats:
+ * - "Loaded image: <digest>" (older Docker versions)
+ * - "Loaded image ID: <digest>" (Docker 27.4+)
+ */
+export const DOCKER_LOAD_OUTPUT_REGEX = 's/Loaded image[^:]*: //g';
 
 /**
  * Options for TarballImageAsset
@@ -17,6 +25,28 @@ export interface TarballImageAssetProps {
    * is located as a resource inside your project.
    */
   readonly tarballFile: string;
+
+  /**
+   * A display name for this asset
+   *
+   * If supplied, the display name will be used in locations where the asset
+   * identifier is printed, like in the CLI progress information. If the same
+   * asset is added multiple times, the display name of the first occurrence is
+   * used.
+   *
+   * The default is the construct path of the `TarballImageAsset` construct,
+   * with respect to the enclosing stack. If the asset is produced by a
+   * construct helper function (such as `lambda.Code.fromAssetImage()`), this
+   * will look like `MyFunction/AssetImage`.
+   *
+   * We use the stack-relative construct path so that in the common case where
+   * you have multiple stacks with the same asset, we won't show something like
+   * `/MyBetaStack/MyFunction/Code` when you are actually deploying to
+   * production.
+   *
+   * @default - Stack-relative construct path
+   */
+  readonly displayName?: string;
 }
 
 /**
@@ -77,8 +107,9 @@ export class TarballImageAsset extends Construct implements IAsset {
       executable: [
         'sh',
         '-c',
-        `docker load -i ${relativePathInOutDir} | tail -n 1 | sed "s/Loaded image: //g"`,
+        `docker load -i ${relativePathInOutDir} | tail -n 1 | sed "${DOCKER_LOAD_OUTPUT_REGEX}"`,
       ],
+      displayName: props.displayName ?? Names.stackRelativeConstructPath(this),
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);

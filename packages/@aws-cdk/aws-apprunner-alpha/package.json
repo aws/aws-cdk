@@ -86,7 +86,7 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "aws-cdk-lib": "0.0.0",
-    "@aws-cdk/integ-runner": "2.186.0",
+    "@aws-cdk/integ-runner": "^2.186.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.14",
     "constructs": "^10.0.0",

@@ -66,23 +66,23 @@
     "@aws-cdk/service-spec-types" "^0.0.128"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/aws-service-spec@^0.1.63":
-  version "0.1.63"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.63.tgz#52a86853fcb102edf042ab79de9be6bada6bc3f0"
-  integrity sha512-5OsuiiRu1hrc02juBAjMDE9oXfjKIuKJ4YCPXX27lFXjBAAvNXLvkjRCJCTmRwVv2/GO3oqouh/Ln3hsvvBDSA==
+"@aws-cdk/aws-service-spec@^0.1.67":
+  version "0.1.67"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.67.tgz#61c265fe9a1363de473d06b22a72cde8767da00b"
+  integrity sha512-X02ntivyBSPM/V3yfxmWi4DiXKVQ7sAmSkvl5o5mRr4lt4GCIfIsuLyElNSlrRhYm6wAX4HdWDtnbZEaly1e0g==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.129"
+    "@aws-cdk/service-spec-types" "^0.0.133"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/cloud-assembly-schema@^40.7.0":
-  version "40.7.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-40.7.0.tgz#1d53d55fc616477965338f0de98192ec3a3ed9bc"
-  integrity sha512-00wVKn9pOOGXbeNwA4E8FUFt0zIB4PmSO7PvIiDWgpaFX3G/sWyy0A3s6bg/n2Yvkghu8r4a8ckm+mAzkAYmfA==
+"@aws-cdk/cloud-assembly-schema@^41.0.0":
+  version "41.0.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-41.0.0.tgz#0d6fc77dd22d78f181a462b89f769497c3898065"
+  integrity sha512-Jgs3gelFN0Ghr5tbAhPxRsf78jKLGrMbUno4nXTGz3QiPkFqfrq0kodxmKP/IVSp55A5I3CsJ5QErQTit39GdA==
   dependencies:
     jsonschema "~1.4.1"
     semver "^7.7.1"
 
-"@aws-cdk/integ-runner@2.186.0":
+"@aws-cdk/integ-runner@^2.186.0":
   version "2.186.0"
   resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.186.0.tgz#87f2868ea291265c90f626364442f9fb1b783e8c"
   integrity sha512-TOQow5gtcJCiF/R3LEfSS4f8OXojxtXKUrv9fDr9yW95t9m8R6QEJDDtz0QCw+QNlxmHknevlGAapWwfK/ZV8w==
@@ -117,12 +117,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v32/-/lambda-layer-kubectl-v32-2.1.0.tgz#6b9beb4b6b09af74ec48f0c778e50732d7bbb54b"
   integrity sha512-a+zvCLapTg8R0P/Nrecc8mKV+ZgAwvkndn4/zlb43e14zRlc4/ozvmeghUT2eoyyaWJv+PwqgWohEXXec3kpSw==
 
-"@aws-cdk/service-spec-importers@^0.0.73":
-  version "0.0.73"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.73.tgz#a66dcae3a887f79fca8f7ea3f504db58675278f4"
-  integrity sha512-gUmkWceGmXlZaLEGoJJNbliYzrbiiR9V35//LxuXHpCCadEa+8fLy2bbaYC2hNQdvQtUtvW5j1qlLvXrX0YfAw==
+"@aws-cdk/service-spec-importers@^0.0.75":
+  version "0.0.75"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.75.tgz#4c5ec4f3cefe34ff37df661b753a38098da7aa11"
+  integrity sha512-3B7RPlDxEzs2limUOUZCL+UJNe7djIjhbHDr6xFiKqz2WGtqrpvlBSCCUSLjk8Y1TT4FmWIWiNpk2pqIm/D/ww==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.129"
+    "@aws-cdk/service-spec-types" "^0.0.132"
     "@cdklabs/tskb" "^0.0.3"
     ajv "^6"
     canonicalize "^2.1.0"
@@ -140,10 +140,17 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/service-spec-types@^0.0.129":
-  version "0.0.129"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.129.tgz#52d495a88a30c1a62b8280a2ebd3674d854be583"
-  integrity sha512-MUWSHlc4df5p34x1ztulhS/7pCUiy9pVjuS6/vWJFkbHDSG/01VqWnELUnPaaWng54tuiHsQUH/jEC3asVLu3g==
+"@aws-cdk/service-spec-types@^0.0.132":
+  version "0.0.132"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.132.tgz#de30ad27c951f182299365fb680e9a7ae6d74000"
+  integrity sha512-DuBsNUgiAlXUpo1MLKvD44iIjKxdfqKd181blPdzvVQ0AYGOoP0OIBxAElLsqyVhUhsRDLli0nA2RoRmAjnaUQ==
+  dependencies:
+    "@cdklabs/tskb" "^0.0.3"
+
+"@aws-cdk/service-spec-types@^0.0.133":
+  version "0.0.133"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.133.tgz#a2e5a14e9dcd359a67800e9db1c982627f7e189c"
+  integrity sha512-pFcKB8DL02/QCZfSv0KxvIdx9J5606VG9i/wCRtSRBwkFMj152MZEx4GSo3iH3rlcxYd9R+O84Yvv85KtqmwWA==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 

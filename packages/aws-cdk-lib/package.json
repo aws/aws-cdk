@@ -121,7 +121,7 @@
   "dependencies": {
     "@aws-cdk/asset-awscli-v1": "^2.2.229",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.0",
-    "@aws-cdk/cloud-assembly-schema": "^40.7.0",
+    "@aws-cdk/cloud-assembly-schema": "^41.0.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.3.0",
@@ -136,7 +136,7 @@
   },
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.0.3",
-    "@aws-cdk/aws-service-spec": "^0.1.63",
+    "@aws-cdk/aws-service-spec": "^0.1.67",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -300,6 +300,7 @@
     "./aws-dms": "./aws-dms/index.js",
     "./aws-docdb": "./aws-docdb/index.js",
     "./aws-docdbelastic": "./aws-docdbelastic/index.js",
+    "./aws-dsql": "./aws-dsql/index.js",
     "./aws-dynamodb": "./aws-dynamodb/index.js",
     "./aws-ec2": "./aws-ec2/index.js",
     "./aws-ecr": "./aws-ecr/index.js",
@@ -526,9 +527,7 @@
   "jsiiRosetta": {
     "exampleDependencies": {
       "@aws-cdk/lambda-layer-kubectl-v32": "^2.0.0",
-      "cdk8s-plus-25": "^2.7.0",
-      "@aws-cdk/aws-kinesisfirehose-alpha": "*",
-      "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "*"
+      "cdk8s-plus-25": "^2.7.0"
     }
   }
 }
