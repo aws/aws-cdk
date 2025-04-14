@@ -295,12 +295,12 @@ export interface TableBucketAttributes {
  *
  * @stateful
  * @example
- * const tableBucket = new TableBucket(scope, 'ExampleTableBucket', {
+ * const sampleTableBucket = new TableBucket(scope, 'ExampleTableBucket', {
  *   tableBucketName: 'example-bucket',
  *   // Optional fields:
  *   unreferencedFileRemoval: {
  *     noncurrentDays: 123,
- *     status: 'status',
+ *     status: UnreferencedFileRemovalStatus.ENABLED,
  *     unreferencedDays: 123,
  *   },
  * });

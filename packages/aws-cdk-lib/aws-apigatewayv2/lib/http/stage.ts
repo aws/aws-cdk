@@ -170,6 +170,7 @@ export class HttpStage extends HttpStageBase {
     new CfnStage(this, 'Resource', {
       apiId: props.httpApi.apiId,
       stageName: this.physicalName,
+      accessLogSettings: this._validateAccessLogSettings(props.accessLogSettings),
       autoDeploy: props.autoDeploy,
       defaultRouteSettings: props.throttle || props.detailedMetricsEnabled ? {
         throttlingBurstLimit: props.throttle?.burstLimit,

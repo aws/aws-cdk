@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-s3tables-alpha",
-  "private": true,
+  "private": false,
   "version": "0.0.0",
   "description": "CDK Constructs for S3 Tables",
   "main": "lib/index.js",
@@ -103,14 +103,7 @@
       "AWSLINT_BASE_CONSTRUCT": true
     }
   },
-  "awslint": {
-    "exclude": [
-      "props-physical-name:@aws-cdk/aws-s3tables-alpha.TableBucketPolicyProps",
-      "duration-prop-type:@aws-cdk/aws-s3tables-alpha.UnreferencedFileRemoval.noncurrentDays",
-      "duration-prop-name:@aws-cdk/aws-s3tables-alpha.UnreferencedFileRemoval.noncurrentDays",
-      "duration-prop-type:@aws-cdk/aws-s3tables-alpha.UnreferencedFileRemoval.unreferencedDays",
-      "duration-prop-name:@aws-cdk/aws-s3tables-alpha.UnreferencedFileRemoval.unreferencedDays",
-      "attribute-tag:@aws-cdk/aws-s3tables-alpha.TableBucket.tableBucketPolicy"
-    ]
+  "publishConfig": {
+    "tag": "latest"
   }
 }
