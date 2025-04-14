@@ -1488,6 +1488,10 @@ export const FLAGS: Record<string, FlagInfo> = {
       priority will always execute last and "win" the write. If you need Aspects
       added by CDK to run after yours, your Aspect needs to have a priority of
       MUTATING or lower.
+
+      This setting only applies to Aspects that were already being added for you
+      before version 2.172.0. Aspects introduced since that version will always
+      be added with a priority of MUTATING, independent of this feature flag.
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
