@@ -48,6 +48,18 @@ export interface MarkersConfig {
 }
 
 /**
+ * Define options which can be passed using the method `Source.jsonData()`.
+ */
+export interface JsonProcessingOptions {
+  /**
+   * If set to `true`, the marker substitution will make sure the value inserted in the file
+   * will be a valid JSON string.
+   * @default - false
+   */
+  readonly escape?: boolean;
+}
+
+/**
  * Bind context for ISources
  */
 export interface DeploymentSourceContext {
@@ -203,10 +215,11 @@ export class Source {
    * @param objectKey The destination S3 object key (relative to the root of the
    * S3 deployment).
    * @param obj A JSON object.
+   * @param jsonProcessingOptions Options for how to process the JSON object.
    */
-  public static jsonData(objectKey: string, obj: any, escape?: boolean): ISource {
+  public static jsonData(objectKey: string, obj: any, jsonProcessingOptions?: JsonProcessingOptions): ISource {
     let markersConfig: MarkersConfig = {};
-    if (escape) {
+    if (jsonProcessingOptions?.escape) {
       markersConfig = { jsonEscape: true };
     }
     return {

@@ -113,10 +113,6 @@ function generateLargeFile(filePath: string, sizeInMB: number, isJson: boolean):
   }
 
   fs.closeSync(fd);
-
-  // Log file size for verification
-  const stats = fs.statSync(filePath);
-  process.stderr.write(`Generated ${filePath} with size: ${(stats.size / (1024 * 1024)).toFixed(2)}MB\n`);
 }
 
 // Generate our test files
@@ -146,7 +142,7 @@ const param = new ssm.StringParameter(stack, 'SecretParam', {
 
 const fileWithMarker = Source.jsonData('my-json/secret-config.json', {
   secret_value: param.stringValue, // Using a tokenized value
-}, true);
+}, { escape: true });
 
 // Deploy the large files
 new BucketDeployment(stack, 'DeployLargeFiles', {
@@ -231,7 +227,7 @@ app.synth();
 process.on('exit', () => {
   try {
     fs.rmSync(tempDir, { recursive: true, force: true });
-    process.stderr.write(`Cleaned up temporary directory: ${tempDir}\n`);
+    process.stdout.write(`Cleaned up temporary directory: ${tempDir}\n`);
   } catch (err) {
     process.stderr.write(`Failed to clean up temporary directory: ${tempDir}\n`);
   }

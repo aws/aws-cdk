@@ -375,7 +375,7 @@ const deployment = new s3deploy.BucketDeployment(this, 'JsonDeployment', {
       }
     },
     // Enable escaping at deployment time
-    true,
+    { escape: true },
     )
   ],
   destinationBucket: bucket,

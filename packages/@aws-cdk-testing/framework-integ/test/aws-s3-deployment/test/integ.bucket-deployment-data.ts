@@ -41,7 +41,7 @@ new CfnOutput(stack, 'SecretValue', { value: tokenizedValue });
 // Add new file with secret value that needs proper escaping
 const file6 = Source.jsonData('my-json/secret-config.json', {
   secret_value: tokenizedValue, // Using the tokenized value explicitly
-}, true);
+}, { escape: true });
 const file7 = Source.yamlData('my-yaml/secret-config.yaml', {
   secret_value: tokenizedValue,
 });
