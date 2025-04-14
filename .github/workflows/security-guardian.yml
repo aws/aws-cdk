@@ -6,6 +6,11 @@ jobs:
   run-security-guardian:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetches full history
+
       - name: Get list of changed .template.json files
         id: filter_files
         run: |
