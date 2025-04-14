@@ -95,6 +95,7 @@ Flags come in three types:
 | [@aws-cdk/aws-events:requireEventBusPolicySid](#aws-cdkaws-eventsrequireeventbuspolicysid) | When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals. | 2.186.0 | fix |
 | [@aws-cdk/aws-dynamodb:retainTableReplica](#aws-cdkaws-dynamodbretaintablereplica) | When enabled, table replica will be default to the removal policy of source table unless specified otherwise. | 2.187.0 | fix |
 | [@aws-cdk/cognito:logUserPoolClientSecretValue](#aws-cdkcognitologuserpoolclientsecretvalue) | When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs. | 2.187.0 | new default |
+| [@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2](#aws-cdkaws-stepfunctionsusedistributedmapresultwriterv2) | When enabled, the resultWriterV2 property of DistributedMap will be used insted of resultWriter | 2.188.0 | (default) |
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | 2.189.0 | new default |
 | [@aws-cdk/core:aspectPrioritiesMutating](#aws-cdkcoreaspectprioritiesmutating) | When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING. | V2NEXT | new default |
 
@@ -177,7 +178,6 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false,
     "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
     "@aws-cdk/aws-events:requireEventBusPolicySid": true,
-    "@aws-cdk/core:aspectPrioritiesMutating": true,
     "@aws-cdk/aws-dynamodb:retainTableReplica": true
   }
 }
@@ -1983,6 +1983,22 @@ resource lambda function logs.
 | 2.187.0 | `false` | `false` |
 
 **Compatibility with old behavior:** Enable the feature flag to keep the old behavior and log the client secret values
+
+
+### @aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2
+
+*When enabled, the resultWriterV2 property of DistributedMap will be used insted of resultWriter* (default)
+
+When this feature flag is enabled, the resultWriterV2 property is used instead of resultWriter in DistributedMap class.
+resultWriterV2 uses ResultWriterV2 class in StepFunctions ASL and can have either Bucket/Prefix or WriterConfig or both.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.188.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag and set resultWriter in DistributedMap
 
 
 ### @aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope
