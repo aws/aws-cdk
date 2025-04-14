@@ -102,7 +102,7 @@
     ]
    }
   },
-  "PipelineArtifactsBucketEncryptionKey01D58D69": { 
+  "PipelineArtifactsBucketEncryptionKey01D58D69": {   
    "Type": "AWS::KMS::Key",
    "Properties": {
     "KeyPolicy": {
