@@ -6,7 +6,7 @@ A GitHub Action tool designed to
 
 ---
 
-## 🚀 Features
+## Features
 
 - Validates only changed `*.template.json` files in PRs
 - Supports `cfn-guard v3`
@@ -15,7 +15,7 @@ A GitHub Action tool designed to
 
 ---
 
-## 📦 Inputs
+## Inputs
 
 | Name             | Description                                                       | Required | Default |
 |------------------|-------------------------------------------------------------------|----------|---------|
