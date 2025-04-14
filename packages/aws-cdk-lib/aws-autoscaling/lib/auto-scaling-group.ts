@@ -25,8 +25,8 @@ import {
   Tokenization, UnscopedValidationError, ValidationError, withResolved,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 
 /**
  * Name tag constant

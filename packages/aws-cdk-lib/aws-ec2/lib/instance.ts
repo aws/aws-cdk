@@ -18,8 +18,8 @@ import * as iam from '../../aws-iam';
 import { Annotations, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Resource, Stack, Tags, Token } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import * as cxapi from '../../cx-api';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import * as cxapi from '../../cx-api';
 
 /**
  * Name tag constant

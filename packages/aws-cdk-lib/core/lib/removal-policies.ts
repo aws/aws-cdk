@@ -2,8 +2,8 @@ import { IConstruct } from 'constructs';
 import { Annotations } from './annotations';
 import { Aspects, IAspect, AspectPriority } from './aspect';
 import { CfnResource } from './cfn-resource';
-import { RemovalPolicy } from './removal-policy';
 import { mutatingAspectPrio32333 } from './private/aspect-prio';
+import { RemovalPolicy } from './removal-policy';
 
 /**
  * Properties for applying a removal policy

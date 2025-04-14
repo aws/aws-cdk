@@ -1,8 +1,8 @@
 import { Construct, IConstruct } from 'constructs';
 import { Annotations } from './annotations';
 import { IAspect, Aspects, AspectOptions } from './aspect';
-import { ITaggable, ITaggableV2, TagManager } from './tag-manager';
 import { mutatingAspectPrio32333 } from './private/aspect-prio';
+import { ITaggable, ITaggableV2, TagManager } from './tag-manager';
 
 /**
  * Properties for a tag

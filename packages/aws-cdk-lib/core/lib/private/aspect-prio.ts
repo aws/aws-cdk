@@ -1,7 +1,7 @@
 import { IConstruct } from 'constructs';
 import * as cxapi from '../../../cx-api';
-import { FeatureFlags } from '../feature-flags';
 import { AspectPriority } from '../aspect';
+import { FeatureFlags } from '../feature-flags';
 
 /**
  * Return the aspect priority of Aspects changed in https://github.com/aws/aws-cdk/pull/32333
