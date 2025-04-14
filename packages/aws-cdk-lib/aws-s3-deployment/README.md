@@ -382,8 +382,6 @@ const deployment = new s3deploy.BucketDeployment(this, 'JsonDeployment', {
 });
 ```
 
-Our testing shows that memory usage for complex JSON processing can be up to 7-8x the file size
-
 ## EFS Support
 
 If your workflow needs more disk space than default (512 MB) disk space, you may attach an EFS storage to underlying
