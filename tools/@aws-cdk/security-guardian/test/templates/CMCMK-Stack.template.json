@@ -1,6 +1,5 @@
 {
  "Resources": { 
-
   "LambdaExecutionRoleD5C26073": {   
    "Type": "AWS::IAM::Role",
    "Properties": {
