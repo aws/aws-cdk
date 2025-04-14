@@ -14,11 +14,7 @@
         }
       }
     },
-<<<<<<< HEAD:packages/@aws-cdk/aws-cognito-identitypool-alpha/test/integ.identitypool.js.snapshot/integidentitypoolDefaultTestDeployAssert8F0BD226.assets.json
-    "1633cd9d0b2ac0d4de103713223ffa2ce4a309ddab19929dcb623081af232571": {
-=======
     "ec0050f55f93d962a14c797f8d37d96d2f2c1354fbf2eeba533cb3fc8ec394d0": {
->>>>>>> main:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/batch/integ.submit-job-queue-jsonpath.js.snapshot/cdksubmitjobqueuejsonpathintegDefaultTestDeployAssert1F18F97A.assets.json
       "source": {
         "path": "cdksubmitjobqueuejsonpathintegDefaultTestDeployAssert1F18F97A.template.json",
         "packaging": "file"
@@ -26,11 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-<<<<<<< HEAD:packages/@aws-cdk/aws-cognito-identitypool-alpha/test/integ.identitypool.js.snapshot/integidentitypoolDefaultTestDeployAssert8F0BD226.assets.json
-          "objectKey": "1633cd9d0b2ac0d4de103713223ffa2ce4a309ddab19929dcb623081af232571.json",
-=======
           "objectKey": "ec0050f55f93d962a14c797f8d37d96d2f2c1354fbf2eeba533cb3fc8ec394d0.json",
->>>>>>> main:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/batch/integ.submit-job-queue-jsonpath.js.snapshot/cdksubmitjobqueuejsonpathintegDefaultTestDeployAssert1F18F97A.assets.json
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
