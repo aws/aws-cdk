@@ -514,14 +514,14 @@ export interface GrantReplicationPermissionDestinationProps {
   /**
    * The destination bucket
    */
-  bucket: IBucket;
+  readonly bucket: IBucket;
 
   /**
    * The KMS key to use for encryption if a destination bucket needs to be encrypted with a customer-managed KMS key.
    *
    * @default - no KMS key is used for replication.
    */
-  encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey;
 }
 
 export interface GrantReplicationPermissionProps {
@@ -531,7 +531,7 @@ export interface GrantReplicationPermissionProps {
    *
    * @default - it's assumed the source bucket is not encrypted with a customer-managed KMS key.
    */
-  sourceDecryptionKey?: kms.IKey;
+  readonly sourceDecryptionKey?: kms.IKey;
 
   /**
    * The destination buckets for replication.
@@ -540,7 +540,7 @@ export interface GrantReplicationPermissionProps {
    *
    * @default - empty array
    */
-  destinations: GrantReplicationPermissionDestinationProps[];
+  readonly destinations: GrantReplicationPermissionDestinationProps[];
 }
 
 /**
