@@ -759,12 +759,14 @@
       "endpointPublicAccess": true,
       "endpointPrivateAccess": true
      },
-     "accessConfig": {},
+     "accessConfig": {
+      "authenticationMode": "API"
+     },
      "remoteNetworkConfig": {
       "remoteNodeNetworks": [
        {
         "cidrs": [
-         "10.0.0.0/16"
+         "172.16.0.0/16"
         ]
        }
       ],
