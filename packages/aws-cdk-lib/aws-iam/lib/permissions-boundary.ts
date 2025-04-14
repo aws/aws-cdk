@@ -1,8 +1,8 @@
 import { IConstruct } from 'constructs';
 import { CfnRole, CfnUser } from './iam.generated';
 import { IManagedPolicy } from './managed-policy';
-import { AspectPriority, Aspects, CfnResource, FeatureFlags } from '../../core';
-import * as cxapi from '../../cx-api';
+import { Aspects, CfnResource } from '../../core';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 
 /**
  * Modify the Permissions Boundaries of Users and Roles in a construct tree
@@ -42,7 +42,7 @@ export class PermissionsBoundary {
         }
       },
     }, {
-      priority: FeatureFlags.of(this.scope).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined,
+      priority: mutatingAspectPrio32333(this.scope),
     });
   }
 
@@ -60,7 +60,7 @@ export class PermissionsBoundary {
         }
       },
     }, {
-      priority: FeatureFlags.of(this.scope).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined,
+      priority: mutatingAspectPrio32333(this.scope),
     });
   }
 }

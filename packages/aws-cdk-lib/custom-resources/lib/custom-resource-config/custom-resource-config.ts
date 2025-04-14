@@ -2,8 +2,8 @@ import { IConstruct, MetadataEntry } from 'constructs';
 import * as cloudformation from '../../../aws-cloudformation';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
-import { AspectPriority, Aspects, FeatureFlags, IAspect, RemovalPolicy } from '../../../core/lib';
-import * as cxapi from '../../../cx-api';
+import { Aspects, IAspect, RemovalPolicy } from '../../../core/lib';
+import { mutatingAspectPrio32333 } from '../../../core/lib/private/aspect-prio';
 
 /* This is duplicated in @aws-cdk/custom-resource-handlers/lib/custom-resources-framework/config.ts */
 export const CUSTOM_RESOURCE_PROVIDER = 'aws:cdk:is-custom-resource-handler-customResourceProvider';
@@ -34,7 +34,7 @@ export class CustomResourceConfig {
    */
   public addLogRetentionLifetime(retention: logs.RetentionDays) {
     Aspects.of(this.scope).add(new CustomResourceLogRetention(retention), {
-      priority: FeatureFlags.of(this.scope).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined,
+      priority: mutatingAspectPrio32333(this.scope),
     });
   }
 
@@ -45,7 +45,7 @@ export class CustomResourceConfig {
    */
   public addRemovalPolicy(removalPolicy: RemovalPolicy) {
     Aspects.of(this.scope).add(new CustomResourceRemovalPolicy(removalPolicy), {
-      priority: FeatureFlags.of(this.scope).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined,
+      priority: mutatingAspectPrio32333(this.scope),
     });
   }
 
@@ -56,7 +56,7 @@ export class CustomResourceConfig {
    */
   public addLambdaRuntime(lambdaRuntime: lambda.Runtime) {
     Aspects.of(this.scope).add(new CustomResourceLambdaRuntime(lambdaRuntime), {
-      priority: FeatureFlags.of(this.scope).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined,
+      priority: mutatingAspectPrio32333(this.scope),
     });
   }
 }

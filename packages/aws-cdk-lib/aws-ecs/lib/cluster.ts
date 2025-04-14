@@ -24,12 +24,11 @@ import {
   IAspect,
   Token,
   Names,
-  AspectPriority,
   FeatureFlags, Annotations,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import * as cxapi from '../../cx-api';
 import { Disable_ECS_IMDS_Blocking, Enable_IMDS_Blocking_Deprecated_Feature } from '../../cx-api';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -333,7 +332,7 @@ export class Cluster extends Resource implements ICluster {
     // resources to the stack which could surprise users working with
     // brown-field CDK apps and stacks.
     Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id), {
-      priority: FeatureFlags.of(this).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined,
+      priority: mutatingAspectPrio32333(this),
     });
   }
 

@@ -1,9 +1,8 @@
 import { Construct, IConstruct } from 'constructs';
-import * as cxapi from '../../cx-api';
 import { Annotations } from './annotations';
-import { IAspect, Aspects, AspectPriority, AspectOptions } from './aspect';
+import { IAspect, Aspects, AspectOptions } from './aspect';
 import { ITaggable, ITaggableV2, TagManager } from './tag-manager';
-import { FeatureFlags } from './feature-flags';
+import { mutatingAspectPrio32333 } from './private/aspect-prio';
 
 /**
  * Properties for a tag
@@ -162,9 +161,7 @@ export class Tags {
    */
   public add(key: string, value: string, props: TagProps = {}) {
     const tag = new Tag(key, value, props);
-    const options: AspectOptions = {
-      priority: FeatureFlags.of(this.scope).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined,
-    };
+    const options: AspectOptions = { priority: mutatingAspectPrio32333(this.scope) };
     Aspects.of(this.scope).add(tag, options);
   }
 
@@ -173,9 +170,7 @@ export class Tags {
    */
   public remove(key: string, props: TagProps = {}) {
     const removeTag = new RemoveTag(key, props);
-    const options: AspectOptions = {
-      priority: FeatureFlags.of(this.scope).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined,
-    };
+    const options: AspectOptions = { priority: mutatingAspectPrio32333(this.scope) };
     Aspects.of(this.scope).add(removeTag, options);
   }
 }

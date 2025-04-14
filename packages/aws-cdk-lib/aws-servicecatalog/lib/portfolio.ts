@@ -4,7 +4,6 @@ import {
   CloudFormationRuleConstraintOptions, CommonConstraintOptions,
   StackSetsConstraintOptions, TagUpdateConstraintOptions,
 } from './constraints';
-import * as cxapi from '../../cx-api';
 import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
@@ -16,6 +15,7 @@ import { IBucket } from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 
 /**
  * Options for portfolio share.
@@ -371,7 +371,7 @@ export class Portfolio extends PortfolioBase {
         }
       },
     }, {
-      priority: cdk.FeatureFlags.of(this).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? cdk.AspectPriority.MUTATING : undefined,
+      priority: mutatingAspectPrio32333(this),
     });
   }
 

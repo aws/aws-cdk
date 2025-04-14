@@ -17,7 +17,6 @@ import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import {
   Annotations,
-  AspectPriority,
   Aspects,
   Aws,
   CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy,
@@ -26,8 +25,8 @@ import {
   Tokenization, UnscopedValidationError, ValidationError, withResolved,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import * as cxapi from '../../cx-api';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 
 /**
  * Name tag constant
@@ -1610,7 +1609,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     if (props.requireImdsv2) {
       Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect(), {
-        priority: FeatureFlags.of(this).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined,
+        priority: mutatingAspectPrio32333(this),
       });
     }
 

@@ -4,9 +4,9 @@ import { BackupableResourcesCollector } from './backupable-resources-collector';
 import { IBackupPlan } from './plan';
 import { BackupResource, TagOperation } from './resource';
 import * as iam from '../../aws-iam';
-import { Lazy, Resource, Aspects, AspectPriority, FeatureFlags } from '../../core';
+import { Lazy, Resource, Aspects } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import * as cxapi from '../../cx-api';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 
 /**
  * Options for a BackupSelection
@@ -145,7 +145,7 @@ export class BackupSelection extends Resource implements iam.IGrantable {
 
     if (resource.construct) {
       Aspects.of(resource.construct).add(this.backupableResourcesCollector, {
-        priority: FeatureFlags.of(this).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? AspectPriority.MUTATING : undefined,
+        priority: mutatingAspectPrio32333(resource.construct),
       });
       // Cannot push `this.backupableResourcesCollector.resources` to
       // `this.resources` here because it has not been evaluated yet.
