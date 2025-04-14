@@ -18,6 +18,7 @@ import * as iam from '../../aws-iam';
 import { Annotations, AspectPriority, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Resource, Stack, Tags, Token, ValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -671,7 +672,9 @@ export class Instance extends Resource implements IInstance {
     }));
 
     if (props.requireImdsv2) {
-      Aspects.of(this).add(new InstanceRequireImdsv2Aspect(), { priority: AspectPriority.MUTATING });
+      Aspects.of(this).add(new InstanceRequireImdsv2Aspect(), {
+        priority: mutatingAspectPrio32333(this),
+      });
     }
   }
 
