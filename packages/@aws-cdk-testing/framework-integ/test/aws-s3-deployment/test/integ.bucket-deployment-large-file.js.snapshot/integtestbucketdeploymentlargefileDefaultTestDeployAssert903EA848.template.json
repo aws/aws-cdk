@@ -28,7 +28,7 @@
      "Key": "\"my-json/secret-config.json\""
     },
     "flattenResponse": "false",
-    "salt": "1744263844145"
+    "salt": "1744668702960"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -59,6 +59,15 @@
       "PolicyDocument": {
        "Version": "2012-10-17",
        "Statement": [
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
         {
          "Action": [
           "s3:GetObject"
@@ -138,6 +147,39 @@
     }
    }
   },
+  "AwsApiCallS3getObject205bb8cf37f6ae58b8123115787e2175": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$ObjectLike\":{\"Body\":\"{\\\"secret_value\\\":\\\"test\\\"with\\\"quotes\\\"}\"}}",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "TestBucketDeploymentLargeFile:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"my-json/secret-config-no-escape.json\""
+    },
+    "flattenResponse": "false",
+    "salt": "1744668702960"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "AwsApiCallS3listObjectsV2dcf6e2df109208a6b0e45f43b6af0b37": {
    "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
    "Properties": {
@@ -170,7 +212,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1744263844145"
+    "salt": "1744668702960"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -472,7 +514,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1744263844147"
+    "salt": "1744668702964"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -600,6 +642,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallS3getObject02d076df441f8e79c1b96c584b36a542",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject205bb8cf37f6ae58b8123115787e2175": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject205bb8cf37f6ae58b8123115787e2175",
      "assertion"
     ]
    }

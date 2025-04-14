@@ -213,16 +213,28 @@
      },
      {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      }
     ],
     "SourceObjectKeys": [
-     "8ac1f2b690a4765f545b6df853e439a522aa8499c6abfced9de057758aab13ee.zip",
+     "dd350b0d251cf3c4abfd488c198fbea912a4964f401a3e01c183ca2f04072e76.zip",
      "cbc7dae5477d6aa98463e36140d5833273cc3caca06c731d848799f30237fefe.zip",
-     "1175d01d4ddecbd7be39bdc306dabe248b6ada0281089ae680473c5ca7e13e67.zip"
+     "1175d01d4ddecbd7be39bdc306dabe248b6ada0281089ae680473c5ca7e13e67.zip",
+     "c71e65c14767615eb12046a47812c3f60d82c33e90ec926c2ab13dca2df294f6.zip"
     ],
     "SourceMarkers": [
      {},
      {},
+     {
+      "<<marker:0xbaba:0>>": {
+       "Fn::GetAtt": [
+        "SecretParam0C31D215",
+        "Value"
+       ]
+      }
+     },
      {
       "<<marker:0xbaba:0>>": {
        "Fn::GetAtt": [
@@ -237,15 +249,15 @@
      {},
      {
       "jsonEscape": true
-     }
+     },
+     {}
     ],
     "DestinationBucketName": {
      "Ref": "Bucket83908E77"
     },
     "RetainOnDelete": false,
     "Prune": true,
-    "OutputObjectKeys": true,
-    "JsonAwareSourceProcessing": true
+    "OutputObjectKeys": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

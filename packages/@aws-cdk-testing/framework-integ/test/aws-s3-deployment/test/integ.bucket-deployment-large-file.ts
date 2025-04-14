@@ -144,10 +144,14 @@ const fileWithMarker = Source.jsonData('my-json/secret-config.json', {
   secret_value: param.stringValue, // Using a tokenized value
 }, { escape: true });
 
+const noEscapeFileWithMarker = Source.jsonData('my-json/secret-config-no-escape.json', {
+  secret_value: param.stringValue,
+});
+
 // Deploy the large files
 new BucketDeployment(stack, 'DeployLargeFiles', {
   destinationBucket: bucket,
-  sources: [largeJsonSource, largeTextSource, fileWithMarker],
+  sources: [largeJsonSource, largeTextSource, fileWithMarker, noEscapeFileWithMarker],
   retainOnDelete: false,
 });
 
@@ -167,6 +171,14 @@ const assertionProvider = integ.assertions.awsApiCall('S3', 'getObject', {
 assertionProvider.expect(ExpectedResult.objectLike({
   // Properly escaped JSON.
   Body: '{"secret_value":"test\\"with\\"quotes"}',
+}));
+
+integ.assertions.awsApiCall('S3', 'getObject', {
+  Bucket: bucket.bucketName,
+  Key: 'my-json/secret-config-no-escape.json',
+}).expect(ExpectedResult.objectLike({
+  // un-escaped JSON.
+  Body: '{"secret_value":"test"with"quotes"}',
 }));
 
 // Verify the large JSON file was deployed successfully
