@@ -169,7 +169,7 @@ test('unapply inherited boundary from a user: order 2', () => {
 
 test.each([
   [undefined, false],
-  /* [undefined, true], -- this case doesn't work, that expected */
+  /* [undefined, true], -- user defined aspect wins, as expected */
   [AspectPriority.MUTATING, false],
   [AspectPriority.MUTATING, true],
 ])('overriding works if base PB is applied using Aspect with prio %p (feature flag %p)', (basePrio, featureFlag) => {
