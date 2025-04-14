@@ -26,9 +26,11 @@ export interface IApp extends IResource {
  */
 export interface SourceCodeProviderConfig {
   /**
-   * The repository for the application. Must use the `HTTPS` protocol.
+   * The full HTTPS URL for the repository for the application.
    *
-   * For example, `https://github.com/aws/aws-cdk`.
+   * For GitHub: `https://github.com/owner/repository`
+   * For GitLab: `https://gitlab.com/owner/repository`
+   * For CodeCommit: The HTTPS clone URL
    */
   readonly repository: string;
 
@@ -36,19 +38,30 @@ export interface SourceCodeProviderConfig {
    * OAuth token for 3rd party source control system for an Amplify App, used
    * to create webhook and read-only deploy key. OAuth token is not stored.
    *
-   * Either `accessToken` or `oauthToken` must be specified if `repository`
-   * is specified.
+   * For GitHub repositories, use `accessToken` instead. OAuth tokens for GitHub repositories
+   * are supported for backward compatibility but we strongly recommend using `accessToken`
+   * with the Amplify GitHub App.
+   *
+   * For other repository providers like Bitbucket or CodeCommit, use `oauthToken`.
+   *
+   * Either `accessToken` (GitHub) or `oauthToken` (other providers) must be specified
+   * when connecting to a source code repository.
    *
    * @default - do not use a token
+   * @deprecated For GitHub repositories, use accessToken instead
    */
   readonly oauthToken?: SecretValue;
 
   /**
-   * Personal Access token for 3rd party source control system for an Amplify
-   * App, used to create webhook and read-only deploy key. Token is not stored.
+   * Personal Access token for GitHub repository for an Amplify
+   * App, used to authorize access to a GitHub repository using the Amplify GitHub App.
+   * Token is not stored.
    *
-   * Either `accessToken` or `oauthToken` must be specified if `repository`
-   * is sepcified.
+   * This is the recommended way to authorize access to GitHub repositories.
+   * For non-GitHub repositories (GitLab, Bitbucket, CodeCommit), use `oauthToken`.
+   *
+   * Either `accessToken` (GitHub) or `oauthToken` (other providers) must be specified
+   * when connecting to a source code repository.
    *
    * @default - do not use a token
    */

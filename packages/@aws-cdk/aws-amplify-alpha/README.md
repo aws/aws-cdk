@@ -26,9 +26,9 @@ import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 
 const amplifyApp = new amplify.App(this, 'MyApp', {
   sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
-    owner: '<user>',
-    repository: '<repo>',
-    oauthToken: SecretValue.secretsManager('my-github-token'),
+    owner: '<github-username>',
+    repository: '<repository-name>',
+    accessToken: SecretValue.secretsManager('my-github-token'),
   }),
   buildSpec: codebuild.BuildSpec.fromObjectToYaml({
     // Alternatively add a `amplify.yml` to the repo
@@ -61,8 +61,8 @@ To connect your `App` to GitLab, use the `GitLabSourceCodeProvider`:
 ```ts
 const amplifyApp = new amplify.App(this, 'MyApp', {
   sourceCodeProvider: new amplify.GitLabSourceCodeProvider({
-    owner: '<user>',
-    repository: '<repo>',
+    owner: '<gitlab-namespace-or-group>',
+    repository: '<repository-name>',
     oauthToken: SecretValue.secretsManager('my-gitlab-token'),
   }),
 });
@@ -158,9 +158,9 @@ Use `BasicAuth.fromCredentials` when referencing an existing secret:
 ```ts
 const amplifyApp = new amplify.App(this, 'MyApp', {
   sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
-    owner: '<user>',
-    repository: '<repo>',
-    oauthToken: SecretValue.secretsManager('my-github-token'),
+    owner: '<github-username>',
+    repository: '<repository-name>', // Just the repository name, NOT the full URL
+    accessToken: SecretValue.secretsManager('my-github-token'),
   }),
   basicAuth: amplify.BasicAuth.fromCredentials('username', SecretValue.secretsManager('my-github-token')),
 });
@@ -196,9 +196,9 @@ of branches:
 ```ts
 const amplifyApp = new amplify.App(this, 'MyApp', {
   sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
-    owner: '<user>',
-    repository: '<repo>',
-    oauthToken: SecretValue.secretsManager('my-github-token'),
+    owner: '<github-username>',
+    repository: '<repository-name>', // Just the repository name, NOT the full URL
+    accessToken: SecretValue.secretsManager('my-github-token'),
   }),
   autoBranchCreation: { // Automatically connect branches that match a pattern set
     patterns: ['feature/*', 'test/*'],
