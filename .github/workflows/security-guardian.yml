@@ -4,6 +4,8 @@ on:
 
 jobs:
   run-security-guardian:
+    permissions:
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
