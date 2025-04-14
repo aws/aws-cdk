@@ -1001,7 +1001,8 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
   ],
 });
 
-// Grant permissions to the replication role
+// Grant permissions to the replication role.
+// This method is not required if you choose to use an auto-generated replication role or manually grant permissions.
 sourceBucket.grantReplicationPermission(replicationRole, {
   // Optional. Specify the KMS key to use for decrypting objects in the source bucket.
   sourceDecryptionKey: encryptionKey,
