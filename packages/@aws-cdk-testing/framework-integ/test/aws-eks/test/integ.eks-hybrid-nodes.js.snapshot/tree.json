@@ -730,7 +730,8 @@
                 {
                   "maxAzs": "*",
                   "natGateways": "*",
-                  "restrictDefaultSecurityGroup": false
+                  "restrictDefaultSecurityGroup": false,
+                  "cidr": "*"
                 }
               ]
             }
@@ -1503,7 +1504,8 @@
                     {
                       "cidrs": "*"
                     }
-                  ]
+                  ],
+                  "authenticationMode": "API"
                 }
               ]
             }
