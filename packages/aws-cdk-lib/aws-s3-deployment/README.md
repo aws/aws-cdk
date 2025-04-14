@@ -361,7 +361,7 @@ When using `Source.jsonData` with CDK Tokens (references to construct properties
 
 ```ts
 declare const bucket: s3.Bucket;
-declare const param: new ssm.StringParameter;
+declare const param: ssm.StringParameter;
 
 // Example with a secret value that contains double quotes
 const deployment = new s3deploy.BucketDeployment(this, 'JsonDeployment', {
