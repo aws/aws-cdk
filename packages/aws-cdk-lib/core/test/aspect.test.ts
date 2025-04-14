@@ -232,7 +232,6 @@ describe('aspect', () => {
     // THEN - check that Tags Aspect is applied to stack with mutating priority
     let aspectApplications = Aspects.of(stack).applied;
     expect(aspectApplications.length).toEqual(2);
-    expect(aspectApplications[1].priority).toEqual(AspectPriority.MUTATING);
 
     // THEN - both Aspects are successfully applied, new logging bucket is added with versioning enabled
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {

@@ -4,8 +4,9 @@ import { BackupableResourcesCollector } from './backupable-resources-collector';
 import { IBackupPlan } from './plan';
 import { BackupResource, TagOperation } from './resource';
 import * as iam from '../../aws-iam';
-import { Lazy, Resource, Aspects, AspectPriority } from '../../core';
+import { Lazy, Resource, Aspects } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 
 /**
  * Options for a BackupSelection
@@ -143,7 +144,9 @@ export class BackupSelection extends Resource implements iam.IGrantable {
     }
 
     if (resource.construct) {
-      Aspects.of(resource.construct).add(this.backupableResourcesCollector, { priority: AspectPriority.MUTATING });
+      Aspects.of(resource.construct).add(this.backupableResourcesCollector, {
+        priority: mutatingAspectPrio32333(resource.construct),
+      });
       // Cannot push `this.backupableResourcesCollector.resources` to
       // `this.resources` here because it has not been evaluated yet.
       // Will be concatenated to `this.resources` in a `Lazy.list`

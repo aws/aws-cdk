@@ -144,8 +144,9 @@ describe('tag aspect', () => {
     expect(res2.tags.renderTags()).toEqual([{ key: 'first', value: 'there is only 1' }]);
   });
 
-  test('Tags applied without priority get mutating priority value', () => {
+  test.each([false, true])('Tags applied without priority get priority value that depends on feature flag %p', (flag) => {
     const root = new Stack();
+    root.node.setContext('@aws-cdk/core:aspectPrioritiesMutating', flag);
     const res = new TaggableResource(root, 'FakeResource', {
       type: 'AWS::Fake::Thing',
     });
@@ -154,11 +155,13 @@ describe('tag aspect', () => {
     Tags.of(res).add('first', 'there is only 1');
     Tags.of(res).remove('root');
 
+    const expected = flag ? AspectPriority.MUTATING : AspectPriority.DEFAULT;
+
     const rootAspectApplications = Aspects.of(root).applied;
-    expect(rootAspectApplications[0].priority).toEqual(AspectPriority.MUTATING);
+    expect(rootAspectApplications[0].priority).toEqual(expected);
     const resAspectApplications = Aspects.of(res).applied;
-    expect(resAspectApplications[0].priority).toEqual(AspectPriority.MUTATING);
-    expect(resAspectApplications[1].priority).toEqual(AspectPriority.MUTATING);
+    expect(resAspectApplications[0].priority).toEqual(expected);
+    expect(resAspectApplications[1].priority).toEqual(expected);
   });
 
   test('add will add a tag and remove will remove a tag if it exists', () => {
