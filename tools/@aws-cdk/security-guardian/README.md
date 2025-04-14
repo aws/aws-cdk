@@ -19,16 +19,16 @@ A GitHub Action tool designed to
 
 | Name             | Description                                                       | Required | Default |
 |------------------|-------------------------------------------------------------------|----------|---------|
-| `data_directory` | Directory containing templates to validate                        | ✅ Yes   |         |
-| `rule_file_path` | Local path to the rules file                                     | ✅ Yes    |         |
-| `show_summary`   | Whether to show summary output (`fail`, `warn`, `none`)          | ❌ No    | `fail`  |
-| `output_format`  | Output format (`single-line-summary`, `json`, etc.)              | ❌ No    | `single-line-summary` |
+| `data_directory` | Directory containing templates to validate                        | Yes   |         |
+| `rule_file_path` | Local path to the rules file                                     | Yes    |         |
+| `show_summary`   | Whether to show summary output (`fail`, `warn`, `none`)          | No    | `fail`  |
+| `output_format`  | Output format (`single-line-summary`, `json`, etc.)              | No    | `single-line-summary` |
 
 > `data_directory` and `rule_file_path` must be set.
 
 ---
 
-## 🛠️ Usage
+## Usage
 
 ```yaml
 - name: Run CFN Guard
@@ -42,7 +42,7 @@ A GitHub Action tool designed to
 
 ---
 
-## 🧪 Local Development
+## Local Development
 
 ### 1. Build
 ```bash
@@ -60,17 +60,17 @@ node dist/index.js \
 ```
 ---
 
-## 👏 Contributing
+## Contributing
 
 PRs are welcome! Please follow conventional commit messages and test your changes before opening a pull request.
 
 ---
 
-## 📣 Acknowledgments
+## Acknowledgments
 
 Built on top of [cfn-guard](https://github.com/aws-cloudformation/cloudformation-guard) and [GitHub Actions Toolkit](https://github.com/actions/toolkit).
 
 ---
 
-Happy Guarding! 🛡️
+Happy Guarding! 
 

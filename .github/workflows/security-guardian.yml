@@ -4,13 +4,6 @@ on:
 
 jobs:
   run-security-guardian:
-    # Necessary to have sufficient permissions to write to the PR
-    permissions:
-      contents: read
-      pull-requests: read
-      statuses: read
-      issues: read
-      checks: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
