@@ -22,21 +22,25 @@ import { FlagInfo, FlagType } from './private/flag-modeling';
 //
 // There are three types of flags: ApiDefault, BugFix, and VisibleContext flags.
 //
-// - ApiDefault flags: change the behavior or defaults of the construct library. When
-//   set, the infrastructure that is generated may be different but there is
-//   a way to get the old infrastructure setup by using the API in a different way.
+// - ApiDefault flags: change the behavior or defaults of the construct library.
+//   It is still possible to achieve the old behavior via the official API
+//   but changes are necessary (e.g. passing a boolean flag).
 //
-// - BugFix flags: the old infra we used to generate is no longer recommended,
-//   and there is no way to achieve that result anymore except by making sure the
-//   flag is unset, or set to `false`. Mostly used for infra-impacting bugfixes or
-//   enhanced security defaults.
+//   Implications for future Major Version:
+//   - The recommended value will become the default value.
+//   - Flags of this type will be removed (code changes will become mandatory).
+//
+// - BugFix flags: the old infra we used to generate is no longer recommended.
+//   The old behavior cannot be achieved anymore using the official API (only
+//   by making sure the feature flag is unset). Mostly used for infra-impacting
+//   bugfixes or enhanced security defaults.
+//
+//   Implications for future Major Version:
+//   - The recommended value will become the default value.
+//   - Flag will never be removed (no other way to achieve legacy behavior).
 //
 // - VisibleContext flags: not really a feature flag, but configurable context which is
 //   advertised by putting the context in the `cdk.json` file of new projects.
-//
-// In future major versions, the "newProjectValues" will become the version
-// default for both DefaultBehavior and BugFix flags, and DefaultBehavior flags
-// will be removed (i.e., their new behavior will become the *only* behavior).
 //
 // See https://github.com/aws/aws-cdk-rfcs/blob/master/text/0055-feature-flags.md
 // --------------------------------------------------------------------------------
@@ -128,6 +132,7 @@ export const LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY = '@aws-cdk/aws-lam
 export const SET_UNIQUE_REPLICATION_ROLE_NAME = '@aws-cdk/aws-s3:setUniqueReplicationRoleName';
 export const PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceStageRoleTrustScope';
 export const EVENTBUS_POLICY_SID_REQUIRED = '@aws-cdk/aws-events:requireEventBusPolicySid';
+export const ASPECT_PRIORITIES_MUTATING = '@aws-cdk/core:aspectPrioritiesMutating';
 export const DYNAMODB_TABLE_RETAIN_TABLE_REPLICA = '@aws-cdk/aws-dynamodb:retainTableReplica';
 export const LOG_USER_POOL_CLIENT_SECRET_VALUE = '@aws-cdk/cognito:logUserPoolClientSecretValue';
 export const PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope';
@@ -1465,6 +1470,43 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
+  [ASPECT_PRIORITIES_MUTATING]: {
+    type: FlagType.ApiDefault,
+    summary: 'When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING.',
+    detailsMd: `
+      Custom Aspects you add have a priority of DEFAULT (500) if you don't
+      assign a more specific priority, which is higher than MUTATING (200). This
+      is relevant if a custom Aspect you add and an Aspect added by CDK try to
+      configure the same value.
+
+      If this flag is set to false (old behavior), Aspects added by CDK are also
+      added with a priority of DEFAULT; because their priorities are equal, the
+      Aspects that is closest to the target construct executes last (either
+      yours or the Aspect added by the CDK).
+
+      If this flag is set to true (recommended behavior), Aspects added by CDK are added
+      with a priority of MUTATING, and custom Aspects you add with DEFAULT
+      priority will always execute last and "win" the write. If you need Aspects
+      added by CDK to run after yours, your Aspect needs to have a priority of
+      MUTATING or lower.
+
+      This setting only applies to Aspects that were already being added for you
+      before version 2.172.0. Aspects introduced since that version will always
+      be added with a priority of MUTATING, independent of this feature flag.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: `
+      To add mutating Aspects controlling construct values that can be overridden
+      by Aspects added by CDK, give them MUTATING priority:
+
+      \`\`\`
+      Aspects.of(stack).add(new MyCustomAspect(), {
+        priority: AspectPriority.MUTATING,
+      });
+      \`\`\`
+    `,
+  },
   [DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: {
     type: FlagType.BugFix,
     summary: 'When enabled, table replica will be default to the removal policy of source table unless specified otherwise.',

@@ -70,4 +70,5 @@
   "@aws-cdk/aws-events:requireEventBusPolicySid": true,
   "@aws-cdk/aws-dynamodb:retainTableReplica": true,
   "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true
+  "@aws-cdk/core:aspectPrioritiesMutating": true
 }
