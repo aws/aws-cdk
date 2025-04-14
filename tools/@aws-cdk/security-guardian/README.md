@@ -1,6 +1,8 @@
 # Security Guardian
 
-A GitHub Action tool designed to validate changed AWS CloudFormation templates against custom [cfn-guard](https://github.com/aws-cloudformation/cloudformation-guard) rules. Supports both local paths and remote URLs for rule sets.
+A GitHub Action tool designed to 
+ - detect broadly scoped inline policies in `*.template.json` files in incoming PRs and validate changed AWS CloudFormation templates against custom [cfn-guard](https://github.com/aws-cloudformation/cloudformation-guard) rules. Supports local paths for custom rule sets.
+ - [in future] detect broadly scoped CFN intrinsic statements
 
 ---
 
@@ -56,25 +58,6 @@ node dist/index.js \
   --output_format=single-line-summary \
   --show_summary=fail
 ```
-
----
-
-## 📝 License
-
-```text
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```
-
 ---
 
 ## 👏 Contributing

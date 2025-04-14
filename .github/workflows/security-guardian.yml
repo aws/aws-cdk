@@ -2,19 +2,6 @@ name: Security Guardian
 on:
   pull_request: {}
 
-  # Triggered from a separate job when a review is added
-  workflow_run:
-    workflows: [PR Linter Trigger]
-    types:
-      - completed
-
-  # Trigger when a status is updated (CodeBuild leads to statuses)
-  status: {}
-
-  # Trigger when a check suite is completed (GitHub actions and CodeCov create checks)
-  check_suite:
-    types: [completed]
-
 jobs:
   run-security-guardian:
     # Necessary to have sufficient permissions to write to the PR
