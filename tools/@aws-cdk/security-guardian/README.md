@@ -17,12 +17,12 @@ A GitHub Action tool designed to
 
 ## Inputs
 
-| Name             | Description                                                       | Required | Default |
-|------------------|-------------------------------------------------------------------|----------|---------|
-| `data_directory` | Directory containing templates to validate                        | Yes   |         |
-| `rule_file_path` | Local path to the rules file                                     | Yes    |         |
-| `show_summary`   | Whether to show summary output (`fail`, `warn`, `none`)          | No    | `fail`  |
-| `output_format`  | Output format (`single-line-summary`, `json`, etc.)              | No    | `single-line-summary` |
+| Name             | Description                                                       | Required | Default               |
+|------------------|-------------------------------------------------------------------|----------|-----------------------|
+| `data_directory` | Directory containing templates to validate                        | Yes      |                       |
+| `rule_file_path` | Local path to the rules file                                      | Yes      |                       |
+| `show_summary`   | Whether to show summary output (`fail`, `warn`, `none`)           | No       | `fail`                |
+| `output_format`  | Output format (`single-line-summary`, `json`, etc.)               | No       | `single-line-summary` |
 
 > `data_directory` and `rule_file_path` must be set.
 
@@ -58,11 +58,6 @@ node dist/index.js \
   --output_format=single-line-summary \
   --show_summary=fail
 ```
----
-
-## Contributing
-
-PRs are welcome! Please follow conventional commit messages and test your changes before opening a pull request.
 
 ---
 
