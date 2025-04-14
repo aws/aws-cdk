@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib/core';
-import * as cxapi from '../../cx-api';
+import * as cxapi from 'aws-cdk-lib/cx-api';
 import { Construct } from 'constructs';
 import { IApplication } from './application';
 import { CheckedStageStackAssociator } from './aspects/stack-associator';
