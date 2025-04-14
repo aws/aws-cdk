@@ -1,11 +1,211 @@
 import { Match, Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
+import { IpAddressType } from '../../../aws-opensearchservice/lib/domain';
 import * as route53 from '../../../aws-route53';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
 
 describe('tests', () => {
+  describe('subnet mappings', () => {
+    test('set subnet', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        subnetMappings: [
+          { subnet: vpc.publicSubnets[0] },
+        ],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        SubnetMappings: [
+          {
+            SubnetId: { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
+          },
+        ],
+      });
+    });
+
+    test('set allocation id', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+      const elasticIp = new ec2.CfnEIP(stack, 'EIP');
+
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        internetFacing: true,
+        subnetMappings: [
+          {
+            subnet: vpc.publicSubnets[0],
+            allocationId: elasticIp.attrAllocationId,
+          },
+        ],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        SubnetMappings: [
+          {
+            SubnetId: { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
+            AllocationId: { 'Fn::GetAtt': ['EIP', 'AllocationId'] },
+          },
+        ],
+      });
+    });
+
+    test('set private ipv4 address', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC', {
+        maxAzs: 2,
+        ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
+      });
+
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        internetFacing: false,
+        subnetMappings: [
+          {
+            subnet: vpc.publicSubnets[0],
+            privateIpv4Address: '10.0.12.29',
+          },
+        ],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        SubnetMappings: [
+          {
+            SubnetId: { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
+            PrivateIPv4Address: '10.0.12.29',
+          },
+        ],
+      });
+    });
+
+    test('set ipv6 address', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC', {
+        maxAzs: 2,
+        ipProtocol: ec2.IpProtocol.DUAL_STACK,
+      });
+
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        ipAddressType: IpAddressType.DUAL_STACK,
+        enablePrefixForIpv6SourceNat: true,
+        subnetMappings: [
+          {
+            subnet: vpc.publicSubnets[0],
+            ipv6Address: 'fd00:1234:5678:abcd::1',
+            sourceNatIpv6Prefix: elbv2.SourceNatIpv6Prefix.autoAssigned(),
+          },
+        ],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        SubnetMappings: [
+          {
+            SubnetId: { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
+            IPv6Address: 'fd00:1234:5678:abcd::1',
+            SourceNatIpv6Prefix: 'auto_assigned',
+          },
+        ],
+      });
+    });
+
+    test('throw error for configuring both vpcSubnets and subnetMappings', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // THEN
+      expect(() => {
+        new elbv2.NetworkLoadBalancer(stack, 'LB', {
+          vpc,
+          vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+          subnetMappings: [
+            { subnet: vpc.publicSubnets[0] },
+          ],
+        });
+      }).toThrow('You can specify either `vpcSubnets` or `subnetMappings`, not both.');
+    });
+
+    test('throw error for configuring private ipv4 address for internet-facing load balancer', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // THEN
+      expect(() => {
+        new elbv2.NetworkLoadBalancer(stack, 'LB', {
+          vpc,
+          internetFacing: true,
+          subnetMappings: [
+            {
+              subnet: vpc.publicSubnets[0],
+              privateIpv4Address: '10.0.12.29',
+            },
+          ],
+        });
+      }).toThrow('Cannot specify `privateIpv4Address` for a internet facing load balancer.');
+    });
+
+    test('throw error for configuring allocation id for internal load balancer', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const elasticIp = new ec2.CfnEIP(stack, 'EIP');
+
+      // THEN
+      expect(() => {
+        new elbv2.NetworkLoadBalancer(stack, 'LB', {
+          vpc,
+          internetFacing: false,
+          subnetMappings: [
+            {
+              subnet: vpc.publicSubnets[0],
+              allocationId: elasticIp.attrAllocationId,
+            },
+          ],
+        });
+      }).toThrow('Cannot specify `allocationId` for a internal load balancer.');
+    });
+
+    test('throw error for configuring source nat ipv6 prefix for a load balancer that does not have `enablePrefixForIpv6SourceNat` enabled', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC', {
+        maxAzs: 2,
+        ipProtocol: ec2.IpProtocol.DUAL_STACK,
+      });
+
+      // THEN
+      expect(() => {
+        new elbv2.NetworkLoadBalancer(stack, 'LB', {
+          vpc,
+          subnetMappings: [
+            {
+              subnet: vpc.publicSubnets[0],
+              sourceNatIpv6Prefix: elbv2.SourceNatIpv6Prefix.autoAssigned(),
+            },
+          ],
+        });
+      }).toThrow('Cannot specify `sourceNatIpv6Prefix` for a load balancer that does not have `enablePrefixForIpv6SourceNat` enabled.');
+    });
+  });
+
   test('specify minimum capacity unit', () => {
     // GIVEN
     const stack = new cdk.Stack();

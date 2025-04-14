@@ -86,6 +86,7 @@ export * as aws_dlm from './aws-dlm';
 export * as aws_dms from './aws-dms';
 export * as aws_docdb from './aws-docdb';
 export * as aws_docdbelastic from './aws-docdbelastic';
+export * as aws_dsql from './aws-dsql';
 export * as aws_dynamodb from './aws-dynamodb';
 export * as aws_ec2 from './aws-ec2';
 export * as aws_ecr from './aws-ecr';

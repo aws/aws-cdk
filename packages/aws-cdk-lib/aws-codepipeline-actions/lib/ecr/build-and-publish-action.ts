@@ -100,7 +100,7 @@ export class EcrBuildAndPublishAction extends Action {
 
   protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
-    // see: https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html#edit-role-ECRBuildAndPublish
+    // see: https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECRBuildAndPublish.html#edit-role-ECRBuildAndPublish
     if (this.props.registryType === RegistryType.PUBLIC) {
       // Public registry
       const repositoryArn = cdk.Stack.of(scope).formatArn({

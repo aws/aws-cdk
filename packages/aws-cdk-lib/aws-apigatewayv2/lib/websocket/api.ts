@@ -5,7 +5,7 @@ import { Grant, IGrantable } from '../../../aws-iam';
 import { ArnFormat, Stack, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
-import { IApi } from '../common/api';
+import { IApi, IpAddressType } from '../common/api';
 import { ApiBase } from '../common/base';
 
 /**
@@ -84,6 +84,15 @@ export interface WebSocketApiProps {
    * @default - no '$default' route configured
    */
   readonly defaultRouteOptions?: WebSocketRouteOptions;
+
+  /**
+   * The IP address types that can invoke the API.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-ip-address-type.html
+   *
+   * @default undefined - AWS default is IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
 }
 
 /**
@@ -147,6 +156,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
       protocolType: 'WEBSOCKET',
       description: props?.description,
       routeSelectionExpression: props?.routeSelectionExpression ?? '$request.body.action',
+      ipAddressType: props?.ipAddressType,
     });
     this.apiId = resource.ref;
     this.apiEndpoint = resource.attrApiEndpoint;
