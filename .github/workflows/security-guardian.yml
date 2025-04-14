@@ -1,13 +1,9 @@
 name: Security Guardian
 on:
-  pull_request: {}
+  pull_request_target: {}
 
 jobs:
   run-security-guardian:
-    permissions:
-        contents: read
-        pages: write
-        id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
