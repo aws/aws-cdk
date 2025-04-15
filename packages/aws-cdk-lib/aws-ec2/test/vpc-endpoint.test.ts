@@ -177,7 +177,7 @@ describe('vpc endpoint', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         IpAddressType: Match.absent(),
-        DnsOptions: { DnsRecordIpType: Match.absent() },
+        DnsOptions: Match.absent(),
       });
     });
 
