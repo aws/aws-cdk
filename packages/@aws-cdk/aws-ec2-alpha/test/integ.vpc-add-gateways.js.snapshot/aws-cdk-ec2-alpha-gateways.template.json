@@ -353,7 +353,6 @@
   "testsubnet3Subnet09F1B369": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2c",
     "CidrBlock": "10.1.3.0/28",
     "Tags": [

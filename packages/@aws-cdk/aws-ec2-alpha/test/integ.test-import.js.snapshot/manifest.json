@@ -18,11 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-<<<<<<< HEAD
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/1c0688da1be39e697a75d5c30f78c32434517b5de3446c48971614ba6d14b464.json",
-=======
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/c8b65284e891905e23f421921cfa83c5b3f0eefe772f01b0e77b424e4190f335.json",
->>>>>>> main
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/c1f4b75d2d3f2e854e49bd6ff47d0b000d55d12ca8041aeb501a416acd0ee010.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -92,17 +88,7 @@
             "data": "ImportedNewVPCAddnewImportedSubnet2DefaultRouteE8630009"
           }
         ],
-<<<<<<< HEAD
-        "/vpcv2-import-integ-test/ImportedNewVPC/NATGateway": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/vpcv2-import-integ-test/ImportedNewVPC/NATGateway/EIP": [
-=======
         "/vpcv2-import-integ-test/ImportedNewVPC/NATGateway-IsolatedSubnet1": [
->>>>>>> main
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -111,25 +97,13 @@
         "/vpcv2-import-integ-test/ImportedNewVPC/NATGateway-IsolatedSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ImportedNewVPCNATGatewayIsolatedSubnet1EIP439F54BA",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ImportedNewVPCNATGatewayIsolatedSubnet1EIP439F54BA"
           }
         ],
         "/vpcv2-import-integ-test/ImportedNewVPC/NATGateway-IsolatedSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ImportedNewVPCNATGatewayIsolatedSubnet1NATGatewayC32B9442",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
-          }
-        ],
-        "/vpcv2-import-integ-test/ImportedNewVPC/EgressOnlyGW": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": "ImportedNewVPCNATGatewayIsolatedSubnet1NATGatewayC32B9442"
           }
         ],
         "/vpcv2-import-integ-test/ImportedNewVPC/EgressOnlyGW": [

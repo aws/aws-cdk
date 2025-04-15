@@ -149,12 +149,7 @@
   "testNATgwEIP1C260FAD": {
    "Type": "AWS::EC2::EIP",
    "Properties": {
-    "Domain": {
-     "Fn::GetAtt": [
-      "natgwpub2FB85986",
-      "VpcId"
-     ]
-    }
+    "Domain": "vpc"
    },
    "DependsOn": [
     "natgwpubSubnetRouteTableAssociation019CE26A"
