@@ -27,7 +27,7 @@ import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 const amplifyApp = new amplify.App(this, 'MyApp', {
   sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
     owner: '<github-username>',
-    repository: '<repository-name>',
+    repository: '<repository-name>', // Just the repository name, NOT the full repository URL
     accessToken: SecretValue.secretsManager('my-github-token'),
   }),
   buildSpec: codebuild.BuildSpec.fromObjectToYaml({
@@ -62,7 +62,7 @@ To connect your `App` to GitLab, use the `GitLabSourceCodeProvider`:
 const amplifyApp = new amplify.App(this, 'MyApp', {
   sourceCodeProvider: new amplify.GitLabSourceCodeProvider({
     owner: '<gitlab-namespace-or-group>',
-    repository: '<repository-name>',
+    repository: '<repository-name>', // Just the repository name, NOT the full repository URL
     oauthToken: SecretValue.secretsManager('my-gitlab-token'),
   }),
 });
@@ -159,7 +159,7 @@ Use `BasicAuth.fromCredentials` when referencing an existing secret:
 const amplifyApp = new amplify.App(this, 'MyApp', {
   sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
     owner: '<github-username>',
-    repository: '<repository-name>', // Just the repository name, NOT the full URL
+    repository: '<repository-name>', // Just the repository name, NOT the full repository URL
     accessToken: SecretValue.secretsManager('my-github-token'),
   }),
   basicAuth: amplify.BasicAuth.fromCredentials('username', SecretValue.secretsManager('my-github-token')),
@@ -171,8 +171,8 @@ Use `BasicAuth.fromGeneratedPassword` to generate a password in Secrets Manager:
 ```ts
 const amplifyApp = new amplify.App(this, 'MyApp', {
   sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
-    owner: '<user>',
-    repository: '<repo>',
+    owner: '<github-username>',
+    repository: '<repository-name>', // Just the repository name, NOT the full repository URL
     oauthToken: SecretValue.secretsManager('my-github-token'),
   }),
   basicAuth: amplify.BasicAuth.fromGeneratedPassword('username'),
@@ -197,7 +197,7 @@ of branches:
 const amplifyApp = new amplify.App(this, 'MyApp', {
   sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
     owner: '<github-username>',
-    repository: '<repository-name>', // Just the repository name, NOT the full URL
+    repository: '<repository-name>', // Just the repository name, NOT the full repository URL
     accessToken: SecretValue.secretsManager('my-github-token'),
   }),
   autoBranchCreation: { // Automatically connect branches that match a pattern set
@@ -214,8 +214,8 @@ Use the `customResponseHeaders` prop to configure custom response headers for an
 ```ts
 const amplifyApp = new amplify.App(this, 'App', {
   sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
-    owner: '<user>',
-    repository: '<repo>',
+    owner: '<github-username>',
+    repository: '<repository-name>', // Just the repository name, NOT the full repository URL
     oauthToken: SecretValue.secretsManager('my-github-token'),
   }),
   customResponseHeaders: [
