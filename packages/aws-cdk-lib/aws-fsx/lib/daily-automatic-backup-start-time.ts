@@ -6,12 +6,14 @@ import { UnscopedValidationError } from '../../core';
 export interface DailyAutomaticBackupStartTimeProps {
   /**
    * The hour of the day (from 0-23) for automatic backup starts.
+   * @default 22
    */
-  readonly hour: number;
+  readonly hour?: number;
   /**
    * The minute of the hour (from 0-59) for automatic backup starts.
+   * @default 0
    */
-  readonly minute: number;
+  readonly minute?: number;
 }
 
 /**
@@ -21,50 +23,71 @@ export class DailyAutomaticBackupStartTime {
   /**
    * The start hour of the automatic backup time in Coordinated Universal Time (UTC), using 24-hour time.
    * For example, 17 refers to 5:00 P.M. UTC.
-   *
-   * @default - 22
    */
   private readonly hour: string;
   /**
    * The start minute of the automatic backup time, in UTC.
-   *
-   * @default - 0
    */
   private readonly minute: string;
 
-  constructor(props: DailyAutomaticBackupStartTimeProps) {
-    this.validate(props.hour, props.minute);
-
-    this.hour = this.getTwoDigitString(props.hour);
-    this.minute = this.getTwoDigitString(props.minute);
-  }
   /**
-   * Converts an hour, and minute into HH:MM string.
+   * Creates a new DailyAutomaticBackupStartTime instance.
+   * @param props Configuration properties (defaults to hour:22, minute:0)
+   */
+  constructor(props: DailyAutomaticBackupStartTimeProps = {}) {
+    const hour = props.hour ?? 22;
+    const minute = props.minute ?? 0;
+    this.validate(hour, minute);
+
+    this.hour = this.getTwoDigitString(hour);
+    this.minute = this.getTwoDigitString(minute);
+  }
+
+  /**
+   * Creates an instance from a "HH:MM" formatted string.
+   * @param timeString Time string in "HH:MM" format (24-hour)
+   * @returns New DailyAutomaticBackupStartTime instance
+   * @throws UnscopedValidationError if format is invalid
+   */
+  public static fromString(timeString: string): DailyAutomaticBackupStartTime {
+    const timeRegex = /^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/;
+    if (!timeRegex.test(timeString)) {
+      throw new UnscopedValidationError(`Time must be in "HH:MM" format (24-hour). Received: ${timeString}`);
+    }
+
+    const [hour, minute] = timeString.split(':').map(Number);
+    return new DailyAutomaticBackupStartTime({ hour, minute });
+  }
+
+  /**
+   * Converts the time to "HH:MM" string format.
+   * @returns Time string in "HH:MM" format
    */
   public toTimestamp(): string {
     return `${this.hour}:${this.minute}`;
   }
 
   /**
-   * Pad an integer so that it always contains at least 2 digits. Assumes the number is a positive integer.
+   * Pad an integer to 2 digits. Assumes the number is a positive integer.
+   * @param n Number to pad
+   * @returns 2-digit string representation
    */
   private getTwoDigitString(n: number): string {
-    const numberString = n.toString();
-    if (numberString.length === 1) {
-      return `0${n}`;
-    }
-    return numberString;
+    return n.toString().padStart(2, '0');
   }
 
   /**
-   * Validation needed for the values of the daily automatic backup time.
+   * Validates hour and minute values.
+   * @param hour Hour value (0-23)
+   * @param minute Minute value (0-59)
+   * @throws UnscopedValidationError if validation fails
    */
-  private validate(hour: number, minute: number) {
+  private validate(hour: number, minute: number): void {
     if (!Number.isInteger(hour) || hour < 0 || hour > 23) {
-      throw new UnscopedValidationError(`dailyAutomaticBackupStartTime hour must be an integer between 0 and 24. received: ${hour}`);
+      throw new UnscopedValidationError(`hour must be an integer between 0 and 23. Received: ${hour}`);
     }
     if (!Number.isInteger(minute) || minute < 0 || minute > 59) {
-      throw new UnscopedValidationError(`dailyAutomaticBackupStartTime minute must be an integer between 0 and 59. received: ${minute}`);
+      throw new UnscopedValidationError(`minute must be an integer between 0 and 59. Received: ${minute}`);
     }
   }
 }
