@@ -2,7 +2,7 @@ import { App, SecretValue, Stack } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { UserPool, UserPoolIdentityProviderGoogle, UserPoolIdentityProviderAmazon, ProviderAttribute, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
-import { IdentityPool, IdentityPoolProviderUrl, UserPoolAuthenticationProvider } from 'aws-cdk-lib/aws-cognito-identitypool';
+import { IdentityPool, IdentityPoolProviderUrl, RoleMappingMatchType, UserPoolAuthenticationProvider } from 'aws-cdk-lib/aws-cognito-identitypool';
 
 const app = new App();
 const stack = new Stack(app, 'integ-idp');
