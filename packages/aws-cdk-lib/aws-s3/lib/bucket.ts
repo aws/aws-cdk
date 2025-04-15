@@ -933,7 +933,6 @@ export abstract class BucketBase extends Resource implements IBucket {
       });
     }
 
-    console.warn(props);
     props.destinations.forEach(destination => {
       destination.encryptionKey?.grantEncrypt(identity);
     });
