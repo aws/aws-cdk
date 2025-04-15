@@ -1,7 +1,8 @@
 {
-  "version": "38.0.1",
+  "version": "41.0.0",
   "files": {
-    "18ff5f513567382d8a37ced2f30c39e53a6519246d768ab8b65abcd9d2d43d89": {
+    "c4a1394c9b3d79fafdb2667618d18e87cd331841dd89ab3097ad9ad1781bb851": {
+      "displayName": "NetworkInterfaceVpc Template",
       "source": {
         "path": "aws-cdk-routev2-networkif-alpha.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "18ff5f513567382d8a37ced2f30c39e53a6519246d768ab8b65abcd9d2d43d89.json",
+          "objectKey": "c4a1394c9b3d79fafdb2667618d18e87cd331841dd89ab3097ad9ad1781bb851.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

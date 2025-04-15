@@ -295,8 +295,8 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
       cidrBlock: ipv4CidrBlock,
       ipv6CidrBlock: ipv6CidrBlock,
       availabilityZone: props.availabilityZone,
-      assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation ?? false,
-      mapPublicIpOnLaunch: props.mapPublicIpOnLaunch ?? undefined,
+      assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation,
+      mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
     });
 
     this.node.defaultChild = subnet;
