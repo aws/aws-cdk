@@ -524,6 +524,9 @@ export interface GrantReplicationPermissionDestinationProps {
   readonly encryptionKey?: kms.IKey;
 }
 
+/**
+ * The properties for the destination bucket for granting replication permission.
+ */
 export interface GrantReplicationPermissionProps {
   /**
    * The KMS key used to decrypt objects in the source bucket for replication.
