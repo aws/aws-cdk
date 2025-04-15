@@ -289,9 +289,7 @@ export interface RestApiProps extends RestApiBaseProps, ResourceOptions {
    * 
    * If you don't specify this property, a default value is chosen:
    * - For REST APIs created before March 29, 2021, the default is `overwrite`
-   * - For REST APIs created after March 29, 2021, the new API definition takes precedence,
-   *   but any container types such as endpoint configurations and binary media types
-   *   are merged with the existing API.
+   * - For REST APIs created after March 29, 2021, the new API definition takes precedence, but any container types such as endpoint configurations and binary media types are merged with the existing API.
    * 
    * Use the default mode to define top-level RestApi properties in addition to using OpenAPI.
    * Generally, it's preferred to use API Gateway's OpenAPI extensions to model these properties.
@@ -930,6 +928,7 @@ export class RestApi extends RestApiBase {
       cloneFrom: props.cloneFrom?.restApiId,
       parameters: props.parameters,
       disableExecuteApiEndpoint: props.disableExecuteApiEndpoint,
+      mode: props.mode,
     });
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
