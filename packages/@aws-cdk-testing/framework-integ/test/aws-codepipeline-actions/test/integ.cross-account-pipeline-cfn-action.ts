@@ -1,5 +1,5 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { App, Fn, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { App, Fn, PhysicalName, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -75,7 +75,7 @@ class PipelineStack extends Stack {
         encryption: s3.BucketEncryption.KMS,
         removalPolicy: RemovalPolicy.DESTROY,
         autoDeleteObjects: true,
-        bucketName: 'integ-cross-account-pipeline-artifact-bucket',
+        bucketName: PhysicalName.GENERATE_IF_NEEDED,
       }),
     });
 
