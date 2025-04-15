@@ -1,6 +1,6 @@
 name: Security Guardian
 on:
-  pull_request_target: {}
+  pull_request: {}
 
 jobs:
   run-security-guardian:
