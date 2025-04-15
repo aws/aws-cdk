@@ -298,7 +298,7 @@ export interface RestApiProps extends RestApiBaseProps, ResourceOptions {
    * 
    * @default - `merge` for REST APIs created after March 29, 2021, otherwise `overwrite`
    */
-  readonly mode?: 'overwrite' | 'merge';
+  readonly mode?: RestApiMode;
 }
 
 /**
@@ -1129,4 +1129,16 @@ class RootResource extends ResourceBase {
 
 function ignore(_x: any) {
   return;
+}
+
+export enum RestApiMode {
+  /**
+   * The new API definition replaces the existing one.
+   */
+  OVERWRITE = 'overwrite',
+
+  /**
+   * The new API definition is merged with the existing API.
+   */
+  MERGE = 'merge',
 }
