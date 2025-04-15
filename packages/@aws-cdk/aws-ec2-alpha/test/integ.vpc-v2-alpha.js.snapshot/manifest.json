@@ -251,12 +251,6 @@
             "data": "*"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/testsbubnet": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-vpcv2-alpha/testsbubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",

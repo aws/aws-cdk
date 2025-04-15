@@ -457,7 +457,6 @@
   "EndpointEEF1FD8F": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
-    "DnsOptions": {},
     "PrivateDnsEnabled": true,
     "SecurityGroupIds": [
      {

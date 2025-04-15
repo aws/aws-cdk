@@ -383,7 +383,6 @@
   "VPCSqsEndpoint9A40D77F": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
-    "DnsOptions": {},
     "PrivateDnsEnabled": true,
     "SecurityGroupIds": [
      {
@@ -478,7 +477,6 @@
   "VPCEcrEndpointB4F98F37": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
-    "DnsOptions": {},
     "PrivateDnsEnabled": true,
     "SecurityGroupIds": [
      {
@@ -573,7 +571,6 @@
   "VPCEcrImageEndpointD55381DC": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
-    "DnsOptions": {},
     "PrivateDnsEnabled": true,
     "SecurityGroupIds": [
      {
@@ -668,7 +665,6 @@
   "VPCCloudWatchLogsEndpointE175AF65": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
-    "DnsOptions": {},
     "PrivateDnsEnabled": true,
     "SecurityGroupIds": [
      {

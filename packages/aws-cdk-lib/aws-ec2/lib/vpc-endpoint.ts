@@ -1025,6 +1025,13 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     // Determine which subnets to place the endpoint in
     const subnetIds = this.endpointSubnets(props);
 
+    const dnsOptions = (props.dnsRecordIpType === undefined && props.privateDnsOnlyForInboundResolverEndpoint === undefined)
+      ? undefined
+      : {
+        dnsRecordIpType: props.dnsRecordIpType,
+        privateDnsOnlyForInboundResolverEndpoint: props.privateDnsOnlyForInboundResolverEndpoint,
+      };
+
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       privateDnsEnabled: props.privateDnsEnabled ?? props.service.privateDnsDefault ?? true,
       policyDocument: Lazy.any({ produce: () => this.policyDocument }),
@@ -1034,10 +1041,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       subnetIds,
       vpcId: props.vpc.vpcId,
       ipAddressType: props.ipAddressType,
-      dnsOptions: {
-        privateDnsOnlyForInboundResolverEndpoint: props.privateDnsOnlyForInboundResolverEndpoint,
-        dnsRecordIpType: props.dnsRecordIpType,
-      },
+      dnsOptions,
     });
 
     this.vpcEndpointId = endpoint.ref;

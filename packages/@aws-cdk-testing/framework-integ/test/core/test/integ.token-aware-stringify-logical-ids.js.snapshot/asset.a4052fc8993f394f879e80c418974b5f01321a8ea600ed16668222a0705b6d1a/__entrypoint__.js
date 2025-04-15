@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.external = void 0;
-exports.handler = handler;
-exports.withRetries = withRetries;
+exports.withRetries = exports.handler = exports.external = void 0;
 const https = require("https");
 const url = require("url");
 // for unit tests
@@ -62,6 +60,7 @@ async function handler(event, context) {
         await submitResponse('FAILED', resp);
     }
 }
+exports.handler = handler;
 function renderResponse(cfnRequest, handlerResponse = {}) {
     // if physical ID is not returned, we have some defaults for you based
     // on the request type.
@@ -150,6 +149,7 @@ function withRetries(options, fn) {
         }
     };
 }
+exports.withRetries = withRetries;
 async function sleep(ms) {
     return new Promise((ok) => setTimeout(ok, ms));
 }

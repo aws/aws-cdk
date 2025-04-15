@@ -348,7 +348,6 @@
   "MyVpcS3MultiRegionAccessEndpointBBDE5F84": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
-    "DnsOptions": {},
     "PrivateDnsEnabled": true,
     "SecurityGroupIds": [
      {

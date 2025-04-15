@@ -542,7 +542,6 @@
   "MyVpcEcrDockerEndpoint0385050C": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
-    "DnsOptions": {},
     "PrivateDnsEnabled": true,
     "SecurityGroupIds": [
      {
@@ -637,7 +636,6 @@
   "MyVpcDynamoDbInterfaceEndpointA97B3149": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
-    "DnsOptions": {},
     "PrivateDnsEnabled": false,
     "SecurityGroupIds": [
      {
