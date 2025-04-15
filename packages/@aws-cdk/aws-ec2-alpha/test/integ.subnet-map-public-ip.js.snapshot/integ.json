@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "SubnetMapPublicIpInteg/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-alpha-subnet-map-public-ip"
+      ],
+      "assertionStack": "SubnetMapPublicIpInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "SubnetMapPublicIpIntegDefaultTestDeployAssert628B9886"
+    }
+  }
+}

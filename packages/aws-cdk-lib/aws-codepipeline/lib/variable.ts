@@ -1,6 +1,6 @@
 import { CfnPipeline } from './codepipeline.generated';
 import { validatePipelineVariableName } from './private/validation';
-import { Token } from '../../core';
+import { Token, UnscopedValidationError } from '../../core';
 
 /**
  * Properties of pipeline-level variable.
@@ -54,10 +54,10 @@ export class Variable {
       && !Token.isUnresolved(this.defaultValue)
       && (this.defaultValue.length < 1 || this.defaultValue.length > 1000)
     ) {
-      throw new Error(`Default value for variable '${this.variableName}' must be between 1 and 1000 characters long, got ${this.defaultValue.length}`);
+      throw new UnscopedValidationError(`Default value for variable '${this.variableName}' must be between 1 and 1000 characters long, got ${this.defaultValue.length}`);
     }
     if (this.description !== undefined && !Token.isUnresolved(this.description) && this.description.length > 200) {
-      throw new Error(`Description for variable '${this.variableName}' must not be greater than 200 characters long, got ${this.description.length}`);
+      throw new UnscopedValidationError(`Description for variable '${this.variableName}' must not be greater than 200 characters long, got ${this.description.length}`);
     }
   }
 
