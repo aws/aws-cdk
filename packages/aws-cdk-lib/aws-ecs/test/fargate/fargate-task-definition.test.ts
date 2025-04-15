@@ -40,7 +40,7 @@ describe('fargate task definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
-        cpu: 256,
+        cpu: 128,
         executionRole: new iam.Role(stack, 'ExecutionRole', {
           path: '/',
           assumedBy: new iam.CompositePrincipal(
@@ -49,7 +49,7 @@ describe('fargate task definition', () => {
           ),
         }),
         family: 'myApp',
-        memoryLimitMiB: 512,
+        memoryLimitMiB: 1024,
         taskRole: new iam.Role(stack, 'TaskRole', {
           assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
         }),
@@ -70,7 +70,7 @@ describe('fargate task definition', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        Cpu: '256',
+        Cpu: '128',
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
@@ -81,7 +81,7 @@ describe('fargate task definition', () => {
           SizeInGiB: 21,
         },
         Family: 'myApp',
-        Memory: '512',
+        Memory: '1024',
         NetworkMode: 'awsvpc',
         PidMode: 'task',
         RequiresCompatibilities: [
