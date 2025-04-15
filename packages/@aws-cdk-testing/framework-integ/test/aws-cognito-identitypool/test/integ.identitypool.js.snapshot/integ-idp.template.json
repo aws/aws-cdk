@@ -575,26 +575,6 @@
        ]
       },
       "Type": "Token"
-     },
-     "googleProvider": {
-      "AmbiguousRoleResolution": "Deny",
-      "Type": "Rules",
-      "IdentityProvider": "accounts.google.com",
-      "RulesConfiguration": {
-       "Rules": [
-        {
-         "Claim": "sub",
-         "Value": "someVal",
-         "MatchType": "Equals",
-         "RoleARN": {
-          "Fn::GetAtt": [
-           "identitypoolAuthenticatedRoleB074B49D",
-           "Arn"
-          ]
-         }
-        }
-       ]
-      }
      }
     },
     "Roles": {

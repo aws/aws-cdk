@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "integ-idp.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b1fe26ab6ef3886f401ef9b20b57b2b94396dbbfb79f1c71ce738186f4bc800b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/70b2a5399ace42fab2c709a754a83c5d69ab9cb57dbae0e37e2beba80a9fc87d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -139,11 +139,39 @@
         "/integ-idp/identitypool": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "authenticationProviders": {
+                "userPools": "*",
+                "amazon": {
+                  "appId": "*"
+                },
+                "google": {
+                  "clientId": "*"
+                }
+              },
+              "roleMappings": [
+                {
+                  "mappingKey": "*",
+                  "providerUrl": "*",
+                  "useToken": true
+                },
+                {
+                  "mappingKey": "*",
+                  "providerUrl": "*",
+                  "useToken": true
+                }
+              ],
+              "allowClassicFlow": true,
+              "identityPoolName": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addUserPoolAuthentication": [
+                {}
+              ]
+            }
           }
         ],
         "/integ-idp/identitypool/Resource": [
@@ -388,11 +416,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-<<<<<<< HEAD:packages/@aws-cdk/aws-cognito-identitypool-alpha/test/integ.identitypool.js.snapshot/manifest.json
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1633cd9d0b2ac0d4de103713223ffa2ce4a309ddab19929dcb623081af232571.json",
-=======
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ccbcaf81c1186e1233eefec3087d4ae6fc6b6c47702eccdffea8342ec80b82d5.json",
->>>>>>> main:packages/@aws-cdk-testing/framework-integ/test/aws-cognito-identitypool/test/integ.identitypool.js.snapshot/manifest.json
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/de4b6e109ed9a143aea1d236fdeb07f8de1604516a1df75e56f12329af9fa8cd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -500,5 +524,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }
