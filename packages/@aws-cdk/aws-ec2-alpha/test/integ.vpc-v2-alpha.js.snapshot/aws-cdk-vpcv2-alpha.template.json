@@ -323,7 +323,7 @@
     "VPCintegtest1InternetGatewayIGWAA29FB02"
    ]
   },
-  "VPCintegtest1NATGateway31DAF7F4": {
+  "VPCintegtest1NATGatewaytestsbubnetNATGateway3A015DE6": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
     "ConnectivityType": "private",

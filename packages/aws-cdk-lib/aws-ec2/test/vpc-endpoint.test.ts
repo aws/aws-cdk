@@ -1,7 +1,7 @@
-import {Match, Template} from '../../assertions';
-import {AnyPrincipal, PolicyStatement} from '../../aws-iam';
+import { Match, Template } from '../../assertions';
+import { AnyPrincipal, PolicyStatement } from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
-import {ContextProvider, Fn, Stack} from '../../core';
+import { ContextProvider, Fn, Stack } from '../../core';
 // eslint-disable-next-line max-len
 import {
   GatewayVpcEndpoint,
