@@ -95,7 +95,9 @@ Flags come in three types:
 | [@aws-cdk/aws-events:requireEventBusPolicySid](#aws-cdkaws-eventsrequireeventbuspolicysid) | When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals. | 2.186.0 | (fix) |
 | [@aws-cdk/aws-dynamodb:retainTableReplica](#aws-cdkaws-dynamodbretaintablereplica) | When enabled, table replica will be default to the removal policy of source table unless specified otherwise. | 2.187.0 | (fix) |
 | [@aws-cdk/cognito:logUserPoolClientSecretValue](#aws-cdkcognitologuserpoolclientsecretvalue) | When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs. | 2.187.0 | (default) |
+| [@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2](#aws-cdkaws-stepfunctionsusedistributedmapresultwriterv2) | When enabled, the resultWriterV2 property of DistributedMap will be used insted of resultWriter | 2.188.0 | (default) |
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | 2.189.0 | (default) |
+| [@aws-cdk/core:aspectPrioritiesMutating](#aws-cdkcoreaspectprioritiesmutating) | When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING. | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -176,7 +178,9 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false,
     "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
     "@aws-cdk/aws-events:requireEventBusPolicySid": true,
-    "@aws-cdk/aws-dynamodb:retainTableReplica": true
+    "@aws-cdk/aws-dynamodb:retainTableReplica": true,
+    "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true
+    "@aws-cdk/core:aspectPrioritiesMutating": true,
   }
 }
 ```
@@ -192,14 +196,14 @@ for your infrastructure, see the flag's description on how to achieve it.
 
 | Flag | Summary | Type | Since |
 | ----- | ----- | ----- | ----- |
-| [@aws-cdk/core:enableStackNameDuplicates](#aws-cdkcoreenablestacknameduplicates) | Allow multiple stacks with the same name | (default) | 1.16.0 |
-| [aws-cdk:enableDiffNoFail](#aws-cdkenablediffnofail) | Make `cdk diff` not fail when there are differences | (default) | 1.19.0 |
-| [@aws-cdk/aws-ecr-assets:dockerIgnoreSupport](#aws-cdkaws-ecr-assetsdockerignoresupport) | DockerImageAsset properly supports `.dockerignore` files by default | (default) | 1.73.0 |
-| [@aws-cdk/aws-secretsmanager:parseOwnedSecretName](#aws-cdkaws-secretsmanagerparseownedsecretname) | Fix the referencing of SecretsManager names from ARNs | (default) | 1.77.0 |
-| [@aws-cdk/aws-kms:defaultKeyPolicies](#aws-cdkaws-kmsdefaultkeypolicies) | Tighten default KMS key policies | (default) | 1.78.0 |
-| [@aws-cdk/aws-s3:grantWriteWithoutAcl](#aws-cdkaws-s3grantwritewithoutacl) | Remove `PutObjectAcl` from Bucket.grantWrite | (default) | 1.85.0 |
-| [@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount](#aws-cdkaws-ecs-patternsremovedefaultdesiredcount) | Do not specify a default DesiredCount for ECS services | (default) | 1.92.0 |
-| [@aws-cdk/aws-efs:defaultEncryptionAtRest](#aws-cdkaws-efsdefaultencryptionatrest) | Enable this feature flag to have elastic file systems encrypted at rest by default. | (default) | 1.98.0 |
+| [@aws-cdk/core:enableStackNameDuplicates](#aws-cdkcoreenablestacknameduplicates) | Allow multiple stacks with the same name | new default | 1.16.0 |
+| [aws-cdk:enableDiffNoFail](#aws-cdkenablediffnofail) | Make `cdk diff` not fail when there are differences | new default | 1.19.0 |
+| [@aws-cdk/aws-ecr-assets:dockerIgnoreSupport](#aws-cdkaws-ecr-assetsdockerignoresupport) | DockerImageAsset properly supports `.dockerignore` files by default | new default | 1.73.0 |
+| [@aws-cdk/aws-secretsmanager:parseOwnedSecretName](#aws-cdkaws-secretsmanagerparseownedsecretname) | Fix the referencing of SecretsManager names from ARNs | new default | 1.77.0 |
+| [@aws-cdk/aws-kms:defaultKeyPolicies](#aws-cdkaws-kmsdefaultkeypolicies) | Tighten default KMS key policies | new default | 1.78.0 |
+| [@aws-cdk/aws-s3:grantWriteWithoutAcl](#aws-cdkaws-s3grantwritewithoutacl) | Remove `PutObjectAcl` from Bucket.grantWrite | new default | 1.85.0 |
+| [@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount](#aws-cdkaws-ecs-patternsremovedefaultdesiredcount) | Do not specify a default DesiredCount for ECS services | new default | 1.92.0 |
+| [@aws-cdk/aws-efs:defaultEncryptionAtRest](#aws-cdkaws-efsdefaultencryptionatrest) | Enable this feature flag to have elastic file systems encrypted at rest by default. | new default | 1.98.0 |
 
 <!-- END removed -->
 
@@ -213,17 +217,17 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 
 | Flag | Summary | Type | Since | v1 default | v2 default |
 | ----- | ----- | ----- | ----- | ----- | ----- |
-| [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | (fix) | 1.39.0 | `false` | `true` |
-| [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | (fix) | 1.58.0 | `false` | `true` |
-| [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | (fix) | 1.97.0 | `false` | `true` |
-| [@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId](#aws-cdkaws-apigatewayusageplankeyorderinsensitiveid) | Allow adding/removing multiple UsagePlanKeys independently | (fix) | 1.98.0 | `false` | `true` |
-| [@aws-cdk/aws-lambda:recognizeVersionProps](#aws-cdkaws-lambdarecognizeversionprops) | Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`. | (fix) | 1.106.0 | `false` | `true` |
-| [@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2\_2021](#aws-cdkaws-cloudfrontdefaultsecuritypolicytlsv12_2021) | Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default. | (fix) | 1.117.0 | `false` | `true` |
-| [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | (default) |  | `false` | `true` |
-| [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | (fix) |  | `false` | `true` |
-| [@aws-cdk/core:aspectStabilization](#aws-cdkcoreaspectstabilization) | When enabled, a stabilization loop will be run when invoking Aspects during synthesis. | (config) |  | `false` | `true` |
-| [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | (default) |  | `false` | `true` |
-| [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | (default) |  | `false` | `true` |
+| [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | fix | 1.39.0 | `false` | `true` |
+| [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | fix | 1.58.0 | `false` | `true` |
+| [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | fix | 1.97.0 | `false` | `true` |
+| [@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId](#aws-cdkaws-apigatewayusageplankeyorderinsensitiveid) | Allow adding/removing multiple UsagePlanKeys independently | fix | 1.98.0 | `false` | `true` |
+| [@aws-cdk/aws-lambda:recognizeVersionProps](#aws-cdkaws-lambdarecognizeversionprops) | Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`. | fix | 1.106.0 | `false` | `true` |
+| [@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2\_2021](#aws-cdkaws-cloudfrontdefaultsecuritypolicytlsv12_2021) | Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default. | fix | 1.117.0 | `false` | `true` |
+| [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | new default |  | `false` | `true` |
+| [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | fix |  | `false` | `true` |
+| [@aws-cdk/core:aspectStabilization](#aws-cdkcoreaspectstabilization) | When enabled, a stabilization loop will be run when invoking Aspects during synthesis. | config |  | `false` | `true` |
+| [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | new default |  | `false` | `true` |
+| [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | new default |  | `false` | `true` |
 
 <!-- END diff -->
 
@@ -250,7 +254,9 @@ Here are more details about each of the flags:
 <!-- BEGIN details -->
 ### @aws-cdk/core:enableStackNameDuplicates
 
-*Allow multiple stacks with the same name* (default)
+*Allow multiple stacks with the same name*
+
+Flag type: New default behavior
 
 If this is set, multiple stacks can use the same stack name (e.g. deployed to
 different environments). This means that the name of the synthesized template
@@ -268,7 +274,9 @@ of the stack.
 
 ### aws-cdk:enableDiffNoFail
 
-*Make `cdk diff` not fail when there are differences* (default)
+*Make `cdk diff` not fail when there are differences*
+
+Flag type: New default behavior
 
 Determines what status code `cdk diff` should return when the specified stack
 differs from the deployed stack or the local CloudFormation template:
@@ -292,7 +300,9 @@ You can override this behavior with the --fail flag:
 
 ### @aws-cdk/aws-ecr-assets:dockerIgnoreSupport
 
-*DockerImageAsset properly supports `.dockerignore` files by default* (default)
+*DockerImageAsset properly supports `.dockerignore` files by default*
+
+Flag type: New default behavior
 
 If this flag is not set, the default behavior for `DockerImageAsset` is to use
 glob semantics for `.dockerignore` files. If this flag is set, the default behavior
@@ -312,7 +322,9 @@ users may have come to depend on it.
 
 ### @aws-cdk/aws-secretsmanager:parseOwnedSecretName
 
-*Fix the referencing of SecretsManager names from ARNs* (default)
+*Fix the referencing of SecretsManager names from ARNs*
+
+Flag type: New default behavior
 
 Secret.secretName for an "owned" secret will attempt to parse the secretName from the ARN,
 rather than the default full resource name, which includes the SecretsManager suffix.
@@ -331,7 +343,9 @@ used by SecretsManager.DescribeSecret, and must be parsed by the user first (e.g
 
 ### @aws-cdk/aws-kms:defaultKeyPolicies
 
-*Tighten default KMS key policies* (default)
+*Tighten default KMS key policies*
+
+Flag type: New default behavior
 
 KMS Keys start with a default key policy that grants the account access to administer the key,
 mirroring the behavior of the KMS SDK/CLI/Console experience. Users may override the default key
@@ -356,7 +370,9 @@ to the key's default policy (rather than replacing it).
 
 ### @aws-cdk/aws-s3:grantWriteWithoutAcl
 
-*Remove `PutObjectAcl` from Bucket.grantWrite* (default)
+*Remove `PutObjectAcl` from Bucket.grantWrite*
+
+Flag type: New default behavior
 
 Change the old 's3:PutObject*' permission to 's3:PutObject' on Bucket,
 as the former includes 's3:PutObjectAcl',
@@ -375,7 +391,9 @@ on the overly-broad permissions are not broken.
 
 ### @aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount
 
-*Do not specify a default DesiredCount for ECS services* (default)
+*Do not specify a default DesiredCount for ECS services*
+
+Flag type: New default behavior
 
 ApplicationLoadBalancedServiceBase, ApplicationMultipleTargetGroupServiceBase,
 NetworkLoadBalancedServiceBase, NetworkMultipleTargetGroupServiceBase, and
@@ -398,7 +416,9 @@ CfnService.desiredCount and as such desiredCount will be undefined, if one is no
 
 ### @aws-cdk/aws-efs:defaultEncryptionAtRest
 
-*Enable this feature flag to have elastic file systems encrypted at rest by default.* (default)
+*Enable this feature flag to have elastic file systems encrypted at rest by default.*
+
+Flag type: New default behavior
 
 Encryption can also be configured explicitly using the `encrypted` property.
 
@@ -413,7 +433,9 @@ Encryption can also be configured explicitly using the `encrypted` property.
 
 ### @aws-cdk/core:newStyleStackSynthesis
 
-*Switch to new stack synthesis method which enables CI/CD* (fix)
+*Switch to new stack synthesis method which enables CI/CD*
+
+Flag type: Backwards incompatible bugfix
 
 If this flag is specified, all `Stack`s will use the `DefaultStackSynthesizer` by
 default. If it is not set, they will use the `LegacyStackSynthesizer`.
@@ -427,7 +449,9 @@ default. If it is not set, they will use the `LegacyStackSynthesizer`.
 
 ### @aws-cdk/core:stackRelativeExports
 
-*Name exports based on the construct paths relative to the stack, rather than the global construct path* (fix)
+*Name exports based on the construct paths relative to the stack, rather than the global construct path*
+
+Flag type: Backwards incompatible bugfix
 
 Combined with the stack name this relative construct path is good enough to
 ensure uniqueness, and makes the export names robust against refactoring
@@ -443,7 +467,9 @@ into a Stage).
 
 ### @aws-cdk/aws-rds:lowercaseDbIdentifier
 
-*Force lowercasing of RDS Cluster names in CDK* (fix)
+*Force lowercasing of RDS Cluster names in CDK*
+
+Flag type: Backwards incompatible bugfix
 
 Cluster names must be lowercase, and the service will lowercase the name when the cluster
 is created. However, CDK did not use to know about this, and would use the user-provided name
@@ -464,7 +490,9 @@ would lead CloudFormation to think the name was changed and would trigger a clus
 
 ### @aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId
 
-*Allow adding/removing multiple UsagePlanKeys independently* (fix)
+*Allow adding/removing multiple UsagePlanKeys independently*
+
+Flag type: Backwards incompatible bugfix
 
 The UsagePlanKey resource connects an ApiKey with a UsagePlan. API Gateway does not allow more than one UsagePlanKey
 for any given UsagePlan and ApiKey combination. For this reason, CloudFormation cannot replace this resource without
@@ -488,7 +516,9 @@ This flag changes the logical id layout of UsagePlanKey to not be sensitive to o
 
 ### @aws-cdk/aws-lambda:recognizeVersionProps
 
-*Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`.* (fix)
+*Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`.*
+
+Flag type: Backwards incompatible bugfix
 
 The previous calculation incorrectly considered properties of the `AWS::Lambda::Function` resource that did
 not constitute creating a new Version.
@@ -504,7 +534,9 @@ See 'currentVersion' section in the aws-lambda module's README for more details.
 
 ### @aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021
 
-*Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default.* (fix)
+*Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default.*
+
+Flag type: Backwards incompatible bugfix
 
 The security policy can also be configured explicitly using the `minimumProtocolVersion` property.
 
@@ -517,7 +549,9 @@ The security policy can also be configured explicitly using the `minimumProtocol
 
 ### @aws-cdk/core:target-partitions
 
-*What regions to include in lookup tables of environment agnostic stacks* (config)
+*What regions to include in lookup tables of environment agnostic stacks*
+
+Flag type: Configuration option
 
 Has no effect on stacks that have a defined region, but will limit the amount
 of unnecessary regions included in stacks without a known region.
@@ -533,7 +567,9 @@ The type of this value should be a list of strings.
 
 ### @aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver
 
-*ECS extensions will automatically add an `awslogs` driver if no logging is specified* (default)
+*ECS extensions will automatically add an `awslogs` driver if no logging is specified*
+
+Flag type: New default behavior
 
 Enable this feature flag to configure default logging behavior for the ECS Service Extensions. This will enable the
 `awslogs` log driver for the application container of the service to send the container logs to CloudWatch Logs.
@@ -551,7 +587,9 @@ This is a feature flag as the new behavior provides a better default experience 
 
 ### @aws-cdk/aws-ec2:uniqueImdsv2TemplateName
 
-*Enable this feature flag to have Launch Templates generated by the `InstanceRequireImdsv2Aspect` use unique names.* (fix)
+*Enable this feature flag to have Launch Templates generated by the `InstanceRequireImdsv2Aspect` use unique names.*
+
+Flag type: Backwards incompatible bugfix
 
 Previously, the generated Launch Template names were only unique within a stack because they were based only on the
 `Instance` construct ID. If another stack that has an `Instance` with the same construct ID is deployed in the same
@@ -568,7 +606,9 @@ The new implementation addresses this issue by generating the Launch Template na
 
 ### @aws-cdk/aws-iam:minimizePolicies
 
-*Minimize IAM policies by combining Statements* (config)
+*Minimize IAM policies by combining Statements*
+
+Flag type: Configuration option
 
 Minimize IAM policies by combining Principals, Actions and Resources of two
 Statements in the policies, as long as it doesn't change the meaning of the
@@ -583,7 +623,9 @@ policy.
 
 ### @aws-cdk/core:checkSecretUsage
 
-*Enable this flag to make it impossible to accidentally use SecretValues in unsafe locations* (config)
+*Enable this flag to make it impossible to accidentally use SecretValues in unsafe locations*
+
+Flag type: Configuration option
 
 With this flag enabled, `SecretValue` instances can only be passed to
 constructs that accept `SecretValue`s; otherwise, `unsafeUnwrap()` must be
@@ -598,7 +640,9 @@ called to use it as a regular string.
 
 ### @aws-cdk/aws-lambda:recognizeLayerVersion
 
-*Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the `fn.currentVersion`.* (fix)
+*Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the `fn.currentVersion`.*
+
+Flag type: Backwards incompatible bugfix
 
 This flag correct incorporates Lambda Layer properties into the Lambda Function Version.
 
@@ -613,7 +657,9 @@ See 'currentVersion' section in the aws-lambda module's README for more details.
 
 ### @aws-cdk/core:validateSnapshotRemovalPolicy
 
-*Error on snapshot removal policies on resources that do not support it.* (default)
+*Error on snapshot removal policies on resources that do not support it.*
+
+Flag type: New default behavior
 
 Makes sure we do not allow snapshot removal policy on resources that do not support it.
 If supplied on an unsupported resource, CloudFormation ignores the policy altogether.
@@ -631,7 +677,9 @@ the snapshot removal policy.
 
 ### @aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName
 
-*Generate key aliases that include the stack name* (fix)
+*Generate key aliases that include the stack name*
+
+Flag type: Backwards incompatible bugfix
 
 Enable this feature flag to have CodePipeline generate a unique cross account key alias name using the stack name.
 
@@ -649,7 +697,9 @@ This new implementation creates a stack safe resource name for the alias using t
 
 ### @aws-cdk/aws-s3:createDefaultLoggingPolicy
 
-*Enable this feature flag to create an S3 bucket policy by default in cases where an AWS service would automatically create the Policy if one does not exist.* (fix)
+*Enable this feature flag to create an S3 bucket policy by default in cases where an AWS service would automatically create the Policy if one does not exist.*
+
+Flag type: Backwards incompatible bugfix
 
 For example, in order to send VPC flow logs to an S3 bucket, there is a specific Bucket Policy
 that needs to be attached to the bucket. If you create the bucket without a policy and then add the
@@ -671,7 +721,9 @@ remain in control of it.
 
 ### @aws-cdk/aws-sns-subscriptions:restrictSqsDescryption
 
-*Restrict KMS key policy for encrypted Queues a bit more* (fix)
+*Restrict KMS key policy for encrypted Queues a bit more*
+
+Flag type: Backwards incompatible bugfix
 
 Enable this feature flag to restrict the decryption of a SQS queue, which is subscribed to a SNS topic, to
 only the topic which it is subscribed to and not the whole SNS service of an account.
@@ -689,7 +741,9 @@ the subscribed queue.
 
 ### @aws-cdk/aws-ecs:arnFormatIncludesClusterName
 
-*ARN format used by ECS. In the new ARN format, the cluster name is part of the resource ID.* (fix)
+*ARN format used by ECS. In the new ARN format, the cluster name is part of the resource ID.*
+
+Flag type: Backwards incompatible bugfix
 
 If this flag is not set, the old ARN format (without cluster name) for ECS is used.
 If this flag is set, the new ARN format (with cluster name) for ECS is used.
@@ -707,7 +761,9 @@ See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-sett
 
 ### @aws-cdk/aws-apigateway:disableCloudWatchRole
 
-*Make default CloudWatch Role behavior safe for multiple API Gateways in one environment* (fix)
+*Make default CloudWatch Role behavior safe for multiple API Gateways in one environment*
+
+Flag type: Backwards incompatible bugfix
 
 Enable this feature flag to change the default behavior for aws-apigateway.RestApi and aws-apigateway.SpecRestApi
 to _not_ create a CloudWatch role and Account. There is only a single ApiGateway account per AWS
@@ -727,7 +783,9 @@ separately _or_ only enable the cloudWatchRole on a single RestApi.
 
 ### @aws-cdk/core:enablePartitionLiterals
 
-*Make ARNs concrete if AWS partition is known* (fix)
+*Make ARNs concrete if AWS partition is known*
+
+Flag type: Backwards incompatible bugfix
 
 Enable this feature flag to get partition names as string literals in Stacks with known regions defined in
 their environment, such as "aws" or "aws-cn".  Previously the CloudFormation intrinsic function
@@ -762,7 +820,9 @@ is unknown.
 
 ### @aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker
 
-*Avoid setting the "ECS" deployment controller when adding a circuit breaker* (fix)
+*Avoid setting the "ECS" deployment controller when adding a circuit breaker*
+
+Flag type: Backwards incompatible bugfix
 
 Enable this feature flag to avoid setting the "ECS" deployment controller when adding a circuit breaker to an
 ECS Service, as this will trigger a full replacement which fails to deploy when using set service names.
@@ -779,7 +839,9 @@ This is a feature flag as the new behavior provides a better default experience 
 
 ### @aws-cdk/aws-events:eventsTargetQueueSameAccount
 
-*Event Rules may only push to encrypted SQS queues in the same account* (fix)
+*Event Rules may only push to encrypted SQS queues in the same account*
+
+Flag type: Backwards incompatible bugfix
 
 This flag applies to SQS Queues that are used as the target of event Rules. When enabled, only principals
 from the same account as the Rule can send messages. If a queue is unencrypted, this restriction will
@@ -794,7 +856,9 @@ always apply, regardless of the value of this flag.
 
 ### @aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName
 
-*Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in.* (fix)
+*Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in.*
+
+Flag type: Backwards incompatible bugfix
 
 Without this, importing the same role in multiple places could lead to the permissions given for one version of the imported role
 to overwrite permissions given to the role at a different place where it was imported. This was due to all imported instances
@@ -811,7 +875,9 @@ This new implementation creates default policy names based on the constructs nod
 
 ### @aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy
 
-*Use S3 Bucket Policy instead of ACLs for Server Access Logging* (fix)
+*Use S3 Bucket Policy instead of ACLs for Server Access Logging*
+
+Flag type: Backwards incompatible bugfix
 
 Enable this feature flag to use S3 Bucket Policy for granting permission fo Server Access Logging
 rather than using the canned `LogDeliveryWrite` ACL. ACLs do not work when Object Ownership is
@@ -831,7 +897,9 @@ practices for S3.
 
 ### @aws-cdk/customresources:installLatestAwsSdkDefault
 
-*Whether to install the latest SDK by default in AwsCustomResource* (default)
+*Whether to install the latest SDK by default in AwsCustomResource*
+
+Flag type: New default behavior
 
 This was originally introduced and enabled by default to not be limited by the SDK version
 that's installed on AWS Lambda. However, it creates issues for Lambdas bound to VPCs that
@@ -851,7 +919,9 @@ flag on a resource-by-resource basis to enable it if necessary.
 
 ### @aws-cdk/aws-route53-patters:useCertificate
 
-*Use the official `Certificate` resource instead of `DnsValidatedCertificate`* (default)
+*Use the official `Certificate` resource instead of `DnsValidatedCertificate`*
+
+Flag type: New default behavior
 
 Enable this feature flag to use the official CloudFormation supported `Certificate` resource instead
 of the deprecated `DnsValidatedCertificate` construct. If this flag is enabled and you are creating
@@ -869,7 +939,9 @@ stack.
 
 ### @aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup
 
-*Remove CloudWatch alarms from deployment group* (fix)
+*Remove CloudWatch alarms from deployment group*
+
+Flag type: Backwards incompatible bugfix
 
 Enable this flag to be able to remove all CloudWatch alarms from a deployment group by removing
 the alarms from the construct. If this flag is not set, removing all alarms from the construct
@@ -884,7 +956,9 @@ will still leave the alarms configured for the deployment group.
 
 ### @aws-cdk/aws-rds:databaseProxyUniqueResourceName
 
-*Use unique resource name for Database Proxy* (fix)
+*Use unique resource name for Database Proxy*
+
+Flag type: Backwards incompatible bugfix
 
 If this flag is not set, the default behavior for `DatabaseProxy` is
 to use `id` of the constructor for `dbProxyName` when it's not specified in the argument.
@@ -903,7 +977,9 @@ This is a feature flag as the old behavior was technically incorrect, but users 
 
 ### @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId
 
-*Include authorizer configuration in the calculation of the API deployment logical ID.* (fix)
+*Include authorizer configuration in the calculation of the API deployment logical ID.*
+
+Flag type: Backwards incompatible bugfix
 
 The logical ID of the AWS::ApiGateway::Deployment resource is calculated by hashing
 the API configuration, including methods, and resources, etc. Enable this feature flag
@@ -919,7 +995,9 @@ calculation, so any changes made to an authorizer will create a new deployment.
 
 ### @aws-cdk/aws-ec2:launchTemplateDefaultUserData
 
-*Define user data for a launch template by default when a machine image is provided.* (fix)
+*Define user data for a launch template by default when a machine image is provided.*
+
+Flag type: Backwards incompatible bugfix
 
 The ec2.LaunchTemplate construct did not define user data when a machine image is
 provided despite the document. If this is set, a user data is automatically defined
@@ -934,7 +1012,9 @@ according to the OS of the machine image.
 
 ### @aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments
 
-*SecretTargetAttachments uses the ResourcePolicy of the attached Secret.* (fix)
+*SecretTargetAttachments uses the ResourcePolicy of the attached Secret.*
+
+Flag type: Backwards incompatible bugfix
 
 Enable this feature flag to make SecretTargetAttachments use the ResourcePolicy of the attached Secret.
 SecretTargetAttachments are created to connect a Secret to a target resource.
@@ -956,7 +1036,9 @@ Then you can re-add the permissions and deploy again.
 
 ### @aws-cdk/aws-redshift:columnId
 
-*Whether to use an ID to track Redshift column changes* (fix)
+*Whether to use an ID to track Redshift column changes*
+
+Flag type: Backwards incompatible bugfix
 
 Redshift columns are identified by their `name`. If a column is renamed, the old column
 will be dropped and a new column will be created. This can cause data loss.
@@ -979,7 +1061,9 @@ of the `id`s, the `name`s of the columns can be changed without data loss.
 
 ### @aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2
 
-*Enable AmazonEMRServicePolicy_v2 managed policies* (fix)
+*Enable AmazonEMRServicePolicy_v2 managed policies*
+
+Flag type: Backwards incompatible bugfix
 
 If this flag is not set, the default behavior for `EmrCreateCluster` is
 to use `AmazonElasticMapReduceRole` managed policies.
@@ -999,7 +1083,9 @@ intervention since they might not have the appropriate tags propagated automatic
 
 ### @aws-cdk/aws-apigateway:requestValidatorUniqueId
 
-*Generate a unique id for each RequestValidator added to a method* (fix)
+*Generate a unique id for each RequestValidator added to a method*
+
+Flag type: Backwards incompatible bugfix
 
 This flag allows multiple RequestValidators to be added to a RestApi when
 providing the `RequestValidatorOptions` in the `addMethod()` method.
@@ -1016,7 +1102,9 @@ Any additional RequestValidators have to be created directly with `new RequestVa
 
 ### @aws-cdk/aws-ec2:restrictDefaultSecurityGroup
 
-*Restrict access to the VPC default security group* (default)
+*Restrict access to the VPC default security group*
+
+Flag type: New default behavior
 
 Enable this feature flag to remove the default ingress/egress rules from the
 VPC default security group.
@@ -1040,7 +1128,9 @@ removing these ingress/egress rules in order to restrict access to the default s
 
 ### @aws-cdk/aws-kms:aliasNameRef
 
-*KMS Alias name and keyArn will have implicit reference to KMS Key* (fix)
+*KMS Alias name and keyArn will have implicit reference to KMS Key*
+
+Flag type: Backwards incompatible bugfix
 
 This flag allows an implicit dependency to be created between KMS Alias and KMS Key
 when referencing key.aliasName or key.keyArn.
@@ -1057,7 +1147,9 @@ implicit dependencies will be set.
 
 ### @aws-cdk/core:includePrefixInUniqueNameGeneration
 
-*Include the stack prefix in the stack name generation process* (fix)
+*Include the stack prefix in the stack name generation process*
+
+Flag type: Backwards incompatible bugfix
 
 This flag prevents the prefix of a stack from making the stack's name longer than the 128 character limit.
 
@@ -1077,7 +1169,9 @@ is not viable in some productive setups.
 
 ### @aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig
 
-*Generate a launch template when creating an AutoScalingGroup* (fix)
+*Generate a launch template when creating an AutoScalingGroup*
+
+Flag type: Backwards incompatible bugfix
 
 Enable this flag to allow AutoScalingGroups to generate a launch template when being created.
 Launch configurations have been deprecated and cannot be created in AWS Accounts created after
@@ -1101,7 +1195,9 @@ provided.
 
 ### @aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby
 
-*Enables support for Multi-AZ with Standby deployment for opensearch domains* (default)
+*Enables support for Multi-AZ with Standby deployment for opensearch domains*
+
+Flag type: New default behavior
 
 If this is set, an opensearch domain will automatically be created with
 multi-az with standby enabled.
@@ -1117,7 +1213,9 @@ multi-az with standby enabled.
 
 ### @aws-cdk/aws-efs:denyAnonymousAccess
 
-*EFS denies anonymous clients accesses* (default)
+*EFS denies anonymous clients accesses*
+
+Flag type: New default behavior
 
 This flag adds the file system policy that denies anonymous clients
 access to `efs.FileSystem`.
@@ -1136,7 +1234,9 @@ that can access over the network.
 
 ### @aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId
 
-*When enabled, mount targets will have a stable logicalId that is linked to the associated subnet.* (fix)
+*When enabled, mount targets will have a stable logicalId that is linked to the associated subnet.*
+
+Flag type: Backwards incompatible bugfix
 
 When this feature flag is enabled, each mount target will have a stable
 logicalId that is linked to the associated subnet. If the flag is set to
@@ -1154,7 +1254,9 @@ Set this flag to false for existing mount targets.
 
 ### @aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion
 
-*Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default* (default)
+*Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default*
+
+Flag type: New default behavior
 
 If this is set, and a `runtime` prop is not passed to, Lambda NodeJs
 functions will us the latest version of the runtime provided by the Lambda
@@ -1172,7 +1274,9 @@ shipped as part of the runtime environment.
 
 ### @aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier
 
-*When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id.* (fix)
+*When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id.*
+
+Flag type: Backwards incompatible bugfix
 
 When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in
 the GraphqlApi construct. Using the ARN allows the association to support an association with a source api or merged api in another account.
@@ -1187,7 +1291,9 @@ Note that for existing source api associations created with this flag disabled, 
 
 ### @aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters
 
-*When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change.* (fix)
+*When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change.*
+
+Flag type: Backwards incompatible bugfix
 
 When this feature flag is enabled, a scope of `InstanceParameterGroup` for
 `AuroraClusterInstance` with each parameters will change to AuroraClusterInstance
@@ -1205,7 +1311,9 @@ with each `InstanceParameterGroup` in the AuroraCluster.
 
 ### @aws-cdk/aws-rds:preventRenderingDeprecatedCredentials
 
-*When enabled, creating an RDS database cluster from a snapshot will only render credentials for snapshot credentials.* (fix)
+*When enabled, creating an RDS database cluster from a snapshot will only render credentials for snapshot credentials.*
+
+Flag type: Backwards incompatible bugfix
 
 The `credentials` property on the `DatabaseClusterFromSnapshotProps`
 interface was deprecated with the new `snapshotCredentials` property being
@@ -1229,7 +1337,9 @@ database cluster from a snapshot.
 
 ### @aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource
 
-*When enabled, the CodeCommit source action is using the default branch name 'main'.* (fix)
+*When enabled, the CodeCommit source action is using the default branch name 'main'.*
+
+Flag type: Backwards incompatible bugfix
 
 When setting up a CodeCommit source action for the source stage of a pipeline, please note that the
 default branch is 'master'.
@@ -1244,7 +1354,9 @@ However, with the activation of this feature flag, the default branch is updated
 
 ### @aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction
 
-*When enabled, the logical ID of a Lambda permission for a Lambda action includes an alarm ID.* (fix)
+*When enabled, the logical ID of a Lambda permission for a Lambda action includes an alarm ID.*
+
+Flag type: Backwards incompatible bugfix
 
 When this feature flag is enabled, a logical ID of `LambdaPermission` for a
 `LambdaAction` will include an alarm ID. Therefore multiple alarms for the same Lambda
@@ -1262,7 +1374,9 @@ If the flag is set to false then it can only make one alarm for the Lambda with
 
 ### @aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse
 
-*Enables Pipeline to set the default value for crossAccountKeys to false.* (default)
+*Enables Pipeline to set the default value for crossAccountKeys to false.*
+
+Flag type: New default behavior
 
 When this feature flag is enabled, and the `crossAccountKeys` property is not provided in a `Pipeline`
 construct, the construct automatically defaults the value of this property to false.
@@ -1278,7 +1392,9 @@ construct, the construct automatically defaults the value of this property to fa
 
 ### @aws-cdk/aws-codepipeline:defaultPipelineTypeToV2
 
-*Enables Pipeline to set the default pipeline type to V2.* (default)
+*Enables Pipeline to set the default pipeline type to V2.*
+
+Flag type: New default behavior
 
 When this feature flag is enabled, and the `pipelineType` property is not provided in a `Pipeline`
 construct, the construct automatically defaults the value of this property to `PipelineType.V2`.
@@ -1294,7 +1410,9 @@ construct, the construct automatically defaults the value of this property to `P
 
 ### @aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope
 
-*When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only.* (fix)
+*When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only.*
+
+Flag type: Backwards incompatible bugfix
 
 When this feature flag is enabled and calling KMS key grant method, the created IAM policy will reduce the resource scope from
 '*' to this specific granting KMS key.
@@ -1308,7 +1426,9 @@ When this feature flag is enabled and calling KMS key grant method, the created 
 
 ### @aws-cdk/aws-eks:nodegroupNameAttribute
 
-*When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix.* (fix)
+*When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix.*
+
+Flag type: Backwards incompatible bugfix
 
 When this feature flag is enabled, the nodegroupName attribute will be exactly the name of the nodegroup without
 any prefix.
@@ -1322,7 +1442,9 @@ any prefix.
 
 ### @aws-cdk/aws-ec2:ebsDefaultGp3Volume
 
-*When enabled, the default volume type of the EBS volume will be GP3* (default)
+*When enabled, the default volume type of the EBS volume will be GP3*
+
+Flag type: New default behavior
 
 When this featuer flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`.
 
@@ -1337,7 +1459,9 @@ When this featuer flag is enabled, the default volume type of the EBS volume wil
 
 ### @aws-cdk/pipelines:reduceAssetRoleTrustScope
 
-*Remove the root account principal from PipelineAssetsFileRole trust policy* (default)
+*Remove the root account principal from PipelineAssetsFileRole trust policy*
+
+Flag type: New default behavior
 
 When this feature flag is enabled, the root account principal will not be added to the trust policy of asset role.
 When this feature flag is disabled, it will keep the root account principal in the trust policy.
@@ -1353,7 +1477,9 @@ When this feature flag is disabled, it will keep the root account principal in t
 
 ### @aws-cdk/aws-ecs:removeDefaultDeploymentAlarm
 
-*When enabled, remove default deployment alarm settings* (default)
+*When enabled, remove default deployment alarm settings*
+
+Flag type: New default behavior
 
 When this featuer flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
 
@@ -1368,7 +1494,9 @@ When this featuer flag is enabled, remove the default deployment alarm settings 
 
 ### @aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault
 
-*When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default* (fix)
+*When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default*
+
+Flag type: Backwards incompatible bugfix
 
 This results in 'logApiResponseData' being passed as true to the custom resource provider. This will cause the custom resource handler to receive an 'Update' event. If you don't
 have an SDK call configured for the 'Update' event and you're dependent on specific SDK call response data, you will see this error from CFN:
@@ -1388,7 +1516,9 @@ property from the event object.
 
 ### @aws-cdk/aws-s3:keepNotificationInImportedBucket
 
-*When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack.* (fix)
+*When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack.*
+
+Flag type: Backwards incompatible bugfix
 
 Currently, adding notifications to a bucket where it was created by ourselves will override notification added where it is imported.
 
@@ -1404,7 +1534,9 @@ Other notifications that are not managed by this stack will be kept.
 
 ### @aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask
 
-*When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model.* (fix)
+*When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model.*
+
+Flag type: Backwards incompatible bugfix
 
 Currently, 'inputPath' and 'outputPath' from the TaskStateBase Props is being used under BedrockInvokeModelProps to define S3URI under 'input' and 'output' fields
 of State Machine Task definition.
@@ -1423,7 +1555,9 @@ When this feature flag is enabled, specify newly introduced props 's3InputUri' a
 
 ### @aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions
 
-*When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration* (fix)
+*When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration*
+
+Flag type: Backwards incompatible bugfix
 
 Currently, we automatically add a number of cloudwatch permissions to the task role when no cloudwatch log group is
 specified as logConfiguration and it will grant 'Resources': ['*'] to the task role.
@@ -1441,7 +1575,9 @@ When this feature flag is enabled, we will only grant the necessary permissions 
 
 ### @aws-cdk/aws-ec2:ec2SumTImeoutEnabled
 
-*When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.* (fix)
+*When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.*
+
+Flag type: Backwards incompatible bugfix
 
 Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance,
 only the value from 'resourceSignalTimeout' will be used.
@@ -1457,7 +1593,9 @@ When this feature flag is enabled, if both initOptions.timeout and resourceSigna
 
 ### @aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission
 
-*When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn.* (fix)
+*When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn.*
+
+Flag type: Backwards incompatible bugfix
 
 Currently, when using a Lambda authorizer with an AppSync GraphQL API, the AWS CDK automatically generates the necessary AWS::Lambda::Permission
 to allow the AppSync API to invoke the Lambda authorizer. This permission is overly permissive because it lacks a SourceArn, meaning
@@ -1475,7 +1613,9 @@ specific AppSync GraphQL API.
 
 ### @aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages
 
-*When enabled, both `@aws-sdk` and `@smithy` packages will be excluded from the Lambda Node.js 18.x runtime to prevent version mismatches in bundled applications.* (fix)
+*When enabled, both `@aws-sdk` and `@smithy` packages will be excluded from the Lambda Node.js 18.x runtime to prevent version mismatches in bundled applications.*
+
+Flag type: Backwards incompatible bugfix
 
 Currently, when bundling Lambda functions with the non-latest runtime that supports AWS SDK JavaScript (v3), only the '@aws-sdk/*' packages are excluded by default.
 However, this can cause version mismatches between the '@aws-sdk/*' and '@smithy/*' packages, as they are tightly coupled dependencies in AWS SDK v3.
@@ -1492,7 +1632,9 @@ occur between these tightly coupled dependencies when using the AWS SDK v3 in La
 
 ### @aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId
 
-*When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn`* (fix)
+*When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn`*
+
+Flag type: Backwards incompatible bugfix
 
 Currently, the value of the property 'instanceResourceId' in construct 'DatabaseInstanceReadReplica' is not correct, and set to 'DbInstanceArn' which is not correct when it is used to create the IAM Policy in the grantConnect method.
 
@@ -1509,7 +1651,9 @@ When this feature flag is enabled, the value of that property will be as expecte
 
 ### @aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics
 
-*When enabled, CFN templates added with `cfn-include` will error if the template contains Resource Update or Create policies with CFN Intrinsics that include non-primitive values.* (fix)
+*When enabled, CFN templates added with `cfn-include` will error if the template contains Resource Update or Create policies with CFN Intrinsics that include non-primitive values.*
+
+Flag type: Backwards incompatible bugfix
 
 Without enabling this feature flag, `cfn-include` will silently drop resource update or create policies that contain CFN Intrinsics if they include non-primitive values.
 
@@ -1524,7 +1668,9 @@ Enabling this feature flag will make `cfn-include` throw on these templates, unl
 
 ### @aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy
 
-*When enabled, the resource of IAM Run Ecs policy generated by SFN EcsRunTask will reference the definition, instead of constructing ARN.* (fix)
+*When enabled, the resource of IAM Run Ecs policy generated by SFN EcsRunTask will reference the definition, instead of constructing ARN.*
+
+Flag type: Backwards incompatible bugfix
 
 Currently, in the IAM Run Ecs policy generated by SFN EcsRunTask(), CDK will construct the ARN with wildcard attached at the end.
 The revision number at the end will be replaced with a wildcard which it shouldn't.
@@ -1540,7 +1686,9 @@ When this feature flag is enabled, if the task definition is created in the stac
 
 ### @aws-cdk/aws-dynamodb:resourcePolicyPerReplica
 
-*When enabled will allow you to specify a resource policy per replica, and not copy the source table policy to all replicas* (fix)
+*When enabled will allow you to specify a resource policy per replica, and not copy the source table policy to all replicas*
+
+Flag type: Backwards incompatible bugfix
 
 If this flag is not set, the default behavior for `TableV2` is to use a different `resourcePolicy` for each replica.
 
@@ -1558,7 +1706,9 @@ This is a feature flag as the old behavior was technically incorrect but users m
 
 ### @aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault
 
-*When enabled, the BastionHost construct will use the latest Amazon Linux 2023 AMI, instead of Amazon Linux 2.* (default)
+*When enabled, the BastionHost construct will use the latest Amazon Linux 2023 AMI, instead of Amazon Linux 2.*
+
+Flag type: New default behavior
 
 Currently, if the machineImage property of the BastionHost construct defaults to using the latest Amazon Linux 2
 AMI. Amazon Linux 2 hits end-of-life in June 2025, so using Amazon Linux 2023 by default is a more future-proof
@@ -1578,7 +1728,9 @@ the latest Amazon Linux 2023 version will be used instead of Amazon Linux 2.
 
 ### @aws-cdk/core:aspectStabilization
 
-*When enabled, a stabilization loop will be run when invoking Aspects during synthesis.* (config)
+*When enabled, a stabilization loop will be run when invoking Aspects during synthesis.*
+
+Flag type: Configuration option
 
 Currently, when Aspects are invoked in one single pass of the construct tree.
 This means that the Aspects that create other Aspects are not run and Aspects that create new nodes of the tree sometimes do not inherit their parent Aspects.
@@ -1594,7 +1746,9 @@ When this feature flag is enabled, a stabilization loop is run to recurse the co
 
 ### @aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource
 
-*When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.* (fix)
+*When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.*
+
+Flag type: Backwards incompatible bugfix
 
 When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
 creates a custom resource internally, but the new method doesn't need a custom resource.
@@ -1610,11 +1764,13 @@ If the flag is set to false then a custom resource will be created when using `U
 
 ### @aws-cdk/aws-ecs:disableEcsImdsBlocking
 
-*When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)*** (temporary)
+*When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)***
+
+Flag type: Temporary flag
 
 In an ECS Cluster with `MachineImageType.AMAZON_LINUX_2`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
 accessing IMDS. CDK cannot guarantee the correct execution of the feature in all platforms. Setting this feature flag
-to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the 
+to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the
 IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
 
 It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
@@ -1630,11 +1786,13 @@ It is recommended to follow ECS documentation to block IMDS for your specific pl
 
 ### @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature
 
-*When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)*** (temporary)
+*When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)***
+
+Flag type: Temporary flag
 
 In an ECS Cluster with `MachineImageType.AMAZON_LINUX_2`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this 
-feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot 
+accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this
+feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot
 guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
 It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
 
@@ -1649,7 +1807,9 @@ It is recommended to follow ECS documentation to block IMDS for your specific pl
 
 ### @aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault
 
-*When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere* (fix)
+*When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere*
+
+Flag type: Backwards incompatible bugfix
 
 For internet facing ALBs with 'dualstack-without-public-ipv4' IP address type, the default security group rules
 will allow IPv6 ingress from anywhere (::/0). Previously, the default security group rules would only allow IPv4 ingress.
@@ -1668,7 +1828,9 @@ on the overly restrictive permissions are not broken.
 
 ### @aws-cdk/aws-iam:oidcRejectUnauthorizedConnections
 
-*When enabled, the default behaviour of OIDC provider will reject unauthorized connections* (fix)
+*When enabled, the default behaviour of OIDC provider will reject unauthorized connections*
+
+Flag type: Backwards incompatible bugfix
 
 When this feature flag is enabled, the default behaviour of OIDC Provider's custom resource handler will
 default to reject unauthorized connections when downloading CA Certificates.
@@ -1687,11 +1849,13 @@ thumbprints from unsecure connections.
 
 ### @aws-cdk/core:enableAdditionalMetadataCollection
 
-*When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues.* (config)
+*When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues.*
+
+Flag type: Configuration option
 
 When this feature flag is enabled, CDK expands the scope of usage data collection to include the following:
   * L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
-  * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted. 
+  * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted.
   * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
 
 
@@ -1703,13 +1867,16 @@ When this feature flag is enabled, CDK expands the scope of usage data collectio
 
 ### @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy
 
-*[Deprecated] When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement* (fix)
+*[Deprecated] When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement*
 
-[Deprecated default feature] When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+
+Flag type: Backwards incompatible bugfix
+
+[Deprecated default feature] When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy.
 The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
 This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
-However in the current implementation, we have removed a dependency of the lambda function on the policy. In addition to this, a Role will be attached to the Policy instead of an inline policy being attached to the role. 
-This will create a data race condition in the CloudFormation template because the creation of the Lambda function no longer waits for the policy to be created. Having said that, we are not deprecating the feature (we are defaulting the feature flag to false for new stacks) since this feature can still be used to get around the circular dependency issue (issue-7016) particularly in cases where the lambda resource creation doesnt need to depend on the policy resource creation. 
+However in the current implementation, we have removed a dependency of the lambda function on the policy. In addition to this, a Role will be attached to the Policy instead of an inline policy being attached to the role.
+This will create a data race condition in the CloudFormation template because the creation of the Lambda function no longer waits for the policy to be created. Having said that, we are not deprecating the feature (we are defaulting the feature flag to false for new stacks) since this feature can still be used to get around the circular dependency issue (issue-7016) particularly in cases where the lambda resource creation doesnt need to depend on the policy resource creation.
 We recommend to unset the feature flag if already set which will restore the original behavior.
 
 
@@ -1721,7 +1888,9 @@ We recommend to unset the feature flag if already set which will restore the ori
 
 ### @aws-cdk/aws-s3:setUniqueReplicationRoleName
 
-*When enabled, CDK will automatically generate a unique role name that is used for s3 object replication.* (fix)
+*When enabled, CDK will automatically generate a unique role name that is used for s3 object replication.*
+
+Flag type: Backwards incompatible bugfix
 
 When performing cross-account S3 replication, we need to explicitly specify a role name for the replication execution role.
 When this feature flag is enabled, a unique role name is specified only when performing cross-account replication.
@@ -1736,7 +1905,9 @@ When disabled, 'CDKReplicationRole' is always specified.
 
 ### @aws-cdk/pipelines:reduceStageRoleTrustScope
 
-*Remove the root account principal from Stage addActions trust policy* (default)
+*Remove the root account principal from Stage addActions trust policy*
+
+Flag type: New default behavior
 
 When this feature flag is enabled, the root account principal will not be added to the trust policy of stage role.
 When this feature flag is disabled, it will keep the root account principal in the trust policy.
@@ -1755,10 +1926,12 @@ If you are providing a custom role, you will need to ensure 'roleName' is specif
 
 ### @aws-cdk/aws-events:requireEventBusPolicySid
 
-*When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals.* (fix)
+*When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals.*
 
-Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails 
-because service principals require resource policies with Statement IDs. 
+Flag type: Backwards incompatible bugfix
+
+Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails
+because service principals require resource policies with Statement IDs.
 
 When this flag is enabled:
 - Resource policies will be created with Statement IDs for service principals
@@ -1780,7 +1953,9 @@ This fixes the issue where permissions were silently not being added for service
 
 ### @aws-cdk/aws-dynamodb:retainTableReplica
 
-*When enabled, table replica will be default to the removal policy of source table unless specified otherwise.* (fix)
+*When enabled, table replica will be default to the removal policy of source table unless specified otherwise.*
+
+Flag type: Backwards incompatible bugfix
 
 Currently, table replica will always be deleted when stack deletes regardless of source table's deletion policy.
 When enabled, table replica will be default to the removal policy of source table unless specified otherwise.
@@ -1794,12 +1969,15 @@ When enabled, table replica will be default to the removal policy of source tabl
 
 ### @aws-cdk/cognito:logUserPoolClientSecretValue
 
-*When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.* (default)
+*When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.*
 
-When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom 
+
+Flag type: New default behavior
+
+When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom
 resource lambda function logs.
 
-When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom 
+When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom
 resource lambda function logs.
 
 
@@ -1811,9 +1989,27 @@ resource lambda function logs.
 **Compatibility with old behavior:** Enable the feature flag to keep the old behavior and log the client secret values
 
 
+### @aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2
+
+*When enabled, the resultWriterV2 property of DistributedMap will be used insted of resultWriter* (default)
+
+When this feature flag is enabled, the resultWriterV2 property is used instead of resultWriter in DistributedMap class.
+resultWriterV2 uses ResultWriterV2 class in StepFunctions ASL and can have either Bucket/Prefix or WriterConfig or both.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.188.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag and set resultWriter in DistributedMap
+
+
 ### @aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope
 
-*When enabled, scopes down the trust policy for the cross-account action role* (default)
+*When enabled, scopes down the trust policy for the cross-account action role*
+
+Flag type: New default behavior
 
 When this feature flag is enabled, the trust policy of the cross-account action role will be scoped to the pipeline role.
 If you are providing a custom role, you will need to ensure 'roleName' is specified or set to PhysicalName.GENERATE_IF_NEEDED.
@@ -1826,6 +2022,50 @@ When this feature flag is disabled, it will keep the root account principal in t
 | 2.189.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to add the root account principal back
+
+
+### @aws-cdk/core:aspectPrioritiesMutating
+
+*When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING.*
+
+Flag type: New default behavior
+
+Custom Aspects you add have a priority of DEFAULT (500) if you don't
+assign a more specific priority, which is higher than MUTATING (200). This
+is relevant if a custom Aspect you add and an Aspect added by CDK try to
+configure the same value.
+
+If this flag is set to false (old behavior), Aspects added by CDK are also
+added with a priority of DEFAULT; because their priorities are equal, the
+Aspects that is closest to the target construct executes last (either
+yours or the Aspect added by the CDK).
+
+If this flag is set to true (recommended behavior), Aspects added by CDK are added
+with a priority of MUTATING, and custom Aspects you add with DEFAULT
+priority will always execute last and "win" the write. If you need Aspects
+added by CDK to run after yours, your Aspect needs to have a priority of
+MUTATING or lower.
+
+This setting only applies to Aspects that were already being added for you
+before version 2.172.0. Aspects introduced since that version will always
+be added with a priority of MUTATING, independent of this feature flag.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** 
+      To add mutating Aspects controlling construct values that can be overridden
+      by Aspects added by CDK, give them MUTATING priority:
+
+      ```
+      Aspects.of(stack).add(new MyCustomAspect(), {
+        priority: AspectPriority.MUTATING,
+      });
+      ```
+    
 
 
 <!-- END details -->
