@@ -1,9 +1,4 @@
 import { App, SecretValue, Stack } from 'aws-cdk-lib';
-<<<<<<< HEAD:packages/@aws-cdk/aws-cognito-identitypool-alpha/test/integ.identitypool.ts
-import { IdentityPool, IdentityPoolProviderUrl, RoleMappingMatchType } from '../lib/identitypool';
-import { UserPoolAuthenticationProvider } from '../lib/identitypool-user-pool-authentication-provider';
-=======
->>>>>>> main:packages/@aws-cdk-testing/framework-integ/test/aws-cognito-identitypool/test/integ.identitypool.ts
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { UserPool, UserPoolIdentityProviderGoogle, UserPoolIdentityProviderAmazon, ProviderAttribute, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
