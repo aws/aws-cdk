@@ -18,7 +18,11 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+<<<<<<< HEAD
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/22b003d853eb28223729eef0c7982ee32a6c4bea02ad0b7547b3944d9f578085.json",
+=======
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5569dd0f97931820ae5531d9fb9139a98413bd01d17b291aeae2c9d3bca49156.json",
+>>>>>>> main
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -233,16 +237,30 @@
             "data": "VPCintegtest1validateIpv6DefaultRoute5D6BE9AD"
           }
         ],
+<<<<<<< HEAD
         "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/NATGateway": [
+=======
+        "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/NATGateway-testsbubnet": [
+>>>>>>> main
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
+<<<<<<< HEAD
         "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/NATGateway/NATGateway": [
+=======
+        "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/NATGateway-testsbubnet/NATGateway": [
+>>>>>>> main
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1NATGateway31DAF7F4"
+            "data": "VPCintegtest1NATGatewaytestsbubnetNATGateway3A015DE6"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha/testsbubnet": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-vpcv2-alpha/testsbubnet": [
@@ -385,6 +403,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "VPCintegtest1NATGateway31DAF7F4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCintegtest1NATGateway31DAF7F4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

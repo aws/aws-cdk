@@ -27,7 +27,11 @@
      }
     },
     "flattenResponse": "false",
+<<<<<<< HEAD
     "salt": "1744406944971"
+=======
+    "salt": "1744330234981"
+>>>>>>> main
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -134,7 +138,11 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
+<<<<<<< HEAD
      "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
+=======
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
+>>>>>>> main
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -173,12 +181,16 @@
      }
     },
     "flattenResponse": "false",
+<<<<<<< HEAD
     "salt": "1744406944973"
+=======
+    "salt": "1744330234983"
+>>>>>>> main
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallEC2describeNatGateways511a1d900eb1e5aff6e80b436887825b": {
+  "AwsApiCallEC2describeNatGateways7a59ae240542825712a65c4c3aa2b030": {
    "Type": "Custom::DeployAssert@SdkCallEC2describeNatGateways",
    "Properties": {
     "ServiceToken": {
@@ -197,7 +209,7 @@
        [
         "[\"",
         {
-         "Fn::ImportValue": "aws-cdk-ec2-alpha-tag:ExportsOutputFnGetAttVPCintegtesttagNATGatewayCE05D4D3NatGatewayId01D930FC"
+         "Fn::ImportValue": "aws-cdk-ec2-alpha-tag:ExportsOutputFnGetAttVPCintegtesttagNATGatewaytestsubnetNATGateway36D56DBFNatGatewayId76DD764D"
         },
         "\"]"
        ]
@@ -205,7 +217,11 @@
      }
     },
     "flattenResponse": "false",
+<<<<<<< HEAD
     "salt": "1744406944973"
+=======
+    "salt": "1744330234983"
+>>>>>>> main
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -237,7 +253,11 @@
      }
     },
     "flattenResponse": "false",
+<<<<<<< HEAD
     "salt": "1744406944973"
+=======
+    "salt": "1744330234984"
+>>>>>>> main
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -269,7 +289,11 @@
      }
     },
     "flattenResponse": "false",
+<<<<<<< HEAD
     "salt": "1744406944974"
+=======
+    "salt": "1744330234984"
+>>>>>>> main
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -301,7 +325,11 @@
      }
     },
     "flattenResponse": "false",
+<<<<<<< HEAD
     "salt": "1744406944974"
+=======
+    "salt": "1744330234984"
+>>>>>>> main
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -324,10 +352,10 @@
     ]
    }
   },
-  "AssertionResultsAwsApiCallEC2describeNatGateways511a1d900eb1e5aff6e80b436887825b": {
+  "AssertionResultsAwsApiCallEC2describeNatGateways7a59ae240542825712a65c4c3aa2b030": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallEC2describeNatGateways511a1d900eb1e5aff6e80b436887825b",
+     "AwsApiCallEC2describeNatGateways7a59ae240542825712a65c4c3aa2b030",
      "assertion"
     ]
    }

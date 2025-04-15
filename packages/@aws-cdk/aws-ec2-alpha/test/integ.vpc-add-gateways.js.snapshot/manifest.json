@@ -18,7 +18,11 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+<<<<<<< HEAD
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8fa61d1f6b2b0e26428711434b27da2751390c5ae3a29542b34c670f6a28455c.json",
+=======
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/18ba8a1f8cd69f707263f3e5a78f75b6933e14140727ca642b5887b59ebb9c89.json",
+>>>>>>> main
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -144,6 +148,45 @@
             "data": "VPCintegtestgatewaytestsubnet2EgressRoute54F6A53E"
           }
         ],
+<<<<<<< HEAD
+=======
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/NATGateway-testsubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/NATGateway-testsubnet3/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCintegtestgatewayNATGatewaytestsubnet3EIP396C3DBA"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/NATGateway-testsubnet3/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCintegtestgatewayNATGatewaytestsubnet3NATGateway4198D6F2"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/NATGateway-testsubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/NATGateway-testsubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCintegtestgatewayNATGatewaytestsubnet2EIPC21D31FA"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/NATGateway-testsubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCintegtestgatewayNATGatewaytestsubnet2NATGateway27C66096"
+          }
+        ],
+>>>>>>> main
         "/aws-cdk-ec2-alpha-gateways/TestRouteTable": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -202,6 +245,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "testsubnet2RouteTableAssociation2ABEB97D"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/testsubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/testsubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testsubnet3Subnet09F1B369"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/testsubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testsubnet3RouteTableAssociation97F126C9"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/Exports/Output{\"Fn::GetAtt\":[\"VPCintegtestgatewayInternetGatewayIGWBF8CBB67\",\"InternetGatewayId\"]}": [
@@ -266,7 +327,11 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+<<<<<<< HEAD
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bfb72135b380879eadbe55b00463ad047101b08f695a28649fdd9d90a6057d7a.json",
+=======
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7bc7270bb0cb40d860d3b37cb65df1b10a0c1f923013b9ee6a457583191713f7.json",
+>>>>>>> main
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
