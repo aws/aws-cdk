@@ -1,0 +1,67 @@
+name: Security Guardian
+on:
+  pull_request_target: {}
+
+jobs:
+  run-security-guardian:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetches full history
+
+      - name: Get list of changed .template.json files
+        id: filter_files
+        run: |
+          echo "Getting changed CloudFormation templates..."
+          mkdir -p changed_templates
+
+          git fetch origin main --depth=1
+
+          base_sha="${{ github.event.pull_request.base.sha }}"
+          head_sha="${{ github.event.pull_request.head.sha }}"
+          if [[ -z "$base_sha" ]]; then base_sha=$(git merge-base origin/main HEAD); fi
+          if [[ -z "$head_sha" ]]; then head_sha=HEAD; fi
+
+          git diff --name-status "$base_sha" "$head_sha" \
+            | grep -E '^(A|M)\s+.*\.template\.json$' \
+            | awk '{print $2}' > changed_files.txt || true
+
+          while IFS= read -r file; do
+            if [ -f "$file" ]; then
+              safe_name=$(echo "$file" | sed 's|/|_|g')
+              cp "$file" "changed_templates/$safe_name"
+            else
+              echo "::warning::Changed file not found in workspace: $file"
+            fi
+          done < changed_files.txt
+
+          if [ -s changed_files.txt ]; then
+            echo "files_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "files_changed=false" >> $GITHUB_OUTPUT
+          fi
+  
+      - name: Install cfn-guard
+        if: steps.filter_files.outputs.files_changed == 'true'
+        run: |
+          mkdir -p $HOME/.local/bin
+          curl -L -o cfn-guard.tar.gz https://github.com/aws-cloudformation/cloudformation-guard/releases/latest/download/cfn-guard-v3-x86_64-ubuntu-latest.tar.gz
+          tar -xzf cfn-guard.tar.gz
+          mv cfn-guard-v3-*/cfn-guard $HOME/.local/bin/cfn-guard
+          chmod +x $HOME/.local/bin/cfn-guard
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+  
+      - name: Install & Build security-guardian
+        if: steps.filter_files.outputs.files_changed == 'true'
+        run: yarn install --frozen-lockfile && cd tools/@aws-cdk/security-guardian && yarn build
+
+      - name: Run cfn-guard if templates changed
+        if: steps.filter_files.outputs.files_changed == 'true'
+        uses: ./tools/@aws-cdk/security-guardian
+        with:
+          data_directory: './changed_templates'
+          rule_set_path: './tools/@aws-cdk/security-guardian/rules/trust_scope_rules.guard'
+          show_summary: 'fail'
+          output_format: 'single-line-summary'
