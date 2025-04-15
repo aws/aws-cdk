@@ -5,7 +5,7 @@ import { IPeer, Peer } from './peer';
 import { Port } from './port';
 import { IVpc } from './vpc';
 import * as cxschema from '../../cloud-assembly-schema';
-import { Annotations, ContextProvider, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token } from '../../core';
+import { Annotations, ContextProvider, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
@@ -435,7 +435,7 @@ export class SecurityGroup extends SecurityGroupBase {
    */
   private static fromLookupAttributes(scope: Construct, id: string, options: SecurityGroupLookupOptions) {
     if (Token.isUnresolved(options.securityGroupId) || Token.isUnresolved(options.securityGroupName) || Token.isUnresolved(options.vpc?.vpcId)) {
-      throw new Error('All arguments to look up a security group must be concrete (no Tokens)');
+      throw new ValidationError('All arguments to look up a security group must be concrete (no Tokens)', scope);
     }
 
     const attributes: cxapi.SecurityGroupContextResponse = ContextProvider.getValue(scope, {
@@ -598,7 +598,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // to "allOutbound=true" mode, because we might have already emitted
       // EgressRule objects (which count as rules added later) and there's no way
       // to recall those. Better to prevent this for now.
-      throw new Error('Cannot add an "all traffic" egress rule in this way; set allowAllOutbound=true (for ipv6) or allowAllIpv6Outbound=true (for ipv6) on the SecurityGroup instead.');
+      throw new ValidationError('Cannot add an "all traffic" egress rule in this way; set allowAllOutbound=true (for ipv6) or allowAllIpv6Outbound=true (for ipv6) on the SecurityGroup instead.', this);
     }
 
     this.addDirectEgressRule(rule);
