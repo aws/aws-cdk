@@ -176,10 +176,10 @@ describe('nested-stack', () => {
     stack.node.setContext(cxapi.BUNDLING_STACKS, ['Stack']);
 
     const child = new NestedStack(stack, 'Child');
-    const child_2 = new NestedStack(child, 'Child2');
+    const child2 = new NestedStack(child, 'Child2');
 
     expect(child.bundlingRequired).toBe(true);
-    expect(child_2.bundlingRequired).toBe(true);
+    expect(child2.bundlingRequired).toBe(true);
   });
 
   test('not requires bundling when root stack has no match in BUNDLING_STACKS', () => {
@@ -188,10 +188,10 @@ describe('nested-stack', () => {
     stack.node.setContext(cxapi.BUNDLING_STACKS, ['Stack2']);
 
     const child = new NestedStack(stack, 'Child');
-    const child_2 = new NestedStack(child, 'Child2');
+    const child2 = new NestedStack(child, 'Child2');
 
     expect(child.bundlingRequired).toBe(false);
-    expect(child_2.bundlingRequired).toBe(false);
+    expect(child2.bundlingRequired).toBe(false);
   });
 });
 
