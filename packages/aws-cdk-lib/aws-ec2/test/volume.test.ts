@@ -1233,13 +1233,13 @@ describe('volume', () => {
         availabilityZone: 'us-east-1a',
         snapshotId: ' snap-1234', // leading extra character(s)
       });
-    }).toThrow('`snapshotId` does match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token');
+    }).toThrow('`snapshotId` does not match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token');
     expect(() => {
       new Volume(stack, `Volume${idx++}`, {
         availabilityZone: 'us-east-1a',
         snapshotId: 'snap-1234 ', // trailing extra character(s)
       });
-    }).toThrow('`snapshotId` does match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token');
+    }).toThrow('`snapshotId` does not match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token');
   });
 
   test('validation iops', () => {

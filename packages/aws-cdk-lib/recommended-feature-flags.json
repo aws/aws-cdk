@@ -69,5 +69,6 @@
   "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
   "@aws-cdk/aws-events:requireEventBusPolicySid": true,
   "@aws-cdk/core:aspectPrioritiesMutating": true,
-  "@aws-cdk/aws-dynamodb:retainTableReplica": true
+  "@aws-cdk/aws-dynamodb:retainTableReplica": true,
+  "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true
 }

@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IClientVpnEndpoint } from './client-vpn-endpoint-types';
 import { CfnClientVpnAuthorizationRule } from './ec2.generated';
-import { Resource } from '../../core';
+import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -54,14 +54,16 @@ export interface ClientVpnAuthorizationRuleProps extends ClientVpnAuthorizationR
 export class ClientVpnAuthorizationRule extends Resource {
   constructor(scope: Construct, id: string, props: ClientVpnAuthorizationRuleProps) {
     if (!props.clientVpnEndoint && !props.clientVpnEndpoint) {
-      throw new Error(
+      throw new ValidationError(
         'ClientVpnAuthorizationRule: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified',
+        scope,
       );
     }
     if (props.clientVpnEndoint && props.clientVpnEndpoint) {
-      throw new Error(
+      throw new ValidationError(
         'ClientVpnAuthorizationRule: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified' +
           ', but not both',
+        scope,
       );
     }
     const clientVpnEndpoint = props.clientVpnEndoint || props.clientVpnEndpoint;

@@ -1553,6 +1553,25 @@ new rds.DatabaseCluster(this, 'Cluster', {
 });
 ```
 
+## Importing existing DatabaseInstance
+
+### Lookup DatabaseInstance by instanceIdentifier
+
+You can lookup an existing DatabaseInstance by its instanceIdentifier using `DatabaseInstance.fromLookup()`.  This method returns an `IDatabaseInstance`.
+
+Here's how `DatabaseInstance.fromLookup()` can be used:
+
+```ts
+declare const myUserRole: iam.Role;
+
+const dbFromLookup = rds.DatabaseInstance.fromLookup(this, 'dbFromLookup', {
+  instanceIdentifier: 'instanceId',
+});
+
+// Grant a connection
+dbFromLookup.grantConnect(myUserRole, 'my-user-id');
+```
+
 ## Limitless Database Cluster
 
 Amazon Aurora [PostgreSQL Limitless Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html) provides automated horizontal scaling to process millions of write transactions per second and manages petabytes of data while maintaining the simplicity of operating inside a single database.

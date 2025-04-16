@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "cdk-ecs-fluentd-test/DefaultTest": {
+      "stacks": [
+        "cdk-ecs-fluentd"
+      ],
+      "assertionStack": "cdk-ecs-fluentd-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkecsfluentdtestDefaultTestDeployAssert52981939"
+    }
+  }
+}
