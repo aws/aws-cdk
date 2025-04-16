@@ -24,9 +24,12 @@ export async function detectChangedTemplates(baseSha: string, headSha: string, o
   if (changed.length === 0) return false;
 
   for (const file of changed) {
-    if (fs.existsSync(file)) {
+    const repoRoot = await exec.getExecOutput('git', ['rev-parse', '--show-toplevel']);
+    const fullPath = path.join(repoRoot.stdout.trim(), file);
+    console.log('fullpath:', fullPath);
+    if (fs.existsSync(fullPath)) {
       const safeName = file.replace(/\//g, '_');
-      fs.copyFileSync(file, path.join(outputDir, safeName));
+      fs.copyFileSync(fullPath, path.join(outputDir, safeName));
       core.info(`Copied: ${file}`);
     } else {
       core.warning(`Changed file not found: ${file}`);

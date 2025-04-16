@@ -4,14 +4,11 @@ import * as core from '@actions/core';
 
 export async function runScan(dataDir: string) {
   let issuesFound = 0;
-  const OUTPUT_FILE = `test/test-run/fnjoin_root_intrinsic_matches_${new Date().toISOString().replace(/[-:]/g, '').slice(0, 15)}.log`;
-
   let matches: Array<{ filePath: string, statements: any[] }> = [];
   let totalFiles = 0;
 
   function isRootPrincipal(statement: any): boolean {
     if (typeof statement !== 'object' || statement == null) return false;
-
     if (statement.Effect !== 'Allow') return false;
 
     const principal = statement.Principal;
@@ -71,7 +68,6 @@ export async function runScan(dataDir: string) {
   }
 
   core.info(`Scanning JSON files in: ${dataDir}`);
-  core.info(`Writing matches to: ${OUTPUT_FILE}\n`);
 
   walkDir(dataDir, filePath => {
     totalFiles++;
@@ -94,19 +90,22 @@ export async function runScan(dataDir: string) {
     }
   });
 
-  const logStream = fs.createWriteStream(OUTPUT_FILE);
+  // Build human-readable detailed output
+  let detailedOutput = '';
   for (const match of matches) {
-    logStream.write(`File: ${match.filePath}\n`);
+    detailedOutput += `File: ${match.filePath}\n`;
     for (const stmt of match.statements) {
-      logStream.write(JSON.stringify(stmt, null, 2) + '\n');
+      detailedOutput += `${JSON.stringify(stmt, null, 2)} |n| `;
     }
-    logStream.write('='.repeat(60) + '\n');
+    detailedOutput += '='.repeat(60) + '\n';
   }
-  logStream.end();
+
+  // Set the output for GitHub Actions
+  core.info(`detailed_output ${detailedOutput.trim()}`);
 
   core.info('\n Scan complete!');
   core.info(` Files scanned : ${totalFiles}`);
   core.info(` Matches found : ${matches.length}`);
-  core.info(` Output file   : ${OUTPUT_FILE}`);
+
   return issuesFound;
 }

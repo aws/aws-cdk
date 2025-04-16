@@ -3,16 +3,35 @@ import * as exec from '@actions/exec';
 import { detectChangedTemplates } from './get-changed-files';
 import { runScan } from './check-intrinsics';
 
+function getInput(name: string, options?: { required?: boolean, default?: string }): string {
+  // GitHub Actions input
+  const actionInput = core.getInput(name);
+  if (actionInput) return actionInput;
+
+  // Local CLI arg
+  const cliArg = process.argv.find(arg => arg.startsWith(`--${name}=`));
+  if (cliArg) return cliArg.split('=')[1];
+
+  // Default fallback
+  if (options?.default !== undefined) return options.default;
+
+  if (options?.required) {
+    throw new Error(`Fatal error: Input '${name}' must be provided.`);
+  }
+
+  return '';
+}
+
 async function run(): Promise<void> {
   const errors: string[] = [];
 
   try {
-    const ruleSetPath = core.getInput('rule_set_path');
-    const baseSha = core.getInput('base_sha') || 'origin/main';
-    const headSha = core.getInput('head_sha') || 'HEAD';
-    const outputFormat = core.getInput('output_format') || 'single-line-summary';
-    const showSummary = core.getInput('show_summary') || 'fail';
-    const workingDir = core.getInput('working_dir') || './changed_templates';
+    const ruleSetPath = getInput('rule_set_path');
+    const baseSha = getInput('base_sha', { default: 'origin/main' });
+    const headSha = getInput('head_sha', { default: 'HEAD' });
+    const outputFormat = getInput('output_format', { default: 'single-line-summary' });
+    const showSummary = getInput('show_summary', { default: 'fail' });
+    const workingDir = getInput('working_dir', { default: './changed_templates' });
 
     const filesChanged = await detectChangedTemplates(baseSha, headSha, workingDir);
     if (!filesChanged) {
@@ -53,7 +72,7 @@ async function run(): Promise<void> {
     }
 
     if (errors.length > 0) {
-      core.setFailed(`Action completed with issues:\n${errors.join('\n')}`);
+      core.setFailed(`Action completed with issues: ${errors}`);
     } else {
       core.info('All validations passed.');
     }
