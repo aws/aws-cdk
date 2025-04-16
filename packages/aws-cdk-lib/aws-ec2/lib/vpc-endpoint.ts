@@ -97,6 +97,74 @@ export enum VpcEndpointType {
 }
 
 /**
+ * IP address type for the endpoint.
+ */
+export enum VpcEndpointIpAddressType {
+  /**
+   * Assign IPv4 addresses to the endpoint network interfaces.
+   * This option is supported only if all selected subnets have IPv4 address ranges
+   * and the endpoint service accepts IPv4 requests.
+   */
+  IPV4 = 'ipv4',
+  /**
+   * Assign IPv6 addresses to the endpoint network interfaces.
+   * This option is supported only if all selected subnets are IPv6 only subnets
+   * and the endpoint service accepts IPv6 requests.
+   */
+  IPV6 = 'ipv6',
+  /**
+   * Assign both IPv4 and IPv6 addresses to the endpoint network interfaces.
+   * This option is supported only if all selected subnets have both IPv4 and IPv6
+   * address ranges and the endpoint service accepts both IPv4 and IPv6 requests.
+   */
+  DUALSTACK = 'dualstack',
+}
+
+/**
+ * Enums for all Dns Record IP Address types.
+ */
+export enum VpcEndpointDnsRecordIpType {
+  /**
+   * Create A records for the private, Regional, and zonal DNS names.
+   * The IP address type must be IPv4 or Dualstack.
+   */
+  IPV4 = 'ipv4',
+  /**
+   * Create AAAA records for the private, Regional, and zonal DNS names.
+   * The IP address type must be IPv6 or Dualstack.
+   */
+  IPV6 = 'ipv6',
+  /**
+   * Create A and AAAA records for the private, Regional, and zonal DNS names.
+   * The IP address type must be Dualstack.
+   */
+  DUALSTACK = 'dualstack',
+  /**
+   * Create A records for the private, Regional, and zonal DNS names and
+   * AAAA records for the Regional and zonal DNS names.
+   * The IP address type must be Dualstack.
+   */
+  SERVICE_DEFINED = 'service-defined',
+}
+
+/**
+ * Indicates whether to enable private DNS only for inbound endpoints.
+ * This option is available only for services that support both gateway and interface endpoints.
+ * It routes traffic that originates from the VPC to the gateway endpoint and traffic that
+ * originates from on-premises to the interface endpoint.
+ */
+export enum VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint {
+  /**
+   * Enable private DNS for all resolvers.
+   */
+  ALL_RESOLVERS = 'AllResolvers',
+  /**
+   * Enable private DNS only for inbound endpoints.
+   */
+  ONLY_INBOUND_RESOLVER = 'OnlyInboundResolver',
+}
+
+/**
  * A service for a gateway VPC endpoint.
  */
 export interface IGatewayVpcEndpointService {
@@ -824,6 +892,27 @@ export interface InterfaceVpcEndpointOptions {
    * @default false
    */
   readonly lookupSupportedAzs?: boolean;
+
+  /**
+   * The IP address type for the endpoint.
+   *
+   * @default not specified
+   */
+  readonly ipAddressType?: VpcEndpointIpAddressType;
+
+  /**
+   * Type of DNS records created for the VPC endpoint.
+   *
+   * @default not specified
+   */
+  readonly dnsRecordIpType?: VpcEndpointDnsRecordIpType;
+
+  /**
+   * Whether to enable private DNS only for inbound endpoints.
+   *
+   * @default not specified
+   */
+  readonly privateDnsOnlyForInboundResolverEndpoint?: VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint;
 }
 
 /**
@@ -936,6 +1025,13 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     // Determine which subnets to place the endpoint in
     const subnetIds = this.endpointSubnets(props);
 
+    const dnsOptions = (props.dnsRecordIpType === undefined && props.privateDnsOnlyForInboundResolverEndpoint === undefined)
+      ? undefined
+      : {
+        dnsRecordIpType: props.dnsRecordIpType,
+        privateDnsOnlyForInboundResolverEndpoint: props.privateDnsOnlyForInboundResolverEndpoint,
+      };
+
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       privateDnsEnabled: props.privateDnsEnabled ?? props.service.privateDnsDefault ?? true,
       policyDocument: Lazy.any({ produce: () => this.policyDocument }),
@@ -944,6 +1040,8 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       vpcEndpointType: VpcEndpointType.INTERFACE,
       subnetIds,
       vpcId: props.vpc.vpcId,
+      ipAddressType: props.ipAddressType,
+      dnsOptions,
     });
 
     this.vpcEndpointId = endpoint.ref;
