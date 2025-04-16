@@ -4343,6 +4343,30 @@ describe('bucket', () => {
       });
     });
 
+    test('throw error when attempting to grant permissions with no destinations', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const dstBucket = new s3.Bucket(stack, 'DstBucket');
+      const dstBucketNoEncryption = new s3.Bucket(stack, 'DstBucketNoEncryption');
+      const replicationRole = new iam.Role(stack, 'ReplicationRole', {
+        assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+      });
+
+      const bucket = new s3.Bucket(stack, 'SrcBucket', {
+        versioned: true,
+        replicationRole,
+        replicationRules: [
+          { destination: dstBucket, priority: 1 },
+        ],
+      });
+
+      expect(() => {
+        bucket.grantReplicationPermission(replicationRole, {
+          destinations: [],
+        });
+      }).toThrow('destinations must be specified');
+    });
+
     test('cross account', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'stack', {
