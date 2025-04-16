@@ -1,9 +1,10 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "files": {
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+      "displayName": "ClusterTestDefaultTestDeployAssert6A1BBA9D Template",
       "source": {
-        "path": "TaskDefinitionDefaultTestDeployAssertF13B2133.template.json",
+        "path": "ClusterTestDefaultTestDeployAssert6A1BBA9D.template.json",
         "packaging": "file"
       },
       "destinations": {
