@@ -21,7 +21,6 @@ import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Toke
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
-import { isPrivate } from '../../../../tools/@aws-cdk/cdk-build-tools/lib/package-info';
 
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
 const APIGATEWAY_RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApi');
