@@ -112,7 +112,6 @@
   "testsbubnetSubnet77337845": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.0.0.0/24",
     "VpcId": {

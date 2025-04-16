@@ -79,7 +79,7 @@
     "TransitGatewayFeatureStatus": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/util.ts",
       "sdk_service": "ec2",
-      "sdk_enum_name": "ApplianceModeSupport",
+      "sdk_enum_name": "PersistRoutes",
       "match_percentage": 1
     },
     "KeyPairFormat": {
@@ -140,6 +140,12 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/volume.ts",
       "sdk_service": "ec2",
       "sdk_enum_name": "VolumeType",
+      "match_percentage": 1
+    },
+    "IpAddressType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint-service.ts",
+      "sdk_service": "ec2",
+      "sdk_enum_name": "IpAddressType",
       "match_percentage": 1
     },
     "VpcEndpointType": {
@@ -264,6 +270,12 @@
     }
   },
   "iot-actions": {
+    "FirehoseRecordSeparator": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/firehose-put-record-action.ts",
+      "sdk_service": "iot",
+      "sdk_enum_name": "SbomValidationStatus",
+      "match_percentage": 1
+    },
     "SnsActionMessageFormat": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/sns-topic-action.ts",
       "sdk_service": "iot",
@@ -758,6 +770,12 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/action.ts",
       "sdk_service": "codepipeline",
       "sdk_enum_name": "Category",
+      "match_percentage": 1
+    },
+    "RetryMode": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.ts",
+      "sdk_service": "codepipeline",
+      "sdk_enum_name": "RetryMode",
       "match_percentage": 1
     },
     "PipelineType": {

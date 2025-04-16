@@ -4131,6 +4131,50 @@ describe('bucket', () => {
       });
     });
 
+    test('use custom replication role', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const dstBucket = new s3.Bucket(stack, 'DstBucket');
+      const replicationRole = new iam.Role(stack, 'ReplicationRole', {
+        assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+      });
+      (replicationRole.node.defaultChild as iam.CfnRole).overrideLogicalId('CustomReplicationRole');
+      new s3.Bucket(stack, 'SrcBucket', {
+        versioned: true,
+        replicationRole,
+        replicationRules: [
+          { destination: dstBucket },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        VersioningConfiguration: { Status: 'Enabled' },
+        ReplicationConfiguration: {
+          Role: {
+            'Fn::GetAtt': ['CustomReplicationRole', 'Arn'],
+          },
+          Rules: [
+            {
+              Destination: {
+                Bucket: {
+                  'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
+                },
+              },
+              Status: 'Enabled',
+              Filter: {
+                Prefix: '',
+              },
+              DeleteMarkerReplication: {
+                Status: 'Disabled',
+              },
+            },
+          ],
+        },
+      });
+      // assert that the built-in replication role is not created
+      Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+    });
+
     test('cross account', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'stack', {
@@ -4448,6 +4492,37 @@ describe('bucket', () => {
           ],
         });
       }).toThrow('accessControlTranslation is only supported for cross-account replication');
+    });
+
+    describe('throw error when replicationRole is provided without valid replicationRules', () => {
+      test('fails when replicationRules is not specified', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'stack');
+
+        expect(() => {
+          new s3.Bucket(stack, 'SrcBucket', {
+            versioned: true,
+            replicationRole: new iam.Role(stack, 'ReplicationRole', {
+              assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+            }),
+          });
+        }).toThrow('cannot specify replicationRole when replicationRules is empty');
+      });
+
+      test('fails when replicationRules is an empty array', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'stack');
+
+        expect(() => {
+          new s3.Bucket(stack, 'SrcBucket', {
+            versioned: true,
+            replicationRole: new iam.Role(stack, 'ReplicationRole', {
+              assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+            }),
+            replicationRules: [],
+          });
+        }).toThrow('cannot specify replicationRole when replicationRules is empty');
+      });
     });
 
     test('source object encryption', () => {

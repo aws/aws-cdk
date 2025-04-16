@@ -10,14 +10,19 @@ class EksHybridNodesStack extends Stack {
     super(scope, id);
 
     // just need one nat gateway to simplify the test
-    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
+    const vpc = new ec2.Vpc(this, 'Vpc', {
+      maxAzs: 2,
+      natGateways: 1,
+      restrictDefaultSecurityGroup: false,
+      cidr: '10.0.0.0/16',
+    });
     new eks.Cluster(this, 'Cluster', {
       vpc,
       ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_30),
       defaultCapacity: 0,
       remoteNodeNetworks: [
         {
-          cidrs: ['10.0.0.0/16'],
+          cidrs: ['172.16.0.0/16'],
         },
       ],
       remotePodNetworks: [
@@ -25,6 +30,7 @@ class EksHybridNodesStack extends Stack {
           cidrs: ['192.168.0.0/16'],
         },
       ],
+      authenticationMode: eks.AuthenticationMode.API,
     });
   }
 }

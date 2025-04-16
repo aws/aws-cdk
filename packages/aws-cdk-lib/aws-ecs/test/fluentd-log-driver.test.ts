@@ -64,6 +64,7 @@ describe('fluentd log driver', () => {
       logging: new ecs.FluentdLogDriver({
         address: 'localhost:24224',
         asyncConnect: true,
+        async: true,
         bufferLimit: 128,
         retryWait: cdk.Duration.seconds(1),
         maxRetries: 4294967295,
@@ -93,6 +94,7 @@ describe('fluentd log driver', () => {
             Options: {
               'fluentd-address': 'localhost:24224',
               'fluentd-async-connect': 'true',
+              'fluentd-async': 'true',
               'fluentd-buffer-limit': '128',
               'fluentd-retry-wait': '1',
               'fluentd-max-retries': '4294967295',

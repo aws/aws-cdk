@@ -41,7 +41,7 @@ new CfnOutput(stack, 'SecretValue', { value: tokenizedValue });
 // Add new file with secret value that needs proper escaping
 const file6 = Source.jsonData('my-json/secret-config.json', {
   secret_value: tokenizedValue, // Using the tokenized value explicitly
-});
+}, { escape: true });
 const file7 = Source.yamlData('my-yaml/secret-config.yaml', {
   secret_value: tokenizedValue,
 });
@@ -73,7 +73,7 @@ const assertionProvider = integ.assertions.awsApiCall('S3', 'getObject', {
 // Verify the content is valid JSON and properly escaped
 assertionProvider.expect(ExpectedResult.objectLike({
   // Properly escaped JSON.
-  Body: '{"secret_value": "test\\"with\\"quotes"}',
+  Body: '{"secret_value":"test\\"with\\"quotes"}',
 }));
 
 // Add assertions to verify the YAML file

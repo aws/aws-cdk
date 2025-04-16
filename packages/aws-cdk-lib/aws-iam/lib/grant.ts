@@ -324,7 +324,7 @@ export class Grant implements IDependable {
   public readonly resourceStatement?: PolicyStatement;
 
   /**
-   * The statements that were added to the principal's policy
+   * The statements that were added to the resource policy
    */
   public readonly resourceStatements = new Array<PolicyStatement>();
 

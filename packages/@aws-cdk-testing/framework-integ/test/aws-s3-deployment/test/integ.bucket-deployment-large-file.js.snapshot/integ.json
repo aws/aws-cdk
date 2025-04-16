@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "integ-test-bucket-deployment-large-file/DefaultTest": {
+      "stacks": [
+        "TestBucketDeploymentLargeFile"
+      ],
+      "assertionStack": "integ-test-bucket-deployment-large-file/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentlargefileDefaultTestDeployAssert903EA848"
+    }
+  }
+}
