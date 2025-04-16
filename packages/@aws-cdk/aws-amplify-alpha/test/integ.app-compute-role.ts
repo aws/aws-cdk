@@ -25,6 +25,4 @@ const stack = new TestStack(app, 'cdk-amplify-app-compute-role');
 
 new IntegTest(app, 'amplify-app-compute-role-integ', {
   testCases: [stack],
-  enableLookups: true,
-  stackUpdateWorkflow: false,
 });
