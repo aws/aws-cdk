@@ -5,7 +5,6 @@ import * as path from 'path';
 
 export async function detectChangedTemplates(baseSha: string, headSha: string, outputDir: string): Promise<boolean> {
   core.info(`Detecting changed .template.json files from ${baseSha} to ${headSha}`);
-  fs.mkdirSync(outputDir, { recursive: true });
 
   let stdout = '';
   await exec.exec('git', ['diff', '--name-status', `${baseSha}`, `${headSha}`], {

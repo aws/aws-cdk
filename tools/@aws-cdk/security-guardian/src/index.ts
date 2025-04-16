@@ -2,6 +2,36 @@ import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import { detectChangedTemplates } from './get-changed-files';
 import { runScan } from './check-intrinsics';
+import * as fs from 'fs';
+import * as path from 'path';
+
+function setupWorkingDir(dir: string) {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+    core.info(`Created working directory: ${dir}`);
+  } else {
+    const files = fs.readdirSync(dir);
+    for (const file of files) {
+      fs.unlinkSync(path.join(dir, file));
+    }
+    core.info(`Cleaned working directory: ${dir}`);
+  }
+}
+
+function cleanupWorkingDir(dir: string) {
+  try {
+    if (fs.existsSync(dir)) {
+      const files = fs.readdirSync(dir);
+      for (const file of files) {
+        fs.unlinkSync(path.join(dir, file));
+      }
+      fs.rmdirSync(dir);
+      core.info(`Removed working directory: ${dir}`);
+    }
+  } catch (err) {
+    core.warning(`Cleanup failed for ${dir}: ${(err as Error).message}`);
+  }
+}
 
 function getInput(name: string, options?: { required?: boolean, default?: string }): string {
   // GitHub Actions input
@@ -24,6 +54,7 @@ function getInput(name: string, options?: { required?: boolean, default?: string
 
 async function run(): Promise<void> {
   const errors: string[] = [];
+  let workingDir: string = './changed_templates';
 
   try {
     const ruleSetPath = getInput('rule_set_path');
@@ -31,8 +62,8 @@ async function run(): Promise<void> {
     const headSha = getInput('head_sha', { default: 'HEAD' });
     const outputFormat = getInput('output_format', { default: 'single-line-summary' });
     const showSummary = getInput('show_summary', { default: 'fail' });
-    const workingDir = getInput('working_dir', { default: './changed_templates' });
-
+    setupWorkingDir(workingDir);
+    
     const filesChanged = await detectChangedTemplates(baseSha, headSha, workingDir);
     if (!filesChanged) {
       core.info('No template files changed. Skipping validation.');
@@ -79,6 +110,8 @@ async function run(): Promise<void> {
 
   } catch (fatal) {
     core.setFailed(`Fatal error: ${(fatal as Error).message}`);
+  } finally {
+    cleanupWorkingDir(workingDir);
   }
 }
 

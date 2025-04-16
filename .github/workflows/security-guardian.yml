@@ -28,6 +28,6 @@ jobs:
         with:
           base_sha: ${{ github.event.pull_request.base.sha }}
           head_sha: ${{ github.event.pull_request.head.sha }}
-          rule_set_path: './tools/@aws-cdk/security-guardian/rules/trust_scope_rules.guard'
+          rule_set_path: './tools/@aws-cdk/security-guardian/rules'
           show_summary: 'fail'
           output_format: 'single-line-summary'
