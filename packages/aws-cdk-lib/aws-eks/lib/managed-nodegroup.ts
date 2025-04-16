@@ -58,6 +58,14 @@ export enum NodegroupAmiType {
    */
   BOTTLEROCKET_X86_64_NVIDIA = 'BOTTLEROCKET_x86_64_NVIDIA',
   /**
+   * Bottlerocket Linux (ARM-64) with FIPS enabled
+   */
+  BOTTLEROCKET_ARM_64_FIPS = 'BOTTLEROCKET_ARM_64_FIPS',
+  /**
+   * Bottlerocket (x86-64) with FIPS enabled
+   */
+  BOTTLEROCKET_X86_64_FIPS = 'BOTTLEROCKET_x86_64_FIPS',
+  /**
    * Windows Core 2019 (x86-64)
    */
   WINDOWS_CORE_2019_X86_64 = 'WINDOWS_CORE_2019_x86_64',
@@ -339,6 +347,14 @@ export interface NodegroupOptions {
    * @default undefined - node groups will update instances one at a time
    */
   readonly maxUnavailablePercentage?: number;
+
+  /**
+   * Specifies whether to enable node auto repair for the node group. Node auto repair is disabled by default.
+   *
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/node-health.html#node-auto-repair
+   * @default - disabled
+   */
+  readonly enableNodeAutoRepair?: boolean;
 }
 
 /**
@@ -527,6 +543,9 @@ export class Nodegroup extends Resource implements INodegroup {
       updateConfig: props.maxUnavailable || props.maxUnavailablePercentage ? {
         maxUnavailable: props.maxUnavailable,
         maxUnavailablePercentage: props.maxUnavailablePercentage,
+      } : undefined,
+      nodeRepairConfig: props.enableNodeAutoRepair ? {
+        enabled: props.enableNodeAutoRepair,
       } : undefined,
     });
 

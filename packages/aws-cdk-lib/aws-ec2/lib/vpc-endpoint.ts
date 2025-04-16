@@ -8,7 +8,7 @@ import { allRouteTableIds, flatten } from './util';
 import { ISubnet, IVpc, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
-import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../core';
+import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -38,7 +38,7 @@ export abstract class VpcEndpoint extends Resource implements IVpcEndpoint {
    */
   public addToPolicy(statement: iam.PolicyStatement) {
     if (!statement.hasPrincipal) {
-      throw new Error('Statement must have a `Principal`.');
+      throw new ValidationError('Statement must have a `Principal`.', this);
     }
 
     if (!this.policyDocument) {
@@ -212,7 +212,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
     const routeTableIds = allRouteTableIds(subnets);
 
     if (routeTableIds.length === 0) {
-      throw new Error('Can\'t add a gateway endpoint to VPC; route table IDs are not available');
+      throw new ValidationError('Can\'t add a gateway endpoint to VPC; route table IDs are not available', this);
     }
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
@@ -518,6 +518,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly LOOKOUT_EQUIPMENT = new InterfaceVpcEndpointAwsService('lookoutequipment');
   public static readonly LOOKOUT_METRICS = new InterfaceVpcEndpointAwsService('lookoutmetrics');
   public static readonly LOOKOUT_VISION = new InterfaceVpcEndpointAwsService('lookoutvision');
+  public static readonly MAILMANAGER = new InterfaceVpcEndpointAwsService('mail-manager');
+  public static readonly MAILMANAGER_FIPS = new InterfaceVpcEndpointAwsService('mail-manager-fips');
   public static readonly MAINFRAME_MODERNIZATION = new InterfaceVpcEndpointAwsService('m2');
   public static readonly MAINFRAME_MODERNIZATION_APP_TEST = new InterfaceVpcEndpointAwsService('apptest');
   public static readonly MACIE = new InterfaceVpcEndpointAwsService('macie2');
@@ -961,7 +963,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
     // Sanity check the subnet count
     if (!subnetSelection.isPendingLookup && subnetSelection.subnets.length == 0) {
-      throw new Error('Cannot create a VPC Endpoint with no subnets');
+      throw new ValidationError('Cannot create a VPC Endpoint with no subnets', this);
     }
 
     // If we aren't going to lookup supported AZs we'll exit early, returning the subnetIds from the provided subnet selection
@@ -987,7 +989,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     // Throw an error if the lookup filtered out all subnets
     // VpcEndpoints must be created with at least one AZ
     if (filteredSubnets.length == 0) {
-      throw new Error(`lookupSupportedAzs returned ${availableAZs} but subnets have AZs ${subnets.map(s => s.availabilityZone)}`);
+      throw new ValidationError(`lookupSupportedAzs returned ${availableAZs} but subnets have AZs ${subnets.map(s => s.availabilityZone)}`, this);
     }
     return filteredSubnets.map(s => s.subnetId);
   }
@@ -1007,12 +1009,12 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
     // Context provider cannot make an AWS call without an account/region
     if (agnosticAcct || agnosticRegion) {
-      throw new Error('Cannot look up VPC endpoint availability zones if account/region are not specified');
+      throw new ValidationError('Cannot look up VPC endpoint availability zones if account/region are not specified', this);
     }
 
     // The AWS call will fail if there is a Token in the service name
     if (agnosticService) {
-      throw new Error(`Cannot lookup AZs for a service name with a Token: ${serviceName}`);
+      throw new ValidationError(`Cannot lookup AZs for a service name with a Token: ${serviceName}`, this);
     }
 
     // The AWS call return strings for AZs, like us-east-1a, us-east-1b, etc
@@ -1020,7 +1022,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     // will not match
     if (agnosticSubnets || agnosticSubnetList) {
       const agnostic = subnets.filter(s => Token.isUnresolved(s.availabilityZone));
-      throw new Error(`lookupSupportedAzs cannot filter on subnets with Token AZs: ${agnostic}`);
+      throw new ValidationError(`lookupSupportedAzs cannot filter on subnets with Token AZs: ${agnostic}`, this);
     }
   }
 
@@ -1034,7 +1036,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       props: { serviceName },
     }).value;
     if (!Array.isArray(availableAZs)) {
-      throw new Error(`Discovered AZs for endpoint service ${serviceName} must be an array`);
+      throw new ValidationError(`Discovered AZs for endpoint service ${serviceName} must be an array`, this);
     }
     return availableAZs;
   }
