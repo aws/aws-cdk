@@ -21,6 +21,7 @@ import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Toke
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
+import { isPrivate } from '../../../../tools/@aws-cdk/cdk-build-tools/lib/package-info';
 
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
 const APIGATEWAY_RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApi');
@@ -692,7 +693,9 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
     }
     if (props.endpointConfiguration) {
       const endpointConfiguration = props.endpointConfiguration;
-      if (endpointConfiguration.types.includes(EndpointType.PRIVATE) && endpointConfiguration.ipAddressType === IpAddressType.IPV4) {
+      const isPrivateApi = endpointConfiguration.types.includes(EndpointType.PRIVATE);
+      const isIpv4Only = endpointConfiguration.ipAddressType === IpAddressType.IPV4;
+      if (isPrivateApi && isIpv4Only) {
         throw new ValidationError('Private APIs can only have a dualstack IP address type.', this);
       }
       return {
