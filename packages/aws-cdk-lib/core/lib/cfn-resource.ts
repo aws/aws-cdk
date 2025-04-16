@@ -14,6 +14,7 @@ import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
 import { ResolutionTypeHint } from './type-hints';
 import * as cxapi from '../../cx-api';
+import { ValidationError } from './errors';
 
 export interface CfnResourceProps {
   /**
@@ -86,7 +87,7 @@ export class CfnResource extends CfnRefElement {
     super(scope, id);
 
     if (!props.type) {
-      throw new Error('The `type` property is required');
+      throw new ValidationError('The `type` property is required', this);
     }
 
     this.cfnResourceType = props.type;
