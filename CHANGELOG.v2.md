@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **neptune**: The `Id` attribute has been removed from `AWS::Neptune::DBSubnetGroup`.
 * **rds**: The `CertificateDetails` and `Endpoint` properties have been removed from `AWS::RDS::DBInstance`.
 * **redshiftserverless**: The `Workgroup.BaseCapacity` attribute has been removed from `AWS::RedshiftServerless::Workgroup`.
+* **s3-deployment**: The automatic JSON escaping behavior introduced in PR [#33698](https://github.com/aws/aws-cdk/pull/33698) is now opt-in via the new `escape` parameter in `Source.jsonData()`. Users who were relying on the automatic JSON escaping for handling special characters in JSON files will need to explicitly enable this behavior by passing `{ escape: true }` as the third parameter.
 
 ### Features
 
