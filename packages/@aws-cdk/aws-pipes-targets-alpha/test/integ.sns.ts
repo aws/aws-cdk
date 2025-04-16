@@ -1,8 +1,8 @@
 import { InputTransformation, IPipe, ISource, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { SnsTarget } from '../lib';
 import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
+import { SnsTarget } from '../lib';
 
 /*
  * This integration test sends a message to an SQS queue and validates
