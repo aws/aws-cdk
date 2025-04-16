@@ -29,6 +29,7 @@ Pipe targets are the end point of an EventBridge Pipe. The following targets are
 * `targets.ApiGatewayTarget`: [Send event source to an API Gateway REST API](#amazon-api-gateway-rest-api)
 * `targets.CloudWatchLogsTarget`: [Send event source to a CloudWatch Logs log group](#amazon-cloudwatch-logs-log-group)
 * `targets.EventBridgeTarget`: [Send event source to an EventBridge event bus](#amazon-eventbridge-event-bus)
+* `targets.FirehoseTarget`: [Send event source to a Firehose stream](#amazon-data-firehose-stream)
 * `targets.KinesisTarget`: [Send event source to a Kinesis data stream](#amazon-kinesis-data-stream)
 * `targets.LambdaFunction`: [Send event source to a Lambda function](#aws-lambda-function)
 * `targets.SageMakerTarget`: [Send event source to a SageMaker pipeline](#amazon-sagemaker-pipeline)
@@ -176,6 +177,44 @@ const eventBusTarget = new targets.EventBridgeTarget(targetEventBus, {
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SqsSource(sourceQueue),
     target: eventBusTarget,
+});
+```
+
+### Amazon Data Firehose Stream
+
+A Firehose stream can be used as a target for a pipe. 
+The topic will receive the (enriched/filtered) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetStream: firehose.DeliveryStream;
+
+const pipeTarget = new targets.FirehoseTarget(targetStream);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: pipeTarget
+});
+```
+
+The target input can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetStream: firehose.DeliveryStream;
+
+const pipeTarget = new targets.FirehoseTarget(targetStream,
+    {
+      inputTransformation: pipes.InputTransformation.fromObject( 
+        { 
+            "SomeKey": pipes.DynamicInput.fromEventPath('$.body')
+        })
+    }
+);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: pipeTarget
 });
 ```
 

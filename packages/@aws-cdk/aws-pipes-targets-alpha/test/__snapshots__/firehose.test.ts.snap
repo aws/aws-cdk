@@ -1,0 +1,279 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`firehose should grant pipe role push access 1`] = `
+{
+  "MyPipeRoleCBC8E9AB": {
+    "Properties": {
+      "AssumeRolePolicyDocument": {
+        "Statement": [
+          {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "pipes.amazonaws.com",
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+    },
+    "Type": "AWS::IAM::Role",
+  },
+  "MyStreamS3DestinationRole5E0BA960": {
+    "Properties": {
+      "AssumeRolePolicyDocument": {
+        "Statement": [
+          {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "firehose.amazonaws.com",
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+    },
+    "Type": "AWS::IAM::Role",
+  },
+}
+`;
+
+exports[`firehose should grant pipe role push access 2`] = `
+{
+  "MyPipeRoleDefaultPolicy31387C20": {
+    "Properties": {
+      "PolicyDocument": {
+        "Statement": [
+          {
+            "Action": [
+              "firehose:PutRecord",
+              "firehose:PutRecordBatch",
+            ],
+            "Effect": "Allow",
+            "Resource": {
+              "Fn::GetAtt": [
+                "MyStream5C050E93",
+                "Arn",
+              ],
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+      "PolicyName": "MyPipeRoleDefaultPolicy31387C20",
+      "Roles": [
+        {
+          "Ref": "MyPipeRoleCBC8E9AB",
+        },
+      ],
+    },
+    "Type": "AWS::IAM::Policy",
+  },
+  "MyStreamS3DestinationRoleDefaultPolicy401EF6F2": {
+    "Properties": {
+      "PolicyDocument": {
+        "Statement": [
+          {
+            "Action": [
+              "s3:GetObject*",
+              "s3:GetBucket*",
+              "s3:List*",
+              "s3:DeleteObject*",
+              "s3:PutObject",
+              "s3:PutObjectLegalHold",
+              "s3:PutObjectRetention",
+              "s3:PutObjectTagging",
+              "s3:PutObjectVersionTagging",
+              "s3:Abort*",
+            ],
+            "Effect": "Allow",
+            "Resource": [
+              {
+                "Fn::GetAtt": [
+                  "Bucket83908E77",
+                  "Arn",
+                ],
+              },
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "Bucket83908E77",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            "Action": [
+              "logs:CreateLogStream",
+              "logs:PutLogEvents",
+            ],
+            "Effect": "Allow",
+            "Resource": {
+              "Fn::GetAtt": [
+                "MyStreamLogGroupAB67AB09",
+                "Arn",
+              ],
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+      "PolicyName": "MyStreamS3DestinationRoleDefaultPolicy401EF6F2",
+      "Roles": [
+        {
+          "Ref": "MyStreamS3DestinationRole5E0BA960",
+        },
+      ],
+    },
+    "Type": "AWS::IAM::Policy",
+  },
+}
+`;
+
+exports[`firehose should grant pipe role put access 1`] = `
+{
+  "MyPipeRoleCBC8E9AB": {
+    "Properties": {
+      "AssumeRolePolicyDocument": {
+        "Statement": [
+          {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "pipes.amazonaws.com",
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+    },
+    "Type": "AWS::IAM::Role",
+  },
+  "MyStreamS3DestinationRole5E0BA960": {
+    "Properties": {
+      "AssumeRolePolicyDocument": {
+        "Statement": [
+          {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "firehose.amazonaws.com",
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+    },
+    "Type": "AWS::IAM::Role",
+  },
+}
+`;
+
+exports[`firehose should grant pipe role put access 2`] = `
+{
+  "MyPipeRoleDefaultPolicy31387C20": {
+    "Properties": {
+      "PolicyDocument": {
+        "Statement": [
+          {
+            "Action": [
+              "firehose:PutRecord",
+              "firehose:PutRecordBatch",
+            ],
+            "Effect": "Allow",
+            "Resource": {
+              "Fn::GetAtt": [
+                "MyStream5C050E93",
+                "Arn",
+              ],
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+      "PolicyName": "MyPipeRoleDefaultPolicy31387C20",
+      "Roles": [
+        {
+          "Ref": "MyPipeRoleCBC8E9AB",
+        },
+      ],
+    },
+    "Type": "AWS::IAM::Policy",
+  },
+  "MyStreamS3DestinationRoleDefaultPolicy401EF6F2": {
+    "Properties": {
+      "PolicyDocument": {
+        "Statement": [
+          {
+            "Action": [
+              "s3:GetObject*",
+              "s3:GetBucket*",
+              "s3:List*",
+              "s3:DeleteObject*",
+              "s3:PutObject",
+              "s3:PutObjectLegalHold",
+              "s3:PutObjectRetention",
+              "s3:PutObjectTagging",
+              "s3:PutObjectVersionTagging",
+              "s3:Abort*",
+            ],
+            "Effect": "Allow",
+            "Resource": [
+              {
+                "Fn::GetAtt": [
+                  "Bucket83908E77",
+                  "Arn",
+                ],
+              },
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "Bucket83908E77",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            "Action": [
+              "logs:CreateLogStream",
+              "logs:PutLogEvents",
+            ],
+            "Effect": "Allow",
+            "Resource": {
+              "Fn::GetAtt": [
+                "MyStreamLogGroupAB67AB09",
+                "Arn",
+              ],
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+      "PolicyName": "MyStreamS3DestinationRoleDefaultPolicy401EF6F2",
+      "Roles": [
+        {
+          "Ref": "MyStreamS3DestinationRole5E0BA960",
+        },
+      ],
+    },
+    "Type": "AWS::IAM::Policy",
+  },
+}
+`;
