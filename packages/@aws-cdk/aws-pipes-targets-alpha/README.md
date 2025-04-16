@@ -33,8 +33,8 @@ Pipe targets are the end point of an EventBridge Pipe. The following targets are
 * `targets.LambdaFunction`: [Send event source to a Lambda function](#aws-lambda-function)
 * `targets.SageMakerTarget`: [Send event source to a SageMaker pipeline](#amazon-sagemaker-pipeline)
 * `targets.SfnStateMachine`: [Invoke a Step Functions state machine from an event source](#aws-step-functions-state-machine)
-* `targets.SnsTarget`: [Send event source to an SNS topic](#amazon-sns)
-* `targets.SqsTarget`: [Send event source to an SQS queue](#amazon-sqs)
+* `targets.SnsTarget`: [Send event source to an SNS topic](#amazon-sns-topic)
+* `targets.SqsTarget`: [Send event source to an SQS queue](#amazon-sqs-queue)
 
 ### Amazon EventBridge API Destination
 
