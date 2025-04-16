@@ -932,10 +932,10 @@ export class FlowLog extends FlowLogBase {
     let trafficType: FlowLogTrafficType | undefined = props.trafficType ?? FlowLogTrafficType.ALL;
     if (props.resourceType.resourceType === 'TransitGateway' || props.resourceType.resourceType === 'TransitGatewayAttachment') {
       if (props.trafficType) {
-        throw new Error('trafficType is not supported for Transit Gateway and Transit Gateway Attachment');
+        throw new ValidationError('trafficType is not supported for Transit Gateway and Transit Gateway Attachment', this);
       }
       if (props.maxAggregationInterval && props.maxAggregationInterval !== FlowLogMaxAggregationInterval.ONE_MINUTE) {
-        throw new Error('maxAggregationInterval must be set to ONE_MINUTE for Transit Gateway and Transit Gateway Attachment');
+        throw new ValidationError('maxAggregationInterval must be set to ONE_MINUTE for Transit Gateway and Transit Gateway Attachment', this);
       }
       trafficType = undefined;
     }
