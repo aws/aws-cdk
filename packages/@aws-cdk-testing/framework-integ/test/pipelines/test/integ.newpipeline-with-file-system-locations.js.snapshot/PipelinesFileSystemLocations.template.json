@@ -883,7 +883,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "FileAsset1",
+        "Name": "Asset",
         "RoleArn": {
          "Fn::GetAtt": [
           "PipelineCodeBuildActionRole226DB0CB",
@@ -1732,7 +1732,7 @@
     "Cache": {
      "Type": "NO_CACHE"
     },
-    "Description": "Pipeline step PipelinesFileSystemLocations/Pipeline/Assets/FileAsset1",
+    "Description": "Pipeline step PipelinesFileSystemLocations/Pipeline/Assets/Asset",
     "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",

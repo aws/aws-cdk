@@ -1,28 +1,28 @@
 {
-  "version": "36.0.0",
+  "version": "40.0.0",
   "artifacts": {
-    "integ-user-pool-client-secret.assets": {
+    "integ-user-pool-client-secret-not-logged.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integ-user-pool-client-secret.assets.json",
+        "file": "integ-user-pool-client-secret-not-logged.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integ-user-pool-client-secret": {
+    "integ-user-pool-client-secret-not-logged": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integ-user-pool-client-secret.template.json",
+        "templateFile": "integ-user-pool-client-secret-not-logged.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3b8ce9dbaed287a880e3608160df54807c78e6bd8f2dd508f3ae939addce7977.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/efa927d6268abbe4bbf58a9243c5782e08cf43e8366059a690f7b0f0bc737cd1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integ-user-pool-client-secret.assets"
+          "integ-user-pool-client-secret-not-logged.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,77 +31,505 @@
         }
       },
       "dependencies": [
-        "integ-user-pool-client-secret.assets"
+        "integ-user-pool-client-secret-not-logged.assets"
       ],
       "metadata": {
-        "/integ-user-pool-client-secret/pool/Resource": [
+        "/integ-user-pool-client-secret-not-logged/pool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/integ-user-pool-client-secret-not-logged/pool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "pool056F3F7E"
           }
         ],
-        "/integ-user-pool-client-secret/pool/client/Resource": [
+        "/integ-user-pool-client-secret-not-logged/pool/client": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "generateSecret": true
+            }
+          }
+        ],
+        "/integ-user-pool-client-secret-not-logged/pool/client/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "poolclient2623294C"
           }
         ],
-        "/integ-user-pool-client-secret/pool/client/DescribeCognitoUserPoolClient/Resource/Default": [
+        "/integ-user-pool-client-secret-not-logged/pool/client/DescribeCognitoUserPoolClient/Provider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool-client-secret-not-logged/pool/client/DescribeCognitoUserPoolClient/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/integ-user-pool-client-secret-not-logged/pool/client/DescribeCognitoUserPoolClient/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "poolclientDescribeCognitoUserPoolClient51F12EBD"
           }
         ],
-        "/integ-user-pool-client-secret/pool/client/DescribeCognitoUserPoolClient/CustomResourcePolicy/Resource": [
+        "/integ-user-pool-client-secret-not-logged/pool/client/DescribeCognitoUserPoolClient/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool-client-secret-not-logged/pool/client/DescribeCognitoUserPoolClient/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "poolclientDescribeCognitoUserPoolClientCustomResourcePolicy5C0049D2"
           }
         ],
-        "/integ-user-pool-client-secret/LatestNodeRuntimeMap": [
+        "/integ-user-pool-client-secret-not-logged/LatestNodeRuntimeMap": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/integ-user-pool-client-secret/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+        "/integ-user-pool-client-secret-not-logged/AWS679f53fac002430cb0da5b7982bd2287": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          }
+        ],
+        "/integ-user-pool-client-secret-not-logged/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool-client-secret-not-logged/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-user-pool-client-secret-not-logged/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
           }
         ],
-        "/integ-user-pool-client-secret/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+        "/integ-user-pool-client-secret-not-logged/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
-        "/integ-user-pool-client-secret/secret/Resource": [
+        "/integ-user-pool-client-secret-not-logged/secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secretStringValue": "*"
+            }
+          }
+        ],
+        "/integ-user-pool-client-secret-not-logged/secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "secret4DA88516"
           }
         ],
-        "/integ-user-pool-client-secret/ClientSecretName": [
+        "/integ-user-pool-client-secret-not-logged/ClientSecretName": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClientSecretName"
           }
         ],
-        "/integ-user-pool-client-secret/BootstrapVersion": [
+        "/integ-user-pool-client-secret-not-logged/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-user-pool-client-secret/CheckBootstrapVersion": [
+        "/integ-user-pool-client-secret-not-logged/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-user-pool-client-secret"
+      "displayName": "integ-user-pool-client-secret-not-logged"
+    },
+    "integ-user-pool-client-secret-logged.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-user-pool-client-secret-logged.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-user-pool-client-secret-logged": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-user-pool-client-secret-logged.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e72f1ec4c5cf2c4318013b075e2b789953f750dd2d2e40c9b017171f49a7f57b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-user-pool-client-secret-logged.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-user-pool-client-secret-logged.assets"
+      ],
+      "metadata": {
+        "/integ-user-pool-client-secret-logged/pool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/pool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pool056F3F7E"
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/pool/client": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "generateSecret": true
+            }
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/pool/client/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "poolclient2623294C"
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/pool/client/DescribeCognitoUserPoolClient/Provider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/pool/client/DescribeCognitoUserPoolClient/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/pool/client/DescribeCognitoUserPoolClient/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "poolclientDescribeCognitoUserPoolClient51F12EBD"
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/pool/client/DescribeCognitoUserPoolClient/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/pool/client/DescribeCognitoUserPoolClient/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "poolclientDescribeCognitoUserPoolClientCustomResourcePolicy5C0049D2"
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/AWS679f53fac002430cb0da5b7982bd2287": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secretStringValue": "*"
+            }
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "secret4DA88516"
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/ClientSecretName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientSecretName"
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-user-pool-client-secret-logged/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-user-pool-client-secret-logged"
     },
     "integuserpoolclientsecrettestDefaultTestDeployAssert4FDD1661.assets": {
       "type": "cdk:asset-manifest",
