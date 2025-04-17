@@ -97,7 +97,7 @@ Flags come in three types:
 | [@aws-cdk/cognito:logUserPoolClientSecretValue](#aws-cdkcognitologuserpoolclientsecretvalue) | When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs. | 2.187.0 | new default |
 | [@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2](#aws-cdkaws-stepfunctionsusedistributedmapresultwriterv2) | When enabled, the resultWriterV2 property of DistributedMap will be used insted of resultWriter | 2.188.0 | new default |
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | 2.189.0 | new default |
-| [@aws-cdk/core:aspectPrioritiesMutating](#aws-cdkcoreaspectprioritiesmutating) | When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING. | V2NEXT | new default |
+| [@aws-cdk/core:aspectPrioritiesMutating](#aws-cdkcoreaspectprioritiesmutating) | When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING. | 2.189.1 | new default |
 
 <!-- END table -->
 
@@ -175,7 +175,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true,
     "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
     "@aws-cdk/core:enableAdditionalMetadataCollection": true,
-    "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true,
+    "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false,
     "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
     "@aws-cdk/aws-events:requireEventBusPolicySid": true,
     "@aws-cdk/core:aspectPrioritiesMutating": true,
@@ -227,6 +227,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | fix |  | `false` | `true` |
 | [@aws-cdk/core:aspectStabilization](#aws-cdkcoreaspectstabilization) | When enabled, a stabilization loop will be run when invoking Aspects during synthesis. | config |  | `false` | `true` |
 | [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | new default |  | `false` | `true` |
+| [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | new default |  | `false` | `true` |
 
 <!-- END diff -->
 
@@ -1769,7 +1770,7 @@ Flag type: Temporary flag
 
 In an ECS Cluster with `MachineImageType.AMAZON_LINUX_2`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
 accessing IMDS. CDK cannot guarantee the correct execution of the feature in all platforms. Setting this feature flag
-to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the 
+to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the
 IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
 
 It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
@@ -1790,8 +1791,8 @@ It is recommended to follow ECS documentation to block IMDS for your specific pl
 Flag type: Temporary flag
 
 In an ECS Cluster with `MachineImageType.AMAZON_LINUX_2`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this 
-feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot 
+accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this
+feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot
 guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
 It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
 
@@ -1854,7 +1855,7 @@ Flag type: Configuration option
 
 When this feature flag is enabled, CDK expands the scope of usage data collection to include the following:
   * L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
-  * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted. 
+  * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted.
   * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
 
 
@@ -1870,15 +1871,18 @@ When this feature flag is enabled, CDK expands the scope of usage data collectio
 
 Flag type: Backwards incompatible bugfix
 
-When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+[Deprecated default feature] When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy.
 The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
 This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
+However in the current implementation, we have removed a dependency of the lambda function on the policy. In addition to this, a Role will be attached to the Policy instead of an inline policy being attached to the role.
+This will create a data race condition in the CloudFormation template because the creation of the Lambda function no longer waits for the policy to be created. Having said that, we are not deprecating the feature (we are defaulting the feature flag to false for new stacks) since this feature can still be used to get around the circular dependency issue (issue-7016) particularly in cases where the lambda resource creation doesnt need to depend on the policy resource creation.
+We recommend to unset the feature flag if already set which will restore the original behavior.
 
 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.180.0 | `false` | `true` |
+| 2.180.0 | `false` | `false` |
 
 
 ### @aws-cdk/aws-s3:setUniqueReplicationRoleName
@@ -1907,6 +1911,9 @@ Flag type: New default behavior
 When this feature flag is enabled, the root account principal will not be added to the trust policy of stage role.
 When this feature flag is disabled, it will keep the root account principal in the trust policy.
 
+For cross-account cases, when this feature flag is enabled the trust policy will be scoped to the role only.
+If you are providing a custom role, you will need to ensure 'roleName' is specified or set to PhysicalName.GENERATE_IF_NEEDED.
+
 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
@@ -1922,8 +1929,8 @@ When this feature flag is disabled, it will keep the root account principal in t
 
 Flag type: Backwards incompatible bugfix
 
-Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails 
-because service principals require resource policies with Statement IDs. 
+Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails
+because service principals require resource policies with Statement IDs.
 
 When this flag is enabled:
 - Resource policies will be created with Statement IDs for service principals
@@ -2047,7 +2054,18 @@ be added with a priority of MUTATING, independent of this feature flag.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.189.1 | `false` | `true` |
+
+**Compatibility with old behavior:** 
+      To add mutating Aspects controlling construct values that can be overridden
+      by Aspects added by CDK, give them MUTATING priority:
+
+      ```
+      Aspects.of(stack).add(new MyCustomAspect(), {
+        priority: AspectPriority.MUTATING,
+      });
+      ```
+    
 
 
 <!-- END details -->
