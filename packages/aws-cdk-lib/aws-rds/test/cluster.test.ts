@@ -165,6 +165,27 @@ describe('cluster new api', () => {
         // THEN
       }).toThrow(errorMessage);
     });
+
+    test.each([
+      [cdk.Duration.seconds(299)],
+      [cdk.Duration.seconds(86401)],
+    ])('when serverless auto-pause duration is incorrect', (autoPause) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          vpcSubnets: vpc.selectSubnets( { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } ),
+          autoPause,
+          iamAuthentication: true,
+        });
+        // THEN
+      }).toThrow('autoPause must be between 300 seconds (5 minutes) and 86,400 seconds (24 hours)');
+    });
   });
 
   describe('cluster options', () => {
@@ -503,6 +524,29 @@ describe('cluster new api', () => {
           { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
           { Ref: 'VPCPrivateSubnet3Subnet3EDCD457' },
         ],
+      });
+    });
+
+    test('with serverless auto-pause configuration', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        autoPause: cdk.Duration.hours(1),
+        iamAuthentication: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        ServerlessV2ScalingConfiguration: {
+          SecondsUntilAutoPause: 3600,
+        },
       });
     });
 
