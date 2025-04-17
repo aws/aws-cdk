@@ -58,7 +58,7 @@ jobs:
           gh pr create --title "chore: update enum static mapping" \
            --body "This PR updates the CDK enum mapping file." \
            --base main \
-           --head "$branchName"
+           --head "$branchName" \
            --label "contribution/core,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
