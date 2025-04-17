@@ -1,0 +1,13 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "CrossAccountStreamConsumption/DefaultTest": {
+      "stacks": [
+        "CrossAccountStack",
+        "StreamResourcesStack"
+      ],
+      "assertionStack": "CrossAccountStreamConsumption/DefaultTest/DeployAssert",
+      "assertionStackName": "CrossAccountStreamConsumptionDefaultTestDeployAssert5C2F0A19"
+    }
+  }
+}

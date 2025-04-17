@@ -26,8 +26,8 @@ export let actualRequest: {
  * Responses can be simulated by assigning values here.
  */
 export let simulateResponse: {
-  describeClusterResponseMockStatus?: string;
-  describeUpdateResponseMockStatus?: string;
+  describeClusterResponseMockStatus?: eks.ClusterStatus;
+  describeUpdateResponseMockStatus?: eks.UpdateStatus;
   describeUpdateResponseMockErrors?: eks.ErrorDetail[];
   deleteClusterError?: Error;
   describeClusterException?: Error;
@@ -90,7 +90,8 @@ export const client: EksClient = {
         arn: 'arn:cluster-arn',
         certificateAuthority: { data: 'certificateAuthority-data' },
         endpoint: 'http://endpoint',
-        status: simulateResponse.describeClusterResponseMockStatus || 'ACTIVE',
+        accessConfig: { authenticationMode: 'CONFIG_MAP' },
+        status: simulateResponse.describeClusterResponseMockStatus || eks.ClusterStatus.ACTIVE,
       },
     };
   },
@@ -178,6 +179,7 @@ export function newRequest<T extends 'Create' | 'Update' | 'Delete'>(
     ResponseURL: 'http://response-url',
     RequestType: requestType,
     OldResourceProperties: {
+      ServiceToken: 'boom',
       Config: oldProps,
       AssumeRoleArn: MOCK_ASSUME_ROLE_ARN,
     },

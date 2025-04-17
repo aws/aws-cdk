@@ -38,17 +38,22 @@ describe('Linux ARM build image', () => {
       });
     });
 
-    test('cannot be used in conjunction with ComputeType MEDIUM', () => {
+    test('can be used with ComputeType MEDIUM', () => {
       const stack = new cdk.Stack();
 
-      expect(() => {
-        new codebuild.PipelineProject(stack, 'Project', {
-          environment: {
-            buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
-            computeType: codebuild.ComputeType.MEDIUM,
-          },
-        });
-      }).toThrow(/ARM images only support ComputeTypes 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_MEDIUM' was given/);
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
+          computeType: codebuild.ComputeType.MEDIUM,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: {
+          Type: 'ARM_CONTAINER',
+          ComputeType: 'BUILD_GENERAL1_MEDIUM',
+        },
+      });
     });
 
     test('can be used with ComputeType LARGE', () => {
@@ -68,17 +73,39 @@ describe('Linux ARM build image', () => {
       });
     });
 
-    test('cannot be used in conjunction with ComputeType X2_LARGE', () => {
+    test('can be used with ComputeType X_LARGE', () => {
+      const stack = new cdk.Stack();
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          computeType: codebuild.ComputeType.X_LARGE,
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: {
+          Type: 'ARM_CONTAINER',
+          ComputeType: 'BUILD_GENERAL1_XLARGE',
+        },
+      });
+    });
+
+    test('can be used with ComputeType X2_LARGE', () => {
       const stack = new cdk.Stack();
 
-      expect(() => {
-        new codebuild.PipelineProject(stack, 'Project', {
-          environment: {
-            buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
-            computeType: codebuild.ComputeType.X2_LARGE,
-          },
-        });
-      }).toThrow(/ARM images only support ComputeTypes 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_2XLARGE' was given/);
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
+          computeType: codebuild.ComputeType.X2_LARGE,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: {
+          Type: 'ARM_CONTAINER',
+          ComputeType: 'BUILD_GENERAL1_2XLARGE',
+        },
+      });
     });
   });
 
@@ -116,17 +143,22 @@ describe('Linux ARM build image', () => {
       });
     });
 
-    test('cannot be used in conjunction with ComputeType MEDIUM', () => {
+    test('can be used with ComputeType MEDIUM', () => {
       const stack = new cdk.Stack();
 
-      expect(() => {
-        new codebuild.PipelineProject(stack, 'Project', {
-          environment: {
-            buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
-            computeType: codebuild.ComputeType.MEDIUM,
-          },
-        });
-      }).toThrow(/ARM images only support ComputeTypes 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_MEDIUM' was given/);
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
+          computeType: codebuild.ComputeType.MEDIUM,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: {
+          Type: 'ARM_CONTAINER',
+          ComputeType: 'BUILD_GENERAL1_MEDIUM',
+        },
+      });
     });
 
     test('can be used with ComputeType LARGE', () => {
@@ -146,17 +178,39 @@ describe('Linux ARM build image', () => {
       });
     });
 
-    test('cannot be used in conjunction with ComputeType X2_LARGE', () => {
+    test('can be used with ComputeType X_LARGE', () => {
+      const stack = new cdk.Stack();
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          computeType: codebuild.ComputeType.X_LARGE,
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: {
+          Type: 'ARM_CONTAINER',
+          ComputeType: 'BUILD_GENERAL1_XLARGE',
+        },
+      });
+    });
+
+    test('can be used with ComputeType X2_LARGE', () => {
       const stack = new cdk.Stack();
 
-      expect(() => {
-        new codebuild.PipelineProject(stack, 'Project', {
-          environment: {
-            buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
-            computeType: codebuild.ComputeType.X2_LARGE,
-          },
-        });
-      }).toThrow(/ARM images only support ComputeTypes 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_2XLARGE' was given/);
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
+          computeType: codebuild.ComputeType.X2_LARGE,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: {
+          Type: 'ARM_CONTAINER',
+          ComputeType: 'BUILD_GENERAL1_2XLARGE',
+        },
+      });
     });
   });
 
@@ -194,17 +248,22 @@ describe('Linux ARM build image', () => {
       });
     });
 
-    test('cannot be used in conjunction with ComputeType MEDIUM', () => {
+    test('can be used with ComputeType MEDIUM', () => {
       const stack = new cdk.Stack();
 
-      expect(() => {
-        new codebuild.PipelineProject(stack, 'Project', {
-          environment: {
-            buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0,
-            computeType: codebuild.ComputeType.MEDIUM,
-          },
-        });
-      }).toThrow(/ARM images only support ComputeTypes 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_MEDIUM' was given/);
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0,
+          computeType: codebuild.ComputeType.MEDIUM,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: {
+          Type: 'ARM_CONTAINER',
+          ComputeType: 'BUILD_GENERAL1_MEDIUM',
+        },
+      });
     });
 
     test('can be used with ComputeType LARGE', () => {
@@ -224,17 +283,39 @@ describe('Linux ARM build image', () => {
       });
     });
 
-    test('cannot be used in conjunction with ComputeType X2_LARGE', () => {
+    test('can be used with ComputeType X_LARGE', () => {
+      const stack = new cdk.Stack();
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          computeType: codebuild.ComputeType.X_LARGE,
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: {
+          Type: 'ARM_CONTAINER',
+          ComputeType: 'BUILD_GENERAL1_XLARGE',
+        },
+      });
+    });
+
+    test('can be used with ComputeType X2_LARGE', () => {
       const stack = new cdk.Stack();
 
-      expect(() => {
-        new codebuild.PipelineProject(stack, 'Project', {
-          environment: {
-            buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0,
-            computeType: codebuild.ComputeType.X2_LARGE,
-          },
-        });
-      }).toThrow(/ARM images only support ComputeTypes 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_2XLARGE' was given/);
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0,
+          computeType: codebuild.ComputeType.X2_LARGE,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: {
+          Type: 'ARM_CONTAINER',
+          ComputeType: 'BUILD_GENERAL1_2XLARGE',
+        },
+      });
     });
   });
 

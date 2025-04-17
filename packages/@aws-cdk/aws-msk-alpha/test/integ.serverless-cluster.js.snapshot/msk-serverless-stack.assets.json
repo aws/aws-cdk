@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "3fe96e39425f97feda99213d01b2d2cc26bae96d4178c3cff77274254846f2dc": {
+      "source": {
+        "path": "msk-serverless-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3fe96e39425f97feda99213d01b2d2cc26bae96d4178c3cff77274254846f2dc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

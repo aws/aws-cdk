@@ -105,7 +105,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "b4ca3ffac109973b26fb14c1a215be999046520164982ae2391cd639cb473911.zip"
+                      "s3Key": "bcc0b05ef0a1a225a30c245c26232f00ff0b69ef30f3afa548235ab51e1cc225.zip"
                     },
                     "handler": "index.main",
                     "role": {
@@ -158,7 +158,7 @@
                             "maximumRetryAttempts": 1,
                             "qualifier": {
                               "Fn::GetAtt": [
-                                "MyLambdaCurrentVersionE7A382CC59bdb67fa1659795f5310ce1074a431e",
+                                "MyLambdaCurrentVersionE7A382CC45f41452e4af8108d62930f8af7039ec",
                                 "Version"
                               ]
                             }
@@ -190,7 +190,7 @@
                             },
                             "functionVersion": {
                               "Fn::GetAtt": [
-                                "MyLambdaCurrentVersionE7A382CC59bdb67fa1659795f5310ce1074a431e",
+                                "MyLambdaCurrentVersionE7A382CC45f41452e4af8108d62930f8af7039ec",
                                 "Version"
                               ]
                             },
@@ -255,7 +255,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

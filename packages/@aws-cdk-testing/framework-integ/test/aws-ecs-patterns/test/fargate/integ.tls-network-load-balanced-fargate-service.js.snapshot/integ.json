@@ -1,0 +1,12 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "networkLoadBalancedFargateServiceTest/DefaultTest": {
+      "stacks": [
+        "tls-network-load-balanced-fargate-service"
+      ],
+      "assertionStack": "networkLoadBalancedFargateServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "networkLoadBalancedFargateServiceTestDefaultTestDeployAssertBFBAA75B"
+    }
+  }
+}

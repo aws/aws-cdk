@@ -4,6 +4,7 @@ import { Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties for PythonLayerVersion
@@ -69,5 +70,8 @@ export class PythonLayerVersion extends lambda.LayerVersion {
         ...props.bundling,
       }),
     });
+
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }

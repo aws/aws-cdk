@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "instance-iam-profile-test/DefaultTest": {
+      "stacks": [
+        "instance-iam-profile"
+      ],
+      "assertionStack": "instance-iam-profile-test/DefaultTest/DeployAssert",
+      "assertionStackName": "instanceiamprofiletestDefaultTestDeployAssert8BAB0841"
+    }
+  }
+}

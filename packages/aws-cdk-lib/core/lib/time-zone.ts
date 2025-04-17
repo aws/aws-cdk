@@ -4,7 +4,6 @@
  * For more information, see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.
  */
 export class TimeZone {
-
   /** IANA Time Zone database entry for Africa/Abidjan.  UTC offset +00:00/+00:00. */
   public static readonly AFRICA_ABIDJAN = new TimeZone('Africa/Abidjan');
 
@@ -1077,5 +1076,4 @@ export class TimeZone {
    */
   private constructor(public readonly timezoneName: string) {
   }
-
 }

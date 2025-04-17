@@ -1,0 +1,388 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "integ-ssmps-sharing-producing": {
+        "id": "integ-ssmps-sharing-producing",
+        "path": "integ-ssmps-sharing-producing",
+        "children": {
+          "String": {
+            "id": "String",
+            "path": "integ-ssmps-sharing-producing/String",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-ssmps-sharing-producing/String/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "/My/Public/Parameter",
+                    "tier": "Advanced",
+                    "type": "String",
+                    "value": "Abc123"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "ParamShare": {
+            "id": "ParamShare",
+            "path": "integ-ssmps-sharing-producing/ParamShare",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::RAM::ResourceShare",
+              "aws:cdk:cloudformation:props": {
+                "allowExternalPrincipals": true,
+                "name": "ParamShare",
+                "permissionArns": [
+                  "arn:aws:ram::aws:permission/AWSRAMDefaultPermissionSSMParameterReadOnly"
+                ],
+                "principals": [
+                  "234567890123"
+                ],
+                "resourceArns": [
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:aws:ssm:us-east-1:12345678:parameter",
+                        {
+                          "Ref": "String0BA8456E"
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "ResourceShareArn": {
+            "id": "ResourceShareArn",
+            "path": "integ-ssmps-sharing-producing/ResourceShareArn",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "ParameterArn": {
+            "id": "ParameterArn",
+            "path": "integ-ssmps-sharing-producing/ParameterArn",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-ssmps-sharing-producing/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-ssmps-sharing-producing/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      },
+      "integ-ssmps-sharing-accepting": {
+        "id": "integ-ssmps-sharing-accepting",
+        "path": "integ-ssmps-sharing-accepting",
+        "children": {
+          "GetResourceShareInvitations": {
+            "id": "GetResourceShareInvitations",
+            "path": "integ-ssmps-sharing-accepting/GetResourceShareInvitations",
+            "children": {
+              "SdkProvider": {
+                "id": "SdkProvider",
+                "path": "integ-ssmps-sharing-accepting/GetResourceShareInvitations/SdkProvider",
+                "children": {
+                  "AssertionsProvider": {
+                    "id": "AssertionsProvider",
+                    "path": "integ-ssmps-sharing-accepting/GetResourceShareInvitations/SdkProvider/AssertionsProvider",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                  "version": "0.0.0"
+                }
+              },
+              "Default": {
+                "id": "Default",
+                "path": "integ-ssmps-sharing-accepting/GetResourceShareInvitations/Default",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "integ-ssmps-sharing-accepting/GetResourceShareInvitations/Default/Default",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+              "version": "0.0.0"
+            }
+          },
+          "SingletonFunction1488541a7b23466481b69b4408076b81": {
+            "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+            "path": "integ-ssmps-sharing-accepting/SingletonFunction1488541a7b23466481b69b4408076b81",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "integ-ssmps-sharing-accepting/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "integ-ssmps-sharing-accepting/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "integ-ssmps-sharing-accepting/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "resourceShareInvitationArnOutput": {
+            "id": "resourceShareInvitationArnOutput",
+            "path": "integ-ssmps-sharing-accepting/resourceShareInvitationArnOutput",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "AcceptResourceShareInvitation": {
+            "id": "AcceptResourceShareInvitation",
+            "path": "integ-ssmps-sharing-accepting/AcceptResourceShareInvitation",
+            "children": {
+              "SdkProvider": {
+                "id": "SdkProvider",
+                "path": "integ-ssmps-sharing-accepting/AcceptResourceShareInvitation/SdkProvider",
+                "children": {
+                  "AssertionsProvider": {
+                    "id": "AssertionsProvider",
+                    "path": "integ-ssmps-sharing-accepting/AcceptResourceShareInvitation/SdkProvider/AssertionsProvider",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                  "version": "0.0.0"
+                }
+              },
+              "Default": {
+                "id": "Default",
+                "path": "integ-ssmps-sharing-accepting/AcceptResourceShareInvitation/Default",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "integ-ssmps-sharing-accepting/AcceptResourceShareInvitation/Default/Default",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-ssmps-sharing-accepting/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-ssmps-sharing-accepting/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      },
+      "integ-ssmps-sharing-consuming": {
+        "id": "integ-ssmps-sharing-consuming",
+        "path": "integ-ssmps-sharing-consuming",
+        "children": {
+          "RemoteParam.Parameter": {
+            "id": "RemoteParam.Parameter",
+            "path": "integ-ssmps-sharing-consuming/RemoteParam.Parameter",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "RemoteParam": {
+            "id": "RemoteParam",
+            "path": "integ-ssmps-sharing-consuming/RemoteParam",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "RemoteParameterValueOutput": {
+            "id": "RemoteParameterValueOutput",
+            "path": "integ-ssmps-sharing-consuming/RemoteParameterValueOutput",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-ssmps-sharing-consuming/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-ssmps-sharing-consuming/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      },
+      "SSMParameterStoreSharingTest": {
+        "id": "SSMParameterStoreSharingTest",
+        "path": "SSMParameterStoreSharingTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "SSMParameterStoreSharingTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "SSMParameterStoreSharingTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "SSMParameterStoreSharingTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "SSMParameterStoreSharingTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "SSMParameterStoreSharingTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
+    }
+  }
+}

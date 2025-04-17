@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "RuleStack.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,12 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "RuleStack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f9728b2d2c64ff638563c8cc4a3e8eb9ddf3074e2ae01d68fde11aeda0968fb1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/48862253eb1fed012c1b274795624b9ddc15444520044ea09a9ecd3ed2f4c300.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,6 +39,48 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyRuleA44AB831"
+          }
+        ],
+        "/RuleStack/MyWildcardRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyWildcardRule477FB0F9"
+          }
+        ],
+        "/RuleStack/MyAnythingButPrefixRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAnythingButPrefixRule756FC7C6"
+          }
+        ],
+        "/RuleStack/MyAnythingButSuffixRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAnythingButSuffixRuleB1E496DF"
+          }
+        ],
+        "/RuleStack/MyAnythingButWildcardRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAnythingButWildcardRuleEED7F44B"
+          }
+        ],
+        "/RuleStack/MyAnythingButEqualsIgnoreCase/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAnythingButEqualsIgnoreCaseEBE7F91F"
+          }
+        ],
+        "/RuleStack/MyPrefixEqualsIgnoreCase/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPrefixEqualsIgnoreCaseC9726B40"
+          }
+        ],
+        "/RuleStack/MySuffixEqualsIgnoreCase/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySuffixEqualsIgnoreCaseBE2DDE03"
           }
         ],
         "/RuleStack/BootstrapVersion": [
@@ -67,7 +111,9 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "IntegTestBatchDefaultEnvVarsStackDefaultTestDeployAssertC15EFFF2.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",

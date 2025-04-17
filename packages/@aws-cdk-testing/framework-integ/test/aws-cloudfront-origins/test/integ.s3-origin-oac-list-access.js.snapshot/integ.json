@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "s3-origin-oac-list-access/DefaultTest": {
+      "stacks": [
+        "cloudfront-s3-bucket-origin-oac-list-access"
+      ],
+      "assertionStack": "s3-origin-oac-list-access/DefaultTest/DeployAssert",
+      "assertionStackName": "s3originoaclistaccessDefaultTestDeployAssert6967EED4"
+    }
+  }
+}

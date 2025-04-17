@@ -233,7 +233,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpStage",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
                   "version": "0.0.0"
                 }
               },
@@ -271,7 +271,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpIntegration",
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
                       "version": "0.0.0"
                     }
                   },
@@ -354,7 +354,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
                   "version": "0.0.0"
                 }
               },
@@ -407,13 +407,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpAuthorizer",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpAuthorizer",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpApi",
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
               "version": "0.0.0"
             }
           },
@@ -460,7 +460,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpStage",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
                   "version": "0.0.0"
                 }
               },
@@ -513,13 +513,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpAuthorizer",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpAuthorizer",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpApi",
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
               "version": "0.0.0"
             }
           },
@@ -620,7 +620,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "867837e91f97aaf9c29d20a4fea18e3f520bb65d84e9bb59ec84058226225ffc.zip"
+                      "s3Key": "305ef816d469be820f1dbbfee876dd1758bf6733bee4d3dba76995a755ac145a.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -677,7 +677,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpIntegration",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
                   "version": "0.0.0"
                 }
               },
@@ -764,7 +764,23 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+              "version": "0.0.0"
+            }
+          },
+          "AuthorizerId": {
+            "id": "AuthorizerId",
+            "path": "AuthorizerInteg/AuthorizerId",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "AuthorizationType": {
+            "id": "AuthorizationType",
+            "path": "AuthorizerInteg/AuthorizationType",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
             }
           },
@@ -795,7 +811,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

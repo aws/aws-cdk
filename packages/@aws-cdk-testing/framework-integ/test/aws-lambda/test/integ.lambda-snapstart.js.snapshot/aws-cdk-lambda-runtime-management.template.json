@@ -1,0 +1,256 @@
+{
+ "Resources": {
+  "JavaSnapstartLambdaServiceRole50CD4832": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "JavaSnapstartLambdaB19F6BA4": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "a37d3ef54c18e7738fe5dc008504591bd3b1f14c6a09ee91eac6d55f7ca5ba5f.zip"
+    },
+    "Handler": "Handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "JavaSnapstartLambdaServiceRole50CD4832",
+      "Arn"
+     ]
+    },
+    "Runtime": "java11",
+    "SnapStart": {
+     "ApplyOn": "PublishedVersions"
+    }
+   },
+   "DependsOn": [
+    "JavaSnapstartLambdaServiceRole50CD4832"
+   ]
+  },
+  "Python312SnapstartLambdaServiceRole16F303C0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "Python312SnapstartLambdaB0C15475": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "pass"
+    },
+    "Handler": "Handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "Python312SnapstartLambdaServiceRole16F303C0",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12",
+    "SnapStart": {
+     "ApplyOn": "PublishedVersions"
+    }
+   },
+   "DependsOn": [
+    "Python312SnapstartLambdaServiceRole16F303C0"
+   ]
+  },
+  "Python313SnapstartLambdaServiceRoleC3989FBF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "Python313SnapstartLambda008EE7A4": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "pass"
+    },
+    "Handler": "Handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "Python313SnapstartLambdaServiceRoleC3989FBF",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.13",
+    "SnapStart": {
+     "ApplyOn": "PublishedVersions"
+    }
+   },
+   "DependsOn": [
+    "Python313SnapstartLambdaServiceRoleC3989FBF"
+   ]
+  },
+  "DotnetSnapstartLambdaServiceRole222A9244": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "DotnetSnapstartLambda7DAEB52E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "a328343cb12aa16bf2c12bfa98f28509923cf8a0e9771cccbbe967d9e15c08f6.zip"
+    },
+    "Handler": "Handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "DotnetSnapstartLambdaServiceRole222A9244",
+      "Arn"
+     ]
+    },
+    "Runtime": "dotnet8",
+    "SnapStart": {
+     "ApplyOn": "PublishedVersions"
+    }
+   },
+   "DependsOn": [
+    "DotnetSnapstartLambdaServiceRole222A9244"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

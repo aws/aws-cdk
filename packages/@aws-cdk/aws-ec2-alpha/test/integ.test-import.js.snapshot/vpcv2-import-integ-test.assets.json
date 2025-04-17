@@ -1,0 +1,21 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "c1f4b75d2d3f2e854e49bd6ff47d0b000d55d12ca8041aeb501a416acd0ee010": {
+      "displayName": "vpcv2-import-integ-test Template",
+      "source": {
+        "path": "vpcv2-import-integ-test.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-west-2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
+          "objectKey": "c1f4b75d2d3f2e854e49bd6ff47d0b000d55d12ca8041aeb501a416acd0ee010.json",
+          "region": "us-west-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

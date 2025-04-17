@@ -131,7 +131,6 @@ export abstract class ApiCallBase extends Construct implements IApiCall {
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
-
   }
 
   public getAtt(attributeName: string): Reference {

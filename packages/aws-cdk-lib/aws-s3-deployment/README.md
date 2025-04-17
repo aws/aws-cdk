@@ -356,6 +356,32 @@ resource handler.
 > NOTE: a new AWS Lambda handler will be created in your stack for each combination
 > of memory and storage size.
 
+## JSON-Aware Source Processing
+When using `Source.jsonData` with CDK Tokens (references to construct properties), you may need to enable the escaping option. This is particularly important when the referenced properties might contain special characters that require proper JSON escaping (like double quotes, line breaks, etc.).
+
+```ts
+declare const bucket: s3.Bucket;
+declare const param: ssm.StringParameter;
+
+// Example with a secret value that contains double quotes
+const deployment = new s3deploy.BucketDeployment(this, 'JsonDeployment', {
+  sources: [
+    s3deploy.Source.jsonData('config.json', {
+      api_endpoint: 'https://api.example.com',
+      secretValue: param.stringValue, // value with double quotes
+      config: {
+        enabled: true,
+        features: ['feature1', 'feature2']
+      }
+    },
+    // Enable escaping at deployment time
+    { escape: true },
+    )
+  ],
+  destinationBucket: bucket,
+});
+```
+
 ## EFS Support
 
 If your workflow needs more disk space than default (512 MB) disk space, you may attach an EFS storage to underlying
@@ -462,6 +488,26 @@ const myBucketDeployment = new s3deploy.BucketDeployment(this, 'DeployMeWithoutE
   sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
   destinationBucket,
   extract: false,
+});
+
+new cdk.CfnOutput(this, 'ObjectKey', {
+  value: cdk.Fn.select(0, myBucketDeployment.objectKeys),
+});
+```
+
+## Controlling the Output of Source Object Keys
+
+By default, the keys of the source objects copied to the destination bucket are returned in the Data property of the custom resource. However, you can disable this behavior by setting the outputObjectKeys property to false. This is particularly useful when the number of objects is too large and might exceed the size limit of the responseData property.
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+declare const destinationBucket: s3.Bucket;
+
+const myBucketDeployment = new s3deploy.BucketDeployment(this, 'DeployMeWithoutExtractingFilesOnDestination', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  destinationBucket,
+  outputObjectKeys: false,
 });
 
 new cdk.CfnOutput(this, 'ObjectKey', {

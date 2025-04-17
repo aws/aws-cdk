@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "640af62fe52ca8caf35ad61505a1d3a643ad36212c3de71d9c22595d1d94afee": {
+      "displayName": "EgressOnlyIgwVpc Template",
+      "source": {
+        "path": "aws-cdk-routev2-egressonlyigw-alpha.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "640af62fe52ca8caf35ad61505a1d3a643ad36212c3de71d9c22595d1d94afee.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

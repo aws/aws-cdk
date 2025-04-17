@@ -9,7 +9,7 @@ import { LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION } from '../../cx-api';
  * Use a Lambda action as an Alarm action
  */
 export class LambdaAction implements cloudwatch.IAlarmAction {
-  private lambdaFunction: lambda.IAlias | lambda.IVersion | lambda.IFunction
+  private lambdaFunction: lambda.IAlias | lambda.IVersion | lambda.IFunction;
   constructor(
     lambdaFunction: lambda.IAlias | lambda.IVersion | lambda.IFunction,
   ) {

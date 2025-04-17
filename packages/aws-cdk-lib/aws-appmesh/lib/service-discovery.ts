@@ -91,7 +91,6 @@ export abstract class ServiceDiscovery {
   /**
    * Returns DNS based service discovery
    *
-   * @param hostname
    * @param responseType Specifies the DNS response type for the virtual node.
    *  The default is `DnsResponseType.LOAD_BALANCER`.
    * @param ipPreference No IP preference is applied to the Virtual Node.

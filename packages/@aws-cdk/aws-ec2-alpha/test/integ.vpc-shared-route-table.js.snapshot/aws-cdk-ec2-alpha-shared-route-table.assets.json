@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "469d5bdf2647e70f17d23780f8c5e5a0f2c51d4732a396f54e42f1c4e52e2afd": {
+      "displayName": "aws-cdk-ec2-alpha-shared-route-table Template",
+      "source": {
+        "path": "aws-cdk-ec2-alpha-shared-route-table.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "469d5bdf2647e70f17d23780f8c5e5a0f2c51d4732a396f54e42f1c4e52e2afd.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

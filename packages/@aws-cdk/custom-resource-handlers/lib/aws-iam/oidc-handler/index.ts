@@ -12,9 +12,10 @@ async function onCreate(event: AWSLambda.CloudFormationCustomResourceCreateEvent
   const issuerUrl = event.ResourceProperties.Url;
   const thumbprints: string[] = (event.ResourceProperties.ThumbprintList ?? []).sort(); // keep sorted for UPDATE
   const clients: string[] = (event.ResourceProperties.ClientIDList ?? []).sort();
+  const rejectUnauthorized: boolean = event.ResourceProperties.RejectUnauthorized ?? false;
 
   if (thumbprints.length === 0) {
-    thumbprints.push(await external.downloadThumbprint(issuerUrl));
+    thumbprints.push(await external.downloadThumbprint(issuerUrl, rejectUnauthorized));
   }
 
   const resp = await external.createOpenIDConnectProvider({
@@ -35,6 +36,7 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceUpdateEvent
   const issuerUrl = event.ResourceProperties.Url;
   const thumbprints: string[] = (event.ResourceProperties.ThumbprintList ?? []).sort(); // keep sorted for UPDATE
   const clients: string[] = (event.ResourceProperties.ClientIDList ?? []).sort();
+  const rejectUnauthorized: boolean = event.ResourceProperties.RejectUnauthorized ?? false;
 
   // determine which update we are talking about.
   const oldIssuerUrl = event.OldResourceProperties.Url;
@@ -48,7 +50,7 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceUpdateEvent
   const providerArn = event.PhysicalResourceId;
 
   if (thumbprints.length === 0) {
-    thumbprints.push(await external.downloadThumbprint(issuerUrl));
+    thumbprints.push(await external.downloadThumbprint(issuerUrl, rejectUnauthorized));
   }
 
   external.log('updating thumbprint to', thumbprints);

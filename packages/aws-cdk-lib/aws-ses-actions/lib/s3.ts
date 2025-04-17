@@ -42,7 +42,6 @@ export interface S3Props {
  * a notification to Amazon SNS.
  */
 export class S3 implements ses.IReceiptRuleAction {
-
   constructor(private readonly props: S3Props) {
   }
 

@@ -2,18 +2,37 @@
 
 This package contains the following custom resource handlers:
 
-### Stable:
+## Stable
 
-- aws-s3/auto-delete-objects-handler
+- aws-certificatemanager/dns-validated-certificate-handler
+- aws-cloudfront/edge-function
+- aws-dynamodb/replica-handler
+- aws-ec2/restrict-default-security-group-handler
 - aws-ecr/auto-delete-images-handler
+- aws-ecs/lambda-source
+- aws-eks/custom-resource-handler
+- aws-eks/kubectl-handler
 - aws-events-targets/aws-api-handler
+- aws-iam/oidc-handler
+- aws-logs/log-retention-handler
+- aws-route53/cross-account-zone-delegation-handler
+- aws-route53/delete-existing-record-set-handler
+- aws-s3/auto-delete-objects-handler
+- aws-s3/notifications-resource-handler
+- aws-s3-deployment/bucket-deployment-handler
+- aws-ses/drop-spam-handler
+- aws-stepfunctions-tasks/cross-region-aws-sdk-handler
+- aws-stepfunctions-tasks/eval-nodejs-handler
+- aws-stepfunctions-tasks/role-policy-handler
 - aws-synthetics/auto-delete-underlying-resources-handler
 - custom-resources/aws-custom-resource-handler
+- pipelines/approve-lambda
+- triggers/lambda
 
 These handlers are copied into `aws-cdk-lib/custom-resource-handlers` at build time
 and included as part of the `aws-cdk-lib` package.
 
-### Experimental:
+## Experimental
 
 - aws-amplify-alpha/asset-deployment-handler
 - aws-redshift-alpha/asset-deployment-handler

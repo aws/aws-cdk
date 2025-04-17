@@ -5,10 +5,32 @@ import { Duration, Stack } from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
- * Properties for starting an AWS Glue job as a task
+ * Properties for the worker configuration.
  */
-export interface GlueStartJobRunProps extends sfn.TaskStateBaseProps {
+export interface WorkerConfigurationProperty {
+  /**
+   * The type of predefined worker that is allocated when a job runs.
+   *
+   * @default - must choose one of `workerType` or `workerTypeV2`
+   * @deprecated Use `workerTypeV2` for more flexibility in defining worker types.
+   */
+  readonly workerType?: WorkerType;
 
+  /**
+   * The type of predefined worker that is allocated when a job runs. Can be one of the
+   * predefined values or dynamic values using `WorkerTypeV2.of(...)`.
+   *
+   * @default - must choose one of `workerType` or `workerTypeV2`
+   */
+  readonly workerTypeV2?: WorkerTypeV2;
+
+  /**
+   * The number of workers of a defined `WorkerType` that are allocated when a job runs.
+   */
+  readonly numberOfWorkers: number;
+}
+
+interface GlueStartJobRunOptions {
   /**
    * Glue job name
    */
@@ -59,19 +81,18 @@ export interface GlueStartJobRunProps extends sfn.TaskStateBaseProps {
 }
 
 /**
- * Properties for the worker configuration.
+ * Properties for starting an AWS Glue job as a task
  */
-export interface WorkerConfigurationProperty {
-  /**
-   * The type of predefined worker that is allocated when a job runs.
-   */
-  readonly workerType: WorkerType;
+export interface GlueStartJobRunJsonPathProps extends sfn.TaskStateJsonPathBaseProps, GlueStartJobRunOptions {}
+/**
+ * Properties for starting an AWS Glue job as a task
+ */
+export interface GlueStartJobRunJsonataProps extends sfn.TaskStateJsonataBaseProps, GlueStartJobRunOptions {}
 
-  /**
-   * The number of workers of a defined `WorkerType` that are allocated when a job runs.
-   */
-  readonly numberOfWorkers: number;
-}
+/**
+ * Properties for starting an AWS Glue job as a task
+ */
+export interface GlueStartJobRunProps extends sfn.TaskStateBaseProps, GlueStartJobRunOptions {}
 
 /**
  * Starts an AWS Glue job in a Task state
@@ -82,6 +103,31 @@ export interface WorkerConfigurationProperty {
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html
  */
 export class GlueStartJobRun extends sfn.TaskStateBase {
+  /**
+   * Starts an AWS Glue job in a Task state using JSONPath
+   *
+   * OUTPUT: the output of this task is a JobRun structure, for details consult
+   * https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-runs.html#aws-glue-api-jobs-runs-JobRun
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html
+   */
+  public static jsonPath(scope: Construct, id: string, props: GlueStartJobRunJsonPathProps) {
+    return new GlueStartJobRun(scope, id, props);
+  }
+  /**
+   * Starts an AWS Glue job in a Task state using JSONata
+   *
+   * OUTPUT: the output of this task is a JobRun structure, for details consult
+   * https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-runs.html#aws-glue-api-jobs-runs-JobRun
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html
+   */
+  public static jsonata(scope: Construct, id: string, props: GlueStartJobRunJsonataProps) {
+    return new GlueStartJobRun(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -91,9 +137,17 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
   private readonly integrationPattern: sfn.IntegrationPattern;
+  private readonly jobArguments?: sfn.TaskInput;
 
   constructor(scope: Construct, id: string, private readonly props: GlueStartJobRunProps) {
-    super(scope, id, props);
+    const superProps = {
+      ...props,
+      // this arguments is for Glue job,
+      // However arguments of state props is used by JSONata states so overwrite by undefined.
+      arguments: undefined,
+    };
+    super(scope, id, superProps);
+    this.jobArguments = props.arguments;
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     validatePatternSupported(this.integrationPattern, GlueStartJobRun.SUPPORTED_INTEGRATION_PATTERNS);
@@ -110,7 +164,8 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     const notificationProperty = this.props.notifyDelayAfter ? { NotifyDelayAfter: this.props.notifyDelayAfter.toMinutes() } : null;
 
     let timeout: number | undefined = undefined;
@@ -122,18 +177,29 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
       timeout = sfn.JsonPath.numberAt(this.props.taskTimeout.path);
     }
 
+    if (this.props.workerConfiguration) {
+      const workerConfiguration = this.props.workerConfiguration;
+      if (workerConfiguration?.workerTypeV2 && workerConfiguration.workerType) {
+        throw new Error('You cannot set both \'workerType\' and \'workerTypeV2\' properties in \'workerConfiguration\'.');
+      }
+      if (!workerConfiguration.workerTypeV2 && !workerConfiguration.workerType) {
+        throw new Error('You must set either \'workerType\' or \'workerTypeV2\' property in \'workerConfiguration\'.');
+      }
+    }
+    const workerType = this.props.workerConfiguration?.workerType ?? this.props.workerConfiguration?.workerTypeV2?.name;
+
     return {
       Resource: integrationResourceArn('glue', 'startJobRun', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         JobName: this.props.glueJobName,
-        Arguments: this.props.arguments?.value,
+        Arguments: this.jobArguments?.value,
         Timeout: timeout,
         SecurityConfiguration: this.props.securityConfiguration,
         NotificationProperty: notificationProperty,
-        WorkerType: this.props.workerConfiguration?.workerType,
+        WorkerType: workerType,
         NumberOfWorkers: this.props.workerConfiguration?.numberOfWorkers,
         ExecutionClass: this.props.executionClass,
-      }),
+      }, queryLanguage),
       TimeoutSeconds: undefined,
       TimeoutSecondsPath: undefined,
     };
@@ -168,8 +234,7 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
 /**
  * The type of predefined worker that is allocated when a job runs.
  *
- * If you need to use a WorkerType that doesn't exist as a static member, you
- * can instantiate a `WorkerType` object, e.g: `WorkerType.of('other type')`.
+ * @deprecated Use `workerTypeV2` property for `WorkerConfigurationProperty`
  */
 export enum WorkerType {
   /**
@@ -206,6 +271,66 @@ export enum WorkerType {
    * Each worker maps to 2 high-memory DPU [M-DPU] (8 vCPU, 64 GB of memory, 128 GB disk). Supported in Ray jobs.
    */
   Z_2X = 'Z.2X',
+}
+
+/**
+ * The type of predefined worker that is allocated when a job runs.
+ *
+ * If you need to use a WorkerTypeV2 that doesn't exist as a static member, you
+ * can instantiate a `WorkerTypeV2` object, e.g: `WorkerTypeV2.of('other type')`.
+ */
+export class WorkerTypeV2 {
+  /**
+   * Each worker provides 4 vCPU, 16 GB of memory and a 50GB disk, and 2 executors per worker.
+   */
+  public static readonly STANDARD = new WorkerTypeV2('Standard');
+
+  /**
+   * Each worker maps to 1 DPU (4 vCPU, 16 GB of memory, 64 GB disk), and provides 1 executor per worker. Suitable for memory-intensive jobs.
+   */
+  public static readonly G_1X = new WorkerTypeV2('G.1X');
+
+  /**
+   * Each worker maps to 2 DPU (8 vCPU, 32 GB of memory, 128 GB disk), and provides 1 executor per worker. Suitable for memory-intensive jobs.
+   */
+  public static readonly G_2X = new WorkerTypeV2('G.2X');
+
+  /**
+   * Each worker maps to 4 DPU (16 vCPU, 64 GB of memory, 256 GB disk), and provides 1 executor per worker. We recommend this worker type for jobs whose workloads contain your most demanding transforms, aggregations, joins, and queries. This worker type is available only for AWS Glue version 3.0 or later jobs.
+   */
+  public static readonly G_4X = new WorkerTypeV2('G.4X');
+
+  /**
+   * Each worker maps to 8 DPU (32 vCPU, 128 GB of memory, 512 GB disk), and provides 1 executor per worker. We recommend this worker type for jobs whose workloads contain your most demanding transforms, aggregations, joins, and queries. This worker type is available only for AWS Glue version 3.0 or later jobs.
+   */
+  public static readonly G_8X = new WorkerTypeV2('G.8X');
+
+  /**
+   * Each worker maps to 0.25 DPU (2 vCPU, 4 GB of memory, 64 GB disk), and provides 1 executor per worker. Suitable for low volume streaming jobs.
+   */
+  public static readonly G_025X = new WorkerTypeV2('G.025X');
+
+  /**
+   * Each worker maps to 2 high-memory DPU [M-DPU] (8 vCPU, 64 GB of memory, 128 GB disk). Supported in Ray jobs.
+   */
+  public static readonly Z_2X = new WorkerTypeV2('Z.2X');
+
+  /**
+   * Custom worker type
+   * @param workerType custom worker type
+   */
+  public static of(workerType: string): WorkerTypeV2 {
+    return new WorkerTypeV2(workerType);
+  }
+
+  /**
+   * The name of this WorkerType, as expected by Job resource.
+   */
+  public readonly name: string;
+
+  private constructor(name: string) {
+    this.name = name;
+  }
 }
 
 /**

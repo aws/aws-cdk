@@ -1,0 +1,12 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "NeptuneClusterPortTest/DefaultTest": {
+      "stacks": [
+        "NeptuneClusterPortTestStack"
+      ],
+      "assertionStack": "NeptuneClusterPortTest/DefaultTest/DeployAssert",
+      "assertionStackName": "NeptuneClusterPortTestDefaultTestDeployAssert7A0847B4"
+    }
+  }
+}

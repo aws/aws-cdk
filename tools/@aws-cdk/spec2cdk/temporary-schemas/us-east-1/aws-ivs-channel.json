@@ -1,0 +1,155 @@
+{
+  "typeName" : "AWS::IVS::Channel",
+  "description" : "Resource Type definition for AWS::IVS::Channel",
+  "sourceUrl" : "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "definitions" : {
+    "Tag" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "Key" : {
+          "type" : "string",
+          "description" : "The key name of the tag. You can specify a value that is 1 to 128 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.",
+          "minLength" : 1,
+          "maxLength" : 128
+        },
+        "Value" : {
+          "type" : "string",
+          "description" : "The value for the tag. You can specify a value that is 0 to 256 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.",
+          "minLength" : 0,
+          "maxLength" : 256
+        }
+      },
+      "required" : [ "Value", "Key" ]
+    },
+    "MultitrackInputConfiguration" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "Enabled" : {
+          "description" : "Indicates whether multitrack input is enabled. Can be set to true only if channel type is STANDARD. Setting enabled to true with any other channel type will cause an exception. If true, then policy, maximumResolution, and containerFormat are required, and containerFormat must be set to FRAGMENTED_MP4. Default: false.",
+          "default" : false,
+          "type" : "boolean"
+        },
+        "MaximumResolution" : {
+          "description" : "Maximum resolution for multitrack input. Required if enabled is true.",
+          "type" : "string",
+          "enum" : [ "SD", "HD", "FULL_HD" ]
+        },
+        "Policy" : {
+          "description" : "Indicates whether multitrack input is allowed or required. Required if enabled is true.",
+          "type" : "string",
+          "enum" : [ "ALLOW", "REQUIRE" ]
+        }
+      }
+    }
+  },
+  "properties" : {
+    "Arn" : {
+      "description" : "Channel ARN is automatically generated on creation and assigned as the unique identifier.",
+      "type" : "string",
+      "pattern" : "^arn:aws:ivs:[a-z0-9-]+:[0-9]+:channel/[a-zA-Z0-9-]+$",
+      "minLength" : 1,
+      "maxLength" : 128
+    },
+    "Name" : {
+      "description" : "Channel",
+      "type" : "string",
+      "minLength" : 0,
+      "maxLength" : 128,
+      "pattern" : "^[a-zA-Z0-9-_]*$",
+      "default" : "-"
+    },
+    "Authorized" : {
+      "description" : "Whether the channel is authorized.",
+      "type" : "boolean",
+      "default" : false
+    },
+    "InsecureIngest" : {
+      "description" : "Whether the channel allows insecure ingest.",
+      "type" : "boolean",
+      "default" : false
+    },
+    "LatencyMode" : {
+      "description" : "Channel latency mode.",
+      "type" : "string",
+      "enum" : [ "NORMAL", "LOW" ],
+      "default" : "LOW"
+    },
+    "Type" : {
+      "description" : "Channel type, which determines the allowable resolution and bitrate. If you exceed the allowable resolution or bitrate, the stream probably will disconnect immediately.",
+      "type" : "string",
+      "enum" : [ "STANDARD", "BASIC", "ADVANCED_SD", "ADVANCED_HD" ],
+      "default" : "STANDARD"
+    },
+    "Tags" : {
+      "description" : "A list of key-value pairs that contain metadata for the asset model.",
+      "type" : "array",
+      "uniqueItems" : true,
+      "insertionOrder" : false,
+      "maxItems" : 50,
+      "items" : {
+        "$ref" : "#/definitions/Tag"
+      }
+    },
+    "PlaybackUrl" : {
+      "description" : "Channel Playback URL.",
+      "type" : "string"
+    },
+    "IngestEndpoint" : {
+      "description" : "Channel ingest endpoint, part of the definition of an ingest server, used when you set up streaming software.",
+      "type" : "string"
+    },
+    "RecordingConfigurationArn" : {
+      "description" : "Recording Configuration ARN. A value other than an empty string indicates that recording is enabled. Default: \"\" (recording is disabled).",
+      "type" : "string",
+      "default" : "",
+      "pattern" : "^$|arn:aws:ivs:[a-z0-9-]+:[0-9]+:recording-configuration/[a-zA-Z0-9-]+$",
+      "minLength" : 0,
+      "maxLength" : 128
+    },
+    "Preset" : {
+      "description" : "Optional transcode preset for the channel. This is selectable only for ADVANCED_HD and ADVANCED_SD channel types. For those channel types, the default preset is HIGHER_BANDWIDTH_DELIVERY. For other channel types (BASIC and STANDARD), preset is the empty string (\"\").",
+      "type" : "string",
+      "enum" : [ "", "HIGHER_BANDWIDTH_DELIVERY", "CONSTRAINED_BANDWIDTH_DELIVERY" ]
+    },
+    "MultitrackInputConfiguration" : {
+      "$ref" : "#/definitions/MultitrackInputConfiguration"
+    },
+    "ContainerFormat" : {
+      "description" : "Indicates which content-packaging format is used (MPEG-TS or fMP4). If multitrackInputConfiguration is specified and enabled is true, then containerFormat is required and must be set to FRAGMENTED_MP4. Otherwise, containerFormat may be set to TS or FRAGMENTED_MP4. Default: TS.",
+      "type" : "string",
+      "default" : "TS",
+      "enum" : [ "TS", "FRAGMENTED_MP4" ]
+    }
+  },
+  "additionalProperties" : false,
+  "required" : [ ],
+  "tagging" : {
+    "taggable" : true,
+    "tagOnCreate" : true,
+    "tagUpdatable" : true,
+    "cloudFormationSystemTags" : false,
+    "tagProperty" : "/properties/Tags",
+    "permissions" : [ "ivs:TagResource", "ivs:UntagResource", "ivs:ListTagsForResource" ]
+  },
+  "readOnlyProperties" : [ "/properties/Arn", "/properties/PlaybackUrl", "/properties/IngestEndpoint" ],
+  "primaryIdentifier" : [ "/properties/Arn" ],
+  "handlers" : {
+    "create" : {
+      "permissions" : [ "ivs:CreateChannel", "ivs:TagResource" ]
+    },
+    "read" : {
+      "permissions" : [ "ivs:GetChannel", "ivs:ListTagsForResource" ]
+    },
+    "update" : {
+      "permissions" : [ "ivs:GetChannel", "ivs:UpdateChannel", "ivs:TagResource", "ivs:UntagResource", "ivs:ListTagsForResource" ]
+    },
+    "delete" : {
+      "permissions" : [ "ivs:DeleteChannel", "ivs:UntagResource" ]
+    },
+    "list" : {
+      "permissions" : [ "ivs:ListChannels", "ivs:ListTagsForResource" ]
+    }
+  }
+}

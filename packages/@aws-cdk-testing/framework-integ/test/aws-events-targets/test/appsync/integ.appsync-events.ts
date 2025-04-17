@@ -9,7 +9,6 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 const app = new cdk.App();
 
 class AwsAppSyncEvent extends cdk.Stack {
-
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -42,7 +41,6 @@ export const response = (ctx) => ctx.args.message
       }),
       deadLetterQueue: queue,
     }));
-
   }
 }
 

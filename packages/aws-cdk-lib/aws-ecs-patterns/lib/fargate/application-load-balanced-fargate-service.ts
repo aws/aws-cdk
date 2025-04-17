@@ -36,13 +36,29 @@ export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationL
    * @default - Health check configuration from container.
    */
   readonly healthCheck?: HealthCheck;
+
+  /**
+   * The minimum number of CPU units to reserve for the container.
+   *
+   * @default - No minimum CPU units reserved.
+   */
+  readonly containerCpu?: number;
+
+  /**
+   * The amount (in MiB) of memory to present to the container.
+   *
+   * If your container attempts to exceed the allocated memory, the container
+   * is terminated.
+   *
+   * @default - No memory limit.
+   */
+  readonly containerMemoryLimitMiB?: number;
 }
 
 /**
  * A Fargate service running on an ECS cluster fronted by an application load balancer.
  */
 export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalancedServiceBase {
-
   /**
    * Determines whether the service will be assigned a public IP address.
    */
@@ -87,6 +103,9 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
         ? taskImageOptions.logDriver : enableLogging
           ? this.createAWSLogDriver(this.node.id) : undefined;
 
+      this.validateContainerCpu(this.taskDefinition.cpu, props.containerCpu);
+      this.validateContainerMemoryLimitMiB(this.taskDefinition.memoryMiB, props.containerMemoryLimitMiB);
+
       const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
@@ -97,6 +116,8 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
         dockerLabels: taskImageOptions.dockerLabels,
         command: taskImageOptions.command,
         entryPoint: taskImageOptions.entryPoint,
+        cpu: props.containerCpu,
+        memoryLimitMiB: props.containerMemoryLimitMiB,
       });
       container.addPortMappings({
         containerPort: taskImageOptions.containerPort || 80,
@@ -150,6 +171,31 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
     if (value === undefined || Token.isUnresolved(value)) { return; }
     if (!Number.isInteger(value) || value < 0) {
       throw new Error(`${name}: Must be a non-negative integer; received ${value}`);
+    }
+  }
+
+  private validateContainerCpu(cpu: number, containerCpu?: number) {
+    if (containerCpu === undefined || Token.isUnresolved(containerCpu) || Token.isUnresolved(cpu)) {
+      return;
+    }
+    if (containerCpu > cpu) {
+      throw new Error(`containerCpu must be less than to cpu; received containerCpu: ${containerCpu}, cpu: ${cpu}`);
+    }
+    // If containerCPU is 0, it is not an error.
+    if (containerCpu < 0 || !Number.isInteger(containerCpu)) {
+      throw new Error(`containerCpu must be a non-negative integer; received ${containerCpu}`);
+    }
+  }
+
+  private validateContainerMemoryLimitMiB(memoryLimitMiB: number, containerMemoryLimitMiB?: number) {
+    if (containerMemoryLimitMiB === undefined || Token.isUnresolved(containerMemoryLimitMiB) || Token.isUnresolved(memoryLimitMiB)) {
+      return;
+    }
+    if (containerMemoryLimitMiB > memoryLimitMiB) {
+      throw new Error(`containerMemoryLimitMiB must be less than to memoryLimitMiB; received containerMemoryLimitMiB: ${containerMemoryLimitMiB}, memoryLimitMiB: ${memoryLimitMiB}`);
+    }
+    if (containerMemoryLimitMiB <= 0 || !Number.isInteger(containerMemoryLimitMiB)) {
+      throw new Error(`containerMemoryLimitMiB must be a positive integer; received ${containerMemoryLimitMiB}`);
     }
   }
 }

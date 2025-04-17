@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnDBSubnetGroup } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
 import { IResource, RemovalPolicy, Resource, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Interface for a subnet group.
@@ -57,7 +58,6 @@ export interface SubnetGroupProps {
  * @resource AWS::RDS::DBSubnetGroup
  */
 export class SubnetGroup extends Resource implements ISubnetGroup {
-
   /**
    * Imports an existing subnet group by name.
    */
@@ -71,6 +71,8 @@ export class SubnetGroup extends Resource implements ISubnetGroup {
 
   constructor(scope: Construct, id: string, props: SubnetGroupProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS });
 

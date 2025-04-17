@@ -1,0 +1,12 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "integ-test-codebuild-project-arm/DefaultTest": {
+      "stacks": [
+        "codebuild-project-arm"
+      ],
+      "assertionStack": "integ-test-codebuild-project-arm/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestcodebuildprojectarmDefaultTestDeployAssert4EE92337"
+    }
+  }
+}

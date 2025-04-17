@@ -1,7 +1,8 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "files": {
     "4509b6f48df5f7f88801598f6f8473b4e0feac7f73d4f677d81e4cb461cefa45": {
+      "displayName": "Function/Code",
       "source": {
         "path": "asset.4509b6f48df5f7f88801598f6f8473b4e0feac7f73d4f677d81e4cb461cefa45",
         "packaging": "zip"
@@ -15,6 +16,7 @@
       }
     },
     "9d8ff3f39c8524444ec8731d043535dc500d580dd48774ce33c75be8bfe2effc": {
+      "displayName": "cdk-integ-lambda-bundling Template",
       "source": {
         "path": "cdk-integ-lambda-bundling.template.json",
         "packaging": "file"

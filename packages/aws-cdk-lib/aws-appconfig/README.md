@@ -96,6 +96,24 @@ const user = new iam.User(this, 'MyUser');
 env.grantReadConfig(user);
 ```
 
+### Deletion Protection Check
+
+You can enable [deletion protection](https://docs.aws.amazon.com/appconfig/latest/userguide/deletion-protection.html) on the environment by setting the `deletionProtectionCheck` property.
+
+- ACCOUNT_DEFAULT: The default setting, which uses account-level deletion protection. To configure account-level deletion protection, use the UpdateAccountSettings API.
+- APPLY: Instructs the deletion protection check to run, even if deletion protection is disabled at the account level. APPLY also forces the deletion protection check to run against resources created in the past hour, which are normally excluded from deletion protection checks.
+- BYPASS: Instructs AWS AppConfig to bypass the deletion protection check and delete an environment even if deletion protection would have otherwise prevented it.
+
+```ts
+declare const application: appconfig.Application;
+declare const alarm: cloudwatch.Alarm;
+declare const compositeAlarm: cloudwatch.CompositeAlarm;
+
+new appconfig.Environment(this, 'MyEnvironment', {
+  application,
+  deletionProtectionCheck: appconfig.DeletionProtectionCheck.APPLY,
+});
+```
 
 ## Deployment Strategy
 
@@ -536,8 +554,21 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
 ## Extension
 
 An extension augments your ability to inject logic or behavior at different points during the AWS AppConfig workflow of
-creating or deploying a configuration.
+creating or deploying a configuration. You can associate these types of tasks with AWS AppConfig applications, environments, and configuration profiles.
 See: https://docs.aws.amazon.com/appconfig/latest/userguide/working-with-appconfig-extensions.html
+
+An extension defines one or more actions, that it performs during an AWS AppConfig workflow. Each action is invoked either when you interact with AWS AppConfig or when AWS AppConfig is performing a process on your behalf. These invocation points are called action points. AWS AppConfig extensions support the following action points: 
+
+* PRE_START_DEPLOYMENT
+* PRE_CREATE_HOSTED_CONFIGURATION_VERSION
+* ON_DEPLOYMENT_START
+* ON_DEPLOYMENT_STEP
+* ON_DEPLOYMENT_BAKING
+* ON_DEPLOYMENT_COMPLETE
+* ON_DEPLOYMENT_ROLLED_BACK
+* AT_DEPLOYMENT_TICK
+
+See: https://docs.aws.amazon.com/appconfig/latest/userguide/working-with-appconfig-extensions-about.html
 
 ### AWS Lambda destination
 

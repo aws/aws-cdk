@@ -9,6 +9,7 @@ import { IRole } from './role';
 import { IUser } from './user';
 import { ArnFormat, Resource, Stack, Arn, Aws } from '../../core';
 import { getCustomizeRolesConfig, PolicySynthesizer } from '../../core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A managed policy
@@ -214,6 +215,8 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
     super(scope, id, {
       physicalName: props.managedPolicyName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.description = props.description || '';
     this.path = props.path || '/';
@@ -274,6 +277,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   /**
    * Adds a statement to the policy document.
    */
+  @MethodMetadata()
   public addStatements(...statement: PolicyStatement[]) {
     this.document.addStatements(...statement);
   }
@@ -281,6 +285,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   /**
    * Attaches this policy to a user.
    */
+  @MethodMetadata()
   public attachToUser(user: IUser) {
     if (this.users.find(u => u.userArn === user.userArn)) { return; }
     this.users.push(user);
@@ -289,6 +294,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   /**
    * Attaches this policy to a role.
    */
+  @MethodMetadata()
   public attachToRole(role: IRole) {
     if (this.roles.find(r => r.roleArn === role.roleArn)) { return; }
     this.roles.push(role);
@@ -297,6 +303,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   /**
    * Attaches this policy to a group.
    */
+  @MethodMetadata()
   public attachToGroup(group: IGroup) {
     if (this.groups.find(g => g.groupArn === group.groupArn)) { return; }
     this.groups.push(group);

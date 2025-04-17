@@ -2,7 +2,7 @@
 import * as _eks from '@aws-sdk/client-eks';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as sts from '@aws-sdk/client-sts';
-import { IsCompleteResponse, OnEventResponse } from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
+import { IsCompleteResponse, OnEventResponse } from '../../copied-from-aws-cdk-lib/provider-framework-types';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 

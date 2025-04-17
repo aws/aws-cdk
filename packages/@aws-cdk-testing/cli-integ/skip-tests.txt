@@ -1,8 +1,0 @@
-# This file is empty on purpose. Leave it here as documentation
-# and an example.
-#
-# Copy this file to cli-regression-patches/vX.Y.Z/skip-tests.txt
-# and edit it there if you want to exclude certain tests from running
-# when performing a certain version's regression tests.
-#
-# Put a test name on a line by itself to skip it.

@@ -1,0 +1,24 @@
+{
+  "Parameters": {
+    "IgnoreUnmodifiedGroupSizeProperties": {
+      "Type": "Boolean",
+      "Default": false
+    }
+  },
+  "Resources": {
+    "ASG": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MinSize": "1",
+        "MaxSize": "10"
+      },
+      "UpdatePolicy": {
+        "AutoScalingScheduledAction": {
+          "IgnoreUnmodifiedGroupSizeProperties": {
+            "Ref": "IgnoreUnmodifiedGroupSizeProperties"
+          }
+        }
+      }
+    }
+  }
+}

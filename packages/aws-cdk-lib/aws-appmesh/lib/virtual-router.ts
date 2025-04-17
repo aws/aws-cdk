@@ -5,6 +5,7 @@ import { renderMeshOwner } from './private/utils';
 import { Route, RouteBaseProps } from './route';
 import { VirtualRouterListener } from './virtual-router-listener';
 import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Interface which all VirtualRouter based classes MUST implement
@@ -144,6 +145,8 @@ export class VirtualRouter extends VirtualRouterBase {
     super(scope, id, {
       physicalName: props.virtualRouterName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.mesh = props.mesh;
     if (props.listeners && props.listeners.length) {

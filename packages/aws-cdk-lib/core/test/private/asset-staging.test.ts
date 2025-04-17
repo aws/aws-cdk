@@ -81,7 +81,6 @@ describe('bundling', () => {
       '--volumes-from', helper.copyContainerName,
       'public.ecr.aws/docker/library/alpine',
     ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
   });
 
   test('AssetBundlingBindMount bundles with bind mount ', () => {

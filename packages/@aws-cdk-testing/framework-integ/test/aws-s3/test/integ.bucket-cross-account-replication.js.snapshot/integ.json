@@ -1,0 +1,13 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "ReplicationInteg/DefaultTest": {
+      "stacks": [
+        "parent-stack",
+        "child-stack"
+      ],
+      "assertionStack": "ReplicationInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ReplicationIntegDefaultTestDeployAssert2C07A074"
+    }
+  }
+}

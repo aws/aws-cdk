@@ -13,8 +13,10 @@ import { ImportedRole } from './private/imported-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
-import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations } from '../../core';
+import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, RemovalPolicy } from '../../core';
 import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 
 const MAX_INLINE_SIZE = 10000;
 const MAX_MANAGEDPOL_SIZE = 6000;
@@ -300,7 +302,7 @@ export class Role extends Resource implements IRole {
   }
 
   /**
-    * Return whether the given object is a Role
+   * Return whether the given object is a Role
    */
   public static isRole(x: any) : x is Role {
     return x !== null && typeof(x) === 'object' && IAM_ROLE_SYMBOL in x;
@@ -311,7 +313,7 @@ export class Role extends Resource implements IRole {
    *
    * The imported role is assumed to exist in the same account as the account
    * the scope's containing Stack is being deployed to.
-
+   *
    * @param scope construct scope
    * @param id construct id
    * @param roleName the name of the role to import
@@ -412,6 +414,8 @@ export class Role extends Resource implements IRole {
     super(scope, id, {
       physicalName: props.roleName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.roleName && !Token.isUnresolved(props.roleName) && !/^[\w+=,.@-]{1,64}$/.test(props.roleName)) {
       throw new Error('Invalid roleName. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 64 characters.');
@@ -493,6 +497,8 @@ export class Role extends Resource implements IRole {
             this.splitLargePolicy();
           }
         },
+      }, {
+        priority: mutatingAspectPrio32333(this),
       });
     }
 
@@ -518,6 +524,7 @@ export class Role extends Resource implements IRole {
    * If there is no default policy attached to this role, it will be created.
    * @param statement The permission statement to add to the policy document
    */
+  @MethodMetadata()
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (this._precreatedRole) {
       return this._precreatedRole.addToPrincipalPolicy(statement);
@@ -537,6 +544,7 @@ export class Role extends Resource implements IRole {
     }
   }
 
+  @MethodMetadata()
   public addToPolicy(statement: PolicyStatement): boolean {
     if (this._precreatedRole) {
       return this._precreatedRole.addToPolicy(statement);
@@ -549,6 +557,7 @@ export class Role extends Resource implements IRole {
    * Attaches a managed policy to this role.
    * @param policy The the managed policy to attach.
    */
+  @MethodMetadata()
   public addManagedPolicy(policy: IManagedPolicy) {
     if (this._precreatedRole) {
       return this._precreatedRole.addManagedPolicy(policy);
@@ -562,6 +571,7 @@ export class Role extends Resource implements IRole {
    * Attaches a policy to this role.
    * @param policy The policy to attach
    */
+  @MethodMetadata()
   public attachInlinePolicy(policy: Policy) {
     if (this._precreatedRole) {
       this._precreatedRole.attachInlinePolicy(policy);
@@ -574,6 +584,7 @@ export class Role extends Resource implements IRole {
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
    */
+  @MethodMetadata()
   public grant(grantee: IPrincipal, ...actions: string[]) {
     return Grant.addToPrincipal({
       grantee,
@@ -586,6 +597,7 @@ export class Role extends Resource implements IRole {
   /**
    * Grant permissions to the given principal to pass this role.
    */
+  @MethodMetadata()
   public grantPassRole(identity: IPrincipal) {
     return this.grant(identity, 'iam:PassRole');
   }
@@ -593,6 +605,7 @@ export class Role extends Resource implements IRole {
   /**
    * Grant permissions to the given principal to assume this role.
    */
+  @MethodMetadata()
   public grantAssumeRole(identity: IPrincipal) {
     // Service and account principals must use assumeRolePolicy
     if (identity instanceof ServicePrincipal || identity instanceof AccountPrincipal) {
@@ -623,12 +636,27 @@ export class Role extends Resource implements IRole {
    * If you do, you are responsible for adding the correct statements to the
    * Role's policies yourself.
    */
+  @MethodMetadata()
   public withoutPolicyUpdates(options: WithoutPolicyUpdatesOptions = {}): IRole {
     if (!this.immutableRole) {
       this.immutableRole = new ImmutableRole(Node.of(this).scope as Construct, `ImmutableRole${this.node.id}`, this, options.addGrantsToResources ?? false);
     }
 
     return this.immutableRole;
+  }
+
+  /**
+   * Skip applyRemovalPolicy if role synthesis is prevented by customizeRoles.
+   * Because in this case, this construct does not have a CfnResource in the tree.
+   * @override
+   * @param policy RemovalPolicy
+   */
+  @MethodMetadata()
+  public applyRemovalPolicy(policy: RemovalPolicy): void {
+    const config = this.getPrecreatedRoleConfig();
+    if (!config.preventSynthesis) {
+      super.applyRemovalPolicy(policy);
+    }
   }
 
   private validateRole(): string[] {
@@ -696,7 +724,6 @@ export class Role extends Resource implements IRole {
   private getPrecreatedRoleConfig(): CustomizeRoleConfig {
     return getPrecreatedRoleConfig(this);
   }
-
 }
 
 /**

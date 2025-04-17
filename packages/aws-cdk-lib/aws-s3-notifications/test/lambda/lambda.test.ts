@@ -5,7 +5,6 @@ import { Stack, App } from '../../../core';
 import * as s3n from '../../lib';
 
 test('add notifications to multiple functions', () => {
-
   const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'MyBucket');
   const fn1 = new lambda.Function(stack, 'MyFunction1', {
@@ -68,11 +67,9 @@ test('add notifications to multiple functions', () => {
       ],
     },
   });
-
 });
 
 test('lambda in a different stack as notification target', () => {
-
   const app = new App();
   const lambdaStack = new Stack(app, 'stack1');
   const bucketStack = new Stack(app, 'stack2');
@@ -183,7 +180,6 @@ test('lambda as notification target specified by function arn', () => {
 });
 
 test('permissions are added as a dependency to the notifications resource when using singleton function', () => {
-
   const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'MyBucket');
   const fn = new lambda.SingletonFunction(stack, 'MyFunction', {
@@ -203,7 +199,6 @@ test('permissions are added as a dependency to the notifications resource when u
 });
 
 test('add multiple event notifications using a singleton function', () => {
-
   const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'MyBucket');
   const fn = new lambda.SingletonFunction(stack, 'MyFunction', {
@@ -226,5 +221,4 @@ test('add multiple event notifications using a singleton function', () => {
       ],
     }),
   });
-
 });

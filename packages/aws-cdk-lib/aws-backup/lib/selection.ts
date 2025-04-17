@@ -5,6 +5,8 @@ import { IBackupPlan } from './plan';
 import { BackupResource, TagOperation } from './resource';
 import * as iam from '../../aws-iam';
 import { Lazy, Resource, Aspects } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 
 /**
  * Options for a BackupSelection
@@ -92,6 +94,8 @@ export class BackupSelection extends Resource implements iam.IGrantable {
 
   constructor(scope: Construct, id: string, props: BackupSelectionProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('backup.amazonaws.com'),
@@ -140,7 +144,9 @@ export class BackupSelection extends Resource implements iam.IGrantable {
     }
 
     if (resource.construct) {
-      Aspects.of(resource.construct).add(this.backupableResourcesCollector);
+      Aspects.of(resource.construct).add(this.backupableResourcesCollector, {
+        priority: mutatingAspectPrio32333(resource.construct),
+      });
       // Cannot push `this.backupableResourcesCollector.resources` to
       // `this.resources` here because it has not been evaluated yet.
       // Will be concatenated to `this.resources` in a `Lazy.list`

@@ -406,6 +406,10 @@
      {
       "Key": "dns_record.client_routing_policy",
       "Value": "partial_availability_zone_affinity"
+     },
+     {
+      "Key": "zonal_shift.config.enabled",
+      "Value": "true"
      }
     ],
     "Scheme": "internal",

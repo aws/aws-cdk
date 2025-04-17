@@ -278,9 +278,10 @@ export class AssetStaging extends Construct {
    */
   private stageByCopying(): StagedAsset {
     const assetHash = this.calculateHash(this.hashType);
-    const stagedPath = this.stagingDisabled
+    const targetPath = this.stagingDisabled
       ? this.sourcePath
       : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, getExtension(this.sourcePath)));
+    const stagedPath = this.renderStagedPath(this.sourcePath, targetPath);
 
     if (!this.sourceStats.isDirectory() && !this.sourceStats.isFile()) {
       throw new Error(`Asset ${this.sourcePath} is expected to be either a directory or a regular file`);
@@ -338,7 +339,10 @@ export class AssetStaging extends Construct {
     // Calculate assetHash afterwards if we still must
     assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, bundledAsset.path);
 
-    const stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash, bundledAsset.extension));
+    const stagedPath = this.renderStagedPath(
+      bundledAsset.path,
+      path.resolve(this.assetOutdir, renderAssetFilename(assetHash, bundledAsset.extension)),
+    );
 
     this.stageAsset(bundledAsset.path, stagedPath, 'move');
 
@@ -388,7 +392,7 @@ export class AssetStaging extends Construct {
     }
 
     // Moving can be done quickly
-    if (style == 'move') {
+    if (style === 'move') {
       fs.renameSync(sourcePath, targetPath);
       return;
     }
@@ -434,19 +438,23 @@ export class AssetStaging extends Construct {
   private bundle(options: BundlingOptions, bundleDir: string) {
     if (fs.existsSync(bundleDir)) { return; }
 
-    fs.ensureDirSync(bundleDir);
+    const tempDir = `${bundleDir}-building`;
+    // Remove the tempDir if it exists, then recreate it
+    fs.rmSync(tempDir, { recursive: true, force: true });
+
+    fs.ensureDirSync(tempDir);
     // Chmod the bundleDir to full access.
-    fs.chmodSync(bundleDir, 0o777);
+    fs.chmodSync(tempDir, 0o777);
 
     let localBundling: boolean | undefined;
     try {
       process.stderr.write(`Bundling asset ${this.node.path}...\n`);
 
-      localBundling = options.local?.tryBundle(bundleDir, options);
+      localBundling = options.local?.tryBundle(tempDir, options);
       if (!localBundling) {
         const assetStagingOptions = {
           sourcePath: this.sourcePath,
-          bundleDir,
+          bundleDir: tempDir,
           ...options,
         };
 
@@ -460,18 +468,11 @@ export class AssetStaging extends Construct {
             break;
         }
       }
-    } catch (err) {
-      // When bundling fails, keep the bundle output for diagnosability, but
-      // rename it out of the way so that the next run doesn't assume it has a
-      // valid bundleDir.
-      const bundleErrorDir = bundleDir + '-error';
-      if (fs.existsSync(bundleErrorDir)) {
-        // Remove the last bundleErrorDir.
-        fs.removeSync(bundleErrorDir);
-      }
 
-      fs.renameSync(bundleDir, bundleErrorDir);
-      throw new Error(`Failed to bundle asset ${this.node.path}, bundle output is located at ${bundleErrorDir}: ${err}`);
+      // Success, rename the tempDir into place
+      fs.renameSync(tempDir, bundleDir);
+    } catch (err) {
+      throw new Error(`Failed to bundle asset ${this.node.path}, bundle output is located at ${tempDir}: ${err}`);
     }
 
     if (FileSystem.isEmpty(bundleDir)) {
@@ -510,6 +511,17 @@ export class AssetStaging extends Construct {
       default:
         throw new Error('Unknown asset hash type.');
     }
+  }
+
+  private renderStagedPath(sourcePath: string, targetPath: string): string {
+    // Add a suffix to the asset file name
+    // because when a file without extension is specified, the source directory name is the same as the staged asset file name.
+    // But when the hashType is `AssetHashType.OUTPUT`, the source directory name begins with `bundling-temp-` and the staged asset file name is different.
+    // We only need to add a suffix when the hashType is not `AssetHashType.OUTPUT`.
+    if (this.hashType !== AssetHashType.OUTPUT && path.dirname(sourcePath) === targetPath) {
+      targetPath = targetPath + '_noext';
+    }
+    return targetPath;
   }
 }
 
@@ -641,17 +653,17 @@ function determineBundledAsset(bundleDir: string, outputType: BundlingOutput): B
 }
 
 /**
-* Return the extension name of a source path
-*
-* Loop through ARCHIVE_EXTENSIONS for valid archive extensions.
-*/
+ * Return the extension name of a source path
+ *
+ * Loop through ARCHIVE_EXTENSIONS for valid archive extensions.
+ */
 function getExtension(source: string): string {
   for ( const ext of ARCHIVE_EXTENSIONS ) {
     if (source.toLowerCase().endsWith(ext)) {
       return ext;
-    };
-  };
+    }
+  }
 
   return path.extname(source);
-};
+}
 

@@ -3,6 +3,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import { RemovalPolicy } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
 import { DatabaseSecret } from '../database-secret';
 import { IEngine } from '../engine';
 import { CommonRotationUserOptions, Credentials, SnapshotCredentials } from '../props';
@@ -37,13 +38,12 @@ export function setupS3ImportExport(
   scope: Construct,
   props: DatabaseS3ImportExportProps,
   combineRoles: boolean): { s3ImportRole?: iam.IRole; s3ExportRole?: iam.IRole } {
-
   let s3ImportRole = props.s3ImportRole;
   let s3ExportRole = props.s3ExportRole;
 
   if (props.s3ImportBuckets && props.s3ImportBuckets.length > 0) {
     if (props.s3ImportRole) {
-      throw new Error('Only one of s3ImportRole or s3ImportBuckets must be specified, not both.');
+      throw new ValidationError('Only one of s3ImportRole or s3ImportBuckets must be specified, not both.', scope);
     }
 
     s3ImportRole = (combineRoles && s3ExportRole) ? s3ExportRole : new iam.Role(scope, 'S3ImportRole', {
@@ -56,7 +56,7 @@ export function setupS3ImportExport(
 
   if (props.s3ExportBuckets && props.s3ExportBuckets.length > 0) {
     if (props.s3ExportRole) {
-      throw new Error('Only one of s3ExportRole or s3ExportBuckets must be specified, not both.');
+      throw new ValidationError('Only one of s3ExportRole or s3ExportBuckets must be specified, not both.', scope);
     }
 
     s3ExportRole = (combineRoles && s3ImportRole) ? s3ImportRole : new iam.Role(scope, 'S3ExportRole', {
@@ -117,7 +117,7 @@ export function renderSnapshotCredentials(scope: Construct, credentials?: Snapsh
   let secret = renderedCredentials?.secret;
   if (!secret && renderedCredentials?.generatePassword) {
     if (!renderedCredentials.username) {
-      throw new Error('`snapshotCredentials` `username` must be specified when `generatePassword` is set to true');
+      throw new ValidationError('`snapshotCredentials` `username` must be specified when `generatePassword` is set to true', scope);
     }
 
     renderedCredentials = SnapshotCredentials.fromSecret(

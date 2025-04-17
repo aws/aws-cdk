@@ -14,7 +14,7 @@ export function singletonActionRole(scope: IConstruct): iam.IRole {
   const existing = scope.node.tryFindChild(id) as iam.IRole;
   if (existing) {
     return existing;
-  };
+  }
 
   const role = new iam.Role(scope as Construct, id, {
     roleName: PhysicalName.GENERATE_IF_NEEDED,

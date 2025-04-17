@@ -11,6 +11,10 @@ import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from 'aws-cdk-lib/cx-api';
 const app = new App({
   postCliContext: {
     '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': false,
+    '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions': false,
+    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 const stack = new Stack(app, 'aws-ecs-integ-alb-idle-timeout');

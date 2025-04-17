@@ -2,7 +2,8 @@ import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { EksContainerDefinition, EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
 import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
-import { ArnFormat, Lazy, Stack } from '../../core';
+import { ArnFormat, Lazy, Stack, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A JobDefinition that uses Eks orchestration
@@ -150,6 +151,8 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
 
   constructor(scope: Construct, id: string, props: EksJobDefinitionProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.container = props.container;
     this.dnsPolicy = props.dnsPolicy;
@@ -201,7 +204,7 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
                   };
                 }
 
-                throw new Error('unknown volume type');
+                throw new ValidationError('unknown volume type', this);
               });
             },
           }),

@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { renderJsonPath, State } from './state';
+import { AssignableStateOptions, JsonataCommonOptions, JsonPathCommonOptions, renderJsonPath, State, StateBaseProps } from './state';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
-import { IChainable, INextable } from '../types';
+import { IChainable, INextable, QueryLanguage } from '../types';
 
 /**
  * The result of a Pass operation
@@ -52,43 +52,15 @@ export class Result {
   }
 }
 
-/**
- * Properties for defining a Pass state
- */
-export interface PassProps {
+interface PassJsonPathOptions extends JsonPathCommonOptions {
   /**
-   * Optional name for this state
+   * If given, treat as the result of this operation
    *
-   * @default - The construct ID will be used as state name
+   * Can be used to inject or replace the current execution state.
+   *
+   * @default No injected result
    */
-  readonly stateName?: string;
-
-  /**
-   * An optional description for this state
-   *
-   * @default No comment
-   */
-  readonly comment?: string;
-
-  /**
-   * JSONPath expression to select part of the state to be the input to this state.
-   *
-   * May also be the special value JsonPath.DISCARD, which will cause the effective
-   * input to be the empty object {}.
-   *
-   * @default $
-   */
-  readonly inputPath?: string;
-
-  /**
-   * JSONPath expression to select part of the state to be the output to this state.
-   *
-   * May also be the special value JsonPath.DISCARD, which will cause the effective
-   * output to be the empty object {}.
-   *
-   * @default $
-   */
-  readonly outputPath?: string;
+  readonly result?: Result;
 
   /**
    * JSONPath expression to indicate where to inject the state's output
@@ -99,15 +71,6 @@ export interface PassProps {
    * @default $
    */
   readonly resultPath?: string;
-
-  /**
-   * If given, treat as the result of this operation
-   *
-   * Can be used to inject or replace the current execution state.
-   *
-   * @default No injected result
-   */
-  readonly result?: Result;
 
   /**
    * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
@@ -121,11 +84,45 @@ export interface PassProps {
 }
 
 /**
+ * Properties for defining a Pass state that using JSONPath
+ */
+export interface PassJsonPathProps extends StateBaseProps, AssignableStateOptions, PassJsonPathOptions {}
+
+/**
+ * Properties for defining a Pass state that using JSONata
+ */
+export interface PassJsonataProps extends StateBaseProps, AssignableStateOptions, JsonataCommonOptions {}
+
+/**
+ * Properties for defining a Pass state
+ */
+export interface PassProps extends StateBaseProps, AssignableStateOptions, PassJsonPathOptions, JsonataCommonOptions {}
+
+/**
  * Define a Pass in the state machine
  *
  * A Pass state can be used to transform the current execution's state.
  */
 export class Pass extends State implements INextable {
+  /**
+   * Define a Pass using JSONPath in the state machine
+   *
+   * A Pass state can be used to transform the current execution's state.
+   */
+  public static jsonPath(scope: Construct, id: string, props: PassJsonPathProps = {}) {
+    return new Pass(scope, id, props);
+  }
+  /**
+   * Define a Pass using JSONata in the state machine
+   *
+   * A Pass state can be used to transform the current execution's state.
+   */
+  public static jsonata(scope: Construct, id: string, props: PassJsonataProps = {}) {
+    return new Pass(scope, id, {
+      ...props,
+      queryLanguage: QueryLanguage.JSONATA,
+    });
+  }
   public readonly endStates: INextable[];
 
   private readonly result?: Result;
@@ -148,15 +145,17 @@ export class Pass extends State implements INextable {
   /**
    * Return the Amazon States Language object for this state
    */
-  public toStateJson(): object {
+  public toStateJson(topLevelQueryLanguage?: QueryLanguage): object {
     return {
       Type: StateType.PASS,
+      ...this.renderQueryLanguage(topLevelQueryLanguage),
       Comment: this.comment,
       Result: this.result?.value,
       ResultPath: renderJsonPath(this.resultPath),
       ...this.renderInputOutput(),
       ...this.renderParameters(),
       ...this.renderNextEnd(),
+      ...this.renderAssign(topLevelQueryLanguage),
     };
   }
 

@@ -23,6 +23,13 @@ const lt = new ec2.LaunchTemplate(stack, 'LT', {
   httpTokens: ec2.LaunchTemplateHttpTokens.REQUIRED,
   instanceMetadataTags: true,
   securityGroup: sg1,
+  blockDevices: [{
+    deviceName: '/dev/xvda',
+    volume: ec2.BlockDeviceVolume.ebs(15, {
+      volumeType: ec2.EbsDeviceVolumeType.GP3,
+      throughput: 250,
+    }),
+  }],
 });
 
 const sg2 = new ec2.SecurityGroup(stack, 'sg2', {
@@ -35,6 +42,14 @@ new ec2.LaunchTemplate(stack, 'LTWithMachineImage', {
   machineImage: ec2.MachineImage.latestAmazonLinux({
     generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
   }),
+});
+
+const pg = new ec2.PlacementGroup(stack, 'pg', {
+  strategy: ec2.PlacementGroupStrategy.SPREAD,
+});
+
+new ec2.LaunchTemplate(stack, 'LTWithPlacementGroup', {
+  placementGroup: pg,
 });
 
 new integ.IntegTest(app, 'LambdaTest', {

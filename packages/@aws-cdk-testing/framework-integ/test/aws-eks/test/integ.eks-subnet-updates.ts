@@ -5,7 +5,6 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
 class EksClusterStack extends Stack {
-
   constructor(scope: App, id: string) {
     super(scope, id);
 
@@ -20,7 +19,11 @@ class EksClusterStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-stack');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster', {

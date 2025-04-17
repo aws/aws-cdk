@@ -1,0 +1,225 @@
+{
+ "Resources": {
+  "SourceQueue6E809DF0": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "TargetEventBus43DE6DE2": {
+   "Type": "AWS::Events::EventBus",
+   "Properties": {
+    "Name": "awscdkpipestargetseventbridgeTargetEventBusF398C0E3"
+   }
+  },
+  "PipeRole7D4AFC73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "pipes.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "PipeRoleDefaultPolicy56E6A74D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sqs:ChangeMessageVisibility",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SourceQueue6E809DF0",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "events:PutEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "TargetEventBus43DE6DE2",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PipeRoleDefaultPolicy56E6A74D",
+    "Roles": [
+     {
+      "Ref": "PipeRole7D4AFC73"
+     }
+    ]
+   }
+  },
+  "Pipe7793F8A1": {
+   "Type": "AWS::Pipes::Pipe",
+   "Properties": {
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "PipeRole7D4AFC73",
+      "Arn"
+     ]
+    },
+    "Source": {
+     "Fn::GetAtt": [
+      "SourceQueue6E809DF0",
+      "Arn"
+     ]
+    },
+    "SourceParameters": {},
+    "Target": {
+     "Fn::GetAtt": [
+      "TargetEventBus43DE6DE2",
+      "Arn"
+     ]
+    },
+    "TargetParameters": {
+     "EventBridgeEventBusParameters": {}
+    }
+   }
+  },
+  "ResultQueue98CD34E0": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ResultQueuePolicy99B2F5C0": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
+       ],
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "ruleF2C1DCDC",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "ResultQueue98CD34E0",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "ResultQueue98CD34E0"
+     }
+    ]
+   }
+  },
+  "ruleF2C1DCDC": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventBusName": {
+     "Ref": "TargetEventBus43DE6DE2"
+    },
+    "EventPattern": {
+     "detail-type": [
+      "Event from aws:sqs"
+     ]
+    },
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "ResultQueue98CD34E0",
+        "Arn"
+       ]
+      },
+      "Id": "Target0"
+     }
+    ]
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefSourceQueue6E809DF09604904F": {
+   "Value": {
+    "Ref": "SourceQueue6E809DF0"
+   },
+   "Export": {
+    "Name": "aws-cdk-pipes-targets-event-bridge:ExportsOutputRefSourceQueue6E809DF09604904F"
+   }
+  },
+  "ExportsOutputRefResultQueue98CD34E0D4C9659C": {
+   "Value": {
+    "Ref": "ResultQueue98CD34E0"
+   },
+   "Export": {
+    "Name": "aws-cdk-pipes-targets-event-bridge:ExportsOutputRefResultQueue98CD34E0D4C9659C"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

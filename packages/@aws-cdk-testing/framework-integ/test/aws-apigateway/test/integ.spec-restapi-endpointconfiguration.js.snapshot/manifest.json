@@ -1,0 +1,226 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "specrestapi-endpointConfiguration.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "specrestapi-endpointConfiguration.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "specrestapi-endpointConfiguration": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "specrestapi-endpointConfiguration.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/49bc236813153541d1c03dbc546dd3a0c1c13433d4cd22504d825b027457c6f8.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "specrestapi-endpointConfiguration.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "specrestapi-endpointConfiguration.assets"
+      ],
+      "metadata": {
+        "/specrestapi-endpointConfiguration/my-api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "apiDefinition": "*"
+            }
+          }
+        ],
+        "/specrestapi-endpointConfiguration/my-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapi4C7BF186"
+          }
+        ],
+        "/specrestapi-endpointConfiguration/my-api/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/specrestapi-endpointConfiguration/my-api/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          }
+        ],
+        "/specrestapi-endpointConfiguration/my-api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeployment92F2CB490e99c1932ac058c07f251d768959caa7"
+          }
+        ],
+        "/specrestapi-endpointConfiguration/my-api/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
+          }
+        ],
+        "/specrestapi-endpointConfiguration/my-api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeploymentStageprod298F01AF"
+          }
+        ],
+        "/specrestapi-endpointConfiguration/my-api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiEndpoint3628AFE3"
+          }
+        ],
+        "/specrestapi-endpointConfiguration/PetsURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PetsURL"
+          }
+        ],
+        "/specrestapi-endpointConfiguration/Exports/Output{\"Ref\":\"myapi4C7BF186\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefmyapi4C7BF1862E84350A"
+          }
+        ],
+        "/specrestapi-endpointConfiguration/Exports/Output{\"Ref\":\"myapiDeploymentStageprod298F01AF\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefmyapiDeploymentStageprod298F01AF9767B267"
+          }
+        ],
+        "/specrestapi-endpointConfiguration/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/specrestapi-endpointConfiguration/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "specrestapi-endpointConfiguration"
+    },
+    "specrestapiendpointConfigurationtestDefaultTestDeployAssert07F4EA8D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "specrestapiendpointConfigurationtestDefaultTestDeployAssert07F4EA8D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "specrestapiendpointConfigurationtestDefaultTestDeployAssert07F4EA8D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "specrestapiendpointConfigurationtestDefaultTestDeployAssert07F4EA8D.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/49bf16eb97de78d28e16e3c62ffb59554cdb44ab58bc6f5bc87ab6eab537f10f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "specrestapiendpointConfigurationtestDefaultTestDeployAssert07F4EA8D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "specrestapi-endpointConfiguration",
+        "specrestapiendpointConfigurationtestDefaultTestDeployAssert07F4EA8D.assets"
+      ],
+      "metadata": {
+        "/specrestapi-endpointConfiguration-test/DefaultTest/DeployAssert/HttpApiCall07aeee68ead70283e21edc7b4cf8686e/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/specrestapi-endpointConfiguration-test/DefaultTest/DeployAssert/HttpApiCall07aeee68ead70283e21edc7b4cf8686e/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCall07aeee68ead70283e21edc7b4cf8686e"
+          }
+        ],
+        "/specrestapi-endpointConfiguration-test/DefaultTest/DeployAssert/HttpApiCall07aeee68ead70283e21edc7b4cf8686e/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsHttpApiCall07aeee68ead70283e21edc7b4cf8686e"
+          }
+        ],
+        "/specrestapi-endpointConfiguration-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/specrestapi-endpointConfiguration-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/specrestapi-endpointConfiguration-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/specrestapi-endpointConfiguration-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/specrestapi-endpointConfiguration-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "specrestapi-endpointConfiguration-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

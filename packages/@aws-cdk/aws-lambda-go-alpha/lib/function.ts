@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
 import { findUp } from './util';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties for a GolangFunction
@@ -120,6 +121,9 @@ export class GoFunction extends lambda.Function {
       }),
       handler: 'bootstrap', // setting name to bootstrap so that the 'provided' runtime can also be used
     });
+
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }
 

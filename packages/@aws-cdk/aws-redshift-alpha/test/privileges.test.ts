@@ -74,7 +74,7 @@ describe('table privileges', () => {
           'username',
         ],
       },
-      tablePrivileges: [{ tableName: 'tableName', actions: ['SELECT', 'DELETE', 'INSERT'] }],
+      tablePrivileges: [{ tableName: 'tableName', actions: ['INSERT', 'DELETE', 'SELECT'] }],
     });
   });
 

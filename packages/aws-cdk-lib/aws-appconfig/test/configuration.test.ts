@@ -365,7 +365,6 @@ describe('configuration', () => {
       Name: 'MySourcedConfig',
       RetrievalRoleArn: { 'Fn::GetAtt': ['MyRoleF48FFE04', 'Arn'] },
     });
-
   });
 
   test('configuration with retrievalRole undefined from CodePipeline source should NOT create a new role', () => {

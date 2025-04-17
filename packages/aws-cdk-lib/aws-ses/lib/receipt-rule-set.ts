@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { DropSpamReceiptRule, ReceiptRule, ReceiptRuleOptions } from './receipt-rule';
 import { CfnReceiptRuleSet } from './ses.generated';
 import { IResource, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A receipt rule set.
@@ -101,6 +102,8 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase {
     super(scope, id, {
       physicalName: props.receiptRuleSetName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnReceiptRuleSet(this, 'Resource', {
       ruleSetName: this.physicalName,

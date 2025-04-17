@@ -1,7 +1,8 @@
-import { testFixtureCluster } from './util';
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
-import { Cluster } from '../lib/cluster';
+import { App, Stack } from '../../core';
+import { Cluster, KubernetesVersion } from '../lib/';
 import { renderAmazonLinuxUserData } from '../lib/user-data';
 
 /* eslint-disable max-len */
@@ -33,7 +34,15 @@ describe('user data', () => {
           ],
         ],
       },
-      '/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ASG46ED3070 --region us-east-1',
+      {
+        'Fn::Join': [
+          '',
+          [
+            '/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ASG46ED3070 --region ',
+            { Ref: 'AWS::Region' },
+          ],
+        ],
+      },
     ]);
   });
 
@@ -63,7 +72,15 @@ describe('user data', () => {
           ],
         ],
       },
-      '/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ASG46ED3070 --region us-east-1',
+      {
+        'Fn::Join': [
+          '',
+          [
+            '/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ASG46ED3070 --region ',
+            { Ref: 'AWS::Region' },
+          ],
+        ],
+      },
     ]);
   });
 
@@ -93,7 +110,15 @@ describe('user data', () => {
           ],
         ],
       },
-      '/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ASG46ED3070 --region us-east-1',
+      {
+        'Fn::Join': [
+          '',
+          [
+            '/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ASG46ED3070 --region ',
+            { Ref: 'AWS::Region' },
+          ],
+        ],
+      },
     ]);
   });
 
@@ -418,7 +443,12 @@ describe('user data', () => {
 });
 
 function newFixtures(spot = false) {
-  const { stack, cluster } = testFixtureCluster();
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+  const cluster = new Cluster(stack, 'Cluster', {
+    version: KubernetesVersion.V1_30,
+    kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+  });
   const vpc = cluster.vpc;
   const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
     instanceType: new ec2.InstanceType('m4.xlarge'),

@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
 import { IResource, Lazy, RemovalPolicy, Resource } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Options for `IParameterGroup.bindToCluster`.
@@ -140,10 +142,12 @@ export class ParameterGroup extends Resource implements IParameterGroup {
 
   constructor(scope: Construct, id: string, props: ParameterGroupProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const family = props.engine.parameterGroupFamily;
     if (!family) {
-      throw new Error("ParameterGroup cannot be used with an engine that doesn't specify a version");
+      throw new ValidationError("ParameterGroup cannot be used with an engine that doesn't specify a version", this);
     }
     this.family = family;
     this.description = props.description;
@@ -152,6 +156,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
     this.removalPolicy = props.removalPolicy;
   }
 
+  @MethodMetadata()
   public bindToCluster(_options: ParameterGroupClusterBindOptions): ParameterGroupClusterConfig {
     if (!this.clusterCfnGroup) {
       const id = this.instanceCfnGroup ? 'ClusterParameterGroup' : 'Resource';
@@ -170,6 +175,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
     };
   }
 
+  @MethodMetadata()
   public bindToInstance(_options: ParameterGroupInstanceBindOptions): ParameterGroupInstanceConfig {
     if (!this.instanceCfnGroup) {
       const id = this.clusterCfnGroup ? 'InstanceParameterGroup' : 'Resource';
@@ -194,6 +200,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
    * @param key The key of the parameter to be added
    * @param value The value of the parameter to be added
    */
+  @MethodMetadata()
   public addParameter(key: string, value: string): boolean {
     this.parameters[key] = value;
     return true;

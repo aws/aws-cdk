@@ -34,7 +34,6 @@ export interface WebSocketLambdaIntegrationProps {
  * Lambda WebSocket Integration
  */
 export class WebSocketLambdaIntegration extends WebSocketRouteIntegration {
-
   private readonly _id: string;
 
   /**

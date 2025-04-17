@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "test-instance-applyimmediately-integ/DefaultTest": {
+      "stacks": [
+        "instance-applyimmediately-integ"
+      ],
+      "assertionStack": "test-instance-applyimmediately-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "testinstanceapplyimmediatelyintegDefaultTestDeployAssert27BFFA14"
+    }
+  }
+}

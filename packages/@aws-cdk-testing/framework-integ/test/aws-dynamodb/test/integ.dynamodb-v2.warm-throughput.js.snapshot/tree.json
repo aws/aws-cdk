@@ -1,0 +1,202 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "warm-throughput-stack-v2": {
+        "id": "warm-throughput-stack-v2",
+        "path": "warm-throughput-stack-v2",
+        "children": {
+          "TableTest1": {
+            "id": "TableTest1",
+            "path": "warm-throughput-stack-v2/TableTest1",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "warm-throughput-stack-v2/TableTest1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::GlobalTable",
+                  "aws:cdk:cloudformation:props": {
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "id",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "gsi1pk",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST",
+                    "globalSecondaryIndexes": [
+                      {
+                        "indexName": "my-index-1",
+                        "keySchema": [
+                          {
+                            "attributeName": "gsi1pk",
+                            "keyType": "HASH"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        },
+                        "warmThroughput": {
+                          "readUnitsPerSecond": 15000,
+                          "writeUnitsPerSecond": 6000
+                        }
+                      },
+                      {
+                        "indexName": "my-index-2",
+                        "keySchema": [
+                          {
+                            "attributeName": "gsi1pk",
+                            "keyType": "HASH"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        }
+                      }
+                    ],
+                    "keySchema": [
+                      {
+                        "attributeName": "id",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "replicas": [
+                      {
+                        "region": "us-west-2",
+                        "globalSecondaryIndexes": [
+                          {
+                            "indexName": "my-index-1"
+                          },
+                          {
+                            "indexName": "my-index-2"
+                          }
+                        ]
+                      },
+                      {
+                        "region": "eu-west-1",
+                        "globalSecondaryIndexes": [
+                          {
+                            "indexName": "my-index-1"
+                          },
+                          {
+                            "indexName": "my-index-2"
+                          }
+                        ]
+                      }
+                    ],
+                    "streamSpecification": {
+                      "streamViewType": "NEW_AND_OLD_IMAGES"
+                    },
+                    "warmThroughput": {
+                      "readUnitsPerSecond": 14000,
+                      "writeUnitsPerSecond": 5000
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "warm-throughput-stack-v2/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "warm-throughput-stack-v2/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      },
+      "warm-throughput-integ-test-v2": {
+        "id": "warm-throughput-integ-test-v2",
+        "path": "warm-throughput-integ-test-v2",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "warm-throughput-integ-test-v2/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "warm-throughput-integ-test-v2/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "warm-throughput-integ-test-v2/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "warm-throughput-integ-test-v2/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "warm-throughput-integ-test-v2/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.4.2"
+    }
+  }
+}

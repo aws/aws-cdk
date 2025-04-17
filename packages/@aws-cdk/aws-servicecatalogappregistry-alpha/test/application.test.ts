@@ -544,7 +544,6 @@ describe('Conditional nested stack Associations with Application within Same Acc
       'Fn::Equals': ['us-east-1'],
     });
   });
-
 });
 
 class AppRegistrySampleStack extends cdk.Stack {

@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { ILambdaDeploymentConfig } from './deployment-config';
-import { Duration, Names, Resource } from '../../../core';
+import { Duration, Names, Resource, ValidationError } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../../custom-resources';
 import { arnForDeploymentConfig, validateName } from '../private/utils';
 
@@ -65,7 +66,6 @@ export interface CustomLambdaDeploymentConfigProps {
  * @deprecated CloudFormation now supports Lambda deployment configurations without custom resources. Use `LambdaDeploymentConfig`.
  */
 export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDeploymentConfig {
-
   /**
    * The name of the deployment config
    * @attribute
@@ -82,6 +82,8 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
 
   public constructor(scope: Construct, id: string, props: CustomLambdaDeploymentConfigProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.validateParameters(props);
 
     // In this section we make the argument for the AWS API call
@@ -161,14 +163,14 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
   // Validate the inputs. The percentage/interval limits come from CodeDeploy
   private validateParameters(props: CustomLambdaDeploymentConfigProps): void {
     if ( !(1 <= props.percentage && props.percentage <= 99) ) {
-      throw new Error(
+      throw new ValidationError(
         `Invalid deployment config percentage "${props.percentage.toString()}". \
-        Step percentage must be an integer between 1 and 99.`);
+        Step percentage must be an integer between 1 and 99.`, this);
     }
     if (props.interval.toMinutes() > 2880) {
-      throw new Error(
+      throw new ValidationError(
         `Invalid deployment config interval "${props.interval.toString()}". \
-        Traffic shifting intervals must be positive integers up to 2880 (2 days).`);
+        Traffic shifting intervals must be positive integers up to 2880 (2 days).`, this);
     }
   }
 }

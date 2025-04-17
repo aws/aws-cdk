@@ -27,7 +27,6 @@ export interface ElasticsearchAccessPolicyProps {
  * Creates LogGroup resource policies.
  */
 export class ElasticsearchAccessPolicy extends cr.AwsCustomResource {
-
   private accessPolicyStatements: iam.PolicyStatement[] = [];
 
   constructor(scope: Construct, id: string, props: ElasticsearchAccessPolicyProps) {

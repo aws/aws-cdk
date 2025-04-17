@@ -1,0 +1,13 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "OpenSearchNodeOptionsInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-os-nodeoptions"
+      ],
+      "diffAssets": true,
+      "assertionStack": "OpenSearchNodeOptionsInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "OpenSearchNodeOptionsIntegDefaultTestDeployAssert9170FAD5"
+    }
+  }
+}

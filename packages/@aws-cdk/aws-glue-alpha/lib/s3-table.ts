@@ -5,6 +5,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { Column } from './schema';
 import { PartitionIndex, TableBase, TableBaseProps } from './table-base';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Encryption options for a Table.
@@ -41,10 +42,10 @@ export enum TableEncryption {
 
 export interface S3TableProps extends TableBaseProps {
   /**
- * S3 bucket in which to store data.
- *
- * @default one is created for you
- */
+   * S3 bucket in which to store data.
+   *
+   * @default one is created for you
+   */
   readonly bucket?: s3.IBucket;
 
   /**
@@ -120,6 +121,8 @@ export class S3Table extends TableBase {
 
   constructor(scope: Construct, id: string, props: S3TableProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.s3Prefix = props.s3Prefix ?? '';
     const { bucket, encryption, encryptionKey } = createBucket(this, props);
     this.bucket = bucket;
@@ -187,6 +190,7 @@ export class S3Table extends TableBase {
    *
    * @param grantee the principal
    */
+  @MethodMetadata()
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, readPermissions);
     if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantDecrypt(grantee); }
@@ -199,6 +203,7 @@ export class S3Table extends TableBase {
    *
    * @param grantee the principal
    */
+  @MethodMetadata()
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, writePermissions);
     if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncrypt(grantee); }
@@ -211,6 +216,7 @@ export class S3Table extends TableBase {
    *
    * @param grantee the principal
    */
+  @MethodMetadata()
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
     if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncryptDecrypt(grantee); }

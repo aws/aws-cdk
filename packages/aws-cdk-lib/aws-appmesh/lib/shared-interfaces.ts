@@ -199,11 +199,11 @@ export abstract class LoggingFormat {
    */
   public static fromJson(jsonLoggingFormat :{[key:string]: string}): LoggingFormat {
     if (Object.keys(jsonLoggingFormat).length == 0) {
-      throw new Error('Json key pairs cannot be empty.');
+      throw new cdk.UnscopedValidationError('Json key pairs cannot be empty.');
     }
 
     return new JsonLoggingFormat(jsonLoggingFormat);
-  };
+  }
 
   /**
    * Called when the Access Log Format is initialized. Can be used to enforce
@@ -217,8 +217,8 @@ export abstract class LoggingFormat {
  */
 class JsonLoggingFormat extends LoggingFormat {
   /**
-  * Json pattern for the output logs
-  */
+   * Json pattern for the output logs
+   */
   private readonly json: Array<CfnVirtualNode.JsonFormatRefProperty>;
   constructor(json: {[key:string]: string}) {
     super();
@@ -236,8 +236,8 @@ class JsonLoggingFormat extends LoggingFormat {
 
 class TextLoggingFormat extends LoggingFormat {
   /**
-  * Json pattern for the output logs
-  */
+   * Json pattern for the output logs
+   */
   private readonly text: string;
   constructor(text: string) {
     super();
@@ -309,7 +309,6 @@ export abstract class Backend {
  * Represents the properties needed to define a Virtual Service backend
  */
 class VirtualServiceBackend extends Backend {
-
   constructor (private readonly virtualService: IVirtualService,
     private readonly tlsClientPolicy: TlsClientPolicy | undefined) {
     super();

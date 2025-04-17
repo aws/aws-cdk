@@ -152,7 +152,6 @@ describe('lambda authorizer', () => {
     });
 
     expect(auth.authorizerArn.endsWith(`/authorizers/${auth.authorizerId}`)).toBeTruthy();
-
   });
 
   test('request authorizer with default cache TTL', () => {

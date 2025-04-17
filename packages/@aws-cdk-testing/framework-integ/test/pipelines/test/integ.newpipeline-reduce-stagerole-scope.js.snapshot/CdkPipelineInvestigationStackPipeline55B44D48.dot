@@ -1,0 +1,37 @@
+digraph G {
+  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen
+  # because the layout looks more natural that way.
+  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.
+  # To render: `dot -Tsvg CdkPipelineInvestigationStackPipeline55B44D48.dot > graph.svg`, open in a browser.
+  node [shape="box"];
+"BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth";
+"Source.aws/aws-cdk" -> "Build.Synth";
+"BEGIN Build" -> "Build.Synth";
+"Build.Synth" -> "END Build";
+"BEGIN UpdatePipeline" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END UpdatePipeline" [shape="cds", style="filled", fillcolor="#b7deff"];
+"UpdatePipeline.SelfMutate";
+"Build.Synth" -> "UpdatePipeline.SelfMutate";
+"BEGIN UpdatePipeline" -> "UpdatePipeline.SelfMutate";
+"UpdatePipeline.SelfMutate" -> "END UpdatePipeline";
+"BEGIN Prod" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Prod" [shape="cds", style="filled", fillcolor="#b7deff"];
+"UpdatePipeline.SelfMutate" -> "BEGIN Prod";
+"BEGIN Prod.ProdStack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Prod.ProdStack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Prod.PromoteToProd" -> "BEGIN Prod.ProdStack";
+"Prod.ProdStack.Deploy";
+"Build.Synth" -> "Prod.ProdStack.Deploy";
+"BEGIN Prod.ProdStack" -> "Prod.ProdStack.Deploy";
+"Prod.ProdStack.Deploy" -> "END Prod.ProdStack";
+"Prod.PromoteToProd";
+"BEGIN Prod" -> "Prod.PromoteToProd";
+"END Prod.ProdStack" -> "END Prod";
+"BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Source.aws/aws-cdk";
+"BEGIN Source" -> "Source.aws/aws-cdk";
+"Source.aws/aws-cdk" -> "END Source";
+}

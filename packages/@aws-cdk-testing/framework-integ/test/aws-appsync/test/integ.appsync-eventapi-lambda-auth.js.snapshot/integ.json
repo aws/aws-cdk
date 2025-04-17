@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "appsync-event-api-lambda-auth/DefaultTest": {
+      "stacks": [
+        "EventApiLambdaAuthStack"
+      ],
+      "assertionStack": "appsync-event-api-lambda-auth/DefaultTest/DeployAssert",
+      "assertionStackName": "appsynceventapilambdaauthDefaultTestDeployAssertC9A06E86"
+    }
+  }
+}

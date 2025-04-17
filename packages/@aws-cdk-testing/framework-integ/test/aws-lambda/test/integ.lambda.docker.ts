@@ -4,7 +4,7 @@ import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import { DockerImageCode, DockerImageFunction, Function } from 'aws-cdk-lib/aws-lambda';
 
 class TestStack extends Stack {
-  public fn: Function
+  public fn: Function;
   constructor(scope: App, id: string) {
     super(scope, id);
 

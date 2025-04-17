@@ -1,5 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Template } from '../../../assertions';
+import { Match, Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
@@ -144,6 +144,23 @@ describe('tests', () => {
       },
       Port: 80,
       UnhealthyThresholdCount: 27,
+    });
+  });
+
+  test.each([
+    elbv2.TargetGroupIpAddressType.IPV4,
+    elbv2.TargetGroupIpAddressType.IPV6,
+  ])('configure IP address type %s', (ipAddressType) => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new elbv2.ApplicationTargetGroup(stack, 'Group', {
+      vpc,
+      ipAddressType,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      IpAddressType: ipAddressType,
     });
   });
 
@@ -433,7 +450,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
@@ -455,7 +472,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
@@ -805,4 +822,43 @@ describe('tests', () => {
     });
   });
 
+  // test cases for crossZoneEnabled
+  describe('crossZoneEnabled', () => {
+    test.each([true, false])('crossZoneEnabled can be %s', (crossZoneEnabled) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.ApplicationTargetGroup(stack, 'LB', { crossZoneEnabled, vpc });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'load_balancing.cross_zone.enabled',
+            Value: `${crossZoneEnabled}`,
+          },
+          {
+            Key: 'stickiness.enabled',
+            Value: 'false',
+          },
+        ],
+      });
+    });
+
+    test('load_balancing.cross_zone.enabled is not set when crossZoneEnabled is not specified', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.ApplicationTargetGroup(stack, 'LB', { vpc, targetType: elbv2.TargetType.LAMBDA });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: Match.absent(),
+      });
+    });
+  });
 });

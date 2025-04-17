@@ -30,11 +30,72 @@ export interface GetContextKeyOptions {
  */
 export interface GetContextValueOptions extends GetContextKeyOptions {
   /**
-   * The value to return if the context value was not found and a missing
-   * context is reported. This should be a dummy value that should preferably
-   * fail during deployment since it represents an invalid state.
+   * The value to return if the lookup has not yet been performed.
+   *
+   * Upon first synthesis, the lookups has not yet been performed. The
+   * `getValue()` operation returns this value instead, so that synthesis can
+   * proceed. After synthesis completes the first time, the actual lookup will
+   * be performed and synthesis will run again with the *real* value.
+   *
+   * Dummy values should preferably have valid shapes so that downstream
+   * consumers of lookup values don't throw validation exceptions if they
+   * encounter a dummy value (or all possible downstream consumers need to
+   * effectively check for the well-known shape of the dummy value); throwing an
+   * exception would error out the synthesis operation and prevent the lookup
+   * and the second, real, synthesis from happening.
+   *
+   * ## Connection to mustExist
+   *
+   * `dummyValue` is also used as the official value to return if the lookup has
+   * failed and `mustExist == false`.
    */
   readonly dummyValue: any;
+
+  /**
+   * Whether the resource must exist
+   *
+   * If this is set (the default), the query fails if the value or resource we
+   * tried to look up doesn't exist.
+   *
+   * If this is `false` and the value we tried to look up could not be found, the
+   * failure is suppressed and `dummyValue` is officially returned instead.
+   *
+   * When this happens, `dummyValue` is encoded into cached context and it will
+   * never be refreshed anymore until the user runs `cdk context --reset <key>`.
+   *
+   * Note that it is not possible for the CDK app code to make a distinction
+   * between "the lookup has not been performed yet" and "the lookup didn't
+   * find anything and we returned a default value instead".
+   *
+   * ## Context providers
+   *
+   * This feature must explicitly be supported by context providers. It is
+   * currently supported by:
+   *
+   * - KMS key provider
+   * - SSM parameter provider
+   *
+   * ## Note to implementors
+   *
+   * The dummy value should not be returned for all SDK lookup failures. For
+   * example, "no network" or "no credentials" or "malformed query" should
+   * not lead to the dummy value being returned. Only the case of "no such
+   * resource" should.
+   *
+   * @default true
+   */
+  readonly mustExist?: boolean;
+
+  /**
+   * Ignore a lookup failure and return the `dummyValue` instead
+   *
+   * `mustExist` is the recommended alias for this deprecated
+   * property (note that its value is reversed).
+   *
+   * @default false
+   * @deprecated Use mustExist instead
+   */
+  readonly ignoreErrorOnMissingContext?: boolean;
 }
 
 /**
@@ -85,6 +146,10 @@ export class ContextProvider {
   }
 
   public static getValue(scope: Construct, options: GetContextValueOptions): GetContextValueResult {
+    if ((options.mustExist !== undefined) && (options.ignoreErrorOnMissingContext !== undefined)) {
+      throw new Error('Only supply one of \'mustExist\' and \'ignoreErrorOnMissingContext\'');
+    }
+
     const stack = Stack.of(scope);
 
     if (Token.isUnresolved(stack.account) || Token.isUnresolved(stack.region)) {
@@ -101,10 +166,29 @@ export class ContextProvider {
     // if context is missing or an error occurred during context retrieval,
     // report and return a dummy value.
     if (value === undefined || providerError !== undefined) {
+      // Render 'ignoreErrorOnMissingContext' iff one of the parameters is supplied.
+      const ignoreErrorOnMissingContext = options.mustExist !== undefined || options.ignoreErrorOnMissingContext !== undefined
+        ? (options.mustExist !== undefined ? !options.mustExist : options.ignoreErrorOnMissingContext)
+        : undefined;
+
+      // build a version of the props which includes the dummyValue and ignoreError flag
+      const extendedProps: { [p: string]: any } = {
+        dummyValue: options.dummyValue,
+
+        // Even though we renamed the user-facing property, the field in the
+        // cloud assembly still has the original name, which is somewhat wrong
+        // because it's not about missing context.
+        ignoreErrorOnMissingContext,
+        ...props,
+      };
+
+      // We'll store the extendedProps in the missingContextKey report
+      // so that we can retrieve the dummyValue and ignoreError flag
+      // in the aws-cdk's ssm-context and kms key provider
       stack.reportMissingContextKey({
         key,
         provider: options.provider as cxschema.ContextProvider,
-        props: props as cxschema.ContextQueryProperties,
+        props: extendedProps as cxschema.ContextQueryProperties,
       });
 
       if (providerError !== undefined) {

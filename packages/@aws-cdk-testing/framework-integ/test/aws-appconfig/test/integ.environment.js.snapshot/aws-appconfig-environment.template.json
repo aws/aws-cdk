@@ -126,6 +126,7 @@
     "ApplicationId": {
      "Ref": "MyApplicationForEnv1F597ED9"
     },
+    "DeletionProtectionCheck": "ACCOUNT_DEFAULT",
     "Description": "This is the environment for integ testing",
     "Monitors": [
      {

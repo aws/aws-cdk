@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "integ-cluster-database-insights/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-integ-cluster-database-insights"
+      ],
+      "assertionStack": "integ-cluster-database-insights/DefaultTest/DeployAssert",
+      "assertionStackName": "integclusterdatabaseinsightsDefaultTestDeployAssertDADC99BF"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { renderJsonPath, State } from './state';
+import { AssignableStateOptions, JsonataCommonOptions, JsonPathCommonOptions, renderJsonPath, State, StateBaseProps } from './state';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
@@ -7,72 +7,12 @@ import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { Credentials } from '../task-credentials';
-import { CatchProps, IChainable, INextable, RetryProps } from '../types';
+import { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
 
 /**
- * Props that are common to all tasks
+ * Base options for all task states
  */
-export interface TaskStateBaseProps {
-  /**
-   * Optional name for this state
-   *
-   * @default - The construct ID will be used as state name
-   */
-  readonly stateName?: string;
-
-  /**
-   * An optional description for this state
-   *
-   * @default - No comment
-   */
-  readonly comment?: string;
-
-  /**
-   * JSONPath expression to select part of the state to be the input to this state.
-   *
-   * May also be the special value JsonPath.DISCARD, which will cause the effective
-   * input to be the empty object {}.
-   *
-   * @default - The entire task input (JSON path '$')
-   */
-  readonly inputPath?: string;
-
-  /**
-   * JSONPath expression to select select a portion of the state output to pass
-   * to the next state.
-   *
-   * May also be the special value JsonPath.DISCARD, which will cause the effective
-   * output to be the empty object {}.
-   *
-   * @default - The entire JSON node determined by the state input, the task result,
-   *   and resultPath is passed to the next state (JSON path '$')
-   */
-  readonly outputPath?: string;
-
-  /**
-   * JSONPath expression to indicate where to inject the state's output
-   *
-   * May also be the special value JsonPath.DISCARD, which will cause the state's
-   * input to become its output.
-   *
-   * @default - Replaces the entire input with the result (JSON path '$')
-   */
-  readonly resultPath?: string;
-
-  /**
-   * The JSON that will replace the state's raw result and become the effective
-   * result before ResultPath is applied.
-   *
-   * You can use ResultSelector to create a payload with values that are static
-   * or selected from the state's raw result.
-   *
-   * @see
-   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-resultselector
-   *
-   * @default - None
-   */
-  readonly resultSelector?: { [key: string]: any };
-
+export interface TaskStateBaseOptions {
   /**
    * Timeout for the task
    *
@@ -135,6 +75,48 @@ export interface TaskStateBaseProps {
   readonly credentials?: Credentials;
 }
 
+interface TaskStateJsonPathBaseOptions extends JsonPathCommonOptions {
+  /**
+   * JSONPath expression to indicate where to inject the state's output
+   *
+   * May also be the special value JsonPath.DISCARD, which will cause the state's
+   * input to become its output.
+   *
+   * @default $
+   */
+  readonly resultPath?: string;
+
+  /**
+   * The JSON that will replace the state's raw result and become the effective
+   * result before ResultPath is applied.
+   *
+   * You can use ResultSelector to create a payload with values that are static
+   * or selected from the state's raw result.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-resultselector
+   *
+   * @default - None
+   */
+  readonly resultSelector?: { [key: string]: any };
+}
+
+/**
+ * Props that are common to all tasks that using JSONPath
+ */
+export interface TaskStateJsonPathBaseProps extends StateBaseProps, TaskStateBaseOptions, AssignableStateOptions, TaskStateJsonPathBaseOptions {}
+
+/**
+ * Props that are common to all tasks that using JSONata
+ */
+export interface TaskStateJsonataBaseProps extends StateBaseProps, TaskStateBaseOptions, AssignableStateOptions, JsonataCommonOptions {}
+
+/**
+ * Props that are common to all tasks
+ */
+export interface TaskStateBaseProps extends StateBaseProps, TaskStateBaseOptions,
+  AssignableStateOptions, TaskStateJsonPathBaseOptions, JsonataCommonOptions {}
+
 /**
  * Define a Task state in the state machine
  *
@@ -146,7 +128,6 @@ export interface TaskStateBaseProps {
  * which are more convenient to use.
  */
 export abstract class TaskStateBase extends State implements INextable {
-
   public readonly endStates: INextable[];
 
   protected abstract readonly taskMetrics?: TaskMetricsConfig;
@@ -202,12 +183,13 @@ export abstract class TaskStateBase extends State implements INextable {
   /**
    * Return the Amazon States Language object for this state
    */
-  public toStateJson(): object {
+  public toStateJson(topLevelQueryLanguage?: QueryLanguage): object {
     return {
+      ...this.renderQueryLanguage(topLevelQueryLanguage),
       ...this.renderNextEnd(),
       ...this.renderRetryCatch(),
       ...this.renderTaskBase(),
-      ...this._renderTask(),
+      ...this._renderTask(topLevelQueryLanguage),
     };
   }
 
@@ -324,7 +306,19 @@ export abstract class TaskStateBase extends State implements INextable {
   /**
    * @internal
    */
-  protected abstract _renderTask(): any;
+  protected abstract _renderTask(topLevelQueryLanguage?: QueryLanguage): any;
+
+  /**
+   * @internal
+   */
+  protected _renderParametersOrArguments(paramOrArg: any, queryLanguage: QueryLanguage): any {
+    return {
+      Parameters: queryLanguage === QueryLanguage.JSON_PATH
+        ? FieldUtils.renderObject(paramOrArg) : undefined,
+      Arguments: queryLanguage === QueryLanguage.JSONATA
+        ? paramOrArg : undefined,
+    };
+  }
 
   private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (prefix === undefined) {
@@ -337,19 +331,22 @@ export abstract class TaskStateBase extends State implements INextable {
     return this.credentials ? FieldUtils.renderObject({ Credentials: { RoleArn: this.credentials.role.roleArn } }) : undefined;
   }
 
-  private renderTaskBase() {
+  private renderTaskBase(topLevelQueryLanguage?: QueryLanguage) {
     return {
       Type: 'Task',
       Comment: this.comment,
-      TimeoutSeconds: this.timeout?.toSeconds() ?? this.taskTimeout?.seconds,
+      TimeoutSeconds: this.timeout?.toSeconds() ?? this.taskTimeout?.seconds ?? this.taskTimeout?.jsonataExpression,
       TimeoutSecondsPath: this.taskTimeout?.path,
-      HeartbeatSeconds: this.heartbeat?.toSeconds() ?? this.heartbeatTimeout?.seconds,
+      HeartbeatSeconds: this.heartbeat?.toSeconds() ?? this.heartbeatTimeout?.seconds ?? this.heartbeatTimeout?.jsonataExpression,
       HeartbeatSecondsPath: this.heartbeatTimeout?.path,
       InputPath: renderJsonPath(this.inputPath),
       OutputPath: renderJsonPath(this.outputPath),
       ResultPath: renderJsonPath(this.resultPath),
+      Arguments: this.arguments,
+      Output: this.outputs,
       ...this.renderResultSelector(),
       ...this.renderCredentials(),
+      ...this.renderAssign(topLevelQueryLanguage),
     };
   }
 }
@@ -424,6 +421,15 @@ export abstract class Timeout {
   }
 
   /**
+   * Use a dynamic timeout specified by a JSONata expression.
+   *
+   * The JSONata expression value must be a positive integer.
+   */
+  public static jsonata(jsonataExpression: string): Timeout {
+    return { jsonataExpression };
+  }
+
+  /**
    * Use a dynamic timeout specified by a path in the state input.
    *
    * The path must select a field whose value is a positive integer.
@@ -436,6 +442,11 @@ export abstract class Timeout {
    * Seconds for this timeout
    */
   public abstract readonly seconds?: number;
+
+  /**
+   * JSONata expression for this timeout
+   */
+  public abstract readonly jsonataExpression?: string;
 
   /**
    * Path for this timeout

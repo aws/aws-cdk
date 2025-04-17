@@ -1,0 +1,192 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "vpc-byoip-ipv6.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "vpc-byoip-ipv6.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "vpc-byoip-ipv6": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "vpc-byoip-ipv6.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7782642d295023a4f37cc8f633b0707c9e5148deacb8aa952c8ba4e940cabfbd.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "vpc-byoip-ipv6.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "vpc-byoip-ipv6.assets"
+      ],
+      "metadata": {
+        "/vpc-byoip-ipv6/VPC-integ-test-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/vpc-byoip-ipv6/VPC-integ-test-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCintegtest1EBA1CB75"
+          }
+        ],
+        "/vpc-byoip-ipv6/VPC-integ-test-1/MyByoipIpv6Block": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/vpc-byoip-ipv6/VPC-integ-test-1/MyByoipIpv6Block/MyByoipIpv6Block": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCintegtest1MyByoipIpv6BlockC474849A"
+          }
+        ],
+        "/vpc-byoip-ipv6/Subnet-integ-test-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/vpc-byoip-ipv6/Subnet-integ-test-1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Subnetintegtest1Subnet33DEE36B"
+          }
+        ],
+        "/vpc-byoip-ipv6/Subnet-integ-test-1/RouteTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/vpc-byoip-ipv6/Subnet-integ-test-1/RouteTable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Subnetintegtest1RouteTableD7246BB7"
+          }
+        ],
+        "/vpc-byoip-ipv6/Subnet-integ-test-1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Subnetintegtest1RouteTableAssociation25E3C72D"
+          }
+        ],
+        "/vpc-byoip-ipv6/Subnet-integ-test-2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/vpc-byoip-ipv6/Subnet-integ-test-2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Subnetintegtest2Subnet5A56D422"
+          }
+        ],
+        "/vpc-byoip-ipv6/Subnet-integ-test-2/RouteTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/vpc-byoip-ipv6/Subnet-integ-test-2/RouteTable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Subnetintegtest2RouteTable2528D856"
+          }
+        ],
+        "/vpc-byoip-ipv6/Subnet-integ-test-2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Subnetintegtest2RouteTableAssociation9569A2C6"
+          }
+        ],
+        "/vpc-byoip-ipv6/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/vpc-byoip-ipv6/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "vpc-byoip-ipv6"
+    },
+    "integtestmodelDefaultTestDeployAssertCF40BD53.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integtestmodelDefaultTestDeployAssertCF40BD53.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integtestmodelDefaultTestDeployAssertCF40BD53": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtestmodelDefaultTestDeployAssertCF40BD53.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integtestmodelDefaultTestDeployAssertCF40BD53.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integtestmodelDefaultTestDeployAssertCF40BD53.assets"
+      ],
+      "metadata": {
+        "/integtest-model/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integtest-model/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integtest-model/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}

@@ -1,6 +1,7 @@
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Construction properties for a DatabaseSecret.
@@ -17,6 +18,13 @@ export interface DatabaseSecretProps {
    * @default default master key
    */
   readonly encryptionKey?: kms.IKey;
+
+  /**
+   * Characters to not include in the generated password.
+   *
+   * @default '"@/\\\ \''
+   */
+  readonly excludeCharacters?: string;
 }
 
 /**
@@ -32,8 +40,10 @@ export class DatabaseSecret extends secretsmanager.Secret {
         passwordLength: 30, // Redshift password could be up to 64 characters
         secretStringTemplate: JSON.stringify({ username: props.username }),
         generateStringKey: 'password',
-        excludeCharacters: '"@/\\\ \'',
+        excludeCharacters: props.excludeCharacters ?? '"@/\\\ \'',
       },
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }

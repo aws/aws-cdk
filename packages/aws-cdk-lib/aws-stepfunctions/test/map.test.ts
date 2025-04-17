@@ -272,6 +272,123 @@ describe('Map State', () => {
     });
   }),
 
+  test('State Machine With Map State using JSONata', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new stepfunctions.Map(stack, 'Map State', {
+      stateName: 'My-Map-State',
+      maxConcurrency: 1,
+      items: stepfunctions.ProvideItems.jsonata('{% $inputForMap %}'),
+      itemSelector: {
+        foo: 'foo',
+        bar: '{% $bar %}',
+      },
+      queryLanguage: stepfunctions.QueryLanguage.JSONATA,
+      assign: {},
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'My-Map-State',
+      States: {
+        'My-Map-State': {
+          Type: 'Map',
+          Assign: {},
+          QueryLanguage: 'JSONata',
+          End: true,
+          ItemSelector: {
+            foo: 'foo',
+            bar: '{% $bar %}',
+          },
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: 'INLINE',
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          Items: '{% $inputForMap %}',
+          MaxConcurrency: 1,
+        },
+      },
+    });
+  }),
+
+  test('State Machine With Map State using JSONata static method with Catch method', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = stepfunctions.Map.jsonata(stack, 'Map State', {
+      stateName: 'My-Map-State',
+      maxConcurrency: 1,
+      items: stepfunctions.ProvideItems.jsonata('{% $inputForMap %}'),
+      itemSelector: {
+        foo: 'foo',
+        bar: '{% $bar %}',
+      },
+      assign: {},
+    }).addCatch(
+      stepfunctions.Fail.jsonPath(stack, 'failed', {
+        error: 'ErrorHappened',
+        cause: 'We got stuck',
+      }),
+      {
+        outputs: '$states.errorOutput',
+      },
+    );
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'My-Map-State',
+      States: {
+        'My-Map-State': {
+          Type: 'Map',
+          Assign: {},
+          Catch: [{
+            ErrorEquals: ['States.ALL'],
+            Next: 'failed',
+            Output: '$states.errorOutput',
+          }],
+          QueryLanguage: 'JSONata',
+          End: true,
+          ItemSelector: {
+            foo: 'foo',
+            bar: '{% $bar %}',
+          },
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: 'INLINE',
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          Items: '{% $inputForMap %}',
+          MaxConcurrency: 1,
+        },
+        'failed': {
+          Type: 'Fail',
+          Error: 'ErrorHappened',
+          Cause: 'We got stuck',
+        },
+      },
+    });
+  }),
+
   test('synth is successful with iterator', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
@@ -490,6 +607,32 @@ describe('Map State', () => {
 
   test('isPositiveInteger is true with max integer value', () => {
     expect(stepfunctions.isPositiveInteger(Number.MAX_SAFE_INTEGER)).toEqual(true);
+  }),
+
+  test('items from JSON array', () => {
+    // GIVEN
+    const jsonArray = [1, '{% $two %}', 3];
+
+    // WHEN
+    const items = stepfunctions.ProvideItems.jsonArray(jsonArray);
+
+    // THEN
+    expect(items).toEqual({
+      items: [1, '{% $two %}', 3],
+    });
+  }),
+
+  test('items from JSONata expression', () => {
+    // GIVEN
+    const jsonataExpression = '{% $items %}';
+
+    // WHEN
+    const items = stepfunctions.ProvideItems.jsonata(jsonataExpression);
+
+    // THEN
+    expect(items).toEqual({
+      items: '{% $items %}',
+    });
   });
 });
 

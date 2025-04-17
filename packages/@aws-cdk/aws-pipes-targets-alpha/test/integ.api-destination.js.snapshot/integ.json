@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "integtest-pipe-target-api-dest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-targets-api-dest"
+      ],
+      "assertionStack": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipetargetapidestDefaultTestDeployAssert6B876A1E"
+    }
+  }
+}

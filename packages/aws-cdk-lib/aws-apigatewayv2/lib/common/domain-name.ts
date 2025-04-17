@@ -3,6 +3,8 @@ import { CfnDomainName, CfnDomainNameProps } from '.././index';
 import { ICertificate } from '../../../aws-certificatemanager';
 import { IBucket } from '../../../aws-s3';
 import { IResource, Lazy, Resource, Token } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 
 /**
  * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.
@@ -170,14 +172,16 @@ export class DomainName extends Resource implements IDomainName {
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.domainName === '') {
-      throw new Error('empty string for domainName not allowed');
+      throw new ValidationError('empty string for domainName not allowed', scope);
     }
 
     // validation for ownership certificate
     if (props.ownershipCertificate && !props.mtls) {
-      throw new Error('ownership certificate can only be used with mtls domains');
+      throw new ValidationError('ownership certificate can only be used with mtls domains', scope);
     }
 
     const mtlsConfig = this.configureMTLS(props.mtls);
@@ -208,7 +212,8 @@ export class DomainName extends Resource implements IDomainName {
    * Adds an endpoint to a domain name.
    * @param options domain name endpoint properties to be set
    */
-  public addEndpoint(options: EndpointOptions) : void {
+  @MethodMetadata()
+  public addEndpoint(options: EndpointOptions): void {
     const domainNameConfig: CfnDomainName.DomainNameConfigurationProperty = {
       certificateArn: options.certificate.certificateArn,
       certificateName: options.certificateName,
@@ -225,7 +230,7 @@ export class DomainName extends Resource implements IDomainName {
   private validateEndpointType(endpointType: string | undefined) : void {
     for (let config of this.domainNameConfigurations) {
       if (endpointType && endpointType == config.endpointType) {
-        throw new Error(`an endpoint with type ${endpointType} already exists`);
+        throw new ValidationError(`an endpoint with type ${endpointType} already exists`, this);
       }
     }
   }

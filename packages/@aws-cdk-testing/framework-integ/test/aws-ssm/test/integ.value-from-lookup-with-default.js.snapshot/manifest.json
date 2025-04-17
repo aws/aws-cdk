@@ -1,0 +1,157 @@
+{
+  "version": "36.0.24",
+  "artifacts": {
+    "value-from-lookup-with-defaults.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "value-from-lookup-with-defaults.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "value-from-lookup-with-defaults": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://12345678/test-region",
+      "properties": {
+        "templateFile": "value-from-lookup-with-defaults.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/275ddfdfcfabbf8ebb96b36f0683ec9e1265c5d95ddaa24e686522bd3f0e804e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "value-from-lookup-with-defaults.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "value-from-lookup-with-defaults.assets"
+      ],
+      "metadata": {
+        "/value-from-lookup-with-defaults/defaultValueOutputParameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "defaultValueOutputParameter94A0BD52"
+          }
+        ],
+        "/value-from-lookup-with-defaults/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/value-from-lookup-with-defaults/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "value-from-lookup-with-defaults"
+    },
+    "ValueFromLookupWithDefaultTestDeployAssert525E0911.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ValueFromLookupWithDefaultTestDeployAssert525E0911.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ValueFromLookupWithDefaultTestDeployAssert525E0911": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ValueFromLookupWithDefaultTestDeployAssert525E0911.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c35b64346fad5676ef4ba0851356b781f7fa4c6e8466a44be0984be95a7f88a4.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ValueFromLookupWithDefaultTestDeployAssert525E0911.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ValueFromLookupWithDefaultTestDeployAssert525E0911.assets"
+      ],
+      "metadata": {
+        "/ValueFromLookupWithDefaultTest/DefaultTest/DeployAssert/AwsApiCallssmGetParameter33149b2fc462c982a09d36d864102e2e/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallssmGetParameter33149b2fc462c982a09d36d864102e2e"
+          }
+        ],
+        "/ValueFromLookupWithDefaultTest/DefaultTest/DeployAssert/AwsApiCallssmGetParameter33149b2fc462c982a09d36d864102e2e/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallssmGetParameter33149b2fc462c982a09d36d864102e2e"
+          }
+        ],
+        "/ValueFromLookupWithDefaultTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/ValueFromLookupWithDefaultTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/ValueFromLookupWithDefaultTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/ValueFromLookupWithDefaultTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ValueFromLookupWithDefaultTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ValueFromLookupWithDefaultTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "missing": [
+    {
+      "key": "ssm:account=12345678:parameterName=/Missing/Parameter:region=test-region",
+      "provider": "ssm",
+      "props": {
+        "dummyValue": "lookup-default-value",
+        "ignoreErrorOnMissingContext": true,
+        "account": "12345678",
+        "region": "test-region",
+        "parameterName": "/Missing/Parameter",
+        "lookupRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region"
+      }
+    }
+  ]
+}

@@ -78,6 +78,6 @@ describe('per environment cache', () => {
     });
 
     // THEN
-    expect(() => new Stack(app, 'Stack2')).toThrowError(/It is not safe to use AppStagingSynthesizer for both environment-agnostic and environment-aware stacks at the same time./);
+    expect(() => new Stack(app, 'Stack2')).toThrow(/It is not safe to use AppStagingSynthesizer for both environment-agnostic and environment-aware stacks at the same time./);
   });
 });

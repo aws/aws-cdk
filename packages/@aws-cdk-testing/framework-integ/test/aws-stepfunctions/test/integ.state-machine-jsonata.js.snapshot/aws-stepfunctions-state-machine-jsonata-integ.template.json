@@ -1,0 +1,82 @@
+{
+ "Resources": {
+  "StateMachineRoleB840431D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "StateMachine2E01A3A5": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": "{\"StartAt\":\"JSONPathPass\",\"States\":{\"JSONPathPass\":{\"Type\":\"Pass\",\"Parameters\":{\"count.$\":\"States.MathAdd($.init, 1)\"},\"Next\":\"JSONataPass\"},\"JSONataPass\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"count\":\"{% $states.input.count + 1 %}\"},\"Next\":\"Choice\"},\"Choice\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"count\":\"{% $states.input.count + 1 %}\"},\"Choices\":[{\"Condition\":\"{% $states.input.count % 2 = 1 %}\",\"Output\":{\"count\":\"{% $states.input.count + 1 %}\"},\"Next\":\"Wait\"}],\"Default\":\"Succeed\"},\"Succeed\":{\"Type\":\"Succeed\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"count\":\"{% $states.input.count + 1 %}\"}},\"Wait\":{\"Type\":\"Wait\",\"QueryLanguage\":\"JSONata\",\"Seconds\":\"{% $states.input.count %}\",\"Output\":{\"count\":\"{% $states.input.count + 1 %}\"},\"Next\":\"Succeed\"}}}",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "StateMachineRoleB840431D"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefStateMachine2E01A3A5BA46F753": {
+   "Value": {
+    "Ref": "StateMachine2E01A3A5"
+   },
+   "Export": {
+    "Name": "aws-stepfunctions-state-machine-jsonata-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,3 +1,4 @@
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { App, Stack, Duration } from '../../core';
 import * as eks from '../lib';
 import { KubernetesObjectValue } from '../lib/k8s-object-value';
@@ -8,7 +9,10 @@ describe('k8s object value', () => {
   test('creates the correct custom resource with explicit values for all properties', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
 
     // WHEN
     const attribute = new KubernetesObjectValue(stack, 'MyAttribute', {
@@ -52,7 +56,10 @@ describe('k8s object value', () => {
   test('creates the correct custom resource with defaults', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
 
     // WHEN
     const attribute = new KubernetesObjectValue(stack, 'MyAttribute', {

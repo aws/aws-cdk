@@ -18,7 +18,6 @@ describe('fargate task definition', () => {
         Cpu: '256',
         Memory: '512',
       });
-
     });
 
     test('support lazy cpu and memory values', () => {
@@ -26,23 +25,22 @@ describe('fargate task definition', () => {
       const stack = new cdk.Stack();
 
       new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
-        cpu: cdk.Lazy.number({ produce: () => 512 }),
+        cpu: cdk.Lazy.number({ produce: () => 128 }),
         memoryLimitMiB: cdk.Lazy.number({ produce: () => 1024 }),
       });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        Cpu: '512',
+        Cpu: '128',
         Memory: '1024',
       });
-
     });
 
     test('with all properties set', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
-        cpu: 256,
+        cpu: 128,
         executionRole: new iam.Role(stack, 'ExecutionRole', {
           path: '/',
           assumedBy: new iam.CompositePrincipal(
@@ -72,7 +70,7 @@ describe('fargate task definition', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        Cpu: '256',
+        Cpu: '128',
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
@@ -108,7 +106,6 @@ describe('fargate task definition', () => {
           },
         ],
       });
-
     });
 
     test('throws when adding placement constraint', () => {
@@ -120,7 +117,6 @@ describe('fargate task definition', () => {
       expect(() => {
         taskDefinition.addPlacementConstraint(ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'));
       }).toThrow(/Cannot set placement constraints on tasks that run on Fargate/);
-
     });
 
     test('throws when adding inference accelerators', () => {
@@ -137,7 +133,6 @@ describe('fargate task definition', () => {
       expect(() => {
         taskDefinition.addInferenceAccelerator(inferenceAccelerator);
       }).toThrow(/Cannot use inference accelerators on tasks that run on Fargate/);
-
     });
 
     test('throws when ephemeral storage request is too high', () => {
@@ -216,32 +211,6 @@ describe('fargate task definition', () => {
         });
       }).toThrow(/'pidMode' can only be set to 'task' for Linux Fargate containers, got: 'host'./);
     });
-
-    test('throws error when invalid CPU and memory combination is provided', () => {
-      const stack = new cdk.Stack();
-
-      new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
-        cpu: 256,
-        memoryLimitMiB: 125,
-      });
-
-      expect(() => {
-        Template.fromStack(stack);
-      }).toThrow(/Invalid CPU and memory combinations for FARGATE compatible task definition/);
-    });
-
-    test('successful when valid CPU and memory combination is provided', () => {
-      const stack = new cdk.Stack();
-      new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
-        cpu: 256,
-        memoryLimitMiB: 512,
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        Cpu: '256',
-        Memory: '512',
-      });
-    });
   });
   describe('When configuredAtLaunch in the Volume', ()=> {
     test('do not throw when configuredAtLaunch is false', () => {
@@ -294,7 +263,6 @@ describe('fargate task definition', () => {
 
       // THEN
       expect(taskDefinition.taskDefinitionArn).toEqual(expectTaskDefinitionArn);
-
     });
 
     test('can succeed using attributes', () => {
@@ -325,7 +293,6 @@ describe('fargate task definition', () => {
       expect(taskDefinition.networkMode).toEqual(expectNetworkMode);
       expect(taskDefinition.taskRole).toEqual(expectTaskRole);
       expect(taskDefinition.executionRole).toEqual(expectExecutionRole);
-
     });
 
     test('returns a Fargate TaskDefinition that will throw an error when trying to access its networkMode but its networkMode is undefined', () => {
@@ -347,7 +314,6 @@ describe('fargate task definition', () => {
         taskDefinition.networkMode;
       }).toThrow('This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
         'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-
     });
 
     test('returns a Fargate TaskDefinition that will throw an error when trying to access its taskRole but its taskRole is undefined', () => {
@@ -386,7 +352,7 @@ describe('fargate task definition', () => {
       // THEN
       expect(() => {
         taskDefinition.ephemeralStorageGiB;
-      }).toBeTruthy;
+      }).toBeTruthy();
     });
 
     test('runtime testing for windows container', () => {
@@ -471,7 +437,7 @@ describe('fargate task definition', () => {
             operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
           },
         });
-      }).toThrowError(`If operatingSystemFamily is ${ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU).`);
+      }).toThrow(`If operatingSystemFamily is ${ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU).`);
 
       // Memory is not in 1 GB increments.
       expect(() => {
@@ -483,7 +449,7 @@ describe('fargate task definition', () => {
             operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
           },
         });
-      }).toThrowError('If provided cpu is 1024, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was 1025.');
+      }).toThrow('If provided cpu is 1024, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was 1025.');
 
       // Check runtimePlatform was been defined ,but not undefined cpu and memoryLimitMiB.
       expect(() => {
@@ -493,9 +459,7 @@ describe('fargate task definition', () => {
             operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2004_CORE,
           },
         });
-      }).toThrowError('If operatingSystemFamily is WINDOWS_SERVER_2004_CORE, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: 256');
-
+      }).toThrow('If operatingSystemFamily is WINDOWS_SERVER_2004_CORE, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: 256');
     });
-
   });
 });

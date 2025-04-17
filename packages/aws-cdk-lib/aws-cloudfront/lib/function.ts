@@ -2,13 +2,13 @@ import * as fs from 'fs';
 import { Construct } from 'constructs';
 import { CfnFunction } from './cloudfront.generated';
 import { IKeyValueStore } from './key-value-store';
-import { IResource, Lazy, Names, Resource, Stack } from '../../core';
+import { IResource, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents the function's source code
  */
 export abstract class FunctionCode {
-
   /**
    * Inline code for function
    * @returns code object with inline code.
@@ -47,7 +47,6 @@ export interface FileCodeOptions {
  * Represents the function's source code as inline code
  */
 class InlineCode extends FunctionCode {
-
   constructor(private code: string) {
     super();
   }
@@ -61,7 +60,6 @@ class InlineCode extends FunctionCode {
  * Represents the function's source code loaded from an external file
  */
 class FileCode extends FunctionCode {
-
   constructor(private options: FileCodeOptions) {
     super();
   }
@@ -161,7 +159,6 @@ export interface FunctionProps {
  * @resource AWS::CloudFront::Function
  */
 export class Function extends Resource implements IFunction {
-
   /** Imports a function by its name and ARN */
   public static fromFunctionAttributes(scope: Construct, id: string, attrs: FunctionAttributes): IFunction {
     return new class extends Resource implements IFunction {
@@ -194,6 +191,8 @@ export class Function extends Resource implements IFunction {
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.functionName = props.functionName ?? this.generateName();
 
@@ -201,9 +200,7 @@ export class Function extends Resource implements IFunction {
     this.functionRuntime = props.runtime?.value ?? defaultFunctionRuntime;
 
     if (props.keyValueStore && this.functionRuntime === FunctionRuntime.JS_1_0.value) {
-      throw new Error(
-        `Key Value Stores cannot be associated to functions using the ${this.functionRuntime} runtime`,
-      );
+      throw new ValidationError(`Key Value Stores cannot be associated to functions using the ${this.functionRuntime} runtime`, this);
     }
 
     const resource = new CfnFunction(this, 'Resource', {

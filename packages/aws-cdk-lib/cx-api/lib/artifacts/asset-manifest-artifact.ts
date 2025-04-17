@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { CloudArtifact } from '../cloud-artifact';
 import { CloudAssembly } from '../cloud-assembly';
+import { CloudAssemblyError } from '../private/error';
 
 const ASSET_MANIFEST_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.AssetManifestArtifact');
 
@@ -27,7 +28,7 @@ export class AssetManifestArtifact extends CloudArtifact {
    * unpredictably. It is safest to avoid using `instanceof`, and using
    * this type-testing method instead.
    */
-  public static isAssetManifestArtifact(art: any): art is AssetManifestArtifact {
+  public static isAssetManifestArtifact(this: void, art: any): art is AssetManifestArtifact {
     return art && typeof art === 'object' && art[ASSET_MANIFEST_ARTIFACT_SYM];
   }
 
@@ -55,7 +56,7 @@ export class AssetManifestArtifact extends CloudArtifact {
 
     const properties = (this.manifest.properties || {}) as cxschema.AssetManifestProperties;
     if (!properties.file) {
-      throw new Error('Invalid AssetManifestArtifact. Missing "file" property');
+      throw new CloudAssemblyError('Invalid AssetManifestArtifact. Missing "file" property');
     }
     this.file = path.resolve(this.assembly.directory, properties.file);
     this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion;
@@ -73,7 +74,6 @@ export class AssetManifestArtifact extends CloudArtifact {
     const contents = this._contents = JSON.parse(fs.readFileSync(this.file, 'utf-8'));
     return contents;
   }
-
 }
 
 /**

@@ -11,7 +11,6 @@ describe('route53', () => {
       Template.fromStack(app.stack).hasResourceProperties('AWS::Route53::HostedZone', {
         Name: 'test.public.',
       });
-
     });
     test('private hosted zone', () => {
       const app = new TestApp();
@@ -157,7 +156,7 @@ describe('route53', () => {
     });
   });
 
-  test('public hosted zone wiht caaAmazon set to true', () => {
+  test('public hosted zone with caaAmazon set to true', () => {
     // GIVEN
     const stack = new cdk.Stack();
 

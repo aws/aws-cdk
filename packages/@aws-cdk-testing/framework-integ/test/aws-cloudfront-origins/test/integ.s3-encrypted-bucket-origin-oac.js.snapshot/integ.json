@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "s3-encrypted-bucket-origin-oac/DefaultTest": {
+      "stacks": [
+        "cloudfront-s3-encrypted-bucket-origin-oac"
+      ],
+      "assertionStack": "s3-encrypted-bucket-origin-oac/DefaultTest/DeployAssert",
+      "assertionStackName": "s3encryptedbucketoriginoacDefaultTestDeployAssertFD658B04"
+    }
+  }
+}

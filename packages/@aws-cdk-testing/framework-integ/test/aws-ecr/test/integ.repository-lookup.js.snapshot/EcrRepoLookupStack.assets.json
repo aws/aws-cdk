@@ -1,0 +1,20 @@
+{
+  "version": "40.0.0",
+  "files": {
+    "694b1f59a97a2cabd43348095c6983d394ce506020298a3a62f3067ae6ce7e18": {
+      "source": {
+        "path": "EcrRepoLookupStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-test-region": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
+          "objectKey": "694b1f59a97a2cabd43348095c6983d394ce506020298a3a62f3067ae6ce7e18.json",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

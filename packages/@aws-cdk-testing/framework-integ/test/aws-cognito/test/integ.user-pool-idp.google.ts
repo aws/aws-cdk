@@ -35,6 +35,7 @@ new UserPoolIdentityProviderGoogle(stack, 'google', {
     givenName: ProviderAttribute.GOOGLE_GIVEN_NAME,
     familyName: ProviderAttribute.GOOGLE_FAMILY_NAME,
     email: ProviderAttribute.GOOGLE_EMAIL,
+    emailVerified: ProviderAttribute.GOOGLE_EMAIL_VERIFIED,
     gender: ProviderAttribute.GOOGLE_GENDER,
     custom: {
       names: ProviderAttribute.GOOGLE_NAMES,

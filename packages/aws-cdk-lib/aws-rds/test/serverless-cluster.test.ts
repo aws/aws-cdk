@@ -250,7 +250,7 @@ describe('serverless cluster', () => {
 
     // WHEN
     const cluster = new ServerlessCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
         username: 'admin',
       },
@@ -465,7 +465,7 @@ describe('serverless cluster', () => {
       },
     });
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       ScalingConfiguration: {
         AutoPause: true,
@@ -488,7 +488,7 @@ describe('serverless cluster', () => {
       enableDataApi: true,
     });
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       EnableHttpEndpoint: true,
     });
@@ -506,7 +506,7 @@ describe('serverless cluster', () => {
       scaling: {},
     });
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       ScalingConfiguration: {
         AutoPause: true,
@@ -528,7 +528,7 @@ describe('serverless cluster', () => {
       },
     });
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       ScalingConfiguration: {
         AutoPause: false,
@@ -742,7 +742,7 @@ describe('serverless cluster', () => {
     // WHEN
     cluster.grantDataApiAccess(user);
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       EnableHttpEndpoint: true,
     });
@@ -891,7 +891,7 @@ describe('serverless cluster', () => {
 
     // WHEN
     new ServerlessCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
       parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
     });
 

@@ -1,10 +1,13 @@
 import { Construct } from 'constructs';
+import { DeliveryPolicy } from './delivery-policy';
 import { CfnSubscription } from './sns.generated';
 import { SubscriptionFilter } from './subscription-filter';
 import { ITopic } from './topic-base';
 import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
 import { IQueue } from '../../aws-sqs';
 import { Resource } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Options for creating a new subscription
@@ -67,6 +70,13 @@ export interface SubscriptionOptions {
    * @default - No subscription role is provided
    */
   readonly subscriptionRoleArn?: string;
+
+  /**
+   * The delivery policy.
+   *
+   * @default - if the initial delivery of the message fails, three retries with a delay between failed attempts set at 20 seconds
+   */
+  readonly deliveryPolicy?: DeliveryPolicy;
 }
 /**
  * Properties for creating a new subscription
@@ -85,7 +95,6 @@ export interface SubscriptionProps extends SubscriptionOptions {
  * this class.
  */
 export class Subscription extends Resource {
-
   /**
    * The DLQ associated with this subscription if present.
    */
@@ -97,6 +106,8 @@ export class Subscription extends Resource {
 
   constructor(scope: Construct, id: string, props: SubscriptionProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.rawMessageDelivery &&
       [
@@ -106,12 +117,12 @@ export class Subscription extends Resource {
         SubscriptionProtocol.FIREHOSE,
       ]
         .indexOf(props.protocol) < 0) {
-      throw new Error('Raw message delivery can only be enabled for HTTP, HTTPS, SQS, and Firehose subscriptions.');
+      throw new ValidationError('Raw message delivery can only be enabled for HTTP, HTTPS, SQS, and Firehose subscriptions.', this);
     }
 
     if (props.filterPolicy) {
       if (Object.keys(props.filterPolicy).length > 5) {
-        throw new Error('A filter policy can have a maximum of 5 attribute names.');
+        throw new ValidationError('A filter policy can have a maximum of 5 attribute names.', this);
       }
 
       this.filterPolicy = Object.entries(props.filterPolicy)
@@ -123,22 +134,22 @@ export class Subscription extends Resource {
       let total = 1;
       Object.values(this.filterPolicy).forEach(filter => { total *= filter.length; });
       if (total > 150) {
-        throw new Error(`The total combination of values (${total}) must not exceed 150.`);
+        throw new ValidationError(`The total combination of values (${total}) must not exceed 150.`, this);
       }
     } else if (props.filterPolicyWithMessageBody) {
       if (Object.keys(props.filterPolicyWithMessageBody).length > 5) {
-        throw new Error('A filter policy can have a maximum of 5 attribute names.');
+        throw new ValidationError('A filter policy can have a maximum of 5 attribute names.', this);
       }
       this.filterPolicyWithMessageBody = props.filterPolicyWithMessageBody;
     }
 
     if (props.protocol === SubscriptionProtocol.FIREHOSE && !props.subscriptionRoleArn) {
-      throw new Error('Subscription role arn is required field for subscriptions with a firehose protocol.');
+      throw new ValidationError('Subscription role arn is required field for subscriptions with a firehose protocol.', this);
     }
 
     // Format filter policy
     const filterPolicy = this.filterPolicyWithMessageBody
-      ? buildFilterPolicyWithMessageBody(this.filterPolicyWithMessageBody)
+      ? buildFilterPolicyWithMessageBody(this, this.filterPolicyWithMessageBody)
       : this.filterPolicy;
 
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
@@ -152,8 +163,82 @@ export class Subscription extends Resource {
       region: props.region,
       redrivePolicy: this.buildDeadLetterConfig(this.deadLetterQueue),
       subscriptionRoleArn: props.subscriptionRoleArn,
+      deliveryPolicy: props.deliveryPolicy ? this.renderDeliveryPolicy(props.deliveryPolicy, props.protocol): undefined,
     });
+  }
 
+  private renderDeliveryPolicy(deliveryPolicy: DeliveryPolicy, protocol: SubscriptionProtocol): any {
+    if (![SubscriptionProtocol.HTTP, SubscriptionProtocol.HTTPS].includes(protocol)) {
+      throw new ValidationError(`Delivery policy is only supported for HTTP and HTTPS subscriptions, got: ${protocol}`, this);
+    }
+    const { healthyRetryPolicy, throttlePolicy } = deliveryPolicy;
+    if (healthyRetryPolicy) {
+      const delayTargetLimitSecs = 3600;
+      const minDelayTarget = healthyRetryPolicy.minDelayTarget;
+      const maxDelayTarget = healthyRetryPolicy.maxDelayTarget;
+      if (minDelayTarget !== undefined) {
+        if (minDelayTarget.toMilliseconds() % 1000 !== 0) {
+          throw new ValidationError(`minDelayTarget must be a whole number of seconds, got: ${minDelayTarget}`, this);
+        }
+        const minDelayTargetSecs = minDelayTarget.toSeconds();
+        if (minDelayTargetSecs < 1 || minDelayTargetSecs > delayTargetLimitSecs) {
+          throw new ValidationError(`minDelayTarget must be between 1 and ${delayTargetLimitSecs} seconds inclusive, got: ${minDelayTargetSecs}s`, this);
+        }
+      }
+      if (maxDelayTarget !== undefined) {
+        if (maxDelayTarget.toMilliseconds() % 1000 !== 0) {
+          throw new ValidationError(`maxDelayTarget must be a whole number of seconds, got: ${maxDelayTarget}`, this);
+        }
+        const maxDelayTargetSecs = maxDelayTarget.toSeconds();
+        if (maxDelayTargetSecs < 1 || maxDelayTargetSecs > delayTargetLimitSecs) {
+          throw new ValidationError(`maxDelayTarget must be between 1 and ${delayTargetLimitSecs} seconds inclusive, got: ${maxDelayTargetSecs}s`, this);
+        }
+        if ((minDelayTarget !== undefined) && minDelayTarget.toSeconds() > maxDelayTargetSecs) {
+          throw new ValidationError('minDelayTarget must not exceed maxDelayTarget', this);
+        }
+      }
+
+      const numRetriesLimit = 100;
+      if (healthyRetryPolicy.numRetries && (healthyRetryPolicy.numRetries < 0 || healthyRetryPolicy.numRetries > numRetriesLimit)) {
+        throw new ValidationError(`numRetries must be between 0 and ${numRetriesLimit} inclusive, got: ${healthyRetryPolicy.numRetries}`, this);
+      }
+      const { numNoDelayRetries, numMinDelayRetries, numMaxDelayRetries } = healthyRetryPolicy;
+      if (numNoDelayRetries && (numNoDelayRetries < 0 || !Number.isInteger(numNoDelayRetries))) {
+        throw new ValidationError(`numNoDelayRetries must be an integer zero or greater, got: ${numNoDelayRetries}`, this);
+      }
+      if (numMinDelayRetries && (numMinDelayRetries < 0 || !Number.isInteger(numMinDelayRetries))) {
+        throw new ValidationError(`numMinDelayRetries must be an integer zero or greater, got: ${numMinDelayRetries}`, this);
+      }
+      if (numMaxDelayRetries && (numMaxDelayRetries < 0 || !Number.isInteger(numMaxDelayRetries))) {
+        throw new ValidationError(`numMaxDelayRetries must be an integer zero or greater, got: ${numMaxDelayRetries}`, this);
+      }
+    }
+    if (throttlePolicy) {
+      const maxReceivesPerSecond = throttlePolicy.maxReceivesPerSecond;
+      if (maxReceivesPerSecond !== undefined && (maxReceivesPerSecond < 1 || !Number.isInteger(maxReceivesPerSecond))) {
+        throw new ValidationError(`maxReceivesPerSecond must be an integer greater than zero, got: ${maxReceivesPerSecond}`, this);
+      }
+    }
+    return {
+      healthyRetryPolicy: healthyRetryPolicy ? {
+        // minDelayTarget, maxDelayTarget and numRetries are (empirically) mandatory when healthyRetryPolicy is specified,
+        // but for user-friendliness we allow them to be undefined and set them here instead.
+        // The defaults we use here are the same used in the event healthyRetryPolicy is not specified, see https://docs.aws.amazon.com/sns/latest/dg/creating-delivery-policy.html.
+        minDelayTarget: (healthyRetryPolicy.minDelayTarget === undefined) ? 20 : healthyRetryPolicy.minDelayTarget.toSeconds(),
+        maxDelayTarget: (healthyRetryPolicy.maxDelayTarget === undefined) ? 20 : healthyRetryPolicy.maxDelayTarget.toSeconds(),
+        numRetries: (healthyRetryPolicy.numRetries === undefined) ? 3: healthyRetryPolicy.numRetries,
+        numNoDelayRetries: healthyRetryPolicy.numNoDelayRetries,
+        numMinDelayRetries: healthyRetryPolicy.numMinDelayRetries,
+        numMaxDelayRetries: healthyRetryPolicy.numMaxDelayRetries,
+        backoffFunction: healthyRetryPolicy.backoffFunction,
+      }: undefined,
+      throttlePolicy: deliveryPolicy.throttlePolicy ? {
+        maxReceivesPerSecond: deliveryPolicy.throttlePolicy.maxReceivesPerSecond,
+      }: undefined,
+      requestPolicy: deliveryPolicy.requestPolicy ? {
+        headerContentType: deliveryPolicy.requestPolicy.headerContentType,
+      }: undefined,
+    };
   }
 
   private buildDeadLetterQueue(props: SubscriptionProps) {
@@ -237,6 +322,7 @@ export enum SubscriptionProtocol {
 }
 
 function buildFilterPolicyWithMessageBody(
+  scope: Construct,
   inputObject: { [key: string]: FilterOrPolicy },
   depth = 1,
   totalCombinationValues = [1],
@@ -245,7 +331,7 @@ function buildFilterPolicyWithMessageBody(
 
   for (const [key, filterOrPolicy] of Object.entries(inputObject)) {
     if (filterOrPolicy.isPolicy()) {
-      result[key] = buildFilterPolicyWithMessageBody(filterOrPolicy.policyDoc, depth + 1, totalCombinationValues);
+      result[key] = buildFilterPolicyWithMessageBody(scope, filterOrPolicy.policyDoc, depth + 1, totalCombinationValues);
     } else if (filterOrPolicy.isFilter()) {
       const filter = filterOrPolicy.filterDoc.conditions;
       result[key] = filter;
@@ -255,11 +341,11 @@ function buildFilterPolicyWithMessageBody(
 
   // https://docs.aws.amazon.com/sns/latest/dg/subscription-filter-policy-constraints.html
   if (totalCombinationValues[0] > 150) {
-    throw new Error(`The total combination of values (${totalCombinationValues}) must not exceed 150.`);
+    throw new ValidationError(`The total combination of values (${totalCombinationValues}) must not exceed 150.`, scope);
   }
 
   return result;
-};
+}
 
 /**
  * The type of the MessageBody at a given key value pair
@@ -281,8 +367,6 @@ export enum FilterOrPolicyType {
 export abstract class FilterOrPolicy {
   /**
    * Filter of MessageBody
-   * @param filter
-   * @returns
    */
   public static filter(filter: SubscriptionFilter) {
     return new Filter(filter);
@@ -290,8 +374,6 @@ export abstract class FilterOrPolicy {
 
   /**
    * Policy of MessageBody
-   * @param policy
-   * @returns
    */
   public static policy(policy: { [attribute: string]: FilterOrPolicy }) {
     return new Policy(policy);

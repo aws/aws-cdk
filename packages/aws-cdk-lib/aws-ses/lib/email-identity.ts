@@ -6,6 +6,7 @@ import { Grant, IGrantable } from '../../aws-iam';
 import { IPublicHostedZone } from '../../aws-route53';
 import * as route53 from '../../aws-route53';
 import { IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * An email identity
@@ -187,19 +188,19 @@ export interface DkimIdentityConfig {
   readonly domainSigningPrivateKey?: string;
 
   /**
-    * A string that's used to identify a public key in the DNS configuration for
-    * a domain
-    *
-    * @default - use Easy DKIM
-    */
+   * A string that's used to identify a public key in the DNS configuration for
+   * a domain
+   *
+   * @default - use Easy DKIM
+   */
   readonly domainSigningSelector?: string;
 
   /**
-    * The key length of the future DKIM key pair to be generated. This can be changed
-    * at most once per day.
-    *
-    * @default EasyDkimSigningKeyLength.RSA_2048_BIT
-    */
+   * The key length of the future DKIM key pair to be generated. This can be changed
+   * at most once per day.
+   *
+   * @default EasyDkimSigningKeyLength.RSA_2048_BIT
+   */
   readonly nextSigningKeyLength?: EasyDkimSigningKeyLength;
 }
 
@@ -457,6 +458,8 @@ export class EmailIdentity extends EmailIdentityBase {
 
   constructor(scope: Construct, id: string, props: EmailIdentityProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const dkimIdentity = props.dkimIdentity ?? DkimIdentity.easyDkim();
 

@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "c093a5b4a568daafc27fab102fea007eaf70c883b8e02171441d44e702e0cebc": {
+      "source": {
+        "path": "IotAuditConfigurationTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c093a5b4a568daafc27fab102fea007eaf70c883b8e02171441d44e702e0cebc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -64,7 +64,6 @@ export async function invokeFunctionMock(req: InvokeCommandInput): Promise<Invoc
   const input = JSON.parse(req.Payload);
 
   try {
-
     let ret;
     switch (req.FunctionName) {
       case MOCK_ON_EVENT_FUNCTION_ARN:

@@ -62,7 +62,7 @@ describe('ResponseHeadersPolicy', () => {
         frameOptions: { frameOption: HeadersFrameOption.DENY, override: true },
         referrerPolicy: { referrerPolicy: HeadersReferrerPolicy.NO_REFERRER, override: true },
         strictTransportSecurity: { accessControlMaxAge: Duration.seconds(600), includeSubdomains: true, override: true },
-        xssProtection: { protection: true, modeBlock: true, reportUri: 'https://example.com/csp-report', override: true },
+        xssProtection: { protection: true, modeBlock: false, reportUri: 'https://example.com/csp-report', override: true },
       },
       removeHeaders: ['Server'],
       serverTimingSamplingRate: 12.3456,
@@ -136,7 +136,7 @@ describe('ResponseHeadersPolicy', () => {
             Override: true,
           },
           XSSProtection: {
-            ModeBlock: true,
+            ModeBlock: false,
             Override: true,
             Protection: true,
             ReportUri: 'https://example.com/csp-report',
@@ -178,6 +178,32 @@ describe('ResponseHeadersPolicy', () => {
       ResponseHeadersPolicyConfig: {
         Name: 'StackAVeryLongIdThatMightSeemRidiculousButSometimesHappensIntenatedWithTheRegionAreQuiteLongMuchLongerThanYouWouldExpect39083892',
       },
+    });
+  });
+
+  describe('corsBehavior', () => {
+    test('throws if accessControlAllowMethods is mixed with `ALL` and other values', () => {
+      expect(() => new ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
+        corsBehavior: {
+          accessControlAllowCredentials: false,
+          accessControlAllowHeaders: ['*'],
+          accessControlAllowMethods: ['ALL', 'GET'],
+          accessControlAllowOrigins: ['*'],
+          originOverride: true,
+        },
+      })).toThrow("accessControlAllowMethods - 'ALL' cannot be combined with specific HTTP methods.");
+    });
+
+    test('throws if accessControlAllowMethods contains unallowed value', () => {
+      expect(() => new ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
+        corsBehavior: {
+          accessControlAllowCredentials: false,
+          accessControlAllowHeaders: ['*'],
+          accessControlAllowMethods: ['PROPFIND'],
+          accessControlAllowOrigins: ['*'],
+          originOverride: true,
+        },
+      })).toThrow(/accessControlAllowMethods contains unexpected method name/);
     });
   });
 });

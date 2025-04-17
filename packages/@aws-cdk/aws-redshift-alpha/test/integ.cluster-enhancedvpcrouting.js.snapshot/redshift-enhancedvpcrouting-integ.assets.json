@@ -1,7 +1,7 @@
 {
-  "version": "29.0.0",
+  "version": "38.0.1",
   "files": {
-    "88e2010a08d484eca3203f7e1bcffce43eaa10faedbd092b56c3d70967765b7a": {
+    "1d3cc31de8d8e1fbd44f686b138ddefab2d11309e92b5b87993f3024a68a7c5c": {
       "source": {
         "path": "redshift-enhancedvpcrouting-integ.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "88e2010a08d484eca3203f7e1bcffce43eaa10faedbd092b56c3d70967765b7a.json",
+          "objectKey": "1d3cc31de8d8e1fbd44f686b138ddefab2d11309e92b5b87993f3024a68a7c5c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

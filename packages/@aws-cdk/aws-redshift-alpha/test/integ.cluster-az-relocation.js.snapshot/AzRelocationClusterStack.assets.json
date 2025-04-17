@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "372f425b8759d50d81ad1eb78afe8753479b917886bfd962747635c6f7dc9170": {
+      "source": {
+        "path": "AzRelocationClusterStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "372f425b8759d50d81ad1eb78afe8753479b917886bfd962747635c6f7dc9170.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

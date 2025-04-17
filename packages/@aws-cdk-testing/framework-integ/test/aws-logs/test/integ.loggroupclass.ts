@@ -51,7 +51,7 @@ const describeInfrequentAccess = integTest.assertions.awsApiCall('CloudWatchLogs
     logGroupNamePrefix: logGroupInfrequentAccess.logGroupName,
   });
 
-//valdiate
+// valdiate
 describeInfrequentAccess.expect(ExpectedResult.objectLike({
   logGroups: [
     {

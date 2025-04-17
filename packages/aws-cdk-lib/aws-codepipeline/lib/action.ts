@@ -4,7 +4,7 @@ import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
-import { IResource, Lazy } from '../../core';
+import { Duration, IResource, Lazy, UnscopedValidationError } from '../../core';
 
 export enum ActionCategory {
   SOURCE = 'Source',
@@ -13,6 +13,7 @@ export enum ActionCategory {
   APPROVAL = 'Approval',
   DEPLOY = 'Deploy',
   INVOKE = 'Invoke',
+  COMPUTE = 'Compute',
 }
 
 /**
@@ -104,6 +105,33 @@ export interface ActionProperties {
    * @default - a name will be generated, based on the stage and action names
    */
   readonly variablesNamespace?: string;
+
+  /**
+   * Shell commands for the Commands action to run.
+   *
+   * @default - no commands
+   */
+  readonly commands?: string[];
+
+  /**
+   * The names of the variables in your environment that you want to export.
+   *
+   * @default - no output variables
+   */
+  readonly outputVariables?: string[];
+
+  /**
+   * A timeout duration that can be applied against the ActionType’s default timeout value
+   * specified in Quotas for AWS CodePipeline.
+   *
+   * This attribute is available only to the `ManualApprovalAction`.
+   *
+   * It is configurable up to 86400 minutes (60 days) with a minimum value of 5 minutes.
+   *
+   * @default - default timeout value defined by each ActionType
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/limits.html
+   */
+  readonly timeout?: Duration;
 }
 
 export interface ActionBindOptions {
@@ -370,8 +398,7 @@ export abstract class Action implements IAction {
       produce: () => {
         // make sure the action was bound (= added to a pipeline)
         if (this._actualNamespace === undefined) {
-          throw new Error(`Cannot reference variables of action '${this.actionProperties.actionName}', ` +
-            'as that action was never added to a pipeline');
+          throw new UnscopedValidationError(`Cannot reference variables of action '${this.actionProperties.actionName}', as that action was never added to a pipeline`);
         } else {
           return this._customerProvidedNamespace !== undefined
             // if a customer passed a namespace explicitly, always use that
@@ -439,7 +466,7 @@ export abstract class Action implements IAction {
     if (this.__pipeline) {
       return this.__pipeline;
     } else {
-      throw new Error('Action must be added to a stage that is part of a pipeline before using onStateChange');
+      throw new UnscopedValidationError('Action must be added to a stage that is part of a pipeline before using onStateChange');
     }
   }
 
@@ -447,7 +474,7 @@ export abstract class Action implements IAction {
     if (this.__stage) {
       return this.__stage;
     } else {
-      throw new Error('Action must be added to a stage that is part of a pipeline before using onStateChange');
+      throw new UnscopedValidationError('Action must be added to a stage that is part of a pipeline before using onStateChange');
     }
   }
 
@@ -460,7 +487,7 @@ export abstract class Action implements IAction {
     if (this.__scope) {
       return this.__scope;
     } else {
-      throw new Error('Action must be added to a stage that is part of a pipeline first');
+      throw new UnscopedValidationError('Action must be added to a stage that is part of a pipeline first');
     }
   }
 }
@@ -506,23 +533,23 @@ export enum PipelineNotificationEvents {
   STAGE_EXECUTION_STARTED = 'codepipeline-pipeline-stage-execution-started',
 
   /**
-  * Trigger notification when pipeline stage execution succeeded
-  */
+   * Trigger notification when pipeline stage execution succeeded
+   */
   STAGE_EXECUTION_SUCCEEDED = 'codepipeline-pipeline-stage-execution-succeeded',
 
   /**
-  * Trigger notification when pipeline stage execution resumed
-  */
+   * Trigger notification when pipeline stage execution resumed
+   */
   STAGE_EXECUTION_RESUMED = 'codepipeline-pipeline-stage-execution-resumed',
 
   /**
-  * Trigger notification when pipeline stage execution canceled
-  */
+   * Trigger notification when pipeline stage execution canceled
+   */
   STAGE_EXECUTION_CANCELED = 'codepipeline-pipeline-stage-execution-canceled',
 
   /**
-  * Trigger notification when pipeline stage execution failed
-  */
+   * Trigger notification when pipeline stage execution failed
+   */
   STAGE_EXECUTION_FAILED = 'codepipeline-pipeline-stage-execution-failed',
 
   /**

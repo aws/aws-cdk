@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "ea7e03252ddf6e5686f64b863d26f92e6262641d0e47b29eadd38880974754c7": {
+      "displayName": "NatGwPrivVpc Template",
+      "source": {
+        "path": "aws-cdk-routev2-privatenatgw-alpha.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ea7e03252ddf6e5686f64b863d26f92e6262641d0e47b29eadd38880974754c7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

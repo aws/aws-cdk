@@ -8,7 +8,6 @@ import * as cdk from 'aws-cdk-lib';
 import * as gamelift from '../lib';
 
 describe('gameSessionQueue', () => {
-
   describe('new', () => {
     let stack: cdk.Stack;
     let fleet: gamelift.FleetBase;
@@ -484,7 +483,6 @@ describe('gameSessionQueue', () => {
         },
       });
     });
-
   });
 
   describe('test import methods', () => {

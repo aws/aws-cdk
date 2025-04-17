@@ -119,6 +119,11 @@ export class Runtime {
   public static readonly NODEJS_LATEST = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
 
   /**
+   * The NodeJS 22.x runtime (nodejs22.x)
+   */
+  public static readonly NODEJS_22_X = new Runtime('nodejs22.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+
+  /**
    * The Python 2.7 runtime (python2.7)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python runtime.
    */
@@ -147,6 +152,7 @@ export class Runtime {
 
   /**
    * The Python 3.8 runtime (python3.8)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python runtime.
    */
   public static readonly PYTHON_3_8 = new Runtime('python3.8', RuntimeFamily.PYTHON, {
     supportsInlineCode: true,
@@ -183,6 +189,16 @@ export class Runtime {
   public static readonly PYTHON_3_12 = new Runtime('python3.12', RuntimeFamily.PYTHON, {
     supportsInlineCode: true,
     supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
+  });
+
+  /**
+   * The Python 3.13 runtime (python3.13)
+   */
+  public static readonly PYTHON_3_13 = new Runtime('python3.13', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
+    supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
   });
 
   /**
@@ -232,7 +248,16 @@ export class Runtime {
   /**
    * The .NET 8 runtime (dotnet8)
    */
-  public static readonly DOTNET_8 = new Runtime('dotnet8', RuntimeFamily.DOTNET_CORE);
+  public static readonly DOTNET_8 = new Runtime('dotnet8', RuntimeFamily.DOTNET_CORE, {
+    supportsSnapStart: true,
+  });
+
+  /**
+   * The .NET 9 runtime (dotnet9)
+   */
+  public static readonly DOTNET_9 = new Runtime('dotnet9', RuntimeFamily.DOTNET_CORE, {
+    supportsSnapStart: true,
+  });
 
   /**
    * The .NET Core 1.0 runtime (dotnetcore1.0)
@@ -282,9 +307,14 @@ export class Runtime {
   public static readonly RUBY_3_2 = new Runtime('ruby3.2', RuntimeFamily.RUBY);
 
   /**
-  * The Ruby 3.3 runtime (ruby3.3)
-  */
+   * The Ruby 3.3 runtime (ruby3.3)
+   */
   public static readonly RUBY_3_3 = new Runtime('ruby3.3', RuntimeFamily.RUBY);
+
+  /**
+   * The Ruby 3.4 runtime (ruby3.4)
+   */
+  public static readonly RUBY_3_4 = new Runtime('ruby3.4', RuntimeFamily.RUBY);
 
   /**
    * The custom provided runtime (provided)

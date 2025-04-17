@@ -101,12 +101,10 @@ describe('arn', () => {
   });
 
   describeDeprecated('Arn.parse(s)', () => {
-
     describe('fails', () => {
       test('if doesn\'t start with "arn:"', () => {
         const stack = new Stack();
         expect(() => stack.parseArn('barn:foo:x:a:1:2')).toThrow(/ARNs must start with "arn:".*barn:foo/);
-
       });
 
       test('if the ARN doesnt have enough components', () => {

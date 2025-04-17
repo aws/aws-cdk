@@ -151,4 +151,11 @@ export interface DatabaseClusterAttributes {
    * @default - the imported Cluster's secret is unknown
    */
   readonly secret?: secretsmanager.ISecret;
+
+  /**
+   * Whether the Data API for the cluster is enabled.
+   *
+   * @default false
+   */
+  readonly dataApiEnabled?: boolean;
 }

@@ -1,0 +1,17 @@
+{
+  "Resources": {
+    "ASG": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MinSize": "1",
+        "MaxSize": "5"
+      },
+      "CreationPolicy": {
+        "NonExistentResourceAttribute": "Bucket1"
+      },
+      "UpdatePolicy": {
+        "NonExistentResourceAttribute": "Bucket1"
+      }
+    }
+  }
+}

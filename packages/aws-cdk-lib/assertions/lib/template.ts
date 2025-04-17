@@ -7,9 +7,10 @@ import { checkTemplateForCyclicDependencies } from './private/cyclic';
 import { findMappings, hasMapping } from './private/mappings';
 import { findOutputs, hasOutput } from './private/outputs';
 import { findParameters, hasParameter } from './private/parameters';
-import { allResources, allResourcesProperties, countResources, countResourcesProperties, findResources, hasResource, hasResourceProperties } from './private/resources';
+import { allResources, allResourcesProperties, countResources, countResourcesProperties, findResources, getResourceId, hasResource, hasResourceProperties } from './private/resources';
 import { Template as TemplateType } from './private/template';
 import { Stack, Stage } from '../../core';
+import { AssertionError } from './private/error';
 
 /**
  * Suite of assertions that can be run on a CDK stack.
@@ -17,7 +18,6 @@ import { Stack, Stage } from '../../core';
  * CloudFormation template has expected resources and properties.
  */
 export class Template {
-
   /**
    * Base your assertions on the CloudFormation template synthesized by a CDK `Stack`.
    * @param stack the CDK Stack to run assertions on
@@ -54,7 +54,7 @@ export class Template {
 
   private constructor(template: { [key: string]: any }, templateParsingOptions: TemplateParsingOptions = {}) {
     this.template = template as TemplateType;
-    if (!templateParsingOptions?.skipCyclicalDependenciesCheck ?? true) {
+    if (!templateParsingOptions.skipCyclicalDependenciesCheck) {
       checkTemplateForCyclicDependencies(this.template);
     }
   }
@@ -75,7 +75,7 @@ export class Template {
   public resourceCountIs(type: string, count: number): void {
     const counted = countResources(this.template, type);
     if (counted !== count) {
-      throw new Error(`Expected ${count} resources of type ${type} but found ${counted}`);
+      throw new AssertionError(`Expected ${count} resources of type ${type} but found ${counted}`);
     }
   }
 
@@ -89,7 +89,7 @@ export class Template {
   public resourcePropertiesCountIs(type: string, props: any, count: number): void {
     const counted = countResourcesProperties(this.template, type, props);
     if (counted !== count) {
-      throw new Error(`Expected ${count} resources of type ${type} but found ${counted}`);
+      throw new AssertionError(`Expected ${count} resources of type ${type} but found ${counted}`);
     }
   }
 
@@ -104,7 +104,7 @@ export class Template {
   public hasResourceProperties(type: string, props: any): void {
     const matchError = hasResourceProperties(this.template, type, props);
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -119,7 +119,7 @@ export class Template {
   public hasResource(type: string, props: any): void {
     const matchError = hasResource(this.template, type, props);
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -135,6 +135,28 @@ export class Template {
   }
 
   /**
+   * Get the Resource ID of a matching resource, expects only to find one match.
+   * Throws AssertionError if none or multiple resources were found.
+   * @param type the resource type; ex: `AWS::S3::Bucket`
+   * @param props by default, matches all resources with the given type.
+   * @returns The resource id of the matched resource.
+   * Performs a partial match via `Match.objectLike()`.
+   */
+  public getResourceId(type: string, props: any = {}): string {
+    const { resourceId, matchError } = getResourceId(this.template, type, props);
+
+    if (matchError) {
+      throw new AssertionError(matchError);
+    }
+
+    if (!resourceId) {
+      throw new AssertionError('unexpected: resourceId was undefined');
+    }
+
+    return resourceId;
+  }
+
+  /**
    * Assert that all resources of the given type contain the given definition in the
    * CloudFormation template.
    * By default, performs partial matching on the resource, via the `Match.objectLike()`.
@@ -145,7 +167,7 @@ export class Template {
   public allResources(type: string, props: any): void {
     const matchError = allResources(this.template, type, props);
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -160,7 +182,7 @@ export class Template {
   public allResourcesProperties(type: string, props: any): void {
     const matchError = allResourcesProperties(this.template, type, props);
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -168,19 +190,19 @@ export class Template {
    * Assert that a Parameter with the given properties exists in the CloudFormation template.
    * By default, performs partial matching on the parameter, via the `Match.objectLike()`.
    * To configure different behavior, use other matchers in the `Match` class.
-   * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
+   * @param logicalId the name of the parameter, provide `'*'` to match all parameters in the template.
    * @param props the parameter as should be expected in the template.
    */
   public hasParameter(logicalId: string, props: any): void {
     const matchError = hasParameter(this.template, logicalId, props);
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
   /**
    * Get the set of matching Parameters that match the given properties in the CloudFormation template.
-   * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
+   * @param logicalId the name of the parameter, provide `'*'` to match all parameters in the template.
    * @param props by default, matches all Parameters in the template.
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
@@ -193,19 +215,19 @@ export class Template {
    * Assert that an Output with the given properties exists in the CloudFormation template.
    * By default, performs partial matching on the resource, via the `Match.objectLike()`.
    * To configure different behavior, use other matchers in the `Match` class.
-   * @param logicalId the name of the output. Provide `'*'` to match all outputs in the template.
+   * @param logicalId the name of the output, provide `'*'` to match all outputs in the template.
    * @param props the output as should be expected in the template.
    */
   public hasOutput(logicalId: string, props: any): void {
     const matchError = hasOutput(this.template, logicalId, props);
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
   /**
    * Get the set of matching Outputs that match the given properties in the CloudFormation template.
-   * @param logicalId the name of the output. Provide `'*'` to match all outputs in the template.
+   * @param logicalId the name of the output, provide `'*'` to match all outputs in the template.
    * @param props by default, matches all Outputs in the template.
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
@@ -218,19 +240,19 @@ export class Template {
    * Assert that a Mapping with the given properties exists in the CloudFormation template.
    * By default, performs partial matching on the resource, via the `Match.objectLike()`.
    * To configure different behavior, use other matchers in the `Match` class.
-   * @param logicalId the name of the mapping. Provide `'*'` to match all mappings in the template.
+   * @param logicalId the name of the mapping, provide `'*'` to match all mappings in the template.
    * @param props the output as should be expected in the template.
    */
   public hasMapping(logicalId: string, props: any): void {
     const matchError = hasMapping(this.template, logicalId, props);
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
   /**
    * Get the set of matching Mappings that match the given properties in the CloudFormation template.
-   * @param logicalId the name of the mapping. Provide `'*'` to match all mappings in the template.
+   * @param logicalId the name of the mapping, provide `'*'` to match all mappings in the template.
    * @param props by default, matches all Mappings in the template.
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
@@ -243,19 +265,19 @@ export class Template {
    * Assert that a Condition with the given properties exists in the CloudFormation template.
    * By default, performs partial matching on the resource, via the `Match.objectLike()`.
    * To configure different behavior, use other matchers in the `Match` class.
-   * @param logicalId the name of the mapping. Provide `'*'` to match all conditions in the template.
+   * @param logicalId the name of the mapping, provide `'*'` to match all conditions in the template.
    * @param props the output as should be expected in the template.
    */
   public hasCondition(logicalId: string, props: any): void {
     const matchError = hasCondition(this.template, logicalId, props);
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
   /**
    * Get the set of matching Conditions that match the given properties in the CloudFormation template.
-   * @param logicalId the name of the condition. Provide `'*'` to match all conditions in the template.
+   * @param logicalId the name of the condition, provide `'*'` to match all conditions in the template.
    * @param props by default, matches all Conditions in the template.
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
@@ -273,7 +295,7 @@ export class Template {
     const result = matcher.test(this.template);
 
     if (result.hasFailed()) {
-      throw new Error([
+      throw new AssertionError([
         'Template did not match as expected. The following mismatches were found:',
         ...result.toHumanStrings().map(s => `\t${s}`),
       ].join('\n'));
@@ -298,7 +320,7 @@ export interface TemplateParsingOptions {
 function toTemplate(stack: Stack): any {
   const stage = Stage.of(stack);
   if (!Stage.isStage(stage)) {
-    throw new Error('unexpected: all stacks must be part of a Stage or an App');
+    throw new AssertionError('unexpected: all stacks must be part of a Stage or an App');
   }
 
   const assembly = stage.synth();

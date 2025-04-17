@@ -1,0 +1,20 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "ae5a97c3fd75f1ee45fe9ea3e90f0e08ec8d391d23a96cbe44f9c347fd8bce1b": {
+      "source": {
+        "path": "CrossAccountStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "157488465701-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-157488465701-us-east-1",
+          "objectKey": "ae5a97c3fd75f1ee45fe9ea3e90f0e08ec8d391d23a96cbe44f9c347fd8bce1b.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::157488465701:role/cdk-hnb659fds-file-publishing-role-157488465701-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

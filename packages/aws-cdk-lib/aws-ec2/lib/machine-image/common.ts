@@ -80,7 +80,6 @@ export abstract class AmazonLinuxImageSsmParameterBase implements IMachineImage 
       userData: this.props.userData ?? UserData.forLinux(),
     };
   }
-
 }
 
 /**

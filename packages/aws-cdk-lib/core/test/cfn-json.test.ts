@@ -2,7 +2,6 @@ import { App, CfnResource, Lazy, Stack } from '../lib';
 import { CfnJson } from '../lib/cfn-json';
 
 describe('cfn json', () => {
-
   test('resolves to a fn::getatt', () => {
     // GIVEN
     const app = new App();

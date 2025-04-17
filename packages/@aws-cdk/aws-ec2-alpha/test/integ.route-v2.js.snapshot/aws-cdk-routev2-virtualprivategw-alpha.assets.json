@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "5fe8a7a8bfbe2eef45dfc2f3835b2d11570cc13eb9545064e5ea3c69d88bb8c3": {
+      "displayName": "VirtualPrivateGwVpc Template",
+      "source": {
+        "path": "aws-cdk-routev2-virtualprivategw-alpha.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5fe8a7a8bfbe2eef45dfc2f3835b2d11570cc13eb9545064e5ea3c69d88bb8c3.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

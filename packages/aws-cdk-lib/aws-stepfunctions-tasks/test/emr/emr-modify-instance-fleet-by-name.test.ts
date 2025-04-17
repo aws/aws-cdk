@@ -46,6 +46,43 @@ test('Modify an InstanceFleet with static ClusterId, InstanceFleetName, and Inst
   });
 });
 
+test('Modify an InstanceFleet with static ClusterId, InstanceFleetName, and InstanceFleetConfiguration - using JSONata', () => {
+  // WHEN
+  const task = tasks.EmrModifyInstanceFleetByName.jsonata(stack, 'Task', {
+    clusterId: 'ClusterId',
+    instanceFleetName: 'InstanceFleetName',
+    targetOnDemandCapacity: 2,
+    targetSpotCapacity: 0,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:modifyInstanceFleetByName',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      ClusterId: 'ClusterId',
+      InstanceFleetName: 'InstanceFleetName',
+      InstanceFleet: {
+        TargetOnDemandCapacity: 2,
+        TargetSpotCapacity: 0,
+      },
+    },
+  });
+});
+
 test('task policies are generated', () => {
   // WHEN
   const task = new tasks.EmrModifyInstanceFleetByName(stack, 'Task', {

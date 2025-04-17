@@ -39,10 +39,11 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
   // merge the request and the result from onEvent to form the complete resource event
   // this also performs validation.
   const resourceEvent = createResponseEvent(cfnRequest, onEventResult);
+  const sanitizedEvent = { ...resourceEvent, ResponseURL: '...' };
   if (onEventResult?.NoEcho) {
-    log('readacted event:', cfnResponse.redactDataFromPayload(resourceEvent));
+    log('readacted event:', cfnResponse.redactDataFromPayload(sanitizedEvent));
   } else {
-    log('event:', resourceEvent);
+    log('event:', sanitizedEvent);
   }
 
   // determine if this is an async provider based on whether we have an isComplete handler defined.

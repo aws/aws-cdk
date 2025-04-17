@@ -16,9 +16,7 @@ describe('utils', () => {
   });
 
   describe('coerceResponse', () => {
-
     test('no ops on simple response', async () => {
-
       const response = {
         simple: 'value1',
         map: {
@@ -36,11 +34,9 @@ describe('utils', () => {
         },
         array: ['value3'],
       });
-
     });
 
     test('json parses strings', async () => {
-
       const response = {
         simple: '{ "foo1": "bar1" }',
         map: {
@@ -58,7 +54,6 @@ describe('utils', () => {
         },
         array: [{ foo3: 'bar3' }],
       });
-
     });
   });
 });

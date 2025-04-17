@@ -14,6 +14,8 @@ import * as iam from '../../aws-iam';
 import { IBucket } from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 
 /**
  * Options for portfolio share.
@@ -340,6 +342,8 @@ export class Portfolio extends PortfolioBase {
 
   constructor(scope: Construct, id: string, props: PortfolioProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.validatePortfolioProps(props);
 
@@ -364,8 +368,10 @@ export class Portfolio extends PortfolioBase {
       visit(c: IConstruct) {
         if (c.node.id === portfolioNodeId) {
           (c as Portfolio).addBucketPermissionsToSharedAccounts();
-        };
+        }
       },
+    }, {
+      priority: mutatingAspectPrio32333(this),
     });
   }
 

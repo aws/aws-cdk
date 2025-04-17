@@ -5,7 +5,7 @@ import { ITable, TableAction } from '../table';
 import { IUser } from '../user';
 import { DatabaseQuery } from './database-query';
 import { HandlerName } from './database-query-provider/handler-name';
-import { TablePrivilege as SerializedTablePrivilege, UserTablePrivilegesHandlerProps } from './handler-props';
+import { UserTablePrivilegesHandlerProps } from './handler-props';
 
 /**
  * The Redshift table and action that make up a privilege that can be granted to a Redshift user.
@@ -61,35 +61,14 @@ export class UserTablePrivileges extends Construct {
       properties: {
         username: props.user.username,
         tablePrivileges: cdk.Lazy.any({
-          produce: () => {
-            const reducedPrivileges = this.privileges.reduce((privileges, { table, actions }) => {
-              const tableId = table.node.id;
-              if (!(tableId in privileges)) {
-                privileges[tableId] = {
-                  tableName: table.tableName,
-                  actions: [],
-                };
-              }
-              actions = actions.concat(privileges[tableId].actions);
-              if (actions.includes(TableAction.ALL)) {
-                actions = [TableAction.ALL];
-              }
-              if (actions.includes(TableAction.UPDATE) || actions.includes(TableAction.DELETE)) {
-                actions.push(TableAction.SELECT);
-              }
-              privileges[tableId] = {
-                tableName: table.tableName,
-                actions: Array.from(new Set(actions)),
-              };
-              return privileges;
-            }, {} as { [key: string]: { tableName: string; actions: TableAction[] } });
-            const serializedPrivileges: SerializedTablePrivilege[] = Object.entries(reducedPrivileges).map(([tableId, config]) => ({
-              tableId,
-              tableName: config.tableName,
-              actions: config.actions.map(action => TableAction[action]),
-            }));
-            return serializedPrivileges;
-          },
+          produce: () =>
+            Object.entries(groupPrivilegesByTable(this.privileges))
+              .map(([tableId, tablePrivileges]) => ({
+                tableId,
+                // The first element always exists since the groupBy element is at least a singleton.
+                tableName: tablePrivileges[0]!.table.tableName,
+                actions: unifyTableActions(tablePrivileges).map(action => TableAction[action]),
+              })),
         }) as any,
       },
     });
@@ -102,3 +81,29 @@ export class UserTablePrivileges extends Construct {
     this.privileges.push({ table, actions });
   }
 }
+
+const unifyTableActions = (tablePrivileges: TablePrivilege[]): TableAction[] => {
+  const set = new Set<TableAction>(tablePrivileges.flatMap(x => x.actions));
+
+  if (set.has(TableAction.ALL)) {
+    return [TableAction.ALL];
+  }
+
+  if (set.has(TableAction.UPDATE) || set.has(TableAction.DELETE)) {
+    set.add(TableAction.SELECT);
+  }
+
+  return [...set];
+};
+
+const groupPrivilegesByTable = (privileges: TablePrivilege[]): Record<string, TablePrivilege[]> => {
+  return privileges.reduce((grouped, privilege) => {
+    const { table } = privilege;
+    const tableId = table.node.id;
+    const tablePrivileges = grouped[tableId] ?? [];
+    return {
+      ...grouped,
+      [tableId]: [...tablePrivileges, privilege],
+    };
+  }, {} as Record<string, TablePrivilege[]>);
+};

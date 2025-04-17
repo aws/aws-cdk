@@ -251,7 +251,6 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
 
     (isAgnostic ? agnosticStacks : envAwareStacks).add(stack);
     if (agnosticStacks.size > 0 && envAwareStacks.size > 0) {
-
       const describeStacks = (xs: Set<Stack>) => Array.from(xs).map(s => s.node.path).join(', ');
 
       throw new Error([
@@ -342,6 +341,8 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
       bucketName: translateCfnTokenToAssetToken(bucketName),
       bucketPrefix: prefix,
       role: assumeRoleArn ? { assumeRoleArn: translateCfnTokenToAssetToken(assumeRoleArn) } : undefined,
+    }, {
+      displayName: asset.displayName,
     });
 
     if (dependencyStack) {
@@ -360,6 +361,8 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
     const location = this.assetManifest.defaultAddDockerImageAsset(this.boundStack, asset, {
       repositoryName: translateCfnTokenToAssetToken(repoName),
       role: assumeRoleArn ? { assumeRoleArn: translateCfnTokenToAssetToken(assumeRoleArn) } : undefined,
+    }, {
+      displayName: asset.displayName,
     });
 
     if (dependencyStack) {

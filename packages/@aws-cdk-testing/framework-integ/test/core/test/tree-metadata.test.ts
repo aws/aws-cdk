@@ -130,7 +130,6 @@ describe('tree metadata', () => {
         },
       }),
     });
-
   });
 
   test('tree metadata has construct class & version in there', () => {
@@ -184,7 +183,6 @@ describe('tree metadata', () => {
         }),
       }),
     });
-
   });
 
   test('token resolution & cfn parameter', () => {
@@ -241,7 +239,6 @@ describe('tree metadata', () => {
         },
       }),
     });
-
   });
 
   test('cross-stack tokens', () => {
@@ -393,7 +390,6 @@ describe('tree metadata', () => {
         },
       }),
     });
-
   });
 });
 

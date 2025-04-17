@@ -255,7 +255,7 @@ export interface AwsIamConfig {
 /**
  * Properties for an AppSync http datasource
  */
-export interface HttpDataSourceProps extends BaseDataSourceProps {
+export interface HttpDataSourceProps extends BackedDataSourceProps {
   /**
    * The http endpoint
    */

@@ -3,10 +3,7 @@ import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for stoping a Query Execution
- */
-export interface AthenaStopQueryExecutionProps extends sfn.TaskStateBaseProps {
+interface AthenaStopQueryExecutionOptions {
   /**
    * Query that will be stopped
    */
@@ -14,11 +11,39 @@ export interface AthenaStopQueryExecutionProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for stopping a Query Execution using JSONPath
+ */
+export interface AthenaStopQueryExecutionJsonPathProps extends sfn.TaskStateJsonPathBaseProps, AthenaStopQueryExecutionOptions { }
+
+/**
+ * Properties for stopping a Query Execution using JSONata
+ */
+export interface AthenaStopQueryExecutionJsonataProps extends sfn.TaskStateJsonataBaseProps, AthenaStopQueryExecutionOptions { }
+
+/**
+ * Properties for stopping a Query Execution
+ */
+export interface AthenaStopQueryExecutionProps extends sfn.TaskStateBaseProps, AthenaStopQueryExecutionOptions { }
+
+/**
  * Stop an Athena Query Execution as a Task
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html
  */
 export class AthenaStopQueryExecution extends sfn.TaskStateBase {
+  /**
+   * Stop an Athena Query Execution as a Task using JSONPath
+   */
+  public static jsonPath(scope: Construct, id: string, props: AthenaStopQueryExecutionJsonPathProps) {
+    return new AthenaStopQueryExecution(scope, id, props);
+  }
+
+  /**
+   * Stop an Athena Query Execution as a Task using JSONata
+   */
+  public static jsonata(scope: Construct, id: string, props: AthenaStopQueryExecutionJsonataProps) {
+    return new AthenaStopQueryExecution(scope, id, { ...props, queryLanguage: sfn.QueryLanguage.JSONATA });
+  }
 
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
@@ -49,12 +74,13 @@ export class AthenaStopQueryExecution extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('athena', 'stopQueryExecution', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         QueryExecutionId: this.props.queryExecutionId,
-      }),
+      }, queryLanguage),
     };
   }
 }

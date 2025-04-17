@@ -40,10 +40,22 @@
             "data": "CertificateCertificateRequestorFunctionServiceRoleC04C13DA"
           }
         ],
-        "/integ-dns-validated-certificate/Certificate/CertificateRequestorFunction/ServiceRole/DefaultPolicy/Resource": [
+        "/integ-dns-validated-certificate/Certificate/CertificateRequestorFunction/inlinePolicyAddedToExecutionRole-0/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CertificateCertificateRequestorFunctionServiceRoleDefaultPolicy3C8845BC"
+            "data": "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole02D5DA9E2"
+          }
+        ],
+        "/integ-dns-validated-certificate/Certificate/CertificateRequestorFunction/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole18173669F"
+          }
+        ],
+        "/integ-dns-validated-certificate/Certificate/CertificateRequestorFunction/inlinePolicyAddedToExecutionRole-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole20FBD3CBF"
           }
         ],
         "/integ-dns-validated-certificate/Certificate/CertificateRequestorFunction/Resource": [

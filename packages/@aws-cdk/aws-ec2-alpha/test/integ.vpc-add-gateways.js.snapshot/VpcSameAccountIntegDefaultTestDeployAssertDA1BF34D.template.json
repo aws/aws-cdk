@@ -1,0 +1,436 @@
+{
+ "Resources": {
+  "AwsApiCallec2DescribeInternetGatewaysCommand3920c7dae7dcf75f3a68a812df0f0ccb": {
+   "Type": "Custom::DeployAssert@SdkCallec2DescribeInternetGatewaysComma",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "ec2",
+    "api": "DescribeInternetGatewaysCommand",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"InternetGateways\":[{\"$ObjectLike\":{\"InternetGatewayId\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgatewayInternetGatewayIGWBF8CBB67InternetGatewayIdBCA9BCBE"
+       },
+       "\",\"Attachments\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"State\":\"available\",\"VpcId\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgateway2BE01D01VpcId015E985D"
+       },
+       "\"}}]}}}]}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "InternetGatewayId": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgatewayInternetGatewayIGWBF8CBB67InternetGatewayIdBCA9BCBE"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1744737671743"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "ec2:DescribeInternetGateways"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ec2:DescribeEgressOnlyInternetGateways"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ec2:DescribeRouteTables"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallec2DescribeEgressOnlyInternetGatewaysCommandf9b5f48191fd50e5e02ab84f6f8f8a2b": {
+   "Type": "Custom::DeployAssert@SdkCallec2DescribeEgressOnlyInternetGat",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "ec2",
+    "api": "DescribeEgressOnlyInternetGatewaysCommand",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"EgressOnlyInternetGateways\":[{\"$ObjectLike\":{\"EgressOnlyInternetGatewayId\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgatewayEgressOnlyGWEIGW686FDB04IdEA72DCCD"
+       },
+       "\",\"Attachments\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"State\":\"attached\",\"VpcId\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgateway2BE01D01VpcId015E985D"
+       },
+       "\"}}]}}}]}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "EgressOnlyInternetGatewayId": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgatewayEgressOnlyGWEIGW686FDB04IdEA72DCCD"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1744737671745"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603": {
+   "Type": "Custom::DeployAssert@SdkCallec2DescribeRouteTablesCommand",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "ec2",
+    "api": "DescribeRouteTablesCommand",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"RouteTables\":[{\"$ObjectLike\":{\"RouteTableId\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttTestRouteTable2RouteTableB32AE314RouteTableId897B0777"
+       },
+       "\",\"Routes\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"DestinationCidrBlock\":\"192.168.0.0/16\",\"GatewayId\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgatewayInternetGatewayIGWBF8CBB67InternetGatewayIdBCA9BCBE"
+       },
+       "\"}},{\"$ObjectLike\":{\"DestinationIpv6CidrBlock\":\"2600:1f00::/24\",\"EgressOnlyInternetGatewayId\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgatewayEgressOnlyGWEIGW686FDB04IdEA72DCCD"
+       },
+       "\"}}]}}},{\"$ObjectLike\":{\"RouteTableId\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttTestRouteTableC34C2E1CRouteTableId4C8A7F39"
+       },
+       "\",\"Routes\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"DestinationCidrBlock\":\"192.168.0.0/16\",\"GatewayId\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgatewayInternetGatewayIGWBF8CBB67InternetGatewayIdBCA9BCBE"
+       },
+       "\"}},{\"$ObjectLike\":{\"DestinationIpv6CidrBlock\":\"2600:1f00::/24\",\"EgressOnlyInternetGatewayId\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgatewayEgressOnlyGWEIGW686FDB04IdEA72DCCD"
+       },
+       "\"}}]}}}]}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "RouteTableIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttTestRouteTableC34C2E1CRouteTableId4C8A7F39"
+        },
+        "\",\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttTestRouteTable2RouteTableB32AE314RouteTableId897B0777"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1744737671745"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallec2DescribeInternetGatewaysCommand3920c7dae7dcf75f3a68a812df0f0ccb": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallec2DescribeInternetGatewaysCommand3920c7dae7dcf75f3a68a812df0f0ccb",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallec2DescribeEgressOnlyInternetGatewaysCommandf9b5f48191fd50e5e02ab84f6f8f8a2b": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallec2DescribeEgressOnlyInternetGatewaysCommandf9b5f48191fd50e5e02ab84f6f8f8a2b",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

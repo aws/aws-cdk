@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "appsync-event-api-grants/DefaultTest": {
+      "stacks": [
+        "EventApiApiGrantStack"
+      ],
+      "assertionStack": "appsync-event-api-grants/DefaultTest/DeployAssert",
+      "assertionStackName": "appsynceventapigrantsDefaultTestDeployAssertD04585BB"
+    }
+  }
+}

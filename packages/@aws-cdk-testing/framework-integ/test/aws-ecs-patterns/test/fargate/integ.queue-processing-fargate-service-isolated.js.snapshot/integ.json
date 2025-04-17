@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "38.0.1",
   "testCases": {
     "isolatedQueueProcessingFargateServiceTest/DefaultTest": {
       "stacks": [

@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "ClusterEnhancedInsights/DefaultTest": {
+      "stacks": [
+        "integ-ecs-enhanced-container-insights"
+      ],
+      "assertionStack": "ClusterEnhancedInsights/DefaultTest/DeployAssert",
+      "assertionStackName": "ClusterEnhancedInsightsDefaultTestDeployAssert64FBF7AE"
+    }
+  }
+}

@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { CfnAddon } from './eks.generated';
 import { ArnFormat, IResource, Resource, Stack, Fn } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an Amazon EKS Add-On.
@@ -28,7 +29,7 @@ export interface AddonProps {
    */
   readonly addonName: string;
   /**
-   * Version of the Add-On. You can check all available versions with describe-addon-versons.
+   * Version of the Add-On. You can check all available versions with describe-addon-versions.
    * For example, this lists all available versions for the `eks-pod-identity-agent` addon:
    * $ aws eks describe-addon-versions --addon-name eks-pod-identity-agent \
    * --query 'addons[*].addonVersions[*].addonVersion'
@@ -40,6 +41,13 @@ export interface AddonProps {
    * The EKS cluster the Add-On is associated with.
    */
   readonly cluster: ICluster;
+  /**
+   * Specifying this option preserves the add-on software on your cluster but Amazon EKS stops managing any settings for the add-on.
+   * If an IAM account is associated with the add-on, it isn't removed.
+   *
+   * @default true
+   */
+  readonly preserveOnDelete?: boolean;
 }
 
 /**
@@ -119,6 +127,8 @@ export class Addon extends Resource implements IAddon {
     super(scope, id, {
       physicalName: props.addonName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.clusterName = props.cluster.clusterName;
     this.addonName = props.addonName;
@@ -127,6 +137,7 @@ export class Addon extends Resource implements IAddon {
       addonName: props.addonName,
       clusterName: this.clusterName,
       addonVersion: props.addonVersion,
+      preserveOnDelete: props.preserveOnDelete,
     });
 
     this.addonName = this.getResourceNameAttribute(resource.ref);

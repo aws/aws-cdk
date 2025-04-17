@@ -28,7 +28,6 @@ describe('api key', () => {
       new apigateway.ApiKey(stack, 'my-api-key', {
         resources: [restApi],
       });
-
     }).toThrow(/Cannot add an ApiKey to a RestApi that does not contain a "deploymentStage"/);
   });
 

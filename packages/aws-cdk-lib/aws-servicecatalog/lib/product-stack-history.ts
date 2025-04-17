@@ -50,7 +50,7 @@ export interface ProductStackHistoryProps {
  * A Construct that contains a Service Catalog product stack with its previous deployments maintained.
  */
 export class ProductStackHistory extends Construct {
-  private readonly props: ProductStackHistoryProps
+  private readonly props: ProductStackHistoryProps;
   constructor(scope: Construct, id: string, props: ProductStackHistoryProps) {
     super(scope, id);
     props.productStack._setParentProductStackHistory(this);

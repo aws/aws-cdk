@@ -1,4 +1,6 @@
+import { IAccessLogDestination } from './access-log';
 import { IDomainName } from './domain-name';
+import { AccessLogFormat } from '../../../aws-apigateway/lib';
 import { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import { IResource } from '../../../core';
 
@@ -73,6 +75,20 @@ export interface StageOptions {
    * @default - no description
    */
   readonly description?: string;
+
+  /**
+   * Specifies whether detailed metrics are enabled.
+   *
+   * @default false
+   */
+  readonly detailedMetricsEnabled?: boolean;
+
+  /**
+   * Settings for access logging.
+   *
+   * @default - No access logging
+   */
+  readonly accessLogSettings?: IAccessLogSettings;
 }
 
 /**
@@ -100,4 +116,27 @@ export interface ThrottleSettings {
    * @default none
    */
   readonly burstLimit?: number;
+}
+
+/**
+ * Settings for access logging.
+ */
+export interface IAccessLogSettings {
+  /**
+   * The destination where to write access logs.
+   *
+   * @default - No destination
+   */
+  readonly destination: IAccessLogDestination;
+
+  /**
+   * A single line format of access logs of data, as specified by selected $context variables.
+   * The format must include either `AccessLogFormat.contextRequestId()`
+   * or `AccessLogFormat.contextExtendedRequestId()`.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-logging-variables.html
+   *
+   * @default - Common Log Format
+   */
+  readonly format?: AccessLogFormat;
 }

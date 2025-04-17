@@ -79,6 +79,7 @@ export class StackSetPipelineStack extends Stack {
 const app = new App({
   postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+    '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,
   },
 });
 const stack = new StackSetPipelineStack(app, 'StackSetPipelineStack');

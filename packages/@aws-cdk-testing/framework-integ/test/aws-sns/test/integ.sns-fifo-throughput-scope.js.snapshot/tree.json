@@ -1,0 +1,153 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "sns-fifo-throughput-scope": {
+        "id": "sns-fifo-throughput-scope",
+        "path": "sns-fifo-throughput-scope",
+        "children": {
+          "MessageGroupScopeTopic": {
+            "id": "MessageGroupScopeTopic",
+            "path": "sns-fifo-throughput-scope/MessageGroupScopeTopic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "sns-fifo-throughput-scope/MessageGroupScopeTopic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {
+                    "fifoThroughputScope": "MessageGroup",
+                    "fifoTopic": true,
+                    "topicName": "snsfifothroughputscope-MessageGroupScopeTopic-52DE3DD3.fifo"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sns.Topic",
+              "version": "0.0.0"
+            }
+          },
+          "TopicScopeTopic": {
+            "id": "TopicScopeTopic",
+            "path": "sns-fifo-throughput-scope/TopicScopeTopic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "sns-fifo-throughput-scope/TopicScopeTopic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {
+                    "fifoThroughputScope": "Topic",
+                    "fifoTopic": true,
+                    "topicName": "snsfifothroughputscope-TopicScopeTopic-92BBF542.fifo"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sns.Topic",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "sns-fifo-throughput-scope/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "sns-fifo-throughput-scope/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "sns-fifo-throughput-scope-test": {
+        "id": "sns-fifo-throughput-scope-test",
+        "path": "sns-fifo-throughput-scope-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "sns-fifo-throughput-scope-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "sns-fifo-throughput-scope-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "sns-fifo-throughput-scope-test/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "sns-fifo-throughput-scope-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "sns-fifo-throughput-scope-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

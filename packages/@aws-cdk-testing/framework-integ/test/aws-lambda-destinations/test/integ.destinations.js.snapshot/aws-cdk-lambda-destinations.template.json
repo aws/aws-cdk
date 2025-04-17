@@ -338,6 +338,203 @@
     "Qualifier": "$LATEST"
    }
   },
+  "OnSuccessBucket7BDFCF14": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "OnFailureBucketC16738A3": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "S3ServiceRole9AEB7DE9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "S3ServiceRoleDefaultPolicyF2AA3BE6": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "OnFailureBucketC16738A3",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnSuccessBucket7BDFCF14",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "OnFailureBucketC16738A3",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "OnSuccessBucket7BDFCF14",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "OnFailureBucketC16738A3",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "OnSuccessBucket7BDFCF14",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "S3ServiceRoleDefaultPolicyF2AA3BE6",
+    "Roles": [
+     {
+      "Ref": "S3ServiceRole9AEB7DE9"
+     }
+    ]
+   }
+  },
+  "S3486F821D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = async (event) => {\n        if (event.status === 'OK') return 'success';\n        throw new Error('failure');\n      };"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "S3ServiceRole9AEB7DE9",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "S3ServiceRoleDefaultPolicyF2AA3BE6",
+    "S3ServiceRole9AEB7DE9"
+   ]
+  },
+  "S3EventInvokeConfig001D7832": {
+   "Type": "AWS::Lambda::EventInvokeConfig",
+   "Properties": {
+    "DestinationConfig": {
+     "OnFailure": {
+      "Destination": {
+       "Fn::GetAtt": [
+        "OnFailureBucketC16738A3",
+        "Arn"
+       ]
+      }
+     },
+     "OnSuccess": {
+      "Destination": {
+       "Fn::GetAtt": [
+        "OnSuccessBucket7BDFCF14",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "FunctionName": {
+     "Ref": "S3486F821D"
+    },
+    "MaximumEventAgeInSeconds": 14400,
+    "MaximumRetryAttempts": 2,
+    "Qualifier": "$LATEST"
+   }
+  },
   "MySpecialAliasC0F04207": {
    "Type": "AWS::Lambda::Alias",
    "Properties": {

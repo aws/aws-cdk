@@ -5,7 +5,12 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 } from 'aws-cdk-lib/cx-api';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  treeMetadata: false,
+  postCliContext: {
+    '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-pipeline-type-v2-by-default');
 stack.node.setContext(CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2, true);

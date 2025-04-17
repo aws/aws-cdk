@@ -169,7 +169,6 @@ describe('DomainName', () => {
 
     // WHEN/THEN
     expect(t).toThrow('defaultDomainMapping not supported with createDefaultStage disabled');
-
   });
 
   test('accepts a mutual TLS configuration', () => {

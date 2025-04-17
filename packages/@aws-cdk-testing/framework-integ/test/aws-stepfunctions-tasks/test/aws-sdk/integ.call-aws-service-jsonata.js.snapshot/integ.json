@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "AwsSdkJsonataTest/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-aws-sdk-jsonata-integ"
+      ],
+      "assertionStack": "AwsSdkJsonataTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AwsSdkJsonataTestDefaultTestDeployAssert03FB1EE5"
+    }
+  }
+}

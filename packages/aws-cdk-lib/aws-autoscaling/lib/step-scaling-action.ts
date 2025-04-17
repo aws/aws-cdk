@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScalingPolicy } from './autoscaling.generated';
-import { Annotations, Duration, Lazy } from '../../core';
+import { Annotations, Duration, Lazy, ValidationError } from '../../core';
 
 /**
  * Properties for a scaling policy
@@ -97,7 +97,7 @@ export class StepScalingAction extends Construct {
    */
   public addAdjustment(adjustment: AdjustmentTier) {
     if (adjustment.lowerBound === undefined && adjustment.upperBound === undefined) {
-      throw new Error('At least one of lowerBound or upperBound is required');
+      throw new ValidationError('At least one of lowerBound or upperBound is required', this);
     }
     this.adjustments.push({
       metricIntervalLowerBound: adjustment.lowerBound,

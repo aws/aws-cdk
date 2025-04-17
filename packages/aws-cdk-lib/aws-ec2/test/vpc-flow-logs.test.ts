@@ -28,7 +28,6 @@ describe('vpc flow logs', () => {
     Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
     Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 0);
-
   });
   test('with cloudwatch logs as the destination, allows use of existing resources', () => {
     const stack = getTestStack();
@@ -53,7 +52,6 @@ describe('vpc flow logs', () => {
       RoleName: 'TestName',
     });
     Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 0);
-
   });
   test('with s3 as the destination, allows use of existing resources', () => {
     const stack = getTestStack();
@@ -75,7 +73,6 @@ describe('vpc flow logs', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'testbucket',
     });
-
   });
   test('with kinesis data firehose as the destination, allows use of existing resources', () => {
     const stack = getTestStack();
@@ -120,7 +117,6 @@ describe('vpc flow logs', () => {
         },
       ],
     });
-
   });
 
   test('allows setting destination options', () => {
@@ -440,7 +436,6 @@ describe('vpc flow logs', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'testbucket',
     });
-
   });
   test('with s3 as the destination and all the defaults set, it successfully creates all the resources', () => {
     const stack = getTestStack();
@@ -461,7 +456,6 @@ describe('vpc flow logs', () => {
     Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
     Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
-
   });
   test('create with vpc', () => {
     const stack = getTestStack();
@@ -486,7 +480,6 @@ describe('vpc flow logs', () => {
         Ref: 'VPCflowLogsLogGroupE900F980',
       },
     });
-
   });
   test('add to vpc', () => {
     const stack = getTestStack();
@@ -758,7 +751,6 @@ test('with custom log format set empty, it not creates with cloudwatch log desti
       Ref: 'FlowLogsLogGroup9853A85F',
     },
   });
-
 });
 
 function getTestStack(): Stack {

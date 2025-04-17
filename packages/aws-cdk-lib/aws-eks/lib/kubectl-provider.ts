@@ -5,7 +5,6 @@ import { Duration, Stack, NestedStack, Names, CfnCondition, Fn, Aws } from '../.
 import { KubectlFunction } from '../../custom-resource-handlers/dist/aws-eks/kubectl-provider.generated';
 import * as cr from '../../custom-resources';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
-import { KubectlLayer } from '../../lambda-layer-kubectl';
 
 /**
  * Properties for a KubectlProvider
@@ -61,7 +60,6 @@ export interface IKubectlProvider extends IConstruct {
  * Implementation of Kubectl Lambda
  */
 export class KubectlProvider extends NestedStack implements IKubectlProvider {
-
   /**
    * Take existing provider or create new based on cluster
    *
@@ -151,7 +149,9 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
     // allow user to customize the layers with the tools we need
     handler.addLayers(props.cluster.awscliLayer ?? new AwsCliLayer(this, 'AwsCliLayer'));
-    handler.addLayers(props.cluster.kubectlLayer ?? new KubectlLayer(this, 'KubectlLayer'));
+    if (props.cluster.kubectlLayer) {
+      handler.addLayers(props.cluster.kubectlLayer);
+    }
 
     this.handlerRole = handler.role!;
 
@@ -200,11 +200,9 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     this.serviceToken = provider.serviceToken;
     this.roleArn = cluster.kubectlRole.roleArn;
   }
-
 }
 
 class ImportedKubectlProvider extends Construct implements IKubectlProvider {
-
   /**
    * The custom resource provider's service token.
    */

@@ -210,7 +210,7 @@ export class AssociationManager {
       });
       return formattedAssertions;
     }, new Array<{ Assert: string; AssertDescription: string | undefined }>());
-  };
+  }
 }
 
 interface LaunchRoleArnOption {

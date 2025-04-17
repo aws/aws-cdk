@@ -6,32 +6,32 @@ import { Size, Token } from '../../../core';
 import { BaseMountPoint, ContainerDefinition } from '../container-definition';
 
 /**
-* Represents the Volume configuration for an ECS service.
-*/
+ * Represents the Volume configuration for an ECS service.
+ */
 export interface ServiceManagedVolumeProps {
   /**
-  * The name of the volume. This corresponds to the name provided in the ECS TaskDefinition.
-  */
+   * The name of the volume. This corresponds to the name provided in the ECS TaskDefinition.
+   */
   readonly name: string;
 
   /**
-  * Configuration for an Amazon Elastic Block Store (EBS) volume managed by ECS.
-  *
-  * @default - undefined
-  */
+   * Configuration for an Amazon Elastic Block Store (EBS) volume managed by ECS.
+   *
+   * @default - undefined
+   */
   readonly managedEBSVolume?: ServiceManagedEBSVolumeConfiguration;
 }
 
 /**
-* Represents the configuration for an ECS Service managed EBS volume.
-*/
+ * Represents the configuration for an ECS Service managed EBS volume.
+ */
 export interface ServiceManagedEBSVolumeConfiguration {
   /**
-  * An IAM role that allows ECS to make calls to EBS APIs on your behalf.
-  * This role is required to create and manage the Amazon EBS volume.
-  *
-  * @default - automatically generated role.
-  */
+   * An IAM role that allows ECS to make calls to EBS APIs on your behalf.
+   * This role is required to create and manage the Amazon EBS volume.
+   *
+   * @default - automatically generated role.
+   */
   readonly role?: iam.IRole;
 
   /**
@@ -122,10 +122,10 @@ export interface ServiceManagedEBSVolumeConfiguration {
   readonly fileSystemType?: FileSystemType;
 
   /**
-  * Specifies the tags to apply to the volume and whether to propagate those tags to the volume.
-  *
-  * @default - No tags are specified.
-  */
+   * Specifies the tags to apply to the volume and whether to propagate those tags to the volume.
+   *
+   * @default - No tags are specified.
+   */
   readonly tagSpecifications?: EBSTagSpecification[];
 }
 
@@ -134,18 +134,18 @@ export interface ServiceManagedEBSVolumeConfiguration {
  */
 export interface EBSTagSpecification {
   /**
-  * The tags to apply to the volume.
-  *
-  * @default - No tags
-  */
+   * The tags to apply to the volume.
+   *
+   * @default - No tags
+   */
   readonly tags?: {[key: string]: string};
 
   /**
-  * Specifies whether to propagate the tags from the task definition or the service to the task.
-  * Valid values are: PropagatedTagSource.SERVICE, PropagatedTagSource.TASK_DEFINITION
-  *
-  * @default - undefined
-  */
+   * Specifies whether to propagate the tags from the task definition or the service to the task.
+   * Valid values are: PropagatedTagSource.SERVICE, PropagatedTagSource.TASK_DEFINITION
+   *
+   * @default - undefined
+   */
   readonly propagateTags?: EbsPropagatedTagSource;
 }
 
@@ -165,6 +165,10 @@ export enum FileSystemType {
    * xfs type
    */
   XFS = 'xfs',
+  /**
+   * ntfs type
+   */
+  NTFS = 'ntfs',
 }
 
 /**
@@ -192,13 +196,13 @@ export interface ContainerMountPoint extends BaseMountPoint {
  */
 export class ServiceManagedVolume extends Construct {
   /**
-  * Name of the volume, referenced by taskdefintion and mount point.
-  */
+   * Name of the volume, referenced by taskdefintion and mount point.
+   */
   public readonly name: string;
 
   /**
-  * Volume configuration
-  */
+   * Volume configuration
+   */
   public readonly config?: ServiceManagedEBSVolumeConfiguration;
 
   /**

@@ -63,7 +63,6 @@ describe('CodeBuild Action', () => {
         expect(() => {
           buildStage.addAction(buildAction2);
         }).toThrow(/https:\/\/github\.com\/aws\/aws-cdk\/issues\/4169/);
-
       });
     });
 
@@ -118,7 +117,6 @@ describe('CodeBuild Action', () => {
           },
         ],
       });
-
     });
 
     test('exposes variables for other actions to consume', () => {
@@ -196,7 +194,6 @@ describe('CodeBuild Action', () => {
           },
         ],
       });
-
     });
 
     test('sets the BatchEnabled configuration', () => {
@@ -250,7 +247,6 @@ describe('CodeBuild Action', () => {
           },
         ],
       });
-
     });
 
     test('sets the CombineArtifacts configuration', () => {
@@ -306,7 +302,6 @@ describe('CodeBuild Action', () => {
           },
         ],
       });
-
     });
 
     describe('environment variables', () => {
@@ -347,7 +342,6 @@ describe('CodeBuild Action', () => {
         expect(() => {
           buildStage.addAction(buildAction);
         }).toThrow(/Plaintext environment variable 'X' contains a secret value!/);
-
       });
 
       test("should allow opting out of the 'secret value in a plaintext variable' validation", () => {
@@ -382,7 +376,6 @@ describe('CodeBuild Action', () => {
             },
           ],
         });
-
       });
     });
   });

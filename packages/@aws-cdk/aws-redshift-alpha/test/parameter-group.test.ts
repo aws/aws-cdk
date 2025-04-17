@@ -25,7 +25,6 @@ test('create a cluster parameter group', () => {
       },
     ],
   });
-
 });
 
 describe('Adding parameters to an existing group', () => {
@@ -98,6 +97,6 @@ describe('Adding parameters to an existing group', () => {
     // WHEN
     expect(() => params.addParameter('param', 'value2'))
       // THEN
-      .toThrowError('The parameter group already contains the parameter');
+      .toThrow('The parameter group already contains the parameter');
   });
 });

@@ -70,8 +70,6 @@ function isInPrerelease(version: string): boolean {
  * and if it current in-pre-release type is same as expect type,
  * it should continue the pre-release with the same type
  *
- * @param version
- * @param expectType
  * @return {boolean}
  */
 function shouldContinuePrerelease(version: string, expectType: ReleaseType): boolean {
@@ -82,7 +80,6 @@ const TypeList = ['major', 'minor', 'patch'].reverse();
 /**
  * extract the in-pre-release type in target version
  *
- * @param version
  * @return {string}
  */
 function getCurrentActiveType(version: string): string {
@@ -98,7 +95,6 @@ function getCurrentActiveType(version: string): string {
  * calculate the priority of release type,
  * major - 2, minor - 1, patch - 0
  *
- * @param type
  * @return {number}
  */
 function getTypePriority(type: string): number {

@@ -2,21 +2,23 @@
 
 This package includes a GitHub Action that does the following:
 - Checks pull requests around PR titles, description and other metadata.
-- Assesses whether or not the PR is ready for review and attaches the correct label to the PR.
+- Assesses whether the PR is ready for review and attaches the correct label to the PR.
 
 # Rules
 
-The first part of the GitHub Action validates whether or not the pull request adheres
+The first part of the GitHub Action validates whether the pull request adheres
 (or has been exempted from) to the following rules:
 
 1. `feat` requires a change to a `README.md` (exemption is the label `pr-linter/exempt-readme`).
 2. Both `feat` and `fix` PRs require a change to a unit test file and integration test files (exemption is the label `pr-linter/exempt-unit-test` or `pr-linter/exempt-integ-test`).
-4. `BREAKING CHANGE` section is formatted correctly, per the [conventional commits] spec.
-5. No breaking changes announced for stable modules.
-6. Title prefix and scope is formatted correctly.
-7. The PR is not opened from the main branch of the author's fork.
-8. Changes to the cli have been run through the test pipeline where cli integ tests are run (indicated by the label `pr-linter/cli-integ-tested`).
-9. No manual changes to `packages/aws-cdk-lib/region-info/build-tools/metadata.ts` file.
+3. `BREAKING CHANGE` section is formatted correctly, per the [conventional commits] spec.
+4. No breaking changes announced for stable modules.
+5. Title prefix and scope is formatted correctly.
+6. The PR is not opened from the main branch of the author's fork.
+7. Changes to the cli have been run through the test pipeline where cli integ tests are run (indicated by the label `pr-linter/cli-integ-tested`).
+8. No manual changes to `packages/aws-cdk-lib/region-info/build-tools/metadata.ts` file.
+9. The size of the PR (number of lines added or removed) does not exceed the 
+   pre-defined threshold of 1000.
 
 > These rules are currently hard coded, in the future, we should consider using [danger.js](https://danger.systems/js/).
 
@@ -24,7 +26,7 @@ The first part of the GitHub Action validates whether or not the pull request ad
 
 # Evaluation and Assigning Labels
 
-The GitHub Action also handles whether or not the PR is ready for review, and by whom.
+The GitHub Action also handles whether the PR is ready for review, and by whom.
 A PR is ready for review when:
 
 1. It is not a draft
@@ -33,7 +35,7 @@ A PR is ready for review when:
 4. A maintainer has not requested changes
 5. A maintainer has not approved
 
-If the PR is ready for review, we also differentiate whether or not it is ready for a
+If the PR is ready for review, we also differentiate whether it is ready for a
 maintainer review (`pr/needs-maintainer-review`) or if we are soliciting help from our
 pool of trusted reviewers (`pr/needs-community-review`).
 
@@ -48,13 +50,13 @@ to the PR.
 # Installation
 
 ```console
-cd tools/prlint
+cd tools/@aws-cdk/prlint
 yarn install
 ```
 
 # Usage
 
-The steps for your Github action would look something like this -
+The steps for your GitHub action would look something like this -
 
 ```yaml
 steps:

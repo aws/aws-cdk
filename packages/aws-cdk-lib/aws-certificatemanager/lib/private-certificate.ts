@@ -3,6 +3,7 @@ import { ICertificate, KeyAlgorithm } from './certificate';
 import { CertificateBase } from './certificate-base';
 import { CfnCertificate } from './certificatemanager.generated';
 import * as acmpca from '../../aws-acmpca';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for your private certificate
@@ -66,6 +67,8 @@ export class PrivateCertificate extends CertificateBase implements ICertificate 
 
   constructor(scope: Construct, id: string, props: PrivateCertificateProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const cert = new CfnCertificate(this, 'Resource', {
       domainName: props.domainName,

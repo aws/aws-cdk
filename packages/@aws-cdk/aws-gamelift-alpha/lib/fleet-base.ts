@@ -443,8 +443,8 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
   }
 
   /**
-    * The Identifier of the fleet.
-    */
+   * The Identifier of the fleet.
+   */
   public abstract readonly fleetId: string;
 
   /**

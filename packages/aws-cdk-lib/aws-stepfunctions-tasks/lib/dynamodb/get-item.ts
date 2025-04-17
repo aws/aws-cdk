@@ -6,10 +6,7 @@ import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
 
-/**
- * Properties for DynamoGetItem Task
- */
-export interface DynamoGetItemProps extends sfn.TaskStateBaseProps {
+interface DynamoGetItemOptions {
   /**
    * The name of the table containing the requested item.
    */
@@ -65,9 +62,38 @@ export interface DynamoGetItemProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for DynamoGetItem Task using JSONPath
+ */
+export interface DynamoGetItemJsonPathProps extends sfn.TaskStateJsonPathBaseProps, DynamoGetItemOptions {}
+
+/**
+ * Properties for DynamoGetItem Task using JSONata
+ */
+export interface DynamoGetItemJsonataProps extends sfn.TaskStateJsonataBaseProps, DynamoGetItemOptions {}
+
+/**
+ * Properties for DynamoGetItem Task
+ */
+export interface DynamoGetItemProps extends sfn.TaskStateBaseProps, DynamoGetItemOptions {}
+
+/**
  * A StepFunctions task to call DynamoGetItem
  */
 export class DynamoGetItem extends sfn.TaskStateBase {
+  /**
+   * A StepFunctions task using JSONPath to call DynamoGetItem
+   */
+  public static jsonPath(scope: Construct, id: string, props: DynamoGetItemJsonPathProps) {
+    return new DynamoGetItem(scope, id, props);
+  }
+
+  /**
+   * A StepFunctions task using JSONata to call DynamoGetItem
+   */
+  public static jsonata(scope: Construct, id: string, props: DynamoGetItemJsonataProps) {
+    return new DynamoGetItem(scope, id, { ...props, queryLanguage: sfn.QueryLanguage.JSONATA });
+  }
+
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
@@ -91,17 +117,18 @@ export class DynamoGetItem extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: getDynamoResourceArn(DynamoMethod.GET),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         Key: transformAttributeValueMap(this.props.key),
         TableName: this.props.table.tableName,
         ConsistentRead: this.props.consistentRead ?? false,
         ExpressionAttributeNames: this.props.expressionAttributeNames,
         ProjectionExpression: this.configureProjectionExpression(this.props.projectionExpression),
         ReturnConsumedCapacity: this.props.returnConsumedCapacity,
-      }),
+      }, queryLanguage),
     };
   }
 

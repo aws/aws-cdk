@@ -116,14 +116,13 @@ export class AwsAuth extends Construct {
   }
 
   private assertSameStack(construct: IConstruct) {
-
     const thisStack = Stack.of(this);
 
     if (Stack.of(construct) !== thisStack) {
       // aws-auth is always part of the cluster stack, and since resources commonly take
       // a dependency on the cluster, allowing those resources to be in a different stack,
       // will create a circular dependency. granted, it won't always be the case,
-      // but we opted for the more causious and restrictive approach for now.
+      // but we opted for the more cautious and restrictive approach for now.
       throw new Error(`${construct.node.path} should be defined in the scope of the ${thisStack.stackName} stack to prevent circular dependencies`);
     }
   }

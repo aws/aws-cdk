@@ -7,7 +7,7 @@ test('throws when a security configuration has no encryption config', () => {
   const stack = new cdk.Stack();
 
   expect(() => new glue.SecurityConfiguration(stack, 'SecurityConfiguration'))
-    .toThrowError(/One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined/);
+    .toThrow(/One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined/);
 });
 
 test('a security configuration with encryption configuration requiring kms key and providing an explicit one', () => {

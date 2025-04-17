@@ -20,7 +20,6 @@ enum ContainerProviderTypes {
  * Class that supports methods which return the EKS cluster name depending on input type.
  */
 export class EksClusterInput {
-
   /**
    * Specify an existing EKS Cluster as the name for this Cluster
    */
@@ -43,10 +42,7 @@ export class EksClusterInput {
   private constructor(readonly clusterName: string) { }
 }
 
-/**
- * Properties to define a EMR Containers CreateVirtualCluster Task on an EKS cluster
- */
-export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBaseProps {
+interface EmrContainersCreateVirtualClusterOptions {
 
   /**
    * EKS Cluster or task input that contains the name of the cluster
@@ -76,12 +72,47 @@ export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBas
 }
 
 /**
+ * Properties to define a EMR Containers CreateVirtualCluster Task using JSONPath on an EKS cluster
+ *
+ */
+export interface EmrContainersCreateVirtualClusterJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EmrContainersCreateVirtualClusterOptions { }
+
+/**
+ * Properties to define a EMR Containers CreateVirtualCluster Task using JSONata on an EKS cluster
+ *
+ */
+export interface EmrContainersCreateVirtualClusterJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrContainersCreateVirtualClusterOptions { }
+
+/**
+ * Properties to define a EMR Containers CreateVirtualCluster Task on an EKS cluster
+ */
+export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBaseProps, EmrContainersCreateVirtualClusterOptions { }
+
+/**
  * Task that creates an EMR Containers virtual cluster from an EKS cluster
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr-eks.html
  */
 export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
-
+  /**
+   * Task that using JSONPath and creates an EMR Containers virtual cluster from an EKS cluster
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr-eks.html
+   */
+  public static jsonPath(scope: Construct, id: string, props: EmrContainersCreateVirtualClusterJsonPathProps) {
+    return new EmrContainersCreateVirtualCluster(scope, id, props);
+  }
+  /**
+   * Task that using JSONata and that creates an EMR Containers virtual cluster from an EKS cluster
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr-eks.html
+   */
+  public static jsonata(scope: Construct, id: string, props: EmrContainersCreateVirtualClusterJsonataProps) {
+    return new EmrContainersCreateVirtualCluster(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
@@ -102,11 +133,15 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('emr-containers', 'createVirtualCluster', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
-        Name: this.props.virtualClusterName ?? sfn.JsonPath.stringAt('States.Format(\'{}/{}\', $$.Execution.Name, $$.State.Name)'),
+      ...this._renderParametersOrArguments({
+        Name: this.props.virtualClusterName ?? (queryLanguage === sfn.QueryLanguage.JSONATA
+          ? "{% States.Format('{}/{}', $states.context.Execution.Name, $states.context.State.Name) %}"
+          : sfn.JsonPath.stringAt('States.Format(\'{}/{}\', $$.Execution.Name, $$.State.Name)')
+        ),
         ContainerProvider: {
           Id: this.props.eksCluster.clusterName,
           Info: {
@@ -117,9 +152,9 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
           Type: ContainerProviderTypes.EKS,
         },
         Tags: this.props.tags,
-      }),
+      }, queryLanguage),
     };
-  };
+  }
 
   private createPolicyStatements(): iam.PolicyStatement[] {
     return [
