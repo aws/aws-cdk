@@ -1,0 +1,577 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "testingStack": {
+        "id": "testingStack",
+        "path": "testingStack",
+        "children": {
+          "MyFunction": {
+            "id": "MyFunction",
+            "path": "testingStack/MyFunction",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "testingStack/MyFunction/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "testingStack/MyFunction/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "testingStack/MyFunction/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "testingStack/MyFunction/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "testingStack/MyFunction/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "events:PutEvents",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":events:test-region:345678901234:event-bus/testingBus"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyFunctionServiceRoleDefaultPolicyB705ABD4",
+                            "roles": [
+                              {
+                                "Ref": "MyFunctionServiceRole3C357FF2"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "testingStack/MyFunction/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "\nimport boto3\nimport json\nimport os\n \ndef handler(event, context):\n  try:\n      client = boto3.client('events')\n      \n      # Reference the EventBus in the other account\n      event_bus_name = os.environ['EVENT_BUS_NAME']\n      event_bus_account = os.environ['EVENT_BUS_ACCOUNT']\n      event_bus_arn = f\"arn:aws:events:{os.environ.get('AWS_REGION')}:{event_bus_account}:event-bus/{event_bus_name}\"\n \n      response = client.put_events(\n          Entries=[\n              {\n                  'Source': 'custom.myapp',\n                  'DetailType': 'MyCustomEvent',\n                  'Detail': json.dumps({'key': 'value'}),\n                  'EventBusName': event_bus_arn\n              }\n          ]\n      )\n      \n      return {\n          'statusCode': 200\n      }\n  except Exception as e:\n      return {\n          'statusCode': 500\n      }\n    "
+                    },
+                    "environment": {
+                      "variables": {
+                        "EVENT_BUS_NAME": "testingBus",
+                        "EVENT_BUS_ACCOUNT": "345678901234"
+                      }
+                    },
+                    "functionName": "testingstackgstackmyfunctione83a75ce9ffe929fc705",
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyFunctionServiceRole3C357FF2",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.9"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "InvokeoMZJGgicWEGdSWEljXOINke04MVnf5CWCOLL+WenzHk=": {
+                "id": "InvokeoMZJGgicWEGdSWEljXOINke04MVnf5CWCOLL+WenzHk=",
+                "path": "testingStack/MyFunction/InvokeoMZJGgicWEGdSWEljXOINke04MVnf5CWCOLL+WenzHk=",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "MyFunction3BAA72D1",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "12345678"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "functionName": "*",
+                  "runtime": "*",
+                  "handler": "*",
+                  "code": "*",
+                  "environment": "*"
+                },
+                {
+                  "addEnvironment": [
+                    "*",
+                    "*"
+                  ]
+                },
+                {
+                  "addEnvironment": [
+                    "*",
+                    "*"
+                  ]
+                }
+              ]
+            }
+          },
+          "importedbus": {
+            "id": "importedbus",
+            "path": "testingStack/importedbus",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "testingStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "testingStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "crossAccountStack": {
+        "id": "crossAccountStack",
+        "path": "crossAccountStack",
+        "children": {
+          "bus": {
+            "id": "bus",
+            "path": "crossAccountStack/bus",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "crossAccountStack/bus/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::EventBus",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "testingBus"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnEventBus",
+                  "version": "0.0.0"
+                }
+              },
+              "cdk-cross-account-access-sid": {
+                "id": "cdk-cross-account-access-sid",
+                "path": "crossAccountStack/bus/cdk-cross-account-access-sid",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "crossAccountStack/bus/cdk-cross-account-access-sid/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Events::EventBusPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "eventBusName": {
+                          "Ref": "bus707364D1"
+                        },
+                        "statement": {
+                          "Action": "events:PutEvents",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::12345678:root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": {
+                            "Fn::GetAtt": [
+                              "bus707364D1",
+                              "Arn"
+                            ]
+                          },
+                          "Sid": "cdk-cross-account-access-sid"
+                        },
+                        "statementId": "cdk-cross-account-access-sid"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_events.CfnEventBusPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.EventBusPolicy",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "eventBus": "*",
+                      "statement": "*",
+                      "statementId": "*"
+                    }
+                  ]
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.EventBus",
+              "version": "0.0.0",
+              "metadata": [
+                {},
+                {
+                  "addToResourcePolicy": [
+                    {}
+                  ]
+                }
+              ]
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "crossAccountStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "crossAccountStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "CrossAccountDeploy": {
+        "id": "CrossAccountDeploy",
+        "path": "CrossAccountDeploy",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "CrossAccountDeploy/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "CrossAccountDeploy/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "CrossAccountDeploy/DefaultTest/DeployAssert",
+                "children": {
+                  "LambdaInvoke3da65bb634d40eac4a5afbc68b2727cd": {
+                    "id": "LambdaInvoke3da65bb634d40eac4a5afbc68b2727cd",
+                    "path": "CrossAccountDeploy/DefaultTest/DeployAssert/LambdaInvoke3da65bb634d40eac4a5afbc68b2727cd",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "CrossAccountDeploy/DefaultTest/DeployAssert/LambdaInvoke3da65bb634d40eac4a5afbc68b2727cd/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "CrossAccountDeploy/DefaultTest/DeployAssert/LambdaInvoke3da65bb634d40eac4a5afbc68b2727cd/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "CrossAccountDeploy/DefaultTest/DeployAssert/LambdaInvoke3da65bb634d40eac4a5afbc68b2727cd/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "CrossAccountDeploy/DefaultTest/DeployAssert/LambdaInvoke3da65bb634d40eac4a5afbc68b2727cd/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "CrossAccountDeploy/DefaultTest/DeployAssert/LambdaInvoke3da65bb634d40eac4a5afbc68b2727cd/Invoke",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "CrossAccountDeploy/DefaultTest/DeployAssert/LambdaInvoke3da65bb634d40eac4a5afbc68b2727cd/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "CrossAccountDeploy/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "CrossAccountDeploy/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "CrossAccountDeploy/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "CrossAccountDeploy/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "CrossAccountDeploy/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "CrossAccountDeploy/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "CrossAccountDeploy/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

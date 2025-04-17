@@ -38,15 +38,6 @@
       "RUBY_31"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-cognito-identitypool-alpha/lib/identitypool.ts": {
-    "IdentityPoolProviderUrl": [
-      "FACEBOOK",
-      "GOOGLE",
-      "AMAZON",
-      "APPLE",
-      "TWITTER"
-    ]
-  },
   "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/access-entry.ts": {
     "AccessPolicyArn": [
       "AMAZON_EKS_ADMIN_POLICY",
@@ -210,15 +201,6 @@
       "SQL_1_0"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-kinesisfirehose-destinations-alpha/lib/common.ts": {
-    "Compression": [
-      "GZIP",
-      "HADOOP_SNAPPY",
-      "SNAPPY",
-      "ZIP",
-      "UNCOMPRESSED"
-    ]
-  },
   "aws-cdk/packages/@aws-cdk/aws-msk-alpha/lib/cluster-version.ts": {
     "KafkaVersion": [
       "V1_1_1",
@@ -275,7 +257,13 @@
       "V1_3_2_0",
       "V1_3_2_1",
       "V1_3_3_0",
-      "V1_3_4_0"
+      "V1_3_4_0",
+      "V1_4_0_0",
+      "V1_4_1_0",
+      "V1_4_2_0",
+      "V1_4_3_0",
+      "V1_4_4_0",
+      "V1_4_5_0"
     ],
     "LogType": [
       "AUDIT"
@@ -343,7 +331,8 @@
     "ParameterGroupFamily": [
       "NEPTUNE_1",
       "NEPTUNE_1_2",
-      "NEPTUNE_1_3"
+      "NEPTUNE_1_3",
+      "NEPTUNE_1_4"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/accelerator-type.ts": {
@@ -574,6 +563,8 @@
       "AMAZON_NOVA_PRO_V1_0",
       "AMAZON_NOVA_PRO_V1_0_300_K",
       "AMAZON_NOVA_REEL_V1_0",
+      "AMAZON_NOVA_REEL_V1_1",
+      "AMAZON_NOVA_SONIC_V1_0",
       "AI21_J2_MID",
       "AI21_LABS_JURASSIC_2_MID_V1",
       "AI21_J2_ULTRA",
@@ -651,6 +642,7 @@
       "MISTRAL_LARGE_V0_1",
       "MISTRAL_SMALL_V0_1",
       "MISTRAL_LARGE_2_V0_1",
+      "MISTRAL_PIXTRAL_LARGE_2502_V1_0",
       "STABILITY_STABLE_DIFFUSION_XL",
       "STABILITY_STABLE_DIFFUSION_XL_V0",
       "STABILITY_STABLE_DIFFUSION_XL_V1",
@@ -893,6 +885,15 @@
       "ONE_AT_A_TIME",
       "HALF_AT_A_TIME",
       "ALL_AT_ONCE"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-cognito-identitypool/lib/identitypool.ts": {
+    "IdentityPoolProviderUrl": [
+      "FACEBOOK",
+      "GOOGLE",
+      "AMAZON",
+      "APPLE",
+      "TWITTER"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool-client.ts": {
@@ -1631,6 +1632,8 @@
       "LOOKOUT_EQUIPMENT",
       "LOOKOUT_METRICS",
       "LOOKOUT_VISION",
+      "MAILMANAGER",
+      "MAILMANAGER_FIPS",
       "MAINFRAME_MODERNIZATION",
       "MAINFRAME_MODERNIZATION_APP_TEST",
       "MACIE",
@@ -2113,6 +2116,7 @@
       "RUBY_2_7",
       "RUBY_3_2",
       "RUBY_3_3",
+      "RUBY_3_4",
       "PROVIDED",
       "PROVIDED_AL2",
       "PROVIDED_AL2023",
@@ -3061,6 +3065,7 @@
       "VER_15_00_4395_2_V1",
       "VER_15_00_4410_1_V1",
       "VER_15_00_4415_2_V1",
+      "VER_15_00_4420_2_V1",
       "VER_16",
       "VER_16_00_4085_2_V1",
       "VER_16_00_4095_4_V1",
