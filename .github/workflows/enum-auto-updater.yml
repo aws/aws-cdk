@@ -60,6 +60,8 @@ jobs:
            --base main \
            --head "$branchName"
            --label "contribution/core,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Identify Missing Values and Apply Code Changes
         run: |
