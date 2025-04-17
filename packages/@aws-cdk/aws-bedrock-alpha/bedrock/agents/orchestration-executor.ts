@@ -30,6 +30,10 @@ export class OrchestrationExecutor {
     return new OrchestrationExecutor(lambdaFunction);
   }
 
+  /**
+   * The Lambda function that contains the custom orchestration logic.
+   * This function is called when the agent needs to make decisions about action execution.
+   */
   public readonly lambdaFunction: IFunction;
 
   private constructor(lambdaFunction: IFunction) {

@@ -13,6 +13,8 @@
 
 import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import { IGrantable, Grant } from 'aws-cdk-lib/aws-iam';
+import { Construct } from 'constructs';
+import { ValidationError } from 'aws-cdk-lib';
 import { IAgentAlias } from './agent-alias';
 
 /**
@@ -32,22 +34,23 @@ export enum AgentCollaboratorType {
   /**
    * Supervisor router.
    */
-  SUPERVISOR_ROUTER = 'SUPERVISOR_ROUTER'
+  SUPERVISOR_ROUTER = 'SUPERVISOR_ROUTER',
 }
 
 /**
  * Enum for collaborator's relay conversation history types.
+ * @internal
  */
 export enum RelayConversationHistoryType {
   /**
-     * Sending to the collaborator.
-     */
+   * Sending to the collaborator.
+   */
   TO_COLLABORATOR = 'TO_COLLABORATOR',
 
   /**
-     * Disabling relay of conversation history to the collaborator.
-     */
-  DISABLED = 'DISABLED'
+   * Disabling relay of conversation history to the collaborator.
+   */
+  DISABLED = 'DISABLED',
 }
 
 /******************************************************************************
@@ -82,10 +85,14 @@ export interface AgentCollaboratorProps {
  *                         DEF - Agent Collaborator Class
  *****************************************************************************/
 
-export class AgentCollaborator {
+export class AgentCollaborator extends Construct {
   // ------------------------------------------------------
   // Attributes
   // ------------------------------------------------------
+  /**
+   * The agent alias that this collaborator represents.
+   * This is the agent that will be called upon for collaboration.
+   */
   public readonly agentAlias: IAgentAlias;
 
   /**
@@ -105,8 +112,8 @@ export class AgentCollaborator {
    */
   public readonly relayConversationHistory?: boolean;
 
-
-  public constructor(props: AgentCollaboratorProps) {
+  public constructor(scope: Construct, id: string, props: AgentCollaboratorProps) {
+    super(scope, id);
     // Validate Props
     this.validateProps(props);
 
@@ -122,26 +129,26 @@ export class AgentCollaborator {
   private validateProps(props: AgentCollaboratorProps) {
     // Validate required properties
     if (!props.agentAlias) {
-      throw new Error('agentAlias is required for AgentCollaborator');
+      throw new ValidationError('agentAlias is required for AgentCollaborator', this);
     }
     if (props.agentAlias.aliasId === 'TSTALIASID') {
-      throw new Error('Agent cannot collaborate with TSTALIASID alias of another agent. Use a different alias to collaborate with.');
+      throw new ValidationError('Agent cannot collaborate with TSTALIASID alias of another agent. Use a different alias to collaborate with.', this);
     }
 
     if (!props.collaborationInstruction || props.collaborationInstruction.trim() === '') {
-      throw new Error('collaborationInstruction is required and cannot be empty for AgentCollaborator');
+      throw new ValidationError('collaborationInstruction is required and cannot be empty for AgentCollaborator', this);
     }
 
     if (!props.collaboratorName || props.collaboratorName.trim() === '') {
-      throw new Error('collaboratorName is required and cannot be empty for AgentCollaborator');
+      throw new ValidationError('collaboratorName is required and cannot be empty for AgentCollaborator', this);
     }
   }
 
   /**
- * Format as CFN properties
- *
- * @internal This is an internal core function and should not be called directly.
- */
+   * Format as CFN properties
+   *
+   * @internal This is an internal core function and should not be called directly.
+   */
   public _render(): CfnAgent.AgentCollaboratorProperty {
     return {
       agentDescriptor: {
@@ -154,12 +161,12 @@ export class AgentCollaborator {
   }
 
   /**
- * Grants the specified principal permissions to get the agent alias and invoke the agent
- * from this collaborator.
- *
- * @param grantee The principal to grant permissions to
- * @returns The Grant object
- */
+   * Grants the specified principal permissions to get the agent alias and invoke the agent
+   * from this collaborator.
+   *
+   * @param grantee The principal to grant permissions to
+   * @returns The Grant object
+   */
   public grant(grantee: IGrantable): Grant {
     const grant1 = this.agentAlias.grantInvoke(grantee);
     const combinedGrant = grant1.combine(this.agentAlias.grantGet(grantee));

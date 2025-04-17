@@ -18,8 +18,8 @@ import { OrchestrationExecutor } from './orchestration-executor';
  */
 export interface CustomOrchestration {
   /**
-     * The Lambda function to use for custom orchestration.
-     */
+   * The Lambda function to use for custom orchestration.
+   */
   readonly executor: OrchestrationExecutor;
 }
 
@@ -28,12 +28,12 @@ export interface CustomOrchestration {
  */
 export enum OrchestrationType {
   /**
-     * Default orchestration by the agent.
-     */
+   * Default orchestration by the agent.
+   */
   DEFAULT = 'DEFAULT',
 
   /**
-     * Custom orchestration using Lambda.
-     */
-  CUSTOM_ORCHESTRATION = 'CUSTOM_ORCHESTRATION'
+   * Custom orchestration using Lambda.
+   */
+  CUSTOM_ORCHESTRATION = 'CUSTOM_ORCHESTRATION',
 }

@@ -11,6 +11,7 @@
  *  and limitations under the License.
  */
 
+import { Duration } from 'aws-cdk-lib/core';
 import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import * as validation from './validation-helpers';
 /**
@@ -38,10 +39,10 @@ enum MemoryType {
  */
 export interface SessionSummaryMemoryProps {
   /**
-   * Duration in days for which session summaries are retained (1-365)
-   * @default 30
+   * Duration for which session summaries are retained (between 1 and 365 days)
+   * @default Duration.days(30)
    */
-  readonly memoryDurationDays?: number;
+  readonly memoryDuration?: Duration;
 
   /**
    * Maximum number of recent session summaries to include (min 1)
@@ -61,9 +62,9 @@ export interface SessionSummaryMemoryProps {
 export class Memory {
   /**
    * Returns session summary memory with default configuration.
-   * @default memoryDurationDays=30, maxRecentSessions=20
+   * @default memoryDuration=Duration.days(30), maxRecentSessions=20
    */
-  public static readonly SESSION_SUMMARY = Memory.sessionSummary({ memoryDurationDays: 30, maxRecentSessions: 20 });
+  public static readonly SESSION_SUMMARY = Memory.sessionSummary({ memoryDuration: Duration.days(30), maxRecentSessions: 20 });
 
   /**
    * Creates a session summary memory with custom configuration.
@@ -72,35 +73,31 @@ export class Memory {
    */
   public static sessionSummary(props: SessionSummaryMemoryProps): CfnAgent.MemoryConfigurationProperty {
     // Do some checks
-    validation.throwIfInvalid(this.validateSessionSummaryMemoryProps, props);
+    validation.throwIfInvalid((config: SessionSummaryMemoryProps) => {
+      let errors: string[] = [];
+
+      // Validate memory duration is between 1 and 365 days
+      if (config.memoryDuration !== undefined) {
+        const days = config.memoryDuration.toDays();
+        if (days < 1 || days > 365) {
+          errors.push('memoryDuration must be between 1 and 365 days');
+        }
+      }
+      if (config.maxRecentSessions !== undefined) {
+        if (config.maxRecentSessions < 1) {
+          errors.push('maxRecentSessions must be greater than 0');
+        }
+      }
+
+      return errors;
+    }, props);
 
     return {
       enabledMemoryTypes: [MemoryType.SESSION_SUMMARY],
-      storageDays: props?.memoryDurationDays ?? 30,
+      storageDays: props?.memoryDuration?.toDays() ?? 30,
       sessionSummaryConfiguration: {
         maxRecentSessions: props?.maxRecentSessions ?? 20,
       },
     };
-  }
-
-  /**
-   * Validate at synth time the configuration.
-   */
-  private static validateSessionSummaryMemoryProps(props: SessionSummaryMemoryProps): string[] {
-    let errors: string[] = [];
-
-    // Validate storage days is between 0 and 365
-    if (props.memoryDurationDays !== undefined) {
-      if (props.memoryDurationDays < 1 || props.memoryDurationDays > 365) {
-        errors.push('memoryDurationDays must be between 1 and 365');
-      }
-    }
-    if (props.maxRecentSessions !== undefined) {
-      if (props.maxRecentSessions < 1) {
-        errors.push('maxRecentSessions must be greater than 0');
-      }
-    }
-
-    return errors;
   }
 }

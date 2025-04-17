@@ -45,12 +45,12 @@ describe('AgentActionGroupExecutor', () => {
     agent.addActionGroup(actionGroup);
 
     Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
-      'ActionGroups': Match.arrayWith([
+      ActionGroups: Match.arrayWith([
         Match.objectLike({
-          'ActionGroupName': 'CustomAction',
-          'ActionGroupState': 'ENABLED',
-          'ActionGroupExecutor': {
-            'Lambda': {
+          ActionGroupName: 'CustomAction',
+          ActionGroupState: 'ENABLED',
+          ActionGroupExecutor: {
+            Lambda: {
               'Fn::GetAtt': [Match.stringLikeRegexp('TestFunction[A-Z0-9]+'), 'Arn'],
             },
           },
@@ -60,16 +60,16 @@ describe('AgentActionGroupExecutor', () => {
 
     // Verify Lambda permissions
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
-      'Action': 'lambda:InvokeFunction',
-      'FunctionName': {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
         'Fn::GetAtt': [Match.stringLikeRegexp('TestFunction[A-Z0-9]+'), 'Arn'],
       },
-      'Principal': 'bedrock.amazonaws.com',
-      'SourceArn': {
-        'Fn::GetAtt': [Match.stringLikeRegexp('TestAgentAgentResource[A-Z0-9]+'), 'AgentArn'],
+      Principal: 'bedrock.amazonaws.com',
+      SourceArn: {
+        'Fn::GetAtt': [Match.stringLikeRegexp('TestAgent[A-Z0-9]+'), 'AgentArn'],
       },
-      'SourceAccount': {
-        'Ref': 'AWS::AccountId',
+      SourceAccount: {
+        Ref: 'AWS::AccountId',
       },
     });
   });
@@ -95,12 +95,12 @@ describe('AgentActionGroupExecutor', () => {
     agent.addActionGroup(actionGroup);
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': Match.arrayWith([
+      PolicyDocument: {
+        Statement: Match.arrayWith([
           Match.objectLike({
-            'Action': 'lambda:InvokeFunction',
-            'Effect': 'Allow',
-            'Resource': Match.arrayWith([
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: Match.arrayWith([
               {
                 'Fn::GetAtt': [Match.stringLikeRegexp('TestFunction[A-Z0-9]+'), 'Arn'],
               },

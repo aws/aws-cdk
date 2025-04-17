@@ -1,17 +1,18 @@
 {
   "name": "@aws-cdk/aws-bedrock-alpha",
   "version": "0.0.0",
-  "description": "An example CDK Construct Library for aws-bedrock-alpha",
+  "private": false,
+  "description": "The CDK Construct Library for Amazon Bedrock",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.aws.bedrock.alpha",
+        "package": "software.amazon.awscdk.services.bedrock.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws-bedrock-alpha"
+          "artifactId": "bedrock-alpha"
         }
       },
       "dotnet": {
@@ -47,10 +48,17 @@
     "directory": "packages/@aws-cdk/aws-bedrock-alpha"
   },
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc-w",
-    "test": "jest",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "integ-runner --language javascript",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
     "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
+    "compat": "cdk-compat",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
@@ -58,9 +66,8 @@
   "keywords": [
     "aws",
     "cdk",
-    "example",
-    "construct",
-    "library"
+    "constructs",
+    "bedrock"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -69,7 +76,13 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "aws-cdk-lib": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "^2.186.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@types/jest": "^29.5.14",
+    "constructs": "^10.0.0",
     "jest": "^29.7.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -77,7 +90,6 @@
     "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
-  "separate-module": false,
   "engines": {
     "node": ">= 14.15.0"
   },
@@ -87,5 +99,17 @@
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
+  },
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "awscdkio": {
+    "announce": false
+  },
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
   }
 }

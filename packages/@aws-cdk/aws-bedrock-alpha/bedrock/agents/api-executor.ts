@@ -42,7 +42,16 @@ export class ActionGroupExecutor {
     return new ActionGroupExecutor(lambdaFunction, undefined);
   }
 
+  /**
+   * The Lambda function that will be called by the action group.
+   * Contains the business logic for handling the action group's invocation.
+   */
   public readonly lambdaFunction?: IFunction;
+
+  /**
+   * The custom control type for the action group executor.
+   * Currently only supports 'RETURN_CONTROL' which returns results directly in the InvokeAgent response.
+   */
   public readonly customControl?: string;
 
   private constructor(lambdaFunction?: IFunction, customControl?: string) {

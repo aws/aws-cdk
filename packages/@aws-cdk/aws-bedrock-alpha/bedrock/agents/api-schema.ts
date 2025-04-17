@@ -50,7 +50,16 @@ export abstract class ApiSchema {
     });
   }
 
+  /**
+   * The S3 location of the API schema file, if using an S3-based schema.
+   * Contains the bucket name and object key information.
+   */
   public readonly s3File?: Location;
+
+  /**
+   * The inline OpenAPI schema definition as a string, if using an inline schema.
+   * Can be in JSON or YAML format.
+   */
   public readonly inlineSchema?: string;
 
   /**
@@ -72,6 +81,10 @@ export abstract class ApiSchema {
 // ------------------------------------------------------
 // Inline Definition
 // ------------------------------------------------------
+/**
+ * Class to define an API Schema from an inline string.
+ * The schema can be provided directly as a string in either JSON or YAML format.
+ */
 export class InlineApiSchema extends ApiSchema {
   constructor(private readonly schema: string) {
     super(undefined, schema);

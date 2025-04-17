@@ -49,7 +49,7 @@ describe('AgentAlias', () => {
     // WHEN
     const alias = new AgentAlias(stack, 'TestAlias', {
       agent: mockAgent,
-      aliasName: 'test-alias',
+      agentAliasName: 'test-alias',
       agentVersion: '1.0.0',
       description: 'Test description',
     });
@@ -86,7 +86,7 @@ describe('AgentAlias', () => {
         resource: 'agent-alias',
         resourceName: 'test-agent-id/test-alias-id',
         arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-      })
+      }),
     );
   });
 
@@ -111,10 +111,10 @@ describe('AgentAlias', () => {
             Action: 'bedrock:InvokeAgent',
             Effect: 'Allow',
             Resource: {
-                'Fn::GetAtt': assertions.Match.arrayWith([
-                  assertions.Match.stringLikeRegexp('TestAliasMyCfnAgentAlias'),
-                  'AgentAliasArn',
-                ]),
+              'Fn::GetAtt': assertions.Match.arrayWith([
+                assertions.Match.stringLikeRegexp('TestAlias[A-Z0-9]+'),
+                'AgentAliasArn',
+              ]),
             },
           },
         ],
@@ -144,7 +144,7 @@ describe('AgentAlias', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': assertions.Match.arrayWith([
-                assertions.Match.stringLikeRegexp('TestAliasMyCfnAgentAlias'),
+                assertions.Match.stringLikeRegexp('TestAlias[A-Z0-9]+'),
                 'AgentAliasArn',
               ]),
             },
@@ -176,7 +176,7 @@ describe('AgentAlias', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': assertions.Match.arrayWith([
-                assertions.Match.stringLikeRegexp('TestAliasMyCfnAgentAlias'),
+                assertions.Match.stringLikeRegexp('TestAlias[A-Z0-9]+'),
                 'AgentAliasArn',
               ]),
             },
@@ -207,14 +207,16 @@ describe('AgentAlias', () => {
     const template = assertions.Template.fromStack(stack);
     template.hasResourceProperties('AWS::Events::Rule', {
       EventPattern: {
-        source: ['aws.bedrock'],
+        'source': ['aws.bedrock'],
         'detail-type': ['AWS API Call via CloudTrail'],
-        detail: {
+        'detail': {
           requestParameters: {
-            agentAliasId: [{ 'Fn::GetAtt': assertions.Match.arrayWith([
-              assertions.Match.stringLikeRegexp('TestAliasMyCfnAgentAlias'),
-              'AgentAliasId'
-            ]) }],
+            agentAliasId: [{
+              'Fn::GetAtt': assertions.Match.arrayWith([
+                assertions.Match.stringLikeRegexp('TestAlias[A-Z0-9]+'),
+                'AgentAliasId',
+              ]),
+            }],
           },
         },
       },
@@ -235,14 +237,16 @@ describe('AgentAlias', () => {
     const template = assertions.Template.fromStack(stack);
     template.hasResourceProperties('AWS::Events::Rule', {
       EventPattern: {
-        source: ['aws.bedrock'],
+        'source': ['aws.bedrock'],
         'detail-type': ['AWS API Call via CloudTrail'],
-        detail: {
+        'detail': {
           requestParameters: {
-            agentAliasId: [{ 'Fn::GetAtt': assertions.Match.arrayWith([
-              assertions.Match.stringLikeRegexp('TestAliasMyCfnAgentAlias'),
-              'AgentAliasId'
-            ]) }],
+            agentAliasId: [{
+              'Fn::GetAtt': assertions.Match.arrayWith([
+                assertions.Match.stringLikeRegexp('TestAlias[A-Z0-9]+'),
+                'AgentAliasId',
+              ]),
+            }],
           },
         },
       },
@@ -251,7 +255,7 @@ describe('AgentAlias', () => {
 
   test('handles undefined agentVersion', () => {
     // WHEN
-     new AgentAlias(stack, 'TestAlias', {
+    new AgentAlias(stack, 'TestAlias', {
       agent: mockAgent,
       agentVersion: undefined,
     });

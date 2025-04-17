@@ -30,17 +30,17 @@ describe('Memory', () => {
         instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
         foundationModel,
         memory: Memory.sessionSummary({
-          memoryDurationDays: 30,
+          memoryDuration: core.Duration.days(30),
           maxRecentSessions: 20,
         }),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
-        'MemoryConfiguration': {
-          'EnabledMemoryTypes': ['SESSION_SUMMARY'],
-          'StorageDays': 30,
-          'SessionSummaryConfiguration': {
-            'MaxRecentSessions': 20,
+        MemoryConfiguration: {
+          EnabledMemoryTypes: ['SESSION_SUMMARY'],
+          StorageDays: 30,
+          SessionSummaryConfiguration: {
+            MaxRecentSessions: 20,
           },
         },
       });
@@ -49,23 +49,23 @@ describe('Memory', () => {
     test('validates memory duration days range', () => {
       expect(() => {
         Memory.sessionSummary({
-          memoryDurationDays: 0,
+          memoryDuration: core.Duration.days(0),
           maxRecentSessions: 20,
         });
-      }).toThrow(/memoryDurationDays must be between 1 and 365/);
+      }).toThrow(/memoryDuration must be between 1 and 365 days/);
 
       expect(() => {
         Memory.sessionSummary({
-          memoryDurationDays: 366,
+          memoryDuration: core.Duration.days(366),
           maxRecentSessions: 20,
         });
-      }).toThrow(/memoryDurationDays must be between 1 and 365/);
+      }).toThrow(/memoryDuration must be between 1 and 365 days/);
     });
 
     test('validates maxRecentSessions range', () => {
       expect(() => {
         Memory.sessionSummary({
-          memoryDurationDays: 30,
+          memoryDuration: core.Duration.days(30),
           maxRecentSessions: 0,
         });
       }).toThrow(/maxRecentSessions must be greater than 0/);
@@ -79,11 +79,11 @@ describe('Memory', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
-        'MemoryConfiguration': {
-          'EnabledMemoryTypes': ['SESSION_SUMMARY'],
-          'StorageDays': 30,
-          'SessionSummaryConfiguration': {
-            'MaxRecentSessions': 20,
+        MemoryConfiguration: {
+          EnabledMemoryTypes: ['SESSION_SUMMARY'],
+          StorageDays: 30,
+          SessionSummaryConfiguration: {
+            MaxRecentSessions: 20,
           },
         },
       });
@@ -99,11 +99,11 @@ describe('Memory', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
-        'MemoryConfiguration': {
-          'EnabledMemoryTypes': ['SESSION_SUMMARY'],
-          'StorageDays': 30,
-          'SessionSummaryConfiguration': {
-            'MaxRecentSessions': 20,
+        MemoryConfiguration: {
+          EnabledMemoryTypes: ['SESSION_SUMMARY'],
+          StorageDays: 30,
+          SessionSummaryConfiguration: {
+            MaxRecentSessions: 20,
           },
         },
       });

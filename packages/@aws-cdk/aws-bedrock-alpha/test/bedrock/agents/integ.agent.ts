@@ -1,6 +1,6 @@
 /*
  * Integration test for Bedrock Agent construct
- * 
+ *
  * Stack verification steps:
  * * Verify that a Bedrock Agent is created with the specified instruction
  * * Verify that the agent uses Claude 3.5 Sonnet v2.0 as its foundation model
@@ -19,7 +19,7 @@ class TestStack extends cdk.Stack {
 
     // Create a Bedrock Agent with minimal properties
     new bedrock.Agent(this, 'TestAgent', {
-      name: 'test-agent-1',
+      agentName: 'test-agent-1',
       instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
       foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
       // Clean up the agent after test
@@ -31,12 +31,12 @@ class TestStack extends cdk.Stack {
 const stack = new TestStack(app, 'agentIntegTestStack', {
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_DEFAULT_REGION ,
-},
+    region: process.env.CDK_DEFAULT_REGION,
+  },
 });
 new IntegTest(app, 'BedrockAgentIntegTest', {
   testCases: [stack],
-  
+
 });
 
 app.synth();

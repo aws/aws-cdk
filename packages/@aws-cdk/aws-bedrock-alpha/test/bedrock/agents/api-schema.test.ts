@@ -21,7 +21,7 @@ describe('ApiSchema', () => {
         '/test': {
           get: {
             responses: {
-              '200': {
+              200: {
                 description: 'OK',
               },
             },
@@ -38,7 +38,7 @@ describe('ApiSchema', () => {
           '/test': {
             get: {
               responses: {
-                '200': {
+                200: {
                   description: 'OK',
                 },
               },
@@ -123,12 +123,12 @@ describe('ApiSchema', () => {
     agent.addActionGroup(actionGroup);
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': Match.arrayWith([
+      PolicyDocument: {
+        Statement: Match.arrayWith([
           Match.objectLike({
-            'Action': ['bedrock:InvokeModel*', 'bedrock:GetFoundationModel'],
-            'Effect': 'Allow',
-            'Resource': 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-v2',
+            Action: ['bedrock:InvokeModel*', 'bedrock:GetFoundationModel'],
+            Effect: 'Allow',
+            Resource: 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-v2',
           }),
         ]),
       },

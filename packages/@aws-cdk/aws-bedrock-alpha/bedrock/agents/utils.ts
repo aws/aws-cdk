@@ -78,7 +78,6 @@ export function generatePhysicalName(
   return prefix.toLowerCase() + allParts + '-' + uniqueStackIdPart;
 }
 
-
 export interface GeneratePhysicalNameV2Options extends cdk.UniqueResourceNameOptions {
   /**
    * Whether to convert the name to lower case.
@@ -161,10 +160,14 @@ export function lambdaMemorySizeLimiter(construct: IConstruct, requestedMemorySi
     recommendedMaximumLambdaMemorySize :
     parseInt(construct.node.tryGetContext(maximumLambdaMemorySizeContextItem));
   if (maximumLambaMemorySize < recommendedMaximumLambdaMemorySize) {
-    console.warn(`Maximum Lambda memorySize, ${maximumLambaMemorySize}, is less than the recommended ${recommendedMaximumLambdaMemorySize}.`);
+    cdk.Annotations.of(construct).addWarning(
+      `Maximum Lambda memorySize, ${maximumLambaMemorySize}, is less than the recommended ${recommendedMaximumLambdaMemorySize}.`,
+    );
   }
   if (requestedMemorySizeInMegabytes > maximumLambaMemorySize) {
-    console.warn(`Reducing Lambda memorySize, ${requestedMemorySizeInMegabytes} to ${maximumLambaMemorySize} for ${construct.constructor.name}`);
+    cdk.Annotations.of(construct).addWarning(
+      `Reducing Lambda memorySize, ${requestedMemorySizeInMegabytes} to ${maximumLambaMemorySize} for ${construct.constructor.name}`,
+    );
     return maximumLambaMemorySize;
   } else {
     return requestedMemorySizeInMegabytes;

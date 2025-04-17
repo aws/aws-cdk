@@ -67,7 +67,7 @@
     ]
    }
   },
-  "TestAgentAgentResource807C0F50": {
+  "TestAgent44AF1AE6": {
    "Type": "AWS::Bedrock::Agent",
    "Properties": {
     "ActionGroups": [

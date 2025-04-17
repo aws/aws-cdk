@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::551246883740:role/cdk-hnb659fds-deploy-role-551246883740-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::551246883740:role/cdk-hnb659fds-cfn-exec-role-551246883740-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-551246883740-us-east-1/8f3aa2d8186452954031b889b726fb27222b71cc657457e00acc2687de173832.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-551246883740-us-east-1/f325476d3b90fed3efe14c8079ae43d0b4ad717c3aecdbeec49002efa031dfc6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -118,10 +118,10 @@
             "data": "TestAgentRoleDefaultPolicy0A38CDBA"
           }
         ],
-        "/agentIntegTestStack/TestAgent/AgentResource": [
+        "/agentIntegTestStack/TestAgent/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestAgentAgentResource807C0F50"
+            "data": "TestAgent44AF1AE6"
           }
         ],
         "/agentIntegTestStack/BootstrapVersion": [

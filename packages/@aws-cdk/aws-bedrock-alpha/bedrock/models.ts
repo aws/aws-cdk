@@ -50,6 +50,9 @@ export interface IInvokable {
   grantInvoke(grantee: IGrantable): Grant;
 }
 
+/**
+ * Properties for configuring a Bedrock Foundation Model.
+ */
 export interface BedrockFoundationModelProps {
   /**
    * Bedrock Agents can use this model.
@@ -85,9 +88,18 @@ export interface BedrockFoundationModelProps {
    * Embedding models have different vector dimensions.
    * Only applicable for embedding models.
    */
-  readonly vectorDimensions?: number;
   /**
-   * Embeddings models have different supported vector types
+   * Embedding models have different vector dimensions.
+   * Only applicable for embedding models.
+   *
+   * @default undefined - No vector dimensions specified
+   */
+  readonly vectorDimensions?: number;
+
+  /**
+   * Embeddings models have different supported vector types.
+   *
+   * @default undefined - No vector types specified
    */
   readonly supportedVectorType?: VectorType[];
 }
@@ -102,6 +114,10 @@ export class BedrockFoundationModel implements IInvokable {
   /****************************************************************************
    *                            AI21
    ***************************************************************************/
+  /**
+   * AI21's Jamba 1.5 Large model, optimized for general text generation and understanding.
+   * Suitable for complex language tasks with high accuracy requirements.
+   */
   public static readonly AI21_JAMBA_1_5_LARGE_V1 = new BedrockFoundationModel(
     'ai21.jamba-1-5-large-v1:0',
     {
@@ -109,6 +125,10 @@ export class BedrockFoundationModel implements IInvokable {
     },
   );
 
+  /**
+   * AI21's Jamba 1.5 Mini model, a lightweight version optimized for faster inference.
+   * Suitable for simpler language tasks where speed is prioritized.
+   */
   public static readonly AI21_JAMBA_1_5_MINI_V1 = new BedrockFoundationModel(
     'ai21.jamba-1-5-mini-v1:0',
     {
@@ -116,6 +136,10 @@ export class BedrockFoundationModel implements IInvokable {
     },
   );
 
+  /**
+   * AI21's Jamba Instruct model, specifically designed for instruction-following tasks.
+   * Optimized for understanding and executing natural language instructions.
+   */
   public static readonly AI21_JAMBA_INSTRUCT_V1 = new BedrockFoundationModel(
     'ai21.jamba-instruct-v1:0',
     {
@@ -125,6 +149,10 @@ export class BedrockFoundationModel implements IInvokable {
   /****************************************************************************
    *                            AMAZON
    ***************************************************************************/
+  /**
+   * Amazon's Titan Text Express model, optimized for fast text generation.
+   * Suitable for real-time applications requiring quick responses.
+   */
   public static readonly AMAZON_TITAN_TEXT_EXPRESS_V1 = new BedrockFoundationModel(
     'amazon.titan-text-express-v1',
     {
@@ -132,6 +160,10 @@ export class BedrockFoundationModel implements IInvokable {
     },
   );
 
+  /**
+   * Amazon's Titan Premier model, offering enhanced capabilities for complex text generation.
+   * Provides higher quality outputs compared to Express version.
+   */
   public static readonly AMAZON_TITAN_PREMIER_V1_0 = new BedrockFoundationModel(
     'amazon.titan-text-premier-v1:0',
     {
@@ -139,6 +171,10 @@ export class BedrockFoundationModel implements IInvokable {
     },
   );
 
+  /**
+   * Amazon's Nova Micro model, a lightweight model optimized for Bedrock Agents.
+   * Provides fast inference with cross-region support.
+   */
   public static readonly AMAZON_NOVA_MICRO_V1 = new BedrockFoundationModel(
     'amazon.nova-micro-v1:0',
     {
@@ -148,18 +184,30 @@ export class BedrockFoundationModel implements IInvokable {
     },
   );
 
+  /**
+   * Amazon's Nova Lite model, balancing performance and resource usage.
+   * Optimized for Bedrock Agents with cross-region support.
+   */
   public static readonly AMAZON_NOVA_LITE_V1 = new BedrockFoundationModel('amazon.nova-lite-v1:0', {
     supportsAgents: true,
     supportsCrossRegion: true,
     optimizedForAgents: true,
   });
 
+  /**
+   * Amazon's Nova Pro model, offering advanced capabilities for complex tasks.
+   * Provides high-quality outputs with cross-region support and agent optimization.
+   */
   public static readonly AMAZON_NOVA_PRO_V1 = new BedrockFoundationModel('amazon.nova-pro-v1:0', {
     supportsAgents: true,
     supportsCrossRegion: true,
     optimizedForAgents: true,
   });
 
+  /**
+   * Amazon's Titan Embed Text V1 model for text embeddings.
+   * Generates 1536-dimensional floating-point vector embeddings.
+   */
   public static readonly TITAN_EMBED_TEXT_V1 = new BedrockFoundationModel(
     'amazon.titan-embed-text-v1',
     {
@@ -169,6 +217,10 @@ export class BedrockFoundationModel implements IInvokable {
     },
   );
 
+  /**
+   * Amazon's Titan Embed Text V2 model with 1024-dimensional vectors.
+   * Supports both floating-point and binary vector embeddings.
+   */
   public static readonly TITAN_EMBED_TEXT_V2_1024 = new BedrockFoundationModel(
     'amazon.titan-embed-text-v2:0',
     {
@@ -178,6 +230,10 @@ export class BedrockFoundationModel implements IInvokable {
     },
   );
 
+  /**
+   * Amazon's Titan Embed Text V2 model with 512-dimensional vectors.
+   * Provides a balance between precision and resource usage.
+   */
   public static readonly TITAN_EMBED_TEXT_V2_512 = new BedrockFoundationModel(
     'amazon.titan-embed-text-v2:0',
     {
@@ -187,6 +243,10 @@ export class BedrockFoundationModel implements IInvokable {
     },
   );
 
+  /**
+   * Amazon's Titan Embed Text V2 model with 256-dimensional vectors.
+   * Optimized for applications requiring compact vector representations.
+   */
   public static readonly TITAN_EMBED_TEXT_V2_256 = new BedrockFoundationModel(
     'amazon.titan-embed-text-v2:0',
     {
@@ -198,42 +258,73 @@ export class BedrockFoundationModel implements IInvokable {
   /****************************************************************************
    *                            ANTHROPIC
    ***************************************************************************/
+  /**
+   * Anthropic's Claude 3.7 Sonnet model, the latest version with enhanced capabilities.
+   * Provides advanced natural language understanding and generation with cross-region support.
+   */
   public static readonly ANTHROPIC_CLAUDE_3_7_SONNET_V1_0 = new BedrockFoundationModel(
     'anthropic.claude-3-7-sonnet-20250219-v1:0',
-
     { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: false },
   );
 
+  /**
+   * Anthropic's Claude 3.5 Sonnet V2 model, optimized for Bedrock Agents.
+   * Offers improved performance and reliability over V1.
+   */
   public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_V2_0 = new BedrockFoundationModel(
     'anthropic.claude-3-5-sonnet-20241022-v2:0',
     { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
   );
 
+  /**
+   * Anthropic's Claude 3.5 Sonnet V1 model, with cross-region support.
+   * Balances performance and resource usage for general-purpose tasks.
+   */
   public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_V1_0 = new BedrockFoundationModel(
     'anthropic.claude-3-5-sonnet-20240620-v1:0',
     { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
   );
 
+  /**
+   * Anthropic's Claude 3.5 Haiku model, a lightweight version optimized for speed.
+   * Ideal for applications requiring quick responses with good accuracy.
+   */
   public static readonly ANTHROPIC_CLAUDE_3_5_HAIKU_V1_0 = new BedrockFoundationModel(
     'anthropic.claude-3-5-haiku-20241022-v1:0',
     { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
   );
 
+  /**
+   * Anthropic's Claude Opus model, their most advanced model for complex tasks.
+   * Provides highest quality outputs with enhanced reasoning capabilities.
+   */
   public static readonly ANTHROPIC_CLAUDE_OPUS_V1_0 = new BedrockFoundationModel(
     'anthropic.claude-3-opus-20240229-v1:0',
     { supportsAgents: true, optimizedForAgents: true },
   );
 
+  /**
+   * Anthropic's Claude Sonnet model, a legacy version with agent optimization.
+   * Provides reliable performance for general language tasks.
+   */
   public static readonly ANTHROPIC_CLAUDE_SONNET_V1_0 = new BedrockFoundationModel(
     'anthropic.claude-3-sonnet-20240229-v1:0',
     { supportsAgents: true, supportsCrossRegion: true, legacy: true, optimizedForAgents: true },
   );
 
+  /**
+   * Anthropic's Claude Haiku model, optimized for fast inference.
+   * Suitable for applications requiring quick responses with good quality.
+   */
   public static readonly ANTHROPIC_CLAUDE_HAIKU_V1_0 = new BedrockFoundationModel(
     'anthropic.claude-3-haiku-20240307-v1:0',
     { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
   );
 
+  /**
+   * Anthropic's Claude V2.1 model, a legacy version with enhanced capabilities.
+   * Provides reliable performance for a wide range of language tasks.
+   */
   public static readonly ANTHROPIC_CLAUDE_V2_1 = new BedrockFoundationModel(
     'anthropic.claude-v2:1',
     {
@@ -243,12 +334,20 @@ export class BedrockFoundationModel implements IInvokable {
     },
   );
 
+  /**
+   * Anthropic's Claude V2 model, a legacy version of their general-purpose model.
+   * Suitable for a wide range of language understanding and generation tasks.
+   */
   public static readonly ANTHROPIC_CLAUDE_V2 = new BedrockFoundationModel('anthropic.claude-v2', {
     supportsAgents: true,
     legacy: true,
     optimizedForAgents: true,
   });
 
+  /**
+   * Anthropic's Claude Instant V1.2 model, a legacy fast-inference version.
+   * Optimized for quick responses while maintaining good output quality.
+   */
   public static readonly ANTHROPIC_CLAUDE_INSTANT_V1_2 = new BedrockFoundationModel(
     'anthropic.claude-instant-v1',
     {
@@ -261,6 +360,10 @@ export class BedrockFoundationModel implements IInvokable {
   /****************************************************************************
    *                            COHERE
    ***************************************************************************/
+  /**
+   * Cohere's English embedding model, optimized for English text.
+   * Generates 1024-dimensional vectors with support for both floating-point and binary types.
+   */
   public static readonly COHERE_EMBED_ENGLISH_V3 = new BedrockFoundationModel(
     'cohere.embed-english-v3',
     {
@@ -270,6 +373,10 @@ export class BedrockFoundationModel implements IInvokable {
     },
   );
 
+  /**
+   * Cohere's multilingual embedding model, supporting multiple languages.
+   * Generates 1024-dimensional vectors with support for both floating-point and binary types.
+   */
   public static readonly COHERE_EMBED_MULTILINGUAL_V3 = new BedrockFoundationModel(
     'cohere.embed-multilingual-v3',
     {
@@ -281,6 +388,10 @@ export class BedrockFoundationModel implements IInvokable {
   /****************************************************************************
    *                            DEEPSEEK
    ***************************************************************************/
+  /**
+   * Deepseek's R1 model, offering advanced language capabilities.
+   * Supports cross-region deployment and Bedrock Agents integration.
+   */
   public static readonly DEEPSEEK_R1_V1 = new BedrockFoundationModel(
     'deepseek.r1-v1:0',
     {
@@ -292,6 +403,10 @@ export class BedrockFoundationModel implements IInvokable {
   /****************************************************************************
    *                            META
    ***************************************************************************/
+  /**
+   * Meta's Llama 3 1.8B instruction-tuned model, a lightweight version.
+   * Suitable for tasks requiring quick responses with good accuracy.
+   */
   public static readonly META_LLAMA_3_1_8B_INSTRUCT_V1 = new BedrockFoundationModel(
     'meta.llama3-1-8b-instruct-v1:0',
     {
@@ -300,6 +415,10 @@ export class BedrockFoundationModel implements IInvokable {
     },
   );
 
+  /**
+   * Meta's Llama 3 70B instruction-tuned model, their largest model.
+   * Provides high-quality outputs for complex language tasks.
+   */
   public static readonly META_LLAMA_3_1_70B_INSTRUCT_V1 = new BedrockFoundationModel(
     'meta.llama3-1-70b-instruct-v1:0',
     {
@@ -308,6 +427,10 @@ export class BedrockFoundationModel implements IInvokable {
     },
   );
 
+  /**
+   * Meta's Llama 3 11B instruction-tuned model, a mid-sized version.
+   * Balances performance and resource usage for general tasks.
+   */
   public static readonly META_LLAMA_3_2_11B_INSTRUCT_V1 = new BedrockFoundationModel(
     'meta.llama3-2-11b-instruct-v1:0',
     {
@@ -316,6 +439,10 @@ export class BedrockFoundationModel implements IInvokable {
     },
   );
 
+  /**
+   * Meta's Llama 3 3B instruction-tuned model, optimized for efficiency.
+   * Suitable for applications requiring fast inference.
+   */
   public static readonly META_LLAMA_3_2_3B_INSTRUCT_V1 = new BedrockFoundationModel(
     'meta.llama3-2-3b-instruct-v1:0',
     {
@@ -324,6 +451,10 @@ export class BedrockFoundationModel implements IInvokable {
     },
   );
 
+  /**
+   * Meta's Llama 3 1B instruction-tuned model, their most compact version.
+   * Ideal for resource-constrained environments.
+   */
   public static readonly META_LLAMA_3_2_1B_INSTRUCT_V1 = new BedrockFoundationModel(
     'meta.llama3-2-1b-instruct-v1:0',
     {
@@ -332,6 +463,10 @@ export class BedrockFoundationModel implements IInvokable {
     },
   );
 
+  /**
+   * Meta's Llama 3.3 70B instruction-tuned model, latest large version.
+   * Offers enhanced capabilities with cross-region support.
+   */
   public static readonly META_LLAMA_3_3_70B_INSTRUCT_V1 = new BedrockFoundationModel(
     'meta.llama3-3-70b-instruct-v1:0',
     {
@@ -340,12 +475,25 @@ export class BedrockFoundationModel implements IInvokable {
     },
   );
 
+  /**
+   * Creates a BedrockFoundationModel from a CDK FoundationModelIdentifier.
+   * @param modelId The foundation model identifier
+   * @param props Optional properties for the model
+   * @returns A new BedrockFoundationModel instance
+   */
   public static fromCdkFoundationModelId(
     modelId: FoundationModelIdentifier,
     props: BedrockFoundationModelProps = {},
   ): BedrockFoundationModel {
     return new BedrockFoundationModel(modelId.modelId, props);
   }
+
+  /**
+   * Creates a BedrockFoundationModel from a CDK FoundationModel.
+   * @param modelId The foundation model
+   * @param props Optional properties for the model
+   * @returns A new BedrockFoundationModel instance
+   */
   public static fromCdkFoundationModel(
     modelId: FoundationModel,
     props: BedrockFoundationModelProps = {},
@@ -356,13 +504,46 @@ export class BedrockFoundationModel implements IInvokable {
   /****************************************************************************
    *                            Constructor
    ***************************************************************************/
+  /**
+   * The unique identifier of the foundation model.
+   */
   public readonly modelId: string;
+
+  /**
+   * The ARN of the foundation model.
+   */
   public readonly modelArn: string;
+
+  /**
+   * The ARN used for invoking the model.
+   */
   public readonly invokableArn: string;
+
+  /**
+   * Whether this model can be used with Bedrock Agents.
+   */
   public readonly supportsAgents: boolean;
+
+  /**
+   * Whether this model supports cross-region inference.
+   */
   public readonly supportsCrossRegion: boolean;
+
+  /**
+   * The dimensionality of vectors produced by this model.
+   * Only applicable for embedding models.
+   */
   public readonly vectorDimensions?: number;
+
+  /**
+   * Whether this model can be used with Bedrock Knowledge Base.
+   */
   public readonly supportsKnowledgeBase: boolean;
+
+  /**
+   * The vector types supported by this model.
+   * Only applicable for embedding models.
+   */
   public readonly supportedVectorType?: VectorType[];
   constructor(value: string, props: BedrockFoundationModelProps = {}) {
     this.modelId = value;
@@ -397,6 +578,12 @@ export class BedrockFoundationModel implements IInvokable {
     return this.modelArn;
   }
 
+  /**
+   * Returns this foundation model as an IModel interface.
+   * This allows using the model with APIs that expect an IModel.
+   * @param construct The scope in which to create any required resources
+   * @returns This foundation model as an IModel
+   */
   asIModel(construct: IConstruct): IModel {
     if (construct) {
     }

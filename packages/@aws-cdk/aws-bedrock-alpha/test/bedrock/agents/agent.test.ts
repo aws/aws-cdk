@@ -32,12 +32,12 @@ describe('Agent', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
-      'Instruction': Match.stringLikeRegexp('.*at least 40 characters.*'),
-      'FoundationModel': foundationModel.invokableArn,
-      'IdleSessionTTLInSeconds': 3600,
-      'AutoPrepare': false,
-      'Description': Match.absent(),
-      'CustomerEncryptionKeyArn': Match.absent(),
+      Instruction: Match.stringLikeRegexp('.*at least 40 characters.*'),
+      FoundationModel: foundationModel.invokableArn,
+      IdleSessionTTLInSeconds: 3600,
+      AutoPrepare: false,
+      Description: Match.absent(),
+      CustomerEncryptionKeyArn: Match.absent(),
     });
   });
 
@@ -45,7 +45,7 @@ describe('Agent', () => {
     new bedrock.Agent(stack, 'TestAgent', {
       instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
       foundationModel,
-      name: 'MyTestAgent',
+      agentName: 'MyTestAgent',
       description: 'Test agent description',
       shouldPrepareAgent: true,
       idleSessionTTL: core.Duration.minutes(30),
@@ -55,13 +55,13 @@ describe('Agent', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
-      'AgentName': 'MyTestAgent',
-      'Description': 'Test agent description',
-      'Instruction': Match.stringLikeRegexp('.*at least 40 characters.*'),
-      'FoundationModel': foundationModel.invokableArn,
-      'IdleSessionTTLInSeconds': 1800,
-      'AutoPrepare': true,
-      'SkipResourceInUseCheckOnDelete': true,
+      AgentName: 'MyTestAgent',
+      Description: 'Test agent description',
+      Instruction: Match.stringLikeRegexp('.*at least 40 characters.*'),
+      FoundationModel: foundationModel.invokableArn,
+      IdleSessionTTLInSeconds: 1800,
+      AutoPrepare: true,
+      SkipResourceInUseCheckOnDelete: true,
     });
   });
 
@@ -72,28 +72,28 @@ describe('Agent', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-      'AssumeRolePolicyDocument': {
-        'Statement': [
+      AssumeRolePolicyDocument: {
+        Statement: [
           {
-            'Action': 'sts:AssumeRole',
-            'Effect': 'Allow',
-            'Principal': {
-              'Service': 'bedrock.amazonaws.com',
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'bedrock.amazonaws.com',
             },
-            'Condition': {
-              'StringEquals': {
-                'aws:SourceAccount': Match.objectLike({ 'Ref': 'AWS::AccountId' })
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': Match.objectLike({ Ref: 'AWS::AccountId' }),
               },
-              'ArnLike': {
+              ArnLike: {
                 'aws:SourceArn': {
                   'Fn::Join': ['', [
                     'arn:',
-                    { 'Ref': 'AWS::Partition' },
+                    { Ref: 'AWS::Partition' },
                     ':bedrock:',
-                    { 'Ref': 'AWS::Region' },
+                    { Ref: 'AWS::Region' },
                     ':',
-                    { 'Ref': 'AWS::AccountId' },
-                    ':agent/*'
+                    { Ref: 'AWS::AccountId' },
+                    ':agent/*',
                   ]],
                 },
               },
@@ -117,13 +117,13 @@ describe('Agent', () => {
     agent.grantInvoke(role);
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': Match.arrayWith([
+      PolicyDocument: {
+        Statement: Match.arrayWith([
           Match.objectLike({
-            'Action': 'bedrock:InvokeAgent',
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::GetAtt': [Match.stringLikeRegexp('TestAgentAgentResource[A-Z0-9]+'), 'AgentArn'],
+            Action: 'bedrock:InvokeAgent',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [Match.stringLikeRegexp('TestAgent[A-Z0-9]+'), 'AgentArn'],
             },
           }),
         ]),
@@ -167,10 +167,10 @@ describe('Agent', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
-        'OrchestrationType': 'CUSTOM_ORCHESTRATION',
-        'CustomOrchestration': {
-          'Executor': {
-            'Lambda': {
+        OrchestrationType: 'CUSTOM_ORCHESTRATION',
+        CustomOrchestration: {
+          Executor: {
+            Lambda: {
               'Fn::GetAtt': [Match.stringLikeRegexp('TestFunction[A-Z0-9]+'), 'Arn'],
             },
           },
@@ -178,16 +178,16 @@ describe('Agent', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
-        'Action': 'lambda:InvokeFunction',
-        'FunctionName': {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
           'Fn::GetAtt': [Match.stringLikeRegexp('TestFunction[A-Z0-9]+'), 'Arn'],
         },
-        'Principal': 'bedrock.amazonaws.com',
-        'SourceArn': {
-          'Fn::GetAtt': [Match.stringLikeRegexp('TestAgentAgentResource[A-Z0-9]+'), 'AgentArn'],
+        Principal: 'bedrock.amazonaws.com',
+        SourceArn: {
+          'Fn::GetAtt': [Match.stringLikeRegexp('TestAgent[A-Z0-9]+'), 'AgentArn'],
         },
-        'SourceAccount': {
-          'Ref': 'AWS::AccountId',
+        SourceAccount: {
+          Ref: 'AWS::AccountId',
         },
       });
     });
@@ -232,7 +232,7 @@ describe('Agent', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
-      'CustomerEncryptionKeyArn': {
+      CustomerEncryptionKeyArn: {
         'Fn::GetAtt': [Match.stringLikeRegexp('TestKey[A-Z0-9]+'), 'Arn'],
       },
     });
@@ -250,7 +250,7 @@ describe('Agent', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
-      'AgentResourceRoleArn': {
+      AgentResourceRoleArn: {
         'Fn::GetAtt': [Match.stringLikeRegexp('ExistingRole[A-Z0-9]+'), 'Arn'],
       },
     });
@@ -265,8 +265,8 @@ describe('Agent', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
-        'AgentCollaboration': 'SUPERVISOR',
-        'AgentCollaborators': Match.absent(),
+        AgentCollaboration: 'SUPERVISOR',
+        AgentCollaborators: Match.absent(),
       });
     });
 
@@ -279,19 +279,19 @@ describe('Agent', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
-        'ActionGroups': [
+        ActionGroups: [
           {
-            'ActionGroupName': 'UserInputAction',
-            'ActionGroupState': 'DISABLED',
-            'ParentActionGroupSignature': 'AMAZON.UserInput',
-            'SkipResourceInUseCheckOnDelete': false
+            ActionGroupName: 'UserInputAction',
+            ActionGroupState: 'DISABLED',
+            ParentActionGroupSignature: 'AMAZON.UserInput',
+            SkipResourceInUseCheckOnDelete: false,
           },
           {
-            'ActionGroupName': 'CodeInterpreterAction',
-            'ActionGroupState': 'DISABLED',
-            'ParentActionGroupSignature': 'AMAZON.CodeInterpreter',
-            'SkipResourceInUseCheckOnDelete': false
-          }
+            ActionGroupName: 'CodeInterpreterAction',
+            ActionGroupState: 'DISABLED',
+            ParentActionGroupSignature: 'AMAZON.CodeInterpreter',
+            SkipResourceInUseCheckOnDelete: false,
+          },
         ],
       });
     });

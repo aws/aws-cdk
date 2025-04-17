@@ -88,7 +88,6 @@ describe('validation-helpers', () => {
       expect(result[0]).toContain('Expected string');
     });
 
-
     test('skips validation for unresolved tokens', () => {
       const tokenValue = Token.asString({ Ref: 'SomeParameter' });
       const result = validateFieldPattern(

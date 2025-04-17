@@ -4,11 +4,13 @@
 
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> All classes are under active development and subject to non-backward compatible changes or removal in any
-> future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
-> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
 
@@ -65,7 +67,7 @@ Amazon Bedrock Agents allow generative AI applications to automate complex, mult
 
 The following example creates an Agent with a simple instruction and default prompts:
 
-```ts
+```ts fixture=default
 const agent = new bedrock.Agent(this, 'Agent', {
   foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_HAIKU_V1_0,
   instruction: 'You are a helpful and friendly agent that answers questions about literature.',
@@ -78,18 +80,24 @@ An action group defines functions your agent can call. The functions are Lambda 
 
 Example:
 
-```ts
-const actionGroupFunction = new lambda_python.PythonFunction(this, 'ActionGroupFunction', {
+```ts fixture=default
+const actionGroupFunction = new lambda.Function(this, 'ActionGroupFunction', {
   runtime: lambda.Runtime.PYTHON_3_12,
-  entry: path.join(__dirname, '../lambda/action-group'),
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, '../lambda/action-group')),
 });
 
-const actionGroup = new AgentActionGroup({
+const actionGroup = new bedrock.AgentActionGroup({
   name: 'query-library',
   description: 'Use these functions to get information about the books in the library.',
   executor: bedrock.ActionGroupExecutor.fromlambdaFunction(actionGroupFunction),
   enabled: true,
   apiSchema: bedrock.ApiSchema.fromLocalAsset(path.join(__dirname, 'action-group.yaml')),
+});
+
+const agent = new bedrock.Agent(this, 'Agent', {
+  foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_HAIKU_V1_0,
+  instruction: 'You are a helpful and friendly agent that answers questions about literature.',
 });
 
 agent.addActionGroup(actionGroup);
@@ -114,7 +122,7 @@ Bedrock Agents allows you to customize the prompts and LLM configuration for dif
 
 Example:
 
-```ts
+```ts fixture=default
 const agent = new bedrock.Agent(this, 'Agent', {
   foundationModel: bedrock.BedrockFoundationModel.AMAZON_NOVA_LITE_V1,
   instruction: 'You are a helpful assistant.',
@@ -137,7 +145,7 @@ const agent = new bedrock.Agent(this, 'Agent', {
 
 You can also use a custom Lambda parser to process the model's output:
 
-```ts
+```ts fixture=default
 const parserFunction = new lambda.Function(this, 'ParserFunction', {
   runtime: lambda.Runtime.PYTHON_3_10,
   handler: 'index.handler',
@@ -166,14 +174,14 @@ Agents can maintain context across multiple sessions and recall past interaction
 
 Example:
 
-```typescript
-const agent = new Agent(this, 'MyAgent', {
-  name: 'MyAgent',
+```ts fixture=default
+const agent = new bedrock.Agent(this, 'MyAgent', {
+  agentName: 'MyAgent',
   instruction: 'Your instruction here',
   foundationModel: bedrock.BedrockFoundationModel.AMAZON_NOVA_LITE_V1,
   memory: Memory.sessionSummary({
     maxRecentSessions: 10, // Keep the last 10 session summaries
-    memoryDurationDays: 20, // Retain summaries for 20 days
+    memoryDuration: Duration.days(20), // Retain summaries for 20 days
   }),
 });
 ```
@@ -184,28 +192,26 @@ Agent Collaboration enables multiple Bedrock Agents to work together on complex 
 
 Example:
 
-```typescript
+```ts fixture=default
 // Create a specialized agent
-const customerSupportAgent = new Agent(this, 'CustomerSupportAgent', {
-  name: 'CustomerSupportAgent',
+const customerSupportAgent = new bedrock.Agent(this, 'CustomerSupportAgent', {
   instruction: 'You specialize in answering customer support questions.',
   foundationModel: bedrock.BedrockFoundationModel.AMAZON_NOVA_LITE_V1,
 });
 
 // Create an agent alias
-const customerSupportAlias = new AgentAlias(this, 'CustomerSupportAlias', {
+const customerSupportAlias = new bedrock.AgentAlias(this, 'CustomerSupportAlias', {
   agent: customerSupportAgent,
-  aliasName: 'production',
+  agentAliasName: 'production',
 });
 
 // Create a main agent that collaborates with the specialized agent
-const mainAgent = new Agent(this, 'MainAgent', {
-  name: 'MainAgent',
+const mainAgent = new bedrock.Agent(this, 'MainAgent', {
   instruction: 'You route specialized questions to other agents.',
   foundationModel: bedrock.BedrockFoundationModel.AMAZON_NOVA_LITE_V1,
-  agentCollaboration: AgentCollaboratorType.SUPERVISOR,
+  agentCollaboration: bedrock.AgentCollaboratorType.SUPERVISOR,
   agentCollaborators: [
-    new bedrock.AgentCollaborator({
+    new bedrock.AgentCollaborator(this, 'CustomerSupportCollaborator', {
       agentAlias: customerSupportAlias,
       collaborationInstruction: 'Route customer support questions to this agent.',
       collaboratorName: 'CustomerSupport',
@@ -221,20 +227,19 @@ Custom Orchestration allows you to override the default agent orchestration flow
 
 Example:
 
-```typescript
+```ts fixture=default
 const orchestrationFunction = new lambda.Function(this, 'OrchestrationFunction', {
   runtime: lambda.Runtime.PYTHON_3_10,
   handler: 'index.handler',
   code: lambda.Code.fromAsset('lambda/orchestration'),
 });
 
-const agent = new Agent(this, 'CustomOrchestrationAgent', {
-  name: 'CustomOrchestrationAgent',
+const agent = new bedrock.Agent(this, 'CustomOrchestrationAgent', {
   instruction: 'You are a helpful assistant with custom orchestration logic.',
   foundationModel: bedrock.BedrockFoundationModel.AMAZON_NOVA_LITE_V1,
-  orchestrationType: OrchestrationType.CUSTOM_ORCHESTRATION,
+  orchestrationType: bedrock.OrchestrationType.CUSTOM_ORCHESTRATION,
   customOrchestration: {
-    executor: OrchestrationExecutor.fromlambdaFunction(orchestrationFunction),
+    executor: bedrock.OrchestrationExecutor.fromlambdaFunction(orchestrationFunction),
   },
 });
 ```
@@ -243,11 +248,20 @@ const agent = new Agent(this, 'CustomOrchestrationAgent', {
 
 After you have sufficiently iterated on your working draft and are satisfied with the behavior of your agent, you can set it up for deployment and integration into your application by creating aliases.
 
+To deploy your agent, you need to create an alias. During alias creation, Amazon Bedrock automatically creates a version of your agent. The alias points to this newly created version. You can point the alias to a previously created version if necessary. You then configure your application to make API calls to that alias.
+
+By default, the Agent resource does not create any aliases, and you can use the 'DRAFT' version.
+
 Example:
 
-```ts
+```ts fixture=default
+const agent = new bedrock.Agent(this, 'Agent', {
+  foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_HAIKU_V1_0,
+  instruction: 'You are a helpful and friendly agent that answers questions about literature.',
+});
+
 const agentAlias = new bedrock.AgentAlias(this, 'myalias', {
-  aliasName: 'production',
+  agentAliasName: 'production',
   agent: agent,
   agentVersion: '1', // optional
   description: 'Production version of my agent'

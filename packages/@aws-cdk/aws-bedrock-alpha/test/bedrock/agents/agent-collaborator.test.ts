@@ -6,19 +6,21 @@ import { IAgentAlias } from '../../../bedrock/agents/agent-alias';
 describe('AgentCollaborator', () => {
   let stack: Stack;
   let mockAgentAlias: IAgentAlias;
+  let mockGrantInvoke: jest.Mock;
+  let mockGrantGet: jest.Mock;
 
   beforeEach(() => {
     stack = new Stack();
+    const mockCombine = jest.fn().mockReturnThis();
+    mockGrantInvoke = jest.fn().mockReturnValue({ combine: mockCombine });
+    mockGrantGet = jest.fn().mockReturnValue({ combine: mockCombine });
+
     mockAgentAlias = {
       aliasId: 'test-alias-id',
       aliasArn: 'arn:aws:bedrock:us-east-1:123456789012:agent-alias/test-agent/test-alias-id',
       agent: {} as any,
-      grantInvoke: jest.fn().mockReturnValue({
-        combine: jest.fn().mockReturnThis(),
-      }),
-      grantGet: jest.fn().mockReturnValue({
-        combine: jest.fn().mockReturnThis(),
-      }),
+      grantInvoke: mockGrantInvoke,
+      grantGet: mockGrantGet,
       grant: jest.fn(),
       onCloudTrailEvent: jest.fn(),
       node: stack.node,
@@ -30,7 +32,7 @@ describe('AgentCollaborator', () => {
 
   test('creates with valid properties', () => {
     // WHEN
-    const collaborator = new AgentCollaborator({
+    const collaborator = new AgentCollaborator(stack, 'TestCollaborator', {
       agentAlias: mockAgentAlias,
       collaborationInstruction: 'Test instruction',
       collaboratorName: 'Test collaborator',
@@ -47,7 +49,7 @@ describe('AgentCollaborator', () => {
   test('throws error when agentAlias is missing', () => {
     // THEN
     expect(() => {
-      new AgentCollaborator({
+      new AgentCollaborator(stack, 'TestCollaborator1', {
         agentAlias: undefined as any,
         collaborationInstruction: 'Test instruction',
         collaboratorName: 'Test collaborator',
@@ -64,7 +66,7 @@ describe('AgentCollaborator', () => {
 
     // THEN
     expect(() => {
-      new AgentCollaborator({
+      new AgentCollaborator(stack, 'TestCollaborator2', {
         agentAlias: testAlias,
         collaborationInstruction: 'Test instruction',
         collaboratorName: 'Test collaborator',
@@ -75,7 +77,7 @@ describe('AgentCollaborator', () => {
   test('throws error when collaborationInstruction is empty', () => {
     // THEN
     expect(() => {
-      new AgentCollaborator({
+      new AgentCollaborator(stack, 'TestCollaborator3', {
         agentAlias: mockAgentAlias,
         collaborationInstruction: '',
         collaboratorName: 'Test collaborator',
@@ -86,7 +88,7 @@ describe('AgentCollaborator', () => {
   test('throws error when collaborationInstruction is whitespace', () => {
     // THEN
     expect(() => {
-      new AgentCollaborator({
+      new AgentCollaborator(stack, 'TestCollaborator4', {
         agentAlias: mockAgentAlias,
         collaborationInstruction: '   ',
         collaboratorName: 'Test collaborator',
@@ -97,7 +99,7 @@ describe('AgentCollaborator', () => {
   test('throws error when collaboratorName is empty', () => {
     // THEN
     expect(() => {
-      new AgentCollaborator({
+      new AgentCollaborator(stack, 'TestCollaborator5', {
         agentAlias: mockAgentAlias,
         collaborationInstruction: 'Test instruction',
         collaboratorName: '',
@@ -108,7 +110,7 @@ describe('AgentCollaborator', () => {
   test('throws error when collaboratorName is whitespace', () => {
     // THEN
     expect(() => {
-      new AgentCollaborator({
+      new AgentCollaborator(stack, 'TestCollaborator6', {
         agentAlias: mockAgentAlias,
         collaborationInstruction: 'Test instruction',
         collaboratorName: '   ',
@@ -118,7 +120,7 @@ describe('AgentCollaborator', () => {
 
   test('renders with relayConversationHistory true', () => {
     // GIVEN
-    const collaborator = new AgentCollaborator({
+    const collaborator = new AgentCollaborator(stack, 'TestCollaborator7', {
       agentAlias: mockAgentAlias,
       collaborationInstruction: 'Test instruction',
       collaboratorName: 'Test collaborator',
@@ -141,7 +143,7 @@ describe('AgentCollaborator', () => {
 
   test('renders with relayConversationHistory false', () => {
     // GIVEN
-    const collaborator = new AgentCollaborator({
+    const collaborator = new AgentCollaborator(stack, 'TestCollaborator8', {
       agentAlias: mockAgentAlias,
       collaborationInstruction: 'Test instruction',
       collaboratorName: 'Test collaborator',
@@ -164,7 +166,7 @@ describe('AgentCollaborator', () => {
 
   test('renders with relayConversationHistory undefined', () => {
     // GIVEN
-    const collaborator = new AgentCollaborator({
+    const collaborator = new AgentCollaborator(stack, 'TestCollaborator9', {
       agentAlias: mockAgentAlias,
       collaborationInstruction: 'Test instruction',
       collaboratorName: 'Test collaborator',
@@ -186,7 +188,7 @@ describe('AgentCollaborator', () => {
 
   test('grants permissions to grantee', () => {
     // GIVEN
-    const collaborator = new AgentCollaborator({
+    const collaborator = new AgentCollaborator(stack, 'TestCollaborator10', {
       agentAlias: mockAgentAlias,
       collaborationInstruction: 'Test instruction',
       collaboratorName: 'Test collaborator',
@@ -199,7 +201,9 @@ describe('AgentCollaborator', () => {
     collaborator.grant(grantee);
 
     // THEN
-    expect(mockAgentAlias.grantInvoke).toHaveBeenCalledWith(grantee);
-    expect(mockAgentAlias.grantGet).toHaveBeenCalledWith(grantee);
+    const checkGrantInvoke = () => expect(mockGrantInvoke).toHaveBeenCalledWith(grantee);
+    const checkGrantGet = () => expect(mockGrantGet).toHaveBeenCalledWith(grantee);
+    checkGrantInvoke();
+    checkGrantGet();
   });
 });

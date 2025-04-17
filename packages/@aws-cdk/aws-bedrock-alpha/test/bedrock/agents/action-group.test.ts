@@ -38,11 +38,11 @@ describe('AgentActionGroup', () => {
     agent.addActionGroup(actionGroup);
 
     Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
-      'ActionGroups': Match.arrayWith([
+      ActionGroups: Match.arrayWith([
         Match.objectLike({
-          'ActionGroupName': 'CustomAction',
-          'ActionGroupState': 'ENABLED',
-          'ParentActionGroupSignature': 'AMAZON.UserInput',
+          ActionGroupName: 'CustomAction',
+          ActionGroupState: 'ENABLED',
+          ParentActionGroupSignature: 'AMAZON.UserInput',
         }),
       ]),
     });
@@ -63,11 +63,11 @@ describe('AgentActionGroup', () => {
     agent.addActionGroup(actionGroup);
 
     Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
-      'ActionGroups': Match.arrayWith([
+      ActionGroups: Match.arrayWith([
         Match.objectLike({
-          'ActionGroupName': 'CustomAction',
-          'ActionGroupState': 'ENABLED',
-          'ParentActionGroupSignature': 'AMAZON.CodeInterpreter',
+          ActionGroupName: 'CustomAction',
+          ActionGroupState: 'ENABLED',
+          ParentActionGroupSignature: 'AMAZON.CodeInterpreter',
         }),
       ]),
     });
@@ -88,11 +88,11 @@ describe('AgentActionGroup', () => {
     agent.addActionGroup(actionGroup);
 
     Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
-      'ActionGroups': Match.arrayWith([
+      ActionGroups: Match.arrayWith([
         Match.objectLike({
-          'ActionGroupName': 'CustomAction',
-          'ActionGroupState': 'DISABLED',
-          'ParentActionGroupSignature': 'AMAZON.UserInput',
+          ActionGroupName: 'CustomAction',
+          ActionGroupState: 'DISABLED',
+          ParentActionGroupSignature: 'AMAZON.UserInput',
         }),
       ]),
     });
@@ -119,16 +119,16 @@ describe('AgentActionGroup', () => {
     agent.addActionGroups(actionGroup1, actionGroup2);
 
     Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
-      'ActionGroups': Match.arrayWith([
+      ActionGroups: Match.arrayWith([
         Match.objectLike({
-          'ActionGroupName': 'CustomAction1',
-          'ActionGroupState': 'ENABLED',
-          'ParentActionGroupSignature': 'AMAZON.UserInput',
+          ActionGroupName: 'CustomAction1',
+          ActionGroupState: 'ENABLED',
+          ParentActionGroupSignature: 'AMAZON.UserInput',
         }),
         Match.objectLike({
-          'ActionGroupName': 'CustomAction2',
-          'ActionGroupState': 'DISABLED',
-          'ParentActionGroupSignature': 'AMAZON.CodeInterpreter',
+          ActionGroupName: 'CustomAction2',
+          ActionGroupState: 'DISABLED',
+          ParentActionGroupSignature: 'AMAZON.CodeInterpreter',
         }),
       ]),
     });

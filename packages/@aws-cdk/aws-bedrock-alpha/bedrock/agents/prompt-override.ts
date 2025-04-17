@@ -19,12 +19,38 @@ import { IInvokable } from '../models';
 /**
  * The step in the agent sequence that this prompt configuration applies to.
  */
+/**
+ * The step in the agent sequence that this prompt configuration applies to.
+ */
 export enum AgentStepType {
+  /**
+   * Pre-processing step that prepares the user input for orchestration.
+   */
   PRE_PROCESSING = 'PRE_PROCESSING',
+
+  /**
+   * Main orchestration step that determines the agent's actions.
+   */
   ORCHESTRATION = 'ORCHESTRATION',
+
+  /**
+   * Post-processing step that refines the agent's response.
+   */
   POST_PROCESSING = 'POST_PROCESSING',
+
+  /**
+   * Step that classifies and routes requests to appropriate collaborators.
+   */
   ROUTING_CLASSIFIER = 'ROUTING_CLASSIFIER',
+
+  /**
+   * Step that summarizes conversation history for memory retention.
+   */
   MEMORY_SUMMARIZATION = 'MEMORY_SUMMARIZATION',
+
+  /**
+   * Step that generates responses using knowledge base content.
+   */
   KNOWLEDGE_BASE_RESPONSE_GENERATION = 'KNOWLEDGE_BASE_RESPONSE_GENERATION',
 }
 
@@ -116,6 +142,7 @@ export interface PromptStepConfiguration {
   readonly customPromptTemplate?: string;
   /**
    * The inference configuration parameters to use.
+   * @default undefined - Default inference configuration will be used
    */
   readonly inferenceConfig?: InferenceConfiguration;
   /**
@@ -127,6 +154,10 @@ export interface PromptStepConfiguration {
   readonly foundationModel?: IInvokable;
 }
 
+/**
+ * Configuration for a prompt step that can use a custom Lambda parser.
+ * Extends the base PromptStepConfiguration with custom parser options.
+ */
 export interface PromptStepConfigurationCustomParser extends PromptStepConfiguration {
   /**
    * Whether to use the custom Lambda parser defined for the sequence.
@@ -136,18 +167,35 @@ export interface PromptStepConfigurationCustomParser extends PromptStepConfigura
   readonly useCustomParser?: boolean;
 }
 
+/**
+ * Properties for configuring a custom Lambda parser for prompt overrides.
+ */
 export interface CustomParserProps {
-  /*
-   * Lambda function to use as custom parser
+  /**
+   * Lambda function to use as custom parser.
+   * @default undefined - No custom parser is used
    */
   readonly parser?: IFunction;
-  /*
-   * prompt step configurations. At least one of the steps must make use of the custom parser.
+
+  /**
+   * Prompt step configurations. At least one of the steps must make use of the custom parser.
+   * @default undefined - No custom prompt step configurations
    */
   readonly steps?: PromptStepConfigurationCustomParser[];
 }
 
+/**
+ * Configuration for overriding prompt templates and behaviors in different parts
+ * of an agent's sequence. This allows customizing how the agent processes inputs,
+ * makes decisions, and generates responses.
+ */
 export class PromptOverrideConfiguration {
+  /**
+   * Creates a PromptOverrideConfiguration from a list of prompt step configurations.
+   * Use this method when you want to override prompts without using a custom parser.
+   * @param steps The prompt step configurations to use
+   * @returns A new PromptOverrideConfiguration instance
+   */
   public static fromSteps(steps?: PromptStepConfiguration[]): PromptOverrideConfiguration {
     // Create new object
     return new PromptOverrideConfiguration({ steps });
@@ -281,7 +329,6 @@ export class PromptOverrideConfiguration {
           errors.push(`Step ${step.stepType}: Foundation model can only be specified for ROUTING_CLASSIFIER step type`);
         }
       }
-
     });
 
     return errors;

@@ -15,6 +15,16 @@ import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import { ActionGroupExecutor } from './api-executor';
 import { ApiSchema } from './api-schema';
 
+/**
+ * Error thrown when action group validation fails.
+ */
+class ActionGroupValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ActionGroupValidationError';
+  }
+}
+
 /******************************************************************************
  *                           Signatures
  *****************************************************************************/
@@ -34,7 +44,18 @@ export class ParentActionGroupSignature {
    * Constructor should be used as a temporary solution when a new signature is supported
    * but its implementation in CDK hasn't been added yet.
    */
-  constructor(public readonly value: string) {}
+
+  constructor(
+    /**
+     * The AWS-defined signature value for this action group capability.
+     */
+    public readonly value: string,
+  ) {}
+
+  /**
+   * Returns the string representation of the signature value.
+   * Used when configuring the action group in CloudFormation.
+   */
   public toString() {
     return this.value;
   }
@@ -51,21 +72,21 @@ export interface AgentActionGroupProps {
   /**
    * A description of the action group.
    *
-   * @default - No description
+   * @default undefined - No description is provided
    */
   readonly description?: string;
 
   /**
-   * The API Schema
+   * The API Schema defining the functions available to the agent.
    *
-   * @default - No API Schema
+   * @default undefined - No API Schema is provided
    */
   readonly apiSchema?: ApiSchema;
 
   /**
-   * The action group executor.
+   * The action group executor that implements the API functions.
    *
-   * @default - No executor
+   * @default undefined - No executor is provided
    */
   readonly executor?: ActionGroupExecutor;
 
@@ -73,27 +94,31 @@ export interface AgentActionGroupProps {
    * Specifies whether the action group is available for the agent to invoke or
    * not when sending an InvokeAgent request.
    *
-   * @default true
+   * @default true - The action group is enabled
    */
   readonly enabled?: boolean;
 
   /**
    * Specifies whether to delete the resource even if it's in use.
    *
-   * @default false
+   * @default false - The resource will not be deleted if it's in use
    */
   readonly forceDelete?: boolean;
 
   /**
    * Defines functions that each define parameters that the agent needs to invoke from the user.
-   * NO L2 yet as this doesn't make much sense IMHO
+   * NO L2 yet as this doesn't make much sense IMHO.
+   *
+   * @default undefined - No function schema is provided
    */
   readonly functionSchema?: CfnAgent.FunctionSchemaProperty;
 
   /**
    * The AWS Defined signature for enabling certain capabilities in your agent.
    * When this property is specified, you must leave the description, apiSchema,
-   * and actionGroupExecutor fields blank for this action group
+   * and actionGroupExecutor fields blank for this action group.
+   *
+   * @default undefined - No parent action group signature is provided
    */
   readonly parentActionGroupSignature?: ParentActionGroupSignature;
 }
@@ -187,7 +212,7 @@ export class AgentActionGroup {
 
   private validateProps(props: AgentActionGroupProps) {
     if (props.parentActionGroupSignature && (props.description || props.apiSchema || props.executor)) {
-      throw new Error(
+      throw new ActionGroupValidationError(
         'When parentActionGroupSignature is specified, you must leave the description, ' +
           'apiSchema, and actionGroupExecutor fields blank for this action group',
       );

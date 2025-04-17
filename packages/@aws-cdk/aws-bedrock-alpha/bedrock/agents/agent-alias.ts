@@ -139,10 +139,11 @@ export abstract class AgentAliasBase extends Resource implements IAgentAlias {
 export interface AgentAliasProps {
   /**
    * The name for the agent alias.
+   * This will be used as the physical name of the agent alias.
    *
    * @default - "latest-{hash}"
    */
-  readonly aliasName?: string;
+  readonly agentAliasName?: string;
   /**
    * The version of the agent to associate with the agent alias.
    *
@@ -155,6 +156,7 @@ export interface AgentAliasProps {
   readonly agent: IAgent;
   /**
    * Description for the agent alias.
+   * @default undefined - No description is provided
    */
   readonly description?: string;
 }
@@ -172,6 +174,7 @@ export interface AgentAliasAttributes {
   readonly aliasId: string;
   /**
    * The name of the agent alias.
+   * @default undefined - No alias name is provided
    */
   readonly aliasName?: string;
   /**
@@ -223,6 +226,10 @@ export class AgentAlias extends AgentAliasBase {
   public readonly agent: IAgent;
   public readonly aliasId: string;
   public readonly aliasArn: string;
+  /**
+   * The name of the agent alias.
+   * This is either provided by the user or generated from a hash.
+   */
   public readonly aliasName: string;
 
   // ------------------------------------------------------
@@ -238,13 +245,13 @@ export class AgentAlias extends AgentAliasBase {
     // Set properties or defaults
     // ------------------------------------------------------
     // see https://github.com/awslabs/generative-ai-cdk-constructs/issues/947
-    this.aliasName = props.aliasName ?? `latest-${hash}`;
+    this.aliasName = props.agentAliasName ?? `latest-${hash}`;
     this.agent = props.agent;
 
     // ------------------------------------------------------
     // L1 Instantiation
     // ------------------------------------------------------
-    const alias = new bedrock.CfnAgentAlias(this, `MyCfnAgentAlias+${hash}`, {
+    const alias = new bedrock.CfnAgentAlias(this, 'Resource', {
       agentAliasName: this.aliasName,
       agentId: this.agent.agentId,
       description: props.description,
