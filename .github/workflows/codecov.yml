@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: write  # Required for actions/upload-pages-artifact
+  pages: write     # Required for actions/deploy-pages
+  id-token: write  # Required for actions/deploy-pages
+
 jobs:
   collect:
     name: collect
