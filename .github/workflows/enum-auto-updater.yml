@@ -33,6 +33,7 @@ jobs:
       - name: Check for changes
         id: static-mapping-check
         run: |
+          cd tools/@aws-cdk/enum-updater
           if [[ -n "$(git status --porcelain ./lib/static-enum-mapping.json)" ]]; then
             echo "changes=true" >> $GITHUB_OUTPUT
           else
@@ -42,6 +43,7 @@ jobs:
       - name: Create PR for static mapping changes
         if: steps.static-mapping-check.outputs.changes == 'true'
         run: |
+          cd tools/@aws-cdk/enum-updater
           git config --global user.name 'aws-cdk-automation'
           git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
 
