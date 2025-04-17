@@ -181,7 +181,7 @@ describe('Static Mapping Generation', () => {
       await generateAndSaveStaticMapping(
         mockCdkEnums,
         mockSdkEnums,
-        mockManualMappings
+        mockManualMappings,
       );
   
       // Verify the file write operation
@@ -197,7 +197,7 @@ describe('Static Mapping Generation', () => {
       await generateAndSaveStaticMapping(
         mockCdkEnums,
         mockSdkEnums,
-        {}
+        {},
       );
   
       // Verify the file write operation
