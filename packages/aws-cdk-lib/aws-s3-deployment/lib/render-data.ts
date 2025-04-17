@@ -60,7 +60,7 @@ export function renderData(scope: Construct, data: string): Content {
 
   function addMarker(part: Ref | GetAtt | FnSelect |FnFindInMap) {
     const keys = Object.keys(part);
-    const acceptedCfnFns = ['Ref', 'Fn::GetAtt', 'Fn::Select','Fn::FindInMap'];
+    const acceptedCfnFns = ['Ref', 'Fn::GetAtt', 'Fn::Select', 'Fn::FindInMap'];
     if (keys.length !== 1 || !acceptedCfnFns.includes(keys[0])) {
       const stringifiedAcceptedCfnFns = acceptedCfnFns.map((fn) => `"${fn}"`).join(' or ');
       throw new ValidationError(`Invalid CloudFormation reference. Key must start with any of ${stringifiedAcceptedCfnFns}. Got ${JSON.stringify(part)}`, scope);
