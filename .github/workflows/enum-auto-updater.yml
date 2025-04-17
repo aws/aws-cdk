@@ -114,7 +114,7 @@ jobs:
           gh pr create --title "chore(${moduleName#aws-}): add new enum values for ${moduleName#aws-}" \
            --body "This PR updates the enum values for ${moduleName#aws-}." \
            --base main \
-           --head "$branchName"
+           --head "$branchName" \
            --label "contribution/core,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test"
           done
         env:
