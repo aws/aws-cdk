@@ -77,6 +77,8 @@ jobs:
         if: steps.git-check.outputs.changes == 'true'
         run: |
           # Iterate through each module directory that has changes
+          git config --global user.name 'aws-cdk-automation'
+          git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
           for module in $(git diff --name-only | grep -E '^packages/(@aws-cdk|aws-cdk-lib)/.*' | sed -E 's|^packages/(@aws-cdk\|aws-cdk-lib)/([^/]+).*|\2|' | sort -u); do
             moduleName=$(basename $module)
                         
@@ -112,7 +114,7 @@ jobs:
           gh pr create --title "chore(${moduleName#aws-}): add new enum values for ${moduleName#aws-}" \
            --body "This PR updates the enum values for ${moduleName#aws-}." \
            --base main \
-           --head "$branchName"
+           --head "$branchName" \
            --label "contribution/core,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test"
           done
         env:

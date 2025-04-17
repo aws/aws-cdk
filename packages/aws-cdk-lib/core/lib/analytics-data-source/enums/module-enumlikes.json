@@ -257,7 +257,13 @@
       "V1_3_2_0",
       "V1_3_2_1",
       "V1_3_3_0",
-      "V1_3_4_0"
+      "V1_3_4_0",
+      "V1_4_0_0",
+      "V1_4_1_0",
+      "V1_4_2_0",
+      "V1_4_3_0",
+      "V1_4_4_0",
+      "V1_4_5_0"
     ],
     "LogType": [
       "AUDIT"
@@ -325,7 +331,8 @@
     "ParameterGroupFamily": [
       "NEPTUNE_1",
       "NEPTUNE_1_2",
-      "NEPTUNE_1_3"
+      "NEPTUNE_1_3",
+      "NEPTUNE_1_4"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/accelerator-type.ts": {
@@ -557,6 +564,7 @@
       "AMAZON_NOVA_PRO_V1_0_300_K",
       "AMAZON_NOVA_REEL_V1_0",
       "AMAZON_NOVA_REEL_V1_1",
+      "AMAZON_NOVA_SONIC_V1_0",
       "AI21_J2_MID",
       "AI21_LABS_JURASSIC_2_MID_V1",
       "AI21_J2_ULTRA",
@@ -634,6 +642,7 @@
       "MISTRAL_LARGE_V0_1",
       "MISTRAL_SMALL_V0_1",
       "MISTRAL_LARGE_2_V0_1",
+      "MISTRAL_PIXTRAL_LARGE_2502_V1_0",
       "STABILITY_STABLE_DIFFUSION_XL",
       "STABILITY_STABLE_DIFFUSION_XL_V0",
       "STABILITY_STABLE_DIFFUSION_XL_V1",
