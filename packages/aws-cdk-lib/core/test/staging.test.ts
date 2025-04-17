@@ -1153,15 +1153,15 @@ describe('staging', () => {
     stage.node.setContext(cxapi.BUNDLING_STACKS, ['Stage/Stack1']);
 
     const stack1 = new Stack(stage, 'Stack1', { stackName: 'unrelated-stack1-name' });
-    const stack1_nested = new NestedStack(stack1, "Stack1Nest");
+    const stack1Nested = new NestedStack(stack1, 'Stack1Nest');
 
     const stack2 = new Stack(stage, 'Stack2', { stackName: 'unrelated-stack2-name' });
-    const stack2_nested = new NestedStack(stack2, "Stack2Nest");
+    const stack2Nested = new NestedStack(stack2, 'Stack2Nest');
 
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
     // WHEN
-    new AssetStaging(stack1_nested, 'Asset', {
+    new AssetStaging(stack1Nested, 'Asset', {
       sourcePath: directory,
       assetHashType: AssetHashType.OUTPUT,
       bundling: {
@@ -1170,7 +1170,7 @@ describe('staging', () => {
       },
     });
 
-    new AssetStaging(stack2_nested, 'Asset', {
+    new AssetStaging(stack2Nested, 'Asset', {
       sourcePath: directory,
       assetHashType: AssetHashType.OUTPUT,
       bundling: {
