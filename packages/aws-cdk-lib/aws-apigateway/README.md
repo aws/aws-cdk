@@ -30,6 +30,10 @@ running on AWS Lambda, or any web application.
     - [Cognito User Pools authorizer](#cognito-user-pools-authorizer)
   - [Mutual TLS (mTLS)](#mutual-tls-mtls)
   - [Deployments](#deployments)
+    - [Deploying to an existing stage](#deploying-to-an-existing-stage)
+      - [Using RestApi](#using-restapi)
+      - [Using SpecRestApi](#using-specrestapi)
+    - [Controlled triggering of deployments](#controlled-triggering-of-deployments)
     - [Deep dive: Invalidation of deployments](#deep-dive-invalidation-of-deployments)
   - [Custom Domains](#custom-domains)
     - [Custom Domains with multi-level api mapping](#custom-domains-with-multi-level-api-mapping)
@@ -64,6 +68,24 @@ books.addMethod('POST');
 const book = books.addResource('{book_id}');
 book.addMethod('GET');
 book.addMethod('DELETE');
+```
+
+When using OpenAPI to define your REST API, you can control how API Gateway handles resource updates using the `mode` property. Valid values are:
+
+* `overwrite` - The new API definition replaces the existing one. The existing API identifier remains unchanged.
+* `merge` - The new API definition is merged with the existing API.
+
+If you don't specify this property, a default value is chosen:
+* For REST APIs created before March 29, 2021, the default is `overwrite`
+* For REST APIs created after March 29, 2021, the new API definition takes precedence, but any container types such as endpoint configurations and binary media types are merged with the existing API.
+
+Use the default mode to define top-level RestApi properties in addition to using OpenAPI.
+Generally, it's preferred to use API Gateway's OpenAPI extensions to model these properties.
+
+```ts
+const api = new apigateway.RestApi(this, 'books-api', {
+  mode: apigateway.RestApiMode.MERGE
+});
 ```
 
 To give an IAM User or Role permission to invoke a method, use `grantExecute`:
@@ -1664,6 +1686,10 @@ like `AWS::APIGateway::DomainNameV2` and this would cause compatibility issue wi
 resource defined in `apigatewayv2.ts` file during the L1 generation.
 
 Move to using `aws-apigatewayv2` to get the latest APIs and updates.
+
+----
+
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ----
 
