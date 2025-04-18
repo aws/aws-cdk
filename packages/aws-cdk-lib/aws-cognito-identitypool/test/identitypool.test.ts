@@ -130,6 +130,222 @@ describe('identity pool', () => {
       },
     });
   });
+
+  test('add role mappings with multiple rules', () => {
+    const stack = new Stack();
+    const identityPool = new IdentityPool(stack, 'TestIdentityPool');
+    const adminRole = new Role(stack, 'AdminRole', {
+      assumedBy: new ServicePrincipal('cognito-identity.amazonaws.com'),
+    });
+    const userRole = new Role(stack, 'UserRole', {
+      assumedBy: new ServicePrincipal('cognito-identity.amazonaws.com'),
+    });
+
+    identityPool.addRoleMappings({
+      providerUrl: IdentityPoolProviderUrl.custom('custom.provider.com'),
+      rules: [
+        {
+          claim: 'custom:role',
+          matchType: RoleMappingMatchType.EQUALS,
+          claimValue: 'admin',
+          mappedRole: adminRole,
+        },
+        {
+          claim: 'custom:role',
+          matchType: RoleMappingMatchType.CONTAINS,
+          claimValue: 'user',
+          mappedRole: userRole,
+        },
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
+      RoleMappings: {
+        'custom.provider.com': {
+          AmbiguousRoleResolution: 'Deny',
+          Type: 'Rules',
+          RulesConfiguration: {
+            Rules: [
+              {
+                Claim: 'custom:role',
+                MatchType: 'Equals',
+                RoleARN: {
+                  'Fn::GetAtt': ['AdminRole38563C57', 'Arn'],
+                },
+                Value: 'admin',
+              },
+              {
+                Claim: 'custom:role',
+                MatchType: 'Contains',
+                RoleARN: {
+                  'Fn::GetAtt': ['UserRoleB7C3739B', 'Arn'],
+                },
+                Value: 'user',
+              },
+            ],
+          },
+        },
+      },
+    });
+  });
+
+  test('add multiple role mappings for different providers', () => {
+    const stack = new Stack();
+    const identityPool = new IdentityPool(stack, 'TestIdentityPool');
+    const mappedRole = new Role(stack, 'MappedRole', {
+      assumedBy: new ServicePrincipal('cognito-identity.amazonaws.com'),
+    });
+
+    identityPool.addRoleMappings(
+      {
+        providerUrl: IdentityPoolProviderUrl.custom('custom.provider.com'),
+        useToken: true,
+        resolveAmbiguousRoles: true,
+      },
+      {
+        providerUrl: IdentityPoolProviderUrl.saml('saml.provider.com'),
+        rules: [
+          {
+            claim: 'Role',
+            matchType: RoleMappingMatchType.EQUALS,
+            claimValue: 'Admin',
+            mappedRole: mappedRole,
+          },
+        ],
+      },
+    );
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
+      RoleMappings: {
+        'custom.provider.com': {
+          AmbiguousRoleResolution: 'AuthenticatedRole',
+          Type: 'Token',
+        },
+        'saml.provider.com': {
+          AmbiguousRoleResolution: 'Deny',
+          RulesConfiguration: {
+            Rules: [
+              {
+                Claim: 'Role',
+                MatchType: 'Equals',
+                RoleARN: {
+                  'Fn::GetAtt': ['MappedRole859428B9', 'Arn'],
+                },
+                Value: 'Admin',
+              },
+            ],
+          },
+          Type: 'Rules',
+        },
+      },
+    });
+  });
+
+  test('add role mappings to identity pool that already has role mappings', () => {
+    const stack = new Stack();
+    const userRole = new Role(stack, 'UserRole', {
+      assumedBy: new ServicePrincipal('cognito-identity.amazonaws.com'),
+    });
+    const identityPool = new IdentityPool(stack, 'TestIdentityPool', {
+      roleMappings: [{
+        providerUrl: IdentityPoolProviderUrl.AMAZON,
+        rules: [
+          {
+            claim: 'custom:role',
+            matchType: RoleMappingMatchType.EQUALS,
+            claimValue: 'admin',
+            mappedRole: userRole,
+          },
+        ],
+      }],
+    });
+
+    // Add additional role mappings after creation
+    identityPool.addRoleMappings(
+      {
+        providerUrl: IdentityPoolProviderUrl.FACEBOOK,
+        rules: [
+          {
+            claim: 'custom:role',
+            matchType: RoleMappingMatchType.EQUALS,
+            claimValue: 'user',
+            mappedRole: userRole,
+          },
+        ],
+      },
+      {
+        providerUrl: IdentityPoolProviderUrl.custom('custom.provider.com'),
+        rules: [
+          {
+            claim: 'custom:role',
+            matchType: RoleMappingMatchType.CONTAINS,
+            claimValue: 'custom',
+            mappedRole: userRole,
+          },
+        ],
+      },
+    );
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
+      RoleMappings: {
+        'www.amazon.com': {
+          AmbiguousRoleResolution: 'Deny',
+          IdentityProvider: 'www.amazon.com',
+          RulesConfiguration: {
+            Rules: [
+              {
+                Claim: 'custom:role',
+                MatchType: 'Equals',
+                RoleARN: {
+                  'Fn::GetAtt': ['UserRoleB7C3739B', 'Arn'],
+                },
+                Value: 'admin',
+              },
+            ],
+          },
+          Type: 'Rules',
+        },
+        'graph.facebook.com': {
+          AmbiguousRoleResolution: 'Deny',
+          IdentityProvider: 'graph.facebook.com',
+          RulesConfiguration: {
+            Rules: [
+              {
+                Claim: 'custom:role',
+                MatchType: 'Equals',
+                RoleARN: {
+                  'Fn::GetAtt': ['UserRoleB7C3739B', 'Arn'],
+                },
+                Value: 'user',
+              },
+            ],
+          },
+          Type: 'Rules',
+        },
+        'custom.provider.com': {
+          AmbiguousRoleResolution: 'Deny',
+          IdentityProvider: 'custom.provider.com',
+          RulesConfiguration: {
+            Rules: [
+              {
+                Claim: 'custom:role',
+                MatchType: 'Contains',
+                RoleARN: {
+                  'Fn::GetAtt': ['UserRoleB7C3739B', 'Arn'],
+                },
+                Value: 'custom',
+              },
+            ],
+          },
+          Type: 'Rules',
+        },
+      },
+    });
+  });
+
   test('adding actions and resources to default roles', () => {
     const stack = new Stack();
     const identityPool = new IdentityPool(stack, 'TestIdentityPoolActions');
