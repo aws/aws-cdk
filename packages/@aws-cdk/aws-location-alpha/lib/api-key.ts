@@ -1,4 +1,4 @@
-import { ArnFormat, Aws, IResource, Lazy, Resource, Stack, Token } from 'aws-cdk-lib/core';
+import { ArnFormat, Aws, IResource, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnAPIKey } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
@@ -245,7 +245,7 @@ export class ApiKey extends Resource implements IApiKey {
     const parsedArn = Stack.of(scope).splitArn(apiKeyArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new Error(`API Key Arn ${apiKeyArn} does not have a resource name.`);
+      throw new UnscopedValidationError(`API Key Arn ${apiKeyArn} does not have a resource name.`);
     }
 
     class Import extends Resource implements IApiKey {
@@ -278,39 +278,39 @@ export class ApiKey extends Resource implements IApiKey {
   public readonly apiKeyUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: ApiKeyProps = {}) {
-    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
-    }
-
-    if (props.apiKeyName !== undefined && !Token.isUnresolved(props.apiKeyName)) {
-      if (props.apiKeyName.length < 1 || props.apiKeyName.length > 100) {
-        throw new Error(`\`apiKeyName\` must be between 1 and 100 characters, got: ${props.apiKeyName.length} characters.`);
-      }
-
-      if (!/^[-._\w]+$/.test(props.apiKeyName)) {
-        throw new Error(`\`apiKeyName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.apiKeyName}.`);
-      }
-    }
-
     super(scope, id, {
       physicalName: props.apiKeyName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
 
+    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
+      throw new ValidationError(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
+    }
+
+    if (props.apiKeyName !== undefined && !Token.isUnresolved(props.apiKeyName)) {
+      if (props.apiKeyName.length < 1 || props.apiKeyName.length > 100) {
+        throw new ValidationError(`\`apiKeyName\` must be between 1 and 100 characters, got: ${props.apiKeyName.length} characters.`, this);
+      }
+
+      if (!/^[-._\w]+$/.test(props.apiKeyName)) {
+        throw new ValidationError(`\`apiKeyName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.apiKeyName}.`, this);
+      }
+    }
+
     if (props.expireTime !== undefined && props.noExpiry === true) {
-      throw new Error('`expireTime` must not be set when `noExpiry` has value true.');
+      throw new ValidationError('`expireTime` must not be set when `noExpiry` has value true.', this);
     }
 
     if (props.expireTime === undefined && props.noExpiry !== true) {
-      throw new Error('`expireTime` must be set when `noExpiry` is false or undefined.');
+      throw new ValidationError('`expireTime` must be set when `noExpiry` is false or undefined.', this);
     }
 
     if (!props.allowMapsActions && !props.allowPlacesActions && !props.allowRoutesActions) {
-      throw new Error('At least one of `allowMapsActions`, `allowPlacesActions`, or `allowRoutesActions` must be specified.');
+      throw new ValidationError('At least one of `allowMapsActions`, `allowPlacesActions`, or `allowRoutesActions` must be specified.', this);
     }
 
     if (props.allowReferers !== undefined &&
       (props.allowReferers.length < 1 || props.allowReferers.length > 5)) {
-      throw new Error(`\`allowReferers\` must be between 1 and 5 elements, got: ${props.allowReferers.length} elements.`);
+      throw new ValidationError(`\`allowReferers\` must be between 1 and 5 elements, got: ${props.allowReferers.length} elements.`, this);
     }
 
     const apiKey = new CfnAPIKey(this, 'Resource', {
