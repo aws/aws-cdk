@@ -149,7 +149,7 @@ export class PrefixList extends PrefixListBase {
     }).value;
 
     // getValue returns a list of result objects. We are expecting 1 result or Error.
-    if (response.length === 0 || response.length > 1) {
+    if (response.length !== 1) {
       throw new ValidationError('Unexpected response received from the context provider. Please clear out the context key using `cdk context --remove` and try again.', scope);
     }
 
