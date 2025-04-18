@@ -1,9 +1,10 @@
 import { Construct } from 'constructs';
+import { CfnDeliveryStream } from './kinesisfirehose.generated';
 import * as iam from '../../aws-iam';
 import { Duration, Size } from '../../core';
 
 /**
- * Configure the data processor.
+ * Configure the LambdaFunctionProcessor.
  */
 export interface DataProcessorProps {
   /**
@@ -32,12 +33,11 @@ export interface DataProcessorProps {
  * The key-value pair that identifies the underlying processor resource.
  *
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processorparameter.html
+ * @deprecated Use `CfnDeliveryStream.ProcessorParameterProperty`
  */
 export interface DataProcessorIdentifier {
   /**
    * The parameter name that corresponds to the processor resource's identifier.
-   *
-   * Must be an accepted value in `CfnDeliveryStream.ProcessoryParameterProperty.ParameterName`.
    */
   readonly parameterName: string;
 
@@ -49,21 +49,26 @@ export interface DataProcessorIdentifier {
 
 /**
  * The full configuration of a data processor.
+ *
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processor.html
  */
 export interface DataProcessorConfig {
   /**
-   * The type of the underlying processor resource.
-   *
-   * Must be an accepted value in `CfnDeliveryStream.ProcessorProperty.Type`.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processor.html#cfn-kinesisfirehose-deliverystream-processor-type
-   * @example 'Lambda'
+   * The type of processor.
    */
   readonly processorType: string;
 
   /**
    * The key-value pair that identifies the underlying processor resource.
+   * @deprecated Use `parameters`
    */
   readonly processorIdentifier: DataProcessorIdentifier;
+
+  /**
+   * The processor parameters.
+   * @default - No parameters
+   */
+  readonly parameters?: CfnDeliveryStream.ProcessorParameterProperty[];
 }
 
 /**

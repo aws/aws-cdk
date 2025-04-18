@@ -101,14 +101,21 @@ export function createEncryptionConfig(
 export function createProcessingConfig(
   scope: Construct,
   role: iam.IRole,
-  dataProcessor?: IDataProcessor,
+  dataProcessors?: IDataProcessor[],
 ): CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
-  return dataProcessor
-    ? {
-      enabled: true,
-      processors: [renderDataProcessor(dataProcessor, scope, role)],
-    }
-    : undefined;
+  if (!dataProcessors?.length) return undefined;
+
+  const processors = dataProcessors.map((dp) => renderDataProcessor(dp, scope, role));
+  const procesorTypes = new Set(processors.map((p) => p.type));
+
+  if (procesorTypes.has('CloudWatchLogProcessing') && !procesorTypes.has('Decompression')) {
+    throw new cdk.ValidationError('CloudWatchLogProcessingProcessor can only be enabled with DecompressionProcessor', scope);
+  }
+
+  return {
+    enabled: true,
+    processors,
+  };
 }
 
 function renderDataProcessor(
@@ -117,20 +124,14 @@ function renderDataProcessor(
   role: iam.IRole,
 ): CfnDeliveryStream.ProcessorProperty {
   const processorConfig = processor.bind(scope, { role });
-  const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
-  parameters.push(processorConfig.processorIdentifier);
-  if (processor.props.bufferInterval) {
-    parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processor.props.bufferInterval.toSeconds().toString() });
+
+  if (processorConfig.processorIdentifier.parameterName) {
+    throw new cdk.ValidationError("'processorIdentifier' has been deprecated. Please update your bind() method to return 'parameters' instead.", scope);
   }
-  if (processor.props.bufferSize) {
-    parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processor.props.bufferSize.toMebibytes().toString() });
-  }
-  if (processor.props.retries) {
-    parameters.push({ parameterName: 'NumberOfRetries', parameterValue: processor.props.retries.toString() });
-  }
+
   return {
     type: processorConfig.processorType,
-    parameters,
+    parameters: processorConfig.parameters ?? [],
   };
 }
 
