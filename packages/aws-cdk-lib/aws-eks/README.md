@@ -1929,10 +1929,13 @@ declare const cluster: eks.Cluster;
 
 new eks.Addon(this, 'Addon', {
   cluster,
-  addonName: 'aws-guardduty-agent',
-  addonVersion: 'v1.6.1',
+  addonName: 'coredns',
+  addonVersion: 'v1.11.4-eksbuild.2',
   // whether to preserve the add-on software on your cluster but Amazon EKS stops managing any settings for the add-on.
   preserveOnDelete: false,
+  configurationValues: JSON.stringify({
+    replicaCount: 2,
+  }),
 });
 ```
 
