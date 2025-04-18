@@ -280,7 +280,7 @@ things.
 > *Info* More complete details can be found [in the docs](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2-examples-setting-capacity-range-for-cluster)
 
 You can also set minimum capacity to zero ACUs and automatically pause,
-if they don't have any connections initiated by user activity within a time period specified by `autoPause` (300 seconds by default).
+if they don't have any connections initiated by user activity within a time period specified by `serverlessV2AutoPause` (300 seconds by default).
 For more information, see [Scaling to Zero ACUs with automatic pause and resume for Aurora Serverless v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html).
 
 ```ts
@@ -289,7 +289,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_08_0 }),
   writer: rds.ClusterInstance.serverlessV2('writer'),
   serverlessV2MinCapacity: 0,
-  autoPause: Duration.hours(1),
+  serverlessV2AutoPause: Duration.hours(1),
   vpc,
 });
 ```

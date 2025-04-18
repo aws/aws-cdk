@@ -98,9 +98,9 @@ interface DatabaseClusterBaseProps {
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html
    *
-   * @default - The RDS default is 300 seconds (5 minutes).
+   * @default - The default is 300 seconds (5 minutes).
    */
-  readonly autoPause?: Duration;
+  readonly serverlessV2AutoPause?: Duration;
 
   /**
    * What subnets to run the RDS instances in.
@@ -792,7 +792,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   protected readonly serverlessV2MinCapacity: number;
   protected readonly serverlessV2MaxCapacity: number;
-  protected readonly autoPause?: Duration;
+  protected readonly serverlessV2AutoPause?: Duration;
 
   protected hasServerlessInstance?: boolean;
   protected enableDataApi?: boolean;
@@ -820,7 +820,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     this.serverlessV2MaxCapacity = props.serverlessV2MaxCapacity ?? 2;
     this.serverlessV2MinCapacity = props.serverlessV2MinCapacity ?? 0.5;
-    this.autoPause = props.autoPause;
+    this.serverlessV2AutoPause = props.serverlessV2AutoPause;
     this.validateServerlessScalingConfig();
 
     this.enableDataApi = props.enableDataApi;
@@ -954,7 +954,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
             return {
               minCapacity: this.serverlessV2MinCapacity,
               maxCapacity: this.serverlessV2MaxCapacity,
-              secondsUntilAutoPause: this.autoPause?.toSeconds(),
+              secondsUntilAutoPause: this.serverlessV2AutoPause?.toSeconds(),
             } satisfies CfnDBCluster.ServerlessV2ScalingConfigurationProperty;
           }
           return undefined;
@@ -1178,10 +1178,11 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       `min: ${this.serverlessV2MaxCapacity}, max: ${this.serverlessV2MaxCapacity}`, this);
     }
 
-    if (this.autoPause && !this.autoPause.isUnresolved()) {
-      if (this.autoPause.toSeconds() < 300 || this.autoPause.toSeconds() > 86400) {
-        throw new ValidationError(`autoPause must be between 300 seconds (5 minutes) and 86,400 seconds (24 hours), received ${this.autoPause.toSeconds()} seconds`, this);
-      }
+    if (
+      this.serverlessV2AutoPause && !this.serverlessV2AutoPause.isUnresolved() &&
+      (this.serverlessV2AutoPause.toSeconds() < 300 || this.serverlessV2AutoPause.toSeconds() > 86400)
+    ) {
+      throw new ValidationError(`serverlessV2AutoPause must be between 300 seconds (5 minutes) and 86,400 seconds (24 hours), received ${this.serverlessV2AutoPause.toSeconds()} seconds`, this);
     }
   }
 

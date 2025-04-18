@@ -180,11 +180,11 @@ describe('cluster new api', () => {
           engine: DatabaseClusterEngine.AURORA_MYSQL,
           vpc,
           vpcSubnets: vpc.selectSubnets( { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } ),
-          autoPause,
+          serverlessV2AutoPause: autoPause,
           iamAuthentication: true,
         });
         // THEN
-      }).toThrow('autoPause must be between 300 seconds (5 minutes) and 86,400 seconds (24 hours)');
+      }).toThrow('serverlessV2AutoPause must be between 300 seconds (5 minutes) and 86,400 seconds (24 hours)');
     });
   });
 
@@ -537,7 +537,7 @@ describe('cluster new api', () => {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.serverlessV2('writer'),
-        autoPause: cdk.Duration.hours(1),
+        serverlessV2AutoPause: cdk.Duration.hours(1),
         iamAuthentication: true,
       });
 
