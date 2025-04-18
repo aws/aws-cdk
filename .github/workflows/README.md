@@ -128,3 +128,8 @@ Owner: CDK Support team
 
 [project-prioritization-needs-attention.yml](project-prioritization-needs-attention.yml): GitHub action that runs every day to update Needs Attention field in the prioritization project board.
 Owner: CDK Support team
+
+### PR Prioritization AddedOn update
+
+[project-prioritization-added-on.yml](project-prioritization-added-on.yml): GitHub action that runs every day to update AddedOn field in the prioritization project board.
+Owner: CDK Support team

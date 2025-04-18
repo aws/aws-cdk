@@ -4,6 +4,7 @@ import { CfnLaunchTemplate } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
+import { IPlacementGroup } from './placement-group';
 import { launchTemplateBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup } from './security-group';
 import { UserData } from './user-data';
@@ -22,6 +23,7 @@ import {
   Tags,
   Token,
   FeatureFlags,
+  ValidationError,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
@@ -441,6 +443,13 @@ export interface LaunchTemplateProps {
    * @default - No instance profile
    */
   readonly instanceProfile?: iam.IInstanceProfile;
+
+  /**
+   * The placement group that you want to launch the instance into.
+   *
+   * @default - no placement group will be used for this launch template.
+   */
+  readonly placementGroup?: IPlacementGroup;
 }
 
 /**
@@ -504,7 +513,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     const haveId = Boolean(attrs.launchTemplateId);
     const haveName = Boolean(attrs.launchTemplateName);
     if (haveId == haveName) {
-      throw new Error('LaunchTemplate.fromLaunchTemplateAttributes() requires exactly one of launchTemplateId or launchTemplateName be provided.');
+      throw new ValidationError('LaunchTemplate.fromLaunchTemplateAttributes() requires exactly one of launchTemplateId or launchTemplateName be provided.', scope);
     }
 
     class Import extends Resource implements ILaunchTemplate {
@@ -615,11 +624,11 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     }
 
     if (props.instanceProfile && props.role) {
-      throw new Error('You cannot provide both an instanceProfile and a role');
+      throw new ValidationError('You cannot provide both an instanceProfile and a role', this);
     }
 
     if (props.keyName && props.keyPair) {
-      throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+      throw new ValidationError('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'', this);
     }
 
     // use provided instance profile or create one if a role was provided
@@ -656,7 +665,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     }
 
     if (this.osType && props.keyPair && !props.keyPair._isOsCompatible(this.osType)) {
-      throw new Error(`${props.keyPair.type} keys are not compatible with the chosen AMI`);
+      throw new ValidationError(`${props.keyPair.type} keys are not compatible with the chosen AMI`, this);
     }
 
     if (FeatureFlags.of(this).isEnabled(cxapi.EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA) ||
@@ -750,7 +759,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       : undefined;
 
     if (props.versionDescription && !Token.isUnresolved(props.versionDescription) && props.versionDescription.length > 255) {
-      throw new Error(`versionDescription must be less than or equal to 255 characters, got ${props.versionDescription.length}`);
+      throw new ValidationError(`versionDescription must be less than or equal to 255 characters, got ${props.versionDescription.length}`, this);
     }
 
     const resource = new CfnLaunchTemplate(this, 'Resource', {
@@ -783,6 +792,9 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         userData: userDataToken,
         metadataOptions: this.renderMetadataOptions(props),
         networkInterfaces,
+        placement: props.placementGroup ? {
+          groupName: props.placementGroup.placementGroupName,
+        } : undefined,
 
         // Fields not yet implemented:
         // ==========================
@@ -811,7 +823,8 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         // Should be implemented via the Tagging aspect in CDK core. Complication will be that this tagging interface is very unique to LaunchTemplates.
         // tagSpecification: undefined
 
-        // CDK has no abstraction for Placement yet.
+        // CDK only has placement groups, not placement.
+        // Specifiying options other than placementGroup is not supported yet.
         // placement: undefined,
 
       },
@@ -866,7 +879,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   @MethodMetadata()
   public addSecurityGroup(securityGroup: ISecurityGroup): void {
     if (!this._connections) {
-      throw new Error('LaunchTemplate can only be added a securityGroup if another securityGroup is initialized in the constructor.');
+      throw new ValidationError('LaunchTemplate can only be added a securityGroup if another securityGroup is initialized in the constructor.', this);
     }
     this._connections.addSecurityGroup(securityGroup);
   }
@@ -878,7 +891,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   public get connections(): Connections {
     if (!this._connections) {
-      throw new Error('LaunchTemplate can only be used as IConnectable if a securityGroup is provided when constructing it.');
+      throw new ValidationError('LaunchTemplate can only be used as IConnectable if a securityGroup is provided when constructing it.', this);
     }
     return this._connections;
   }
@@ -890,7 +903,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   public get grantPrincipal(): iam.IPrincipal {
     if (!this._grantPrincipal) {
-      throw new Error('LaunchTemplate can only be used as IGrantable if a role is provided when constructing it.');
+      throw new ValidationError('LaunchTemplate can only be used as IGrantable if a role is provided when constructing it.', this);
     }
     return this._grantPrincipal;
   }
