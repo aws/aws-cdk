@@ -181,36 +181,4 @@ describe('prefix list', () => {
       PrefixList.fromLookup(stack, 'PrefixList', { prefixListName: prefixListName.valueAsString });
     }).toThrow('All arguments to look up a managed prefix list must be concrete (no Tokens)');
   });
-
-  test('fromLookup throws if not found', () => {
-    // GIVEN
-    const resultObjs = [];
-    jest.spyOn(ContextProvider, 'getValue').mockReturnValue({ value: resultObjs });
-
-    // WHEN
-    const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
-
-    // THEN
-    expect(() => {
-      PrefixList.fromLookup(stack, 'PrefixList', {
-        prefixListName: 'com.amazonaws.us-east-1.missingprefixlist',
-      });
-    }).toThrow('Could not find any managed prefix lists matching');
-  });
-
-  test('fromLookup throws if multiple resources found', () => {
-    // GIVEN
-    const resultObjs = [{ PrefixListId: 'pl-xxxxxxxx' }, { PrefixListId: 'pl-yyyyyyyy' }];
-    jest.spyOn(ContextProvider, 'getValue').mockReturnValue({ value: resultObjs });
-
-    // WHEN
-    const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
-
-    // THEN
-    expect(() => {
-      PrefixList.fromLookup(stack, 'PrefixList', {
-        prefixListName: 'com.amazonaws.us-east-1.missingprefixlist',
-      });
-    }).toThrow('Found 2 managed prefix lists matching');
-  });
 });

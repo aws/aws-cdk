@@ -143,15 +143,14 @@ export class PrefixList extends PrefixListBase {
           ...(options.addressFamily ? { AddressFamily: options.addressFamily } : undefined),
         },
         propertiesToReturn: ['PrefixListId'],
+        expectedMatchCount: 'exactly-one',
       } satisfies Omit<cxschema.CcApiContextQuery, 'account'|'region'>,
       dummyValue: [dummyResponse] satisfies PrefixListContextResponse[],
     }).value;
 
     // getValue returns a list of result objects. We are expecting 1 result or Error.
-    if (response.length === 0) {
-      throw new ValidationError(`Could not find any managed prefix lists matching ${JSON.stringify(options)}`, scope);
-    } else if (response.length > 1) {
-      throw new ValidationError(`Found ${response.length} managed prefix lists matching ${JSON.stringify(options)}; please narrow the search criteria`, scope);
+    if (response.length === 0 || response.length > 1) {
+      throw new ValidationError('Unexpected response received from the context provider. Please clear out the context key using `cdk context --remove` and try again.', scope);
     }
 
     const prefixList = response[0];
