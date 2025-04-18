@@ -1,7 +1,8 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+      "displayName": "aws-stepfunctions-csv-delimiter-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
         "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
         "packaging": "zip"
@@ -15,6 +16,7 @@
       }
     },
     "a7430e67a0ec846331bde3c909e998207c985f2a343874a0bf6a02bfb59cb74c": {
+      "displayName": "aws-stepfunctions-csv-delimiter-integ Template",
       "source": {
         "path": "aws-stepfunctions-csv-delimiter-integ.template.json",
         "packaging": "file"
