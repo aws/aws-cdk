@@ -1,0 +1,147 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "AnomalyDetectionAlarmTestStack": {
+        "id": "AnomalyDetectionAlarmTestStack",
+        "path": "AnomalyDetectionAlarmTestStack",
+        "children": {
+          "AnomalyAlarm": {
+            "id": "AnomalyAlarm",
+            "path": "AnomalyDetectionAlarmTestStack/AnomalyAlarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AnomalyDetectionAlarmTestStack/AnomalyAlarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "LessThanLowerOrGreaterThanUpperThreshold",
+                    "datapointsToAlarm": 2,
+                    "evaluationPeriods": 3,
+                    "metrics": [
+                      {
+                        "expression": "ANOMALY_DETECTION_BAND(m0, 2)",
+                        "id": "expr_1",
+                        "returnData": true
+                      },
+                      {
+                        "metricStat": {
+                          "metric": {
+                            "metricName": "CPUUtilization",
+                            "namespace": "AWS/EC2"
+                          },
+                          "period": 300,
+                          "stat": "Average"
+                        },
+                        "id": "m0",
+                        "returnData": true
+                      }
+                    ],
+                    "thresholdMetricId": "expr_1"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "AnomalyDetectionAlarmTestStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "AnomalyDetectionAlarmTestStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "AnomalyDetectionAlarmIntegTest": {
+        "id": "AnomalyDetectionAlarmIntegTest",
+        "path": "AnomalyDetectionAlarmIntegTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "AnomalyDetectionAlarmIntegTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "AnomalyDetectionAlarmIntegTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

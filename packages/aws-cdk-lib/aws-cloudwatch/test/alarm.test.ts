@@ -3,7 +3,7 @@ import { Match, Template, Annotations } from '../../assertions';
 import { Ec2Action, Ec2InstanceAction } from '../../aws-cloudwatch-actions/lib';
 import { Duration, Stack, App } from '../../core';
 import { ENABLE_PARTITION_LITERALS } from '../../cx-api';
-import { Alarm, IAlarm, IAlarmAction, Metric, MathExpression, IMetric, Stats } from '../lib';
+import { Alarm, IAlarm, IAlarmAction, Metric, MathExpression, IMetric, Stats, ComparisonOperator, CfnAlarm } from '../lib';
 
 const testMetric = new Metric({
   namespace: 'CDK/Test',
@@ -236,7 +236,7 @@ describe('Alarm', () => {
 
   test('EC2 alarm actions with InstanceId dimension', () => {
     // GIVEN
-    const app = new App({ context: { [ ENABLE_PARTITION_LITERALS]: true } });
+    const app = new App({ context: { [ENABLE_PARTITION_LITERALS]: true } });
     const stack = new Stack(app, 'EC2AlarmStack', { env: { region: 'us-west-2', account: '123456789012' } });
 
     // WHEN
@@ -265,7 +265,7 @@ describe('Alarm', () => {
 
   test('EC2 alarm actions without InstanceId dimension', () => {
     // GIVEN
-    const app = new App({ context: { [ ENABLE_PARTITION_LITERALS]: true } });
+    const app = new App({ context: { [ENABLE_PARTITION_LITERALS]: true } });
     const stack = new Stack(app, 'EC2AlarmStack', { env: { region: 'us-west-2', account: '123456789012' } });
 
     // WHEN
@@ -457,6 +457,105 @@ describe('Alarm', () => {
     expect(alarmFromName.alarmName).toEqual('TestAlarmName');
     expect(alarmFromName.alarmArn).toMatch(/:alarm:TestAlarmName$/);
   });
+});
+
+test('createAnomalyDetectionAlarm creates an alarm with correct properties based on a Metric', () => {
+  // GIVEN
+  const stack = new Stack();
+  const metric = new Metric({ namespace: 'AWS/EC2', metricName: 'CPUUtilization' });
+
+  // WHEN
+  const alarm = metric.createAnomalyDetectionAlarm(stack, 'Alarm', {
+    bounds: 1,
+    evaluationPeriods: 3,
+    datapointsToAlarm: 2,
+    comparisonOperator: ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
+  });
+
+  // THEN
+  const cfnAlarm = alarm.node.defaultChild as CfnAlarm;
+  expect(cfnAlarm.comparisonOperator).toEqual('LessThanLowerOrGreaterThanUpperThreshold');
+  expect(cfnAlarm.threshold).toBeUndefined();
+  expect(cfnAlarm.thresholdMetricId).toEqual('expr_1');
+  expect(cfnAlarm.metrics).toHaveLength(2);
+  expect(cfnAlarm.metrics![0].returnData).toBeTruthy();
+  expect(cfnAlarm.metrics![1].returnData).toBeTruthy();
+  expect(cfnAlarm.metrics![0].expression).toEqual('ANOMALY_DETECTION_BAND(m0, 1)');
+});
+
+test('createAnomalyDetectionAlarm creates an alarm with correct properties based on a MathExpression', () => {
+  // GIVEN
+  const stack = new Stack();
+  const metric = new MathExpression({
+    expression: 'm1 + 1',
+    usingMetrics: { m1: new Metric({ namespace: 'AWS/EC2', metricName: 'CPUUtilization' }) },
+  });
+
+  // WHEN
+  const alarm = metric.createAnomalyDetectionAlarm(stack, 'Alarm', {
+    bounds: 10,
+    evaluationPeriods: 3,
+    datapointsToAlarm: 2,
+    comparisonOperator: ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
+  });
+
+  // THEN
+  const cfnAlarm = alarm.node.defaultChild as CfnAlarm;
+  expect(cfnAlarm.comparisonOperator).toEqual('LessThanLowerOrGreaterThanUpperThreshold');
+  expect(cfnAlarm.threshold).toBeUndefined();
+  expect(cfnAlarm.thresholdMetricId).toEqual('expr_1');
+  expect(cfnAlarm.metrics).toHaveLength(3);
+  expect(cfnAlarm.metrics![0].returnData).toBeTruthy();
+  expect(cfnAlarm.metrics![1].returnData).toBeTruthy();
+  expect(cfnAlarm.metrics![0].expression).toEqual('ANOMALY_DETECTION_BAND(m0, 10)');
+});
+
+test('isAnomalyDetectionOperator returns correct values', () => {
+  // GIVEN
+  const anomalyOperators = [
+    ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
+    ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD,
+    ComparisonOperator.LESS_THAN_LOWER_THRESHOLD,
+  ];
+  const nonAnomalyOperators = [
+    ComparisonOperator.GREATER_THAN_THRESHOLD,
+    ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+    ComparisonOperator.LESS_THAN_THRESHOLD,
+    ComparisonOperator.LESS_THAN_OR_EQUAL_TO_THRESHOLD,
+  ];
+
+  // WHEN / THEN
+  for (const operator of anomalyOperators) {
+    expect(Alarm.isAnomalyDetectionOperator(operator)).toBeTruthy();
+  }
+  for (const operator of nonAnomalyOperators) {
+    expect(Alarm.isAnomalyDetectionOperator(operator)).toBeFalsy();
+  }
+});
+
+test('Anomaly detection alarm does not accept non Anomaly Operators', () => {
+  // GIVEN
+  const stack = new Stack();
+  const metric = new Metric({ namespace: 'AWS/EC2', metricName: 'CPUUtilization' });
+
+  const nonAnomalyOperators = [
+    ComparisonOperator.GREATER_THAN_THRESHOLD,
+    ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+    ComparisonOperator.LESS_THAN_THRESHOLD,
+    ComparisonOperator.LESS_THAN_OR_EQUAL_TO_THRESHOLD,
+  ];
+  for (const operator of nonAnomalyOperators) {
+    expect(() => {
+      // WHEN
+      metric.createAnomalyDetectionAlarm(stack, 'Alarm', {
+        bounds: 1,
+        evaluationPeriods: 3,
+        datapointsToAlarm: 2,
+        comparisonOperator: operator,
+      });
+      // THEN
+    }).toThrow(/Invalid comparison operator for anomaly detection alarm/);
+  }
 });
 
 class TestAlarmAction implements IAlarmAction {

@@ -303,6 +303,33 @@ export class Metric implements IMetric {
     });
   }
 
+  /**
+   * Make a new Alarm for this metric using anomaly detection
+   *
+   * @param scope The scope in which to create the alarm
+   * @param id The ID of the alarm
+   * @param props Alarm creation properties for anomaly detection
+   * @param metric The metric to create the alarm for
+   * @returns The newly created Alarm
+   */
+  public static createAnomalyDetectionAlarmFromMetric(scope: Construct, id: string, props: CreateAnomalyDetectionAlarmProps, metric: IMetric): Alarm {
+    if (!Alarm.isAnomalyDetectionOperator(props.comparisonOperator)) {
+      throw new cdk.ValidationError(`Invalid comparison operator for anomaly detection alarm: ${props.comparisonOperator}`, scope);
+    }
+    const anomalyDetectionExpression = new MathExpression({
+      expression: `ANOMALY_DETECTION_BAND(m0, ${props.bounds ?? 1})`,
+      usingMetrics: { m0: metric },
+      period: props.period,
+    });
+
+    return new Alarm(scope, id, {
+      ...props,
+      metric: anomalyDetectionExpression,
+      threshold: 0, // This value will be ignored for anomaly detection alarms
+      thresholdMetricId: 'expr_1',
+    });
+  }
+
   /** Dimensions of this metric */
   public readonly dimensions?: DimensionHash;
   /** Namespace of this metric */
@@ -358,11 +385,11 @@ export class Metric implements IMetric {
     if (parsedStat.type === 'generic') {
       // Unrecognized statistic, do not throw, just warn
       // There may be a new statistic that this lib does not support yet
-      const label = props.label ? `, label "${props.label}"`: '';
+      const label = props.label ? `, label "${props.label}"` : '';
 
       const warning = `Unrecognized statistic "${props.statistic}" for metric with namespace "${props.namespace}"${label} and metric name "${props.metricName}".` +
-          ' Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic.' +
-          ' You can ignore this warning if your statistic is valid but not yet supported by the `aws_cloudwatch.Stats` helper class.';
+        ' Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic.' +
+        ' You can ignore this warning if your statistic is valid but not yet supported by the `aws_cloudwatch.Stats` helper class.';
       this.warningsV2 = {
         'CloudWatch:Alarm:UnrecognizedStatistic': warning,
       };
@@ -558,6 +585,17 @@ export class Metric implements IMetric {
       treatMissingData: props.treatMissingData,
       actionsEnabled: props.actionsEnabled,
     });
+  }
+
+  /**
+   * Make a new Alarm for this metric using anomaly detection
+   *
+   * @param scope The scope in which to create the alarm
+   * @param id The ID of the alarm
+   * @param props Alarm creation properties for anomaly detection
+   */
+  public createAnomalyDetectionAlarm(scope: Construct, id: string, props: CreateAnomalyDetectionAlarmProps): Alarm {
+    return Metric.createAnomalyDetectionAlarmFromMetric(scope, id, props, this);
   }
 
   public toString() {
@@ -805,6 +843,17 @@ export class MathExpression implements IMetric {
     });
   }
 
+  /**
+   * Make a new Alarm for this metric using anomaly detection
+   *
+   * @param scope The scope in which to create the alarm
+   * @param id The ID of the alarm
+   * @param props Alarm creation properties for anomaly detection
+   */
+  public createAnomalyDetectionAlarm(scope: Construct, id: string, props: CreateAnomalyDetectionAlarmProps): Alarm {
+    return Metric.createAnomalyDetectionAlarmFromMetric(scope, id, props, this);
+  }
+
   public toString() {
     return this.label || this.expression;
   }
@@ -852,10 +901,7 @@ function allIdentifiersInExpression(x: string) {
   return Array.from(matchAll(x, FIND_VARIABLE)).map(m => m[0]);
 }
 
-/**
- * Properties needed to make an alarm from a metric
- */
-export interface CreateAlarmOptions {
+interface CreateAlarmOptionsBase {
   /**
    * The period over which the specified statistic is applied.
    *
@@ -907,11 +953,6 @@ export interface CreateAlarmOptions {
   readonly comparisonOperator?: ComparisonOperator;
 
   /**
-   * The value against which the specified statistic is compared.
-   */
-  readonly threshold: number;
-
-  /**
    * The number of periods over which data is compared to the specified threshold.
    */
   readonly evaluationPeriods: number;
@@ -951,6 +992,35 @@ export interface CreateAlarmOptions {
   readonly datapointsToAlarm?: number;
 }
 
+/**
+ * Properties needed to make an alarm from a metric
+ */
+export interface CreateAlarmOptions extends CreateAlarmOptionsBase {
+
+  /**
+   * The value against which the specified statistic is compared.
+   */
+  readonly threshold: number;
+}
+
+/**
+ * Properties needed to make an anomaly detection alarm from a metric
+ */
+export interface CreateAnomalyDetectionAlarmProps extends CreateAlarmOptionsBase {
+  /**
+   * The number of standard deviations to use for the anomaly detection band. The higher the value, the wider the band.
+   *
+   * - The minimum value should be greater than 0. A value of 0 or negative values would not make sense in the context of calculating standard deviations.
+   * - There is no strict maximum value defined, as standard deviations can theoretically extend infinitely. However, in practice, values beyond 5 or 6 standard deviations are rarely used, as they would result in an extremely wide anomaly detection band, potentially missing significant anomalies.
+   */
+  readonly bounds: number;
+
+  /**
+   * Comparison to use to check if metric is breaching
+   */
+  readonly comparisonOperator: ComparisonOperator;
+}
+
 function ifUndefined<T>(x: T | undefined, def: T | undefined): T | undefined {
   if (x !== undefined) {
     return x;
@@ -981,7 +1051,7 @@ function changeAllPeriods(metrics: Record<string, IMetric>, period: cdk.Duration
  * Relies on the fact that implementations of `IMetric` are also supposed to have
  * an implementation of `with` that accepts an argument called `period`. See `IModifiableMetric`.
  */
-function changePeriod(metric: IMetric, period: cdk.Duration): { metric: IMetric; overridden: boolean} {
+function changePeriod(metric: IMetric, period: cdk.Duration): { metric: IMetric; overridden: boolean } {
   if (isModifiableMetric(metric)) {
     const overridden =
       isMetricWithPeriod(metric) && // always true, as the period property is set with a default value even if it is not specified
