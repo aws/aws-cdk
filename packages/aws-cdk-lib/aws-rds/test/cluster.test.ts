@@ -169,7 +169,7 @@ describe('cluster new api', () => {
     test.each([
       [cdk.Duration.seconds(299)],
       [cdk.Duration.seconds(86401)],
-    ])('when serverless auto-pause duration is incorrect', (autoPause) => {
+    ])('when serverlessV2 auto-pause duration is incorrect', (autoPause) => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -527,7 +527,7 @@ describe('cluster new api', () => {
       });
     });
 
-    test('with serverless auto-pause configuration', () => {
+    test('with serverlessV2 auto-pause configuration', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
