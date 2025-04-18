@@ -629,7 +629,7 @@ exports[`built-in data is correct 1`] = `
       "1.0.295.0": undefined,
       "1.0.317.0": undefined,
       "1.0.333.0": undefined,
-      "1.0.391.0": undefined,
+      "1.0.391.0": "arn:aws:lambda:ap-southeast-7:761018874580:layer:LambdaInsightsExtension:2",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
