@@ -279,21 +279,21 @@ export interface RestApiProps extends RestApiBaseProps, ResourceOptions {
   /**
    * This property applies only when you use OpenAPI to define your REST API.
    * The Mode determines how API Gateway handles resource updates.
-   * 
+   *
    * Valid values are `overwrite` or `merge`.
-   * 
+   *
    * For `overwrite`, the new API definition replaces the existing one.
    * The existing API identifier remains unchanged.
-   * 
+   *
    * For `merge`, the new API definition is merged with the existing API.
-   * 
+   *
    * If you don't specify this property, a default value is chosen:
    * - For REST APIs created before March 29, 2021, the default is `overwrite`
    * - For REST APIs created after March 29, 2021, the new API definition takes precedence, but any container types such as endpoint configurations and binary media types are merged with the existing API.
-   * 
+   *
    * Use the default mode to define top-level RestApi properties in addition to using OpenAPI.
    * Generally, it's preferred to use API Gateway's OpenAPI extensions to model these properties.
-   * 
+   *
    * @default - `merge` for REST APIs created after March 29, 2021, otherwise `overwrite`
    */
   readonly mode?: RestApiMode;
@@ -1130,6 +1130,10 @@ function ignore(_x: any) {
   return;
 }
 
+/**
+ * Specifies how API Gateway handles resource updates when importing an OpenAPI definition.
+ * This property applies only when you use OpenAPI to define your REST API.
+ */
 export enum RestApiMode {
   /**
    * The new API definition replaces the existing one.
