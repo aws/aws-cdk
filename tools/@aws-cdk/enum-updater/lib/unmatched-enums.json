@@ -1672,6 +1672,12 @@
     "CsvDelimiter": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/distributed-map/item-reader.ts"
     },
+    "Transformation": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/distributed-map/result-writer.ts"
+    },
+    "OutputType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/distributed-map/result-writer.ts"
+    },
     "StateType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/private/state-type.ts"
     },
