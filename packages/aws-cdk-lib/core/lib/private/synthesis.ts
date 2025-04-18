@@ -8,7 +8,7 @@ import { CloudAssembly } from '../../../cx-api';
 import * as cxapi from '../../../cx-api';
 import { Annotations } from '../annotations';
 import { App } from '../app';
-import { AspectApplication, AspectPriority, Aspects } from '../aspect';
+import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
 import { FileSystem } from '../fs';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
@@ -37,7 +37,7 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
   // we start by calling "synth" on all nested assemblies (which will take care of all their children)
   synthNestedAssemblies(root, options);
 
-  if (options.aspectStabilization == true) {
+  if (options.aspectStabilization) {
     invokeAspectsV2(root);
   } else {
     invokeAspects(root);
@@ -274,32 +274,33 @@ function invokeAspects(root: IConstruct) {
  * than the most recently invoked Aspect on that node.
  */
 function invokeAspectsV2(root: IConstruct) {
-  const invokedByPath: { [nodePath: string]: AspectApplication[] } = { };
+  const invokedByPath = new Map<string, AspectApplication[]>();
 
   recurse(root, []);
 
   for (let i = 0; i <= 100; i++) {
     const didAnythingToTree = recurse(root, []);
 
-    if (!didAnythingToTree) {
+    // Keep on invoking until nothing gets invoked anymore
+    if (didAnythingToTree === 'nothing') {
       return;
     }
   }
 
   throw new Error('We have detected a possible infinite loop while invoking Aspects. Please check your Aspects and verify there is no configuration that would cause infinite Aspect or Node creation.');
 
-  function recurse(construct: IConstruct, inheritedAspects: AspectApplication[]): boolean {
+  function recurse(construct: IConstruct, inheritedAspects: AspectApplication[]): 'invoked' | 'abort-recursion' | 'nothing' {
     const node = construct.node;
 
-    let didSomething = false;
+    let ret: ReturnType<typeof recurse> = 'nothing';
+    const currentAspectTreeRevision = _aspectTreeRevisionReader(construct);
+    const versionAtStart = currentAspectTreeRevision();
 
-    let localAspects = getAspectApplications(construct);
-    const allAspectsHere = sortAspectsByPriority(inheritedAspects, localAspects);
-
+    const allAspectsHere = sortAspectsByPriority(inheritedAspects, getAspectApplications(construct));
     for (const aspectApplication of allAspectsHere) {
-      let invoked = invokedByPath[node.path];
+      let invoked = invokedByPath.get(node.path);
       if (!invoked) {
-        invoked = invokedByPath[node.path] = [];
+        invokedByPath.set(node.path, invoked = []);
       }
 
       if (invoked.some(invokedApp => invokedApp.aspect === aspectApplication.aspect)) {
@@ -310,25 +311,38 @@ function invokeAspectsV2(root: IConstruct) {
       const lastInvokedAspect = invoked[invoked.length - 1];
       if (lastInvokedAspect && lastInvokedAspect.priority > aspectApplication.priority) {
         throw new Error(
-          `Cannot invoke Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} on node ${node.path}: an Aspect ${lastInvokedAspect.aspect.constructor.name} with a lower priority (${lastInvokedAspect.priority}) was already invoked on this node.`,
+          `Cannot invoke Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} on node ${node.path}: an Aspect ${lastInvokedAspect.aspect.constructor.name} with a lower priority (added at ${lastInvokedAspect.construct.node.path} with priority ${lastInvokedAspect.priority}) was already invoked on this node.`,
         );
       }
 
       aspectApplication.aspect.visit(construct);
 
-      didSomething = true;
+      ret = 'invoked';
 
       // mark as invoked for this node
       invoked.push(aspectApplication);
-    }
 
-    let childDidSomething = false;
-    for (const child of construct.node.children) {
-      if (!Stage.isStage(child)) {
-        childDidSomething = recurse(child, allAspectsHere) || childDidSomething;
+      // If this aspect added another aspect, we need to reconsider everything;
+      // it might have added an aspect above us and we need to restart the
+      // entire tree. This could probably be made more efficient, but restarting
+      // the tree from the top currently does it as well.
+      if (currentAspectTreeRevision() !== versionAtStart) {
+        return 'abort-recursion';
       }
     }
-    return didSomething || childDidSomething;
+
+    for (const child of construct.node.children) {
+      if (!Stage.isStage(child)) {
+        const childDidSomething = recurse(child, allAspectsHere);
+        ret = childDidSomething !== 'nothing' ? childDidSomething : ret;
+
+        if (ret === 'abort-recursion') {
+          break;
+        }
+      }
+    }
+
+    return ret;
   }
 }
 

@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { Construct } from 'constructs';
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
@@ -252,6 +253,29 @@ test('asset metadata is only emitted if ASSET_RESOURCE_METADATA_ENABLED_CONTEXT 
       'aws:asset:property': 'PropName',
     },
   }));
+});
+
+test('assets have a display name based on their construct path', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack1 = new cdk.Stack(new cdk.Stage(app, 'Stage1'), 'Stack');
+  const ctr1 = new Construct(stack1, 'Ctr');
+
+  // WHEN
+  new Asset(ctr1, 'MyAsset', { path: SAMPLE_ASSET_DIR });
+
+  // THEN
+  const assembly = app.synth();
+
+  // Read the assets from the asset manifest
+  for (const stageName of ['Stage1']) {
+    const manifestArtifact = assembly.getNestedAssembly(`assembly-${stageName}`).artifacts.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact)[0];
+    const manifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
+
+    expect(manifest.files[SAMPLE_ASSET_HASH]).toEqual(expect.objectContaining({
+      displayName: 'Ctr/MyAsset',
+    }));
+  }
 });
 
 test('nested assemblies share assets: legacy synth edition', () => {
