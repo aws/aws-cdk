@@ -350,6 +350,30 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
 });
 ```
 
+To enable Backlog per instance scaling. See [Amazon SQS Backlog per instance](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-target-tracking-metric-math.html#metric-math-sqs-queue-backlog)
+
+To specify custom backlog per instance value, use the ```backlogPerInstanceTargetValue``` property.
+
+```ts
+const cluster = new ecs.Cluster(stack, 'EcsCluster', { containerInsightsV2: ContainerInsights.ENABLED });
+
+new QueueProcessingFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  command: ["-c", "4", "amazon.com"],
+  enableLogging: false,
+  desiredTaskCount: 2,
+  environment: {},
+  maxScalingCapacity: 5,
+  containerName: 'test',
+  minHealthyPercent: 100,
+  enableBacklogPerInstanceBasedScaling: true,
+  backlogPerInstanceTargetValue: 100,
+  disableCpuBasedScaling: true,
+});
+```
+
 ## Scheduled Tasks
 
 To define a task that runs periodically, there are 2 options:
