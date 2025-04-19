@@ -57,6 +57,7 @@ new glue.PySparkFlexEtlJob(stack, 'OverridePySparkFlexEtlJob', {
   tags: {
     key: 'value',
   },
+  notifyDelayAfter: cdk.Duration.minutes(5),
 });
 
 new integ.IntegTest(app, 'aws-glue-job-pysparkflex-etl-integ-test', {

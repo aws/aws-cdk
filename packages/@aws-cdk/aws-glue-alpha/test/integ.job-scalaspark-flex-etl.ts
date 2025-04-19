@@ -54,6 +54,7 @@ new glue.ScalaSparkFlexEtlJob(stack, 'OverrideScalaSparkFlexEtlJob', {
   tags: {
     key: 'value',
   },
+  notifyDelayAfter: cdk.Duration.minutes(5),
 });
 
 new integ.IntegTest(app, 'aws-glue-job-scalasparkflex-etl-integ-test', {
