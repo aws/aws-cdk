@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { IpAddressType } from './api';
 import { CfnDomainName, CfnDomainNameProps } from '.././index';
 import { ICertificate } from '../../../aws-certificatemanager';
 import { IBucket } from '../../../aws-s3';
@@ -126,6 +127,15 @@ export interface EndpointOptions {
    * @default - only required when configuring mTLS
    */
   readonly ownershipCertificate?: ICertificate;
+
+  /**
+   * The IP address types that can invoke the API.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-ip-address-type.html
+   *
+   * @default undefined - AWS default is IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
 }
 
 /**
@@ -220,6 +230,7 @@ export class DomainName extends Resource implements IDomainName {
       endpointType: options.endpointType ? options.endpointType?.toString() : 'REGIONAL',
       ownershipVerificationCertificateArn: options.ownershipCertificate?.certificateArn,
       securityPolicy: options.securityPolicy?.toString(),
+      ipAddressType: options.ipAddressType,
     };
 
     this.validateEndpointType(domainNameConfig.endpointType);

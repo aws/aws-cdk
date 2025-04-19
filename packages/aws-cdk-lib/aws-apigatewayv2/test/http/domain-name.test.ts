@@ -2,7 +2,7 @@ import { Template } from '../../../assertions';
 import { Certificate } from '../../../aws-certificatemanager';
 import { Bucket } from '../../../aws-s3';
 import { Stack } from '../../../core';
-import { DomainName, EndpointType, HttpApi, SecurityPolicy } from '../../lib';
+import { DomainName, EndpointType, HttpApi, IpAddressType, SecurityPolicy } from '../../lib';
 
 const domainName = 'example.com';
 const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
@@ -336,5 +336,23 @@ describe('DomainName', () => {
 
     // THEN
     expect(t).toThrow(/an endpoint with type REGIONAL already exists/);
+  });
+
+  test.each([IpAddressType.IPV4, IpAddressType.DUAL_STACK])('ipAddressType is set', (ipAddressType) => {
+    const stack = new Stack();
+    const dn = new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      ipAddressType,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::DomainName', {
+      DomainName: domainName,
+      DomainNameConfigurations: [
+        {
+          IpAddressType: ipAddressType,
+        },
+      ],
+    });
   });
 });

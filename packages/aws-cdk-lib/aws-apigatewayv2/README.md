@@ -194,6 +194,22 @@ const api = new apigwv2.HttpApi(this, 'HttpProxyProdApi', {
 });
 ```
 
+The IP address type for the domain name can be configured by using the `ipAddressType`
+property. Valid values are `IPV4` (default) and `DUAL_STACK`.
+
+```ts
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+
+declare const certificate: acm.ICertificate;
+declare const domainName: string;
+
+const dn = new apigwv2.DomainName(this, 'DN', {
+  domainName: domainName,
+  certificate: certificate,
+  ipAddressType: apigwv2.IpAddressType.DUAL_STACK,
+});
+```
+
 To migrate a domain endpoint from one type to another, you can add a new endpoint configuration via `addEndpoint()`
 and then configure DNS records to route traffic to the new endpoint. After that, you can remove the previous endpoint configuration.
 Learn more at [Migrating a custom domain name](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-regional-api-custom-domain-migrate.html)
