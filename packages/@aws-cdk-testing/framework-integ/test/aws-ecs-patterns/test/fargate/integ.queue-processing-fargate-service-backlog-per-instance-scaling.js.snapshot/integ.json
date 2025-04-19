@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "queueProcessingFargateServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-patterns-queue-backlog-per-instance-scaling"
+      ],
+      "assertionStack": "queueProcessingFargateServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "queueProcessingFargateServiceTestDefaultTestDeployAssert73AFD2F6"
+    }
+  }
+}

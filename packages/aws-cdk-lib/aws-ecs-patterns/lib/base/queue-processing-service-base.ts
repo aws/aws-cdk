@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { ScalingInterval } from '../../../aws-applicationautoscaling';
-import { MathExpression } from '../../../aws-cloudwatch';
+import { MathExpression, Metric, Stats } from '../../../aws-cloudwatch';
 import { IVpc } from '../../../aws-ec2';
 import {
   AwsLogDriver, BaseService, CapacityProviderStrategy, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
@@ -463,8 +463,20 @@ export abstract class QueueProcessingServiceBase extends Construct {
         metric: new MathExpression({
           expression: 'm1 / m2',
           usingMetrics: {
-            m1: this.sqsQueue.metricApproximateNumberOfMessagesVisible(),
-            m2: service.metric('RunningTaskCount'),
+            m1: this.sqsQueue.metricApproximateNumberOfMessagesVisible({
+              period: Duration.minutes(1),
+              statistic: Stats.SUM,
+            }),
+            m2: new Metric({
+              namespace: 'ECS/ContainerInsights',
+              metricName: 'RunningTaskCount',
+              dimensionsMap: {
+                ClusterName: this.cluster.clusterName,
+                ServiceName: service.serviceName,
+              },
+              statistic: Stats.AVERAGE,
+              period: Duration.minutes(1),
+            }),
           },
         }),
         targetValue: this.backlogPerInstanceTargetValue!,
