@@ -58,25 +58,6 @@
       1
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-cognito-identitypool-alpha/lib/identitypool.ts": {
-    "IdentityPoolProviderType": [
-      "Facebook",
-      "Google",
-      "Amazon",
-      "Apple",
-      "Twitter",
-      "OpenId",
-      "Saml",
-      "UserPool",
-      "Custom"
-    ],
-    "RoleMappingMatchType": [
-      "Equals",
-      "Contains",
-      "StartsWith",
-      "NotEqual"
-    ]
-  },
   "aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/ipam.ts": {
     "AddressFamily": [
       "ipv4",
@@ -176,6 +157,8 @@
       "BOTTLEROCKET_x86_64",
       "BOTTLEROCKET_ARM_64_NVIDIA",
       "BOTTLEROCKET_x86_64_NVIDIA",
+      "BOTTLEROCKET_ARM_64_FIPS",
+      "BOTTLEROCKET_x86_64_FIPS",
       "WINDOWS_CORE_2019_x86_64",
       "WINDOWS_CORE_2022_x86_64",
       "WINDOWS_FULL_2019_x86_64",
@@ -455,7 +438,8 @@
       "WED",
       "THU",
       "FRI",
-      "SAT"
+      "SAT",
+      "UNSET_VALUE"
     ],
     "Frequency": [
       "DAILY",
@@ -536,19 +520,6 @@
       "TASK",
       "OPERATOR",
       "PARALLELISM"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-kinesisfirehose-alpha/lib/delivery-stream.ts": {
-    "StreamEncryptionType": [
-      0,
-      1,
-      2
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-kinesisfirehose-destinations-alpha/lib/common.ts": {
-    "BackupMode": [
-      0,
-      1
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/packaging.ts": {
@@ -768,6 +739,12 @@
       "ZSTD"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.ts": {
+    "UnreferencedFileRemovalStatus": [
+      "Enabled",
+      "Disabled"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts": {
     "InvocationHttpResponseCode": [
       "Invocation4XXErrors",
@@ -778,24 +755,6 @@
     "SharePermission": [
       0,
       1
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/cdk-cli-wrapper/lib/commands/common.ts": {
-    "RequireApproval": [
-      "never",
-      "any-change",
-      "broadening"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/cdk-cli-wrapper/lib/commands/deploy.ts": {
-    "HotswapMode": [
-      "fall-back",
-      "hotswap-only",
-      "full-deployment"
-    ],
-    "StackActivityProgress": [
-      "bar",
-      "events"
     ]
   },
   "aws-cdk/packages/@aws-cdk/custom-resource-handlers/lib/core/cfn-utils-provider/index.ts": {
@@ -816,18 +775,6 @@
       "SingletonFunction",
       "CustomResourceProvider",
       "NoOp"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/integ-runner/lib/workers/common.ts": {
-    "DiagnosticReason": [
-      "NO_SNAPSHOT",
-      "TEST_FAILED",
-      "TEST_ERROR",
-      "SNAPSHOT_FAILED",
-      "SNAPSHOT_ERROR",
-      "SNAPSHOT_SUCCESS",
-      "TEST_SUCCESS",
-      "ASSERTION_FAILED"
     ]
   },
   "aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/lambda-handler/types.ts": {
@@ -943,6 +890,12 @@
     "HttpLambdaResponseType": [
       0,
       1
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/common/api.ts": {
+    "IpAddressType": [
+      "ipv4",
+      "dualstack"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/common/domain-name.ts": {
@@ -1600,7 +1553,8 @@
     ],
     "SSLMethod": [
       "sni-only",
-      "vip"
+      "vip",
+      "static-ip"
     ],
     "SecurityPolicyProtocol": [
       "SSLv3",
@@ -2048,6 +2002,12 @@
       "Events"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ecr/build-and-publish-action.ts": {
+    "RegistryType": [
+      "private",
+      "public"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/github/source-action.ts": {
     "GitHubTrigger": [
       "None",
@@ -2100,6 +2060,16 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.ts": {
+    "Result": [
+      "ROLLBACK",
+      "FAIL",
+      "RETRY",
+      "SKIP"
+    ],
+    "RetryMode": [
+      "ALL_ACTIONS",
+      "FAILED_ACTIONS"
+    ],
     "PipelineType": [
       "V1",
       "V2"
@@ -2124,6 +2094,25 @@
     "DetailType": [
       "BASIC",
       "FULL"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-cognito-identitypool/lib/identitypool.ts": {
+    "IdentityPoolProviderType": [
+      "Facebook",
+      "Google",
+      "Amazon",
+      "Apple",
+      "Twitter",
+      "OpenId",
+      "Saml",
+      "UserPool",
+      "Custom"
+    ],
+    "RoleMappingMatchType": [
+      "Equals",
+      "Contains",
+      "StartsWith",
+      "NotEqual"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool-domain.ts": {
@@ -2154,7 +2143,8 @@
     ],
     "LambdaVersion": [
       "V1_0",
-      "V2_0"
+      "V2_0",
+      "V3_0"
     ],
     "Mfa": [
       "OFF",
@@ -2914,10 +2904,34 @@
       "standard"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint-service.ts": {
+    "IpAddressType": [
+      "ipv4",
+      "ipv6"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.ts": {
     "VpcEndpointType": [
       "Interface",
-      "Gateway"
+      "Gateway",
+      "GatewayLoadBalancer",
+      "ServiceNetwork",
+      "Resource"
+    ],
+    "VpcEndpointIpAddressType": [
+      "ipv4",
+      "ipv6",
+      "dualstack"
+    ],
+    "VpcEndpointDnsRecordIpType": [
+      "ipv4",
+      "ipv6",
+      "dualstack",
+      "service-defined"
+    ],
+    "VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint": [
+      "AllResolvers",
+      "OnlyInboundResolver"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.ts": {
@@ -2955,7 +2969,8 @@
     ],
     "DefaultInstanceTenancy": [
       "default",
-      "dedicated"
+      "dedicated",
+      "host"
     ],
     "RouterType": [
       "CarrierGateway",
@@ -3450,7 +3465,8 @@
     "FileSystemType": [
       "ext3",
       "ext4",
-      "xfs"
+      "xfs",
+      "ntfs"
     ],
     "EbsPropagatedTagSource": [
       "SERVICE",
@@ -3781,6 +3797,8 @@
       "BOTTLEROCKET_x86_64",
       "BOTTLEROCKET_ARM_64_NVIDIA",
       "BOTTLEROCKET_x86_64_NVIDIA",
+      "BOTTLEROCKET_ARM_64_FIPS",
+      "BOTTLEROCKET_x86_64_FIPS",
       "WINDOWS_CORE_2019_x86_64",
       "WINDOWS_CORE_2022_x86_64",
       "WINDOWS_FULL_2019_x86_64",
@@ -3792,7 +3810,8 @@
     ],
     "CapacityType": [
       "SPOT",
-      "ON_DEMAND"
+      "ON_DEMAND",
+      "CAPACITY_BLOCK"
     ],
     "TaintEffect": [
       "NO_SCHEDULE",
@@ -4322,6 +4341,10 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts": {
+    "EngineLifecycleSupport": [
+      "open-source-rds-extended-support",
+      "open-source-rds-extended-support-disabled"
+    ],
     "DBClusterStorageType": [
       "aurora",
       "aurora-iopt1"
@@ -4480,7 +4503,8 @@
   "aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.ts": {
     "ServerSideEncryption": [
       "AES256",
-      "aws:kms"
+      "aws:kms",
+      "aws:kms:dsse"
     ],
     "StorageClass": [
       "STANDARD",
@@ -5044,6 +5068,17 @@
       "SEMICOLON",
       "SPACE",
       "TAB"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/distributed-map/result-writer.ts": {
+    "Transformation": [
+      "NONE",
+      "COMPACT",
+      "FLATTEN"
+    ],
+    "OutputType": [
+      "JSON",
+      "JSONL"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/private/state-type.ts": {

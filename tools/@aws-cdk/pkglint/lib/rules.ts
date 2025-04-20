@@ -1222,7 +1222,7 @@ export class MustHaveIntegCommand extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       '@aws-cdk/integ-runner',
-      `${PKGLINT_VERSION}`); // eslint-disable-line @typescript-eslint/no-require-imports
+      '*'); // eslint-disable-line @typescript-eslint/no-require-imports
   }
 }
 
