@@ -4,7 +4,7 @@ import { AutoScalingGroup } from '../../../aws-autoscaling';
 import * as ec2 from '../../../aws-ec2';
 import { MachineImage } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
-import { AsgCapacityProvider } from '../../../aws-ecs';
+import { AsgCapacityProvider, ContainerInsights } from '../../../aws-ecs';
 import * as sqs from '../../../aws-sqs';
 import { Queue } from '../../../aws-sqs';
 import * as cdk from '../../../core';
@@ -1003,5 +1003,113 @@ test('test Fargate queue worker service construct - with no taskDefinition or im
       vpc,
     });
   }).toThrow(new Error('You must specify one of: taskDefinition or image'));
+});
+
+test('test Fargate queue worker service construct - with backlog per instance scaling enabled', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, containerInsightsV2: ContainerInsights.ENABLED });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+  const queue = new sqs.Queue(stack, 'fargate-test-queue', {
+    queueName: 'fargate-test-sqs-queue',
+  });
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    memoryLimitMiB: 512,
+    image: ecs.ContainerImage.fromRegistry('test'),
+    command: ['-c', '4', 'amazon.com'],
+    enableLogging: false,
+    environment: {
+      TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+      TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+    },
+    queue,
+    maxScalingCapacity: 5,
+    minHealthyPercent: 60,
+    maxHealthyPercent: 150,
+    serviceName: 'fargate-test-service',
+    family: 'fargate-task-family',
+    platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    circuitBreaker: { rollback: true },
+    disableCpuBasedScaling: true,
+    enableBacklogPerInstanceBasedScaling: true,
+    backlogPerInstanceTargetValue: 100,
+  });
+
+  // THEN - Customized Backlog per Instance Metric set
+  Template.fromStack(stack). hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    PolicyType: 'TargetTrackingScaling',
+    TargetTrackingScalingPolicyConfiguration: {
+      CustomizedMetricSpecification: {
+        Metrics: [
+          {
+            Id: 'm1',
+            MetricStat: {
+              Metric: {
+                Dimensions: [
+                  {
+                    Name: 'QueueName',
+                    Value: {
+                      'Fn::GetAtt': [
+                        'fargatetestqueue28B43841',
+                        'QueueName',
+                      ],
+                    },
+                  },
+                ],
+                MetricName: 'ApproximateNumberOfMessagesVisible',
+                Namespace: 'AWS/SQS',
+              },
+              Stat: 'Sum',
+            },
+            ReturnData: false,
+          },
+          {
+            Id: 'm2',
+            MetricStat: {
+              Metric: {
+                Dimensions: [
+                  {
+                    Name: 'ClusterName',
+                    Value: {
+                      Ref: 'ClusterEB0386A7',
+                    },
+                  },
+                  {
+                    Name: 'ServiceName',
+                    Value: {
+                      'Fn::GetAtt': [
+                        'ServiceQueueProcessingFargateService217E8E72',
+                        'Name',
+                      ],
+                    },
+                  },
+                ],
+                MetricName: 'RunningTaskCount',
+                Namespace: 'ECS/ContainerInsights',
+              },
+              Stat: 'Average',
+            },
+            ReturnData: false,
+          },
+          {
+            Expression: 'm1 / m2',
+            Id: 'expression',
+            ReturnData: true,
+          },
+        ],
+      },
+      TargetValue: 100,
+    },
+  });
 });
 

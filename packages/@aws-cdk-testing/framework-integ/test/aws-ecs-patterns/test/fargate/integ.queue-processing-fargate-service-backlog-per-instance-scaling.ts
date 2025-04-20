@@ -28,4 +28,4 @@ new integ.IntegTest(app, 'queueProcessingFargateServiceTest', {
   testCases: [stack],
 });
 
-// app.synth();
+app.synth();
