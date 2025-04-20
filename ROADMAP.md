@@ -138,7 +138,7 @@ To make the CDK more accessible and easier to understand, we publish educational
 - [Blog] [How the PGA Tour speeds up development with the AWS CDK](https://aws.amazon.com/blogs/devops/driving-development-forward-how-the-pga-tour-speeds-up-development-with-the-aws-cdk/)
 - [Workshop/Livestream] [CDK Workshop Series on CDK Live!](https://youtube.com/playlist?list=PLp1wJE9SAACOLvdtKL2P2Kq_N_AiYIj8N&si=hH14gEVmM_35xivq)
 - [Livestream] [Learn how to build and publish AWS CDK Constructs](https://www.youtube.com/live/kUfSoFy4Mgg?si=aDMMacUT3lq6ZeKw)
-- [Workshop] [The AWS CDK Workshop](https://cdkworkshop.com/)
+- [Workshop] [AWS CDK Immersion Day Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/10141411-0192-4021-afa8-2436f3c66bd8/en-US)
 - [Workshop] [Extended CDK Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/071bbc60-6c1f-47b6-8c66-e84f5dc96b3f/en-US)
 - [Workshop] [Automating your workload deployments in AWS Local Zones](https://catalog.workshops.aws/localzone-cdk/en-US)
 - [Blogpost] [Using AWS CloudFormation and AWS Cloud Development Kit to provision multicloud resources](https://aws.amazon.com/blogs/devops/using-aws-cloudformation-and-aws-cloud-development-kit-to-provision-multicloud-resources/)

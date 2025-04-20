@@ -710,7 +710,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
     // THEN
     expect(() => {
       service.internalDesiredCount;
-    }).toBeTruthy;
+    }).toBeTruthy();
   });
 
   test('multiple capacity provider strategies are set', () => {

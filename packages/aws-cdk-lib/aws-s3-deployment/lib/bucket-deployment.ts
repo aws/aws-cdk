@@ -2,7 +2,7 @@
 import * as fs from 'fs';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
-import { ISource, SourceConfig, Source } from './source';
+import { ISource, SourceConfig, Source, MarkersConfig } from './source';
 import * as cloudfront from '../../aws-cloudfront';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
@@ -427,6 +427,18 @@ export class BucketDeployment extends Construct {
             }, [] as Array<Record<string, any>>);
           },
         }, { omitEmptyArray: true }),
+        SourceMarkersConfig: cdk.Lazy.uncachedAny({
+          produce: () => {
+            return this.sources.reduce((acc, source) => {
+              if (source.markersConfig) {
+                acc.push(source.markersConfig);
+              } else if (this.sources.length > 1) {
+                acc.push({});
+              }
+              return acc;
+            }, [] as Array<MarkersConfig>);
+          },
+        }, { omitEmptyArray: true }),
         DestinationBucketName: this.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
@@ -664,7 +676,7 @@ export class DeployTimeSubstitutedFile extends BucketDeployment {
     }
     // Makes substitutions on the file
     let fileData = fs.readFileSync(props.source, 'utf-8');
-    fileData = fileData.replace(/{{\s*(\w+)\s*}}/g, function(match, expr) {
+    fileData = fileData.replace(/{{\s*(\w+)\s*}}/g, function (match, expr) {
       return props.substitutions[expr] ?? match;
     });
 
@@ -819,6 +831,11 @@ export enum ServerSideEncryption {
    * 'aws:kms'
    */
   AWS_KMS = 'aws:kms',
+
+  /**
+   * 'aws:kms:dsse'
+   */
+  AWS_KMS_DSSE = 'aws:kms:dsse',
 }
 
 /**

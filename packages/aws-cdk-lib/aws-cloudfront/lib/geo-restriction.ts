@@ -11,7 +11,7 @@ export class GeoRestriction {
    * that you want to allow. Include one element for each country.
    * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
    */
-  public static allowlist(...locations: string[]) {
+  public static allowlist(this: void, ...locations: string[]) {
     return new GeoRestriction('whitelist', GeoRestriction.validateLocations(locations));
   }
 
@@ -22,7 +22,7 @@ export class GeoRestriction {
    * that you want to deny. Include one element for each country.
    * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
    */
-  public static denylist(...locations: string[]) {
+  public static denylist(this: void, ...locations: string[]) {
     return new GeoRestriction('blacklist', GeoRestriction.validateLocations(locations));
   }
 

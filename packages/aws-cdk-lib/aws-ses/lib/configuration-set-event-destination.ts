@@ -5,7 +5,7 @@ import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as firehose from '../../aws-kinesisfirehose';
 import * as sns from '../../aws-sns';
-import { Aws, IResource, Resource, Stack } from '../../core';
+import { Aws, IResource, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -246,18 +246,18 @@ export enum CloudWatchDimensionSource {
 }
 
 /**
- * An object that defines an Amazon Kinesis Data Firehose destination for email events
+ * An object that defines an Amazon Data Firehose destination for email events
  */
 export interface FirehoseDeliveryStreamDestination {
   /**
-   * The Amazon Kinesis Data Firehose stream that the Amazon SES API v2 sends email events to.
+   * The Amazon Data Firehose stream that the Amazon SES API v2 sends email events to.
    */
   readonly deliveryStream: firehose.IDeliveryStream;
 
   /**
-   * The IAM role that the Amazon SES API v2 uses to send email events to the Amazon Kinesis Data Firehose stream.
+   * The IAM role that the Amazon SES API v2 uses to send email events to the Amazon Data Firehose stream.
    *
-   * @default - Create IAM Role for Kinesis Data Firehose Delivery stream
+   * @default - Create IAM Role for Amazon Data Firehose Delivery stream
    */
   readonly role?: iam.IRole;
 }
@@ -296,7 +296,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
         resourceName: 'default',
       })
     ) {
-      throw new Error(`Only the default bus can be used as an event destination. Got ${props.destination.bus.eventBusArn}`);
+      throw new ValidationError(`Only the default bus can be used as an event destination. Got ${props.destination.bus.eventBusArn}`, this);
     }
 
     let firehoseDeliveryStreamIamRoleArn = '';

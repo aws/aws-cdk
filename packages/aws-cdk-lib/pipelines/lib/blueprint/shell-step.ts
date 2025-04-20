@@ -149,7 +149,7 @@ export class ShellStep extends Step {
     this.commands = props.commands;
     this.installCommands = props.installCommands ?? [];
     this.env = props.env ?? {};
-    this.envFromCfnOutputs = mapValues(props.envFromCfnOutputs ?? {}, StackOutputReference.fromCfnOutput);
+    this.envFromCfnOutputs = mapValues(props.envFromCfnOutputs ?? {}, x => StackOutputReference.fromCfnOutput(x));
 
     // 'env' is the only thing that can contain outputs
     this.discoverReferencedOutputs({

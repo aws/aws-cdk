@@ -711,3 +711,26 @@ you can set the `classicResizing` flag when creating the cluster.
 
 There are other constraints to be aware of, for example, elastic resizing does not support single-node clusters and there are
 limits on the number of nodes you can add to a cluster. See the [AWS Redshift Documentation](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-operations.html#rs-resize-tutorial) and [AWS API Documentation](https://docs.aws.amazon.com/redshift/latest/APIReference/API_ResizeCluster.html) for more details.
+
+## Maintenance track name
+
+When Amazon Redshift releases a new cluster version, your cluster is updated during its maintenance window.
+You can control whether your cluster is updated to the most recent approved release or to the previous release.
+See the [AWS Redshift Documentation](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-considerations.html#rs-mgmt-maintenance-tracks) for more details.
+
+To control which cluster version is applied during a maintenance window, set the `maintenanceTrackName` property for the cluster.
+
+```ts
+new redshift.Cluster(stack, 'Cluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  maintenanceTrackName: redshift.MaintenanceTrackName.CURRENT,
+});
+```
+
+You can specify one of the following `MaintenanceTrackName` values:
+
+* `CURRENT`: Use the most current approved cluster version.
+* `TRAILING`: Use the cluster version before the current version.

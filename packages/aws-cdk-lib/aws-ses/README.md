@@ -149,7 +149,7 @@ new ses.ConfigurationSet(this, 'ConfigurationSet', {
 });
 ```
 
-Use `addEventDestination()` to publish email sending events to Amazon SNS, Amazon CloudWatch, Amazon Kinesis Firehose or Amazon EventBridge:
+Use `addEventDestination()` to publish email sending events to Amazon SNS, Amazon CloudWatch, Amazon Data Firehose or Amazon EventBridge:
 
 ```ts
 declare const myConfigurationSet: ses.ConfigurationSet;

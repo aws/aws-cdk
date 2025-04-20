@@ -1,0 +1,12 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "cdk-integ-lambda-golang-bundling-user-test/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-golang"
+      ],
+      "assertionStack": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkinteglambdagolangbundlingusertestDefaultTestDeployAssert9AB7EE8A"
+    }
+  }
+}
