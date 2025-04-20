@@ -1,0 +1,886 @@
+{
+ "Resources": {
+  "ECSTaskRoleF2ADB362": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/CloudWatchAgentServerPolicy"
+       ]
+      ]
+     }
+    ],
+    "RoleName": "ECSTaskRole-ApplicationSignalsInfra-Replica"
+   }
+  },
+  "ECSTaskRoleDefaultPolicy82FC9293": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ssmmessages:CreateControlChannel",
+        "ssmmessages:CreateDataChannel",
+        "ssmmessages:OpenControlChannel",
+        "ssmmessages:OpenDataChannel"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ECSTaskRoleDefaultPolicy82FC9293",
+    "Roles": [
+     {
+      "Ref": "ECSTaskRoleF2ADB362"
+     }
+    ]
+   }
+  },
+  "ECSTaskExecutionRole911F5A4F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+       ]
+      ]
+     }
+    ],
+    "RoleName": "ECSTaskExecutionRole-ApplicationSignalsInfra-Replica"
+   }
+  },
+  "ECSVPCB65D497F": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApplicationSignalsInfra-Replica/ECSVPC"
+     }
+    ]
+   }
+  },
+  "ECSVPCPublicSubnet1SubnetF687C8BC": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ECSVPCB65D497F"
+    }
+   }
+  },
+  "ECSVPCPublicSubnet1RouteTable08125A7E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ECSVPCB65D497F"
+    }
+   }
+  },
+  "ECSVPCPublicSubnet1RouteTableAssociation05712F96": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ECSVPCPublicSubnet1RouteTable08125A7E"
+    },
+    "SubnetId": {
+     "Ref": "ECSVPCPublicSubnet1SubnetF687C8BC"
+    }
+   }
+  },
+  "ECSVPCPublicSubnet1DefaultRouteE3BABCF5": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "ECSVPCIGWA5DF967D"
+    },
+    "RouteTableId": {
+     "Ref": "ECSVPCPublicSubnet1RouteTable08125A7E"
+    }
+   },
+   "DependsOn": [
+    "ECSVPCVPCGWBBCD282B"
+   ]
+  },
+  "ECSVPCPublicSubnet1EIP5508CF3B": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "ECSVPCPublicSubnet1NATGateway3F55CBA0": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "ECSVPCPublicSubnet1EIP5508CF3B",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "ECSVPCPublicSubnet1SubnetF687C8BC"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "ECSVPCPublicSubnet1DefaultRouteE3BABCF5",
+    "ECSVPCPublicSubnet1RouteTableAssociation05712F96"
+   ]
+  },
+  "ECSVPCPublicSubnet2Subnet65EAA6C3": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ECSVPCB65D497F"
+    }
+   }
+  },
+  "ECSVPCPublicSubnet2RouteTable3903EDDF": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ECSVPCB65D497F"
+    }
+   }
+  },
+  "ECSVPCPublicSubnet2RouteTableAssociationB2369E99": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ECSVPCPublicSubnet2RouteTable3903EDDF"
+    },
+    "SubnetId": {
+     "Ref": "ECSVPCPublicSubnet2Subnet65EAA6C3"
+    }
+   }
+  },
+  "ECSVPCPublicSubnet2DefaultRoute4839A28E": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "ECSVPCIGWA5DF967D"
+    },
+    "RouteTableId": {
+     "Ref": "ECSVPCPublicSubnet2RouteTable3903EDDF"
+    }
+   },
+   "DependsOn": [
+    "ECSVPCVPCGWBBCD282B"
+   ]
+  },
+  "ECSVPCPublicSubnet2EIP7688D464": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "ECSVPCPublicSubnet2NATGateway6CF45DA2": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "ECSVPCPublicSubnet2EIP7688D464",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "ECSVPCPublicSubnet2Subnet65EAA6C3"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApplicationSignalsInfra-Replica/ECSVPC/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "ECSVPCPublicSubnet2DefaultRoute4839A28E",
+    "ECSVPCPublicSubnet2RouteTableAssociationB2369E99"
+   ]
+  },
+  "ECSVPCPrivateSubnet1Subnet47127919": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "ApplicationSignalsInfra-Replica/ECSVPC/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ECSVPCB65D497F"
+    }
+   }
+  },
+  "ECSVPCPrivateSubnet1RouteTable6DDD0E2A": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApplicationSignalsInfra-Replica/ECSVPC/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ECSVPCB65D497F"
+    }
+   }
+  },
+  "ECSVPCPrivateSubnet1RouteTableAssociationFF4079C4": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ECSVPCPrivateSubnet1RouteTable6DDD0E2A"
+    },
+    "SubnetId": {
+     "Ref": "ECSVPCPrivateSubnet1Subnet47127919"
+    }
+   }
+  },
+  "ECSVPCPrivateSubnet1DefaultRoute796C9E0B": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "ECSVPCPublicSubnet1NATGateway3F55CBA0"
+    },
+    "RouteTableId": {
+     "Ref": "ECSVPCPrivateSubnet1RouteTable6DDD0E2A"
+    }
+   }
+  },
+  "ECSVPCPrivateSubnet2Subnet3DDEA4A1": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "ApplicationSignalsInfra-Replica/ECSVPC/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ECSVPCB65D497F"
+    }
+   }
+  },
+  "ECSVPCPrivateSubnet2RouteTable6C7BC896": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApplicationSignalsInfra-Replica/ECSVPC/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ECSVPCB65D497F"
+    }
+   }
+  },
+  "ECSVPCPrivateSubnet2RouteTableAssociation3172EDC5": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ECSVPCPrivateSubnet2RouteTable6C7BC896"
+    },
+    "SubnetId": {
+     "Ref": "ECSVPCPrivateSubnet2Subnet3DDEA4A1"
+    }
+   }
+  },
+  "ECSVPCPrivateSubnet2DefaultRouteDC044AA2": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "ECSVPCPublicSubnet2NATGateway6CF45DA2"
+    },
+    "RouteTableId": {
+     "Ref": "ECSVPCPrivateSubnet2RouteTable6C7BC896"
+    }
+   }
+  },
+  "ECSVPCIGWA5DF967D": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApplicationSignalsInfra-Replica/ECSVPC"
+     }
+    ]
+   }
+  },
+  "ECSVPCVPCGWBBCD282B": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "ECSVPCIGWA5DF967D"
+    },
+    "VpcId": {
+     "Ref": "ECSVPCB65D497F"
+    }
+   }
+  },
+  "ECSVPCRestrictDefaultSecurityGroupCustomResourceB6CA0A9F": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "ECSVPCB65D497F",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "ECSVPCB65D497F",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ]
+  },
+  "TestClusterE0095054": {
+   "Type": "AWS::ECS::Cluster"
+  },
+  "Namespace9B63B8C8": {
+   "Type": "AWS::ServiceDiscovery::PrivateDnsNamespace",
+   "Properties": {
+    "Name": "local",
+    "Vpc": {
+     "Ref": "ECSVPCB65D497F"
+    }
+   }
+  },
+  "ECSSG6D882F29": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "ApplicationSignalsInfra-Replica/ECSSG",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ECSVPCB65D497F"
+    }
+   }
+  },
+  "ECSSGfromApplicationSignalsInfraReplicaECSSG4E03F621065535C290991E": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "from ApplicationSignalsInfraReplicaECSSG4E03F621:0-65535",
+    "FromPort": 0,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "ECSSG6D882F29",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "ECSSG6D882F29",
+      "GroupId"
+     ]
+    },
+    "ToPort": 65535
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttECSTaskExecutionRole911F5A4FArn90EDA8DE": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ECSTaskExecutionRole911F5A4F",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "ApplicationSignalsInfra-Replica:ExportsOutputFnGetAttECSTaskExecutionRole911F5A4FArn90EDA8DE"
+   }
+  },
+  "ExportsOutputFnGetAttECSTaskRoleF2ADB362Arn397CEC35": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ECSTaskRoleF2ADB362",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "ApplicationSignalsInfra-Replica:ExportsOutputFnGetAttECSTaskRoleF2ADB362Arn397CEC35"
+   }
+  },
+  "ExportsOutputRefTestClusterE00950540C50D0A5": {
+   "Value": {
+    "Ref": "TestClusterE0095054"
+   },
+   "Export": {
+    "Name": "ApplicationSignalsInfra-Replica:ExportsOutputRefTestClusterE00950540C50D0A5"
+   }
+  },
+  "ExportsOutputRefECSVPCPrivateSubnet1Subnet47127919A0DA97A7": {
+   "Value": {
+    "Ref": "ECSVPCPrivateSubnet1Subnet47127919"
+   },
+   "Export": {
+    "Name": "ApplicationSignalsInfra-Replica:ExportsOutputRefECSVPCPrivateSubnet1Subnet47127919A0DA97A7"
+   }
+  },
+  "ExportsOutputRefECSVPCPrivateSubnet2Subnet3DDEA4A1B9FACCA0": {
+   "Value": {
+    "Ref": "ECSVPCPrivateSubnet2Subnet3DDEA4A1"
+   },
+   "Export": {
+    "Name": "ApplicationSignalsInfra-Replica:ExportsOutputRefECSVPCPrivateSubnet2Subnet3DDEA4A1B9FACCA0"
+   }
+  },
+  "ExportsOutputFnGetAttECSSG6D882F29GroupId3205927F": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ECSSG6D882F29",
+     "GroupId"
+    ]
+   },
+   "Export": {
+    "Name": "ApplicationSignalsInfra-Replica:ExportsOutputFnGetAttECSSG6D882F29GroupId3205927F"
+   }
+  },
+  "ExportsOutputFnGetAttNamespace9B63B8C8ArnC7278E2B": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Namespace9B63B8C8",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "ApplicationSignalsInfra-Replica:ExportsOutputFnGetAttNamespace9B63B8C8ArnC7278E2B"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

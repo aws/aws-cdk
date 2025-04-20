@@ -1,0 +1,14 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "ApplicationSignalsIntegrationECSReplicaTest/DefaultTest": {
+      "stacks": [
+        "ApplicationSignalsInfra-Replica",
+        "ApplicationSignalsCloudWatchAgent-Replica",
+        "ApplicationSignalsPythonApp-Replica"
+      ],
+      "assertionStack": "ApplicationSignalsIntegrationECSReplicaTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ApplicationSignalsIntegrationECSReplicaTestDefaultTestDeployAssert818A098D"
+    }
+  }
+}
