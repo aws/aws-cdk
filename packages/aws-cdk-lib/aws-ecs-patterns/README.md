@@ -357,9 +357,9 @@ To specify custom backlog per instance value, use the ```backlogPerInstanceTarge
 NOTE: The cluster should have Container Insights Enabled by setting ```containerInsightsV2``` to  ```ContainerInsights.ENABLED```
 
 ```ts
-const cluster = new ecs.Cluster(stack, 'EcsCluster', { containerInsightsV2: ContainerInsights.ENABLED });
+const cluster = new ecs.Cluster(this, 'EcsCluster', { containerInsightsV2: ecs.ContainerInsights.ENABLED });
 
-new QueueProcessingFargateService(stack, 'Service', {
+new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
