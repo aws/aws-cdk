@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "aws-ecs-patterns-queue-backlog-per-instance-scaling.assets": {
       "type": "cdk:asset-manifest",
