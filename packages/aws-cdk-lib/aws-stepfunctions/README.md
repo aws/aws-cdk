@@ -1050,7 +1050,7 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
  *  }
  */
 const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
-  resultWriter: new sfn.ResultWriter({
+  resultWriterV2: new sfn.ResultWriterV2({
     bucketNamePath: sfn.JsonPath.stringAt('$.bucketName'),
   }),
 });

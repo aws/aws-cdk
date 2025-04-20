@@ -28,15 +28,14 @@ export interface ResultWriterProps {
 export interface ResultWriterV2Props {
   /**
    * S3 Bucket in which to save Map Run results
-   *
-   * @default - S3 bucket will be determined from @see bucketNamePath
+   * @default - specify a bucket
    */
   readonly bucket?: IBucket;
 
   /**
    * S3 bucket name in which to save Map Run results, as JsonPath
    *
-   * @default - S3 bucket will be determined from @see bucket
+   * @default - no bucket path
    */
   readonly bucketNamePath?: string;
 
