@@ -69,6 +69,30 @@ describe('firehose', () => {
     });
   });
 
+  it('should handle an empty parameter object', () => {
+    // ARRANGE
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const bucket = new Bucket(stack, 'Bucket');
+    const stream = new DeliveryStream(stack, 'MyStream', {
+      destination: new S3Bucket(bucket),
+    });
+    const target = new FirehoseTarget(stream, {});
+
+    new Pipe(stack, 'MyPipe', {
+      source: new TestSource(),
+      target,
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // ASSERT
+    template.hasResourceProperties('AWS::Pipes::Pipe', {
+      TargetParameters: {},
+    });
+  });
+
   it('should grant pipe role put access', () => {
     // ARRANGE
     const app = new App();

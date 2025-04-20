@@ -34,7 +34,7 @@ export class FirehoseTarget implements ITarget {
   }
 
   bind(pipe: IPipe): TargetConfig {
-    if (!this.streamParameters) {
+    if (!this.streamParameters?.inputTransformation) {
       return {
         targetParameters: {},
       };
