@@ -105,6 +105,8 @@ describe('cluster engine', () => {
       'aurora-postgresql9.6');
     expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('10.0', '10') }).parameterGroupFamily).toEqual(
       'aurora-postgresql10');
+    expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('13.20', '13') }).parameterGroupFamily).toEqual(
+      'aurora-postgresql13');
     expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('14.3', '14') }).parameterGroupFamily).toEqual(
       'aurora-postgresql14');
     expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('15.7', '15') }).parameterGroupFamily).toEqual(
@@ -122,8 +124,20 @@ describe('cluster engine', () => {
 
   test('cluster parameter group correctly determined for AURORA_POSTGRESQL 14 (and other) and given version', () => {
     // GIVEN
+    const engine_VER_13_20 = DatabaseClusterEngine.auroraPostgres({
+      version: AuroraPostgresEngineVersion.VER_13_20,
+    });
     const engine_VER_14_3 = DatabaseClusterEngine.auroraPostgres({
       version: AuroraPostgresEngineVersion.VER_14_3,
+    });
+    const engine_VER_15_2 = DatabaseClusterEngine.auroraPostgres({
+      version: AuroraPostgresEngineVersion.VER_15_2,
+    });
+    const engine_VER_16_8 = DatabaseClusterEngine.auroraPostgres({
+      version: AuroraPostgresEngineVersion.VER_16_8,
+    });
+    const engine_VER_17_2 = DatabaseClusterEngine.auroraPostgres({
+      version: AuroraPostgresEngineVersion.VER_17_2,
     });
     const engine_ver_1_22_3 = DatabaseClusterEngine.aurora({
       version: AuroraEngineVersion.VER_1_22_3,
@@ -172,7 +186,11 @@ describe('cluster engine', () => {
     });
 
     // THEN
+    expect(engine_VER_13_20.parameterGroupFamily).toEqual('aurora-postgresql13');
     expect(engine_VER_14_3.parameterGroupFamily).toEqual('aurora-postgresql14');
+    expect(engine_VER_15_2.parameterGroupFamily).toEqual('aurora-postgresql15');
+    expect(engine_VER_16_8.parameterGroupFamily).toEqual('aurora-postgresql16');
+    expect(engine_VER_17_2.parameterGroupFamily).toEqual('aurora-postgresql17');
     expect(engine_ver_1_22_3.parameterGroupFamily).toEqual('aurora5.6');
     expect(engine_ver_1_22_4.parameterGroupFamily).toEqual('aurora5.6');
     expect(engine_ver_1_22_5.parameterGroupFamily).toEqual('aurora5.6');
