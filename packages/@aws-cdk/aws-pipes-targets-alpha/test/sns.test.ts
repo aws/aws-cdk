@@ -59,6 +59,28 @@ describe('sns', () => {
     });
   });
 
+  it('should handle an empty parameter object', () => {
+    // ARRANGE
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const topic = new Topic(stack, 'MyTopic', {});
+
+    const target = new SnsTarget(topic, {});
+
+    new Pipe(stack, 'MyPipe', {
+      source: new TestSource(),
+      target,
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // ASSERT
+    template.hasResourceProperties('AWS::Pipes::Pipe', {
+      TargetParameters: {},
+    });
+  });
+
   it('should grant pipe role publish access', () => {
     // ARRANGE
     const app = new App();

@@ -34,7 +34,7 @@ export class SnsTarget implements ITarget {
   }
 
   bind(pipe: IPipe): TargetConfig {
-    if (!this.topicParameters) {
+    if (!this.topicParameters?.inputTransformation) {
       return {
         targetParameters: {},
       };
