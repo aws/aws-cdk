@@ -223,6 +223,13 @@ export class CfnInclude extends core.CfnElement {
   }
 
   /**
+   * @returns Array of all known logicalIds, associated with each low-level CfnResource from the template.
+   */
+  public getResourceNames() : string[] {
+    return Object.keys(this.resources);
+  }
+
+  /**
    * Returns the CfnCondition object from the 'Conditions'
    * section of the CloudFormation template with the given name.
    * Any modifications performed on that object will be reflected in the resulting CDK template.
