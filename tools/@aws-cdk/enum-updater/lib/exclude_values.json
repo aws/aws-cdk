@@ -76,5 +76,19 @@
         "DataResourceType": {
             "comment": "New DataResourceType need further change. Backfilling enum is not enough"
         }
+    },
+    "ec2": {
+        "VpcEndpointIpAddressType": {
+            "values": ["NOT_SPECIFIED"],
+            "comment": "Although NOT_SPECIFIED is a valid value, but for CDK customers can just not provide the value for that property"
+        },
+        "VpcEndpointDnsRecordIpType": {
+            "values": ["NOT_SPECIFIED"],
+            "comment": "Although NOT_SPECIFIED is a valid value, but for CDK customers can just not provide the value for that property"
+        },
+        "VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint": {
+            "values": ["NOTSPECIFIED"],
+            "comment": "Although NOTSPECIFIED is a valid value, but for CDK customers can just not provide the value for that property"
+        }
     }
 }
