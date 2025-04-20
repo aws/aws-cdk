@@ -2,10 +2,15 @@ import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib/core';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import { STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2 } from 'aws-cdk-lib/cx-api';
 
 const CSV_KEY = 'my-key.csv';
 
-const app = new App();
+const app = new App({
+  context: {
+    [STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2]: true,
+  },
+});
 const stack = new Stack(app, 'aws-stepfunctions-map-result-writer-bucket-jsonpath');
 
 const bucket = new s3.Bucket(stack, 'Bucket', {
@@ -18,7 +23,7 @@ const distributedMap = new sfn.DistributedMap(stack, 'DistributedMap', {
     bucket: bucket,
     key: CSV_KEY,
   }),
-  resultWriter: new sfn.ResultWriter({
+  resultWriterV2: new sfn.ResultWriterV2({
     bucketNamePath: sfn.JsonPath.stringAt('$.bucketName'),
     prefix: 'my-prefix',
   }),

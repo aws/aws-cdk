@@ -1263,6 +1263,7 @@ describe('Distributed Map State', () => {
   test('State Machine With Distributed Map State, ResultWriter and bucketNamePath', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, true);
 
     // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
@@ -1272,7 +1273,7 @@ describe('Distributed Map State', () => {
         foo: 'foo',
         bar: stepfunctions.JsonPath.stringAt('$.bar'),
       },
-      resultWriter: new stepfunctions.ResultWriter({
+      resultWriterV2: new stepfunctions.ResultWriterV2({
         bucketNamePath: stepfunctions.JsonPath.stringAt('$.bucketName'),
         prefix: 'test',
       }),
@@ -1543,7 +1544,7 @@ describe('Distributed Map State', () => {
       const writerBucket = new s3.Bucket(stack, 'TestBucket');
 
       const map = new stepfunctions.DistributedMap(stack, 'Map State', {
-        resultWriter: new stepfunctions.ResultWriter({
+        resultWriterV2: new stepfunctions.ResultWriterV2({
           bucket: writerBucket,
           bucketNamePath: stepfunctions.JsonPath.stringAt('$.bucketName'),
         }),
@@ -1553,18 +1554,6 @@ describe('Distributed Map State', () => {
     });
 
     expect(() => app.synth()).toThrow(/Provide either `bucket` or `bucketNamePath`, but not both/);
-  }),
-
-  test('fails in synthesis if resultWriter contains neither bucket nor bucketNamePath', () => {
-    const app = createAppWithMap((stack) => {
-      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
-        resultWriter: new stepfunctions.ResultWriter({}),
-      });
-
-      return map;
-    });
-
-    expect(() => app.synth()).toThrow(/Provide either `bucket` or `bucketNamePath`/);
   }),
 
   test('does not throw while accessing bucket of itemReader which was initialised with bucket', () => {
