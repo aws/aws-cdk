@@ -13,7 +13,7 @@ import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as eks from '../lib';
-import { HelmChart } from '../lib';
+import { Addon, CfnAddon, HelmChart } from '../lib';
 import { KubectlProvider } from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
 
@@ -1053,6 +1053,183 @@ describe('cluster', () => {
       machineImageType: eks.MachineImageType.BOTTLEROCKET,
       bootstrapOptions: {},
     })).toThrow(/bootstrapOptions is not supported for Bottlerocket/);
+  });
+
+  test('no addon for pod identity agent when not accessed', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      prune: false,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // WHEN
+    const service_account = new eks.ServiceAccount(stack, 'ServiceAccount', {
+      cluster,
+      name: 'test-service-account',
+      identityType: eks.IdentityType.IRSA,
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::EKS::Addon', 0);
+  });
+
+  test('create addon for pod identity agent by get', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      prune: false,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // WHEN
+    const pod_identity_agent = cluster.eksPodIdentityAgent;
+
+    // THEN
+    expect(pod_identity_agent).toBeDefined();
+    expect(pod_identity_agent?.node.id).toBe('EksPodIdentityAgentAddon');
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::EKS::Addon', {
+      AddonName: 'eks-pod-identity-agent',
+    }, 1);
+  });
+
+  test('create separate addon for pod identity agent', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      prune: false,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // WHEN
+    const existing_addon = new eks.Addon(stack, 'ExistingPodIdentityAgent', {
+      cluster,
+      addonName: 'eks-pod-identity-agent',
+    });
+    const pod_identity_agent = cluster.eksPodIdentityAgent;
+
+    // THEN
+    expect(pod_identity_agent).toBeDefined();
+    expect(pod_identity_agent?.node.id).toBe('ExistingPodIdentityAgent');
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::EKS::Addon', {
+      AddonName: 'eks-pod-identity-agent',
+    }, 1);
+  });
+
+  test('create separate cfnaddon for pod identity agent', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      prune: false,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // WHEN
+    const existing_cfn_addon = new eks.CfnAddon(stack, 'ExistingPodIdentityAgent', {
+      clusterName: cluster.clusterName,
+      addonName: 'eks-pod-identity-agent',
+    });
+    const pod_identity_agent = cluster.eksPodIdentityAgent;
+
+    // THEN
+    expect(pod_identity_agent).toBeDefined();
+    expect(pod_identity_agent?.node.id).toBe('EksPodIdentityAgentAddon-ExistingPodIdentityAgent');
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::EKS::Addon', {
+      AddonName: 'eks-pod-identity-agent',
+    }, 1);
+  });
+
+  test('create separate addon for pod identity agent, then a service account', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      prune: false,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    const existing_addon = new Addon(stack, 'ExistingPodIdentityAgent', {
+      cluster,
+      addonName: 'eks-pod-identity-agent',
+    });
+
+    // WHEN
+    const service_account = new eks.ServiceAccount(stack, 'ServiceAccount', {
+      cluster,
+      name: 'test-service-account',
+      identityType: eks.IdentityType.POD_IDENTITY,
+    });
+
+    // THEN
+    const pod_identity_agent = cluster.eksPodIdentityAgent;
+    expect(pod_identity_agent).toBeDefined();
+    expect(pod_identity_agent?.node.id).toBe('ExistingPodIdentityAgent');
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::EKS::Addon', {
+      AddonName: 'eks-pod-identity-agent',
+    }, 1);
+  });
+
+  test('create multiple addons for pod identity agent throws error', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      prune: false,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    const existing_addon = new Addon(stack, 'ExistingPodIdentityAgent', {
+      cluster,
+      addonName: 'eks-pod-identity-agent',
+    });
+
+    // WHEN
+    const second_addon = new Addon(stack, 'SecondPodIdentityAgent', {
+      cluster,
+      addonName: 'eks-pod-identity-agent',
+    });
+
+    // THEN
+    expect(() => cluster.eksPodIdentityAgent).toThrow(/Multiple pod identity agent Addons found in stack/);
+  });
+
+  test('create addon and cfnaddon for pod identity agent throws error', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      prune: false,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    const existing_addon = new Addon(stack, 'ExistingPodIdentityAgent', {
+      cluster,
+      addonName: 'eks-pod-identity-agent',
+    });
+
+    // WHEN
+    const second_addon = new CfnAddon(stack, 'SecondPodIdentityAgent', {
+      clusterName: cluster.clusterName,
+      addonName: 'eks-pod-identity-agent',
+    });
+
+    // THEN
+    expect(() => cluster.eksPodIdentityAgent).toThrow(/Multiple pod identity agent CfnAddons found in stack/);
   });
 
   test('import cluster with existing kubectl provider function', () => {
