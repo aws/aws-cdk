@@ -916,44 +916,6 @@ describe('restapi', () => {
     }).toThrow(/'cloudWatchRole' must be enabled for 'cloudWatchRoleRemovalPolicy' to be applied./);
   });
 
-  test('mode property is set correctly', () => {
-    // WHEN
-    const apiWithOverwrite = new apigw.RestApi(stack, 'api-overwrite', {
-      mode: apigw.RestApiMode.OVERWRITE,
-    });
-    apiWithOverwrite.root.addMethod('GET');
-
-    const apiWithMerge = new apigw.RestApi(stack, 'api-merge', {
-      mode: apigw.RestApiMode.MERGE,
-    });
-    apiWithMerge.root.addMethod('GET');
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
-      Name: 'api-overwrite',
-      Mode: 'overwrite',
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
-      Name: 'api-merge',
-      Mode: 'merge',
-    });
-  });
-
-  test('mode property is optional', () => {
-    // WHEN
-    const api = new apigw.RestApi(stack, 'api');
-    api.root.addMethod('GET');
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
-      Name: 'api',
-    });
-    // Mode should not be present in the template when not specified
-    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
-      Mode: Match.absent(),
-    });
-  });
 });
 
 describe('Import', () => {
@@ -1452,6 +1414,26 @@ describe('SpecRestApi', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
       ApiKeyRequired: false,
+    });
+  });
+
+  test.each([
+    [apigw.RestApiMode.OVERWRITE, 'overwrite'],
+    [apigw.RestApiMode.MERGE, 'merge'],
+    [undefined, Match.absent()],
+  ])('mode property is set (%s)', (mode, expectedMode) => {
+    // WHEN
+    const api = new apigw.SpecRestApi(stack, 'api', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      mode,
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      Name: 'api',
+      Mode: expectedMode ?? Match.absent(),
     });
   });
 

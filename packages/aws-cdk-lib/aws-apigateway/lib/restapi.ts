@@ -226,7 +226,7 @@ export interface RestApiOptions extends RestApiBaseProps, ResourceOptions {
 /**
  * Props to create a new instance of RestApi
  */
-export interface RestApiProps extends RestApiBaseProps, ResourceOptions {
+export interface RestApiProps extends RestApiOptions {
 
   /**
    * The list of binary media mime-types that are supported by the RestApi
@@ -276,27 +276,6 @@ export interface RestApiProps extends RestApiBaseProps, ResourceOptions {
    */
   readonly apiKeySourceType?: ApiKeySourceType;
 
-  /**
-   * This property applies only when you use OpenAPI to define your REST API.
-   * The Mode determines how API Gateway handles resource updates.
-   *
-   * Valid values are `overwrite` or `merge`.
-   *
-   * For `overwrite`, the new API definition replaces the existing one.
-   * The existing API identifier remains unchanged.
-   *
-   * For `merge`, the new API definition is merged with the existing API.
-   *
-   * If you don't specify this property, a default value is chosen:
-   * - For REST APIs created before March 29, 2021, the default is `overwrite`
-   * - For REST APIs created after March 29, 2021, the new API definition takes precedence, but any container types such as endpoint configurations and binary media types are merged with the existing API.
-   *
-   * Use the default mode to define top-level RestApi properties in addition to using OpenAPI.
-   * Generally, it's preferred to use API Gateway's OpenAPI extensions to model these properties.
-   *
-   * @default - `merge` for REST APIs created after March 29, 2021, otherwise `overwrite`
-   */
-  readonly mode?: RestApiMode;
 }
 
 /**
@@ -320,6 +299,28 @@ export interface SpecRestApiProps extends RestApiBaseProps {
    * @default - Compression is disabled.
    */
   readonly minCompressionSize?: Size;
+
+  /**
+   * This property applies only when you use OpenAPI to define your REST API.
+   * The Mode determines how API Gateway handles resource updates.
+   *
+   * Valid values are `overwrite` or `merge`.
+   *
+   * For `overwrite`, the new API definition replaces the existing one.
+   * The existing API identifier remains unchanged.
+   *
+   * For `merge`, the new API definition is merged with the existing API.
+   *
+   * If you don't specify this property, a default value is chosen:
+   * - For REST APIs created before March 29, 2021, the default is `overwrite`
+   * - For REST APIs created after March 29, 2021, the new API definition takes precedence, but any container types such as endpoint configurations and binary media types are merged with the existing API.
+   *
+   * Use the default mode to define top-level RestApi properties in addition to using OpenAPI.
+   * Generally, it's preferred to use API Gateway's OpenAPI extensions to model these properties.
+   *
+   * @default - `merge` for REST APIs created after March 29, 2021, otherwise `overwrite`
+   */
+  readonly mode?: RestApiMode;
 }
 
 /**
@@ -776,6 +777,7 @@ export class SpecRestApi extends RestApiBase {
       endpointConfiguration: this._configureEndpoints(props),
       parameters: props.parameters,
       disableExecuteApiEndpoint: props.disableExecuteApiEndpoint,
+      mode: props.mode,
     });
 
     props.apiDefinition.bindAfterCreate(this, this);
@@ -928,7 +930,6 @@ export class RestApi extends RestApiBase {
       cloneFrom: props.cloneFrom?.restApiId,
       parameters: props.parameters,
       disableExecuteApiEndpoint: props.disableExecuteApiEndpoint,
-      mode: props.mode,
     });
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
@@ -1081,6 +1082,22 @@ export enum EndpointType {
   PRIVATE = 'PRIVATE',
 }
 
+/**
+ * Specifies how API Gateway handles resource updates when importing an OpenAPI definition.
+ * This property applies only when you use OpenAPI to define your REST API.
+ */
+export enum RestApiMode {
+  /**
+   * The new API definition replaces the existing one.
+   */
+  OVERWRITE = 'overwrite',
+
+  /**
+   * The new API definition is merged with the existing API.
+   */
+  MERGE = 'merge',
+}
+
 class RootResource extends ResourceBase {
   public readonly parentResource?: IResource;
   public readonly api: RestApiBase;
@@ -1128,20 +1145,4 @@ class RootResource extends ResourceBase {
 
 function ignore(_x: any) {
   return;
-}
-
-/**
- * Specifies how API Gateway handles resource updates when importing an OpenAPI definition.
- * This property applies only when you use OpenAPI to define your REST API.
- */
-export enum RestApiMode {
-  /**
-   * The new API definition replaces the existing one.
-   */
-  OVERWRITE = 'overwrite',
-
-  /**
-   * The new API definition is merged with the existing API.
-   */
-  MERGE = 'merge',
 }

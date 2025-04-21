@@ -70,24 +70,6 @@ book.addMethod('GET');
 book.addMethod('DELETE');
 ```
 
-When using OpenAPI to define your REST API, you can control how API Gateway handles resource updates using the `mode` property. Valid values are:
-
-* `overwrite` - The new API definition replaces the existing one. The existing API identifier remains unchanged.
-* `merge` - The new API definition is merged with the existing API.
-
-If you don't specify this property, a default value is chosen:
-* For REST APIs created before March 29, 2021, the default is `overwrite`
-* For REST APIs created after March 29, 2021, the new API definition takes precedence, but any container types such as endpoint configurations and binary media types are merged with the existing API.
-
-Use the default mode to define top-level RestApi properties in addition to using OpenAPI.
-Generally, it's preferred to use API Gateway's OpenAPI extensions to model these properties.
-
-```ts
-const api = new apigateway.RestApi(this, 'books-api', {
-  mode: apigateway.RestApiMode.MERGE
-});
-```
-
 To give an IAM User or Role permission to invoke a method, use `grantExecute`:
 
 ```ts
@@ -1622,6 +1604,25 @@ booksResource.addMethod('GET', integration);
 
 It is possible to use the `addResource()` API to define additional API Gateway Resources.
 
+You can control how API Gateway handles resource updates using the `mode` property. Valid values are:
+
+* `overwrite` - The new API definition replaces the existing one. The existing API identifier remains unchanged.
+* `merge` - The new API definition is merged with the existing API.
+
+If you don't specify this property, a default value is chosen:
+* For REST APIs created before March 29, 2021, the default is `overwrite`
+* For REST APIs created after March 29, 2021, the new API definition takes precedence, but any container types such as endpoint configurations and binary media types are merged with the existing API.
+
+Use the default mode to define top-level RestApi properties in addition to using OpenAPI.
+Generally, it's preferred to use API Gateway's OpenAPI extensions to model these properties.
+
+```ts
+const api = new apigateway.SpecRestApi(this, 'books-api', {
+  apiDefinition: apigateway.ApiDefinition.fromAsset('path-to-file.json'),
+  mode: apigateway.RestApiMode.MERGE
+});
+```
+
 **Note:** Deployment will fail if a Resource of the same name is already defined in the Open API specification.
 
 **Note:** Any default properties configured, such as `defaultIntegration`, `defaultMethodOptions`, etc. will only be
@@ -1686,10 +1687,6 @@ like `AWS::APIGateway::DomainNameV2` and this would cause compatibility issue wi
 resource defined in `apigatewayv2.ts` file during the L1 generation.
 
 Move to using `aws-apigatewayv2` to get the latest APIs and updates.
-
-----
-
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ----
 
