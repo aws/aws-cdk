@@ -226,7 +226,10 @@
         "/CrossAccountStepFunctionStack/CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5-InvokeStepFunction-InvokeStateMachine-ActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5InvokeStepFunctionInvokeStateMachineActionRoleA1EF4B34"
+            "data": "CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5InvokeStepFunctionInvokeStateMachineActionRoleA1EF4B34",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/CrossAccountStepFunctionStack/CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5-InvokeStepFunction-InvokeStateMachine-ActionRole/DefaultPolicy": [
@@ -305,7 +308,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/3480981ae483c4aa2bbfd649297c843b0a81b3ce02e1ba37eef1f8162bbc0d6c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/e6dde5cf7e78c0061ba38a84a62ebaf3ece1f07f29740b3d0d456722e7a59772.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -406,7 +409,10 @@
         "/CdkPipelineStepFunctionsActionStack/BucketDeployment/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BucketDeploymentAwsCliLayerB018DCE1"
+            "data": "BucketDeploymentAwsCliLayerB018DCE1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/CdkPipelineStepFunctionsActionStack/BucketDeployment/CustomResourceHandler": [
@@ -700,19 +706,41 @@
         "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "pipelineName": "*",
+              "crossAccountKeys": true,
+              "artifactBucket": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStage": [
+                {
+                  "stageName": "*"
+                }
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStage": [
+                {
+                  "stageName": "*"
+                }
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStage": [
+                {
+                  "stageName": "*"
+                }
+              ]
+            }
           }
         ],
         "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline/Role": [
@@ -792,7 +820,10 @@
         "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CrossAccountStepFunctionsPipelineRoleD362C1BB"
+            "data": "CrossAccountStepFunctionsPipelineRoleD362C1BB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline/Role/DefaultPolicy": [
