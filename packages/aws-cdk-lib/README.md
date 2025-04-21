@@ -1567,6 +1567,7 @@ export class ApiKey extends ApiKeyBase {
 Organizations can set default property values to a Construct by writing Injectors for builders to consume.
 
 Here is a simple example of an Injector for APiKey.  
+
 ```ts
 export class ApiKeyPropsInjector implements IPropertyInjector {
   readonly constructUniqueId: string;
@@ -1583,10 +1584,12 @@ export class ApiKeyPropsInjector implements IPropertyInjector {
   }
 }
 ```
+
 Some notes:
-* ApiKey must have a `PROPERTY_INJECTION_ID` property, in addition to having `@propertyInjectable` class decorator.
-* We set ApiKeyProps.enabled to false, if it is not provided; otherwise it would use the value that was passed in.
-* It is also possible to force ApiKeyProps.enabled to false, and not provide a way for the builders to overwrite it.
+
+- ApiKey must have a `PROPERTY_INJECTION_ID` property, in addition to having `@propertyInjectable` class decorator.
+- We set ApiKeyProps.enabled to false, if it is not provided; otherwise it would use the value that was passed in.
+- It is also possible to force ApiKeyProps.enabled to false, and not provide a way for the builders to overwrite it.
 
 Here is an example of how builders can use the injector the org created.
 
@@ -1609,9 +1612,10 @@ new ApiKey(stack, 'my-api-key', {
 ```
 
 Some notes:
-* We attach the injectors to Stack in this example, but we can also attach them to App or Stage.
-* All the ApiKey created in the scope of stack will get `enabled: false`.
-* Builders can overwrite the default value with `new ApiKey(stack, 'my-api-key', {enabled: true});`
+
+- We attach the injectors to Stack in this example, but we can also attach them to App or Stage.
+- All the ApiKey created in the scope of stack will get `enabled: false`.
+- Builders can overwrite the default value with `new ApiKey(stack, 'my-api-key', {enabled: true});`
 
 For more information, please see the [RFC](https://github.com/aws/aws-cdk-rfcs/blob/main/text/0693-property-injection.md).
 

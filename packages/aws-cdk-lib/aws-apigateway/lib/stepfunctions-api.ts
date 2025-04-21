@@ -6,6 +6,7 @@ import * as iam from '../../aws-iam';
 import * as sfn from '../../aws-stepfunctions';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Properties for StepFunctionsRestApi
@@ -110,7 +111,13 @@ export interface StepFunctionsRestApiProps extends RestApiProps {
 /**
  * Defines an API Gateway REST API with a Synchrounous Express State Machine as a proxy integration.
  */
+@propertyInjectable
 export class StepFunctionsRestApi extends RestApi {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.StepFunctionsRestApi';
+
   constructor(scope: Construct, id: string, props: StepFunctionsRestApiProps) {
     if (props.defaultIntegration) {
       throw new ValidationError('Cannot specify "defaultIntegration" since Step Functions integration is automatically defined', scope);

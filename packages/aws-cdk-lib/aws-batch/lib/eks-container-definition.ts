@@ -2,6 +2,7 @@ import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import * as ecs from '../../aws-ecs';
 import { Lazy, Size } from '../../core';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 const EMPTY_DIR_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/eks-container-definition.EmptyDirVolume');
 const HOST_PATH_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/eks-container-definition.HostPathVolume');
@@ -530,7 +531,13 @@ export interface EksContainerDefinitionProps {
 /**
  * A container that can be run with EKS orchestration on EC2 resources
  */
+@propertyInjectable
 export class EksContainerDefinition extends Construct implements IEksContainerDefinition {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.EksContainerDefinition';
+
   public readonly image: ecs.ContainerImage;
   public readonly args?: string[];
   public readonly command?: string[];

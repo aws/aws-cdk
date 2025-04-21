@@ -5,6 +5,7 @@ import { CfnAuthorizer } from '.././index';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectors';
 import { IAuthorizer } from '../common';
 
 /**
@@ -82,7 +83,13 @@ export interface WebSocketAuthorizerAttributes {
  * An authorizer for WebSocket Apis
  * @resource AWS::ApiGatewayV2::Authorizer
  */
+@propertyInjectable
 export class WebSocketAuthorizer extends Resource implements IWebSocketAuthorizer {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.WebSocketAuthorizer';
+
   /**
    * Import an existing WebSocket Authorizer into this CDK app.
    */
