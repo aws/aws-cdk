@@ -1420,7 +1420,7 @@ describe('SpecRestApi', () => {
   test.each([
     [apigw.RestApiMode.OVERWRITE, 'overwrite'],
     [apigw.RestApiMode.MERGE, 'merge'],
-    [undefined, Match.absent()],
+    [undefined, undefined],
   ])('mode property is set (%s)', (mode, expectedMode) => {
     // WHEN
     const api = new apigw.SpecRestApi(stack, 'api', {
