@@ -26,7 +26,6 @@ This construct library facilitates the deployment of Bedrock Agents, enabling yo
 
 ## Table of contents
 
-- [API](#api)
 - [Agents](#agents)
   - [Create an Agent](#create-an-agent)
   - [Action groups](#action-groups)
@@ -37,15 +36,25 @@ This construct library facilitates the deployment of Bedrock Agents, enabling yo
   - [Custom Orchestration](#custom-orchestration)
   - [Agent Alias](#agent-alias)
 
-## API
-
-See the [API documentation](../../../apidocs/namespaces/bedrock/README.md).
-
 ## Agents
 
-Amazon Bedrock Agents allow generative AI applications to automate complex, multistep tasks by seamlessly integrating with your company's systems, APIs, and data sources.
+Amazon Bedrock Agents allow generative AI applications to automate complex, multistep tasks by seamlessly integrating with your company's systems, APIs, and data sources. It uses the reasoning of foundation models (FMs), APIs, and data to break down user requests, gather relevant information, and efficiently complete tasks.
+
+### Create an Agent
+
+Building an agent is straightforward and fast.
+The following example creates an Agent with a simple instruction and default prompts:
+
+```ts fixture=default
+const agent = new bedrock.Agent(this, 'Agent', {
+  foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_HAIKU_V1_0,
+  instruction: 'You are a helpful and friendly agent that answers questions about literature.',
+});
+```
 
 ### Agent Properties
+
+The Bedrock Agent class supports the following properties.
 
 | Name | Type | Required | Description |
 |---|---|---|---|
@@ -62,17 +71,6 @@ Amazon Bedrock Agents allow generative AI applications to automate complex, mult
 | userInputEnabled | boolean | No | Select whether the agent can prompt additional information from the user when it lacks enough information. Defaults to false |
 | codeInterpreterEnabled | boolean | No | Select whether the agent can generate, run, and troubleshoot code when trying to complete a task. Defaults to false |
 | forceDelete | boolean | No | Whether to delete the resource even if it's in use. Defaults to true |
-
-### Create an Agent
-
-The following example creates an Agent with a simple instruction and default prompts:
-
-```ts fixture=default
-const agent = new bedrock.Agent(this, 'Agent', {
-  foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_HAIKU_V1_0,
-  instruction: 'You are a helpful and friendly agent that answers questions about literature.',
-});
-```
 
 ### Action Groups
 
