@@ -37,9 +37,13 @@ jobs:
         run: cd packages/aws-cdk-lib && yarn test core
 
       - name: Upload results to Codecov
+        if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push'
         uses: codecov/codecov-action@v5
         with:
           files: packages/aws-cdk-lib/coverage/cobertura-coverage.xml
           fail_ci_if_error: true
           flags: suite.unit
           use_oidc: true
+      - name: Skip Codecov upload (fork PR)
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        run: echo "Skipping Codecov upload. PR is from a fork"
