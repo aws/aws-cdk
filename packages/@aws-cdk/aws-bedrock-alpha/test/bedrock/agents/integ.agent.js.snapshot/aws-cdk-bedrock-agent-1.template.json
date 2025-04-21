@@ -14,7 +14,26 @@
          }
         },
         "ArnLike": {
-         "aws:SourceArn": "arn:aws:bedrock:us-east-1:551246883740:agent/*"
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":agent/*"
+           ]
+          ]
+         }
         }
        },
        "Effect": "Allow",
