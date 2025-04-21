@@ -7,6 +7,7 @@ import { LogDriverConfig } from './log-drivers/log-driver';
 import * as iam from '../../aws-iam';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Firelens log router type, fluentbit or fluentd.
@@ -209,7 +210,13 @@ export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverCo
 /**
  * Firelens log router
  */
+@propertyInjectable
 export class FirelensLogRouter extends ContainerDefinition {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.FirelensLogRouter';
+
   /**
    * Firelens configuration
    */

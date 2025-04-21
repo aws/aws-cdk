@@ -13,6 +13,7 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 import { AutoDeleteUnderlyingResourcesProvider } from '../../custom-resource-handlers/dist/aws-synthetics/auto-delete-underlying-resources-provider.generated';
 
 const AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE = 'Custom::SyntheticsAutoDeleteUnderlyingResources';
@@ -312,7 +313,13 @@ export enum ArtifactsEncryptionMode {
 /**
  * Define a new Canary
  */
+@propertyInjectable
 export class Canary extends cdk.Resource implements ec2.IConnectable {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-synthetics.Canary';
+
   /**
    * Execution role associated with this Canary.
    */

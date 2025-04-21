@@ -6,6 +6,7 @@ import { LustreMaintenanceTime } from './maintenance-time';
 import { Connections, ISecurityGroup, ISubnet, Port, SecurityGroup } from '../../aws-ec2';
 import { Aws, Duration, Token } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * The Lustre version for the file system.
@@ -249,7 +250,13 @@ export interface LustreFileSystemProps extends FileSystemProps {
  *
  * @resource AWS::FSx::FileSystem
  */
+@propertyInjectable
 export class LustreFileSystem extends FileSystemBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-fsx.LustreFileSystem';
+
   /**
    * Import an existing FSx for Lustre file system from the given properties.
    */

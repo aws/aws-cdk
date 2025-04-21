@@ -11,6 +11,7 @@ import { ISamlProvider } from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import { CfnOutput, Resource, Token } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 /**
  * Options for a client VPN endpoint
@@ -267,7 +268,13 @@ export interface ClientVpnEndpointAttributes {
 /**
  * A client VPN connection
  */
+@propertyInjectable
 export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.ClientVpnEndpoint';
+
   /**
    * Import an existing client VPN endpoint
    */

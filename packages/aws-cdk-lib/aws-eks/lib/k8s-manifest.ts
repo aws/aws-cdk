@@ -3,6 +3,7 @@ import { AlbScheme } from './alb-controller';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 import { CustomResource, Stack } from '../../core';
+import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 const PRUNE_LABEL_PREFIX = 'aws.cdk.eks/prune-';
 
@@ -114,7 +115,13 @@ export interface KubernetesManifestProps extends KubernetesManifestOptions {
  *
  * Applies/deletes the manifest using `kubectl`.
  */
+@propertyInjectable
 export class KubernetesManifest extends Construct {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.KubernetesManifest';
+
   /**
    * The CloudFormation resource type.
    */
