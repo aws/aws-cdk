@@ -118,6 +118,14 @@ export enum VpcEndpointIpAddressType {
    * address ranges and the endpoint service accepts both IPv4 and IPv6 requests.
    */
   DUALSTACK = 'dualstack',
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  SERVICE_DEFINED = 'service-defined',
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  NOT_SPECIFIED = 'not-specified',
 }
 
 /**
@@ -145,6 +153,10 @@ export enum VpcEndpointDnsRecordIpType {
    * The IP address type must be Dualstack.
    */
   SERVICE_DEFINED = 'service-defined',
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  NOT_SPECIFIED = 'not-specified',
 }
 
 /**
