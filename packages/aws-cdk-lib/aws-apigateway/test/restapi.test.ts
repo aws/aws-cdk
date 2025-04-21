@@ -915,7 +915,6 @@ describe('restapi', () => {
       });
     }).toThrow(/'cloudWatchRole' must be enabled for 'cloudWatchRoleRemovalPolicy' to be applied./);
   });
-
 });
 
 describe('Import', () => {
