@@ -745,13 +745,17 @@
     "LinuxArmLambdaBuildImage": [
       "AMAZON_LINUX_2_NODE_18",
       "AMAZON_LINUX_2023_NODE_20",
+      "AMAZON_LINUX_2023_NODE_22",
       "AMAZON_LINUX_2_PYTHON_3_11",
       "AMAZON_LINUX_2023_PYTHON_3_12",
+      "AMAZON_LINUX_2023_PYTHON_3_13",
       "AMAZON_LINUX_2_RUBY_3_2",
+      "AMAZON_LINUX_2023_RUBY_3_4",
       "AMAZON_LINUX_2023_CORRETTO_21",
       "AMAZON_LINUX_2_CORRETTO_17",
       "AMAZON_LINUX_2_CORRETTO_11",
       "AMAZON_LINUX_2_GO_1_21",
+      "AMAZON_LINUX_2023_GO_1_24",
       "AMAZON_LINUX_2_DOTNET_6",
       "AMAZON_LINUX_2023_DOTNET_8"
     ]
@@ -781,13 +785,17 @@
     "LinuxLambdaBuildImage": [
       "AMAZON_LINUX_2_NODE_18",
       "AMAZON_LINUX_2023_NODE_20",
+      "AMAZON_LINUX_2023_NODE_22",
       "AMAZON_LINUX_2_PYTHON_3_11",
       "AMAZON_LINUX_2023_PYTHON_3_12",
+      "AMAZON_LINUX_2023_PYTHON_3_13",
       "AMAZON_LINUX_2_RUBY_3_2",
+      "AMAZON_LINUX_2023_RUBY_3_4",
       "AMAZON_LINUX_2023_CORRETTO_21",
       "AMAZON_LINUX_2_CORRETTO_17",
       "AMAZON_LINUX_2_CORRETTO_11",
       "AMAZON_LINUX_2_GO_1_21",
+      "AMAZON_LINUX_2023_GO_1_24",
       "AMAZON_LINUX_2_DOTNET_6",
       "AMAZON_LINUX_2023_DOTNET_8"
     ]
@@ -2354,6 +2362,7 @@
       "VER_2_12_1",
       "VER_2_12_2",
       "VER_2_12_3",
+      "VER_2_12_4",
       "VER_3_01_0",
       "VER_3_01_1",
       "VER_3_02_0",
@@ -2376,7 +2385,8 @@
       "VER_3_07_0",
       "VER_3_07_1",
       "VER_3_08_0",
-      "VER_3_08_1"
+      "VER_3_08_1",
+      "VER_3_08_2"
     ],
     "AuroraPostgresEngineVersion": [
       "VER_9_6_8",
@@ -2452,6 +2462,7 @@
       "VER_13_16",
       "VER_13_17",
       "VER_13_18",
+      "VER_13_20",
       "VER_14_3",
       "VER_14_4",
       "VER_14_5",
@@ -2465,6 +2476,7 @@
       "VER_14_13",
       "VER_14_14",
       "VER_14_15",
+      "VER_14_17",
       "VER_15_2",
       "VER_15_3",
       "VER_15_4",
@@ -2474,6 +2486,7 @@
       "VER_15_8",
       "VER_15_9",
       "VER_15_10",
+      "VER_15_12",
       "VER_16_0",
       "VER_16_1",
       "VER_16_2",
@@ -2483,6 +2496,7 @@
       "VER_16_5",
       "VER_16_6",
       "VER_16_6_LIMITLESS",
+      "VER_16_8",
       "VER_17_1",
       "VER_17_2"
     ],

@@ -33,6 +33,7 @@ jobs:
       - name: Check for changes
         id: static-mapping-check
         run: |
+          cd tools/@aws-cdk/enum-updater
           if [[ -n "$(git status --porcelain ./lib/static-enum-mapping.json)" ]]; then
             echo "changes=true" >> $GITHUB_OUTPUT
           else
@@ -42,6 +43,7 @@ jobs:
       - name: Create PR for static mapping changes
         if: steps.static-mapping-check.outputs.changes == 'true'
         run: |
+          cd tools/@aws-cdk/enum-updater
           git config --global user.name 'aws-cdk-automation'
           git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
 
@@ -56,8 +58,10 @@ jobs:
           gh pr create --title "chore: update enum static mapping" \
            --body "This PR updates the CDK enum mapping file." \
            --base main \
-           --head "$branchName"
+           --head "$branchName" \
            --label "contribution/core,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Identify Missing Values and Apply Code Changes
         run: |
@@ -77,6 +81,8 @@ jobs:
         if: steps.git-check.outputs.changes == 'true'
         run: |
           # Iterate through each module directory that has changes
+          git config --global user.name 'aws-cdk-automation'
+          git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
           for module in $(git diff --name-only | grep -E '^packages/(@aws-cdk|aws-cdk-lib)/.*' | sed -E 's|^packages/(@aws-cdk\|aws-cdk-lib)/([^/]+).*|\2|' | sort -u); do
             moduleName=$(basename $module)
                         
@@ -112,7 +118,7 @@ jobs:
           gh pr create --title "chore(${moduleName#aws-}): add new enum values for ${moduleName#aws-}" \
            --body "This PR updates the enum values for ${moduleName#aws-}." \
            --base main \
-           --head "$branchName"
+           --head "$branchName" \
            --label "contribution/core,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test"
           done
         env:
