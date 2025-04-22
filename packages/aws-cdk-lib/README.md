@@ -1617,6 +1617,17 @@ Some notes:
 - All the ApiKey created in the scope of stack will get `enabled: false`.
 - Builders can overwrite the default value with `new ApiKey(stack, 'my-api-key', {enabled: true});`
 
+If you specify two or more injectors for the same Constructs, the last one is in effect.  In the example below, `ApiKeyPropsInjector` will never be applied.
+
+```ts
+const stack = new Stack(app2, 'my-stack', {
+  propertyInjectors: [
+    new ApiKeyPropsInjector(),
+    new AnotherApiKeyPropsInjector(),
+  ],
+});
+```
+
 For more information, please see the [RFC](https://github.com/aws/aws-cdk-rfcs/blob/main/text/0693-property-injection.md).
 
 <!--END CORE DOCUMENTATION-->

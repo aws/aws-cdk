@@ -1,4 +1,3 @@
-import { warn } from 'console';
 import { Construct, IConstruct } from 'constructs';
 import { PROPERTY_INJECTORS_SYMBOL } from './private/prop-injectors-helpers';
 
@@ -84,9 +83,6 @@ export class PropertyInjectors {
    */
   public add(...propsInjectors: IPropertyInjector[]) {
     for (const pi of propsInjectors) {
-      if (this._injectors.has(pi.constructUniqueId)) {
-        warn(`WARN: Overwriting injector for ${pi.constructUniqueId}`);
-      }
       this._injectors.set(pi.constructUniqueId, pi);
     }
   }
