@@ -1,5 +1,5 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from 'aws-cdk-lib/core';
+import { ArnFormat, IResource, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnPlaceIndex } from 'aws-cdk-lib/aws-location';
 import { DataSource, generateUniqueId } from './util';
@@ -101,7 +101,7 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
     const parsedArn = Stack.of(scope).splitArn(placeIndexArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new Error(`Place Index Arn ${placeIndexArn} does not have a resource name.`);
+      throw new UnscopedValidationError(`Place Index Arn ${placeIndexArn} does not have a resource name.`);
     }
 
     class Import extends Resource implements IPlaceIndex {
@@ -134,25 +134,25 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
   public readonly placeIndexUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: PlaceIndexProps = {}) {
-    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
-    }
-
-    if (props.placeIndexName !== undefined && !Token.isUnresolved(props.placeIndexName)) {
-      if (props.placeIndexName.length < 1 || props.placeIndexName.length > 100) {
-        throw new Error(`\`placeIndexName\` must be between 1 and 100 characters, got: ${props.placeIndexName.length} characters.`);
-      }
-
-      if (!/^[-._\w]+$/.test(props.placeIndexName)) {
-        throw new Error(`\`placeIndexName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.placeIndexName}.`);
-      }
-    }
-
     super(scope, id, {
       physicalName: props.placeIndexName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
+      throw new ValidationError(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
+    }
+
+    if (props.placeIndexName !== undefined && !Token.isUnresolved(props.placeIndexName)) {
+      if (props.placeIndexName.length < 1 || props.placeIndexName.length > 100) {
+        throw new ValidationError(`\`placeIndexName\` must be between 1 and 100 characters, got: ${props.placeIndexName.length} characters.`, this);
+      }
+
+      if (!/^[-._\w]+$/.test(props.placeIndexName)) {
+        throw new ValidationError(`\`placeIndexName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.placeIndexName}.`, this);
+      }
+    }
 
     const placeIndex = new CfnPlaceIndex(this, 'Resource', {
       indexName: this.physicalName,
