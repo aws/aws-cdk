@@ -129,27 +129,35 @@ export class WriterConfig {
 /**
  * Generate policy statements to allow S3PutObject on the bucket
  */
-function buildS3PutObjectPolicyStatements(bucketName: string): iam.PolicyStatement[] {
-  const resource = Arn.format({
-    region: '',
-    account: '',
-    partition: Aws.PARTITION,
-    service: 's3',
-    resource: bucketName,
-    resourceName: '*',
+function buildS3PutObjectPolicyStatements(bucketName?: string, bucketNamePath?: string): iam.PolicyStatement[] {
+  if (!bucketName && !bucketNamePath) {
+    return [];
+  }
+
+  const policyStatement = new iam.PolicyStatement({
+    actions: [
+      's3:PutObject',
+      's3:GetObject',
+      's3:ListMultipartUploadParts',
+      's3:AbortMultipartUpload',
+    ],
+    resources: [
+      bucketName ? Arn.format({
+        region: '',
+        account: '',
+        partition: Aws.PARTITION,
+        service: 's3',
+        resource: bucketName,
+        resourceName: '*',
+      }) : '*',
+    ],
   });
 
-  return [
-    new iam.PolicyStatement({
-      actions: [
-        's3:PutObject',
-        's3:GetObject',
-        's3:ListMultipartUploadParts',
-        's3:AbortMultipartUpload',
-      ],
-      resources: [resource],
-    }),
-  ];
+  if (bucketNamePath) {
+    policyStatement.addActions('s3:ListBucket');
+  }
+
+  return [policyStatement];
 }
 
 /**
@@ -284,39 +292,10 @@ export class ResultWriterV2 {
    * Compile policy statements to provide relevent permissions to the state machine
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
-    if (!this.bucket && !this.bucketNamePath) {
+    if (!this.bucket?.bucketName && !this.bucketNamePath) {
       return [];
     }
-
-    const statements = [
-      new iam.PolicyStatement({
-        actions: [
-          's3:PutObject',
-          's3:GetObject',
-          's3:ListMultipartUploadParts',
-          's3:AbortMultipartUpload',
-        ],
-        resources: [
-          this.bucket ? Arn.format({
-            region: '',
-            account: '',
-            partition: Aws.PARTITION,
-            service: 's3',
-            resource: this.bucket.bucketName,
-            resourceName: '*',
-          }) : '*',
-        ],
-      }),
-    ];
-
-    if (!this.bucket) {
-      statements.push(new iam.PolicyStatement({
-        actions: ['s3:ListBucket'],
-        resources: ['*'],
-      }));
-    }
-
-    return statements;
+    return buildS3PutObjectPolicyStatements(this.bucket?.bucketName, this.bucketNamePath);
   }
 
   /**
