@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { Cluster, ClusterOptions, CoreDnsComputeType } from './cluster';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Configuration props for EKS Fargate.

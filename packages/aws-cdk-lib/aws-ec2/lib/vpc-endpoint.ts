@@ -10,7 +10,7 @@ import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A VPC endpoint.

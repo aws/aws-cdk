@@ -9,7 +9,7 @@ import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import { Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for an AWS CloudTrail trail

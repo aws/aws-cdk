@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { Stack } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,

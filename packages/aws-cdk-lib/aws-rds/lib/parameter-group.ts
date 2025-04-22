@@ -4,7 +4,7 @@ import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated
 import { IResource, Lazy, RemovalPolicy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Options for `IParameterGroup.bindToCluster`.

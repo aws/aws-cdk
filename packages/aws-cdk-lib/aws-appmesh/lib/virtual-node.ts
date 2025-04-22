@@ -8,7 +8,7 @@ import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-l
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface which all VirtualNode based classes must implement

@@ -12,7 +12,7 @@ import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
 import { IServerlessCluster, IDatabaseCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
 import { IResolvable, Lazy, Stack, Token } from '../../core';
-import { propertyInjectable } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Base properties for an AppSync datasource

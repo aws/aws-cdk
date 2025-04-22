@@ -7,7 +7,7 @@ import { LogDriverConfig } from './log-drivers/log-driver';
 import * as iam from '../../aws-iam';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
-import { propertyInjectable } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Firelens log router type, fluentbit or fluentd.

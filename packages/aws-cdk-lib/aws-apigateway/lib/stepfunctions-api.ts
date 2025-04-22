@@ -6,7 +6,7 @@ import * as iam from '../../aws-iam';
 import * as sfn from '../../aws-stepfunctions';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for StepFunctionsRestApi

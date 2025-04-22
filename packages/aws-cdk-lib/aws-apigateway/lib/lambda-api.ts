@@ -7,7 +7,7 @@ import { RestApi, RestApiProps } from './restapi';
 import * as lambda from '../../aws-lambda';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface LambdaRestApiProps extends RestApiProps {
   /**

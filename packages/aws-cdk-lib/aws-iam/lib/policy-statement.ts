@@ -7,7 +7,6 @@ import {
 import { normalizeStatement } from './private/postprocess-policy-document';
 import { LITERAL_STRING_KEY, mergePrincipal, sum } from './private/util';
 import * as cdk from '../../core';
-import { propertyInjectable } from '../../core/lib/prop-injectors';
 
 const ensureArrayOrUndefined = (field: any) => {
   if (field === undefined) {
@@ -41,7 +40,6 @@ const ARN_SIZE_ESTIMATE_CONTEXT_KEY = '@aws-cdk/aws-iam.arnSizeEstimate';
 /**
  * Represents a statement in an IAM policy document.
  */
-@propertyInjectable
 export class PolicyStatement {
   /**
    * Uniquely identifies this class.

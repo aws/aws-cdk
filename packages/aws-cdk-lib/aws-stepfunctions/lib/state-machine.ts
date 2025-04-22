@@ -12,7 +12,7 @@ import * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
 import { Arn, ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Two types of state machines are available in AWS Step Functions: EXPRESS AND STANDARD.

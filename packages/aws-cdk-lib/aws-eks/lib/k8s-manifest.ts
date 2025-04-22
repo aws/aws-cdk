@@ -3,7 +3,7 @@ import { AlbScheme } from './alb-controller';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 import { CustomResource, Stack } from '../../core';
-import { propertyInjectable } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 const PRUNE_LABEL_PREFIX = 'aws.cdk.eks/prune-';
 

@@ -6,7 +6,7 @@ import { DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY } from './common';
 import { CloudFormationProductVersion } from './product';
 import { ProductStack } from './product-stack';
 import { Names } from '../../core';
-import { propertyInjectable } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for a ProductStackHistory.
@@ -112,7 +112,7 @@ export class ProductStackHistory extends Construct {
         ${this.props.currentVersionName} already exist in ${productStackSnapshotDirectory}.
         Since locked has been set to ${this.props.currentVersionLocked},
         Either update the currentVersionName to deploy a new version or deploy the existing ProductStack snapshot.
-        If ${this.props.currentVersionName} was unintentionally synthesized and not deployed, 
+        If ${this.props.currentVersionName} was unintentionally synthesized and not deployed,
         delete the corresponding version from ${productStackSnapshotDirectory} and redeploy.`);
       }
     }

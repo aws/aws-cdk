@@ -12,7 +12,7 @@ import * as cxschema from '../../cloud-assembly-schema';
 import { ContextProvider, Duration, Lazy, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Common properties to create a Route 53 hosted zone

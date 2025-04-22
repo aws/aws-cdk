@@ -1,10 +1,6 @@
 import { warn } from 'console';
-import { Construct, IConstruct, Node } from 'constructs';
-
-/**
- * This symbol is needed to identify PropertyInjectors.
- */
-const PROPERTY_INJECTORS_SYMBOL = Symbol.for('@aws-cdk/core.PropertyInjectors');
+import { Construct, IConstruct } from 'constructs';
+import { PROPERTY_INJECTORS_SYMBOL } from './private/prop-injectors-helpers';
 
 /**
  * This defines the values needed for Injection.
@@ -111,103 +107,4 @@ export class PropertyInjectors {
   public supportedClasses(): string[] {
     return Array.from(this._injectors.keys());
   }
-}
-
-/**
- * This is called by the constructor to find and apply the PropertyInjector for that Construct.
- * @param uniqueId - uniqueId of the Construct
- * @param originalProps - original constructor properties
- * @param context - context of the injection
- * @returns a new props with default values.
- */
-export function applyInjectors(uniqueId: string, originalProps: any, context: InjectionContext): any {
-  const injector = findInjectorFromConstruct(context.scope, uniqueId);
-  if (injector === undefined) {
-    // no injector found
-    return originalProps;
-  }
-  return injector.inject(originalProps, {
-    scope: context.scope,
-    id: context.id,
-  });
-}
-
-/**
- * This function finds the PropertyInjectors in the scope by walking up the scope tree.
- * It then returns the Injector associated with uniqueId, or undefined if it is not found.
- * Borrowed logic from Stack.of.
- */
-export function findInjectorFromConstruct(scope: IConstruct, uniqueId: string): IPropertyInjector | undefined {
-  const result = _lookup(scope);
-  if (result === undefined) {
-    return undefined;
-  }
-  const injectors = _getInjectorsFromConstruct(result) as unknown as PropertyInjectors;
-
-  const propsInjector = injectors.for(uniqueId);
-  if (!propsInjector) {
-    const parent = Node.of(scope).scope;
-    if (parent) {
-      return findInjectorFromConstruct(parent, uniqueId);
-    }
-  }
-  return propsInjector;
-
-  function _getInjectorsFromConstruct(c: any): any {
-    type ObjKey = keyof typeof c;
-    const k = PROPERTY_INJECTORS_SYMBOL as unknown as ObjKey;
-    return c[k];
-  }
-
-  function _lookup(c: Construct): PropertyInjectors | undefined {
-    if (PropertyInjectors.hasPropertyInjectors(c)) {
-      return c;
-    }
-
-    const n = Node.of(c);
-    if (n === undefined) {
-      return undefined;
-    }
-    const _scope = n.scope;
-    if (!_scope) {
-      // not more scope to check, so return undefined
-      return undefined;
-    }
-
-    return _lookup(_scope);
-  }
-}
-
-// Class Decorator fails JSII.  See https://github.com/aws/aws-cdk/pull/33213
-// Decorator References:
-//    https://www.typescriptlang.org/docs/handbook/decorators.html#class-decorators
-//    https://stackoverflow.com/questions/66077874/how-to-obtain-constructor-arguments-inside-a-decorator
-
-type Constructor = { new (...args: any[]): {} };
-
-/**
- * This decorator applies property injection before calling the Construct's constructor.
- *
- * ** Please make sure the Construct has PROPERTY_INJECTION_ID property.**
- *
- * @param constructor constructor of the Construct
- * @returns an instance of the class with Property Injection applied.
- */
-export function propertyInjectable<T extends Constructor>(constructor: T) {
-  return class extends constructor {
-    constructor(...args: any[]) {
-      const scope = args[0];
-      const id = args[1];
-      let props = args[2];
-
-      // eslint-disable-next-line dot-notation
-      const uniqueId = (constructor as any)['PROPERTY_INJECTION_ID'] as string;
-      props = applyInjectors(uniqueId, props, {
-        scope,
-        id,
-      });
-
-      super(scope, id, props);
-    }
-  };
 }

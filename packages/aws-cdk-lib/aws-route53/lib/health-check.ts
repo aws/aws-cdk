@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { CfnHealthCheck } from './route53.generated';
 import { Duration, IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Imported or created health check

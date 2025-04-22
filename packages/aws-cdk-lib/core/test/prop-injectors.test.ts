@@ -5,7 +5,8 @@ import { Code, Function, Runtime } from '../../aws-lambda';
 import { BlockPublicAccess, Bucket, BucketEncryption, BucketProps } from '../../aws-s3';
 import { Annotations, RemovalPolicy, Stack, Stage } from '../lib';
 import { App } from '../lib/app';
-import { applyInjectors, findInjectorFromConstruct, InjectionContext, IPropertyInjector, PropertyInjectors } from '../lib/prop-injectors';
+import { applyInjectors, findInjectorFromConstruct } from '../lib/private/prop-injectors-helpers';
+import { InjectionContext, IPropertyInjector, PropertyInjectors } from '../lib/prop-injectors';
 
 // Define Injectors for our testing
 class DoNothingInjector implements IPropertyInjector {

@@ -8,7 +8,7 @@ import * as iam from '../../aws-iam';
 import { ArnFormat, IResource as IResourceBase, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * API keys are alphanumeric string values that you distribute to

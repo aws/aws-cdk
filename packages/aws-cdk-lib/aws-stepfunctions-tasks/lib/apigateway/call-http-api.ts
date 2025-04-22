@@ -4,7 +4,7 @@ import { CallApiGatewayEndpointBaseProps, CallApiGatewayEndpointJsonataBaseProps
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { propertyInjectable } from '../../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**
  * Base properties for calling an HTTP API Endpoint

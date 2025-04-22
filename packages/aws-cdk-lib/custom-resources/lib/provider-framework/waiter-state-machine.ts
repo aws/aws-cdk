@@ -4,7 +4,7 @@ import { IFunction } from '../../../aws-lambda';
 import { ILogGroup, LogGroup } from '../../../aws-logs';
 import { CfnStateMachine, LogLevel } from '../../../aws-stepfunctions';
 import { Duration, Stack } from '../../../core';
-import { propertyInjectable } from '../../../core/lib/prop-injectors';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**
  * Log Options for the state machine.
