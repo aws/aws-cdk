@@ -275,7 +275,6 @@ export interface RestApiProps extends RestApiOptions {
    * @default - Metering is disabled.
    */
   readonly apiKeySourceType?: ApiKeySourceType;
-
 }
 
 /**
