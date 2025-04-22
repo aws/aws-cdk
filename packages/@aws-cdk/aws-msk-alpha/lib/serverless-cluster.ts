@@ -1,5 +1,5 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { Fn, Lazy, Names } from 'aws-cdk-lib';
+import { Fn, Lazy, Names, ValidationError } from 'aws-cdk-lib';
 import * as constructs from 'constructs';
 import { ClusterBase, ICluster } from '.';
 import { CfnServerlessCluster } from 'aws-cdk-lib/aws-msk';
@@ -87,7 +87,7 @@ export class ServerlessCluster extends ClusterBase {
     addConstructMetadata(this, props);
 
     if (props.vpcConfigs.length < 1 || props.vpcConfigs.length > 5) {
-      throw Error(`\`vpcConfigs\` must contain between 1 and 5 configurations, got ${props.vpcConfigs.length} configurations.`);
+      throw new ValidationError(`\`vpcConfigs\` must contain between 1 and 5 configurations, got ${props.vpcConfigs.length} configurations.`, this);
     }
 
     const vpcConfigs = props.vpcConfigs.map((vpcConfig, index) => this._renderVpcConfig(vpcConfig, index));
@@ -127,16 +127,14 @@ export class ServerlessCluster extends ClusterBase {
     const subnetSelection = vpcConfig.vpc.selectSubnets(vpcConfig.vpcSubnets);
 
     if (subnetSelection.subnets.length < 2) {
-      throw Error(
-        `Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length} subnet.`,
-      );
+      throw new ValidationError(`Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length} subnet.`, this);
     }
 
     let securityGroups: ec2.ISecurityGroup[] = [];
 
     if (vpcConfig.securityGroups) {
       if (vpcConfig.securityGroups.length < 1 || vpcConfig.securityGroups.length > 5) {
-        throw Error(`\`securityGroups\` must contain between 1 and 5 elements, got ${vpcConfig.securityGroups.length} elements.`);
+        throw new ValidationError(`\`securityGroups\` must contain between 1 and 5 elements, got ${vpcConfig.securityGroups.length} elements.`, this);
       }
       securityGroups = vpcConfig.securityGroups;
     } else {
