@@ -25,7 +25,7 @@ export interface OriginGroupProps {
   /**
    * A unique identifier for the origin. This value must be unique within the distribution.
    *
-   * @default - an originId will be generated for you
+   * @default - CloudFormation will generate an originId for you
    */
   readonly originId?: string;
 
