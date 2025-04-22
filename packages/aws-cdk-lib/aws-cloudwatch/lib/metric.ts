@@ -1,5 +1,5 @@
 import { Construct, IConstruct } from 'constructs';
-import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
+import { Alarm, ComparisonOperator, THRESHOLD_IGNORED_FOR_ANOMALY_DETECTION, TreatMissingData } from './alarm';
 import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Statistic, Unit } from './metric-types';
 import { dispatchMetric, metricKey } from './private/metric-util';
 import { normalizeStatistic, pairStatisticToString, parseStatistic, singleStatisticToString } from './private/statistic';
@@ -313,19 +313,27 @@ export class Metric implements IMetric {
    * @returns The newly created Alarm
    */
   public static createAnomalyDetectionAlarmFromMetric(scope: Construct, id: string, props: CreateAnomalyDetectionAlarmProps, metric: IMetric): Alarm {
+    // Validate stdDevs
+    if (props.stdDevs !== undefined && props.stdDevs <= 0) {
+      throw new cdk.ValidationError('stdDevs must be greater than 0', scope);
+    }
+
     if (!Alarm.isAnomalyDetectionOperator(props.comparisonOperator)) {
       throw new cdk.ValidationError(`Invalid comparison operator for anomaly detection alarm: ${props.comparisonOperator}`, scope);
     }
+
+    // Create the anomaly detection band expression
     const anomalyDetectionExpression = new MathExpression({
-      expression: `ANOMALY_DETECTION_BAND(m0, ${props.bounds ?? 1})`,
+      expression: `ANOMALY_DETECTION_BAND(m0, ${props.stdDevs ?? 2})`,
       usingMetrics: { m0: metric },
       period: props.period,
+      label: 'Anomaly Detection Band',
     });
 
     return new Alarm(scope, id, {
       ...props,
       metric: anomalyDetectionExpression,
-      threshold: 0, // This value will be ignored for anomaly detection alarms
+      threshold: THRESHOLD_IGNORED_FOR_ANOMALY_DETECTION, // This value will be ignored for anomaly detection alarms
       thresholdMetricId: 'expr_1',
     });
   }
@@ -946,13 +954,6 @@ interface CreateAlarmOptionsBase {
   readonly alarmDescription?: string;
 
   /**
-   * Comparison to use to check if metric is breaching
-   *
-   * @default GreaterThanOrEqualToThreshold
-   */
-  readonly comparisonOperator?: ComparisonOperator;
-
-  /**
    * The number of periods over which data is compared to the specified threshold.
    */
   readonly evaluationPeriods: number;
@@ -998,6 +999,13 @@ interface CreateAlarmOptionsBase {
 export interface CreateAlarmOptions extends CreateAlarmOptionsBase {
 
   /**
+   * Comparison to use to check if metric is breaching
+   *
+   * @default GreaterThanOrEqualToThreshold
+   */
+  readonly comparisonOperator?: ComparisonOperator;
+
+  /**
    * The value against which the specified statistic is compared.
    */
   readonly threshold: number;
@@ -1010,13 +1018,19 @@ export interface CreateAnomalyDetectionAlarmProps extends CreateAlarmOptionsBase
   /**
    * The number of standard deviations to use for the anomaly detection band. The higher the value, the wider the band.
    *
-   * - The minimum value should be greater than 0. A value of 0 or negative values would not make sense in the context of calculating standard deviations.
+   * - Must be greater than 0. A value of 0 or negative values would not make sense in the context of calculating standard deviations.
    * - There is no strict maximum value defined, as standard deviations can theoretically extend infinitely. However, in practice, values beyond 5 or 6 standard deviations are rarely used, as they would result in an extremely wide anomaly detection band, potentially missing significant anomalies.
+   *
+   * @default 2
    */
-  readonly bounds: number;
+  readonly stdDevs?: number;
 
   /**
-   * Comparison to use to check if metric is breaching
+   * Comparison operator to use to check if metric is breaching.
+   * Must be one of the anomaly detection operators:
+   * - LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD
+   * - GREATER_THAN_UPPER_THRESHOLD
+   * - LESS_THAN_LOWER_THRESHOLD
    */
   readonly comparisonOperator: ComparisonOperator;
 }

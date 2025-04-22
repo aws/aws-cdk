@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AnomalyAlarm4A93F8A2": {
+  "DefaultAnomalyAlarmC6622B30": {
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "LessThanLowerOrGreaterThanUpperThreshold",
@@ -10,6 +10,7 @@
      {
       "Expression": "ANOMALY_DETECTION_BAND(m0, 2)",
       "Id": "expr_1",
+      "Label": "Anomaly Detection Band",
       "ReturnData": true
      },
      {
@@ -26,6 +27,89 @@
      }
     ],
     "ThresholdMetricId": "expr_1"
+   }
+  },
+  "ExplicitOperatorAnomalyAlarm061F9C2B": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanUpperThreshold",
+    "EvaluationPeriods": 2,
+    "Metrics": [
+     {
+      "Expression": "ANOMALY_DETECTION_BAND(m0, 3)",
+      "Id": "expr_1",
+      "Label": "Anomaly Detection Band",
+      "ReturnData": true
+     },
+     {
+      "Id": "m0",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "CPUUtilization",
+        "Namespace": "AWS/EC2"
+       },
+       "Period": 300,
+       "Stat": "Average"
+      },
+      "ReturnData": true
+     }
+    ],
+    "ThresholdMetricId": "expr_1"
+   }
+  },
+  "DescriptiveAnomalyAlarm8B14203E": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "Alarm when CPU utilization is outside the expected band",
+    "ComparisonOperator": "GreaterThanUpperThreshold",
+    "EvaluationPeriods": 3,
+    "Metrics": [
+     {
+      "Expression": "ANOMALY_DETECTION_BAND(m0, 2.5)",
+      "Id": "expr_1",
+      "Label": "Anomaly Detection Band",
+      "ReturnData": true
+     },
+     {
+      "Id": "m0",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "CPUUtilization",
+        "Namespace": "AWS/EC2"
+       },
+       "Period": 300,
+       "Stat": "Average"
+      },
+      "ReturnData": true
+     }
+    ],
+    "ThresholdMetricId": "expr_1"
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefDefaultAnomalyAlarmC6622B30C3592624": {
+   "Value": {
+    "Ref": "DefaultAnomalyAlarmC6622B30"
+   },
+   "Export": {
+    "Name": "AnomalyDetectionAlarmTestStack:ExportsOutputRefDefaultAnomalyAlarmC6622B30C3592624"
+   }
+  },
+  "ExportsOutputRefExplicitOperatorAnomalyAlarm061F9C2BB2D8039E": {
+   "Value": {
+    "Ref": "ExplicitOperatorAnomalyAlarm061F9C2B"
+   },
+   "Export": {
+    "Name": "AnomalyDetectionAlarmTestStack:ExportsOutputRefExplicitOperatorAnomalyAlarm061F9C2BB2D8039E"
+   }
+  },
+  "ExportsOutputRefDescriptiveAnomalyAlarm8B14203E100E41DF": {
+   "Value": {
+    "Ref": "DescriptiveAnomalyAlarm8B14203E"
+   },
+   "Export": {
+    "Name": "AnomalyDetectionAlarmTestStack:ExportsOutputRefDescriptiveAnomalyAlarm8B14203E100E41DF"
    }
   }
  },

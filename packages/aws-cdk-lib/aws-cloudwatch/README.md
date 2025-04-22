@@ -389,22 +389,89 @@ calculations in CDK: https://github.com/aws/aws-cdk/issues/5595
 
 ## Anomaly Detection Alarms
 
-To create an alarm based on anomaly detection, you can use the `createAnomalyDetectionAlarm` method on a `Metric` or `MathExpression` object:
+CloudWatch anomaly detection applies machine learning algorithms to create a model of expected metric behavior. You can use anomaly detection to:
+
+- Detect anomalies with minimal configuration
+- Visualize expected metric behavior
+- Create alarms that trigger when metrics deviate from expected patterns
+
+### Creating an Anomaly Detection Alarm
+
+There are two ways to create an alarm based on anomaly detection:
+
+#### Method 1: Using the `createAnomalyDetectionAlarm` helper method
+
+The simplest way is to use the `createAnomalyDetectionAlarm` method on a `Metric` or `MathExpression` object:
 
 ```ts
-declare const queue: sqs.Queue;
+// Create a metric
+const metric = new cloudwatch.Metric({
+  namespace: 'AWS/EC2',
+  metricName: 'CPUUtilization',
+  statistic: 'Average',
+  period: Duration.minutes(5),
+});
 
-const alarm = queue.metricNumberOfMessagesSent().createAnomalyDetectionAlarm(this, 'AnomalyAlarm', {
-  bounds: 2,
-  evaluationPeriods: 1,
+// Create an anomaly detection alarm with default settings
+const alarm = metric.createAnomalyDetectionAlarm(this, 'AnomalyAlarm', {
+  stdDevs: 2, // Number of standard deviations for the band (default: 2)
+  evaluationPeriods: 3,
   comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
+});
+
+// Or, create an anomaly detection alarm with custom settings
+const customAlarm = metric.createAnomalyDetectionAlarm(this, 'CustomAnomalyAlarm', {
+  stdDevs: 3,
+  evaluationPeriods: 2,
+  datapointsToAlarm: 2,
+  comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD,
+  alarmDescription: 'Alarm when metric exceeds the upper band of expected behavior',
 });
 ```
 
 This method automatically sets up the necessary ANOMALY_DETECTION_BAND expression and configures the alarm correctly for anomaly detection.
-Note that anomaly detection alarms don't require a threshold value, as the threshold is dynamically determined by the anomaly detection algorithm. The `createAnomalyDetectionAlarm` method handles the necessary configuration, including setting the `thresholdMetricId` to the appropriate value.
-For more information on anomaly detection in CloudWatch, see the [AWS documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Anomaly_Detection.html).
 
+#### Method 2: Creating an anomaly detection alarm directly
+
+You can also create an anomaly detection alarm directly by creating a math expression with the ANOMALY_DETECTION_BAND function and then creating an alarm with an anomaly detection comparison operator:
+
+```ts
+// Create a metric
+const metric = new cloudwatch.Metric({
+  namespace: 'AWS/EC2',
+  metricName: 'CPUUtilization',
+  statistic: 'Average',
+  period: Duration.minutes(5),
+});
+
+// Create an anomaly detection band expression
+const anomalyBand = new cloudwatch.MathExpression({
+  expression: 'ANOMALY_DETECTION_BAND(m1, 2)',
+  usingMetrics: { m1: metric },
+  label: 'Anomaly Detection Band',
+});
+
+// Create an alarm using the anomaly detection band
+const alarm = new cloudwatch.Alarm(this, 'AnomalyAlarm', {
+  metric: anomalyBand,
+  evaluationPeriods: 3,
+  // Use THRESHOLD_IGNORED_FOR_ANOMALY_DETECTION constant for clarity
+  threshold: cloudwatch.THRESHOLD_IGNORED_FOR_ANOMALY_DETECTION,
+  comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
+});
+```
+
+Note that anomaly detection alarms don't use a specific threshold value, as the threshold is dynamically determined by the anomaly detection algorithm. It's recommended to use the `THRESHOLD_IGNORED_FOR_ANOMALY_DETECTION` constant to make it clear in your code that the threshold value is not being used for the actual alarm evaluation.
+
+### Comparison Operators for Anomaly Detection
+
+When creating an anomaly detection alarm, you must use one of the following comparison operators:
+
+- `LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD`: Alarm when the metric is either below the lower band or above the upper band
+- `GREATER_THAN_UPPER_THRESHOLD`: Alarm only when the metric is above the upper band
+- `LESS_THAN_LOWER_THRESHOLD`: Alarm only when the metric is below the lower band
+
+For more information on anomaly detection in CloudWatch, see the [AWS documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Anomaly_Detection.html).
 
 ## Dashboards
 

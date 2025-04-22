@@ -1,7 +1,8 @@
 {
-  "version": "36.0.5",
+  "version": "41.0.0",
   "files": {
-    "b96f486889914dd9e9ee35b7a1fc0f4d923bce6e1f75eb5b0a18795cd9cb977d": {
+    "21c27aee1ad0326558a3efdcf7925eae1b16f86b0ad643d7b1553596a5a14f30": {
+      "displayName": "AnomalyDetectionAlarmTestStack Template",
       "source": {
         "path": "AnomalyDetectionAlarmTestStack.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b96f486889914dd9e9ee35b7a1fc0f4d923bce6e1f75eb5b0a18795cd9cb977d.json",
+          "objectKey": "21c27aee1ad0326558a3efdcf7925eae1b16f86b0ad643d7b1553596a5a14f30.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
