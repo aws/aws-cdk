@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "ApplicationSignalsInfra-Daemon.assets": {
       "type": "cdk:asset-manifest",
@@ -44,6 +44,16 @@
                 "assumeRoleAction": "*"
               },
               "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
                 {
                   "managedPolicyArn": "*"
                 }
@@ -251,6 +261,12 @@
             "data": "JavaTaskDefinition93F96919"
           }
         ],
+        "/ApplicationSignalsJavaApp-Daemon/JavaECSIntegration": [
+          {
+            "type": "aws:cdk:warning",
+            "data": " Application Signals functionality requires prior deployment of the CloudWatch Agent with appropriate security group settings. Missing or incorrect configurations will prevent successful collection of observability data. [ack: JavaECSIntegration]"
+          }
+        ],
         "/ApplicationSignalsJavaApp-Daemon/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -320,5 +336,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

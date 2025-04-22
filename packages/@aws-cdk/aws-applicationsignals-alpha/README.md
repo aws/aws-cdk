@@ -167,7 +167,10 @@ class MyStack extends cdk.Stack {
 
 #### Enable Application Signals on ECS with replica mode
 
-Note: Since the daemon deployment strategy is not supported on ECS Fargate, this mode is only supported on ECS on EC2.
+**Note**
+*Running CloudWatch Agent service using replica mode requires specific security group configurations to enable communication with other services.
+For Application Signals functionality, configure the security group with the following minimum inbound rules: Port 2000 (HTTP) and Port 4316 (HTTP).
+This configuration ensures proper connectivity between the CloudWatch Agent and dependent services.*
 
 1. Run CloudWatch Agent as a replica service with service connect.
 1. Configure `instrumentation` to instrument the application with the ADOT Python Agent.
@@ -191,6 +194,8 @@ class MyStack extends cdk.Stack {
       vpc,
       name: 'local',
     });
+    const securityGroup = new ec2.SecurityGroup(this, 'ECSSG', { vpc });
+    securityGroup.addIngressRule(securityGroup, ec2.Port.tcpRange(0, 65535));
 
     // Define Task Definition for CloudWatch agent (Replica)
     const cwAgentTaskDefinition = new ecs.FargateTaskDefinition(this, 'CloudWatchAgentTaskDefinition', {});
@@ -219,6 +224,7 @@ class MyStack extends cdk.Stack {
     new ecs.FargateService(this, 'CloudWatchAgentService', {
       cluster: cluster,
       taskDefinition: cwAgentTaskDefinition,
+      securityGroups: [securityGroup],
       serviceConnectConfiguration: {
         namespace: dnsNamespace.namespaceArn,
         services: [

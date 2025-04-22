@@ -1,7 +1,8 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "files": {
     "1b94200f5619eaed3efe22e69ba29da2803b62aa6b0f7cfacb52a6d015d0f1b1": {
+      "displayName": "ApplicationSignalsJavaApp-Daemon Template",
       "source": {
         "path": "ApplicationSignalsJavaApp-Daemon.template.json",
         "packaging": "file"

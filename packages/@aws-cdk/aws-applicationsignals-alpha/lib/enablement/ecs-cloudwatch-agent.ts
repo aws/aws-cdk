@@ -1,4 +1,5 @@
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
 /**
@@ -150,6 +151,8 @@ export class CloudWatchAgentIntegration extends Construct {
     props: CloudWatchAgentIntegrationProps,
   ) {
     super(scope, id);
+
+    props.taskDefinition.taskRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('CloudWatchAgentServerPolicy'));
 
     this.agentContainer = props.taskDefinition.addContainer(props.containerName, {
       image: ecs.ContainerImage.fromRegistry(CloudWatchAgentVersion.getCloudWatchAgentImage(props.operatingSystemFamily)),

@@ -1,7 +1,8 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "files": {
     "65ef091867c1316d968bc3004ff4861cfbd903d92c2a0569162074707eccb49c": {
+      "displayName": "ApplicationSignalsDotnetApp-Sidecar Template",
       "source": {
         "path": "ApplicationSignalsDotnetApp-Sidecar.template.json",
         "packaging": "file"

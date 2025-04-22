@@ -1,7 +1,8 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "files": {
     "f612434cc6ae64f23db8b121ce1c7aef32981487de44a9e920052c9e289beb5c": {
+      "displayName": "ApplicationSignalsPythonApp-Sidecar Template",
       "source": {
         "path": "ApplicationSignalsPythonApp-Sidecar.template.json",
         "packaging": "file"

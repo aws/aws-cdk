@@ -58,6 +58,23 @@ describe('application signals cloudwatch agent integration', () => {
         ],
       },
     });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/CloudWatchAgentServerPolicy',
+            ],
+          ],
+        },
+      ],
+    });
   });
 
   test('should create a sidecar container with customized config', () => {

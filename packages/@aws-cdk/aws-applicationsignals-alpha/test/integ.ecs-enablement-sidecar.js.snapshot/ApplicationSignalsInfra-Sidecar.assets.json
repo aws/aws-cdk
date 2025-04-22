@@ -1,7 +1,8 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "files": {
     "760ba6b127c631f1b056b0ce1115a8decc6c1fc79d1123bedf629c7633f5701f": {
+      "displayName": "ApplicationSignalsInfra-Sidecar Template",
       "source": {
         "path": "ApplicationSignalsInfra-Sidecar.template.json",
         "packaging": "file"

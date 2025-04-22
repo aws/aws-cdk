@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "ApplicationSignalsInfra-Replica.assets": {
       "type": "cdk:asset-manifest",
@@ -44,6 +44,16 @@
                 "assumeRoleAction": "*"
               },
               "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
                 {
                   "managedPolicyArn": "*"
                 }
@@ -711,6 +721,12 @@
             "data": "PythonTaskDefinition2F79666C"
           }
         ],
+        "/ApplicationSignalsPythonApp-Replica/PythonECSIntegration": [
+          {
+            "type": "aws:cdk:warning",
+            "data": " Application Signals functionality requires prior deployment of the CloudWatch Agent with appropriate security group settings. Missing or incorrect configurations will prevent successful collection of observability data. [ack: PythonECSIntegration]"
+          }
+        ],
         "/ApplicationSignalsPythonApp-Replica/PythonApp": [
           {
             "type": "aws:cdk:warning",
@@ -796,5 +812,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

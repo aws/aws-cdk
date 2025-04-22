@@ -1,5 +1,5 @@
+import { Annotations } from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import * as constants from './constants';
 import * as agent from './ecs-cloudwatch-agent';
@@ -154,7 +154,6 @@ export class ApplicationSignalsIntegration extends Construct {
     }
 
     if (this.cloudWatchAgentSidecar) {
-      taskDefinition.taskRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('CloudWatchAgentServerPolicy'));
       const cloudWatchAgent = new agent.CloudWatchAgentIntegration(this, 'CloudWatchAgentSidecar',
         {
           taskDefinition: taskDefinition,
@@ -165,6 +164,8 @@ export class ApplicationSignalsIntegration extends Construct {
         container: cloudWatchAgent.agentContainer,
         condition: ecs.ContainerDependencyCondition.START,
       });
+    } else {
+      Annotations.of(this).addWarningV2(this.node.id, ' Application Signals functionality requires prior deployment of the CloudWatch Agent with appropriate security group settings. Missing or incorrect configurations will prevent successful collection of observability data.');
     }
   }
 }

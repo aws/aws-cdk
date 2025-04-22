@@ -1,7 +1,8 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "files": {
     "becd52dbd41040f252b3faf5ad45d03c45ce14f3b7ea502176d6ce57cb9f3a41": {
+      "displayName": "ApplicationSignalsInfra-Daemon Template",
       "source": {
         "path": "ApplicationSignalsInfra-Daemon.template.json",
         "packaging": "file"
