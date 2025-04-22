@@ -1604,7 +1604,6 @@ booksResource.addMethod('GET', integration);
 
 It is possible to use the `addResource()` API to define additional API Gateway Resources.
 
-
 **Note:** Deployment will fail if a Resource of the same name is already defined in the Open API specification.
 
 **Note:** Any default properties configured, such as `defaultIntegration`, `defaultMethodOptions`, etc. will only be
