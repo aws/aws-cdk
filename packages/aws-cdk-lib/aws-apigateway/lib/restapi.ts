@@ -300,8 +300,7 @@ export interface SpecRestApiProps extends RestApiBaseProps {
   readonly minCompressionSize?: Size;
 
   /**
-   * This property applies only when you use OpenAPI to define your REST API.
-   * The Mode determines how API Gateway handles resource updates.
+   * The Mode that determines how API Gateway handles resource updates.
    *
    * Valid values are `overwrite` or `merge`.
    *
