@@ -3,7 +3,7 @@ import {
   SecurityGroup,
   SecurityGroupProps,
   Vpc,
-  VpcProps
+  VpcProps,
 } from 'aws-cdk-lib/aws-ec2';
 import {
   ApplicationLogLevel,
@@ -16,13 +16,13 @@ import {
 import {
   LogGroup,
   LogRetention,
-  RetentionDays
+  RetentionDays,
 } from 'aws-cdk-lib/aws-logs';
 import {
   BlockPublicAccess,
   Bucket,
   BucketEncryption,
-  IBucket
+  IBucket,
 } from 'aws-cdk-lib/aws-s3';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
@@ -34,7 +34,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
  * The SecurityGroup Injector shows an injector that does change the input props.
  * The S3 Injector shows an example of creating a log bucket for a bucket.  It uses _skip to break infinite recursion.
  * The Function Injector shows creating a LogGroup for a Function.
- * 
+ *
  */
 
 // Simple Injector
@@ -111,7 +111,7 @@ class MyBucketPropsInjector implements cdk.IPropertyInjector {
       // reset the _skip flag
       this._skip = false;
     }
-    
+
     const newProps = {
       ...this.commonInjectionValues,
       serverAccessLogsBucket: accessLoggingBucket,
@@ -165,7 +165,7 @@ new Function(stack, 'Function', {
   functionName: 'myfunc',
   runtime: Runtime.NODEJS_20_X,
   handler: 'index.handler',
-  code: Code.fromInline(`console.log();`),
+  code: Code.fromInline('console.log();'),
 });
 
 const vpc = new Vpc(stack, 'my-vpc', {});
