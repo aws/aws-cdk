@@ -1604,7 +1604,23 @@ booksResource.addMethod('GET', integration);
 
 It is possible to use the `addResource()` API to define additional API Gateway Resources.
 
-You can control how API Gateway handles resource updates using the `mode` property. Valid values are:
+
+**Note:** Deployment will fail if a Resource of the same name is already defined in the Open API specification.
+
+**Note:** Any default properties configured, such as `defaultIntegration`, `defaultMethodOptions`, etc. will only be
+applied to Resources and Methods defined in the CDK, and not the ones defined in the spec. Use the [API Gateway
+extensions to OpenAPI](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions.html)
+to configure these.
+
+There are a number of limitations in using OpenAPI definitions in API Gateway. Read the [Amazon API Gateway important
+notes for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html#api-gateway-known-issues-rest-apis)
+for more details.
+
+**Note:** When starting off with an OpenAPI definition using `SpecRestApi`, it is not possible to configure some
+properties that can be configured directly in the OpenAPI specification file. This is to prevent people duplication
+of these properties and potential confusion.
+
+However, you can control how API Gateway handles resource updates using the `mode` property. Valid values are:
 
 * `overwrite` - The new API definition replaces the existing one. The existing API identifier remains unchanged.
 * `merge` - The new API definition is merged with the existing API.
@@ -1622,21 +1638,6 @@ const api = new apigateway.SpecRestApi(this, 'books-api', {
   mode: apigateway.RestApiMode.MERGE
 });
 ```
-
-**Note:** Deployment will fail if a Resource of the same name is already defined in the Open API specification.
-
-**Note:** Any default properties configured, such as `defaultIntegration`, `defaultMethodOptions`, etc. will only be
-applied to Resources and Methods defined in the CDK, and not the ones defined in the spec. Use the [API Gateway
-extensions to OpenAPI](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions.html)
-to configure these.
-
-There are a number of limitations in using OpenAPI definitions in API Gateway. Read the [Amazon API Gateway important
-notes for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html#api-gateway-known-issues-rest-apis)
-for more details.
-
-**Note:** When starting off with an OpenAPI definition using `SpecRestApi`, it is not possible to configure some
-properties that can be configured directly in the OpenAPI specification file. This is to prevent people duplication
-of these properties and potential confusion.
 
 ### Endpoint configuration
 
