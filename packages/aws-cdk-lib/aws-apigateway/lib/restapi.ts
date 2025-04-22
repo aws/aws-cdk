@@ -1081,8 +1081,7 @@ export enum EndpointType {
 }
 
 /**
- * Specifies how API Gateway handles resource updates when importing an OpenAPI definition.
- * This property applies only when you use OpenAPI to define your REST API.
+ * The Mode that determines how API Gateway handles resource updates when importing an OpenAPI definition.
  */
 export enum RestApiMode {
   /**
