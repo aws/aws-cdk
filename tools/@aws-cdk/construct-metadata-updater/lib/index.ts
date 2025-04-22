@@ -1,4 +1,4 @@
-import { ConstructsUpdater, EnumsUpdater, MethodsUpdater, PropertyUpdater } from './metadata-updater';
+import { ConstructsUpdater, EnumLikeUpdater, EnumsUpdater, MethodsUpdater, PropertyUpdater } from './metadata-updater';
 
 export function main() {
   const dir = '../../../../packages/'
@@ -11,7 +11,10 @@ export function main() {
 
   new EnumsUpdater(dir).execute();
   console.log('Enums updater finished.');
-
+  
+  new EnumLikeUpdater(dir).execute();
+  console.log('Enums-like updater finished.');
+  
   new MethodsUpdater(dir).execute();
   console.log('Methods updater finished.');
 }

@@ -1,6 +1,7 @@
 import { Match } from './match';
 import { Matcher } from './matcher';
 import { Stack, Stage } from '../../core';
+import { AssertionError } from './private/error';
 
 type ManifestTags = { [key: string]: string };
 
@@ -37,7 +38,7 @@ export class Tags {
     // Match.absent() will not work as the caller expects, so we push them
     // towards a working API.
     if (Matcher.isMatcher(tags) && tags.name === 'absent') {
-      throw new Error(
+      throw new AssertionError(
         'Match.absent() will never match Tags because "{}" is the default value. Use Tags.hasNone() instead.',
       );
     }
@@ -46,7 +47,7 @@ export class Tags {
 
     const result = matcher.test(this.all());
     if (result.hasFailed()) {
-      throw new Error(
+      throw new AssertionError(
         'Stack tags did not match as expected:\n' + result.renderMismatch(),
       );
     }
@@ -79,7 +80,7 @@ export class Tags {
 function getManifestTags(stack: Stack): ManifestTags {
   const root = stack.node.root;
   if (!Stage.isStage(root)) {
-    throw new Error('unexpected: all stacks must be part of a Stage or an App');
+    throw new AssertionError('unexpected: all stacks must be part of a Stage or an App');
   }
 
   // synthesis is not forced: the stack will only be synthesized once regardless

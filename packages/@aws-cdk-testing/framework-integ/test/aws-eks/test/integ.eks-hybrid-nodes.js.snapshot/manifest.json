@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster-hybrid-nodes.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/52309ebf8b2fb368923749214c0b4a7b9d8870f4058971b55a98891cf6a1beba.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3c0f46ebb955738d2f053cd6225a0860596a7df08a9c175cfc42d656f7ba5f37.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -40,7 +40,8 @@
             "data": {
               "maxAzs": "*",
               "natGateways": "*",
-              "restrictDefaultSecurityGroup": false
+              "restrictDefaultSecurityGroup": false,
+              "cidr": "*"
             }
           }
         ],
@@ -309,7 +310,18 @@
               "vpc": "*",
               "version": "*",
               "kubectlLayer": "*",
-              "defaultCapacity": "*"
+              "defaultCapacity": "*",
+              "remoteNodeNetworks": [
+                {
+                  "cidrs": "*"
+                }
+              ],
+              "remotePodNetworks": [
+                {
+                  "cidrs": "*"
+                }
+              ],
+              "authenticationMode": "API"
             }
           }
         ],

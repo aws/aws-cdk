@@ -17,7 +17,8 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { ArnComponents, ArnFormat, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import * as cxschema from '../../cloud-assembly-schema';
+import { ArnComponents, ArnFormat, ContextProvider, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
@@ -134,6 +135,60 @@ export interface DatabaseInstanceAttributes {
  * A new or imported database instance.
  */
 export abstract class DatabaseInstanceBase extends Resource implements IDatabaseInstance {
+  /**
+   * Lookup an existing DatabaseInstance using instanceIdentifier.
+   */
+  public static fromLookup(scope: Construct, id: string, options: DatabaseInstanceLookupOptions): IDatabaseInstance {
+    const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.CC_API_PROVIDER,
+      props: {
+        typeName: 'AWS::RDS::DBInstance',
+        exactIdentifier: options.instanceIdentifier,
+        propertiesToReturn: [
+          'DBInstanceArn',
+          'Endpoint.Address',
+          'Endpoint.Port',
+          'DbiResourceId',
+          'DBSecurityGroups',
+        ],
+      } as cxschema.CcApiContextQuery,
+      dummyValue: [
+        {
+          'Identifier': 'TEST',
+          'DBInstanceArn': 'TESTARN',
+          'Endpoint.Address': 'TESTADDRESS',
+          'Endpoint.Port': '5432',
+          'DbiResourceId': 'TESTID',
+          'DBSecurityGroups': [],
+        },
+      ],
+    }).value;
+
+    // getValue returns a list of result objects.  We are expecting 1 result or Error.
+    const instance = response[0];
+
+    // Get ISecurityGroup from securityGroupId
+    let securityGroups: ec2.ISecurityGroup[] = [];
+    const dbsg: string[] = instance.DBSecurityGroups;
+    if (dbsg) {
+      securityGroups = dbsg.map(securityGroupId => {
+        return ec2.SecurityGroup.fromSecurityGroupId(
+          scope,
+          `LSG-${securityGroupId}`,
+          securityGroupId,
+        );
+      });
+    }
+
+    return this.fromDatabaseInstanceAttributes(scope, id, {
+      instanceEndpointAddress: instance['Endpoint.Address'],
+      port: instance['Endpoint.Port'],
+      instanceIdentifier: options.instanceIdentifier,
+      securityGroups: securityGroups,
+      instanceResourceId: instance.DbiResourceId,
+    });
+  }
+
   /**
    * Import an existing database instance.
    */
@@ -739,6 +794,20 @@ export interface DatabaseInstanceNewProps {
    * @default - RDS will choose a certificate authority
    */
   readonly caCertificate?: CaCertificate;
+
+  /**
+   * Specifies whether changes to the DB instance and any pending modifications are applied immediately, regardless of the `preferredMaintenanceWindow` setting.
+   * If set to `false`, changes are applied during the next maintenance window.
+   *
+   * Until RDS applies the changes, the DB instance remains in a drift state.
+   * As a result, the configuration doesn't fully reflect the requested modifications and temporarily diverges from the intended state.
+   *
+   * This property also determines whether the DB instance reboots when a static parameter is modified in the associated DB parameter group.
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.DBInstance.Modifying.html
+   *
+   * @default - Changes will be applied immediately
+   */
+  readonly applyImmediately?: boolean;
 }
 
 /**
@@ -904,6 +973,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       domainIamRoleName: this.domainRole?.roleName,
       networkType: props.networkType,
       caCertificateIdentifier: props.caCertificate ? props.caCertificate.toString() : undefined,
+      applyImmediately: props.applyImmediately,
     };
   }
 
@@ -1125,6 +1195,16 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
     return super.grantConnect(grantee, dbUser);
   }
+}
+
+/**
+ * Properties for looking up an existing DatabaseInstance.
+ */
+export interface DatabaseInstanceLookupOptions {
+  /**
+   * The instance identifier of the DatabaseInstance
+   */
+  readonly instanceIdentifier: string;
 }
 
 /**

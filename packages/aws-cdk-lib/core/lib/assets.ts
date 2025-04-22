@@ -53,8 +53,6 @@ export interface AssetOptions {
    *
    * @default - uploaded as-is to S3 if the asset is a regular file or a .zip file,
    * archived into a .zip file and uploaded to S3 otherwise
-   *
-   *
    */
   readonly bundling?: BundlingOptions;
 }
@@ -146,6 +144,16 @@ export interface FileAssetSource {
    * @default false
    */
   readonly deployTime?: boolean;
+
+  /**
+   * A display name for this asset
+   *
+   * If supplied, the display name will be used in locations where the asset
+   * identifier is printed, like in the CLI progress information.
+   *
+   * @default - The asset hash is used to display the asset
+   */
+  readonly displayName?: string;
 }
 
 export interface DockerImageAssetSource {
@@ -293,6 +301,16 @@ export interface DockerImageAssetSource {
    * @default - cache is used
    */
   readonly dockerCacheDisabled?: boolean;
+
+  /**
+   * A display name for this asset
+   *
+   * If supplied, the display name will be used in locations where the asset
+   * identifier is printed, like in the CLI progress information.
+   *
+   * @default - The asset hash is used to display the asset
+   */
+  readonly displayName?: string;
 }
 
 /**

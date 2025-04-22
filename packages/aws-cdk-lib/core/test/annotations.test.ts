@@ -129,4 +129,22 @@ describe('annotations', () => {
     // THEN
     expect(getWarnings(app.synth())).toEqual([]);
   });
+
+  test('don\'t resolve the message if tokens are included', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+
+    // WHEN
+    Annotations.of(c1).addWarningV2('MESSAGE', `stackId: ${stack.stackId}`);
+
+    // THEN
+    expect(getWarnings(app.synth())).toEqual([
+      {
+        path: '/S1/C1',
+        message: expect.stringMatching(/stackId: \${Token\[AWS::StackId\.\d+\]} \[ack: MESSAGE\]/),
+      },
+    ]);
+  });
 });

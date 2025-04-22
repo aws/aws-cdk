@@ -5,7 +5,7 @@ import { Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '../../core';
-import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion, FeaturePlan } from '../lib';
+import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion, FeaturePlan, PasskeyUserVerification, StandardThreatProtectionMode, CustomThreatProtectionMode } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -522,6 +522,7 @@ describe('User Pool', () => {
     const pool = new UserPool(stack, 'Pool', {
       customSenderKmsKey: kmsKey,
       advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
+      featurePlan: FeaturePlan.PLUS,
     });
     pool.addTrigger(UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG, preTokenGeneration);
 
@@ -546,7 +547,7 @@ describe('User Pool', () => {
     });
   });
 
-  test('add preTokenGeneration trigger v2', () => {
+  testDeprecated('add preTokenGeneration trigger v2', () => {
     // GIVEN
     const stack = new Stack();
     const kmsKey = fooKey(stack, 'TestKMSKey');
@@ -557,6 +558,7 @@ describe('User Pool', () => {
     const pool = new UserPool(stack, 'Pool', {
       customSenderKmsKey: kmsKey,
       advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
+      featurePlan: FeaturePlan.PLUS,
     });
     pool.addTrigger(UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG, preTokenGeneration, LambdaVersion.V2_0);
 
@@ -581,7 +583,42 @@ describe('User Pool', () => {
     });
   });
 
-  test('throw error when lambda trigger version v2 is specified for an invalid operation', () => {
+  test.each([
+    LambdaVersion.V2_0,
+    LambdaVersion.V3_0,
+  ])('add preTokenGeneration trigger %s', (lambdaVersion) => {
+    // GIVEN
+    const stack = new Stack();
+    const kmsKey = fooKey(stack, 'TestKMSKey');
+
+    const preTokenGeneration = fooFunction(stack, 'preTokenGeneration');
+
+    // WHEN
+    const pool = new UserPool(stack, 'Pool', {
+      customSenderKmsKey: kmsKey,
+      featurePlan: FeaturePlan.PLUS,
+    });
+    pool.addTrigger(UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG, preTokenGeneration, lambdaVersion);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      LambdaConfig: {
+        PreTokenGenerationConfig: {
+          LambdaArn: stack.resolve(preTokenGeneration.functionArn),
+          LambdaVersion: lambdaVersion,
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: stack.resolve(preTokenGeneration.functionArn),
+      Principal: 'cognito-idp.amazonaws.com',
+      SourceArn: stack.resolve(pool.userPoolArn),
+    });
+  });
+
+  testDeprecated('throw error when lambda trigger version v2 is specified for an invalid operation', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -590,6 +627,7 @@ describe('User Pool', () => {
     // WHEN
     const pool = new UserPool(stack, 'Pool', {
       advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
+      featurePlan: FeaturePlan.PLUS,
     });
     expect(() => {
       pool.addTrigger(
@@ -597,7 +635,29 @@ describe('User Pool', () => {
         preTokenGeneration,
         LambdaVersion.V2_0,
       );
-    }).toThrow(/Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 lambda version./);
+    }).toThrow(/Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 and V3_0 lambda version./);
+  });
+
+  test.each([
+    LambdaVersion.V2_0,
+    LambdaVersion.V3_0,
+  ])('throw error when lambda trigger version %s is specified for an invalid operation', (lambdaVersion) => {
+    // GIVEN
+    const stack = new Stack();
+
+    const preTokenGeneration = fooFunction(stack, 'preTokenGeneration');
+
+    // WHEN
+    const pool = new UserPool(stack, 'Pool', {
+      featurePlan: FeaturePlan.PLUS,
+    });
+    expect(() => {
+      pool.addTrigger(
+        UserPoolOperation.PRE_TOKEN_GENERATION,
+        preTokenGeneration,
+        lambdaVersion,
+      );
+    }).toThrow(/Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 and V3_0 lambda version./);
   });
 
   test('can use same lambda as trigger for multiple user pools', () => {
@@ -2085,6 +2145,154 @@ describe('User Pool', () => {
       }),
     })).toThrow(/"fromEmail" contains a different domain than the "sesVerifiedDomain"/);
   });
+
+  test('signInPolicy is not present if none of options are not provided', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      signInPolicy: {},
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      Policies: Match.absent(),
+    });
+  });
+
+  test('allowFirstAuthFactors throws when password is false', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => {
+      new UserPool(stack, 'Pool', {
+        signInPolicy: {
+          allowedFirstAuthFactors: { password: false },
+        },
+      });
+    }).toThrow('The password authentication cannot be disabled.');
+  });
+
+  test('allowFirstAuthFactors are correctly named', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      signInPolicy: {
+        allowedFirstAuthFactors: {
+          password: true,
+          emailOtp: true,
+          smsOtp: true,
+          passkey: true,
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      Policies: {
+        SignInPolicy: {
+          AllowedFirstAuthFactors: [
+            'PASSWORD',
+            'EMAIL_OTP',
+            'SMS_OTP',
+            'WEB_AUTHN',
+          ],
+        },
+      },
+    });
+  });
+
+  test('allowFirstAuthFactors throws when the feature plan is Lite', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => {
+      new UserPool(stack, 'Pool', {
+        signInPolicy: {
+          allowedFirstAuthFactors: { password: true, emailOtp: true },
+        },
+        featurePlan: FeaturePlan.LITE,
+      });
+    }).toThrow('To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
+  });
+
+  test('allowFirstAuthFactors can specify only password when the feature plan is Lite', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      signInPolicy: {
+        allowedFirstAuthFactors: { password: true },
+      },
+      featurePlan: FeaturePlan.LITE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      Policies: {
+        SignInPolicy: {
+          AllowedFirstAuthFactors: ['PASSWORD'],
+        },
+      },
+    });
+  });
+
+  test('passkeyRelyingPartyId is configured', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      passkeyRelyingPartyId: 'example.com',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      WebAuthnRelyingPartyID: 'example.com',
+    });
+  });
+
+  test('passkeyRelyingPartyId length must be >= 1', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => {
+      new UserPool(stack, 'Pool1', { passkeyRelyingPartyId: '' });
+    }).toThrow('passkeyRelyingPartyId length must be (inclusively) between 1 and 63, got 0');
+  });
+
+  test('passkeyRelyingPartyId length must be <= 63', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => {
+      new UserPool(stack, 'Pool2', { passkeyRelyingPartyId: 'x'.repeat(64) });
+    }).toThrow('passkeyRelyingPartyId length must be (inclusively) between 1 and 63, got 64');
+  });
+
+  test.each([
+    [PasskeyUserVerification.PREFERRED, 'preferred'],
+    [PasskeyUserVerification.REQUIRED, 'required'],
+  ])('passkeyUserVerification is configured correctly when set to (%s)', (passkeyUserVerification, compareString) => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', { passkeyUserVerification });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      WebAuthnUserVerification: compareString,
+    });
+  });
 });
 
 test('device tracking is configured correctly', () => {
@@ -2216,16 +2424,18 @@ test('feature plan is not present if option is not provided', () => {
 
 test.each(
   [
-    [AdvancedSecurityMode.ENFORCED, 'ENFORCED'],
-    [AdvancedSecurityMode.AUDIT, 'AUDIT'],
-    [AdvancedSecurityMode.OFF, 'OFF'],
-  ])('advanced security is configured correctly when set to (%s)', (advancedSecurityMode, compareString) => {
+    [AdvancedSecurityMode.ENFORCED, 'ENFORCED', FeaturePlan.PLUS],
+    [AdvancedSecurityMode.AUDIT, 'AUDIT', FeaturePlan.PLUS],
+    [AdvancedSecurityMode.OFF, 'OFF', FeaturePlan.LITE],
+    [AdvancedSecurityMode.OFF, 'OFF', FeaturePlan.ESSENTIALS],
+  ])('advanced security is configured correctly when set to (%s)', (advancedSecurityMode, compareString, featurePlan) => {
   // GIVEN
   const stack = new Stack();
 
   // WHEN
   new UserPool(stack, 'Pool', {
     advancedSecurityMode: advancedSecurityMode,
+    featurePlan: featurePlan,
   });
 
   // THEN
@@ -2236,7 +2446,7 @@ test.each(
   });
 });
 
-test('advanced security is not present if option is not provided', () => {
+test('advanced security defaults when no option provided', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -2244,16 +2454,14 @@ test('advanced security is not present if option is not provided', () => {
   new UserPool(stack, 'Pool', {});
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
-    UserPoolAddOns: Match.absent(),
-  });
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {});
 });
 
 test.each([
   [FeaturePlan.ESSENTIALS, AdvancedSecurityMode.AUDIT],
   [FeaturePlan.ESSENTIALS, AdvancedSecurityMode.ENFORCED],
-  [FeaturePlan.PLUS, AdvancedSecurityMode.AUDIT],
-  [FeaturePlan.PLUS, AdvancedSecurityMode.ENFORCED],
+  [FeaturePlan.LITE, AdvancedSecurityMode.AUDIT],
+  [FeaturePlan.LITE, AdvancedSecurityMode.ENFORCED],
 ])('throws when feature plan is %s and advanced security mode is %s', (featurePlan, advancedSecurityMode) => {
   // GIVEN
   const stack = new Stack();
@@ -2261,7 +2469,65 @@ test.each([
   // WHEN
   expect(() => {
     new UserPool(stack, 'Pool', { featurePlan, advancedSecurityMode });
-  }).toThrow('you cannot enable Advanced Security Mode when feature plan is Essentials or higher.');
+  }).toThrow('you cannot enable Advanced Security when feature plan is not Plus.');
+});
+
+test.each([
+  [FeaturePlan.ESSENTIALS, StandardThreatProtectionMode.AUDIT_ONLY],
+  [FeaturePlan.ESSENTIALS, StandardThreatProtectionMode.FULL_FUNCTION],
+  [FeaturePlan.LITE, StandardThreatProtectionMode.AUDIT_ONLY],
+  [FeaturePlan.LITE, StandardThreatProtectionMode.FULL_FUNCTION],
+])('throws when feature plan is %s and standard threat protection mode is %s', (featurePlan, standardThreatProtectionMode) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  expect(() => {
+    new UserPool(stack, 'Pool', { featurePlan, standardThreatProtectionMode });
+  }).toThrow('you cannot enable Threat Protection when feature plan is not Plus.');
+});
+
+test.each([
+  [FeaturePlan.ESSENTIALS, CustomThreatProtectionMode.AUDIT_ONLY],
+  [FeaturePlan.ESSENTIALS, CustomThreatProtectionMode.FULL_FUNCTION],
+  [FeaturePlan.LITE, CustomThreatProtectionMode.AUDIT_ONLY],
+  [FeaturePlan.LITE, CustomThreatProtectionMode.FULL_FUNCTION],
+])('throws when feature plan is %s and custom threat protection mode is %s', (featurePlan, customThreatProtectionMode) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  expect(() => {
+    new UserPool(stack, 'Pool', { featurePlan, customThreatProtectionMode });
+  }).toThrow('you cannot enable Threat Protection when feature plan is not Plus.');
+});
+
+test('throws when deprecated property AdvancedSecurityMode and StandardThreatProtectionMode are specified at the same time.', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  expect(() => {
+    new UserPool(stack, 'Pool', {
+      featurePlan: FeaturePlan.PLUS,
+      advancedSecurityMode: AdvancedSecurityMode.AUDIT,
+      standardThreatProtectionMode: StandardThreatProtectionMode.AUDIT_ONLY,
+    });
+  }).toThrow('you cannot set Threat Protection and Advanced Security Mode at the same time. Advanced Security Mode is deprecated and should be replaced with Threat Protection instead.');
+});
+
+test('throws when deprecated property AdvancedSecurityMode and CustomThreatProtectionMode are specified at the same time.', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  expect(() => {
+    new UserPool(stack, 'Pool', {
+      featurePlan: FeaturePlan.PLUS,
+      advancedSecurityMode: AdvancedSecurityMode.AUDIT,
+      customThreatProtectionMode: CustomThreatProtectionMode.AUDIT_ONLY,
+    });
+  }).toThrow('you cannot set Threat Protection and Advanced Security Mode at the same time. Advanced Security Mode is deprecated and should be replaced with Threat Protection instead.');
 });
 
 describe('email MFA test', () => {
@@ -2325,7 +2591,7 @@ describe('email MFA test', () => {
   test.each([
     AdvancedSecurityMode.AUDIT,
     AdvancedSecurityMode.ENFORCED,
-  ])('email MFA with Lite feature plan and %s Advanced Security Mode', (advancedSecurityMode) => {
+  ])('email MFA with PLUS feature plan and %s Advanced Security Mode', (advancedSecurityMode) => {
     const stack = new Stack();
 
     expect(() => new UserPool(stack, 'Pool1', {
@@ -2342,7 +2608,7 @@ describe('email MFA test', () => {
         otp: false,
         email: true,
       },
-      featurePlan: FeaturePlan.LITE,
+      featurePlan: FeaturePlan.PLUS,
       advancedSecurityMode,
     })).not.toThrow();
   });

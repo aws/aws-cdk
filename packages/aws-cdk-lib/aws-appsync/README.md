@@ -936,8 +936,7 @@ const api = new appsync.GraphqlApi(this, 'OwnerContact', {
 ## Events
 
 ### Example
-AWS AppSync Events lets you create secure and performant serverless WebSocket APIs that can broadcast real-time event data to millions of subscribers,
-without you having to manage connections or resource scaling.
+AWS AppSync Events lets you create secure and performant serverless WebSocket APIs that can broadcast real-time event data to millions of subscribers, without you having to manage connections or resource scaling.
 
 ```ts
 const apiKeyProvider: appsync.AppSyncAuthProvider = {
@@ -962,6 +961,8 @@ const api = new appsync.EventApi(this, 'api', {
     ],
   },
 });
+
+api.addChannelNamespace('default');
 ```
 
 ### Authorization
@@ -1023,6 +1024,8 @@ const api = new appsync.EventApi(this, 'api', {
     ],
   }
 });
+
+api.addChannelNamespace('default');
 ```
 
 If you don't specify any overrides for the `connectionAuthModeTypes`, `defaultPublishAuthModeTypes`, and `defaultSubscribeAuthModeTypes` parameters then all `authProviders` defined are included as default authorization mode types for connection, publish, and subscribe.
@@ -1053,6 +1056,8 @@ const api = new appsync.EventApi(this, 'api', {
     ],
   }
 });
+
+api.addChannelNamespace('default');
 ```
 
 ### Custom Domain Names
@@ -1097,6 +1102,8 @@ const api = new appsync.EventApi(this, 'api', {
     domainName: myDomainName,
   },
 });
+
+api.addChannelNamespace('default');
 
 // You can get custom HTTP/Realtime endpoint
 new CfnOutput(this, 'AWS AppSync Events HTTP endpoint', { value: api.customHttpEndpoint });
@@ -1144,6 +1151,8 @@ const api = new appsync.EventApi(this, 'api', {
     retention: logs.RetentionDays.ONE_WEEK,
   },
 });
+
+api.addChannelNamespace('default');
 ```
 
 ### WAF Protection
@@ -1185,8 +1194,7 @@ api.addChannelNamespace('AnotherNameSpace', {});
 ```
 
 The API's publishing and subscribing authorization configuration is automatically applied to all namespaces.
-You can override this configuration at the namespace level. **Note**: the authorization type you select as 
-overviews, must be defined as an authorization provider at the API level.
+You can override this configuration at the namespace level. **Note**: the authorization type you select for a namespace must be defined as an authorization provider at the API level.
 
 ```ts
 declare const api: appsync.EventApi;

@@ -49,9 +49,10 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "e35d06c04a5f086530cad7876451b9fbd93ded1d4940950bb104fb78dd322310.zip"
+                      "s3Key": "a5110b475e7a506b8a1282cdfb3c2f7ae59bcf00ba96273a702339b8819dd17f.zip"
                     },
-                    "description": "/opt/kubectl/kubectl and /opt/helm/helm"
+                    "description": "/opt/kubectl/kubectl 1.31.0; /opt/helm/helm 3.17.1",
+                    "licenseInfo": "Apache-2.0"
                   }
                 },
                 "constructInfo": {
@@ -61,10 +62,10 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.lambda_layer_kubectl.KubectlLayer",
-              "version": "0.0.0",
+              "fqn": "@aws-cdk/lambda-layer-kubectl-v31.KubectlV31Layer",
+              "version": "2.0.3",
               "metadata": [
-                {}
+                "*"
               ]
             }
           },
@@ -328,16 +329,6 @@
                                           ]
                                         }
                                       ]
-                                    },
-                                    {
-                                      "Action": "lambda:GetFunction",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "Lambdapython39426A0480",
-                                          "Arn"
-                                        ]
-                                      }
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -369,11 +360,6 @@
                             {
                               "attachToRole": [
                                 "*"
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
                               ]
                             },
                             {
@@ -416,8 +402,13 @@
                           ]
                         },
                         {
-                          "addToPrincipalPolicy": [
-                            {}
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
                           ]
                         }
                       ]
@@ -495,6 +486,70 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-0": {
+                    "id": "inlinePolicyAddedToExecutionRole-0",
+                    "path": "lambda-layer-kubectl-integ-stack/Providerpython3.9/framework-onEvent/inlinePolicyAddedToExecutionRole-0",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "lambda-layer-kubectl-integ-stack/Providerpython3.9/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:GetFunction",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "Lambdapython39426A0480",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "Providerpython39frameworkonEventinlinePolicyAddedToExecutionRole0012C4340",
+                            "roles": [
+                              {
+                                "Ref": "Providerpython39frameworkonEventServiceRoleA299F5C1"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
@@ -820,16 +875,6 @@
                                           ]
                                         }
                                       ]
-                                    },
-                                    {
-                                      "Action": "lambda:GetFunction",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "Lambdapython310815BD7E9",
-                                          "Arn"
-                                        ]
-                                      }
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -861,11 +906,6 @@
                             {
                               "attachToRole": [
                                 "*"
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
                               ]
                             },
                             {
@@ -908,8 +948,13 @@
                           ]
                         },
                         {
-                          "addToPrincipalPolicy": [
-                            {}
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
                           ]
                         }
                       ]
@@ -987,6 +1032,70 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-0": {
+                    "id": "inlinePolicyAddedToExecutionRole-0",
+                    "path": "lambda-layer-kubectl-integ-stack/Providerpython3.10/framework-onEvent/inlinePolicyAddedToExecutionRole-0",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "lambda-layer-kubectl-integ-stack/Providerpython3.10/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:GetFunction",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "Lambdapython310815BD7E9",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "Providerpython310frameworkonEventinlinePolicyAddedToExecutionRole0B240717D",
+                            "roles": [
+                              {
+                                "Ref": "Providerpython310frameworkonEventServiceRoleB6DF2879"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
                     }
                   }
                 },

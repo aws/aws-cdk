@@ -5,7 +5,12 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-    
+
+permissions:
+  contents: write  # Required for actions/upload-pages-artifact
+  pages: write     # Required for actions/deploy-pages
+  id-token: write  # Required for actions/deploy-pages
+
 jobs:
   collect:
     name: collect
@@ -13,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
+      contents: read
+      pages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,19 +33,13 @@ jobs:
       - name: Build Library
         run: npx lerna run build --scope=aws-cdk-lib
 
-      - name: Build CLI
-        run: npx lerna run build --scope=aws-cdk
-
       - name: Run Core tests
         run: cd packages/aws-cdk-lib && yarn test core
-
-      - name: Run CLI tests
-        run: cd packages/aws-cdk && yarn test
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v5
         with:
-          files: packages/aws-cdk/coverage/cobertura-coverage.xml,packages/aws-cdk-lib/coverage/cobertura-coverage.xml
+          files: packages/aws-cdk-lib/coverage/cobertura-coverage.xml
           fail_ci_if_error: true
           flags: suite.unit
           use_oidc: true

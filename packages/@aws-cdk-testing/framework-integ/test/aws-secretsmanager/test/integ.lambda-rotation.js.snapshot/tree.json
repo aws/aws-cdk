@@ -312,57 +312,6 @@
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
-                  },
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "cdk-integ-secret-lambda-rotation/Lambda/ServiceRole/DefaultPolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "cdk-integ-secret-lambda-rotation/Lambda/ServiceRole/DefaultPolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": [
-                                    "secretsmanager:DescribeSecret",
-                                    "secretsmanager:GetSecretValue",
-                                    "secretsmanager:PutSecretValue",
-                                    "secretsmanager:UpdateSecretVersionStage"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Ref": "SecretA720EF05"
-                                  }
-                                },
-                                {
-                                  "Action": "secretsmanager:GetRandomPassword",
-                                  "Effect": "Allow",
-                                  "Resource": "*"
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "LambdaServiceRoleDefaultPolicyDAE46E21",
-                            "roles": [
-                              {
-                                "Ref": "LambdaServiceRoleA8ED4D3B"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
-                    }
                   }
                 },
                 "constructInfo": {
@@ -414,6 +363,91 @@
                   "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                   "version": "0.0.0"
                 }
+              },
+              "inlinePolicyAddedToExecutionRole-0": {
+                "id": "inlinePolicyAddedToExecutionRole-0",
+                "path": "cdk-integ-secret-lambda-rotation/Lambda/inlinePolicyAddedToExecutionRole-0",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-integ-secret-lambda-rotation/Lambda/inlinePolicyAddedToExecutionRole-0/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "secretsmanager:DescribeSecret",
+                                "secretsmanager:GetSecretValue",
+                                "secretsmanager:PutSecretValue",
+                                "secretsmanager:UpdateSecretVersionStage"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Ref": "SecretA720EF05"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "LambdainlinePolicyAddedToExecutionRole06CEA97D1",
+                        "roles": [
+                          {
+                            "Ref": "LambdaServiceRoleA8ED4D3B"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
+                }
+              },
+              "inlinePolicyAddedToExecutionRole-1": {
+                "id": "inlinePolicyAddedToExecutionRole-1",
+                "path": "cdk-integ-secret-lambda-rotation/Lambda/inlinePolicyAddedToExecutionRole-1",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-integ-secret-lambda-rotation/Lambda/inlinePolicyAddedToExecutionRole-1/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "secretsmanager:GetRandomPassword",
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "LambdainlinePolicyAddedToExecutionRole1629BC4CB",
+                        "roles": [
+                          {
+                            "Ref": "LambdaServiceRoleA8ED4D3B"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -456,7 +490,7 @@
                 "path": "cdk-integ-secret-lambda-rotation-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -502,7 +536,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.4.2"
         }
       }
     },

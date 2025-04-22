@@ -67,6 +67,26 @@ const myRtmpChannel = new ivs.Channel(this, 'myRtmpChannel', {
 });
 ```
 
+### Multitrack Video
+
+Multitrack video is a new, low-latency streaming paradigm supported by Amazon Interactive Video Service (IVS) and services that use Amazon IVS.
+
+You can use Multitrack Video by setting the `multitrackInputConfiguration` property.
+Multitrack Video requires both a STANDARD Channel and Fragmented Mp4.
+
+For more information, see [Amazon IVS Multitrack Video](https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/multitrack-video.html).
+
+```ts
+new ivs.Channel(this, 'ChannelWithMultitrackVideo', {
+  type: ivs.ChannelType.STANDARD,
+  containerFormat: ivs.ContainerFormat.FRAGMENTED_MP4,
+  multitrackInputConfiguration: {
+    maximumResolution: ivs.MaximumResolution.HD,
+    policy: ivs.Policy.ALLOW,
+  },
+});
+```
+
 ### Importing an existing channel
 
 You can reference an existing channel, for example, if you need to create a

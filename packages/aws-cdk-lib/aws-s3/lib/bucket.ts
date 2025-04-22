@@ -25,6 +25,7 @@ import {
   Token,
   Tokenization,
   Annotations,
+  PhysicalName,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -396,7 +397,7 @@ export interface IBucket extends IResource {
    * Function to add required permissions to the destination bucket for cross account
    * replication. These permissions will be added as a resource based policy on the bucket.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
-   * If owner of the bucket needs to be overriden, set accessControlTransition to true and provide
+   * If owner of the bucket needs to be overridden, set accessControlTransition to true and provide
    * account ID in which destination bucket is hosted. For more information on accessControlTransition
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-accesscontroltranslation.html
    */
@@ -966,7 +967,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * Function to add required permissions to the destination bucket for cross account
    * replication. These permissions will be added as a resource based policy on the bucket
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
-   * If owner of the bucket needs to be overriden, set accessControlTransition to true and provide
+   * If owner of the bucket needs to be overridden, set accessControlTransition to true and provide
    * account ID in which destination bucket is hosted. For more information on accessControlTransition
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-accesscontroltranslation.html
    */
@@ -1638,8 +1639,7 @@ export interface BucketProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default - `KMS` if `encryptionKey` is specified, or `UNENCRYPTED` otherwise.
-   * But if `UNENCRYPTED` is specified, the bucket will be encrypted as `S3_MANAGED` automatically.
+   * @default - `KMS` if `encryptionKey` is specified, or `S3_MANAGED` otherwise.
    */
   readonly encryption?: BucketEncryption;
 
@@ -1922,6 +1922,15 @@ export interface BucketProps {
    * @default No minimum TLS version is enforced.
    */
   readonly minimumTLSVersion?: number;
+
+  /**
+   * The role to be used by the replication.
+   *
+   * When setting this property, you must also set `replicationRules`.
+   *
+   * @default - a new role will be created.
+   */
+  readonly replicationRole?: iam.IRole;
 
   /**
    * A container for one or more replication rules.
@@ -2544,6 +2553,22 @@ export class Bucket extends BucketBase {
         throw new ValidationError('All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`', self);
       }
 
+      // Validate transitions: exactly one of transitionDate or transitionAfter must be specified
+      if (rule.transitions) {
+        for (const transition of rule.transitions) {
+          const hasTransitionDate = transition.transitionDate !== undefined;
+          const hasTransitionAfter = transition.transitionAfter !== undefined;
+
+          if (!hasTransitionDate && !hasTransitionAfter) {
+            throw new ValidationError('Exactly one of transitionDate or transitionAfter must be specified in lifecycle rule transition', self);
+          }
+
+          if (hasTransitionDate && hasTransitionAfter) {
+            throw new ValidationError('Exactly one of transitionDate or transitionAfter must be specified in lifecycle rule transition', self);
+          }
+        }
+      }
+
       const x: CfnBucket.RuleProperty = {
         // eslint-disable-next-line max-len
         abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfter !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfter.toDays() } : undefined,
@@ -2664,7 +2689,7 @@ export class Bucket extends BucketBase {
     }
 
     if (accessControlRequiresObjectOwnership && this.objectOwnership === ObjectOwnership.BUCKET_OWNER_ENFORCED) {
-      throw new ValidationError (`objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`, this);
+      throw new ValidationError(`objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`, this);
     }
 
     return {
@@ -2763,7 +2788,11 @@ export class Bucket extends BucketBase {
   }
 
   private renderReplicationConfiguration(props: BucketProps): CfnBucket.ReplicationConfigurationProperty | undefined {
-    if (!props.replicationRules || props.replicationRules.length === 0) {
+    const replicationRulesIsEmpty = !props.replicationRules || props.replicationRules.length === 0;
+    if (replicationRulesIsEmpty && props.replicationRole) {
+      throw new ValidationError('cannot specify replicationRole when replicationRules is empty', this);
+    }
+    if (replicationRulesIsEmpty) {
       return undefined;
     }
 
@@ -2785,39 +2814,42 @@ export class Bucket extends BucketBase {
     const destinationBuckets = props.replicationRules.map(rule => rule.destination);
     const kmsKeys = props.replicationRules.map(rule => rule.kmsKey).filter(kmsKey => kmsKey !== undefined) as kms.IKey[];
 
-    const replicationRole = new iam.Role(this, 'ReplicationRole', {
-      assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
-      // To avoid the error where the replication role cannot be used during cross-account replication,
-      // it is necessary to set the `roleName`.
-      roleName: 'CDKReplicationRole',
-    });
+    let replicationRole: iam.IRole;
+    if (!props.replicationRole) {
+      replicationRole = new iam.Role(this, 'ReplicationRole', {
+        assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+        roleName: FeatureFlags.of(this).isEnabled(cxapi.SET_UNIQUE_REPLICATION_ROLE_NAME) ? PhysicalName.GENERATE_IF_NEEDED : 'CDKReplicationRole',
+      });
 
-    // add permissions to the role
-    // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
-    replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
-      resources: [Lazy.string({ produce: () => this.bucketArn })],
-      effect: iam.Effect.ALLOW,
-    }));
-    replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
-      resources: [Lazy.string({ produce: () => this.arnForObjects('*') })],
-      effect: iam.Effect.ALLOW,
-    }));
-    if (destinationBuckets.length > 0) {
+      // add permissions to the role
+      // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
       replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
-        resources: destinationBuckets.map(bucket => bucket.arnForObjects('*')),
+        actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
+        resources: [Lazy.string({ produce: () => this.bucketArn })],
         effect: iam.Effect.ALLOW,
       }));
+      replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
+        resources: [Lazy.string({ produce: () => this.arnForObjects('*') })],
+        effect: iam.Effect.ALLOW,
+      }));
+      if (destinationBuckets.length > 0) {
+        replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
+          actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
+          resources: destinationBuckets.map(bucket => bucket.arnForObjects('*')),
+          effect: iam.Effect.ALLOW,
+        }));
+      }
+
+      kmsKeys.forEach(kmsKey => {
+        kmsKey.grantEncrypt(replicationRole);
+      });
+
+      // If KMS key encryption is enabled on the source bucket, configure the decrypt permissions.
+      this.encryptionKey?.grantDecrypt(replicationRole);
+    } else {
+      replicationRole = props.replicationRole;
     }
-
-    kmsKeys.forEach(kmsKey => {
-      kmsKey.grantEncrypt(replicationRole);
-    });
-
-    // If KMS key encryption is enabled on the source bucket, configure the decrypt permissions.
-    this.encryptionKey?.grantDecrypt(replicationRole);
 
     return {
       role: replicationRole.roleArn,
@@ -2850,7 +2882,7 @@ export class Bucket extends BucketBase {
         const isCrossAccount = sourceAccount !== destinationAccount;
 
         if (isCrossAccount) {
-          Annotations.of(this).addInfo('For Cross-account S3 replication, ensure to set up permissions on source bucket using method addReplicationPolicy() ');
+          Annotations.of(this).addInfo('For Cross-account S3 replication, ensure to set up permissions on destination bucket using method addReplicationPolicy() ');
         } else if (rule.accessControlTransition) {
           throw new ValidationError('accessControlTranslation is only supported for cross-account replication', this);
         }
@@ -3292,6 +3324,21 @@ export enum EventType {
    * object’s ACL.
    */
   OBJECT_ACL_PUT = 's3:ObjectAcl:Put',
+
+  /**
+   * Using restore object event types you can receive notifications for
+   * initiation and completion when restoring objects from the S3 Glacier
+   * storage class.
+   *
+   * You use s3:ObjectRestore:* to request notification of
+   * any restoration event.
+   */
+  OBJECT_RESTORE = 's3:ObjectRestore:*',
+
+  /**
+   * You receive this notification event for any object replication event.
+   */
+  REPLICATION = 's3:Replication:*',
 }
 
 export interface NotificationKeyFilter {

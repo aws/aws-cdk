@@ -1,0 +1,19 @@
+{
+  "version": "40.0.0",
+  "files": {
+    "fcb9e338351a307838d4040dd7c4d20dfb4306612cedea67c42b58aa1359dcc1": {
+      "source": {
+        "path": "ses-configuration-set-firehose.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fcb9e338351a307838d4040dd7c4d20dfb4306612cedea67c42b58aa1359dcc1.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

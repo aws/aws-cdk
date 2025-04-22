@@ -852,9 +852,9 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
         {
           storageClass: s3.StorageClass.GLACIER,
 
-          // the properties below are optional
+          // exactly one of transitionAfter or transitionDate must be specified
           transitionAfter: Duration.days(30),
-          transitionDate: new Date(),
+          // transitionDate: new Date(), // cannot specify both
         },
       ],
     },
@@ -940,11 +940,14 @@ To replicate objects to a destination bucket, you can specify the `replicationRu
 ```ts
 declare const destinationBucket1: s3.IBucket;
 declare const destinationBucket2: s3.IBucket;
+declare const replicationRole: iam.IRole;
 declare const kmsKey: kms.IKey;
 
 const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
   // Versioning must be enabled on both the source and destination bucket
   versioned: true,
+  // Optional. If not specified, a new role will be created.
+  replicationRole,
   replicationRules: [
     {
       // The destination bucket for the replication rule.
@@ -1005,7 +1008,7 @@ In a cross-account scenario, where the source and destination buckets are owned 
 For more information, please refer to https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html .
 > **NOTE:** AWS managed keys don't allow cross-account use, and therefore can't be used to perform cross-account replication.
 
-If you need to ovveride the bucket ownership to destination account pass the account value to the method to provide permissions to override bucket owner.
+If you need to override the bucket ownership to destination account pass the account value to the method to provide permissions to override bucket owner.
 `addReplicationPolicy(bucket.replicationRoleArn, true, '11111111111')`;
 
 
@@ -1015,9 +1018,11 @@ so you will need to [configure the necessary bucket policy](https://docs.aws.ama
 ```ts
 // The destination bucket in a different account.
 declare const destinationBucket: s3.IBucket;
-
+declare const replicationRole: iam.IRole;
 const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
   versioned: true,
+  // Optional. If not specified, a new role will be created.
+  replicationRole,
   replicationRules: [
     {
       destination: destinationBucket,

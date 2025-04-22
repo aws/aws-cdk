@@ -32,7 +32,7 @@ export interface IGrantable {
  * Notifications Service).
  *
  * A single logical Principal may also map to a set of physical principals.
- * For example, `new OrganizationPrincipal('o-1234')` represents all
+ * For example, `new OrganizationPrincipal('o-12345abcde')` represents all
  * identities that are part of the given AWS Organization.
  */
 export interface IPrincipal extends IGrantable {
@@ -53,7 +53,7 @@ export interface IPrincipal extends IGrantable {
    * Can be a Token - in that case,
    * it's assumed to be AWS::AccountId.
    */
-  readonly principalAccount?: string;
+  readonly principalAccount?: string | undefined;
 
   /**
    * Add to the policy of this principal.
@@ -92,14 +92,14 @@ export class ComparablePrincipal {
   /**
    * Whether or not the given principal is a comparable principal
    */
-  public static isComparablePrincipal(x: IPrincipal): x is IComparablePrincipal {
+  public static isComparablePrincipal(this: void, x: IPrincipal): x is IComparablePrincipal {
     return 'dedupeString' in x;
   }
 
   /**
    * Return the dedupeString of the given principal, if available
    */
-  public static dedupeStringFor(x: IPrincipal): string | undefined {
+  public static dedupeStringFor(this: void, x: IPrincipal): string | undefined {
     return ComparablePrincipal.isComparablePrincipal(x) ? x.dedupeString() : undefined;
   }
 }
@@ -608,9 +608,18 @@ export class OrganizationPrincipal extends PrincipalBase {
   /**
    *
    * @param organizationId The unique identifier (ID) of an organization (i.e. o-12345abcde)
+   * It must match regex pattern ^o-[a-z0-9]{10,32}$
+   * @see https://docs.aws.amazon.com/organizations/latest/APIReference/API_Organization.html
    */
   constructor(public readonly organizationId: string) {
     super();
+
+    // We can only validate if it's a literal string (not a token)
+    if (!cdk.Token.isUnresolved(organizationId)) {
+      if (!organizationId.match(/^o-[a-z0-9]{10,32}$/)) {
+        throw new Error(`Expected Organization ID must match regex pattern ^o-[a-z0-9]{10,32}$, received ${organizationId}`);
+      }
+    }
   }
 
   public get policyFragment(): PrincipalPolicyFragment {

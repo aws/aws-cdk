@@ -9,6 +9,7 @@ import { findTokens } from './resolve';
 import { makeUniqueId } from './uniqueid';
 import * as cxapi from '../../../cx-api';
 import { CfnElement } from '../cfn-element';
+import { Fn } from '../cfn-fn';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
 import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
@@ -18,6 +19,8 @@ import { IResolvable } from '../resolvable';
 import { Stack } from '../stack';
 import { Token, Tokenization } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
+
+export const STRING_LIST_REFERENCE_DELIMITER = '||';
 
 /**
  * This is called from the App level to resolve all references defined. Each
@@ -100,7 +103,13 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // therefore, we can only export from a top-level stack.
   if (producer.nested) {
     const outputValue = createNestedStackOutput(producer, reference);
-    return resolveValue(consumer, outputValue);
+    const resolvedValue = resolveValue(consumer, outputValue);
+
+    if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
+      return Tokenization.reverseList(Fn.split(STRING_LIST_REFERENCE_DELIMITER, Token.asString(resolvedValue))) as IResolvable;
+    } else {
+      return resolvedValue;
+    }
   }
 
   // ----------------------------------------------------------------------
@@ -260,7 +269,7 @@ function generateExportName(importStack: Stack, reference: Reference, id: string
   return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
 }
 
-export function getExportable(stack: Stack, reference: Reference): Reference {
+export function getExportable(stack: Stack, reference: Reference): Intrinsic {
   // could potentially be changed by a call to overrideLogicalId. This would cause our Export/Import
   // to have an incorrect id. For a better user experience, lock the logicalId and throw an error
   // if the user tries to override the id _after_ calling exportValue
@@ -306,7 +315,11 @@ function createNestedStackOutput(producer: Stack, reference: Reference): CfnRefe
   const outputId = generateUniqueId(producer, reference);
   let output = producer.node.tryFindChild(outputId) as CfnOutput;
   if (!output) {
-    output = new CfnOutput(producer, outputId, { value: Token.asString(reference) });
+    if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
+      output = new CfnOutput(producer, outputId, { value: Fn.join(STRING_LIST_REFERENCE_DELIMITER, Token.asList(reference)) });
+    } else {
+      output = new CfnOutput(producer, outputId, { value: Token.asString(reference) });
+    }
   }
 
   if (!producer.nestedStackResource) {
@@ -321,15 +334,21 @@ function createNestedStackOutput(producer: Stack, reference: Reference): CfnRefe
  *
  * Will create Outputs along the chain of Nested Stacks, and return the final `{ Fn::GetAtt }`.
  */
-export function referenceNestedStackValueInParent(reference: Reference, targetStack: Stack) {
+export function referenceNestedStackValueInParent(reference: Reference, targetStack: Stack): Intrinsic {
   let currentStack = Stack.of(reference.target);
   if (currentStack !== targetStack && !isNested(currentStack, targetStack)) {
     throw new Error(`Referenced resource must be in stack '${targetStack.node.path}', got '${reference.target.node.path}'`);
   }
 
+  const isNestedListReference = currentStack !== targetStack && reference.typeHint === ResolutionTypeHint.STRING_LIST;
+
   while (currentStack !== targetStack) {
     reference = createNestedStackOutput(Stack.of(reference.target), reference);
     currentStack = Stack.of(reference.target);
+  }
+
+  if (isNestedListReference) {
+    return Tokenization.reverseList(Fn.split(STRING_LIST_REFERENCE_DELIMITER, Token.asString(reference))) as Intrinsic;
   }
 
   return reference;

@@ -455,6 +455,17 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
         resources: ['*'],
       }),
       new iam.PolicyStatement({
+        actions: ['sagemaker:AddTags'],
+        resources: [
+          stack.formatArn({
+            service: 'sagemaker',
+            resource: 'training-job',
+            // If the job name comes from input, we cannot target the policy to a particular ARN prefix reliably...
+            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.trainingJobName) ? '*' : `${this.props.trainingJobName}*`,
+          }),
+        ],
+      }),
+      new iam.PolicyStatement({
         actions: ['iam:PassRole'],
         resources: [this._role!.roleArn],
         conditions: {

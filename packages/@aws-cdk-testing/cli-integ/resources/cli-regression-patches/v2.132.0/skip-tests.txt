@@ -1,4 +1,0 @@
-# Skipping the test to fix issue https://github.com/aws/aws-cdk/issues/29420. 
-# cli-integ tests failing for the old tests with the new cli changes for list stacks.
-
-cdk ls --show-dependencies --json
