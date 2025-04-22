@@ -703,7 +703,7 @@ new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_32,
   albController: {
     version: eks.AlbControllerVersion.V2_8_2,
-    additionalHelmchartValues: {
+    additionalHelmChartValues: {
       enableWafv2: false
   }
   },
