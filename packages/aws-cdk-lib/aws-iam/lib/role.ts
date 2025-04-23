@@ -14,9 +14,10 @@ import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
 import * as cxschema from '../../cloud-assembly-schema';
-import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, RemovalPolicy, AspectPriority, ContextProvider } from '../../core';
+import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, RemovalPolicy, ContextProvider } from '../../core';
 import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 
 const MAX_INLINE_SIZE = 10000;
 const MAX_MANAGEDPOL_SIZE = 6000;
@@ -543,7 +544,9 @@ export class Role extends Resource implements IRole {
             this.splitLargePolicy();
           }
         },
-      }, { priority: AspectPriority.MUTATING });
+      }, {
+        priority: mutatingAspectPrio32333(this),
+      });
     }
 
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;

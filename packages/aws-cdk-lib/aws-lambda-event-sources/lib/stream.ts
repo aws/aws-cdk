@@ -99,16 +99,13 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
   readonly maxRecordAge?: Duration;
 
   /**
-   * Maximum number of retry attempts
-   * Valid Range:
-   * * Minimum value of 0
-   * * Maximum value of 10000
+   * Maximum number of retry attempts.
    *
-   * The default value is -1, which sets the maximum number of retries to infinite.
-   * When MaximumRetryAttempts is infinite, Lambda retries failed records until
-   * the record expires in the event source.
+   * Set to -1 for infinite retries (until the record expires in the event source).
    *
-   * @default -1
+   * Valid Range: -1 (infinite) or 0 to 10000
+   *
+   * @default -1 (infinite retries)
    */
   readonly retryAttempts?: number;
 
