@@ -1573,7 +1573,7 @@ class ApiKeyPropsInjector implements IPropertyInjector {
   readonly constructUniqueId: string;
 
   constructor() {
-    this.constructUniqueId = ApiKey.PROPERTY_INJECTION_ID;
+    this.constructUniqueId = api.ApiKey.PROPERTY_INJECTION_ID;
   }
 
   inject(originalProps: api.ApiKeyProps, context: InjectionContext): api.ApiKeyProps {
@@ -1594,17 +1594,17 @@ Some notes:
 Here is an example of how builders can use the injector the org created.
 
 ```ts fixture=README-blueprints
-const stack = new Stack(app2, 'my-stack', {
+const stack = new Stack(app, 'my-stack', {
   propertyInjectors: [new ApiKeyPropsInjector()],
 });
-new ApiKey(stack, 'my-api-key', {});
+new api.ApiKey(stack, 'my-api-key', {});
 ```
 
 This is equivalent to:
 
 ```ts fixture=README-blueprints
 const stack = new Stack(app, 'my-stack', {});
-new ApiKey(stack, 'my-api-key', {
+new api.ApiKey(stack, 'my-api-key', {
   enabled: false,
 });
 ```
