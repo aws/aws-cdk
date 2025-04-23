@@ -19,6 +19,7 @@ import { Annotations, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Reso
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import * as cxapi from '../../cx-api';
 
 /**
