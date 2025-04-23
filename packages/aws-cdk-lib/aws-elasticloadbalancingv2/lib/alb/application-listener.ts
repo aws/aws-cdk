@@ -264,7 +264,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     }
 
     if (protocol === ApplicationProtocol.HTTP && props.certificates?.length) {
-      throw new ValidationError('A certificate cannot be specified for HTTP listeners', scope);
+      throw new ValidationError('certificates cannot be specified for HTTP listeners', scope);
     }
 
     validateMutualAuthentication(scope, props.mutualAuthentication);
