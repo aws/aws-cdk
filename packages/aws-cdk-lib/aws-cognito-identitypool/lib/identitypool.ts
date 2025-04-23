@@ -440,7 +440,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Role Provider for the default Role for authenticated users
    */
-  public readonly roleAttachment: IdentityPoolRoleAttachment;
+  public readonly roleAttachment: CfnIdentityPoolRoleAttachment;
 
   /**
    * List of Identity Providers added in constructor for use with property overrides
@@ -500,7 +500,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
       authenticatedRole: this.authenticatedRole,
       unauthenticatedRole: this.unauthenticatedRole,
       roleMappings: props.roleMappings,
-    });
+    }).resource;
 
     Array.isArray(this.roleAttachment);
   }
@@ -589,6 +589,11 @@ class IdentityPoolRoleAttachment extends Resource implements IIdentityPoolRoleAt
    */
   public readonly identityPoolId: string;
 
+  /**
+   * The Identity Pool Role Attachment CFN resource.
+   */
+  public readonly resource: CfnIdentityPoolRoleAttachment;
+
   constructor(scope: Construct, id: string, props: IdentityPoolRoleAttachmentProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
@@ -604,7 +609,7 @@ class IdentityPoolRoleAttachment extends Resource implements IIdentityPoolRoleAt
     if (mappings) {
       roleMappings = this.configureRoleMappings(...mappings);
     }
-    new CfnIdentityPoolRoleAttachment(this, 'Resource', {
+    this.resource = new CfnIdentityPoolRoleAttachment(this, 'Resource', {
       identityPoolId: this.identityPoolId,
       roles,
       roleMappings,
