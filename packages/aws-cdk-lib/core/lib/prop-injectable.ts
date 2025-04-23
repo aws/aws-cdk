@@ -41,5 +41,5 @@ export function propertyInjectable<T extends PropertyInjectableConstructConstruc
     value: constructor.name,
     writable: false,
   });
-  return WrappedClass as T;
+  return WrappedClass as any;
 }
