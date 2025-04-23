@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.191.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.190.0-alpha.0...v2.191.0-alpha.0) (2025-04-22)
+
+
+### Features
+
+* **location:** throw ValidationError instead of untyped errors ([#34174](https://github.com/aws/aws-cdk/issues/34174)) ([2ecf14a](https://github.com/aws/aws-cdk/commit/2ecf14a0c3e5a988532975536980d81589ea448e))
+* **msk:** throw ValidationError instead of untyped errors ([#34214](https://github.com/aws/aws-cdk/issues/34214)) ([02cb5a4](https://github.com/aws/aws-cdk/commit/02cb5a4284e9aad2f8cc4fc8fcb2c1aebe8f92be))
+
 ## [2.190.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.189.1-alpha.0...v2.190.0-alpha.0) (2025-04-16)
 
 
