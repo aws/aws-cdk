@@ -739,6 +739,12 @@
       "ZSTD"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.ts": {
+    "UnreferencedFileRemovalStatus": [
+      "Enabled",
+      "Disabled"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts": {
     "InvocationHttpResponseCode": [
       "Invocation4XXErrors",
@@ -884,6 +890,12 @@
     "HttpLambdaResponseType": [
       0,
       1
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/common/api.ts": {
+    "IpAddressType": [
+      "ipv4",
+      "dualstack"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/common/domain-name.ts": {
@@ -1541,7 +1553,8 @@
     ],
     "SSLMethod": [
       "sni-only",
-      "vip"
+      "vip",
+      "static-ip"
     ],
     "SecurityPolicyProtocol": [
       "SSLv3",
@@ -2904,6 +2917,21 @@
       "GatewayLoadBalancer",
       "ServiceNetwork",
       "Resource"
+    ],
+    "VpcEndpointIpAddressType": [
+      "ipv4",
+      "ipv6",
+      "dualstack"
+    ],
+    "VpcEndpointDnsRecordIpType": [
+      "ipv4",
+      "ipv6",
+      "dualstack",
+      "service-defined"
+    ],
+    "VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint": [
+      "AllResolvers",
+      "OnlyInboundResolver"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.ts": {
@@ -5040,6 +5068,17 @@
       "SEMICOLON",
       "SPACE",
       "TAB"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/distributed-map/result-writer.ts": {
+    "Transformation": [
+      "NONE",
+      "COMPACT",
+      "FLATTEN"
+    ],
+    "OutputType": [
+      "JSON",
+      "JSONL"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/private/state-type.ts": {
