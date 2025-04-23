@@ -6,6 +6,7 @@ import { Grant, IGrantable } from '../../aws-iam';
 import { IPublicHostedZone } from '../../aws-route53';
 import * as route53 from '../../aws-route53';
 import { ArnFormat, IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -408,7 +409,7 @@ export class EmailIdentity extends EmailIdentityBase {
     const parsedArn = stack.splitArn(emailIdentityArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (parsedArn.service !== 'ses' || parsedArn.resource !== 'identity' || !parsedArn.resourceName) {
-      throw new Error(`Invalid email identity ARN: ${emailIdentityArn}`);
+      throw new ValidationError(`Invalid email identity ARN: ${emailIdentityArn}`, scope);
     }
 
     const emailIdentityName = parsedArn.resourceName;
