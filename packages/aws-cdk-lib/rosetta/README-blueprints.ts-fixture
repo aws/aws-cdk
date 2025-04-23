@@ -6,7 +6,7 @@ class ApiKeyPropsInjector implements IPropertyInjector {
   readonly constructUniqueId: string;
 
   constructor() {
-    this.constructUniqueId = ApiKey.PROPERTY_INJECTION_ID;
+    this.constructUniqueId = api.ApiKey.PROPERTY_INJECTION_ID;
   }
 
   inject(originalProps: api.ApiKeyProps, context: InjectionContext): api.ApiKeyProps {
@@ -21,7 +21,7 @@ class AnotherApiKeyPropsInjector implements IPropertyInjector {
   readonly constructUniqueId: string;
 
   constructor() {
-    this.constructUniqueId = ApiKey.PROPERTY_INJECTION_ID;
+    this.constructUniqueId = api.ApiKey.PROPERTY_INJECTION_ID;
   }
 
   inject(originalProps: api.ApiKeyProps, context: InjectionContext): api.ApiKeyProps {
@@ -34,3 +34,4 @@ class AnotherApiKeyPropsInjector implements IPropertyInjector {
 
 const app = new App({});
 /// here
+
