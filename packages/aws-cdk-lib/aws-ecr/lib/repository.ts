@@ -637,7 +637,7 @@ export class Repository extends RepositoryBase {
    * Uniquely identifies this class.
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecr.Repository';
-=======
+
   /**
    * Lookup an existing repository
    */
