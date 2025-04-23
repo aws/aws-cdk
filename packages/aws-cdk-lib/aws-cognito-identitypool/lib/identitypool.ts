@@ -440,7 +440,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Role Provider for the default Role for authenticated users
    */
-  private readonly roleAttachment: IdentityPoolRoleAttachment;
+  public readonly roleAttachment: IdentityPoolRoleAttachment;
 
   /**
    * List of Identity Providers added in constructor for use with property overrides
