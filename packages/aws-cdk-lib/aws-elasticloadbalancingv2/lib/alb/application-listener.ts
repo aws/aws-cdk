@@ -263,6 +263,10 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       throw new ValidationError('At least one of \'port\' or \'protocol\' is required', scope);
     }
 
+    if (protocol === ApplicationProtocol.HTTP && props.certificates?.length) {
+      throw new ValidationError('A certificate cannot be specified for HTTP listeners', scope);
+    }
+
     validateMutualAuthentication(scope, props.mutualAuthentication);
 
     let advertiseTrustStoreCaNames: string | undefined;
