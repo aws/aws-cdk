@@ -1555,12 +1555,12 @@ class decorator and specifying `PROPERTY_INJECTION_ID` readonly property.  For e
 
 ```ts
 @propertyInjectable
-export class ApiKey extends ApiKeyBase {
+class ApiKey extends api.ApiKeyBase {
   /**
    * Uniquely identifies this class.
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.ApiKey';
-  ...
+  // rest of class code
 }
 ```
 
@@ -1569,14 +1569,14 @@ Organizations can set default property values to a Construct by writing Injector
 Here is a simple example of an Injector for APiKey.  
 
 ```ts
-export class ApiKeyPropsInjector implements IPropertyInjector {
+class ApiKeyPropsInjector implements IPropertyInjector {
   readonly constructUniqueId: string;
 
   constructor() {
     this.constructUniqueId = ApiKey.PROPERTY_INJECTION_ID;
   }
 
-  inject(originalProps: ApiKeyProps, context: InjectionContext): ApiKeyProps {
+  inject(originalProps: api.ApiKeyProps, context: InjectionContext): api.ApiKeyProps {
     return {
       enabled: false,
       ...originalProps,
@@ -1593,8 +1593,7 @@ Some notes:
 
 Here is an example of how builders can use the injector the org created.
 
-```ts
-const app = new App({});
+```ts fixture=README-blueprints
 const stack = new Stack(app2, 'my-stack', {
   propertyInjectors: [new ApiKeyPropsInjector()],
 });
@@ -1603,8 +1602,7 @@ new ApiKey(stack, 'my-api-key', {});
 
 This is equivalent to:
 
-```ts
-const app = new App({});
+```ts fixture=README-blueprints
 const stack = new Stack(app, 'my-stack', {});
 new ApiKey(stack, 'my-api-key', {
   enabled: false,
@@ -1619,8 +1617,8 @@ Some notes:
 
 If you specify two or more injectors for the same Constructs, the last one is in effect.  In the example below, `ApiKeyPropsInjector` will never be applied.
 
-```ts
-const stack = new Stack(app2, 'my-stack', {
+```ts fixture=README-blueprints
+const stack = new Stack(app, 'my-stack', {
   propertyInjectors: [
     new ApiKeyPropsInjector(),
     new AnotherApiKeyPropsInjector(),
