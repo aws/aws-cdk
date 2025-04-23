@@ -1553,7 +1553,7 @@ The goal of Blueprint Property Injection is to provide builders an automatic way
 Construct authors can declare that a Construct can have it properties injected by adding `@propertyInjectable`
 class decorator and specifying `PROPERTY_INJECTION_ID` readonly property.  For example:
 
-```ts
+```ts fixture=README-Injectable
 @propertyInjectable
 class ApiKey extends api.ApiKeyBase {
   /**
@@ -1568,7 +1568,7 @@ Organizations can set default property values to a Construct by writing Injector
 
 Here is a simple example of an Injector for APiKey.  
 
-```ts
+```ts fixture=README-Injectable
 class ApiKeyPropsInjector implements IPropertyInjector {
   readonly constructUniqueId: string;
 
