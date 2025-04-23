@@ -3,7 +3,7 @@ import { CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
 import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IKey, ViaServicePrincipal } from '../../aws-kms';
-import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy, FeatureFlags } from '../../core';
+import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy, FeatureFlags, UnscopedValidationError, ValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -172,7 +172,7 @@ export class BlockDeviceVolume {
    */
   public static ephemeral(volumeIndex: number) {
     if (volumeIndex < 0) {
-      throw new Error(`volumeIndex must be a number starting from 0, got "${volumeIndex}"`);
+      throw new UnscopedValidationError(`volumeIndex must be a number starting from 0, got "${volumeIndex}"`);
     }
 
     return new this(undefined, `ephemeral${volumeIndex}`);
@@ -619,7 +619,7 @@ export class Volume extends VolumeBase {
     }
     // Check that the provided volumeId looks like it could be valid.
     if (!Token.isUnresolved(attrs.volumeId) && !/^vol-[0-9a-fA-F]+$/.test(attrs.volumeId)) {
-      throw new Error('`volumeId` does not match expected pattern. Expected `vol-<hexadecmial value>` (ex: `vol-05abe246af`) or a Token');
+      throw new ValidationError('`volumeId` does not match expected pattern. Expected `vol-<hexadecmial value>` (ex: `vol-05abe246af`) or a Token', scope);
     }
     return new Import(scope, id);
   }
@@ -681,15 +681,15 @@ export class Volume extends VolumeBase {
 
   protected validateProps(props: VolumeProps) {
     if (!(props.size || props.snapshotId)) {
-      throw new Error('Must provide at least one of `size` or `snapshotId`');
+      throw new ValidationError('Must provide at least one of `size` or `snapshotId`', this);
     }
 
     if (props.snapshotId && !Token.isUnresolved(props.snapshotId) && !/^snap-[0-9a-fA-F]+$/.test(props.snapshotId)) {
-      throw new Error('`snapshotId` does match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token');
+      throw new ValidationError('`snapshotId` does not match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token', this);
     }
 
     if (props.encryptionKey && !props.encrypted) {
-      throw new Error('`encrypted` must be true when providing an `encryptionKey`.');
+      throw new ValidationError('`encrypted` must be true when providing an `encryptionKey`.', this);
     }
 
     if (
@@ -700,8 +700,9 @@ export class Volume extends VolumeBase {
       ].includes(props.volumeType) &&
       !props.iops
     ) {
-      throw new Error(
+      throw new ValidationError(
         '`iops` must be specified if the `volumeType` is `PROVISIONED_IOPS_SSD` or `PROVISIONED_IOPS_SSD_IO2`.',
+        this,
       );
     }
 
@@ -714,8 +715,9 @@ export class Volume extends VolumeBase {
           EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
         ].includes(volumeType)
       ) {
-        throw new Error(
+        throw new ValidationError(
           '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`, `PROVISIONED_IOPS_SSD_IO2` or `GENERAL_PURPOSE_SSD_GP3`.',
+          this,
         );
       }
       // Enforce minimum & maximum IOPS:
@@ -726,7 +728,7 @@ export class Volume extends VolumeBase {
       iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 256000 };
       const { Min, Max } = iopsRanges[volumeType];
       if (props.iops < Min || props.iops > Max) {
-        throw new Error(`\`${volumeType}\` volumes iops must be between ${Min} and ${Max}.`);
+        throw new ValidationError(`\`${volumeType}\` volumes iops must be between ${Min} and ${Max}.`, this);
       }
 
       // Enforce maximum ratio of IOPS/GiB:
@@ -737,7 +739,7 @@ export class Volume extends VolumeBase {
       maximumRatios[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = 500;
       const maximumRatio = maximumRatios[volumeType];
       if (props.size && (props.iops > maximumRatio * props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }))) {
-        throw new Error(`\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`);
+        throw new ValidationError(`\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`, this);
       }
 
       const maximumThroughputRatios: { [key: string]: number } = {};
@@ -746,7 +748,7 @@ export class Volume extends VolumeBase {
       if (props.throughput && props.iops) {
         const iopsRatio = (props.throughput / props.iops);
         if (iopsRatio > maximumThroughputRatio) {
-          throw new Error(`Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`);
+          throw new ValidationError(`Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`, this);
         }
       }
     }
@@ -759,7 +761,7 @@ export class Volume extends VolumeBase {
           EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
         ].includes(volumeType)
       ) {
-        throw new Error('multi-attach is supported exclusively on `PROVISIONED_IOPS_SSD` and `PROVISIONED_IOPS_SSD_IO2` volumes.');
+        throw new ValidationError('multi-attach is supported exclusively on `PROVISIONED_IOPS_SSD` and `PROVISIONED_IOPS_SSD_IO2` volumes.', this);
       }
     }
 
@@ -778,7 +780,7 @@ export class Volume extends VolumeBase {
       const volumeType = props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD;
       const { Min, Max } = sizeRanges[volumeType];
       if (size < Min || size > Max) {
-        throw new Error(`\`${volumeType}\` volumes must be between ${Min} GiB and ${Max} GiB in size.`);
+        throw new ValidationError(`\`${volumeType}\` volumes must be between ${Min} GiB and ${Max} GiB in size.`, this);
       }
     }
 
@@ -786,13 +788,15 @@ export class Volume extends VolumeBase {
       const throughputRange = { Min: 125, Max: 1000 };
       const { Min, Max } = throughputRange;
       if (props.volumeType != EbsDeviceVolumeType.GP3) {
-        throw new Error(
+        throw new ValidationError(
           'throughput property requires volumeType: EbsDeviceVolumeType.GP3',
+          this,
         );
       }
       if (props.throughput < Min || props.throughput > Max) {
-        throw new Error(
+        throw new ValidationError(
           `throughput property takes a minimum of ${Min} and a maximum of ${Max}`,
+          this,
         );
       }
     }

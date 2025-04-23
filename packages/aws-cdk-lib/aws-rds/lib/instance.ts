@@ -17,7 +17,8 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { ArnComponents, ArnFormat, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import * as cxschema from '../../cloud-assembly-schema';
+import { ArnComponents, ArnFormat, ContextProvider, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -135,6 +136,60 @@ export interface DatabaseInstanceAttributes {
  * A new or imported database instance.
  */
 export abstract class DatabaseInstanceBase extends Resource implements IDatabaseInstance {
+  /**
+   * Lookup an existing DatabaseInstance using instanceIdentifier.
+   */
+  public static fromLookup(scope: Construct, id: string, options: DatabaseInstanceLookupOptions): IDatabaseInstance {
+    const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.CC_API_PROVIDER,
+      props: {
+        typeName: 'AWS::RDS::DBInstance',
+        exactIdentifier: options.instanceIdentifier,
+        propertiesToReturn: [
+          'DBInstanceArn',
+          'Endpoint.Address',
+          'Endpoint.Port',
+          'DbiResourceId',
+          'DBSecurityGroups',
+        ],
+      } as cxschema.CcApiContextQuery,
+      dummyValue: [
+        {
+          'Identifier': 'TEST',
+          'DBInstanceArn': 'TESTARN',
+          'Endpoint.Address': 'TESTADDRESS',
+          'Endpoint.Port': '5432',
+          'DbiResourceId': 'TESTID',
+          'DBSecurityGroups': [],
+        },
+      ],
+    }).value;
+
+    // getValue returns a list of result objects.  We are expecting 1 result or Error.
+    const instance = response[0];
+
+    // Get ISecurityGroup from securityGroupId
+    let securityGroups: ec2.ISecurityGroup[] = [];
+    const dbsg: string[] = instance.DBSecurityGroups;
+    if (dbsg) {
+      securityGroups = dbsg.map(securityGroupId => {
+        return ec2.SecurityGroup.fromSecurityGroupId(
+          scope,
+          `LSG-${securityGroupId}`,
+          securityGroupId,
+        );
+      });
+    }
+
+    return this.fromDatabaseInstanceAttributes(scope, id, {
+      instanceEndpointAddress: instance['Endpoint.Address'],
+      port: instance['Endpoint.Port'],
+      instanceIdentifier: options.instanceIdentifier,
+      securityGroups: securityGroups,
+      instanceResourceId: instance.DbiResourceId,
+    });
+  }
+
   /**
    * Import an existing database instance.
    */
@@ -1141,6 +1196,16 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
     return super.grantConnect(grantee, dbUser);
   }
+}
+
+/**
+ * Properties for looking up an existing DatabaseInstance.
+ */
+export interface DatabaseInstanceLookupOptions {
+  /**
+   * The instance identifier of the DatabaseInstance
+   */
+  readonly instanceIdentifier: string;
 }
 
 /**

@@ -1,0 +1,12 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "NlbSubnetMappingStackTest/DefaultTest": {
+      "stacks": [
+        "NlbSubnetMappingStack"
+      ],
+      "assertionStack": "NlbSubnetMappingStackTest/DefaultTest/DeployAssert",
+      "assertionStackName": "NlbSubnetMappingStackTestDefaultTestDeployAssert227D4D32"
+    }
+  }
+}

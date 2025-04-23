@@ -69,6 +69,20 @@ export interface StageProps {
    * Options for applying a permissions boundary to all IAM Roles
    * and Users created within this Stage
    *
+   * Be aware that this feature uses Aspects, and the Aspects are applied at the
+   * Stack level with a priority of `MUTATING` (if the feature flag
+   * `@aws-cdk/core:aspectPrioritiesMutating` is set) or `DEFAULT` (if the flag
+   * is not set). This is relevant if you are both using your own Aspects to
+   * assign Permissions Boundaries, as well as specifying this property.  The
+   * Aspect added by this property will overwrite the Permissions Boundary
+   * assigned by your own Aspect if both: (a) your Aspect has a lower or equal
+   * priority to the automatic Aspect, and (b) your Aspect is applied *above*
+   * the Stack level.  If either of those conditions are not true, your own
+   * Aspect will win.
+   *
+   * We recommend assigning Permissions Boundaries only using the provided APIs,
+   * and not using custom Aspects.
+   *
    * @default - no permissions boundary is applied
    */
   readonly permissionsBoundary?: PermissionsBoundary;
@@ -170,7 +184,7 @@ export class Stage extends Construct {
   constructor(scope: Construct, id: string, props: StageProps = {}) {
     super(scope, id);
 
-    if (id !== '' && !/^[a-z][a-z0-9\-\_\.]+$/i.test(id)) {
+    if (id !== '' && !/^[a-z][a-z0-9\-\_\.]*$/i.test(id)) {
       throw new Error(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`);
     }
 

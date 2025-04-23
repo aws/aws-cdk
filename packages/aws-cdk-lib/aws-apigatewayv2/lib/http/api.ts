@@ -10,9 +10,10 @@ import { ArnFormat, Duration, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { IApi } from '../common/api';
+import { IApi, IpAddressType } from '../common/api';
 import { ApiBase } from '../common/base';
 import { DomainMappingOptions } from '../common/stage';
+
 /**
  * Represents an HTTP API
  */
@@ -33,6 +34,14 @@ export interface IHttpApi extends IApi {
    * @default - no default authorization scopes
    */
   readonly defaultAuthorizationScopes?: string[];
+
+  /**
+   * The default stage of this API
+   *
+   * @attribute
+   * @default - a stage will be created
+   */
+  readonly defaultStage?: IHttpStage;
 
   /**
    * Metric for the number of client-side errors captured in a given period.
@@ -171,6 +180,15 @@ export interface HttpApiProps {
    * @default false
    */
   readonly routeSelectionExpression?: boolean;
+
+  /**
+   * The IP address types that can invoke the API.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-ip-address-type.html
+   *
+   * @default undefined - AWS default is IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
 }
 
 /**
@@ -453,6 +471,7 @@ export class HttpApi extends HttpApiBase {
       description: props?.description,
       disableExecuteApiEndpoint: this.disableExecuteApiEndpoint,
       routeSelectionExpression: props?.routeSelectionExpression ? '${request.method} ${request.path}' : undefined,
+      ipAddressType: props?.ipAddressType,
     };
 
     const resource = new CfnApi(this, 'Resource', apiProps);
