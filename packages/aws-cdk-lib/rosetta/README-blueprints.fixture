@@ -1,4 +1,4 @@
-import * as api from 'aws-cdk-lib/aws-api';
+import * as api from 'aws-cdk-lib/aws-apigateway';
 import { InjectionContext, IPropertyInjector, PropertyInjectors, propertyInjectable } from 'aws-cdk-lib/core';
 import { App, Stack } from 'aws-cdk-lib';
 
