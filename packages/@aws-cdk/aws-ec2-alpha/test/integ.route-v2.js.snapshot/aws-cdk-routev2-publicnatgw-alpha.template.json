@@ -85,7 +85,6 @@
   "natgwpubSubnet79D316E5": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-east-1a",
     "CidrBlock": "10.0.0.0/24",
     "Ipv6CidrBlock": {
@@ -150,12 +149,7 @@
   "testNATgwEIP1C260FAD": {
    "Type": "AWS::EC2::EIP",
    "Properties": {
-    "Domain": {
-     "Fn::GetAtt": [
-      "natgwpub2FB85986",
-      "VpcId"
-     ]
-    }
+    "Domain": "vpc"
    },
    "DependsOn": [
     "natgwpubSubnetRouteTableAssociation019CE26A"
