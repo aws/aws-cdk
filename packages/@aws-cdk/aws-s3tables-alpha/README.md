@@ -41,6 +41,22 @@ const sampleTableBucket = new TableBucket(scope, 'ExampleTableBucket', {
 
 Learn more about table buckets maintenance operations and default behavior from the [S3 Tables User Guide](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-table-buckets-maintenance.html)
 
+### Server-side Encryption
+
+By default, S3 Tables buckets are encrypted using Amazon S3-managed keys (SSE-S3). You can also use AWS Key Management Service (AWS KMS) keys to encrypt your data.
+To do this, you can specify the `kmsKey` property when creating the bucket:
+
+```ts
+declare const kmsKey: kms.IKey;
+
+new s3tables.TableBucket(this, 'TableBucket', {
+  tableBucketName: 'kms-key-s3tables-bucket',
+  kmsKey,
+});
+```
+
+**Note**: AWS CDK automatically add a resource policy to the KMS key to allow the S3 Tables service to use it for automatic table maintenance. Detail information can be found in the [security for S3 tables](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-kms-permissions.html) documentation.
+
 ### Controlling Table Bucket Permissions
 
 ```ts
