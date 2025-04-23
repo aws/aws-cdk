@@ -18,8 +18,8 @@ import * as iam from '../../aws-iam';
 import { Annotations, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Resource, Stack, Tags, Token, ValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
