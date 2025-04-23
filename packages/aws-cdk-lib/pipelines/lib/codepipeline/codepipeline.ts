@@ -715,6 +715,8 @@ export class CodePipeline extends PipelineBase {
             actionName: options.actionName,
             runOrder: options.runOrder,
             additionalInformation: step.comment,
+            externalEntityLink: step.reviewUrl,
+            notificationTopic: step.notificationTopic,
           }));
           return { runOrdersConsumed: 1 };
         },
