@@ -272,8 +272,12 @@ export class Role extends Resource implements IRole {
       } as cxschema.CcApiContextQuery,
       dummyValue: [
         {
-          // eslint-disable-next-line @cdklabs/no-literal-partition
-          Arn: 'arn:aws:iam::123456789012:role/DUMMY_ARN',
+          Arn: Stack.of(scope).formatArn({
+            service: 'iam',
+            account: '123456789012',
+            resource: 'role',
+            resourceName: 'DUMMY_ARN',
+          }),
         },
       ],
     }).value;
