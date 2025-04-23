@@ -21,6 +21,12 @@ describe('Role from lookup', () => {
     const role = iam.Role.fromLookup(stack, 'MyRole', {
       roleName: 'MyExistingRole',
     });
+    const dummyRoleArn = Stack.of(stack).formatArn({
+      service: 'iam',
+      account: '123456789012',
+      resource: 'role',
+      resourceName: 'DUMMY_ARN',
+    })
 
     // THEN
     expect(role.roleArn).toEqual('arn:aws:iam::123456789012:role/MyExistingRole');
@@ -36,7 +42,7 @@ describe('Role from lookup', () => {
         } as cxschema.CcApiContextQuery,
         dummyValue: [
           {
-            'Arn': 'arn:aws:iam::123456789012:role/DUMMY_ARN',
+            'Arn': dummyRoleArn,
           },
         ],
     });
