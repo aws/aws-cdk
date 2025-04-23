@@ -49,7 +49,7 @@ To do this, you can specify the `kmsKey` property when creating the bucket:
 ```ts
 declare const kmsKey: kms.IKey;
 
-new s3tables.TableBucket(this, 'TableBucket', {
+new TableBucket(this, 'TableBucket', {
   tableBucketName: 'kms-key-s3tables-bucket',
   kmsKey,
 });
