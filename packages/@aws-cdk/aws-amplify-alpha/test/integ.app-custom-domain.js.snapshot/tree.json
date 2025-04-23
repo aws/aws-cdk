@@ -132,6 +132,7 @@
                     "basicAuthConfig": {
                       "enableBasicAuth": false
                     },
+                    "customHeaders": "",
                     "iamServiceRole": {
                       "Fn::GetAtt": [
                         "AppRole1AF9B530",

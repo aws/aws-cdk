@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/52c01435146f94b28f058464ccdc77ecea779ba1f2809be438facf8863e8b544.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6c397878c7d83515dcc4c770171b86d5cd54969815a43bdfb9f27cbed144dc66.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -71,10 +71,10 @@
             "data": "AppdevB328DAFC"
           }
         ],
-        "/cdk-amplify-app-custom-domain/App/example.com/Resource": [
+        "/cdk-amplify-app-custom-domain/App/*.example.com/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Appexamplecom93D8EC68"
+            "data": "Appexamplecom6AF1A3AD"
           }
         ],
         "/cdk-amplify-app-custom-domain/Certificate/Resource": [
