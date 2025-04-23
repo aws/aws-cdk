@@ -528,7 +528,6 @@ export class TableBucket extends TableBucketBase {
               service: 's3tables',
               resource: 'bucket',
               resourceName: props.tableBucketName,
-              sep: '/',
             })}/*`,
           },
         },
