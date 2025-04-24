@@ -95,7 +95,7 @@ body:
     id: cdk-cli-version
     attributes:
       label: AWS CDK CLI version
-      description: Run `npx cdk --version` to get the version of the AWS CDK CLI
+      description: Run `npx cdk --version` to get the version of AWS CDK CLI
     validations:
       required: true
 
