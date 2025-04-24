@@ -18,8 +18,6 @@ import * as s3 from '../../aws-s3';
 import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
-import { ValidationError } from '../../core/lib/errors';
-
 
 /**
  * Interface for CloudFront distributions
