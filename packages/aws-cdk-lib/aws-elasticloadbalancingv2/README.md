@@ -418,6 +418,78 @@ const listener = lb.addListener('Listener', {
 });
 ```
 
+### Configuring a subnet information for a Network Load Balancer
+
+You can specify the subnets for a Network Load Balancer easily by setting the `vpcSubnets` property.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PRIVATE,
+  },
+});
+```
+
+If you want to configure detailed information about the subnets, you can use the `subnetMappings` property as follows:
+
+```ts
+declare const vpc: ec2.IVpc;
+declare const dualstackVpc: ec2.IVpc;
+declare const subnet: ec2.ISubnet;
+declare const dualstackSubnet: ec2.ISubnet;
+declare const cfnEip: ec2.CfnEIP;
+
+// Internet facing Network Load Balancer with an Elastic IPv4 address
+new elbv2.NetworkLoadBalancer(this, 'InternetFacingLb', {
+  vpc,
+  internetFacing: true,
+  subnetMappings: [
+    {
+      subnet,
+      // The allocation ID of the Elastic IP address
+      allocationId: cfnEip.attrAllocationId,
+    },
+  ],
+});
+
+// Internal Network Load Balancer with a private IPv4 address
+new elbv2.NetworkLoadBalancer(this, 'InternalLb', {
+  vpc,
+  internetFacing: false,
+  subnetMappings: [
+    {
+      subnet,
+      // The private IPv4 address from the subnet
+      // The address must be in the subnet's CIDR range and
+      // can not be configured for a internet facing Network Load Balancer.
+      privateIpv4Address: '10.0.12.29',
+    },
+  ],
+});
+
+// Dualstack Network Load Balancer with an IPv6 address and prefix for source NAT
+new elbv2.NetworkLoadBalancer(this, 'DualstackLb', {
+  vpc: dualstackVpc,
+  // Configure the dualstack Network Load Balancer
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+  enablePrefixForIpv6SourceNat: true,
+  subnetMappings: [
+    {
+      subnet: dualstackSubnet,
+      // The IPv6 address from the subnet
+      // `ipAddresstype` must be `DUAL_STACK` or `DUAL_STACK_WITHOUT_PUBLIC_IPV4` to set the IPv6 address.
+      ipv6Address: '2001:db8:1234:1a00::10',
+      // The IPv6 prefix to use for source NAT
+      // `enablePrefixForIpv6SourceNat` must be `true` to set `sourceNatIpv6Prefix`.
+      sourceNatIpv6Prefix: elbv2.SourceNatIpv6Prefix.autoAssigned(),
+    },
+  ],
+});
+```
+
 ### Network Load Balancer attributes
 
 You can modify attributes of Network Load Balancers:
