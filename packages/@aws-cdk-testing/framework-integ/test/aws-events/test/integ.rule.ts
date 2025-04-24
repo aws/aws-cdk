@@ -1,12 +1,18 @@
 import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Rule, Match } from 'aws-cdk-lib/aws-events';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 const app = new App();
 
 const stack = new Stack(app, 'RuleStack');
 
+const role = new iam.Role(stack, 'MyRole', {
+  assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+});
+
 new Rule(stack, 'MyRule', {
+  role,
   eventPattern: {
     account: ['account1', 'account2'],
     detail: {

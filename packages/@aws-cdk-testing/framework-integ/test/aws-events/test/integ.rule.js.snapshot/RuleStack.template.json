@@ -1,5 +1,22 @@
 {
  "Resources": {
+  "MyRoleF48FFE04": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
   "MyRuleA44AB831": {
    "Type": "AWS::Events::Rule",
    "Properties": {
@@ -144,6 +161,12 @@
      ],
      "version": [
       "0"
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "MyRoleF48FFE04",
+      "Arn"
      ]
     },
     "State": "ENABLED"
