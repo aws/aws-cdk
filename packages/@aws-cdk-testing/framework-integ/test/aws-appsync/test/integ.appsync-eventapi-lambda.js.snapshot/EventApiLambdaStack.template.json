@@ -1,0 +1,346 @@
+{
+ "Resources": {
+  "EventApiLambda6AA4ADA7": {
+   "Type": "AWS::AppSync::Api",
+   "Properties": {
+    "EventConfig": {
+     "AuthProviders": [
+      {
+       "AuthType": "API_KEY"
+      }
+     ],
+     "ConnectionAuthModes": [
+      {
+       "AuthType": "API_KEY"
+      }
+     ],
+     "DefaultPublishAuthModes": [
+      {
+       "AuthType": "API_KEY"
+      }
+     ],
+     "DefaultSubscribeAuthModes": [
+      {
+       "AuthType": "API_KEY"
+      }
+     ]
+    },
+    "Name": "LambdaEventApi"
+   }
+  },
+  "EventApiLambdaDefaultApiKeyA456E74C": {
+   "Type": "AWS::AppSync::ApiKey",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "EventApiLambda6AA4ADA7",
+      "ApiId"
+     ]
+    }
+   }
+  },
+  "EventApiLambdalambdadsServiceRole252ADB67": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appsync.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "EventApiLambdalambdadsServiceRoleDefaultPolicy10960CD6": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "LambdaDs69120E12",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "LambdaDs69120E12",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EventApiLambdalambdadsServiceRoleDefaultPolicy10960CD6",
+    "Roles": [
+     {
+      "Ref": "EventApiLambdalambdadsServiceRole252ADB67"
+     }
+    ]
+   }
+  },
+  "EventApiLambdalambdads48EEE400": {
+   "Type": "AWS::AppSync::DataSource",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "EventApiLambda6AA4ADA7",
+      "ApiId"
+     ]
+    },
+    "LambdaConfig": {
+     "LambdaFunctionArn": {
+      "Fn::GetAtt": [
+       "LambdaDs69120E12",
+       "Arn"
+      ]
+     }
+    },
+    "Name": "lambdads",
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "EventApiLambdalambdadsServiceRole252ADB67",
+      "Arn"
+     ]
+    },
+    "Type": "AWS_LAMBDA"
+   }
+  },
+  "EventApiLambdachat46AF0486": {
+   "Type": "AWS::AppSync::ChannelNamespace",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "EventApiLambda6AA4ADA7",
+      "ApiId"
+     ]
+    },
+    "CodeS3Location": {
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e00ae16bf92ecc5687abe4a8a6af9764576bc75ee2429a2cf09ac2af40391423.js"
+    },
+    "HandlerConfigs": {
+     "OnPublish": {
+      "Behavior": "CODE",
+      "Integration": {
+       "DataSourceName": "lambdads"
+      }
+     }
+    },
+    "Name": "chat"
+   },
+   "DependsOn": [
+    "EventApiLambdalambdads48EEE400"
+   ]
+  },
+  "LambdaDsServiceRoleB6A777D1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "LambdaDs69120E12": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "4e26ae887ef77e2529aab7e8ba8834cf586893a60d402ca3d069c404fa3a09c3.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdaDsServiceRoleB6A777D1",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x"
+   },
+   "DependsOn": [
+    "LambdaDsServiceRoleB6A777D1"
+   ]
+  },
+  "EventApiLambdaTestFunctionServiceRole4E48AAF1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "EventApiLambdaTestFunctionF2682C94": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "31a32f1a22c81e206f6deb3ac781a0a928858d96389855289ca7a36438e0fc20.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "EVENT_API_REALTIME_URL": {
+       "Fn::Join": [
+        "",
+        [
+         "wss://",
+         {
+          "Fn::GetAtt": [
+           "EventApiLambda6AA4ADA7",
+           "Dns.Realtime"
+          ]
+         },
+         "/event/realtime"
+        ]
+       ]
+      },
+      "EVENT_API_HTTP_URL": {
+       "Fn::Join": [
+        "",
+        [
+         "https://",
+         {
+          "Fn::GetAtt": [
+           "EventApiLambda6AA4ADA7",
+           "Dns.Http"
+          ]
+         },
+         "/event"
+        ]
+       ]
+      },
+      "API_KEY": {
+       "Fn::GetAtt": [
+        "EventApiLambdaDefaultApiKeyA456E74C",
+        "ApiKey"
+       ]
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "EventApiLambdaTestFunctionServiceRole4E48AAF1",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 15
+   },
+   "DependsOn": [
+    "EventApiLambdaTestFunctionServiceRole4E48AAF1"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefEventApiLambdaTestFunctionF2682C946A8B4038": {
+   "Value": {
+    "Ref": "EventApiLambdaTestFunctionF2682C94"
+   },
+   "Export": {
+    "Name": "EventApiLambdaStack:ExportsOutputRefEventApiLambdaTestFunctionF2682C946A8B4038"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

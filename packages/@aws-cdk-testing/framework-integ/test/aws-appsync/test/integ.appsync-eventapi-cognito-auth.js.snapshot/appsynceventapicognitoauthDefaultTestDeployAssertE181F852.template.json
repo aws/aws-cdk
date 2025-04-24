@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "LambdaInvokebf5141fc88f7c179d94a3e7c6df61400": {
+  "LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -11,7 +11,7 @@
     },
     "service": "Lambda",
     "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"Payload\":\"{\\\"statusCode\\\":200,\\\"msg\\\":\\\"subscribe_success\\\"}\"}}",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"{\\\"statusCode\\\":200,\\\"msg\\\":\\\"publish_success\\\"}\"}}",
     "parameters": {
      "FunctionName": {
       "Fn::Join": [
@@ -25,15 +25,15 @@
        ]
       ]
      },
-     "Payload": "\"{\\\"action\\\":\\\"subscribe\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"USER_POOL\\\"}\""
+     "Payload": "\"{\\\"action\\\":\\\"publish\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"USER_POOL\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1740448373389"
+    "salt": "1743733571317"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvokebf5141fc88f7c179d94a3e7c6df61400Invoke550829A2": {
+  "LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98cInvokeC96299DC": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -176,7 +176,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4a8b2d1ae3fba266ef36adae459ae53392d074ee550352d271d073f06413f06b.zip"
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -188,7 +188,7 @@
     }
    }
   },
-  "LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c": {
+  "LambdaInvokebf5141fc88f7c179d94a3e7c6df61400": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -199,7 +199,7 @@
     },
     "service": "Lambda",
     "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"Payload\":\"{\\\"statusCode\\\":200,\\\"msg\\\":\\\"publish_success\\\"}\"}}",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"{\\\"statusCode\\\":200,\\\"msg\\\":\\\"subscribe_success\\\"}\"}}",
     "parameters": {
      "FunctionName": {
       "Fn::Join": [
@@ -213,15 +213,15 @@
        ]
       ]
      },
-     "Payload": "\"{\\\"action\\\":\\\"publish\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"USER_POOL\\\"}\""
+     "Payload": "\"{\\\"action\\\":\\\"subscribe\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"USER_POOL\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1740448373390"
+    "salt": "1743733571317"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98cInvokeC96299DC": {
+  "LambdaInvokebf5141fc88f7c179d94a3e7c6df61400Invoke550829A2": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -238,18 +238,18 @@
   }
  },
  "Outputs": {
-  "AssertionResultsLambdaInvokebf5141fc88f7c179d94a3e7c6df61400": {
-   "Value": {
-    "Fn::GetAtt": [
-     "LambdaInvokebf5141fc88f7c179d94a3e7c6df61400",
-     "assertion"
-    ]
-   }
-  },
   "AssertionResultsLambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c": {
    "Value": {
     "Fn::GetAtt": [
      "LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvokebf5141fc88f7c179d94a3e7c6df61400": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvokebf5141fc88f7c179d94a3e7c6df61400",
      "assertion"
     ]
    }

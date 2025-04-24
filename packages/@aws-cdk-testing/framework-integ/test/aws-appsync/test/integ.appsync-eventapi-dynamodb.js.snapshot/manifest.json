@@ -1,0 +1,456 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "EventApiDynamoDBStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EventApiDynamoDBStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EventApiDynamoDBStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "EventApiDynamoDBStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3eb9cd4d8fd00783ae0e3534f38b83903cdb158f915c36306bdf4afb7a7d63f8.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EventApiDynamoDBStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EventApiDynamoDBStack.assets"
+      ],
+      "metadata": {
+        "/EventApiDynamoDBStack/EventApiDynamoDB": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "apiName": "*"
+            }
+          }
+        ],
+        "/EventApiDynamoDBStack/EventApiDynamoDB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiDynamoDB38AC7582"
+          }
+        ],
+        "/EventApiDynamoDBStack/EventApiDynamoDB/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiDynamoDBDefaultApiKey344B41A8"
+          }
+        ],
+        "/EventApiDynamoDBStack/EventApiDynamoDB/ddbsource/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/EventApiDynamoDBStack/EventApiDynamoDB/ddbsource/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EventApiDynamoDBStack/EventApiDynamoDB/ddbsource/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiDynamoDBddbsourceServiceRole74740409"
+          }
+        ],
+        "/EventApiDynamoDBStack/EventApiDynamoDB/ddbsource/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/EventApiDynamoDBStack/EventApiDynamoDB/ddbsource/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiDynamoDBddbsourceServiceRoleDefaultPolicy4BCF2A29"
+          }
+        ],
+        "/EventApiDynamoDBStack/EventApiDynamoDB/ddbsource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiDynamoDBddbsourceFA9A2D53"
+          }
+        ],
+        "/EventApiDynamoDBStack/EventApiDynamoDB/chat": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "api": "*",
+              "channelNamespaceName": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/EventApiDynamoDBStack/EventApiDynamoDB/chat/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiDynamoDBchat04C8B1A6"
+          }
+        ],
+        "/EventApiDynamoDBStack/table": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "tableName": "*",
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "removalPolicy": "destroy"
+            }
+          },
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "table8235A42E"
+            }
+          }
+        ],
+        "/EventApiDynamoDBStack/table/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "table8235A42E"
+          }
+        ],
+        "/EventApiDynamoDBStack/table/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EventApiDynamoDBStack/EventApiDynamoDBTestFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "environment": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "entry": "*",
+              "handler": "*",
+              "timeout": "*",
+              "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "environment": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "entry": "*",
+              "handler": "*",
+              "timeout": "*"
+            }
+          }
+        ],
+        "/EventApiDynamoDBStack/EventApiDynamoDBTestFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/EventApiDynamoDBStack/EventApiDynamoDBTestFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EventApiDynamoDBStack/EventApiDynamoDBTestFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiDynamoDBTestFunctionServiceRoleDA467FC4"
+          }
+        ],
+        "/EventApiDynamoDBStack/EventApiDynamoDBTestFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiDynamoDBTestFunctionF2F014A6"
+          }
+        ],
+        "/EventApiDynamoDBStack/Exports/Output{\"Ref\":\"EventApiDynamoDBTestFunctionF2F014A6\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefEventApiDynamoDBTestFunctionF2F014A60FF6E4D1"
+          }
+        ],
+        "/EventApiDynamoDBStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EventApiDynamoDBStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EventApiDynamoDBStack"
+    },
+    "appsynceventapidynamodbtestDefaultTestDeployAssert08DEAAC3.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "appsynceventapidynamodbtestDefaultTestDeployAssert08DEAAC3.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "appsynceventapidynamodbtestDefaultTestDeployAssert08DEAAC3": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "appsynceventapidynamodbtestDefaultTestDeployAssert08DEAAC3.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/016b69dd37a886ae0cd1e60a193121444321f82aeeae4dfa9c7adc60c1b3b2ba.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "appsynceventapidynamodbtestDefaultTestDeployAssert08DEAAC3.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EventApiDynamoDBStack",
+        "appsynceventapidynamodbtestDefaultTestDeployAssert08DEAAC3.assets"
+      ],
+      "metadata": {
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/LambdaInvoke706f7cdda084efe6ccecf3370ed11369/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/LambdaInvoke706f7cdda084efe6ccecf3370ed11369/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke706f7cdda084efe6ccecf3370ed11369"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/LambdaInvoke706f7cdda084efe6ccecf3370ed11369/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke706f7cdda084efe6ccecf3370ed11369InvokeF36F7571"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBbatchGetItema8f576027c70a2d8171e20104cdb4bd9/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBbatchGetItema8f576027c70a2d8171e20104cdb4bd9/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallDynamoDBbatchGetItema8f576027c70a2d8171e20104cdb4bd9"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBbatchGetItema8f576027c70a2d8171e20104cdb4bd9/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallDynamoDBbatchGetItema8f576027c70a2d8171e20104cdb4bd9WaitForIsCompleteProviderInvoke55711ABA"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBbatchGetItema8f576027c70a2d8171e20104cdb4bd9/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallDynamoDBbatchGetItema8f576027c70a2d8171e20104cdb4bd9WaitForTimeoutProviderInvokeD58608C0"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBbatchGetItema8f576027c70a2d8171e20104cdb4bd9/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallDynamoDBbatchGetItema8f576027c70a2d8171e20104cdb4bd9WaitForRole247DD0BB"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBbatchGetItema8f576027c70a2d8171e20104cdb4bd9/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallDynamoDBbatchGetItema8f576027c70a2d8171e20104cdb4bd9WaitForE749EBB4"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBbatchGetItema8f576027c70a2d8171e20104cdb4bd9/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallDynamoDBbatchGetItema8f576027c70a2d8171e20104cdb4bd9"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}

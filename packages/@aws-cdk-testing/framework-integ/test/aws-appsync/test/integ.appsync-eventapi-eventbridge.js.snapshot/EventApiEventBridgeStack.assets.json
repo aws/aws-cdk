@@ -1,0 +1,48 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "3d3fa79451aad94b890d5cfa7ffb5fc9783bb1f4193aac609a2afceb58f74a5a": {
+      "displayName": "EventApiEventBridge/chat/Code",
+      "source": {
+        "path": "asset.3d3fa79451aad94b890d5cfa7ffb5fc9783bb1f4193aac609a2afceb58f74a5a.js",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3d3fa79451aad94b890d5cfa7ffb5fc9783bb1f4193aac609a2afceb58f74a5a.js",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "edc70213276ce4560b3c1cb79784ba43c1c263344bdcbba473002e1726a2c6d6": {
+      "displayName": "EventApiEventBridgeTestFunction/Code",
+      "source": {
+        "path": "asset.edc70213276ce4560b3c1cb79784ba43c1c263344bdcbba473002e1726a2c6d6",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "edc70213276ce4560b3c1cb79784ba43c1c263344bdcbba473002e1726a2c6d6.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "f569b91ed205c46c6f6416a4328ccbd99c0a8e1d80f5bf26dfea7f83eea03866": {
+      "displayName": "EventApiEventBridgeStack Template",
+      "source": {
+        "path": "EventApiEventBridgeStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f569b91ed205c46c6f6416a4328ccbd99c0a8e1d80f5bf26dfea7f83eea03866.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

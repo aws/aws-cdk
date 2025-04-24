@@ -1,0 +1,48 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "f01de4f897700135f0d7681e4e4364a1dbe4a5aaac00b7cb9feb74ba06718f15": {
+      "displayName": "EventApiDynamoDB/chat/Code",
+      "source": {
+        "path": "asset.f01de4f897700135f0d7681e4e4364a1dbe4a5aaac00b7cb9feb74ba06718f15.js",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f01de4f897700135f0d7681e4e4364a1dbe4a5aaac00b7cb9feb74ba06718f15.js",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "6a1bab1f68782b71fe3b8037fc9f353fc17c3d2cb012425489f8d707634823c5": {
+      "displayName": "EventApiDynamoDBTestFunction/Code",
+      "source": {
+        "path": "asset.6a1bab1f68782b71fe3b8037fc9f353fc17c3d2cb012425489f8d707634823c5",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6a1bab1f68782b71fe3b8037fc9f353fc17c3d2cb012425489f8d707634823c5.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "3eb9cd4d8fd00783ae0e3534f38b83903cdb158f915c36306bdf4afb7a7d63f8": {
+      "displayName": "EventApiDynamoDBStack Template",
+      "source": {
+        "path": "EventApiDynamoDBStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3eb9cd4d8fd00783ae0e3534f38b83903cdb158f915c36306bdf4afb7a7d63f8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

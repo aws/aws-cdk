@@ -1,0 +1,319 @@
+{
+ "Resources": {
+  "EventApiDynamoDB38AC7582": {
+   "Type": "AWS::AppSync::Api",
+   "Properties": {
+    "EventConfig": {
+     "AuthProviders": [
+      {
+       "AuthType": "API_KEY"
+      }
+     ],
+     "ConnectionAuthModes": [
+      {
+       "AuthType": "API_KEY"
+      }
+     ],
+     "DefaultPublishAuthModes": [
+      {
+       "AuthType": "API_KEY"
+      }
+     ],
+     "DefaultSubscribeAuthModes": [
+      {
+       "AuthType": "API_KEY"
+      }
+     ]
+    },
+    "Name": "DynamoDBEventApi"
+   }
+  },
+  "EventApiDynamoDBDefaultApiKey344B41A8": {
+   "Type": "AWS::AppSync::ApiKey",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "EventApiDynamoDB38AC7582",
+      "ApiId"
+     ]
+    }
+   }
+  },
+  "EventApiDynamoDBddbsourceServiceRole74740409": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appsync.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "EventApiDynamoDBddbsourceServiceRoleDefaultPolicy4BCF2A29": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "table8235A42E",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EventApiDynamoDBddbsourceServiceRoleDefaultPolicy4BCF2A29",
+    "Roles": [
+     {
+      "Ref": "EventApiDynamoDBddbsourceServiceRole74740409"
+     }
+    ]
+   }
+  },
+  "EventApiDynamoDBddbsourceFA9A2D53": {
+   "Type": "AWS::AppSync::DataSource",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "EventApiDynamoDB38AC7582",
+      "ApiId"
+     ]
+    },
+    "DynamoDBConfig": {
+     "AwsRegion": {
+      "Ref": "AWS::Region"
+     },
+     "TableName": {
+      "Ref": "table8235A42E"
+     }
+    },
+    "Name": "ddbsource",
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "EventApiDynamoDBddbsourceServiceRole74740409",
+      "Arn"
+     ]
+    },
+    "Type": "AMAZON_DYNAMODB"
+   }
+  },
+  "EventApiDynamoDBchat04C8B1A6": {
+   "Type": "AWS::AppSync::ChannelNamespace",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "EventApiDynamoDB38AC7582",
+      "ApiId"
+     ]
+    },
+    "CodeS3Location": {
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f01de4f897700135f0d7681e4e4364a1dbe4a5aaac00b7cb9feb74ba06718f15.js"
+    },
+    "HandlerConfigs": {
+     "OnPublish": {
+      "Behavior": "CODE",
+      "Integration": {
+       "DataSourceName": "ddbsource"
+      }
+     }
+    },
+    "Name": "chat"
+   },
+   "DependsOn": [
+    "EventApiDynamoDBddbsourceFA9A2D53"
+   ]
+  },
+  "table8235A42E": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 5,
+     "WriteCapacityUnits": 5
+    },
+    "TableName": "event-messages"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EventApiDynamoDBTestFunctionServiceRoleDA467FC4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "EventApiDynamoDBTestFunctionF2F014A6": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "6a1bab1f68782b71fe3b8037fc9f353fc17c3d2cb012425489f8d707634823c5.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "EVENT_API_REALTIME_URL": {
+       "Fn::Join": [
+        "",
+        [
+         "wss://",
+         {
+          "Fn::GetAtt": [
+           "EventApiDynamoDB38AC7582",
+           "Dns.Realtime"
+          ]
+         },
+         "/event/realtime"
+        ]
+       ]
+      },
+      "EVENT_API_HTTP_URL": {
+       "Fn::Join": [
+        "",
+        [
+         "https://",
+         {
+          "Fn::GetAtt": [
+           "EventApiDynamoDB38AC7582",
+           "Dns.Http"
+          ]
+         },
+         "/event"
+        ]
+       ]
+      },
+      "API_KEY": {
+       "Fn::GetAtt": [
+        "EventApiDynamoDBDefaultApiKey344B41A8",
+        "ApiKey"
+       ]
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "EventApiDynamoDBTestFunctionServiceRoleDA467FC4",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 15
+   },
+   "DependsOn": [
+    "EventApiDynamoDBTestFunctionServiceRoleDA467FC4"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefEventApiDynamoDBTestFunctionF2F014A60FF6E4D1": {
+   "Value": {
+    "Ref": "EventApiDynamoDBTestFunctionF2F014A6"
+   },
+   "Export": {
+    "Name": "EventApiDynamoDBStack:ExportsOutputRefEventApiDynamoDBTestFunctionF2F014A60FF6E4D1"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
