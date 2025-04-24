@@ -30,6 +30,10 @@ running on AWS Lambda, or any web application.
     - [Cognito User Pools authorizer](#cognito-user-pools-authorizer)
   - [Mutual TLS (mTLS)](#mutual-tls-mtls)
   - [Deployments](#deployments)
+    - [Deploying to an existing stage](#deploying-to-an-existing-stage)
+      - [Using RestApi](#using-restapi)
+      - [Using SpecRestApi](#using-specrestapi)
+    - [Controlled triggering of deployments](#controlled-triggering-of-deployments)
     - [Deep dive: Invalidation of deployments](#deep-dive-invalidation-of-deployments)
   - [Custom Domains](#custom-domains)
     - [Custom Domains with multi-level api mapping](#custom-domains-with-multi-level-api-mapping)
@@ -1614,6 +1618,25 @@ for more details.
 **Note:** When starting off with an OpenAPI definition using `SpecRestApi`, it is not possible to configure some
 properties that can be configured directly in the OpenAPI specification file. This is to prevent people duplication
 of these properties and potential confusion.
+
+However, you can control how API Gateway handles resource updates using the `mode` property. Valid values are:
+
+* `overwrite` - The new API definition replaces the existing one. The existing API identifier remains unchanged.
+* `merge` - The new API definition is merged with the existing API.
+
+If you don't specify this property, a default value is chosen:
+* For REST APIs created before March 29, 2021, the default is `overwrite`
+* For REST APIs created after March 29, 2021, the new API definition takes precedence, but any container types such as endpoint configurations and binary media types are merged with the existing API.
+
+Use the default mode to define top-level RestApi properties in addition to using OpenAPI.
+Generally, it's preferred to use API Gateway's OpenAPI extensions to model these properties.
+
+```ts
+const api = new apigateway.SpecRestApi(this, 'books-api', {
+  apiDefinition: apigateway.ApiDefinition.fromAsset('path-to-file.json'),
+  mode: apigateway.RestApiMode.MERGE
+});
+```
 
 ### Endpoint configuration
 
