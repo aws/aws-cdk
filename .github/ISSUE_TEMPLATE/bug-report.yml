@@ -32,7 +32,7 @@ body:
     id: working-version
     attributes:
       label: Last Known Working CDK Library Version
-      description: Specify the last known CDK version where this code was functioning as expected (if applicable).
+      description: Specify the last known CDK Library version where this code was functioning as expected (if applicable).
     validations:
       required: false
   - type: textarea
@@ -95,7 +95,7 @@ body:
     id: cdk-cli-version
     attributes:
       label: AWS CDK CLI version
-      description: Run `cdk --version` for global version or `npx cdk --version` at the root of your CDK project
+      description: Run `cdk --version` for global installation or `npx cdk --version` at the root of your CDK project
     validations:
       required: true
 

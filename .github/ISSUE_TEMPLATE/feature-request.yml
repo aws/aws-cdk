@@ -56,7 +56,7 @@ body:
     id: cdk-cli-version
     attributes:
       label: AWS CDK CLI version
-      description: Run `cdk --version` for global version or `npx cdk --version` at the root of your CDK project
+      description: Run `cdk --version` for global installation or `npx cdk --version` at the root of your CDK project
     validations:
       required: true
   - type: input
