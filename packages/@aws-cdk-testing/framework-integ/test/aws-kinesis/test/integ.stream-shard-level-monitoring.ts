@@ -6,12 +6,6 @@ import { RemovalPolicies } from '../../../../../aws-cdk-lib/core/lib/removal-pol
 const app = new App();
 const stack = new Stack(app, 'kinesis-stream-shard-level-monitoring-stack');
 
-new kinesis.Stream(stack, 'NormalStream');
-
-new kinesis.Stream(stack, 'SingleStream', {
-  shardLevelMetrics: [kinesis.ShardLevelMetrics.INCOMING_BYTES],
-});
-
 const explicitStream = new kinesis.Stream(stack, 'ExplicitStream', {
   shardLevelMetrics: [
     kinesis.ShardLevelMetrics.INCOMING_BYTES,
