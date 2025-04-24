@@ -53,6 +53,14 @@ export interface RuleProps extends EventCommonOptions {
    * @default - The default event bus.
    */
   readonly eventBus?: IEventBus;
+
+  /**
+   * The role that is used for target invocation.
+   * Must be assumable by principal `events.amazonaws.com`.
+   *
+   * @default - No role associated
+   */
+  readonly role?: IRole;
 }
 
 /**
@@ -116,6 +124,7 @@ export class Rule extends Resource implements IRule {
       eventPattern: Lazy.any({ produce: () => this._renderEventPattern() }),
       targets: Lazy.any({ produce: () => this.renderTargets() }),
       eventBusName: props.eventBus && props.eventBus.eventBusName,
+      roleArn: props.role?.roleArn,
     });
 
     this.ruleArn = this.getResourceArnAttribute(resource.attrArn, {

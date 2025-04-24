@@ -1,0 +1,208 @@
+{
+ "Resources": {
+  "PythonTaskDefinition2F79666C": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Command": [
+       "sh",
+       "-c",
+       "python3 manage.py migrate --noinput && python3 manage.py collectstatic --noinput && python3 manage.py runserver 0.0.0.0:8080 --noreload"
+      ],
+      "DependsOn": [
+       {
+        "Condition": "SUCCESS",
+        "ContainerName": "adot-init"
+       }
+      ],
+      "Environment": [
+       {
+        "Name": "PYTHONPATH",
+        "Value": "/otel-auto-instrumentation-python/opentelemetry/instrumentation/auto_instrumentation:/django_remote_app:/otel-auto-instrumentation-python"
+       },
+       {
+        "Name": "DJANGO_SETTINGS_MODULE",
+        "Value": "django_remote_service.settings"
+       },
+       {
+        "Name": "OTEL_LOGS_EXPORTER",
+        "Value": "none"
+       },
+       {
+        "Name": "OTEL_METRICS_EXPORTER",
+        "Value": "none"
+       },
+       {
+        "Name": "OTEL_EXPORTER_OTLP_PROTOCOL",
+        "Value": "http/protobuf"
+       },
+       {
+        "Name": "OTEL_AWS_APPLICATION_SIGNALS_ENABLED",
+        "Value": "true"
+       },
+       {
+        "Name": "OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT",
+        "Value": "http://cwagent-4316-http:4316/v1/metrics"
+       },
+       {
+        "Name": "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
+        "Value": "http://cwagent-4316-http:4316/v1/traces"
+       },
+       {
+        "Name": "OTEL_TRACES_SAMPLER",
+        "Value": "xray"
+       },
+       {
+        "Name": "OTEL_TRACES_SAMPLER_ARG",
+        "Value": "endpoint=http://cwagent-2000-http:2000"
+       },
+       {
+        "Name": "OTEL_PROPAGATORS",
+        "Value": "tracecontext,baggage,b3,xray"
+       },
+       {
+        "Name": "OTEL_PYTHON_DISTRO",
+        "Value": "aws_distro"
+       },
+       {
+        "Name": "OTEL_PYTHON_CONFIGURATOR",
+        "Value": "aws_configurator"
+       },
+       {
+        "Name": "OTEL_SERVICE_NAME",
+        "Value": "python-demo"
+       }
+      ],
+      "Essential": true,
+      "Image": "public.ecr.aws/q0c5s6i7/demo-application:python-remote",
+      "Memory": 512,
+      "MountPoints": [
+       {
+        "ContainerPath": "/otel-auto-instrumentation-python",
+        "ReadOnly": false,
+        "SourceVolume": "opentelemetry-auto-instrumentation"
+       }
+      ],
+      "Name": "app"
+     },
+     {
+      "Command": [
+       "cp",
+       "-a",
+       "/autoinstrumentation/.",
+       "/otel-auto-instrumentation-python"
+      ],
+      "Cpu": 0,
+      "Essential": false,
+      "Image": "public.ecr.aws/aws-observability/adot-autoinstrumentation-python:v0.8.0",
+      "Memory": 32,
+      "MountPoints": [
+       {
+        "ContainerPath": "/otel-auto-instrumentation-python",
+        "ReadOnly": false,
+        "SourceVolume": "opentelemetry-auto-instrumentation"
+       }
+      ],
+      "Name": "adot-init"
+     }
+    ],
+    "Cpu": "256",
+    "ExecutionRoleArn": {
+     "Fn::ImportValue": "ApplicationSignalsInfra-Replica:ExportsOutputFnGetAttECSTaskExecutionRole911F5A4FArn90EDA8DE"
+    },
+    "Family": "ApplicationSignalsPythonAppReplicaPythonTaskDefinition1EB5B62D",
+    "Memory": "512",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::ImportValue": "ApplicationSignalsInfra-Replica:ExportsOutputFnGetAttECSTaskRoleF2ADB362Arn397CEC35"
+    },
+    "Volumes": [
+     {
+      "Name": "opentelemetry-auto-instrumentation"
+     }
+    ]
+   }
+  },
+  "PythonAppServiceF84D7198": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Fn::ImportValue": "ApplicationSignalsInfra-Replica:ExportsOutputRefTestClusterE00950540C50D0A5"
+    },
+    "DeploymentConfiguration": {
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "DesiredCount": 1,
+    "EnableECSManagedTags": false,
+    "EnableExecuteCommand": true,
+    "LaunchType": "FARGATE",
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::ImportValue": "ApplicationSignalsInfra-Replica:ExportsOutputFnGetAttECSSG6D882F29GroupId3205927F"
+       }
+      ],
+      "Subnets": [
+       {
+        "Fn::ImportValue": "ApplicationSignalsInfra-Replica:ExportsOutputRefECSVPCPrivateSubnet1Subnet47127919A0DA97A7"
+       },
+       {
+        "Fn::ImportValue": "ApplicationSignalsInfra-Replica:ExportsOutputRefECSVPCPrivateSubnet2Subnet3DDEA4A1B9FACCA0"
+       }
+      ]
+     }
+    },
+    "ServiceConnectConfiguration": {
+     "Enabled": true,
+     "Namespace": {
+      "Fn::ImportValue": "ApplicationSignalsInfra-Replica:ExportsOutputFnGetAttNamespace9B63B8C8ArnC7278E2B"
+     }
+    },
+    "TaskDefinition": {
+     "Ref": "PythonTaskDefinition2F79666C"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

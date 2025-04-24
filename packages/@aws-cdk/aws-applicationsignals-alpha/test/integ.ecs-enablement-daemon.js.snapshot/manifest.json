@@ -1,0 +1,341 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "ApplicationSignalsInfra-Daemon.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ApplicationSignalsInfra-Daemon.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ApplicationSignalsInfra-Daemon": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ApplicationSignalsInfra-Daemon.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/becd52dbd41040f252b3faf5ad45d03c45ce14f3b7ea502176d6ce57cb9f3a41.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ApplicationSignalsInfra-Daemon.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ApplicationSignalsInfra-Daemon.assets"
+      ],
+      "metadata": {
+        "/ApplicationSignalsInfra-Daemon/ECSTaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/ApplicationSignalsInfra-Daemon/ECSTaskRole/ImportECSTaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/ApplicationSignalsInfra-Daemon/ECSTaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSTaskRoleF2ADB362"
+          }
+        ],
+        "/ApplicationSignalsInfra-Daemon/ECSTaskExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/ApplicationSignalsInfra-Daemon/ECSTaskExecutionRole/ImportECSTaskExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/ApplicationSignalsInfra-Daemon/ECSTaskExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSTaskExecutionRole911F5A4F"
+          }
+        ],
+        "/ApplicationSignalsInfra-Daemon/Exports/Output{\"Fn::GetAtt\":[\"ECSTaskExecutionRole911F5A4F\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttECSTaskExecutionRole911F5A4FArn90EDA8DE"
+          }
+        ],
+        "/ApplicationSignalsInfra-Daemon/Exports/Output{\"Fn::GetAtt\":[\"ECSTaskRoleF2ADB362\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttECSTaskRoleF2ADB362Arn397CEC35"
+          }
+        ],
+        "/ApplicationSignalsInfra-Daemon/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ApplicationSignalsInfra-Daemon/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ApplicationSignalsInfra-Daemon"
+    },
+    "ApplicationSignalsCloudWatchAgent-Daemon.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ApplicationSignalsCloudWatchAgent-Daemon.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ApplicationSignalsCloudWatchAgent-Daemon": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ApplicationSignalsCloudWatchAgent-Daemon.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/76d61b69b8d74aa14c9920e489d649ba5180d009fda3ba40cf6d33838beed4f9.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ApplicationSignalsCloudWatchAgent-Daemon.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ApplicationSignalsInfra-Daemon",
+        "ApplicationSignalsCloudWatchAgent-Daemon.assets"
+      ],
+      "metadata": {
+        "/ApplicationSignalsCloudWatchAgent-Daemon/CloudWatchAgentTaskDefinition": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/ApplicationSignalsCloudWatchAgent-Daemon/CloudWatchAgentTaskDefinition/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudWatchAgentTaskDefinition6DFFEF0D"
+          }
+        ],
+        "/ApplicationSignalsCloudWatchAgent-Daemon/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ApplicationSignalsCloudWatchAgent-Daemon/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ApplicationSignalsCloudWatchAgent-Daemon"
+    },
+    "ApplicationSignalsJavaApp-Daemon.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ApplicationSignalsJavaApp-Daemon.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ApplicationSignalsJavaApp-Daemon": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ApplicationSignalsJavaApp-Daemon.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1b94200f5619eaed3efe22e69ba29da2803b62aa6b0f7cfacb52a6d015d0f1b1.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ApplicationSignalsJavaApp-Daemon.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ApplicationSignalsCloudWatchAgent-Daemon",
+        "ApplicationSignalsInfra-Daemon",
+        "ApplicationSignalsJavaApp-Daemon.assets"
+      ],
+      "metadata": {
+        "/ApplicationSignalsJavaApp-Daemon/JavaTaskDefinition": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/ApplicationSignalsJavaApp-Daemon/JavaTaskDefinition/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JavaTaskDefinition93F96919"
+          }
+        ],
+        "/ApplicationSignalsJavaApp-Daemon/JavaECSIntegration": [
+          {
+            "type": "aws:cdk:warning",
+            "data": " Application Signals functionality requires prior deployment of the CloudWatch Agent with appropriate security group settings. Missing or incorrect configurations will prevent successful collection of observability data. [ack: JavaECSIntegration]"
+          }
+        ],
+        "/ApplicationSignalsJavaApp-Daemon/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ApplicationSignalsJavaApp-Daemon/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ApplicationSignalsJavaApp-Daemon"
+    },
+    "ApplicationSignalsIntegrationECSDaemonTestDefaultTestDeployAssert1C48CFAF.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ApplicationSignalsIntegrationECSDaemonTestDefaultTestDeployAssert1C48CFAF.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ApplicationSignalsIntegrationECSDaemonTestDefaultTestDeployAssert1C48CFAF": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ApplicationSignalsIntegrationECSDaemonTestDefaultTestDeployAssert1C48CFAF.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ApplicationSignalsIntegrationECSDaemonTestDefaultTestDeployAssert1C48CFAF.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ApplicationSignalsIntegrationECSDaemonTestDefaultTestDeployAssert1C48CFAF.assets"
+      ],
+      "metadata": {
+        "/ApplicationSignalsIntegrationECSDaemonTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ApplicationSignalsIntegrationECSDaemonTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ApplicationSignalsIntegrationECSDaemonTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}
