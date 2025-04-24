@@ -213,6 +213,339 @@ test('imported alias by name - will throw an error when accessing the key', () =
   expect(() => myAlias.aliasTargetKey).toThrow('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().');
 });
 
+test('imported alias by name - grantDecrypt applies kms:ResourceAliases condition', () => {
+  const stack = new Stack();
+  const aliasName = 'alias/myAlias';
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
+  const user = new iam.User(stack, 'User');
+
+  myAlias.grantDecrypt(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'kms:Decrypt',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':kms:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':key/*',
+            ]],
+          },
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'kms:ResourceAliases': aliasName,
+            },
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('imported alias by name - grantEncrypt applies kms:ResourceAliases condition', () => {
+  const stack = new Stack();
+  const aliasName = 'alias/myAlias';
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
+  const user = new iam.User(stack, 'User');
+
+  myAlias.grantEncrypt(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':kms:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':key/*',
+            ]],
+          },
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'kms:ResourceAliases': aliasName,
+            },
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('imported alias by name - grantEncryptDecrypt applies kms:ResourceAliases condition', () => {
+  const stack = new Stack();
+  const aliasName = 'alias/myAlias';
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
+  const user = new iam.User(stack, 'User');
+
+  myAlias.grantEncryptDecrypt(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: ['kms:Decrypt', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':kms:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':key/*',
+            ]],
+          },
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'kms:ResourceAliases': aliasName,
+            },
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('imported alias by name - grantSign applies kms:ResourceAliases condition', () => {
+  const stack = new Stack();
+  const aliasName = 'alias/myAlias';
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
+  const user = new iam.User(stack, 'User');
+
+  myAlias.grantSign(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'kms:Sign',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':kms:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':key/*',
+            ]],
+          },
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'kms:ResourceAliases': aliasName,
+            },
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('imported alias by name - grantVerify applies kms:ResourceAliases condition', () => {
+  const stack = new Stack();
+  const aliasName = 'alias/myAlias';
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
+  const user = new iam.User(stack, 'User');
+
+  myAlias.grantVerify(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'kms:Verify',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':kms:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':key/*',
+            ]],
+          },
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'kms:ResourceAliases': aliasName,
+            },
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('imported alias by name - grantSignVerify applies kms:ResourceAliases condition', () => {
+  const stack = new Stack();
+  const aliasName = 'alias/myAlias';
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
+  const user = new iam.User(stack, 'User');
+
+  myAlias.grantSignVerify(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: ['kms:Sign', 'kms:Verify'],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':kms:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':key/*',
+            ]],
+          },
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'kms:ResourceAliases': aliasName,
+            },
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('imported alias by name - grantGenerateMac applies kms:ResourceAliases condition', () => {
+  const stack = new Stack();
+  const aliasName = 'alias/myAlias';
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
+  const user = new iam.User(stack, 'User');
+
+  myAlias.grantGenerateMac(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'kms:GenerateMac',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':kms:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':key/*',
+            ]],
+          },
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'kms:ResourceAliases': aliasName,
+            },
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('imported alias by name - grantVerifyMac applies kms:ResourceAliases condition', () => {
+  const stack = new Stack();
+  const aliasName = 'alias/myAlias';
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
+  const user = new iam.User(stack, 'User');
+
+  myAlias.grantVerifyMac(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'kms:VerifyMac',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':kms:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':key/*',
+            ]],
+          },
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'kms:ResourceAliases': aliasName,
+            },
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('imported alias by name - grant method applies kms:ResourceAliases condition', () => {
+  const stack = new Stack();
+  const aliasName = 'alias/myAlias';
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
+  const user = new iam.User(stack, 'User');
+
+  myAlias.grant(user, 'kms:CreateGrant', 'kms:DescribeKey');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: ['kms:CreateGrant', 'kms:DescribeKey'],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':kms:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':key/*',
+            ]],
+          },
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'kms:ResourceAliases': aliasName,
+            },
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
 test('fails if alias policy is invalid', () => {
   const app = new App();
   const stack = new Stack(app, 'my-stack');

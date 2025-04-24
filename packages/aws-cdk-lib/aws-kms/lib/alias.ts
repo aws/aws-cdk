@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { IKey } from './key';
 import { CfnAlias } from './kms.generated';
 import * as iam from '../../aws-iam';
+import * as perms from './private/perms';
 import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -186,7 +187,8 @@ export class Alias extends AliasBase {
   /**
    * Import an existing KMS Alias defined outside the CDK app, by the alias name. This method should be used
    * instead of 'fromAliasAttributes' when the underlying KMS Key ARN is not available.
-   * This Alias will not have a direct reference to the KMS Key, so addAlias and grant* methods are not supported.
+   * This Alias will not have a direct reference to the KMS Key, so addAlias method is not supported.
+   * The grant* methods will use the kms:ResourceAliases condition to grant permissions to the specific alias name.
    *
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
@@ -202,15 +204,55 @@ export class Alias extends AliasBase {
       public addToResourcePolicy(_statement: iam.PolicyStatement, _allowNoOp?: boolean): iam.AddToResourcePolicyResult {
         return { statementAdded: false };
       }
-      public grant(grantee: iam.IGrantable, ..._actions: string[]): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantDecrypt(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantEncrypt(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantSign(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantVerify(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantSignVerify(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantGenerateMac(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantVerifyMac(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
+
+      public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+        return iam.Grant.addToPrincipal({
+          grantee,
+          actions,
+          resourceArns: [Stack.of(scope).formatArn({
+            service: 'kms',
+            resource: 'key',
+            resourceName: '*',
+          })],
+          conditions: {
+            'ForAnyValue:StringEquals': {
+              'kms:ResourceAliases': this.aliasName,
+            },
+          },
+        });
+      }
+
+      public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, ...perms.DECRYPT_ACTIONS);
+      }
+
+      public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, ...perms.ENCRYPT_ACTIONS);
+      }
+
+      public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, ...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS);
+      }
+
+      public grantSign(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, ...perms.SIGN_ACTIONS);
+      }
+
+      public grantVerify(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, ...perms.VERIFY_ACTIONS);
+      }
+
+      public grantSignVerify(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, ...perms.SIGN_ACTIONS, ...perms.VERIFY_ACTIONS);
+      }
+
+      public grantGenerateMac(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, ...perms.GENERATE_HMAC_ACTIONS);
+      }
+
+      public grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, ...perms.VERIFY_HMAC_ACTIONS);
+      }
     }
 
     return new Import(scope, id);
@@ -282,3 +324,4 @@ export class Alias extends AliasBase {
     return REQUIRED_ALIAS_PREFIX + super.generatePhysicalName();
   }
 }
+
