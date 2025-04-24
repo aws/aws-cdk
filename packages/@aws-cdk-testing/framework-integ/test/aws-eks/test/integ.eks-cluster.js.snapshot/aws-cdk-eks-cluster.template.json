@@ -461,9 +461,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "c475180f5b1bbabac165414da13a9b843b111cd3b6d5fae9c954c006640c4064.zip"
+     "S3Key": "6094cb0ff874f89ab5ab24fb6b9417df0fdeb6966645f90c88ec1d7e28130112.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.24; /opt/helm/helm 3.9",
+    "Description": "/opt/kubectl/kubectl 1.32.3; /opt/helm/helm 3.17.2",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -943,7 +943,7 @@
      ]
     },
     "Config": {
-     "version": "1.24",
+     "version": "1.32",
      "roleArn": {
       "Fn::GetAtt": [
        "ClusterRoleFA261979",
@@ -1852,7 +1852,7 @@
       }
      },
      "ImageId": {
-      "Ref": "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
      },
      "InstanceType": "t2.medium",
      "Monitoring": {
@@ -2274,7 +2274,7 @@
       }
      },
      "ImageId": {
-      "Ref": "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
      },
      "InstanceType": "m6g.medium",
      "Monitoring": {
@@ -2696,7 +2696,7 @@
       }
      },
      "ImageId": {
-      "Ref": "SsmParameterValueawsservicebottlerocketawsk8s124x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsservicebottlerocketawsk8s132x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
      },
      "InstanceType": "t3.small",
      "Monitoring": {
@@ -3118,7 +3118,7 @@
       }
      },
      "ImageId": {
-      "Ref": "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
      },
      "InstanceMarketOptions": {
       "MarketType": "spot",
@@ -3324,10 +3324,10 @@
     },
     "Release": "cdkeksclusterclusterchartspotinterrupthandler936fbaa0",
     "Chart": "aws-node-termination-handler",
-    "Version": "0.18.0",
+    "Version": "0.27.0",
     "Values": "{\"nodeSelector\":{\"lifecycle\":\"Ec2Spot\"}}",
     "Namespace": "kube-system",
-    "Repository": "https://aws.github.io/eks-charts",
+    "Repository": "oci://public.ecr.aws/aws-ec2/helm/aws-node-termination-handler",
     "CreateNamespace": true
    },
    "DependsOn": [
@@ -4282,7 +4282,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/35233ffd2b1647650c9a4ad294af7a62fd4140fc8b8972227dd6aef88678f1af.json"
+       "/a554cd2c8192596e1940dd7bf19922ec36ab8220a0ae8a165625567ea4881769.json"
       ]
      ]
     }
@@ -4328,7 +4328,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/577a255f790ca448d5d123fdf36a35ef2d8610bbcf4d2846b89466cf11834c91.json"
+       "/8fe60e83cae60d75b5d11d1e34281e176fd35cf97627940673de72069132dc97.json"
       ]
      ]
     }
@@ -4616,17 +4616,17 @@
   }
  },
  "Parameters": {
-  "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/aws/service/eks/optimized-ami/1.24/amazon-linux-2/recommended/image_id"
+   "Default": "/aws/service/eks/optimized-ami/1.32/amazon-linux-2/recommended/image_id"
   },
-  "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/aws/service/eks/optimized-ami/1.24/amazon-linux-2-arm64/recommended/image_id"
+   "Default": "/aws/service/eks/optimized-ami/1.32/amazon-linux-2-arm64/recommended/image_id"
   },
-  "SsmParameterValueawsservicebottlerocketawsk8s124x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsservicebottlerocketawsk8s132x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/aws/service/bottlerocket/aws-k8s-1.24/x86_64/latest/image_id"
+   "Default": "/aws/service/bottlerocket/aws-k8s-1.32/x86_64/latest/image_id"
   },
   "SsmParameterValueawsserviceeksoptimizedami125amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<String>",
