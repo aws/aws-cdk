@@ -1,12 +1,16 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "testCases": {
-    "ApplicationSignalsIntegrationECSSidecar/DefaultTest": {
+    "ApplicationSignalsECSSidecarTest/DefaultTest": {
       "stacks": [
-        "ecs-enablement-integration"
+        "ApplicationSignalsInfra-Sidecar",
+        "ApplicationSignalsJavaApp-Sidecar",
+        "ApplicationSignalsPythonApp-Sidecar",
+        "ApplicationSignalsDotnetApp-Sidecar",
+        "ApplicationSignalsNodeApp-Sidecar"
       ],
-      "assertionStack": "ApplicationSignalsIntegrationECSSidecar/DefaultTest/DeployAssert",
-      "assertionStackName": "ApplicationSignalsIntegrationECSSidecarDefaultTestDeployAssert7F3E5290"
+      "assertionStack": "ApplicationSignalsECSSidecarTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ApplicationSignalsECSSidecarTestDefaultTestDeployAssert82C486F2"
     }
   }
 }

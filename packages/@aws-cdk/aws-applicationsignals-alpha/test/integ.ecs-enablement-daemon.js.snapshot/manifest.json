@@ -1,28 +1,28 @@
 {
-  "version": "40.0.0",
+  "version": "42.0.0",
   "artifacts": {
-    "ecs-enablement-integration.assets": {
+    "ApplicationSignalsInfra-Daemon.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "ecs-enablement-integration.assets.json",
+        "file": "ApplicationSignalsInfra-Daemon.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "ecs-enablement-integration": {
+    "ApplicationSignalsInfra-Daemon": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "ecs-enablement-integration.template.json",
+        "templateFile": "ApplicationSignalsInfra-Daemon.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e99e497fe431aa6e238d9ff1cbb2456e20363821f82e30da6063551d6b96eb05.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/becd52dbd41040f252b3faf5ad45d03c45ce14f3b7ea502176d6ce57cb9f3a41.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "ecs-enablement-integration.assets"
+          "ApplicationSignalsInfra-Daemon.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,635 +31,270 @@
         }
       },
       "dependencies": [
-        "ecs-enablement-integration.assets"
+        "ApplicationSignalsInfra-Daemon.assets"
       ],
       "metadata": {
-        "/ecs-enablement-integration/TestVpc": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcE77CE678"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PublicSubnet1": [
+        "/ApplicationSignalsInfra-Daemon/ECSTaskRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PublicSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPublicSubnet1SubnetA7DB1EDF"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PublicSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPublicSubnet1RouteTable4CBFF871"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PublicSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPublicSubnet1RouteTableAssociation7D1DECD9"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PublicSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPublicSubnet1DefaultRoute6C0F0315"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PublicSubnet1/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPublicSubnet1EIP4884338C"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PublicSubnet1/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPublicSubnet1NATGatewayA323E3EC"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PublicSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PublicSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPublicSubnet2Subnet80A14523"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PublicSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPublicSubnet2RouteTable75B88314"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PublicSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPublicSubnet2RouteTableAssociationB386A819"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PublicSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPublicSubnet2DefaultRoute054DAE0A"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PublicSubnet2/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPublicSubnet2EIP83F7944C"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PublicSubnet2/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPublicSubnet2NATGatewayA9858C31"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PrivateSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PrivateSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPrivateSubnet1SubnetCC65D771"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PrivateSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPrivateSubnet1RouteTable469B0105"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PrivateSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPrivateSubnet1RouteTableAssociationFFD4DFF7"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PrivateSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPrivateSubnet1DefaultRoute32E7B814"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PrivateSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PrivateSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPrivateSubnet2SubnetDE0C64A2"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PrivateSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPrivateSubnet2RouteTableCEF29F7C"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PrivateSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPrivateSubnet2RouteTableAssociation18250AB4"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/PrivateSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcPrivateSubnet2DefaultRouteA7EB6930"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/IGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcIGW9DD53F70"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/VPCGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcVPCGWF1827B84"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/RestrictDefaultSecurityGroupCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/ecs-enablement-integration/TestVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcRestrictDefaultSecurityGroupCustomResourceB02B826A"
-          }
-        ],
-        "/ecs-enablement-integration/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/ecs-enablement-integration/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/ecs-enablement-integration/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-          }
-        ],
-        "/ecs-enablement-integration/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
-          }
-        ],
-        "/ecs-enablement-integration/TestCluster": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*"
-            }
-          }
-        ],
-        "/ecs-enablement-integration/TestCluster/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestClusterE0095054"
-          }
-        ],
-        "/ecs-enablement-integration/Namespace": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "name": "*"
-            }
-          }
-        ],
-        "/ecs-enablement-integration/Namespace/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Namespace9B63B8C8"
-          }
-        ],
-        "/ecs-enablement-integration/CwAgentDaemonTaskDef": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/ecs-enablement-integration/CwAgentDaemonTaskDef/TaskRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/ecs-enablement-integration/CwAgentDaemonTaskDef/TaskRole/ImportTaskRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/ecs-enablement-integration/CwAgentDaemonTaskDef/TaskRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CwAgentDaemonTaskDefTaskRoleB630618E"
-          }
-        ],
-        "/ecs-enablement-integration/CwAgentDaemonTaskDef/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CwAgentDaemonTaskDefD42721B8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
-          }
-        ],
-        "/ecs-enablement-integration/CwAgentDaemonTaskDef/ecs-cwagent/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "retention": "*"
-            }
-          }
-        ],
-        "/ecs-enablement-integration/CwAgentDaemonTaskDef/ecs-cwagent/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CwAgentDaemonTaskDefecscwagentLogGroupEE66E5BB"
-          }
-        ],
-        "/ecs-enablement-integration/CwAgentDaemonTaskDef/ExecutionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
+              "roleName": "*",
               "assumedBy": {
                 "principalAccount": "*",
                 "assumeRoleAction": "*"
               },
-              "roleName": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
               ]
             }
           },
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
               ]
             }
           }
         ],
-        "/ecs-enablement-integration/CwAgentDaemonTaskDef/ExecutionRole/ImportExecutionRole": [
+        "/ApplicationSignalsInfra-Daemon/ECSTaskRole/ImportECSTaskRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/ecs-enablement-integration/CwAgentDaemonTaskDef/ExecutionRole/Resource": [
+        "/ApplicationSignalsInfra-Daemon/ECSTaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CwAgentDaemonTaskDefExecutionRoleDB11FC2A"
+            "data": "ECSTaskRoleF2ADB362"
           }
         ],
-        "/ecs-enablement-integration/CwAgentDaemonTaskDef/ExecutionRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/ecs-enablement-integration/CwAgentDaemonTaskDef/ExecutionRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CwAgentDaemonTaskDefExecutionRoleDefaultPolicy765BB856"
-          }
-        ],
-        "/ecs-enablement-integration/CwAgentDaemonService": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "minHealthyPercent has not been configured so the default value of 0% for a daemon service is used. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentDaemon]"
-          }
-        ],
-        "/ecs-enablement-integration/CwAgentDaemonService/Service": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CwAgentDaemonServiceA063D544"
-          }
-        ],
-        "/ecs-enablement-integration/CwAgentDaemonService/SecurityGroup": [
+        "/ApplicationSignalsInfra-Daemon/ECSTaskExecutionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "vpc": "*"
-            }
-          }
-        ],
-        "/ecs-enablement-integration/CwAgentDaemonService/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CwAgentDaemonServiceSecurityGroup4155633D"
-          }
-        ],
-        "/ecs-enablement-integration/Ec2TaskDefinition": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/ecs-enablement-integration/Ec2TaskDefinition/TaskRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
+              "roleName": "*",
               "assumedBy": {
                 "principalAccount": "*",
                 "assumeRoleAction": "*"
-              }
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
             }
           }
         ],
-        "/ecs-enablement-integration/Ec2TaskDefinition/TaskRole/ImportTaskRole": [
+        "/ApplicationSignalsInfra-Daemon/ECSTaskExecutionRole/ImportECSTaskExecutionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/ecs-enablement-integration/Ec2TaskDefinition/TaskRole/Resource": [
+        "/ApplicationSignalsInfra-Daemon/ECSTaskExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ec2TaskDefinitionTaskRole0B78BC85"
+            "data": "ECSTaskExecutionRole911F5A4F"
           }
         ],
-        "/ecs-enablement-integration/Ec2TaskDefinition/Resource": [
+        "/ApplicationSignalsInfra-Daemon/Exports/Output{\"Fn::GetAtt\":[\"ECSTaskExecutionRole911F5A4F\",\"Arn\"]}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ec2TaskDefinitionB25030BE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ExportsOutputFnGetAttECSTaskExecutionRole911F5A4FArn90EDA8DE"
           }
         ],
-        "/ecs-enablement-integration/BootstrapVersion": [
+        "/ApplicationSignalsInfra-Daemon/Exports/Output{\"Fn::GetAtt\":[\"ECSTaskRoleF2ADB362\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttECSTaskRoleF2ADB362Arn397CEC35"
+          }
+        ],
+        "/ApplicationSignalsInfra-Daemon/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/ecs-enablement-integration/CheckBootstrapVersion": [
+        "/ApplicationSignalsInfra-Daemon/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "CwAgentLogGroupBF702CD8": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CwAgentLogGroupBF702CD8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
-      "displayName": "ecs-enablement-integration"
+      "displayName": "ApplicationSignalsInfra-Daemon"
     },
-    "ApplicationSignalsIntegrationECSDaemonDefaultTestDeployAssert0A2A622F.assets": {
+    "ApplicationSignalsCloudWatchAgent-Daemon.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "ApplicationSignalsIntegrationECSDaemonDefaultTestDeployAssert0A2A622F.assets.json",
+        "file": "ApplicationSignalsCloudWatchAgent-Daemon.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "ApplicationSignalsIntegrationECSDaemonDefaultTestDeployAssert0A2A622F": {
+    "ApplicationSignalsCloudWatchAgent-Daemon": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "ApplicationSignalsIntegrationECSDaemonDefaultTestDeployAssert0A2A622F.template.json",
+        "templateFile": "ApplicationSignalsCloudWatchAgent-Daemon.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/76d61b69b8d74aa14c9920e489d649ba5180d009fda3ba40cf6d33838beed4f9.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ApplicationSignalsCloudWatchAgent-Daemon.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ApplicationSignalsInfra-Daemon",
+        "ApplicationSignalsCloudWatchAgent-Daemon.assets"
+      ],
+      "metadata": {
+        "/ApplicationSignalsCloudWatchAgent-Daemon/CloudWatchAgentTaskDefinition": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/ApplicationSignalsCloudWatchAgent-Daemon/CloudWatchAgentTaskDefinition/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudWatchAgentTaskDefinition6DFFEF0D"
+          }
+        ],
+        "/ApplicationSignalsCloudWatchAgent-Daemon/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ApplicationSignalsCloudWatchAgent-Daemon/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ApplicationSignalsCloudWatchAgent-Daemon"
+    },
+    "ApplicationSignalsJavaApp-Daemon.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ApplicationSignalsJavaApp-Daemon.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ApplicationSignalsJavaApp-Daemon": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ApplicationSignalsJavaApp-Daemon.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1b94200f5619eaed3efe22e69ba29da2803b62aa6b0f7cfacb52a6d015d0f1b1.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ApplicationSignalsJavaApp-Daemon.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ApplicationSignalsCloudWatchAgent-Daemon",
+        "ApplicationSignalsInfra-Daemon",
+        "ApplicationSignalsJavaApp-Daemon.assets"
+      ],
+      "metadata": {
+        "/ApplicationSignalsJavaApp-Daemon/JavaTaskDefinition": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/ApplicationSignalsJavaApp-Daemon/JavaTaskDefinition/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JavaTaskDefinition93F96919"
+          }
+        ],
+        "/ApplicationSignalsJavaApp-Daemon/JavaECSIntegration": [
+          {
+            "type": "aws:cdk:warning",
+            "data": " Application Signals functionality requires prior deployment of the CloudWatch Agent with appropriate security group settings. Missing or incorrect configurations will prevent successful collection of observability data. [ack: JavaECSIntegration]"
+          }
+        ],
+        "/ApplicationSignalsJavaApp-Daemon/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ApplicationSignalsJavaApp-Daemon/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ApplicationSignalsJavaApp-Daemon"
+    },
+    "ApplicationSignalsIntegrationECSDaemonTestDefaultTestDeployAssert1C48CFAF.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ApplicationSignalsIntegrationECSDaemonTestDefaultTestDeployAssert1C48CFAF.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ApplicationSignalsIntegrationECSDaemonTestDefaultTestDeployAssert1C48CFAF": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ApplicationSignalsIntegrationECSDaemonTestDefaultTestDeployAssert1C48CFAF.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -668,7 +303,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "ApplicationSignalsIntegrationECSDaemonDefaultTestDeployAssert0A2A622F.assets"
+          "ApplicationSignalsIntegrationECSDaemonTestDefaultTestDeployAssert1C48CFAF.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -677,23 +312,23 @@
         }
       },
       "dependencies": [
-        "ApplicationSignalsIntegrationECSDaemonDefaultTestDeployAssert0A2A622F.assets"
+        "ApplicationSignalsIntegrationECSDaemonTestDefaultTestDeployAssert1C48CFAF.assets"
       ],
       "metadata": {
-        "/ApplicationSignalsIntegrationECSDaemon/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/ApplicationSignalsIntegrationECSDaemonTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/ApplicationSignalsIntegrationECSDaemon/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/ApplicationSignalsIntegrationECSDaemonTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "ApplicationSignalsIntegrationECSDaemon/DefaultTest/DeployAssert"
+      "displayName": "ApplicationSignalsIntegrationECSDaemonTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -701,5 +336,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

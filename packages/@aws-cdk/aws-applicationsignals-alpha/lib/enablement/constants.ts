@@ -7,7 +7,8 @@ export class CommonExporting {
   public static readonly OTEL_EXPORTER_OTLP_PROTOCOL = 'OTEL_EXPORTER_OTLP_PROTOCOL';
   /** HTTP/Protobuf protocol setting for OTLP exporter */
   public static readonly OTEL_EXPORTER_OTLP_PROTOCOL_HTTP_PROTOBUF = 'http/protobuf';
-
+  /** Resource attribute configuration for service.name */
+  public static readonly OTEL_SERVICE_NAME = 'OTEL_SERVICE_NAME';
   /** Resource attributes configuration for OpenTelemetry */
   public static readonly OTEL_RESOURCE_ATTRIBUTES = 'OTEL_RESOURCE_ATTRIBUTES';
 
@@ -101,8 +102,6 @@ export class TraceExporting {
 export class JavaInstrumentation {
   /** Java tool options environment variable */
   public static readonly JAVA_TOOL_OPTIONS = 'JAVA_TOOL_OPTIONS';
-  /** Java agent configuration for ADOT */
-  public static readonly JAVA_TOOL_OPTIONS_ADOT = ' -javaagent:/otel-auto-instrumentation/javaagent.jar';
 }
 
 /**
@@ -119,11 +118,8 @@ export class PythonInstrumentation {
   public static readonly OTEL_PYTHON_CONFIGURATOR = 'OTEL_PYTHON_CONFIGURATOR';
   /** AWS configurator for Python OpenTelemetry */
   public static readonly OTEL_PYTHON_CONFIGURATOR_AWS_CONFIGURATOR = 'aws_configurator';
-
   /** Python path environment variable */
   public static readonly PYTHONPATH = 'PYTHONPATH';
-  /** ADOT Python auto-instrumentation path */
-  public static readonly PYTHONPATH_ADOT = '/otel-auto-instrumentation-python/opentelemetry/instrumentation/auto_instrumentation:/otel-auto-instrumentation-python';
 }
 
 /**
@@ -136,63 +132,36 @@ export class DotnetInstrumentation {
   public static readonly OTEL_DOTNET_DISTRO = 'OTEL_DOTNET_DISTRO';
   /** AWS distribution for .NET OpenTelemetry */
   public static readonly OTEL_DOTNET_DISTRO_AWS_DISTRO = 'aws_distro';
-
   /** .NET OpenTelemetry configurator setting */
   public static readonly OTEL_DOTNET_CONFIGURATOR = 'OTEL_DOTNET_CONFIGURATOR';
   /** AWS configurator for .NET OpenTelemetry */
   public static readonly OTEL_DOTNET_CONFIGURATOR_AWS_CONFIGURATOR = 'aws_configurator';
-
   /** .NET auto-instrumentation plugins configuration */
   public static readonly OTEL_DOTNET_AUTO_PLUGINS = 'OTEL_DOTNET_AUTO_PLUGINS';
   /** ADOT auto-instrumentation plugin for .NET */
   public static readonly OTEL_DOTNET_AUTO_PLUGINS_ADOT = 'AWS.Distro.OpenTelemetry.AutoInstrumentation.Plugin, AWS.Distro.OpenTelemetry.AutoInstrumentation';
-
   /** CoreCLR profiling enable flag */
   public static readonly CORECLR_ENABLE_PROFILING = 'CORECLR_ENABLE_PROFILING';
   /** Enable CoreCLR profiling */
   public static readonly CORECLR_ENABLE_PROFILING_ENABLED = '1';
   /** Disable CoreCLR profiling */
   public static readonly CORECLR_ENABLE_PROFILING_DISABLED = '0';
-
   /** CoreCLR profiler GUID */
   public static readonly CORECLR_PROFILER = 'CORECLR_PROFILER';
   /** OpenTelemetry CoreCLR profiler ID */
   public static readonly CORECLR_PROFILER_OTEL = '{918728DD-259F-4A6A-AC2B-B85E1B658318}';
-
   /** Path to CoreCLR profiler */
   public static readonly CORECLR_PROFILER_PATH = 'CORECLR_PROFILER_PATH';
-  /** Linux x64 CoreCLR profiler path */
-  public static readonly CORECLR_PROFILER_PATH_LINUX_X64 = '/otel-auto-instrumentation-dotnet/linux-x64/OpenTelemetry.AutoInstrumentation.Native.so';
-  /** Windows x64 CoreCLR profiler path */
-  public static readonly CORECLR_PROFILER_PATH_WINDOWS_X64 = 'C:\\otel-auto-instrumentation-dotnet\\win-x64\\OpenTelemetry.AutoInstrumentation.Native.dll';
-
   /** .NET startup hooks configuration */
   public static readonly DOTNET_STARTUP_HOOKS = 'DOTNET_STARTUP_HOOKS';
-  /** Linux ADOT startup hooks path */
-  public static readonly DOTNET_STARTUP_HOOKS_LINUX_ADOT = '/otel-auto-instrumentation-dotnet/net/OpenTelemetry.AutoInstrumentation.StartupHook.dll';
-  /** Windows ADOT startup hooks path */
-  public static readonly DOTNET_STARTUP_HOOKS_WINDOWS_ADOT = 'C:\\otel-auto-instrumentation-dotnet\\net\\OpenTelemetry.AutoInstrumentation.StartupHook.dll';
-
   /** Additional .NET dependencies configuration */
   public static readonly DOTNET_ADDITIONAL_DEPS = 'DOTNET_ADDITIONAL_DEPS';
-  /** Linux ADOT additional dependencies path */
-  public static readonly DOTNET_ADDITIONAL_DEPS_LINUX_ADOT = '/otel-auto-instrumentation-dotnet/AdditionalDeps';
-  /** Windows ADOT additional dependencies path */
-  public static readonly DOTNET_ADDITIONAL_DEPS_WINDOWS_ADOT = 'C:\\otel-auto-instrumentation-dotnet\\AdditionalDeps';
 
   /** .NET auto-instrumentation home directory */
   public static readonly OTEL_DOTNET_AUTO_HOME = 'OTEL_DOTNET_AUTO_HOME';
-  /** Linux ADOT home directory */
-  public static readonly OTEL_DOTNET_AUTO_HOME_LINUX_ADOT = '/otel-auto-instrumentation-dotnet';
-  /** Windows ADOT home directory */
-  public static readonly OTEL_DOTNET_AUTO_HOME_WINDOWS_ADOT = 'C:\\otel-auto-instrumentation-dotnet';
 
   /** .NET shared store configuration */
   public static readonly DOTNET_SHARED_STORE = 'DOTNET_SHARED_STORE';
-  /** Linux ADOT shared store path */
-  public static readonly DOTNET_SHARED_STORE_LINUX_ADOT = '/otel-auto-instrumentation-dotnet/store';
-  /** Windows ADOT shared store path */
-  public static readonly DOTNET_SHARED_STORE_WINDOWS_ADOT = 'C:\\otel-auto-instrumentation-dotnet\\store';
 }
 
 /**
@@ -202,6 +171,4 @@ export class DotnetInstrumentation {
 export class NodeInstrumentation {
   /** Node.js options environment variable */
   public static readonly NODE_OPTIONS = 'NODE_OPTIONS';
-  /** ADOT Node.js instrumentation option */
-  public static readonly NODE_OPTIONS_ADOT = '--require=/otel-auto-instrumentation-nodejs/opentelemetry-node-instrumentation.js';
 }

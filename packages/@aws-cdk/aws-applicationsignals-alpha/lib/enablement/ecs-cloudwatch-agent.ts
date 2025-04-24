@@ -1,4 +1,5 @@
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
 /**
@@ -8,7 +9,7 @@ export class CloudWatchAgentVersion {
   /**
    * Default CloudWatch Agent image for Linux.
    */
-  public static readonly CLOUDWATCH_AGENT_IMAGE = 'amazon/cloudwatch-agent:latest';
+  public static readonly CLOUDWATCH_AGENT_IMAGE = 'public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest';
 
   /**
    * CloudWatch Agent image for Windows Server 2019.
@@ -51,6 +52,12 @@ export interface CloudWatchAgentOptions {
    * Name of the CloudWatch Agent container.
    */
   readonly containerName: string;
+
+  /**
+   * Start as an essential container.
+   * @default - true
+   */
+  readonly essential?: boolean;
 
   /**
    * Custom agent configuration in JSON format.
@@ -145,9 +152,12 @@ export class CloudWatchAgentIntegration extends Construct {
   ) {
     super(scope, id);
 
+    props.taskDefinition.taskRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('CloudWatchAgentServerPolicy'));
+
     this.agentContainer = props.taskDefinition.addContainer(props.containerName, {
       image: ecs.ContainerImage.fromRegistry(CloudWatchAgentVersion.getCloudWatchAgentImage(props.operatingSystemFamily)),
       cpu: props.cpu,
+      essential: props.essential? props.essential:true,
       memoryLimitMiB: props.memoryLimitMiB,
       memoryReservationMiB: props.memoryReservationMiB,
       logging: props.enableLogging? new ecs.AwsLogDriver({

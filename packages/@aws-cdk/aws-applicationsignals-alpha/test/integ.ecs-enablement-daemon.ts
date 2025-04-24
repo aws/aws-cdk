@@ -1,98 +1,112 @@
 
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-import { PrivateDnsNamespace } from 'aws-cdk-lib/aws-servicediscovery';
+import { Role, ManagedPolicy, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Construct } from 'constructs';
 import * as appsignals from '../lib';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'ecs-enablement-integration');
+class InfraStack extends cdk.Stack {
+  public readonly taskRole: Role;
+  public readonly taskExecutionRole: Role;
 
-const vpc = new ec2.Vpc(stack, 'TestVpc', {});
-const cluster = new ecs.Cluster(stack, 'TestCluster', { vpc });
-const namespace = new PrivateDnsNamespace(stack, 'Namespace', {
-  vpc,
-  name: 'local',
-});
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    this.taskRole = new Role(this, 'ECSTaskRole', {
+      roleName: `ECSTaskRole-${this.stackName}`,
+      assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com'),
+      managedPolicies: [
+        ManagedPolicy.fromAwsManagedPolicyName('CloudWatchAgentServerPolicy'),
+      ],
+    });
 
-// Define Task Definition for CloudWatch agent (Daemon)
-const cwAgentTaskDefinition = new ecs.Ec2TaskDefinition(stack, 'CwAgentDaemonTaskDef', {
-  networkMode: ecs.NetworkMode.AWS_VPC,
-});
-new appsignals.CloudWatchAgentIntegration(stack, 'CloudWatchAgent',
-  {
-    taskDefinition: cwAgentTaskDefinition,
-    containerName: 'ecs-cwagent',
-    enableLogging: true,
-    cpu: 128,
-    memoryLimitMiB: 64,
-    portMappings: [
-      {
-        name: 'cwagent-4316',
-        containerPort: 4316,
-        hostPort: 4316,
+    this.taskExecutionRole = new Role(this, 'ECSTaskExecutionRole', {
+      roleName: `ECSTaskExecutionRole-${this.stackName}`,
+      assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com'),
+      managedPolicies: [
+        ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonECSTaskExecutionRolePolicy'),
+      ],
+    });
+  }
+}
+
+interface ApplicationSignalsStackProps extends cdk.StackProps {
+  taskRole: Role;
+  taskExecutionRole: Role;
+}
+
+class CloudWatchAgentStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props: ApplicationSignalsStackProps) {
+    super(scope, id, props);
+
+    // Define Task Definition for CloudWatch agent (Daemon)
+    const taskDefinition = new ecs.Ec2TaskDefinition(this, 'CloudWatchAgentTaskDefinition', {
+      networkMode: ecs.NetworkMode.HOST,
+      taskRole: props.taskRole,
+      executionRole: props.taskExecutionRole,
+    });
+
+    new appsignals.CloudWatchAgentIntegration(this, 'CloudWatchAgentECSIntegration', {
+      taskDefinition: taskDefinition,
+      containerName: 'ecs-cwagent',
+      enableLogging: false,
+      cpu: 128,
+      memoryLimitMiB: 64,
+      portMappings: [
+        {
+          containerPort: 4316,
+          hostPort: 4316,
+        },
+        {
+          containerPort: 2000,
+          hostPort: 2000,
+        },
+      ],
+    });
+  }
+}
+
+class JavaStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props: ApplicationSignalsStackProps) {
+    super(scope, id, props);
+
+    const taskDefinition = new ecs.Ec2TaskDefinition(this, 'JavaTaskDefinition', {
+      taskRole: props.taskRole,
+      executionRole: props.taskExecutionRole,
+      networkMode: ecs.NetworkMode.HOST,
+    });
+
+    taskDefinition.addContainer('app', {
+      image: ecs.ContainerImage.fromRegistry('public.ecr.aws/aws-containers/retail-store-sample-cart:1.1.0'),
+      memoryLimitMiB: 512,
+    });
+
+    new appsignals.ApplicationSignalsIntegration(this, 'JavaECSIntegration', {
+      taskDefinition: taskDefinition,
+      instrumentation: {
+        sdkVersion: appsignals.JavaInstrumentationVersion.V2_10_0,
       },
-      {
-        name: 'cwagent-2000',
-        containerPort: 2000,
-        hostPort: 2000,
-      },
-    ],
-  },
-);
+      serviceName: 'java-demo',
+    });
+  }
+}
 
-new ecs.Ec2Service(stack, 'CwAgentDaemonService', {
-  cluster,
-  taskDefinition: cwAgentTaskDefinition,
-  daemon: true, // Runs one container per EC2 instance
-  serviceConnectConfiguration: {
-    namespace: namespace.namespaceArn,
-    services: [{
-      portMappingName: 'cwagent-4316',
-      dnsName: 'cwagent-4316-http',
-      port: 4316,
-    }, {
-      portMappingName: 'cwagent-2000',
-      dnsName: 'cwagent-2000-http',
-      port: 2000,
-    }],
-  },
+const infraStack = new InfraStack(app, 'ApplicationSignalsInfra-Daemon');
+const cwaStack = new CloudWatchAgentStack(app, 'ApplicationSignalsCloudWatchAgent-Daemon', {
+  taskRole: infraStack.taskRole,
+  taskExecutionRole: infraStack.taskExecutionRole,
 });
 
-const ec2TaskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDefinition', {
-  networkMode: ecs.NetworkMode.AWS_VPC,
+const javaStack = new JavaStack(app, 'ApplicationSignalsJavaApp-Daemon', {
+  taskRole: infraStack.taskRole,
+  taskExecutionRole: infraStack.taskExecutionRole,
 });
+javaStack.addDependency(cwaStack);
 
-ec2TaskDefinition.addContainer('app', {
-  image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
-  cpu: 0,
-  memoryLimitMiB: 512,
-});
-
-new appsignals.ApplicationSignalsIntegration(stack, 'TestEc2TaskDefinitionIntegration', {
-  taskDefinition: ec2TaskDefinition,
-  instrumentation: {
-    sdkVersion: appsignals.PythonInstrumentationVersion.V0_8_0,
-  },
-  serviceName: 'demo',
-  overrideEnvironments: [
-    {
-      name: appsignals.CommonExporting.OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT,
-      value: 'http://cwagent-4316-http:4316/v1/metrics',
-    }, {
-      name: appsignals.TraceExporting.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT,
-      value: 'hhttp://cwagent-4316-http:4316/v1/traces',
-    }, {
-      name: appsignals.TraceExporting.OTEL_TRACES_SAMPLER_ARG,
-      value: 'endpoint=http://cwagent-2000-http:2000',
-    },
-  ],
-});
-
-new integ.IntegTest(app, 'ApplicationSignalsIntegrationECSDaemon', {
-  testCases: [stack],
+new integ.IntegTest(app, 'ApplicationSignalsIntegrationECSDaemonTest', {
+  testCases: [infraStack, cwaStack, javaStack],
 });
 
 app.synth();

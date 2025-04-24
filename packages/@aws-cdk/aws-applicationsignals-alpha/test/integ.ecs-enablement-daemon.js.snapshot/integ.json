@@ -1,12 +1,14 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "testCases": {
-    "ApplicationSignalsIntegrationECSDaemon/DefaultTest": {
+    "ApplicationSignalsIntegrationECSDaemonTest/DefaultTest": {
       "stacks": [
-        "ecs-enablement-integration"
+        "ApplicationSignalsInfra-Daemon",
+        "ApplicationSignalsCloudWatchAgent-Daemon",
+        "ApplicationSignalsJavaApp-Daemon"
       ],
-      "assertionStack": "ApplicationSignalsIntegrationECSDaemon/DefaultTest/DeployAssert",
-      "assertionStackName": "ApplicationSignalsIntegrationECSDaemonDefaultTestDeployAssert0A2A622F"
+      "assertionStack": "ApplicationSignalsIntegrationECSDaemonTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ApplicationSignalsIntegrationECSDaemonTestDefaultTestDeployAssert1C48CFAF"
     }
   }
 }

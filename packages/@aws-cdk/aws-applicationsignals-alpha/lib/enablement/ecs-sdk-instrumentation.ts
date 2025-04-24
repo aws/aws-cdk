@@ -22,7 +22,7 @@ export interface EnvironmentExtension {
  * the necessary environment variables.
  */
 export abstract class Injector {
-  private static readonly DEFAULT_ENVS: EnvironmentExtension[] = [
+  protected static readonly DEFAULT_ENVS: EnvironmentExtension[] = [
     {
       name: constants.LogsExporting.OTEL_LOGS_EXPORTER,
       value: constants.LogsExporting.OTEL_LOGS_EXPORTER_NONE,
@@ -61,17 +61,14 @@ export abstract class Injector {
     },
   ];
 
-  protected taskDefinition: ecs.TaskDefinition;
   protected sharedVolumeName: string;
   protected instrumentationVersion: inst.InstrumentationVersion;
   private overrideEnvironments?: EnvironmentExtension[];
 
   public constructor(
-    taskDefinition: ecs.TaskDefinition,
     sharedVolumeName: string,
     instrumentationVersion: inst.InstrumentationVersion,
     overrideEnvironments?: EnvironmentExtension[]) {
-    this.taskDefinition = taskDefinition;
     this.sharedVolumeName = sharedVolumeName;
     this.instrumentationVersion = instrumentationVersion;
     this.overrideEnvironments = overrideEnvironments;
@@ -84,7 +81,7 @@ export abstract class Injector {
   /**
    * The path to ADOT SDK agent in the init container.
    */
-  protected abstract get containerPath(): string;
+  abstract get containerPath(): string;
   /**
    * Inject additional environment variables to the application container other than the DEFAULT_ENVS.
    */
@@ -96,10 +93,11 @@ export abstract class Injector {
 
   /**
    * Inject ADOT SDK agent init container.
+   * @param taskDefinition The TaskDefinition to render
    * @returns The created ContainerDefinition
    */
-  public injectInitContainer(): ecs.ContainerDefinition {
-    const initContainer = this.taskDefinition.addContainer('adot-init', {
+  public injectInitContainer(taskDefinition: ecs.TaskDefinition): ecs.ContainerDefinition {
+    const initContainer = taskDefinition.addContainer('adot-init', {
       image: ecs.ContainerImage.fromRegistry(this.instrumentationVersion.imageURI()),
       essential: false,
       command: this.command,
@@ -117,9 +115,11 @@ export abstract class Injector {
 
   /**
    * Render the application container for SDK instrumentation.
-   * @param container The application container
+   * @param taskDefinition The TaskDefinition to render
    */
-  public renderDefaultContainer(container: ecs.ContainerDefinition): void {
+  public renderDefaultContainer(taskDefinition: ecs.TaskDefinition): void {
+    let container = taskDefinition.defaultContainer!;
+
     const envsToInject: { [key: string]: string } = {};
     const envsFromTaskDef = (container as any).environment;
 
@@ -144,6 +144,14 @@ export abstract class Injector {
       container.addEnvironment(env.name, env.value);
     }
 
+    if (!envsFromTaskDef[constants.CommonExporting.OTEL_SERVICE_NAME]) {
+      let resourceAttributesVal = (envsFromTaskDef[constants.CommonExporting.OTEL_RESOURCE_ATTRIBUTES] || '') as string;
+      if (resourceAttributesVal.indexOf('service.name') < 0) {
+        // Configure service.name to be task definition family name if undefined.
+        container.addEnvironment(constants.CommonExporting.OTEL_SERVICE_NAME, taskDefinition.family);
+      }
+    }
+
     container.addMountPoints({
       sourceVolume: this.sharedVolumeName,
       containerPath: this.containerPath,
@@ -158,25 +166,16 @@ export abstract class Injector {
  * Handles Java agent configuration and environment setup.
  */
 export class JavaInjector extends Injector {
-  private static readonly JAVA_ENVS = [
-    {
-      name: constants.JavaInstrumentation.JAVA_TOOL_OPTIONS,
-      value: constants.JavaInstrumentation.JAVA_TOOL_OPTIONS_ADOT,
-    },
-  ];
-
   get command(): string[] {
     return ['cp', '/javaagent.jar', `${this.containerPath}/javaagent.jar`];
   }
 
-  protected get containerPath(): string {
+  get containerPath(): string {
     return '/otel-auto-instrumentation';
   }
 
   protected injectAdditionalEnvironments(envsToInject: { [key: string]: string }, _envsFromTaskDef: { [key: string]: string }): void {
-    for (const env of JavaInjector.JAVA_ENVS) {
-      envsToInject[env.name] = env.value;
-    }
+    envsToInject[constants.JavaInstrumentation.JAVA_TOOL_OPTIONS] = ` -javaagent:${this.containerPath}/javaagent.jar`;
   }
 
   protected overrideAdditionalEnvironments(_envsToOverride: { [key: string]: string }, _overrideEnvironments: { [key: string]: string }): void {
@@ -189,7 +188,7 @@ export class JavaInjector extends Injector {
  * Handles Python auto-instrumentation setup and PYTHONPATH configuration.
  */
 export class PythonInjector extends Injector {
-  private static readonly PYTHON_ENVS = [
+  protected static readonly PYTHON_ENVS: EnvironmentExtension[] = [
     {
       name: constants.PythonInstrumentation.OTEL_PYTHON_DISTRO,
       value: constants.PythonInstrumentation.OTEL_PYTHON_DISTRO_AWS_DISTRO,
@@ -197,10 +196,6 @@ export class PythonInjector extends Injector {
     {
       name: constants.PythonInstrumentation.OTEL_PYTHON_CONFIGURATOR,
       value: constants.PythonInstrumentation.OTEL_PYTHON_CONFIGURATOR_AWS_CONFIGURATOR,
-    },
-    {
-      name: constants.PythonInstrumentation.PYTHONPATH,
-      value: constants.PythonInstrumentation.PYTHONPATH_ADOT,
     },
   ];
   get command(): string[] {
@@ -211,9 +206,10 @@ export class PythonInjector extends Injector {
     for (const env of PythonInjector.PYTHON_ENVS) {
       envsToInject[env.name] = env.value;
     }
+    envsToInject[constants.PythonInstrumentation.PYTHONPATH] = `${this.containerPath}/opentelemetry/instrumentation/auto_instrumentation:${this.containerPath}`;
   }
 
-  protected get containerPath(): string {
+  get containerPath(): string {
     return '/otel-auto-instrumentation-python';
   }
 
@@ -251,7 +247,7 @@ export abstract class DotNetInjector extends Injector {
  * Handles CoreCLR profiler setup and paths for Linux environments.
  */
 export class DotNetLinuxInjector extends DotNetInjector {
-  private static readonly DOTNET_LINUX_ENVS = [
+  protected static readonly DOTNET_LINUX_ENVS: EnvironmentExtension[] = [
     {
       name: constants.DotnetInstrumentation.CORECLR_ENABLE_PROFILING,
       value: constants.DotnetInstrumentation.CORECLR_ENABLE_PROFILING_ENABLED,
@@ -260,37 +256,16 @@ export class DotNetLinuxInjector extends DotNetInjector {
       name: constants.DotnetInstrumentation.CORECLR_PROFILER,
       value: constants.DotnetInstrumentation.CORECLR_PROFILER_OTEL,
     },
-    {
-      name: constants.DotnetInstrumentation.CORECLR_PROFILER_PATH,
-      value: constants.DotnetInstrumentation.CORECLR_PROFILER_PATH_LINUX_X64,
-    },
-    {
-      name: constants.DotnetInstrumentation.DOTNET_STARTUP_HOOKS,
-      value: constants.DotnetInstrumentation.DOTNET_STARTUP_HOOKS_LINUX_ADOT,
-    },
-    {
-      name: constants.DotnetInstrumentation.DOTNET_ADDITIONAL_DEPS,
-      value: constants.DotnetInstrumentation.DOTNET_ADDITIONAL_DEPS_LINUX_ADOT,
-    },
-    {
-      name: constants.DotnetInstrumentation.OTEL_DOTNET_AUTO_HOME,
-      value: constants.DotnetInstrumentation.OTEL_DOTNET_AUTO_HOME_LINUX_ADOT,
-    },
-    {
-      name: constants.DotnetInstrumentation.DOTNET_SHARED_STORE,
-      value: constants.DotnetInstrumentation.DOTNET_SHARED_STORE_LINUX_ADOT,
-    },
   ];
 
   private cpuArch: ecs.CpuArchitecture;
 
   constructor(
-    taskDefinition: ecs.TaskDefinition,
     sharedVolumeName: string,
     instrumentationVersion: inst.InstrumentationVersion,
     cpuArch: ecs.CpuArchitecture,
     overrideEnvironments?: EnvironmentExtension[]) {
-    super(taskDefinition, sharedVolumeName, instrumentationVersion, overrideEnvironments);
+    super(sharedVolumeName, instrumentationVersion, overrideEnvironments);
     this.cpuArch = cpuArch;
   }
 
@@ -299,33 +274,36 @@ export class DotNetLinuxInjector extends DotNetInjector {
   }
 
   protected injectAdditionalEnvironments(envsToInject: { [key: string]: string }, envsFromTaskDef: { [key: string]: string }): void {
-    let libPath = 'linux-x64';
-    if (this.cpuArch == ecs.CpuArchitecture.ARM64) {
-      libPath = 'linux-arm64';
-    }
-    for (const env of [...DotNetInjector.DOTNET_COMMON_ENVS, {
-      name: 'CORECLR_PROFILER_PATH',
-      value: `${this.containerPath}/${libPath}/OpenTelemetry.AutoInstrumentation.Native.so`,
-    }]) {
-      envsToInject[env.name] = env.value;
-    }
-
     if (envsFromTaskDef[constants.DotnetInstrumentation.OTEL_DOTNET_AUTO_HOME]) {
       // If OTEL_DOTNET_AUTO_HOME env var is already set, we will assume that .NET Auto-instrumentation is already configured.
       return;
     }
 
+    for (const env of DotNetInjector.DOTNET_COMMON_ENVS) {
+      envsToInject[env.name] = env.value;
+    }
     for (const env of DotNetLinuxInjector.DOTNET_LINUX_ENVS) {
       envsToInject[env.name] = env.value;
     }
+
+    envsToInject[constants.DotnetInstrumentation.CORECLR_PROFILER_PATH] = this.getCoreCLRProfilerPath();
+    envsToInject[constants.DotnetInstrumentation.DOTNET_STARTUP_HOOKS] = `${this.containerPath}/net/OpenTelemetry.AutoInstrumentation.StartupHook.dll`;
+    envsToInject[constants.DotnetInstrumentation.DOTNET_ADDITIONAL_DEPS] = `${this.containerPath}/AdditionalDeps`;
+    envsToInject[constants.DotnetInstrumentation.OTEL_DOTNET_AUTO_HOME] = `${this.containerPath}`;
+    envsToInject[constants.DotnetInstrumentation.DOTNET_SHARED_STORE] = `${this.containerPath}/store`;
   }
 
-  protected get containerPath(): string {
+  get containerPath(): string {
     return '/otel-auto-instrumentation-dotnet';
   }
 
   protected overrideAdditionalEnvironments(_envsToOverride: { [key: string]: string }, _envsFromTaskDef: { [key: string]: string }): void {
     // No additional overrides needed for .NET on Linux
+  }
+
+  private getCoreCLRProfilerPath() {
+    const subPath = this.cpuArch == ecs.CpuArchitecture.ARM64 ? 'linux-arm64': 'linux-x64';
+    return `${this.containerPath}/${subPath}/OpenTelemetry.AutoInstrumentation.Native.so`;
   }
 }
 
@@ -334,7 +312,7 @@ export class DotNetLinuxInjector extends DotNetInjector {
  * Handles CoreCLR profiler setup and paths for Windows environments.
  */
 export class DotNetWindowsInjector extends DotNetInjector {
-  private static readonly DOTNET_WINDOWS_ENVS = [
+  protected static readonly DOTNET_WINDOWS_ENVS: EnvironmentExtension[] = [
     {
       name: constants.DotnetInstrumentation.CORECLR_ENABLE_PROFILING,
       value: constants.DotnetInstrumentation.CORECLR_ENABLE_PROFILING_ENABLED,
@@ -342,26 +320,6 @@ export class DotNetWindowsInjector extends DotNetInjector {
     {
       name: constants.DotnetInstrumentation.CORECLR_PROFILER,
       value: constants.DotnetInstrumentation.CORECLR_PROFILER_OTEL,
-    },
-    {
-      name: constants.DotnetInstrumentation.CORECLR_PROFILER_PATH,
-      value: constants.DotnetInstrumentation.CORECLR_PROFILER_PATH_WINDOWS_X64,
-    },
-    {
-      name: constants.DotnetInstrumentation.DOTNET_STARTUP_HOOKS,
-      value: constants.DotnetInstrumentation.DOTNET_STARTUP_HOOKS_WINDOWS_ADOT,
-    },
-    {
-      name: constants.DotnetInstrumentation.DOTNET_ADDITIONAL_DEPS,
-      value: constants.DotnetInstrumentation.DOTNET_ADDITIONAL_DEPS_WINDOWS_ADOT,
-    },
-    {
-      name: constants.DotnetInstrumentation.OTEL_DOTNET_AUTO_HOME,
-      value: constants.DotnetInstrumentation.OTEL_DOTNET_AUTO_HOME_WINDOWS_ADOT,
-    },
-    {
-      name: constants.DotnetInstrumentation.DOTNET_SHARED_STORE,
-      value: constants.DotnetInstrumentation.DOTNET_SHARED_STORE_WINDOWS_ADOT,
     },
   ];
 
@@ -381,19 +339,24 @@ export class DotNetWindowsInjector extends DotNetInjector {
   }
 
   protected injectAdditionalEnvironments(envsToInject: { [key: string]: string }, envsFromTaskDef: { [key: string]: string }): void {
-    for (const env of DotNetInjector.DOTNET_COMMON_ENVS) {
-      envsToInject[env.name] = env.value;
-    }
     if (envsFromTaskDef[constants.DotnetInstrumentation.OTEL_DOTNET_AUTO_HOME]) {
       // If OTEL_DOTNET_AUTO_HOME env var is already set, we will assume that .NET Auto-instrumentation is already configured.
       return;
     }
+    for (const env of DotNetInjector.DOTNET_COMMON_ENVS) {
+      envsToInject[env.name] = env.value;
+    }
     for (const env of DotNetWindowsInjector.DOTNET_WINDOWS_ENVS) {
       envsToInject[env.name] = env.value;
     }
+    envsToInject[constants.DotnetInstrumentation.CORECLR_PROFILER_PATH] = `${this.containerPath}\\win-x64\\OpenTelemetry.AutoInstrumentation.Native.dll`;
+    envsToInject[constants.DotnetInstrumentation.DOTNET_STARTUP_HOOKS] = `${this.containerPath}\\net\\OpenTelemetry.AutoInstrumentation.StartupHook.dll`;
+    envsToInject[constants.DotnetInstrumentation.DOTNET_ADDITIONAL_DEPS] = `${this.containerPath}\\AdditionalDeps`;
+    envsToInject[constants.DotnetInstrumentation.OTEL_DOTNET_AUTO_HOME] = `${this.containerPath}`;
+    envsToInject[constants.DotnetInstrumentation.DOTNET_SHARED_STORE] = `${this.containerPath}\\store`;
   }
 
-  protected get containerPath(): string {
+  get containerPath(): string {
     return 'C:\\otel-auto-instrumentation-dotnet';
   }
 
@@ -415,7 +378,7 @@ export class NodeInjector extends Injector {
     envsToInject[constants.NodeInstrumentation.NODE_OPTIONS] = ` --require ${this.containerPath}/autoinstrumentation.js`;
   }
 
-  protected get containerPath(): string {
+  get containerPath(): string {
     return '/otel-auto-instrumentation-nodejs';
   }
 

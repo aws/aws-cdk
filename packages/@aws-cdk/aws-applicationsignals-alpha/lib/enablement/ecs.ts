@@ -1,5 +1,5 @@
+import { Annotations } from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import * as constants from './constants';
 import * as agent from './ecs-cloudwatch-agent';
@@ -74,14 +74,6 @@ export class ApplicationSignalsIntegration extends Construct {
     id: string,
     props: ApplicationSignalsIntegrationProps) {
     super(scope, id);
-    let serviceName = props.serviceName;
-    if (!serviceName) {
-      serviceName = props.taskDefinition.family;
-    }
-
-    if (props.taskDefinition.compatibility === ecs.Compatibility.FARGATE && !props.cloudWatchAgentSidecar) {
-      throw new Error('Fargate tasks must deploy CloudWatch Agent as a sidecar container');
-    }
     this.cloudWatchAgentSidecar = props.cloudWatchAgentSidecar;
 
     let runtimePlatformObj = props.instrumentation.runtimePlatform ?? (props.taskDefinition as any).runtimePlatform;
@@ -98,21 +90,24 @@ export class ApplicationSignalsIntegration extends Construct {
       }
     }
 
-    let overrideEnvironments: sdk.EnvironmentExtension[] = [{
-      name: constants.CommonExporting.OTEL_RESOURCE_ATTRIBUTES,
-      value: `service.name=${serviceName}`,
-    }];
+    const overrideEnvironments = [];
+    if (props.serviceName) {
+      // If service.name is also provided in OTEL_RESOURCE_ATTRIBUTES, then OTEL_SERVICE_NAME takes precedence.
+      overrideEnvironments.push({
+        name: constants.CommonExporting.OTEL_SERVICE_NAME,
+        value: props.serviceName,
+      });
+    }
     overrideEnvironments.push(...props.overrideEnvironments ?? []);
+
     if (props.instrumentation.sdkVersion instanceof inst.JavaInstrumentationVersion) {
       this.sdkInjector = new sdk.JavaInjector(
-        props.taskDefinition,
         this.mountVolumeName,
         props.instrumentation.sdkVersion,
         overrideEnvironments,
       );
     } else if (props.instrumentation.sdkVersion instanceof inst.PythonInstrumentationVersion) {
       this.sdkInjector = new sdk.PythonInjector(
-        props.taskDefinition,
         this.mountVolumeName,
         props.instrumentation.sdkVersion,
         overrideEnvironments,
@@ -120,14 +115,12 @@ export class ApplicationSignalsIntegration extends Construct {
     } else if (props.instrumentation.sdkVersion instanceof inst.DotnetInstrumentationVersion) {
       if (isWindows) {
         this.sdkInjector = new sdk.DotNetWindowsInjector(
-          props.taskDefinition,
           this.mountVolumeName,
           props.instrumentation.sdkVersion,
           overrideEnvironments,
         );
       } else {
         this.sdkInjector = new sdk.DotNetLinuxInjector(
-          props.taskDefinition,
           this.mountVolumeName,
           props.instrumentation.sdkVersion,
           cpuArch,
@@ -136,7 +129,6 @@ export class ApplicationSignalsIntegration extends Construct {
       }
     } else if (props.instrumentation.sdkVersion instanceof inst.NodeInstrumentationVersion) {
       this.sdkInjector = new sdk.NodeInjector(
-        props.taskDefinition,
         this.mountVolumeName,
         props.instrumentation.sdkVersion,
         overrideEnvironments,
@@ -153,8 +145,8 @@ export class ApplicationSignalsIntegration extends Construct {
 
     let defaultContainer = taskDefinition.defaultContainer!;
     if (this.sdkInjector) {
-      this.sdkInjector.renderDefaultContainer(defaultContainer);
-      let initContainer = this.sdkInjector.injectInitContainer();
+      this.sdkInjector.renderDefaultContainer(taskDefinition);
+      let initContainer = this.sdkInjector.injectInitContainer(taskDefinition);
       defaultContainer.addContainerDependencies({
         container: initContainer,
         condition: ecs.ContainerDependencyCondition.SUCCESS,
@@ -162,7 +154,6 @@ export class ApplicationSignalsIntegration extends Construct {
     }
 
     if (this.cloudWatchAgentSidecar) {
-      taskDefinition.taskRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('CloudWatchAgentServerPolicy'));
       const cloudWatchAgent = new agent.CloudWatchAgentIntegration(this, 'CloudWatchAgentSidecar',
         {
           taskDefinition: taskDefinition,
@@ -173,6 +164,8 @@ export class ApplicationSignalsIntegration extends Construct {
         container: cloudWatchAgent.agentContainer,
         condition: ecs.ContainerDependencyCondition.START,
       });
+    } else {
+      Annotations.of(this).addWarningV2(this.node.id, ' Application Signals functionality requires prior deployment of the CloudWatch Agent with appropriate security group settings. Missing or incorrect configurations will prevent successful collection of observability data.');
     }
   }
 }
