@@ -1,6 +1,5 @@
 # AWS CodePipeline Actions
 
-
 This package contains Actions that can be used in a CodePipeline.
 
 ```ts nofixture
@@ -1305,6 +1304,37 @@ pipeline.addStage({
 ```
 
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-StepFunctions.html)
+for information on Action structure reference.
+
+### Pipeline
+
+This module contains an Action that allows you to invoke another pipeline execution in a pipeline:
+
+```ts
+import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const targetPipeline = codepipeline.Pipeline.fromPipelineArn(this, 'Pipeline',
+    'arn:aws:codepipeline:us-east-1:123456789012:InvokePipelineAction'); // If targetPipeline is not created by cdk, import from arn.
+pipeline.addStage({
+  stageName: 'stageName',
+  actions: [new cpactions.PipelineInvokeAction({
+  actionName: 'Invoke',
+  targetPipeline,
+  variables: [{
+    name: 'name1',
+    value: 'value1',
+  }],
+  sourceRevisions: [{
+    actionName: 'Source',
+    revisionType: cpactions.RevisionType.S3_OBJECT_VERSION_ID,
+    revisionValue: 'testRevisionValue',
+    }],
+  })],
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-PipelineInvoke.html)
 for information on Action structure reference.
 
 ## Invoke
