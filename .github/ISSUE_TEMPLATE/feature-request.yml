@@ -46,9 +46,17 @@ body:
         - label: This feature might incur a breaking change
           required: false
   - type: input
-    id: sdk-version
+    id: cdk-lib-version
     attributes:
-      label: CDK version used
+      label: AWS CDK Library version (aws-cdk-lib)
+      description: Run `npm ls aws-cdk-lib` at the root of your CDK project
+    validations:
+      required: true
+  - type: input
+    id: cdk-cli-version
+    attributes:
+      label: AWS CDK CLI version
+      description: Run `npx cdk --version` to get the version of the AWS CDK CLI
     validations:
       required: true
   - type: input
