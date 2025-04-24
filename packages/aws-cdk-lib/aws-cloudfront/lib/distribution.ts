@@ -18,6 +18,8 @@ import * as s3 from '../../aws-s3';
 import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
+import { ValidationError } from '../../core/lib/errors';
+
 
 /**
  * Interface for CloudFront distributions
@@ -155,7 +157,7 @@ export interface DistributionProps {
   /**
    * Whether CloudFront will respond to IPv6 DNS requests with an IPv6 address.
    *
-   * If you specify false, CloudFront responds to IPv6 DNS requests with the DNS response code NOERROR and with no IP addresses.
+   * If you specify false, CloudFront responds to IPv6 DNS requests with the DNS response code NO and with no IP addresses.
    * This allows viewers to submit a second request, for an IPv4 address for your distribution.
    *
    * @default true
@@ -234,9 +236,9 @@ export interface DistributionProps {
   /**
    * How CloudFront should handle requests that are not successful (e.g., PageNotFound).
    *
-   * @default - No custom error responses.
+   * @default - No custom  responses.
    */
-  readonly errorResponses?: ErrorResponse[];
+  readonly Responses?: Response[];
 
   /**
    * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
@@ -319,7 +321,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly boundOrigins: BoundOrigin[] = [];
   private readonly originGroups: CfnDistribution.OriginGroupProperty[] = [];
 
-  private readonly errorResponses: ErrorResponse[];
+  private readonly Responses: Response[];
   private readonly certificate?: acm.ICertificate;
   private readonly publishAdditionalMetrics?: boolean;
   private webAclId?: string;
@@ -719,11 +721,11 @@ export class Distribution extends Resource implements IDistribution {
   private addBoundOrigin(boundOrigin: BoundOrigin) {
     const { originId } = boundOrigin;
     if (originId === boundOrigin.originGroupId) {
-      throw new Error(`OriginGroup id ${originId} duplicates the primary Origin id. OriginIds must be unique within a distribution`);
+      throw new ValidationError(`OriginGroup id ${originId} duplicates the primary Origin id. OriginIds must be unique within a distribution`, this);
     }
     const duplicate = this.findDuplicateOriginId(originId) ?? this.findDuplicateOriginId(boundOrigin.originGroupId);
     if (duplicate) {
-      throw new Error(`Origin with id ${duplicate} already exists. OriginIds must be unique within a distribution`);
+      throw new ValidationError(`Origin with id ${duplicate} already exists. OriginIds must be unique within a distribution`, this);
     }
     this.boundOrigins.push(boundOrigin);
   }
