@@ -69,18 +69,17 @@ body:
 
         🚀 Checklist:
 
-        * [ ] Add region in [AWS_CDK_METADATA](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/region-info/build-tools/metadata.ts#L10) (commented out).
-        * [ ] Add region and zone id in [ROUTE_53_BUCKET_WEBSITE_ZONE_IDS](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L7).
-        * [ ] Add region and zone id in [EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L48).
-        * [ ] Add region and account in [ELBV2_ACCOUNTS](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L124).
-        * [ ] Add region and account in [DLC_REPOSITORY_ACCOUNTS](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L158).
-        * [ ] Add region and account in [APPMESH_ECR_ACCOUNTS](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L190).
-        * [ ] Add region and ARN in [CLOUDWATCH_LAMBDA_INSIGHTS_ARNS](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L485).
-        * [ ] Add region and ARN in [ADOT_LAMBDA_LAYER_JAVA_SDK_ARNS](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L1245) for most recent version in `x86_64` and `arm64`.
-        * [ ] Add region and ARN in [ADOT_LAMBDA_LAYER_JAVA_AUTO_INSTRUMENTATION_ARNS](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L1804) for most recent version in `x86_64` and `arm64`.
-        * [ ] Add region and ARN in [ADOT_LAMBDA_LAYER_JAVASCRIPT_SDK_ARNS](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L2364) for most recent version in `x86_64` and `arm64`.
-        * [ ] Add region and ARN in [ADOT_LAMBDA_LAYER_PYTHON_SDK_ARNS](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L2885) for most recent version in `x86_64` and `arm64`.
-        * [ ] Add region and ARN in [ADOT_LAMBDA_LAYER_GENERIC_ARNS](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L3482) for most recent version in `x86_64` and `arm64`.
-        * [ ] Add region in [AWS_REGIONS_AND_RULES](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/region-info/lib/aws-entities.ts#L27).
-        * [ ] Add partition info if the region is also a new partition in [PARTITION_MAP](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L88)
+        * [ ] Add region and zone id in [ROUTE_53_BUCKET_WEBSITE_ZONE_IDS](https://github.com/aws/aws-cdk/blob/05968247399ab79a086a37cf665f4d0c3ed051a7/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L7).
+        * [ ] Add region and zone id in [EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS](https://github.com/aws/aws-cdk/blob/05968247399ab79a086a37cf665f4d0c3ed051a7/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L48).
+        * [ ] Add region and account in [ELBV2_ACCOUNTS](https://github.com/aws/aws-cdk/blob/05968247399ab79a086a37cf665f4d0c3ed051a7/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L124).
+        * [ ] Add region and account in [DLC_REPOSITORY_ACCOUNTS](https://github.com/aws/aws-cdk/blob/05968247399ab79a086a37cf665f4d0c3ed051a7/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L158).
+        * [ ] Add region and account in [APPMESH_ECR_ACCOUNTS](https://github.com/aws/aws-cdk/blob/05968247399ab79a086a37cf665f4d0c3ed051a7/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L190).
+        * [ ] Add region and ARN in [CLOUDWATCH_LAMBDA_INSIGHTS_ARNS](https://github.com/aws/aws-cdk/blob/05968247399ab79a086a37cf665f4d0c3ed051a7/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L485).
+        * [ ] Add region and ARN in [ADOT_LAMBDA_LAYER_JAVA_SDK_ARNS](https://github.com/aws/aws-cdk/blob/05968247399ab79a086a37cf665f4d0c3ed051a7/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L1245) for most recent version in `x86_64` and `arm64`.
+        * [ ] Add region and ARN in [ADOT_LAMBDA_LAYER_JAVA_AUTO_INSTRUMENTATION_ARNS](https://github.com/aws/aws-cdk/blob/05968247399ab79a086a37cf665f4d0c3ed051a7/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L1804) for most recent version in `x86_64` and `arm64`.
+        * [ ] Add region and ARN in [ADOT_LAMBDA_LAYER_JAVASCRIPT_SDK_ARNS](https://github.com/aws/aws-cdk/blob/05968247399ab79a086a37cf665f4d0c3ed051a7/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L2364) for most recent version in `x86_64` and `arm64`.
+        * [ ] Add region and ARN in [ADOT_LAMBDA_LAYER_PYTHON_SDK_ARNS](https://github.com/aws/aws-cdk/blob/05968247399ab79a086a37cf665f4d0c3ed051a7/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L2885) for most recent version in `x86_64` and `arm64`.
+        * [ ] Add region and ARN in [ADOT_LAMBDA_LAYER_GENERIC_ARNS](https://github.com/aws/aws-cdk/blob/05968247399ab79a086a37cf665f4d0c3ed051a7/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L3482) for most recent version in `x86_64` and `arm64`.
+        * [ ] Add region in [AWS_REGIONS_AND_RULES](https://github.com/aws/aws-cdk/blob/05968247399ab79a086a37cf665f4d0c3ed051a7/packages/aws-cdk-lib/region-info/lib/aws-entities.ts#L27).
+        * [ ] Add partition info if the region is also a new partition in [PARTITION_MAP](https://github.com/aws/aws-cdk/blob/05968247399ab79a086a37cf665f4d0c3ed051a7/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts#L88)
         * [ ] Run integ tests and update snapshots
