@@ -1640,7 +1640,7 @@ describe('cluster', () => {
             Chart: 'aws-node-termination-handler',
             Values: '{\"nodeSelector\":{\"lifecycle\":\"Ec2Spot\"}}',
             Namespace: 'kube-system',
-            Repository: 'https://aws.github.io/eks-charts',
+            Repository: 'oci://public.ecr.aws/aws-ec2/helm/aws-node-termination-handler',
           });
         });
 
