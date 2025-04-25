@@ -5,6 +5,7 @@ import { IVpcV2 } from './vpc-v2-base';
 import { CidrBlock, CidrBlockIpv6 } from './util';
 import { RouteTable } from './route';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { defaultSubnetName } from 'aws-cdk-lib/aws-ec2/lib/util';
 
 /**
  * Interface to define subnet CIDR
@@ -36,6 +37,9 @@ const NAME_TAG: string = 'Name';
  * VPC Name tag constant
  */
 const VPCNAME_TAG: string = 'VpcName';
+
+const SUBNETTYPE_TAG = 'aws-cdk:subnet-type';
+const SUBNETNAME_TAG = 'aws-cdk:subnet-name';
 
 /**
  * Properties to define subnet for VPC.
@@ -307,9 +311,11 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
 
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
 
-    if (props.subnetName) {
-      Tags.of(this).add(NAME_TAG, props.subnetName);
-    }
+    props.subnetName ? Tags.of(this).add(NAME_TAG, props.subnetName) : Tags.of(this).add(NAME_TAG, subnet.node.path);
+
+    const includeResourceTypes = [CfnSubnet.CFN_RESOURCE_TYPE_NAME];
+    Tags.of(this).add(SUBNETNAME_TAG, defaultSubnetName(props.subnetType), { includeResourceTypes });
+    Tags.of(subnet).add(SUBNETTYPE_TAG, subnetConfig(props.subnetType), { includeResourceTypes });
 
     if (props.vpc.vpcName) {
       Tags.of(this).add(VPCNAME_TAG, props.vpc.vpcName);
@@ -322,6 +328,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
       this._routeTable = new RouteTable(this, 'RouteTable', {
         vpc: props.vpc,
         routeTableName: 'DefaultCDKRouteTable',
+        subnetTag: this.node.path,
       });
     }
 
@@ -594,4 +601,15 @@ function validateOverlappingCidrRangesipv6(vpc: IVpcV2, ipv6CidrBlock: string): 
   }
 
   return result;
+}
+
+function subnetConfig(subnetType: SubnetType) {
+  if (subnetType === SubnetType.PUBLIC) {
+    return 'public';
+  } else if (subnetType === SubnetType.PRIVATE_WITH_EGRESS ||
+             subnetType === SubnetType.PRIVATE_WITH_NAT) {
+    return 'private';
+  } else {
+    return 'isolated';
+  }
 }
