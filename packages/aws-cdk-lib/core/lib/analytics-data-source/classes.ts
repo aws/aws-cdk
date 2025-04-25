@@ -7424,6 +7424,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'SpecRestApi': {
       'apiDefinition': '*',
       'minCompressionSize': '*',
+      'mode': 'RestApiMode',
       'deploy': 'boolean',
       'deployOptions': {
         'stageName': '*',
@@ -16422,6 +16423,23 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
       'description': '*',
       'ruleName': '*',
       'eventPattern': {
@@ -16463,6 +16481,23 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'eventBusArn': '*',
         'eventBusPolicy': '*',
         'eventSourceName': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
         'stack': '*',
         'env': {
           'account': '*',
