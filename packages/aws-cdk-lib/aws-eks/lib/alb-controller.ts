@@ -246,7 +246,8 @@ export enum AlbScheme {
 export interface AlbControllerHelmChartOptions {
 
   /**
-   * Enable or disable the AWS WAF add on for the ALB ingress controller.
+   * Enable or disable AWS WAFv2 on the ALB ingress controller.
+   *
    * @default - no value defined for this helm chart option, so it will not be set in the helm chart values
    */
   readonly enableWafv2?: boolean;
