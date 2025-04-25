@@ -5,19 +5,6 @@ import { ValidationError } from '../../core/lib/errors';
 import { RegionInfo } from '../../region-info';
 
 /**
- * Properties for Beanstalk environment alias record target
- */
-export interface IBeanstalkAliasRecordTargetProps extends IAliasRecordTargetProps {
-  /**
-   * Hosted zone ID of the target Beanstalk environment.
-   * You can use `RegionInfo.get(yourRegion).ebsEnvEndpointHostedZoneId` to get this value
-   *
-   * @default - auto detected from stack region or Beanstalk environment endpoint
-   */
-  readonly hostedZoneId?: string;
-}
-
-/**
  * Use an Elastic Beanstalk environment URL as an alias record target.
  * E.g. mysampleenvironment.xyz.us-east-1.elasticbeanstalk.com
  * or mycustomcnameprefix.us-east-1.elasticbeanstalk.com
@@ -27,7 +14,7 @@ export interface IBeanstalkAliasRecordTargetProps extends IAliasRecordTargetProp
 export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAliasRecordTarget {
   private hostedZoneId?: string;
 
-  constructor(private readonly environmentEndpoint: string, private readonly props?: IBeanstalkAliasRecordTargetProps) {
+  constructor(private readonly environmentEndpoint: string, private readonly props?: IAliasRecordTargetProps) {
     this.hostedZoneId = props?.hostedZoneId;
   }
 
