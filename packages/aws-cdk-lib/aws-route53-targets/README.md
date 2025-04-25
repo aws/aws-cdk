@@ -225,6 +225,8 @@ new route53.ARecord(this, 'AliasRecord', {
 If Elastic Beanstalk environment URL is not avaiable at synth time, you can specify Hosted Zone ID of the target
 
 ```ts
+import { RegionInfo } from 'aws-cdk-lib/region-info';
+
 declare const zone: route53.HostedZone;
 declare const ebsEnvironmentUrl: string;
 
