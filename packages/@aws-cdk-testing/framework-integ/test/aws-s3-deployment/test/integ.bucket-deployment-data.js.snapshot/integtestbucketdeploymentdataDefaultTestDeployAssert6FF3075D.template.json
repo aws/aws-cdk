@@ -28,7 +28,7 @@
      "Key": "\"deploy/here/my-json/secret-config.json\""
     },
     "flattenResponse": "false",
-    "salt": "1744264369446"
+    "salt": "1745526118431"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -139,7 +139,7 @@
      "Key": "\"deploy/here/my-yaml/secret-config.yaml\""
     },
     "flattenResponse": "false",
-    "salt": "1744264369446"
+    "salt": "1745526118431"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -277,6 +277,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {

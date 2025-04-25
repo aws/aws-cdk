@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "aws-cdk-docdb-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5a74817e8237620d725e0cd94fd468e66a9b48cad94a53a840995fc423b32729.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/859e669c46468d674ec0e4419f103f8d388994cc4d5d54968a2e7b46c48f3990.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,52 @@
         "aws-cdk-docdb-integ.assets"
       ],
       "metadata": {
+        "/aws-cdk-docdb-integ/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-docdb-integ/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/aws-cdk-docdb-integ/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-docdb-integ/VPC/PublicSubnet1/Subnet": [
@@ -76,6 +118,42 @@
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
+        "/aws-cdk-docdb-integ/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/aws-cdk-docdb-integ/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -112,6 +190,34 @@
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
+        "/aws-cdk-docdb-integ/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/aws-cdk-docdb-integ/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -134,6 +240,34 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/aws-cdk-docdb-integ/VPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/aws-cdk-docdb-integ/VPC/PrivateSubnet2/Subnet": [
@@ -172,6 +306,12 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
+        "/aws-cdk-docdb-integ/VPC/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-docdb-integ/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -182,6 +322,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-cdk-docdb-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/aws-cdk-docdb-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
@@ -196,10 +342,34 @@
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
+        "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotDisabled": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "engineVersion": "*",
+              "masterUser": {
+                "username": "*"
+              },
+              "instanceType": "*",
+              "vpc": "*",
+              "removalPolicy": "destroy",
+              "copyTagsToSnapshot": false
+            }
+          }
+        ],
         "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotDisabled/Subnets": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseCopyTagsToSnapshotDisabledSubnets798D8ABD"
+          }
+        ],
+        "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotDisabled/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
           }
         ],
         "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotDisabled/SecurityGroup/Resource": [
@@ -208,10 +378,37 @@
             "data": "DatabaseCopyTagsToSnapshotDisabledSecurityGroupDA546735"
           }
         ],
+        "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotDisabled/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secretName": "*",
+              "encryptionKey": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "username": "*",
+              "encryptionKey": "*",
+              "excludeCharacters": "*",
+              "secretName": "*"
+            }
+          }
+        ],
         "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotDisabled/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseCopyTagsToSnapshotDisabledSecret84FDE733"
+          }
+        ],
+        "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotDisabled/Secret/Attachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "target": "*"
+            }
           }
         ],
         "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotDisabled/Secret/Attachment/Resource": [
@@ -232,10 +429,34 @@
             "data": "DatabaseCopyTagsToSnapshotDisabledInstance1437B1FA7"
           }
         ],
+        "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotEnabled": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "engineVersion": "*",
+              "masterUser": {
+                "username": "*"
+              },
+              "instanceType": "*",
+              "vpc": "*",
+              "removalPolicy": "destroy",
+              "copyTagsToSnapshot": true
+            }
+          }
+        ],
         "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotEnabled/Subnets": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseCopyTagsToSnapshotEnabledSubnets0F90F00C"
+          }
+        ],
+        "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotEnabled/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
           }
         ],
         "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotEnabled/SecurityGroup/Resource": [
@@ -244,10 +465,37 @@
             "data": "DatabaseCopyTagsToSnapshotEnabledSecurityGroup227F101E"
           }
         ],
+        "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotEnabled/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secretName": "*",
+              "encryptionKey": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "username": "*",
+              "encryptionKey": "*",
+              "excludeCharacters": "*",
+              "secretName": "*"
+            }
+          }
+        ],
         "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotEnabled/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseCopyTagsToSnapshotEnabledSecret3AD5FDE3"
+          }
+        ],
+        "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotEnabled/Secret/Attachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "target": "*"
+            }
           }
         ],
         "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotEnabled/Secret/Attachment/Resource": [
@@ -337,5 +585,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

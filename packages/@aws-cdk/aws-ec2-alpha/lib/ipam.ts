@@ -573,13 +573,17 @@ function createIpamPool(
   poolOptions: PoolOptions,
   scopeId: string,
 ): IpamPool {
-  const isLocaleInOperatingRegions = scopeOptions.ipamOperatingRegions
-    ? scopeOptions.ipamOperatingRegions.map(region => ({ regionName: region }))
-      .some(region => region.regionName === poolOptions.locale)
-    : false;
+  // Only check locale if it's provided since it's an optional field
+  if (poolOptions.locale) {
+    const isLocaleInOperatingRegions = scopeOptions.ipamOperatingRegions
+      ? scopeOptions.ipamOperatingRegions.map(region => ({ regionName: region }))
+        .some(region => region.regionName === poolOptions.locale)
+      : false;
 
-  if (!isLocaleInOperatingRegions) {
-    throw new Error(`The provided locale '${poolOptions.locale}' is not in the operating regions.`);
+    if (!isLocaleInOperatingRegions) {
+      throw new Error(`The provided locale '${poolOptions.locale}' is not in the operating regions (${scopeOptions.ipamOperatingRegions}). ` +
+        'If specified, locale must be configured as an operating region for the IPAM.');
+    }
   }
 
   return new IpamPool(scope, id, {
@@ -592,4 +596,3 @@ function createIpamPool(
     awsService: poolOptions.awsService,
   });
 }
-

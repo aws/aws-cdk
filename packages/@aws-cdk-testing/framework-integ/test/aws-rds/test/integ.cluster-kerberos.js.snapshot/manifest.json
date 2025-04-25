@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "cluster-kerberos.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a2cadfa7608aa23de491b66ed991496c78b273935595bbb8fc6dfc2b96a29776.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b19cd94ff28deb56bf90ed51052d6af70d5f21acd304722738f83d7e04e1cd15.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,52 @@
         "cluster-kerberos.assets"
       ],
       "metadata": {
+        "/cluster-kerberos/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cluster-kerberos/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/cluster-kerberos/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/cluster-kerberos/VPC/PublicSubnet1/Subnet": [
@@ -76,6 +118,42 @@
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
+        "/cluster-kerberos/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/cluster-kerberos/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -112,6 +190,34 @@
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
+        "/cluster-kerberos/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/cluster-kerberos/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -134,6 +240,34 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/cluster-kerberos/VPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/cluster-kerberos/VPC/PrivateSubnet2/Subnet": [
@@ -172,6 +306,12 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
+        "/cluster-kerberos/VPC/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cluster-kerberos/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -182,6 +322,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/cluster-kerberos/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/cluster-kerberos/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
@@ -196,6 +342,28 @@
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
+        "/cluster-kerberos/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/cluster-kerberos/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cluster-kerberos/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -208,10 +376,53 @@
             "data": "AD"
           }
         ],
+        "/cluster-kerberos/Database": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "engine": {
+                "engineType": "*",
+                "singleUserRotationApplication": "*",
+                "engineVersion": {
+                  "fullVersion": "*",
+                  "majorVersion": "*"
+                },
+                "parameterGroupFamily": "*",
+                "engineFamily": "*",
+                "supportedLogTypes": "*",
+                "combineImportAndExportRoles": true
+              },
+              "writer": "*",
+              "vpc": "*",
+              "domain": "*",
+              "domainRole": "*"
+            }
+          }
+        ],
+        "/cluster-kerberos/Database/Subnets": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "removalPolicy": "*"
+            }
+          }
+        ],
         "/cluster-kerberos/Database/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseSubnets56F17B9A"
+          }
+        ],
+        "/cluster-kerberos/Database/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
           }
         ],
         "/cluster-kerberos/Database/SecurityGroup/Resource": [
@@ -220,10 +431,40 @@
             "data": "DatabaseSecurityGroup5C91FDCB"
           }
         ],
+        "/cluster-kerberos/Database/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryptionKey": "*",
+              "secretName": "*",
+              "replicaRegions": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "username": "*",
+              "secretName": "*",
+              "encryptionKey": "*",
+              "excludeCharacters": "*",
+              "replaceOnPasswordCriteriaChanges": "*",
+              "replicaRegions": "*"
+            }
+          }
+        ],
         "/cluster-kerberos/Database/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseSecret3B817195"
+          }
+        ],
+        "/cluster-kerberos/Database/Secret/Attachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "target": "*"
+            }
           }
         ],
         "/cluster-kerberos/Database/Secret/Attachment/Resource": [
@@ -236,6 +477,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseB269D8BB"
+          }
+        ],
+        "/cluster-kerberos/Database/Instance": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cluster-kerberos/Database/Instance/Resource": [
@@ -313,5 +560,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

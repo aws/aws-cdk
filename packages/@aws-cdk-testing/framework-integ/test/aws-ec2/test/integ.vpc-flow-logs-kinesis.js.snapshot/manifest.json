@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "42.0.0",
   "artifacts": {
     "FlowLogsTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "FlowLogsTestStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c22551462d92065888506a45879e5ac69b0c5f5c29110a6c00f410666dcd4ace.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ec7a7578dcb3b39ce1c1775a596d5b7d567227c1f8d9e6f5b44abdbf6aab8795.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -35,10 +34,54 @@
         "FlowLogsTestStack.assets"
       ],
       "metadata": {
+        "/FlowLogsTestStack/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "natGateways": "*"
+            }
+          }
+        ],
         "/FlowLogsTestStack/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/FlowLogsTestStack/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/FlowLogsTestStack/VPC/PublicSubnet1/Subnet": [
@@ -77,6 +120,34 @@
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
+        "/FlowLogsTestStack/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/FlowLogsTestStack/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -101,6 +172,34 @@
             "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
+        "/FlowLogsTestStack/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/FlowLogsTestStack/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -123,6 +222,34 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/FlowLogsTestStack/VPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/FlowLogsTestStack/VPC/PrivateSubnet2/Subnet": [
@@ -161,10 +288,25 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
+        "/FlowLogsTestStack/VPC/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/FlowLogsTestStack/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
+          }
+        ],
+        "/FlowLogsTestStack/VPC/FlowLogsKinesisDataFirehose": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resourceType": "*",
+              "destination": "*"
+            }
           }
         ],
         "/FlowLogsTestStack/VPC/FlowLogsKinesisDataFirehose/FlowLog": [
@@ -197,16 +339,119 @@
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
+        "/FlowLogsTestStack/FlowLogsCW": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resourceType": "*",
+              "flowLogName": "*"
+            }
+          }
+        ],
+        "/FlowLogsTestStack/FlowLogsCW/IAMRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/FlowLogsTestStack/FlowLogsCW/IAMRole/ImportIAMRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/FlowLogsTestStack/FlowLogsCW/IAMRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FlowLogsCWIAMRole017AD736"
           }
         ],
+        "/FlowLogsTestStack/FlowLogsCW/IAMRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
         "/FlowLogsTestStack/FlowLogsCW/IAMRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FlowLogsCWIAMRoleDefaultPolicy943C8A20"
+          }
+        ],
+        "/FlowLogsTestStack/FlowLogsCW/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/FlowLogsTestStack/FlowLogsCW/LogGroup/Resource": [
@@ -221,16 +466,39 @@
             "data": "FlowLogsCWFlowLog9CED86DA"
           }
         ],
+        "/FlowLogsTestStack/Bucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
+          }
+        ],
         "/FlowLogsTestStack/Bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Bucket83908E77"
           }
         ],
+        "/FlowLogsTestStack/Bucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/FlowLogsTestStack/Bucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketPolicyE9A3008A"
+          }
+        ],
+        "/FlowLogsTestStack/Bucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/FlowLogsTestStack/Bucket/AutoDeleteObjectsCustomResource/Default": [
@@ -257,10 +525,105 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
+        "/FlowLogsTestStack/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/FlowLogsTestStack/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/FlowLogsTestStack/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Role1ABCC5F0"
+          }
+        ],
+        "/FlowLogsTestStack/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/FlowLogsTestStack/Role/DefaultPolicy/Resource": [
@@ -305,7 +668,6 @@
         "templateFile": "FlowLogsDefaultTestDeployAssert6AFD1854.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
@@ -345,5 +707,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

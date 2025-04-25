@@ -599,7 +599,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "86c1f810188044ee5131336e9c4bd0c97bf5110181d112dfa5de98163adc8a8d.zip"
+     "S3Key": "07dd4b9948a8969a8e5fbe975d575ab65ae5b3841bf90c79d8be6415a149e528.zip"
     },
     "Environment": {
      "Variables": {
@@ -808,6 +808,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {

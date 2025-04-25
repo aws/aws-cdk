@@ -30,7 +30,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1744232008953"
+    "salt": "1745526112868"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -254,7 +254,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -332,7 +332,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -382,7 +382,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -422,7 +422,7 @@
      "Body": "\"a,b,c\\n1,2,3\\n4,5,6\""
     },
     "flattenResponse": "false",
-    "salt": "1744232008954"
+    "salt": "1745526112869"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -456,7 +456,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1744232008954"
+    "salt": "1745526112870"
    },
    "DependsOn": [
     "AwsApiCallS3putObject9f7ed865afc47100b3c2a9fea2cf51ee"
@@ -497,7 +497,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1744232008954"
+    "salt": "1745526112870"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa"
@@ -765,6 +765,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {

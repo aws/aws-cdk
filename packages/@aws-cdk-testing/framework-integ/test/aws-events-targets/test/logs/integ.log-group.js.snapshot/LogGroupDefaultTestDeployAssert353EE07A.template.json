@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallEventBridgeputEvents46b072b790faca487657d56df9b6723a": {
+  "AwsApiCallEventBridgeputEvents19566420e1969cbc0609673d95cedca9": {
    "Type": "Custom::DeployAssert@SdkCallEventBridgeputEvents",
    "Properties": {
     "ServiceToken": {
@@ -12,10 +12,10 @@
     "service": "EventBridge",
     "api": "putEvents",
     "parameters": {
-     "Entries": "[{\"Detail\":\"{\\\"date\\\":\\\"abc1743746758535\\\"}\",\"DetailType\":\"cdk-integ-custom-rule\",\"Source\":\"cdk-integ\"}]"
+     "Entries": "[{\"Detail\":\"{\\\"date\\\":\\\"abc1745526134222\\\"}\",\"DetailType\":\"cdk-integ-custom-rule\",\"Source\":\"cdk-integ\"}]"
     },
     "flattenResponse": "false",
-    "salt": "1743746758544"
+    "salt": "1745526134230"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -107,7 +107,7 @@
     }
    }
   },
-  "AwsApiCallCloudWatchLogsfilterLogEvents7a14337481710ac67a887c70883218bf": {
+  "AwsApiCallCloudWatchLogsfilterLogEvents3d64df21fff30492117ab649e5ac45ee": {
    "Type": "Custom::DeployAssert@SdkCallCloudWatchLogsfilterLogEvents",
    "Properties": {
     "ServiceToken": {
@@ -118,7 +118,7 @@
     },
     "service": "CloudWatchLogs",
     "api": "filterLogEvents",
-    "expected": "{\"$StringLike\":\"abc1743746758535\"}",
+    "expected": "{\"$StringLike\":\"abc1745526134222\"}",
     "actualPath": "events.0.message",
     "parameters": {
      "logGroupName": {
@@ -133,17 +133,17 @@
        ]
       ]
      },
-     "startTime": "1743746758535",
+     "startTime": "1745526134222",
      "limit": "1"
     },
     "flattenResponse": "true",
     "outputPaths": [
      "events.0.message"
     ],
-    "salt": "1743746758544"
+    "salt": "1745526134231"
    },
    "DependsOn": [
-    "AwsApiCallEventBridgeputEvents46b072b790faca487657d56df9b6723a"
+    "AwsApiCallEventBridgeputEvents19566420e1969cbc0609673d95cedca9"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -265,6 +265,9 @@
    "us-isob-east-1": {
     "value": "nodejs18.x"
    },
+   "us-isob-west-1": {
+    "value": "nodejs18.x"
+   },
    "us-west-1": {
     "value": "nodejs20.x"
    },
@@ -274,10 +277,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEvents7a14337481710ac67a887c70883218bf": {
+  "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEvents3d64df21fff30492117ab649e5ac45ee": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallCloudWatchLogsfilterLogEvents7a14337481710ac67a887c70883218bf",
+     "AwsApiCallCloudWatchLogsfilterLogEvents3d64df21fff30492117ab649e5ac45ee",
      "assertion"
     ]
    }

@@ -26,7 +26,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1744306931930"
+    "salt": "1745526166610"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -154,7 +154,7 @@
      "Key": "\"my-key/my-dir/file.txt\""
     },
     "flattenResponse": "false",
-    "salt": "1744306931930"
+    "salt": "1745526166611"
    },
    "DependsOn": [
     "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e",
@@ -197,7 +197,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1744306931931"
+    "salt": "1745526166611"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -553,6 +553,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {

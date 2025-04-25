@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "aws-cdk-codedeploy-lambda-config.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4586b74784fc3cee3fd820f2fd642874d89fc8bb3b9c33949869634d243bccbf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f3b4b93b65c1965823658ef0a9c6410a249655eac153b0e200fac1e9efaa97a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,119 @@
         "aws-cdk-codedeploy-lambda-config.assets"
       ],
       "metadata": {
+        "/aws-cdk-codedeploy-lambda-config/LinearConfig": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-codedeploy-lambda-config/LinearConfig/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LinearConfig531CF4AA"
           }
         ],
+        "/aws-cdk-codedeploy-lambda-config/CustomConfig": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda-config/CustomConfig/DeploymentConfig/Provider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda-config/CustomConfig/DeploymentConfig/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-codedeploy-lambda-config/CustomConfig/DeploymentConfig/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomConfigDeploymentConfigE9E1F384"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda-config/CustomConfig/DeploymentConfig/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-codedeploy-lambda-config/CustomConfig/DeploymentConfig/CustomResourcePolicy/Resource": [
@@ -56,6 +159,61 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda-config/AWS679f53fac002430cb0da5b7982bd2287": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda-config/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda-config/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-codedeploy-lambda-config/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -139,5 +297,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }
