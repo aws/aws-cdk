@@ -705,7 +705,7 @@ new eks.Cluster(this, 'HelloEKS', {
     version: eks.AlbControllerVersion.V2_8_2,
     additionalHelmChartValues: {
       enableWafv2: false
-  }
+    }
   },
   kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
