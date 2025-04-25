@@ -1073,13 +1073,12 @@ const api = new appsync.EventApi(this, 'EventApiDynamoDB', {
   apiName: 'DynamoDBEventApi',
 });
 
-const table = new ddb.Table(this, 'table', {
+const table = new dynamodb.Table(this, 'table', {
   tableName: 'event-messages',
   partitionKey: {
     name: 'id',
-    type: ddb.AttributeType.STRING,
+    type: dynamodb.AttributeType.STRING,
   },
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const dataSource = api.addDynamoDbDataSource('ddbsource', table);
@@ -1088,18 +1087,21 @@ const dataSource = api.addDynamoDbDataSource('ddbsource', table);
 #### Amazon Aurora Serverless
 
 ```ts
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+
+declare const vpc: ec2.Vpc;
 const databaseName = 'mydb';
 const cluster = new rds.DatabaseCluster(this, 'Cluster', {
   engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_6 }),
   writer: rds.ClusterInstance.serverlessV2('writer'),
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
-  vpc,
-  credentials: rds.Credentials.fromGeneratedSecret('clusteradmin', credentialsBaseOptions),
+  vpc: vpc,
+  credentials: { username: 'clusteradmin' },
   defaultDatabaseName: databaseName,
   enableDataApi: true,
 });
 
-const secret = secretmanager.Secret.fromSecretNameV2(this, 'Secret', 'db-secretName');
+const secret = secretsmanager.Secret.fromSecretNameV2(this, 'Secret', 'db-secretName');
+
 const api = new appsync.EventApi(this, 'EventApiRds', {
   apiName: 'RdsEventApi',
 });
@@ -1110,6 +1112,8 @@ const dataSource = api.addRdsDataSource('rdsds', cluster, secret, databaseName);
 #### Amazon EventBridge
 
 ```ts
+import * as events from 'aws-cdk-lib/aws-events';
+
 const api = new appsync.EventApi(this, 'EventApiEventBridge', {
   apiName: 'EventBridgeEventApi',
 });
@@ -1122,14 +1126,12 @@ const dataSource = api.addEventBridgeDataSource('eventbridgeds', eventBus);
 #### AWS Lambda
 
 ```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const lambdaDs: lambda.Function;
+
 const api = new appsync.EventApi(this, 'EventApiLambda', {
   apiName: 'LambdaEventApi',
-});
-
-const lambdaDs = new nodejs.NodejsFunction(this, 'LambdaDs', {
-  runtime: lambda.Runtime.NODEJS_22_X,
-  entry: path.join(__dirname, 'path-to-code', 'index.js'),
-  handler: 'handler',
 });
 
 const dataSource = api.addLambdaDataSource('lambdads', lambdaDs);
@@ -1138,9 +1140,10 @@ const dataSource = api.addLambdaDataSource('lambdads', lambdaDs);
 #### Amazon OpenSearch Service
 
 ```ts
+import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
+
 const domain = new opensearch.Domain(this, 'Domain', {
   version: opensearch.EngineVersion.OPENSEARCH_2_17,
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
   encryptionAtRest: {
     enabled: true,
   },
@@ -1164,6 +1167,8 @@ const dataSource = api.addOpenSearchDataSource('opensearchds', domain);
 #### HTTP Endpoints
 
 ```ts
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
+
 const api = new appsync.EventApi(this, 'EventApiHttp', {
   apiName: 'HttpEventApi',
 });
