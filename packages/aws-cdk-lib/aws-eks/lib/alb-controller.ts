@@ -293,6 +293,7 @@ export interface AlbControllerOptions {
 
   /**
    * Additional helm chart values for ALB controller
+   *
    * @default - no additional helm chart values
    */
   readonly additionalHelmChartValues?: AlbControllerHelmChartOptions;
