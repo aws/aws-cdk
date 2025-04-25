@@ -97,12 +97,12 @@ describe('event source mapping', () => {
     })).toThrow(/maxRecordAge must be between 60 seconds and 7 days inclusive/);
   });
 
-  test('throws if retryAttempts is negative', () => {
+  test('accepts retryAttempts = -1 for infinite retries', () => {
     expect(() => new EventSourceMapping(stack, 'test', {
       target: fn,
       eventSourceArn: '',
       retryAttempts: -1,
-    })).toThrow(/retryAttempts must be between 0 and 10000 inclusive, got -1/);
+    })).not.toThrow();
   });
 
   test('throws if retryAttempts is over 10000', () => {
@@ -110,7 +110,7 @@ describe('event source mapping', () => {
       target: fn,
       eventSourceArn: '',
       retryAttempts: 10001,
-    })).toThrow(/retryAttempts must be between 0 and 10000 inclusive, got 10001/);
+    })).toThrow(/retryAttempts must be -1 \(for infinite\) or between 0 and 10000 inclusive, got 10001/);
   });
 
   test('accepts if retryAttempts is a token', () => {

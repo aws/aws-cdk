@@ -1,7 +1,8 @@
 {
-  "version": "20.0.0",
+  "version": "41.0.0",
   "files": {
     "98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22": {
+      "displayName": "BundledAsset",
       "source": {
         "path": "asset.98ba393580c41ce2b2e3417f5e114223359ba726471a06326cf81743b16daa22",
         "packaging": "zip"
@@ -15,6 +16,7 @@
       }
     },
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+      "displayName": "cdk-integ-assets-bundling-docker-opts Template",
       "source": {
         "path": "cdk-integ-assets-bundling-docker-opts.template.json",
         "packaging": "file"
