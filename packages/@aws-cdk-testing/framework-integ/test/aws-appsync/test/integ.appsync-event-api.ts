@@ -9,7 +9,6 @@ import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import { CfnWebACL, CfnWebACLAssociation } from 'aws-cdk-lib/aws-wafv2';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 interface EventApiStackProps extends cdk.StackProps {
   hostedZoneId: string;
@@ -49,7 +48,7 @@ class EventApiStack extends cdk.Stack {
     });
 
     const authorizer = new lambda.Function(this, 'AuthorizerFunction', {
-      runtime: STANDARD_NODEJS_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_22_X,
       code: lambda.Code.fromInline(`
             exports.handler = async (event) => {
               console.log("Authorization event:", JSON.stringify(event));

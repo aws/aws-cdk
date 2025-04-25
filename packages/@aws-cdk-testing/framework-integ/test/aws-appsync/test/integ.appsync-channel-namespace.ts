@@ -4,7 +4,6 @@ import * as appsync from 'aws-cdk-lib/aws-appsync';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class EventApiChannelNamespaceStack extends cdk.Stack {
   public readonly eventApi: appsync.EventApi;
@@ -12,7 +11,7 @@ class EventApiChannelNamespaceStack extends cdk.Stack {
     super(scope, id);
 
     const authorizer = new lambda.Function(this, 'AuthorizerFunction', {
-      runtime: STANDARD_NODEJS_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_22_X,
       code: lambda.Code.fromInline(`
             exports.handler = async (event) => {
               console.log("Authorization event:", JSON.stringify(event));
