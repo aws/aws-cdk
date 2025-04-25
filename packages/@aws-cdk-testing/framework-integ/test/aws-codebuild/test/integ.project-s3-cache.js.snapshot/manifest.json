@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/88046a9aa3f638eaa4cb1263a227795955d39f91bf7708acc993933a13bb737f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2f78021fd3523181f2f5044fa8a75bae05b89aa6c2c38f0de75d7432bdc5f4ce.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -94,13 +94,13 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
-        "/codebuild-s3-cache-stack/Project": [
+        "/codebuild-s3-cache-stack/ProjectA": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/codebuild-s3-cache-stack/Project/Role": [
+        "/codebuild-s3-cache-stack/ProjectA/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -130,19 +130,19 @@
             "data": "*"
           }
         ],
-        "/codebuild-s3-cache-stack/Project/Role/ImportRole": [
+        "/codebuild-s3-cache-stack/ProjectA/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/codebuild-s3-cache-stack/Project/Role/Resource": [
+        "/codebuild-s3-cache-stack/ProjectA/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ProjectRole4CCB274E"
+            "data": "ProjectARoleB54F4848"
           }
         ],
-        "/codebuild-s3-cache-stack/Project/Role/DefaultPolicy": [
+        "/codebuild-s3-cache-stack/ProjectA/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -172,16 +172,106 @@
             "data": "*"
           }
         ],
-        "/codebuild-s3-cache-stack/Project/Role/DefaultPolicy/Resource": [
+        "/codebuild-s3-cache-stack/ProjectA/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ProjectRoleDefaultPolicy7F29461B"
+            "data": "ProjectARoleDefaultPolicyFD70CA18"
           }
         ],
-        "/codebuild-s3-cache-stack/Project/Resource": [
+        "/codebuild-s3-cache-stack/ProjectA/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ProjectC78D97AD"
+            "data": "ProjectA8C1CB2D1"
+          }
+        ],
+        "/codebuild-s3-cache-stack/ProjectB": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/codebuild-s3-cache-stack/ProjectB/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/codebuild-s3-cache-stack/ProjectB/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/codebuild-s3-cache-stack/ProjectB/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectBRoleF7D6B894"
+          }
+        ],
+        "/codebuild-s3-cache-stack/ProjectB/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/codebuild-s3-cache-stack/ProjectB/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectBRoleDefaultPolicy8935700C"
+          }
+        ],
+        "/codebuild-s3-cache-stack/ProjectB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectBEC12129A"
           }
         ],
         "/codebuild-s3-cache-stack/Exports/Output{\"Ref\":\"MyBucketF68F3FF0\"}": [
@@ -190,10 +280,16 @@
             "data": "ExportsOutputRefMyBucketF68F3FF0442F9925"
           }
         ],
-        "/codebuild-s3-cache-stack/Exports/Output{\"Ref\":\"ProjectC78D97AD\"}": [
+        "/codebuild-s3-cache-stack/Exports/Output{\"Ref\":\"ProjectA8C1CB2D1\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefProjectC78D97AD3B9780D2"
+            "data": "ExportsOutputRefProjectA8C1CB2D1B268694A"
+          }
+        ],
+        "/codebuild-s3-cache-stack/Exports/Output{\"Ref\":\"ProjectBEC12129A\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefProjectBEC12129A119337F0"
           }
         ],
         "/codebuild-s3-cache-stack/BootstrapVersion": [
@@ -228,7 +324,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c67853507245766b9f9d68630692ab846d712bd103dc50d538151021c422fe11.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/28fff4bdaeaea254f5ce766ceac7761fa0e14f01cf698048b599923a7b704c64.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -245,7 +341,7 @@
         "codebuilds3cacheintegDefaultTestDeployAssert27F68086.assets"
       ],
       "metadata": {
-        "/codebuild-s3-cache-integ/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjects21c88d5f83407043b537b1efd155b811/Default": [
+        "/codebuild-s3-cache-integ/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjectsd54891821517debdd6d60f262099ea55/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -259,16 +355,16 @@
             "data": "*"
           }
         ],
-        "/codebuild-s3-cache-integ/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjects21c88d5f83407043b537b1efd155b811/Default/Default": [
+        "/codebuild-s3-cache-integ/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjectsd54891821517debdd6d60f262099ea55/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallCodeBuildbatchGetProjects21c88d5f83407043b537b1efd155b811"
+            "data": "AwsApiCallCodeBuildbatchGetProjectsd54891821517debdd6d60f262099ea55"
           }
         ],
-        "/codebuild-s3-cache-integ/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjects21c88d5f83407043b537b1efd155b811/AssertionResults": [
+        "/codebuild-s3-cache-integ/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjectsd54891821517debdd6d60f262099ea55/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallCodeBuildbatchGetProjects21c88d5f83407043b537b1efd155b811"
+            "data": "AssertionResultsAwsApiCallCodeBuildbatchGetProjectsd54891821517debdd6d60f262099ea55"
           }
         ],
         "/codebuild-s3-cache-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -287,6 +383,32 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/codebuild-s3-cache-integ/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjects92c2a732a2826314983751685ba1e10a/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/codebuild-s3-cache-integ/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjects92c2a732a2826314983751685ba1e10a/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetProjects92c2a732a2826314983751685ba1e10a"
+          }
+        ],
+        "/codebuild-s3-cache-integ/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjects92c2a732a2826314983751685ba1e10a/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCodeBuildbatchGetProjects92c2a732a2826314983751685ba1e10a"
           }
         ],
         "/codebuild-s3-cache-integ/DefaultTest/DeployAssert/BootstrapVersion": [

@@ -13,29 +13,59 @@ const bucket = new s3.Bucket(stack, 'MyBucket', {
   autoDeleteObjects: true,
 });
 
-const project = new codebuild.Project(stack, 'Project', {
+const buildSpec = codebuild.BuildSpec.fromObject({
+  version: '0.2',
+  phases: {
+    build: {
+      commands: ['echo "Hello, CodeBuild!"'],
+    },
+  },
+  cache: {
+    paths: [
+      '/root/cachedir/**/*',
+    ],
+    key: 'unique-key',
+  },
+});
+
+const projectA = new codebuild.Project(stack, 'ProjectA', {
   source: codebuild.Source.s3({
     bucket,
-    path: 'path/to/my/source.zip',
+    path: 'path/to/source-a.zip',
   }),
   cache: codebuild.Cache.bucket(bucket, {
     prefix: 'cache',
     cacheNamespace: 'cache-namespace',
   }),
+  buildSpec,
+});
+
+const projectB = new codebuild.Project(stack, 'ProjectB', {
+  source: codebuild.Source.s3({
+    bucket,
+    path: 'path/to/source-b.zip',
+  }),
+  cache: codebuild.Cache.bucket(bucket, {
+    prefix: 'cache',
+    cacheNamespace: 'cache-namespace',
+  }),
+  buildSpec,
 });
 
 const integ = new IntegTest(app, 'codebuild-s3-cache-integ', {
   testCases: [stack],
 });
 
-integ.assertions.awsApiCall('CodeBuild', 'batchGetProjects', {
-  names: [project.projectName],
-}).expect(ExpectedResult.objectLike({
-  projects: [{
-    cache: {
-      type: 'S3',
-      location: `${bucket.bucketName}/cache`,
-      cacheNamespace: 'cache-namespace',
-    },
-  }],
-}));
+[projectA, projectB].forEach((project) => {
+  integ.assertions.awsApiCall('CodeBuild', 'batchGetProjects', {
+    names: [project.projectName],
+  }).expect(ExpectedResult.objectLike({
+    projects: [{
+      cache: {
+        type: 'S3',
+        location: `${bucket.bucketName}/cache`,
+        cacheNamespace: 'cache-namespace',
+      },
+    }],
+  }));
+});
