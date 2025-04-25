@@ -2822,6 +2822,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'resume-cluster',
     'failover-primary-compute'
   ],
+  'RestApiMode': [
+    'overwrite',
+    'merge'
+  ],
   'Result': [
     'ROLLBACK',
     'FAIL',

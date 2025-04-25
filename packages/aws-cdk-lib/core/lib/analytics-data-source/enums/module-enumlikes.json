@@ -4,6 +4,29 @@
       "SINGLE_PAGE_APPLICATION_REDIRECT"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts": {
+    "JavaInstrumentationVersion": [
+      "V2_10_0",
+      "V1_33_0",
+      "V1_32_6"
+    ],
+    "PythonInstrumentationVersion": [
+      "V0_8_0",
+      "V0_9_0"
+    ],
+    "DotnetInstrumentationVersion": [
+      "V1_6_0",
+      "V1_6_0_WINDOWS2022",
+      "V1_6_0_WINDOWS2019",
+      "V1_7_0",
+      "V1_7_0_WINDOWS2022",
+      "V1_7_0_WINDOWS2019"
+    ],
+    "NodeInstrumentationVersion": [
+      "V0_5_0",
+      "V0_6_0"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-apprunner-alpha/lib/service.ts": {
     "Cpu": [
       "QUARTER_VCPU",
@@ -3080,6 +3103,7 @@
       "VER_15_00_4410_1_V1",
       "VER_15_00_4415_2_V1",
       "VER_15_00_4420_2_V1",
+      "VER_15_00_4430_1_V1",
       "VER_16",
       "VER_16_00_4085_2_V1",
       "VER_16_00_4095_4_V1",
@@ -3092,7 +3116,8 @@
       "VER_16_00_4140_3_V1",
       "VER_16_00_4150_1_V1",
       "VER_16_00_4165_4_V1",
-      "VER_16_00_4175_1_V1"
+      "VER_16_00_4175_1_V1",
+      "VER_16_00_4185_3_V1"
     ],
     "DatabaseInstanceEngine": [
       "MARIADB",
