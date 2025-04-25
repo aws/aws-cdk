@@ -405,6 +405,7 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
   type: appconfig.ConfigurationType.FEATURE_FLAGS,
   kmsKey, // set customer managed key
 });
+```
 
 ### SourcedConfiguration
 
