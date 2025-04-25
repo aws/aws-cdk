@@ -266,11 +266,12 @@ If you want to [share the same cache between multiple projects](https://docs.aws
 - Use the same Amazon S3 buckets and `pathPrefix` if set.
 
 ```ts
+declare const sourceBucket: s3.Bucket;
 declare const myCachingBucket: s3.Bucket;
 
 new codebuild.Project(this, 'ProjectA', {
   source: codebuild.Source.s3({
-    bucket,
+    bucket: sourceBucket,
     path: 'path/to/source-a.zip',
   }),
   // configure the same bucket and path prefix
@@ -298,7 +299,7 @@ new codebuild.Project(this, 'ProjectA', {
 
 new codebuild.Project(this, 'ProjectB', {
   source: codebuild.Source.s3({
-    bucket,
+    bucket: sourceBucket,
     path: 'path/to/source-b.zip',
   }),
   // configure the same bucket and path prefix
