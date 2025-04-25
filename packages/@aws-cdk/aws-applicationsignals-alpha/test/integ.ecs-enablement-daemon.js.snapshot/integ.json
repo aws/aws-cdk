@@ -1,0 +1,14 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "ApplicationSignalsIntegrationECSDaemonTest/DefaultTest": {
+      "stacks": [
+        "ApplicationSignalsInfra-Daemon",
+        "ApplicationSignalsCloudWatchAgent-Daemon",
+        "ApplicationSignalsJavaApp-Daemon"
+      ],
+      "assertionStack": "ApplicationSignalsIntegrationECSDaemonTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ApplicationSignalsIntegrationECSDaemonTestDefaultTestDeployAssert1C48CFAF"
+    }
+  }
+}
