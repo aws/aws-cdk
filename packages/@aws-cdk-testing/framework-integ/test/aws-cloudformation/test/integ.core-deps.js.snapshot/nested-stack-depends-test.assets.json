@@ -1,7 +1,8 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "files": {
     "a0a84b40ba60ba1e502f2d610a4a4f1887756b077982504bcc7227a7d3d81425": {
+      "displayName": "Stack1 Nested Stack Template",
       "source": {
         "path": "nestedstackdependstestStack1DE6783D8.nested.template.json",
         "packaging": "file"
@@ -15,6 +16,7 @@
       }
     },
     "a967bbe5c0391c1c335b765fd70a93c81565a73fdd887a2456aa54f001e52336": {
+      "displayName": "Stack2 Nested Stack Template",
       "source": {
         "path": "nestedstackdependstestStack2A36722CF.nested.template.json",
         "packaging": "file"
@@ -28,6 +30,7 @@
       }
     },
     "ee5289d3d1a75cecdf6a72fb59f6f721e15b9d0997bd959d035048a679fa6c9d": {
+      "displayName": "nested-stack-depends-test Template",
       "source": {
         "path": "nested-stack-depends-test.template.json",
         "packaging": "file"

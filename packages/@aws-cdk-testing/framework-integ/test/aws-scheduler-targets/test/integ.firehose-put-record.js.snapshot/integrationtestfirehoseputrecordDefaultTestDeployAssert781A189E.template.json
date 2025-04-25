@@ -31,7 +31,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1742260566717"
+    "salt": "1745526115146"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -485,6 +485,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {
