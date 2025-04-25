@@ -2,6 +2,7 @@ import { Template } from '../../assertions';
 import * as elasticbeanstalk from '../../aws-elasticbeanstalk';
 import * as route53 from '../../aws-route53';
 import { App, Stack } from '../../core';
+import { RegionInfo } from '../../region-info';
 import * as targets from '../lib';
 
 test('use EBS environment as record target', () => {
@@ -56,6 +57,36 @@ test('EBS environment endpoint token can be referenced if stack region is specif
         'Fn::GetAtt': ['Environment', 'EndpointURL'],
       },
       HostedZoneId: 'Z38NKT9BP95V3O',
+    },
+  });
+});
+
+test('hostedZoneId can be specified', () => {
+  // GIVEN
+  const stack = new Stack();
+  const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
+
+  const ebsEnv = new elasticbeanstalk.CfnEnvironment(stack, 'Environment', {
+    applicationName: 'test',
+  });
+
+  // WHEN
+  new route53.ARecord(stack, 'Alias', {
+    zone,
+    target: route53.RecordTarget.fromAlias(
+      new targets.ElasticBeanstalkEnvironmentEndpointTarget(ebsEnv.attrEndpointUrl, {
+        hostedZoneId: RegionInfo.get('us-east-1').ebsEnvEndpointHostedZoneId,
+      }),
+    ),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+    AliasTarget: {
+      DNSName: {
+        'Fn::GetAtt': ['Environment', 'EndpointURL'],
+      },
+      HostedZoneId: 'Z117KPS5GTRQ2G',
     },
   });
 });
