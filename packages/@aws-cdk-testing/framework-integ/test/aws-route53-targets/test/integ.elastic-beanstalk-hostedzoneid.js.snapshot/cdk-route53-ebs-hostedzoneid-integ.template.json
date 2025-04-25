@@ -108,7 +108,7 @@
      ]
     },
     "Create": "{\"service\":\"ElasticBeanstalk\",\"action\":\"describeEnvironments\",\"parameters\":{\"EnvironmentNames\":[]},\"physicalResourceId\":{\"id\":\"EnvironmentUrl\"},\"logApiResponseData\":false}",
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "Environment",
@@ -337,6 +337,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {
