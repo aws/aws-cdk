@@ -387,7 +387,7 @@ export interface HostedConfigurationProps extends ConfigurationProps {
   /**
    * The customer managed key to encrypt hosted configuration.
    *
-   * @default - None.
+   * @default None
    */
   readonly kmsKey?: kms.IKey;
 }
