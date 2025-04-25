@@ -69,7 +69,7 @@ integTest.assertions.invokeFunction({
     statusCode: 200,
     msg: 'subscribe_success',
   }),
-})).waitForAssertions();
+}));
 
 integTest.assertions.invokeFunction({
   functionName: stack.lambdaTestFn.functionName,
@@ -83,4 +83,4 @@ integTest.assertions.invokeFunction({
     statusCode: 400,
     msg: 'HandlerExecutionError',
   }),
-})).waitForAssertions();
+}));

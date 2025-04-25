@@ -26754,7 +26754,8 @@ async function subscribe(channel, authMode, authToken, triggerPub = false, event
     authorization: await getPublishAuthHeader(authMode, { channel: subChannel }, authToken)
   }));
   if (triggerPub) {
-    await sleep(1e3);
+    await sleep(2e3);
+    console.log("Hello in here for publishing");
     await publish(channel, eventPayload, authMode, authToken);
   }
   await sleep(3e3);
@@ -26781,7 +26782,7 @@ async function publish(channel, eventPayload, authMode, authToken) {
   const output = await response.json();
   return {
     statusCode: 200,
-    msg: output.successful.length == 1 ? "publish_success" : "publish_fail"
+    msg: output.successful.length == eventPayload.length ? "publish_success" : "publish_fail"
   };
 }
 exports.handler = async function(event) {

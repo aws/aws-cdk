@@ -27,7 +27,7 @@
      "Payload": "\"{\\\"action\\\":\\\"publish\\\",\\\"authMode\\\":\\\"API_KEY\\\",\\\"channel\\\":\\\"chat/messages\\\",\\\"eventPayload\\\":[{\\\"id\\\":\\\"1\\\",\\\"message\\\":\\\"Test\\\"},{\\\"id\\\":\\\"2\\\",\\\"message\\\":\\\"Test2\\\"},{\\\"id\\\":\\\"3\\\",\\\"message\\\":\\\"Test3\\\"}]}\""
     },
     "flattenResponse": "false",
-    "salt": "1743268856122"
+    "salt": "1745594063238"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -184,7 +184,7 @@
      "RequestItems": "{\"event-messages\":{\"Keys\":[{\"id\":{\"S\":\"1\"}},{\"id\":{\"S\":\"2\"}},{\"id\":{\"S\":\"3\"}}]}}"
     },
     "flattenResponse": "false",
-    "salt": "1743268856122"
+    "salt": "1745594063239"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -27,7 +27,7 @@
      "Payload": "\"{\\\"channel\\\":\\\"chat/messages\\\",\\\"action\\\":\\\"publish\\\",\\\"authMode\\\":\\\"API_KEY\\\",\\\"eventPayload\\\":[{\\\"message\\\":\\\"hello1\\\"}]}\""
     },
     "flattenResponse": "false",
-    "salt": "1743284864518"
+    "salt": "1745594782293"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -188,7 +188,7 @@
     "outputPaths": [
      "Messages.0.Body.detail.message"
     ],
-    "salt": "1743284864519"
+    "salt": "1745594782294"
    },
    "DependsOn": [
     "LambdaInvokec09ec61d0a89b1cb8a2bcab762e98458",

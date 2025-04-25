@@ -26768,13 +26768,11 @@ async function publish(channel, eventPayload, authMode, authToken) {
     "channel": `${channel}/test`,
     "events": eventPayload.map((_payload) => JSON.stringify(_payload))
   };
-  console.log(event);
   const response = await fetch(`${httpUrl}`, {
     method: "POST",
     headers: await getPublishAuthHeader(authMode, event, authToken),
     body: JSON.stringify(event)
   });
-  console.log(response);
   if (!response.ok) {
     return {
       statusCode: response.status,
@@ -26782,7 +26780,6 @@ async function publish(channel, eventPayload, authMode, authToken) {
     };
   }
   const output = await response.json();
-  console.log(output);
   return {
     statusCode: 200,
     msg: output.successful.length == eventPayload.length ? "publish_success" : "publish_fail"

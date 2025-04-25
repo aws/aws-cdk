@@ -28,7 +28,7 @@
      "Payload": "\"{\\\"action\\\":\\\"publish\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"USER_POOL\\\",\\\"customEndpoint\\\":true}\""
     },
     "flattenResponse": "false",
-    "salt": "1743734237100"
+    "salt": "1745592412693"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -296,7 +296,7 @@
      "Payload": "\"{\\\"action\\\":\\\"publish\\\",\\\"channel\\\":\\\"ChannelNamespace\\\",\\\"authMode\\\":\\\"API_KEY\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1743734237101"
+    "salt": "1745592412694"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -344,7 +344,7 @@
      "Payload": "\"{\\\"action\\\":\\\"subscribe\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1743734237101"
+    "salt": "1745592412694"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -392,7 +392,7 @@
      "Payload": "\"{\\\"action\\\":\\\"subscribe\\\",\\\"channel\\\":\\\"ChannelNamespace\\\",\\\"authMode\\\":\\\"API_KEY\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1743734237102"
+    "salt": "1745592412694"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -561,9 +561,6 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {

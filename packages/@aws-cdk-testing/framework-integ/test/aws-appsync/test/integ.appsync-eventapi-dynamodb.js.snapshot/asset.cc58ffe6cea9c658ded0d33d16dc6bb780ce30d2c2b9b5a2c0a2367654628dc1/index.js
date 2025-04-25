@@ -26754,7 +26754,8 @@ async function subscribe(channel, authMode, authToken, triggerPub = false, event
     authorization: await getPublishAuthHeader(authMode, { channel: subChannel }, authToken)
   }));
   if (triggerPub) {
-    await sleep(1e3);
+    await sleep(2e3);
+    console.log("Hello in here for publishing");
     await publish(channel, eventPayload, authMode, authToken);
   }
   await sleep(3e3);

@@ -24,14 +24,17 @@ __export(index_exports, {
 });
 module.exports = __toCommonJS(index_exports);
 var handler = async (event) => {
+  console.log("event", event);
   if (event.info.operation === "PUBLISH") {
     return {};
   } else if (event.info.operation === "SUBSCRIBE") {
     const segments = event.info.channel.segments;
+    console.log("segments", segments);
     if (segments.includes("invalid")) {
       throw new Error("You are not authorized to subscribe to this channel");
     }
-    return {};
+    console.log("I am in here which means no errors");
+    return null;
   }
 };
 // Annotate the CommonJS export names for ESM import in node:

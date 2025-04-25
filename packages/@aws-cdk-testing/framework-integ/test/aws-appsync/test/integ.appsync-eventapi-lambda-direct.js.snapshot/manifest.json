@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b0e60e13a0625f1b8f9a895e112d07dc539aeee62dc638ab303ec4c78d9c81be.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ac4bfbb9f4a753926a1abf8073fafbd31773ba46c37c509f0d8774fdee2b91cd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -324,7 +324,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/90b1f05ba078a3cce432e80df20ffb8ad63f499d1ceba5eb332c1e3dd6f955e9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b190b56ece07ce091664bca6e3661a6aa5b7cc81dd868f0b7469e56c71faab53.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -367,30 +367,6 @@
             "data": "LambdaInvoke9ba265c6c3fb824413b5c0192184d58aInvoke9DCEE644"
           }
         ],
-        "/appsync-eventapi-lambda-direct-test/DefaultTest/DeployAssert/LambdaInvoke9ba265c6c3fb824413b5c0192184d58a/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke9ba265c6c3fb824413b5c0192184d58aWaitForIsCompleteProviderInvoke13EBB964"
-          }
-        ],
-        "/appsync-eventapi-lambda-direct-test/DefaultTest/DeployAssert/LambdaInvoke9ba265c6c3fb824413b5c0192184d58a/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke9ba265c6c3fb824413b5c0192184d58aWaitForTimeoutProviderInvoke770FD680"
-          }
-        ],
-        "/appsync-eventapi-lambda-direct-test/DefaultTest/DeployAssert/LambdaInvoke9ba265c6c3fb824413b5c0192184d58a/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke9ba265c6c3fb824413b5c0192184d58aWaitForRoleB340EE45"
-          }
-        ],
-        "/appsync-eventapi-lambda-direct-test/DefaultTest/DeployAssert/LambdaInvoke9ba265c6c3fb824413b5c0192184d58a/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke9ba265c6c3fb824413b5c0192184d58aWaitForBC00DDC7"
-          }
-        ],
         "/appsync-eventapi-lambda-direct-test/DefaultTest/DeployAssert/LambdaInvoke9ba265c6c3fb824413b5c0192184d58a/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
@@ -413,30 +389,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/appsync-eventapi-lambda-direct-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
-          }
-        ],
-        "/appsync-eventapi-lambda-direct-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
-          }
-        ],
-        "/appsync-eventapi-lambda-direct-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
-          }
-        ],
-        "/appsync-eventapi-lambda-direct-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
           }
         ],
         "/appsync-eventapi-lambda-direct-test/DefaultTest/DeployAssert/LambdaInvoke4e2c4f3bd0e1c89da57338f3c06d1758/Default": [
@@ -463,30 +415,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdaInvoke4e2c4f3bd0e1c89da57338f3c06d1758Invoke4388B734"
-          }
-        ],
-        "/appsync-eventapi-lambda-direct-test/DefaultTest/DeployAssert/LambdaInvoke4e2c4f3bd0e1c89da57338f3c06d1758/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke4e2c4f3bd0e1c89da57338f3c06d1758WaitForIsCompleteProviderInvoke0BE94695"
-          }
-        ],
-        "/appsync-eventapi-lambda-direct-test/DefaultTest/DeployAssert/LambdaInvoke4e2c4f3bd0e1c89da57338f3c06d1758/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke4e2c4f3bd0e1c89da57338f3c06d1758WaitForTimeoutProviderInvoke934A6267"
-          }
-        ],
-        "/appsync-eventapi-lambda-direct-test/DefaultTest/DeployAssert/LambdaInvoke4e2c4f3bd0e1c89da57338f3c06d1758/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke4e2c4f3bd0e1c89da57338f3c06d1758WaitForRole11C4CE2E"
-          }
-        ],
-        "/appsync-eventapi-lambda-direct-test/DefaultTest/DeployAssert/LambdaInvoke4e2c4f3bd0e1c89da57338f3c06d1758/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke4e2c4f3bd0e1c89da57338f3c06d1758WaitForEB3C3355"
           }
         ],
         "/appsync-eventapi-lambda-direct-test/DefaultTest/DeployAssert/LambdaInvoke4e2c4f3bd0e1c89da57338f3c06d1758/AssertionResults": [

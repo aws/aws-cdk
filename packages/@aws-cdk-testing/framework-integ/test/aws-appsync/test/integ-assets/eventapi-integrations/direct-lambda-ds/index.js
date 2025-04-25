@@ -12,6 +12,6 @@ export const handler = async (event) => {
     if (segments.includes("invalid")) {
       throw new Error("You are not authorized to subscribe to this channel");
     }
-    return {};
+    return null;
   }
 };
