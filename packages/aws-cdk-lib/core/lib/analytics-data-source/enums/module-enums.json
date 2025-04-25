@@ -867,6 +867,10 @@
       "EDGE",
       "REGIONAL",
       "PRIVATE"
+    ],
+    "RestApiMode": [
+      "overwrite",
+      "merge"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/stage.ts": {
