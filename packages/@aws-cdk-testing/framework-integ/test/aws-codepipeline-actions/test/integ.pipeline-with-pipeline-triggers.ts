@@ -179,7 +179,7 @@ const awsApiCall2 = integrationTest.assertions.awsApiCall('CodePipeline', 'getPi
 awsApiCall2.assertAtPath('pipeline.name', ExpectedResult.stringLikeRegexp('my-pipeline2'));
 
 integrationTest.assertions.awsApiCall('CodePipeline', 'getPipeline', {
-  name: 'codepipeline-integ-trigger-test'
+  name: 'codepipeline-integ-trigger-test',
 }).expect(ExpectedResult.objectLike({
   pipeline: {
     name: 'codepipeline-integ-trigger-test',
