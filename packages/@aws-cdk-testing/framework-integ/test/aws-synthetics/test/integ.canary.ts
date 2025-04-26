@@ -68,6 +68,20 @@ const folderAsset = new Canary(stack, 'FolderAsset', {
   cleanup: Cleanup.LAMBDA,
 });
 
+const zipAsset = new Canary(stack, 'ZipAsset', {
+  test: Test.custom({
+    handler: 'canary.handler',
+    code: Code.fromAsset(path.join(__dirname, 'canary.zip')),
+  }),
+  artifactsBucketLifecycleRules: [
+    {
+      expiration: cdk.Duration.days(30),
+    },
+  ],
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+  cleanup: Cleanup.LAMBDA,
+});
+
 const kebabToPascal = (text:string) => text.replace(/(^\w|[-./]\w)/g, (v) => v.replace(/[-./]/, '').toUpperCase());
 const createCanaryByRuntimes = (runtime: Runtime, handler?: string) =>
   new Canary(stack, kebabToPascal(runtime.name + (handler ?? '')), {
@@ -107,6 +121,7 @@ const test = new IntegTest(app, 'IntegCanaryTest', {
   inlineAsset,
   directoryAsset,
   folderAsset,
+  zipAsset,
   puppeteer52,
   puppeteer62,
   puppeteer70,
