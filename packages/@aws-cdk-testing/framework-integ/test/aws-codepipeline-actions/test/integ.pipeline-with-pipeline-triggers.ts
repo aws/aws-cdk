@@ -156,6 +156,13 @@ new codepipeline.Pipeline(stack, 'codepipeline-integ-trigger-test', {
         filePathsExcludes: ['/path/to/exclude1', '/path/to/exclude2'],
         filePathsIncludes: ['/path/to/include1', '/path/to/include2'],
       }],
+      pullRequestFilter: [{
+        branchesExcludes: ['excludePR1', 'excludePR2'],
+        branchesIncludes: ['includePR1', 'includePR2'],
+        filePathsExcludes: ['/path/to/excludePR1', '/path/to/excludePR2'],
+        filePathsIncludes: ['/path/to/includePR1', '/path/to/includePR2'],
+        events: [codepipeline.GitPullRequestEvent.OPEN, codepipeline.GitPullRequestEvent.UPDATED],
+      }],
     },
   }],
 });
@@ -171,35 +178,40 @@ awsApiCall1.assertAtPath('pipeline.name', ExpectedResult.stringLikeRegexp('my-pi
 const awsApiCall2 = integrationTest.assertions.awsApiCall('CodePipeline', 'getPipeline', { name: 'my-pipeline2' });
 awsApiCall2.assertAtPath('pipeline.name', ExpectedResult.stringLikeRegexp('my-pipeline2'));
 
-const awsApiCall3 = integrationTest.assertions.awsApiCall('CodePipeline', 'getPipeline', { name: 'codepipeline-integ-trigger-test' });
-awsApiCall3.assertAtPath('pipeline.name',
-  ExpectedResult.stringLikeRegexp('codepipeline-integ-trigger-test'));
-awsApiCall3.assertAtPath('pipeline.stages.0.name',
-  ExpectedResult.stringLikeRegexp('Source'));
-awsApiCall3.assertAtPath('pipeline.stages.1.name',
-  ExpectedResult.stringLikeRegexp('Build'));
-awsApiCall3.assertAtPath('pipeline.triggers.0.providerType',
-  ExpectedResult.stringLikeRegexp(codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION));
-awsApiCall3.assertAtPath('pipeline.triggers.0.gitConfiguration.sourceActionName',
-  ExpectedResult.stringLikeRegexp('integ-action-name'));
-// Assert branch includes
-awsApiCall3.assertAtPath('pipeline.triggers.0.gitConfiguration.push.0.branches.includes.0',
-  ExpectedResult.stringLikeRegexp('include1'));
-awsApiCall3.assertAtPath('pipeline.triggers.0.gitConfiguration.push.0.branches.includes.1',
-  ExpectedResult.stringLikeRegexp('include2'));
-awsApiCall3.assertAtPath('pipeline.triggers.0.gitConfiguration.push.0.branches.excludes.0',
-  ExpectedResult.stringLikeRegexp('exclude1'));
-awsApiCall3.assertAtPath('pipeline.triggers.0.gitConfiguration.push.0.branches.excludes.1',
-  ExpectedResult.stringLikeRegexp('exclude2'));
-// Assert file path includes
-awsApiCall3.assertAtPath('pipeline.triggers.0.gitConfiguration.push.0.filePaths.includes.0',
-  ExpectedResult.stringLikeRegexp('/path/to/include1'));
-awsApiCall3.assertAtPath('pipeline.triggers.0.gitConfiguration.push.0.filePaths.includes.1',
-  ExpectedResult.stringLikeRegexp('/path/to/include2'));
-// Assert file path excludes
-awsApiCall3.assertAtPath('pipeline.triggers.0.gitConfiguration.push.0.filePaths.excludes.0',
-  ExpectedResult.stringLikeRegexp('/path/to/exclude1'));
-awsApiCall3.assertAtPath('pipeline.triggers.0.gitConfiguration.push.0.filePaths.excludes.1',
-  ExpectedResult.stringLikeRegexp('/path/to/exclude2'));
-
-app.synth();
+integrationTest.assertions.awsApiCall('CodePipeline', 'getPipeline', {
+  name: 'codepipeline-integ-trigger-test'
+}).expect(ExpectedResult.objectLike({
+  pipeline: {
+    name: 'codepipeline-integ-trigger-test',
+    stages: [
+      { name: 'Source' },
+      { name: 'Build' },
+    ],
+    triggers: [{
+      providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+      gitConfiguration: {
+        sourceActionName: 'integ-action-name',
+        push: [{
+          branches: {
+            includes: ['include1', 'include2'],
+            excludes: ['exclude1', 'exclude2'],
+          },
+          filePaths: {
+            includes: ['/path/to/include1', '/path/to/include2'],
+            excludes: ['/path/to/exclude1', '/path/to/exclude2'],
+          },
+        }],
+        pullRequest: [{
+          branches: {
+            includes: ['includePR1', 'includePR2'],
+            excludes: ['excludePR1', 'excludePR2'],
+          },
+          filePaths: {
+            includes: ['/path/to/includePR1', '/path/to/includePR2'],
+            excludes: ['/path/to/excludePR1', '/path/to/excludePR2'],
+          },
+        }],
+      },
+    }],
+  },
+}));
