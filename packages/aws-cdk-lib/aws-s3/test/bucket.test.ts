@@ -4204,13 +4204,17 @@ describe('bucket', () => {
         ],
       });
       (bucket.node.defaultChild as s3.CfnBucket).overrideLogicalId('SrcBucket');
-      bucket.grantReplicationPermission(replicationRole, {
+      const grant = bucket.grantReplicationPermission(replicationRole, {
         sourceDecryptionKey: srcEncryptionKey,
         destinations: [{
           bucket: dstBucket,
           encryptionKey: dstEncryptionKey,
         }],
       });
+
+      grant.assertSuccess();
+      // 5 because of the 3 actions for `s3:*`, the 1 kms decrypt action for source bucket, and the 1 kms encrypt action for destination bucket
+      expect(grant.principalStatements).toHaveLength(5);
 
       Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
         VersioningConfiguration: { Status: 'Enabled' },

@@ -905,38 +905,48 @@ export abstract class BucketBase extends Resource implements IBucket {
    * @param identity The principal to grant replication permission to.
    * @param props The properties of the replication source and destination buckets.
    */
-  public grantReplicationPermission(identity: iam.IGrantable, props: GrantReplicationPermissionProps): void {
+  public grantReplicationPermission(identity: iam.IGrantable, props: GrantReplicationPermissionProps): iam.Grant {
     if (props.destinations.length === 0) {
       throw new ValidationError('destinations must be specified', this);
     }
 
     // add permissions to the role
     // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
-    this.grant(identity, ['s3:GetReplicationConfiguration', 's3:ListBucket'], [], Lazy.string({ produce: () => this.bucketArn }));
+    let result = this.grant(identity, ['s3:GetReplicationConfiguration', 's3:ListBucket'], [], Lazy.string({ produce: () => this.bucketArn }));
 
-    this.grant(
+    const g1 = this.grant(
       identity,
       ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
       [],
       Lazy.string({ produce: () => this.arnForObjects('*') })
     );
+    result = result.combine(g1);
 
     const destinationBuckets = props.destinations.map(destination => destination.bucket);
     if (destinationBuckets.length > 0) {
-      iam.Grant.addToPrincipalOrResource({
+      const g2 = iam.Grant.addToPrincipalOrResource({
         grantee: identity,
         actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
         resourceArns: destinationBuckets.map(bucket => Lazy.string({ produce: () => bucket.arnForObjects('*') })),
         resource: this,
       });
+      result = result.combine(g2);
     }
 
     props.destinations.forEach(destination => {
-      destination.encryptionKey?.grantEncrypt(identity);
+      const g = destination.encryptionKey?.grantEncrypt(identity);
+      if (g !== undefined) {
+        result = result.combine(g);
+      }
     });
 
     // If KMS key encryption is enabled on the source bucket, configure the decrypt permissions.
-    this.encryptionKey?.grantDecrypt(identity);
+    const g3 = this.encryptionKey?.grantDecrypt(identity);
+    if (g3 !== undefined) {
+      result = result.combine(g3);
+    }
+
+    return result;
   }
 
   /**
