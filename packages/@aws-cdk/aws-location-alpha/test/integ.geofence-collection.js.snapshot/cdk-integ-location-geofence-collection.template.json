@@ -38,7 +38,7 @@
   "GeofenceCollection6FAC681F": {
    "Type": "AWS::Location::GeofenceCollection",
    "Properties": {
-    "CollectionName": "MyGeofenceCollection",
+    "CollectionName": "my_geofence_collection",
     "Description": "test",
     "KmsKeyId": {
      "Fn::GetAtt": [

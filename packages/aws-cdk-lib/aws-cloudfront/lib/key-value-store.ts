@@ -5,7 +5,8 @@ import { Construct } from 'constructs';
 import { CfnKeyValueStore } from './cloudfront.generated';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
-import { Resource, IResource, Lazy, Names, Stack, Arn, ArnFormat, FileSystem } from '../../core';
+import { Resource, IResource, Lazy, Names, Stack, Arn, ArnFormat, FileSystem, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The data to be imported to the key value store.
@@ -100,9 +101,10 @@ export class AssetImportSource extends ImportSource {
         ...this.options,
       });
     } else if (Stack.of(this.asset) !== Stack.of(scope)) {
-      throw new Error(
+      throw new ValidationError(
         `Asset is already associated with another stack '${Stack.of(this.asset).stackName}. ` +
           'Create a new ImportSource instance for every stack.',
+        scope,
       );
     }
 
@@ -130,7 +132,6 @@ export class InlineImportSource extends ImportSource {
    * @internal
    */
   public _bind(scope: Construct): CfnKeyValueStore.ImportSourceProperty {
-
     if (!this.asset) {
       // CfnKeyValueStore does not support native in-line, so we need to use a
       // temporary file to be uploaded with the S3 assets
@@ -143,9 +144,10 @@ export class InlineImportSource extends ImportSource {
         deployTime: true,
       });
     } else if (Stack.of(this.asset) !== Stack.of(scope)) {
-      throw new Error(
+      throw new ValidationError(
         `Asset is already associated with another stack '${Stack.of(this.asset).stackName}. ` +
         'Create a new ImportSource instance for every stack.',
+        scope,
       );
     }
 
@@ -223,7 +225,7 @@ export class KeyValueStore extends Resource implements IKeyValueStore {
   public static fromKeyValueStoreArn(scope: Construct, id: string, keyValueStoreArn: string): IKeyValueStore {
     const storeId = Arn.split(keyValueStoreArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!storeId) {
-      throw new Error(`Invalid Key Value Store Arn: '${keyValueStoreArn}'`);
+      throw new ValidationError(`Invalid Key Value Store Arn: '${keyValueStoreArn}'`, scope);
     }
     return new class Import extends Resource implements IKeyValueStore {
       readonly keyValueStoreArn: string = keyValueStoreArn;
@@ -235,7 +237,7 @@ export class KeyValueStore extends Resource implements IKeyValueStore {
       }
 
       public get keyValueStoreStatus(): string {
-        throw new Error('Status is not available for imported Key Value Store');
+        throw new ValidationError('Status is not available for imported Key Value Store', scope);
       }
     };
   }
@@ -250,6 +252,8 @@ export class KeyValueStore extends Resource implements IKeyValueStore {
         produce: () => Names.uniqueResourceName(this, { maxLength: 64 }),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnKeyValueStore(this, 'Resource', {
       name: this.physicalName,

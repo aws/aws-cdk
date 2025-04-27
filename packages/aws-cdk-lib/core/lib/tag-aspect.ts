@@ -1,6 +1,7 @@
 import { Construct, IConstruct } from 'constructs';
 import { Annotations } from './annotations';
-import { IAspect, Aspects } from './aspect';
+import { IAspect, Aspects, AspectOptions } from './aspect';
+import { mutatingAspectPrio32333 } from './private/aspect-prio';
 import { ITaggable, ITaggableV2, TagManager } from './tag-manager';
 
 /**
@@ -58,7 +59,6 @@ export interface TagProps {
  * The common functionality for Tag and Remove Tag Aspects
  */
 abstract class TagBase implements IAspect {
-
   /**
    * The string key for the tag
    */
@@ -87,7 +87,6 @@ abstract class TagBase implements IAspect {
  * The Tag Aspect will handle adding a tag to this node and cascading tags to children
  */
 export class Tag extends TagBase {
-
   /**
    * DEPRECATED: add tags to the node of a construct and all its the taggable children
    *
@@ -161,14 +160,18 @@ export class Tags {
    * add tags to the node of a construct and all its the taggable children
    */
   public add(key: string, value: string, props: TagProps = {}) {
-    Aspects.of(this.scope).add(new Tag(key, value, props));
+    const tag = new Tag(key, value, props);
+    const options: AspectOptions = { priority: mutatingAspectPrio32333(this.scope) };
+    Aspects.of(this.scope).add(tag, options);
   }
 
   /**
    * remove tags to the node of a construct and all its the taggable children
    */
   public remove(key: string, props: TagProps = {}) {
-    Aspects.of(this.scope).add(new RemoveTag(key, props));
+    const removeTag = new RemoveTag(key, props);
+    const options: AspectOptions = { priority: mutatingAspectPrio32333(this.scope) };
+    Aspects.of(this.scope).add(removeTag, options);
   }
 }
 
@@ -176,7 +179,6 @@ export class Tags {
  * The RemoveTag Aspect will handle removing tags from this node and children
  */
 export class RemoveTag extends TagBase {
-
   private readonly defaultPriority = 200;
 
   constructor(key: string, props: TagProps = {}) {

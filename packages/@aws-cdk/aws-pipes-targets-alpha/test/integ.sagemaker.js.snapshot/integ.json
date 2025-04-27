@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "integtest-pipe-target-sagemaker/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-targets-sagemaker"
+      ],
+      "assertionStack": "integtest-pipe-target-sagemaker/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipetargetsagemakerDefaultTestDeployAssert7D2ED3D4"
+    }
+  }
+}

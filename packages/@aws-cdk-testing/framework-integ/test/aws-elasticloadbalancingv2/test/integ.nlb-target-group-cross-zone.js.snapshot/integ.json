@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "nlb-target-group-cross-zone-test-stack/DefaultTest": {
+      "stacks": [
+        "nlb-target-group-cross-zone-stack"
+      ],
+      "assertionStack": "nlb-target-group-cross-zone-test-stack/DefaultTest/DeployAssert",
+      "assertionStackName": "nlbtargetgroupcrosszoneteststackDefaultTestDeployAssert1641E699"
+    }
+  }
+}

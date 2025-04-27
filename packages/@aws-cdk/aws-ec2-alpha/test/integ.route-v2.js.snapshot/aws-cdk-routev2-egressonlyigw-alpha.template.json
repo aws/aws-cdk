@@ -6,10 +6,16 @@
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-routev2-egressonlyigw-alpha/eigw"
+     }
+    ]
    }
   },
-  "eigwAmazonIpv69E78211F": {
+  "eigwAmazonIpv6DB7F7BE7": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -35,7 +41,6 @@
   "TestRoottableeigwRouteF867084E": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "DestinationCidrBlock": "::/0",
     "DestinationIpv6CidrBlock": "::/0",
     "EgressOnlyInternetGatewayId": {
      "Fn::GetAtt": [
@@ -49,12 +54,14 @@
       "RouteTableId"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "testEOIGWEIGW54CCAD37"
+   ]
   },
   "eigwSubnetCC28B9F9": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-east-1a",
     "CidrBlock": "10.0.0.0/24",
     "VpcId": {
@@ -65,7 +72,7 @@
     }
    },
    "DependsOn": [
-    "eigwAmazonIpv69E78211F"
+    "eigwAmazonIpv6DB7F7BE7"
    ]
   },
   "eigwSubnetRouteTableAssociation887F4A97": {
@@ -82,7 +89,7 @@
     }
    },
    "DependsOn": [
-    "eigwAmazonIpv69E78211F"
+    "eigwAmazonIpv6DB7F7BE7"
    ]
   },
   "testEOIGWEIGW54CCAD37": {

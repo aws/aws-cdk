@@ -1,7 +1,6 @@
 import { randomUUID } from 'crypto';
 import * as path from 'path';
-import { Pipe } from '@aws-cdk/aws-pipes-alpha';
-import { SqsSource } from '@aws-cdk/aws-pipes-sources-alpha';
+import { IPipe, ISource, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -16,9 +15,32 @@ import { LambdaFunction } from '../lib';
  *    Value: <RandomUUID>
  * 3. The assertion verifies that the expected tag is created by calling listTags on the Lambda Function.
  */
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-pipes-lambda-target');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
+
+// When this module is promoted from alpha, TestSource should
+// be replaced with SqsSource from @aws-cdk/aws-pipes-sources-alpha
+class TestSource implements ISource {
+  sourceArn: string;
+  sourceParameters = undefined;
+  constructor(private readonly queue: cdk.aws_sqs.Queue) {
+    this.queue = queue;
+    this.sourceArn = queue.queueArn;
+  }
+  bind(_pipe: IPipe): SourceConfig {
+    return {
+      sourceParameters: this.sourceParameters,
+    };
+  }
+  grantRead(pipeRole: cdk.aws_iam.IRole): void {
+    this.queue.grantConsumeMessages(pipeRole);
+  }
+}
 
 const functionName = 'TestCdkPipesTargetLambdaFunction';
 const targetFunction = new lambda.Function(stack, 'TargetLambdaFunction', {
@@ -40,7 +62,7 @@ targetFunction.addToRolePolicy(
 );
 
 new Pipe(stack, 'Pipe', {
-  source: new SqsSource(sourceQueue),
+  source: new TestSource(sourceQueue),
   target: new LambdaFunction(targetFunction, {}),
 });
 

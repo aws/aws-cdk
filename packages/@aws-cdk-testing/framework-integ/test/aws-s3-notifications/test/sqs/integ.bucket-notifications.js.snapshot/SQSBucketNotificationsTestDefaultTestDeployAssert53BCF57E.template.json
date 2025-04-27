@@ -26,7 +26,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1726695669420"
+    "salt": "1745526116232"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -106,7 +106,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "da514df694ce3f41453746a766ae6aff13c869c38002598930d6d34e5711985b.zip"
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -146,7 +146,7 @@
      "Body": "\"Some content\""
     },
     "flattenResponse": "false",
-    "salt": "1726695669421"
+    "salt": "1745526116232"
    },
    "DependsOn": [
     "AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4"
@@ -186,7 +186,7 @@
     "outputPaths": [
      "Messages.0.Body.Records.0.s3.object.key"
     ],
-    "salt": "1726695669421"
+    "salt": "1745526116233"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f"
@@ -243,10 +243,10 @@
     "value": "nodejs20.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "eu-central-1": {
     "value": "nodejs20.x"
@@ -297,10 +297,10 @@
     "value": "nodejs20.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"
@@ -309,6 +309,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {

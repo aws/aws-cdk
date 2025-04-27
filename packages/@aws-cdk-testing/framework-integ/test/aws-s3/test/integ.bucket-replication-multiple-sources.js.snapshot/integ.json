@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "ReplicationInteg/DefaultTest": {
+      "stacks": [
+        "BucketReplicationMultipleSourcesTestStack"
+      ],
+      "assertionStack": "ReplicationInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ReplicationIntegDefaultTestDeployAssert2C07A074"
+    }
+  }
+}

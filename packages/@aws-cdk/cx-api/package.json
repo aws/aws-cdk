@@ -62,7 +62,7 @@
     "gen": "cdk-copy cx-api",
     "watch": "cdk-watch",
     "lint": "cdk-lint && madge --circular --extensions js lib",
-    "test": "cdk-test",
+    "test": "jest",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -79,19 +79,19 @@
     "organization": true
   },
   "dependencies": {
-    "semver": "^7.6.3"
+    "semver": "^7.7.1"
   },
   "peerDependencies": {
-    "@aws-cdk/cloud-assembly-schema": "^38.0.0"
+    "@aws-cdk/cloud-assembly-schema": ">=41.0.0"
   },
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cloud-assembly-schema": "^38.0.0",
+    "@aws-cdk/cloud-assembly-schema": "^41.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "^29.5.14",
     "@types/mock-fs": "^4.13.4",
-    "@types/semver": "^7.5.8",
+    "@types/semver": "^7.7.0",
     "jest": "^29.7.0",
     "madge": "^5.0.2",
     "mock-fs": "^4.14.0"

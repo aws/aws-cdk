@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnVdmAttributes } from './ses.generated';
 import { IResource, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Virtual Deliverability Manager (VDM) attributes
@@ -58,6 +59,8 @@ export class VdmAttributes extends Resource implements IVdmAttributes {
 
   constructor(scope: Construct, id: string, props: VdmAttributesProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnVdmAttributes(this, 'Resource', {
       dashboardAttributes: {

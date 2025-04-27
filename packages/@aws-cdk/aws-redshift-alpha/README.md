@@ -76,6 +76,30 @@ const cluster = new Cluster(this, 'Redshift', {
 });
 ```
 
+## Availability Zone Relocation
+
+By using [relocation in Amazon Redshift](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-recovery.html), you allow Amazon Redshift to move a cluster to another Availability Zone (AZ) without any loss of data or changes to your applications.
+This feature can be applied to both new and existing clusters.
+
+To enable this feature, set the `availabilityZoneRelocation` property to `true`.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+declare const vpc: ec2.IVpc;
+
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  nodeType: NodeType.RA3_XLPLUS,
+  availabilityZoneRelocation: true,
+});
+```
+
+**Note**: The `availabilityZoneRelocation` property is only available for RA3 node types.
+
 ## Connecting
 
 To control who can access the cluster, use the `.connections` attribute. Redshift Clusters have
@@ -274,6 +298,24 @@ new Table(this, 'Table', {
 });
 ```
 
+Query execution duration is limited to 1 minute by default. You can change this by setting the `timeout` property.
+
+Valid timeout values are between 1 seconds and 15 minutes.
+
+```ts fixture=cluster
+import { Duration } from 'aws-cdk-lib';
+
+new Table(this, 'Table', {
+  tableColumns: [
+    { id: 'col1', name: 'col1', dataType: 'varchar(4)' },
+    { id: 'col2', name: 'col2', dataType: 'float' }
+  ],
+  cluster: cluster,
+  databaseName: 'databaseName',
+  timeout: Duration.minutes(15),
+});
+```
+
 ### Granting Privileges
 
 You can give a user privileges to perform certain actions on a table by using the
@@ -428,6 +470,48 @@ const cluster = new Cluster(this, 'Cluster', {
 
 cluster.addToParameterGroup('enable_user_activity_logging', 'true');
 cluster.enableRebootForParameterChanges()
+```
+
+## Resource Action
+
+You can perform various actions on the Redshift resource by specifying the `resourceAction` property,
+including [pausing and resuming the cluster](https://docs.aws.amazon.com/redshift/latest/mgmt/rs-mgmt-pause-resume-cluster.html), as well as initiating [failover for Multi-AZ clusters](https://docs.aws.amazon.com/redshift/latest/mgmt/test-cluster-multi-az.html).
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { ResourceAction } from '@aws-cdk/aws-redshift-alpha';
+
+declare const vpc: ec2.IVpc;
+
+// Pause the cluster
+new Cluster(this, 'PausedCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  resourceAction: ResourceAction.PAUSE,
+});
+
+// Resume the cluster
+new Cluster(this, 'ResumedCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  resourceAction: ResourceAction.RESUME,
+});
+
+// Failover the cluster
+new Cluster(this, 'FailOverCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  // VPC must have 3 AZs for the cluster which executes failover action
+  vpc,
+  // Must be a multi-AZ cluster to failover
+  multiAz: true,
+  resourceAction: ResourceAction.FAILOVER_PRIMARY_COMPUTE,
+});
 ```
 
 ## Elastic IP
@@ -616,6 +700,7 @@ as it's a fast operation and typically completes in minutes. Elastic resize is o
   * dc2.8xlarge
   * ds2.xlarge
   * ds2.8xlarge
+  * ra3.large
   * ra3.xlplus
   * ra3.4xlarge
   * ra3.16xlarge
@@ -626,3 +711,26 @@ you can set the `classicResizing` flag when creating the cluster.
 
 There are other constraints to be aware of, for example, elastic resizing does not support single-node clusters and there are
 limits on the number of nodes you can add to a cluster. See the [AWS Redshift Documentation](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-operations.html#rs-resize-tutorial) and [AWS API Documentation](https://docs.aws.amazon.com/redshift/latest/APIReference/API_ResizeCluster.html) for more details.
+
+## Maintenance track name
+
+When Amazon Redshift releases a new cluster version, your cluster is updated during its maintenance window.
+You can control whether your cluster is updated to the most recent approved release or to the previous release.
+See the [AWS Redshift Documentation](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-considerations.html#rs-mgmt-maintenance-tracks) for more details.
+
+To control which cluster version is applied during a maintenance window, set the `maintenanceTrackName` property for the cluster.
+
+```ts
+new redshift.Cluster(stack, 'Cluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  maintenanceTrackName: redshift.MaintenanceTrackName.CURRENT,
+});
+```
+
+You can specify one of the following `MaintenanceTrackName` values:
+
+* `CURRENT`: Use the most current approved cluster version.
+* `TRAILING`: Use the cluster version before the current version.

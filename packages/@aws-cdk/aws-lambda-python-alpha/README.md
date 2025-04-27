@@ -233,7 +233,7 @@ new python.PythonFunction(this, 'function', {
 });
 ```
 
-The index URL or the token are only used during bundling and thus not included in the final asset. Setting only environment variable for `PIP_INDEX_URL` or `PIP_EXTRA_INDEX_URL` should work for accesing private Python repositories with `pip`, `pipenv` and `poetry` based dependencies.
+The index URL or the token are only used during bundling and thus not included in the final asset. Setting only environment variable for `PIP_INDEX_URL` or `PIP_EXTRA_INDEX_URL` should work for accessing private Python repositories with `pip`, `pipenv` and `poetry` based dependencies.
 
 If you also want to use the Code Artifact repo for building the base Docker image for bundling, use `buildArgs`. However, note that setting custom build args for bundling will force the base bundling image to be rebuilt every time (i.e. skip the Docker cache). Build args can be customized as:
 
@@ -299,7 +299,7 @@ container for Docker bundling or on the host OS for local bundling.
 ## Docker based bundling in complex Docker configurations
 
 By default the input and output of Docker based bundling is handled via bind mounts.
-In situtations where this does not work, like Docker-in-Docker setups or when using a remote Docker socket, you can configure an alternative, but slower, variant that also works in these situations.
+In situations where this does not work, like Docker-in-Docker setups or when using a remote Docker socket, you can configure an alternative, but slower, variant that also works in these situations.
 
 ```ts
 const entry = '/path/to/function';

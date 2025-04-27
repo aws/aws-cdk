@@ -1,28 +1,28 @@
 {
-  "version": "36.0.5",
+  "version": "42.0.0",
   "artifacts": {
-    "aws-cdk-vpcv2-alpha.assets": {
+    "aws-cdk-vpcv2-alpha-integ-ipam.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-vpcv2-alpha.assets.json",
+        "file": "aws-cdk-vpcv2-alpha-integ-ipam.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-vpcv2-alpha": {
+    "aws-cdk-vpcv2-alpha-integ-ipam": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-vpcv2-alpha.template.json",
+        "templateFile": "aws-cdk-vpcv2-alpha-integ-ipam.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/12b670f0da573a7daa252fe7ca5b1dd687f4248e204c38b0323beaf64d0400bc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/349634e3d5cf07c230f7ef2f7e39c0e73aae2f553e75b2cc32ecc2e976e47356.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-vpcv2-alpha.assets"
+          "aws-cdk-vpcv2-alpha-integ-ipam.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,83 +31,135 @@
         }
       },
       "dependencies": [
-        "aws-cdk-vpcv2-alpha.assets"
+        "aws-cdk-vpcv2-alpha-integ-ipam.assets"
       ],
       "metadata": {
-        "/aws-cdk-vpcv2-alpha/IpamTest/Ipam": [
+        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamTest": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamTest/Ipam": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IpamTestIpam6C9298EF"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/IpamTest/PrivatePool0/PrivatePool0": [
+        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamTest/PrivatePool0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamTest/PrivatePool0/PrivatePool0": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IpamTestPrivatePool039C763DC"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0": [
+        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamTest/PublicPool0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamTest/PublicPool0/PublicPool0": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IpamTestPublicPool0C44B7C49"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0Cidr": [
+        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamTest/PublicPool0/PublicPool0Cidr": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IpamTestPublicPool0PublicPool0CidrC57CE00C"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/Resource": [
+        "/aws-cdk-vpcv2-alpha-integ-ipam/VPC-integ-test-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha-integ-ipam/VPC-integ-test-1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCintegtest1EBA1CB75"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/ipv4IpamCidr": [
+        "/aws-cdk-vpcv2-alpha-integ-ipam/VPC-integ-test-1/ipv4IpamCidr": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1ipv4IpamCidr8105B4E4"
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/Ipv6IpamCidr": [
+        "/aws-cdk-vpcv2-alpha-integ-ipam/VPC-integ-test-1/ipv4IpamCidr/ipv4IpamCidr": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1Ipv6IpamCidrEF56F8F7"
+            "data": "VPCintegtest1ipv4IpamCidr451A5376"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/testsbubnet/Subnet": [
+        "/aws-cdk-vpcv2-alpha-integ-ipam/VPC-integ-test-1/Ipv6IpamCidr": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha-integ-ipam/VPC-integ-test-1/Ipv6IpamCidr/Ipv6IpamCidr": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCintegtest1Ipv6IpamCidr2E5BBFED"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha-integ-ipam/testsbubnet": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha-integ-ipam/testsbubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "testsbubnetSubnet77337845"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/testsbubnet/RouteTable/RouteTable": [
+        "/aws-cdk-vpcv2-alpha-integ-ipam/testsbubnet/RouteTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha-integ-ipam/testsbubnet/RouteTable/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "testsbubnetRouteTableD0136BEA"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/testsbubnet/RouteTableAssociation": [
+        "/aws-cdk-vpcv2-alpha-integ-ipam/testsbubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "testsbubnetRouteTableAssociationD6D083FA"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/BootstrapVersion": [
+        "/aws-cdk-vpcv2-alpha-integ-ipam/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/CheckBootstrapVersion": [
+        "/aws-cdk-vpcv2-alpha-integ-ipam/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-vpcv2-alpha"
+      "displayName": "aws-cdk-vpcv2-alpha-integ-ipam"
     },
     "integtestmodelDefaultTestDeployAssertCF40BD53.assets": {
       "type": "cdk:asset-manifest",
@@ -163,5 +215,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

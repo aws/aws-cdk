@@ -1,0 +1,518 @@
+{
+ "Resources": {
+  "AwsApiCallEC2describeVpcs05561814f1e78d0cfa29ef5272521670": {
+   "Type": "Custom::DeployAssert@SdkCallEC2describeVpcs",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "EC2",
+    "api": "describeVpcs",
+    "expected": "{\"$ObjectLike\":{\"Vpcs\":[{\"$ObjectLike\":{\"Tags\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Key\":\"Name\",\"Value\":\"CDKintegTestVPC\"}}]}}}]}}",
+    "parameters": {
+     "VpcIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ec2-alpha-tag:ExportsOutputFnGetAttVPCintegtesttag58C3A45FVpcIdC12EBB53"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1744737671057"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "ec2:DescribeVpcs"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ec2:DescribeInternetGateways"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ec2:DescribeNatGateways"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ec2:DescribeRouteTables"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ec2:DescribeIpams"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ec2:DescribeIpamScopes"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallEC2describeInternetGateways7423672f34f9408be926d1ced9502e5d": {
+   "Type": "Custom::DeployAssert@SdkCallEC2describeInternetGateways",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "EC2",
+    "api": "describeInternetGateways",
+    "expected": "{\"$ObjectLike\":{\"InternetGateways\":[{\"$ObjectLike\":{\"Tags\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Key\":\"Name\",\"Value\":\"CDKIntegTestTagIGW\"}}]}}}]}}",
+    "parameters": {
+     "InternetGatewayIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ec2-alpha-tag:ExportsOutputFnGetAttVPCintegtesttagInternetGatewayIGWC653A733InternetGatewayIdBB15D4AC"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1744737671058"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallEC2describeNatGateways7a59ae240542825712a65c4c3aa2b030": {
+   "Type": "Custom::DeployAssert@SdkCallEC2describeNatGateways",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "EC2",
+    "api": "describeNatGateways",
+    "expected": "{\"$ObjectLike\":{\"NatGateways\":[{\"$ObjectLike\":{\"Tags\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Key\":\"Name\",\"Value\":\"CDKIntegTestTagNGW\"}}]}}}]}}",
+    "parameters": {
+     "NatGatewayIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ec2-alpha-tag:ExportsOutputFnGetAttVPCintegtesttagNATGatewaytestsubnetNATGateway36D56DBFNatGatewayId76DD764D"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1744737671059"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallEC2describeRouteTables12b9b6cc894f4fb271c8783896ec62c3": {
+   "Type": "Custom::DeployAssert@SdkCallEC2describeRouteTables",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "EC2",
+    "api": "describeRouteTables",
+    "expected": "{\"$ObjectLike\":{\"RouteTables\":[{\"$ObjectLike\":{\"Tags\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Key\":\"Name\",\"Value\":\"TestRouteTable\"}}]}}}]}}",
+    "parameters": {
+     "RouteTableIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ec2-alpha-tag:ExportsOutputFnGetAttTestRouteTableC34C2E1CRouteTableId4C8A7F39"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1744737671059"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallEC2describeIpams1f021f01bab38b9d5c38e379c465bf37": {
+   "Type": "Custom::DeployAssert@SdkCallEC2describeIpams",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "EC2",
+    "api": "describeIpams",
+    "expected": "{\"$ObjectLike\":{\"Ipams\":[{\"$ObjectLike\":{\"Tags\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Key\":\"Name\",\"Value\":\"CDKIpamTestTag\"}}]}}}]}}",
+    "parameters": {
+     "IpamIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ec2-alpha-tag:ExportsOutputFnGetAttIpamIntegTestIpam00B5B97AIpamId2B933FDC"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1744737671059"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallEC2describeIpamScopes66fb6cbc44f999e9eaafa20e56188a53": {
+   "Type": "Custom::DeployAssert@SdkCallEC2describeIpamScopes",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "EC2",
+    "api": "describeIpamScopes",
+    "expected": "{\"$ObjectLike\":{\"IpamScopes\":[{\"$ObjectLike\":{\"Tags\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Key\":\"Name\",\"Value\":\"CustomPrivateScopeTag\"}}]}}}]}}",
+    "parameters": {
+     "IpamScopeIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ec2-alpha-tag:ExportsOutputFnGetAttIpamScopeIpamScopeIdB53A2540"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1744737671059"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallEC2describeVpcs05561814f1e78d0cfa29ef5272521670": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallEC2describeVpcs05561814f1e78d0cfa29ef5272521670",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallEC2describeInternetGateways7423672f34f9408be926d1ced9502e5d": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallEC2describeInternetGateways7423672f34f9408be926d1ced9502e5d",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallEC2describeNatGateways7a59ae240542825712a65c4c3aa2b030": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallEC2describeNatGateways7a59ae240542825712a65c4c3aa2b030",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallEC2describeRouteTables12b9b6cc894f4fb271c8783896ec62c3": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallEC2describeRouteTables12b9b6cc894f4fb271c8783896ec62c3",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallEC2describeIpams1f021f01bab38b9d5c38e379c465bf37": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallEC2describeIpams1f021f01bab38b9d5c38e379c465bf37",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallEC2describeIpamScopes66fb6cbc44f999e9eaafa20e56188a53": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallEC2describeIpamScopes66fb6cbc44f999e9eaafa20e56188a53",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

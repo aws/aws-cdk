@@ -3,6 +3,7 @@ import { KubectlV24Layer } from '@aws-cdk/lambda-layer-kubectl-v24';
 import { KubectlV29Layer } from '@aws-cdk/lambda-layer-kubectl-v29';
 import { KubectlV30Layer } from '@aws-cdk/lambda-layer-kubectl-v30';
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import { Construct } from 'constructs';
 import * as eks from 'aws-cdk-lib/aws-eks';
 
@@ -15,6 +16,7 @@ const versionMap: { [key: string]: new (scope: Construct, id: string) => lambda.
   '1.29': KubectlV29Layer,
   '1.30': KubectlV30Layer,
   '1.31': KubectlV31Layer,
+  '1.32': KubectlV32Layer,
 };
 
 export function getClusterVersionConfig(scope: Construct, version?: eks.KubernetesVersion) {
@@ -27,4 +29,4 @@ export function getClusterVersionConfig(scope: Construct, version?: eks.Kubernet
     // kubectlLayer: new KubectlV24Layer(scope, 'KubectlLayer') as unknown as lambda.ILayerVersion,
     kubectlLayer: new versionMap[_version.version](scope, 'KubectlLayer') as unknown as lambda.ILayerVersion,
   };
-};
+}

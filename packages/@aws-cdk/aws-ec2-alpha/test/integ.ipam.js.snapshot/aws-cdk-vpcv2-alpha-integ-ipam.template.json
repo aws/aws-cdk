@@ -1,0 +1,203 @@
+{
+ "Resources": {
+  "IpamTestIpam6C9298EF": {
+   "Type": "AWS::EC2::IPAM",
+   "Properties": {
+    "OperatingRegions": [
+     {
+      "RegionName": "us-west-2"
+     }
+    ]
+   }
+  },
+  "IpamTestPrivatePool039C763DC": {
+   "Type": "AWS::EC2::IPAMPool",
+   "Properties": {
+    "AddressFamily": "ipv4",
+    "IpamScopeId": {
+     "Fn::GetAtt": [
+      "IpamTestIpam6C9298EF",
+      "PrivateDefaultScopeId"
+     ]
+    },
+    "Locale": "us-west-2",
+    "ProvisionedCidrs": [
+     {
+      "Cidr": "10.2.0.0/16"
+     }
+    ]
+   }
+  },
+  "IpamTestPublicPool0C44B7C49": {
+   "Type": "AWS::EC2::IPAMPool",
+   "Properties": {
+    "AddressFamily": "ipv6",
+    "AwsService": "ec2",
+    "IpamScopeId": {
+     "Fn::GetAtt": [
+      "IpamTestIpam6C9298EF",
+      "PublicDefaultScopeId"
+     ]
+    },
+    "Locale": "us-west-2",
+    "PublicIpSource": "amazon"
+   }
+  },
+  "IpamTestPublicPool0PublicPool0CidrC57CE00C": {
+   "Type": "AWS::EC2::IPAMPoolCidr",
+   "Properties": {
+    "IpamPoolId": {
+     "Fn::GetAtt": [
+      "IpamTestPublicPool0C44B7C49",
+      "IpamPoolId"
+     ]
+    },
+    "NetmaskLength": 52
+   }
+  },
+  "VPCintegtest1EBA1CB75": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha-integ-ipam/VPC-integ-test-1"
+     }
+    ]
+   }
+  },
+  "VPCintegtest1ipv4IpamCidr451A5376": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "Ipv4IpamPoolId": {
+     "Fn::GetAtt": [
+      "IpamTestPrivatePool039C763DC",
+      "IpamPoolId"
+     ]
+    },
+    "Ipv4NetmaskLength": 20,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtest1EBA1CB75",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "VPCintegtest1Ipv6IpamCidr2E5BBFED": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "Ipv6IpamPoolId": {
+     "Fn::GetAtt": [
+      "IpamTestPublicPool0C44B7C49",
+      "IpamPoolId"
+     ]
+    },
+    "Ipv6NetmaskLength": 60,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtest1EBA1CB75",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "IpamTestPublicPool0PublicPool0CidrC57CE00C"
+   ]
+  },
+  "testsbubnetSubnet77337845": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-west-2a",
+    "CidrBlock": "10.0.0.0/24",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtest1EBA1CB75",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCintegtest1ipv4IpamCidr451A5376",
+    "VPCintegtest1Ipv6IpamCidr2E5BBFED"
+   ]
+  },
+  "testsbubnetRouteTableD0136BEA": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtest1EBA1CB75",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCintegtest1ipv4IpamCidr451A5376",
+    "VPCintegtest1Ipv6IpamCidr2E5BBFED"
+   ]
+  },
+  "testsbubnetRouteTableAssociationD6D083FA": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "testsbubnetRouteTableD0136BEA",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "testsbubnetSubnet77337845"
+    }
+   },
+   "DependsOn": [
+    "VPCintegtest1ipv4IpamCidr451A5376",
+    "VPCintegtest1Ipv6IpamCidr2E5BBFED"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

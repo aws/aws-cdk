@@ -44,6 +44,20 @@ class TestStack extends Stack {
       },
     });
 
+    new lambda.NodejsFunction(this, 'js-handler-tsconfig-path', {
+      entry: path.join(__dirname, 'integ-handlers/js-handler.js'),
+      bundling: {
+        tsconfig: path.join(__dirname, 'whitespace path/tsconfig.json'),
+      },
+    });
+
+    new lambda.NodejsFunction(this, 'ts-handler-metafile-path', {
+      entry: path.join(__dirname, 'integ-handlers/whitespace path/ts-handler.ts'),
+      bundling: {
+        metafile: true,
+      },
+    });
+
     new lambda.NodejsFunction(this, 'ts-handler-vpc', {
       entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
       runtime: STANDARD_NODEJS_RUNTIME,

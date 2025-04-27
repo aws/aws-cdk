@@ -43,6 +43,21 @@ export interface ProductStackProps {
    * @default 128
    */
   readonly memoryLimit?: number;
+
+  /**
+   * A description of the stack.
+   *
+   * @default - No description.
+   */
+  readonly description?: string;
+
+  /**
+   * Include runtime versioning information in this Stack
+   *
+   * @default - `analyticsReporting` setting of containing `App`, or value of
+   * 'aws:cdk:version-reporting' context key
+   */
+  readonly analyticsReporting?: boolean;
 }
 
 /**
@@ -64,6 +79,8 @@ export class ProductStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: ProductStackProps = {}) {
     const parentStack = findParentStack(scope);
     super(scope, id, {
+      analyticsReporting: props.analyticsReporting,
+      description: props.description,
       synthesizer: new ProductStackSynthesizer({
         parentStack,
         assetBucket: props.assetBucket,
@@ -133,6 +150,7 @@ export class ProductStack extends cdk.Stack {
       packaging: cdk.FileAssetPackaging.FILE,
       sourceHash: templateHash,
       fileName: this.templateFile,
+      displayName: `${this.node.path} Template`,
     }).httpUrl;
 
     if (this._parentProductStackHistory) {

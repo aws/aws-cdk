@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "IntegCanaryTest/DefaultTest": {
+      "stacks": [
+        "canary-artifact-s3-encryption"
+      ],
+      "assertionStack": "IntegCanaryTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegCanaryTestDefaultTestDeployAssert3AD5A094"
+    }
+  }
+}

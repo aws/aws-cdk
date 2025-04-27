@@ -23,7 +23,6 @@ describe('Metric Math', () => {
         },
       });
     }).toThrow(/Invalid variable names in expression/);
-
   });
 
   test('cannot reuse variable names in nested MathExpressions', () => {
@@ -40,7 +39,6 @@ describe('Metric Math', () => {
         },
       });
     }).toThrow(/The ID 'a' used for two metrics in the expression: 'BCount' and 'ACount'. Rename one/);
-
   });
 
   test('can not use invalid period in MathExpression', () => {
@@ -51,7 +49,6 @@ describe('Metric Math', () => {
         period: Duration.seconds(20),
       });
     }).toThrow(/'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received 20/);
-
   });
 
   test('MathExpression optimization: "with" with the same period returns the same object', () => {
@@ -77,6 +74,15 @@ describe('Metric Math', () => {
   test('metrics METRICS expression does not produce warning for unknown identifier', () => {
     const m = new MathExpression({
       expression: 'SUM(METRICS())',
+      usingMetrics: {},
+    });
+
+    expect(m.warningsV2).toBeUndefined();
+  });
+
+  test('metrics METRICS expression with parameter does not produce warning for unknown identifier', () => {
+    const m = new MathExpression({
+      expression: 'SUM(METRICS("parameter"))',
       usingMetrics: {},
     });
 
@@ -124,6 +130,90 @@ describe('Metric Math', () => {
     });
   });
 
+  test('warn if a period is specified in usingMetrics and not equal to the value of the period for MathExpression', () => {
+    const m = new MathExpression({
+      expression: 'm1',
+      usingMetrics: {
+        m1: new Metric({ namespace: 'Test', metricName: 'ACount', period: Duration.minutes(4) }),
+      },
+      period: Duration.minutes(3),
+    });
+
+    expect(m.warningsV2).toMatchObject({
+      'CloudWatch:Math:MetricsPeriodsOverridden': 'Periods of metrics in \'usingMetrics\' for Math expression \'m1\' have been overridden to 180 seconds.',
+    });
+  });
+
+  test('warn if periods are specified in usingMetrics and one is not equal to the value of the period for MathExpression', () => {
+    const m = new MathExpression({
+      expression: 'm1 + m2',
+      usingMetrics: {
+        m1: new Metric({ namespace: 'Test', metricName: 'ACount', period: Duration.minutes(4) }),
+        m2: new Metric({ namespace: 'Test', metricName: 'BCount', period: Duration.minutes(3) }),
+      },
+      period: Duration.minutes(3),
+    });
+
+    expect(m.warningsV2).toMatchObject({
+      'CloudWatch:Math:MetricsPeriodsOverridden': 'Periods of metrics in \'usingMetrics\' for Math expression \'m1 + m2\' have been overridden to 180 seconds.',
+    });
+  });
+
+  test('warn if a period is specified in usingMetrics and not equal to the default value of the period for MathExpression', () => {
+    const m = new MathExpression({
+      expression: 'm1',
+      usingMetrics: {
+        m1: new Metric({ namespace: 'Test', metricName: 'ACount', period: Duration.minutes(4) }),
+      },
+    });
+
+    expect(m.warningsV2).toMatchObject({
+      'CloudWatch:Math:MetricsPeriodsOverridden': 'Periods of metrics in \'usingMetrics\' for Math expression \'m1\' have been overridden to 300 seconds.',
+    });
+  });
+
+  test('can raise multiple warnings', () => {
+    const m = new MathExpression({
+      expression: 'e1 + m1',
+      usingMetrics: {
+        e1: new MathExpression({
+          expression: 'n1 + n2',
+        }),
+        m1: new Metric({ namespace: 'Test', metricName: 'ACount', period: Duration.minutes(4) }),
+      },
+      period: Duration.minutes(3),
+    });
+
+    expect(m.warningsV2).toMatchObject({
+      'CloudWatch:Math:MetricsPeriodsOverridden': 'Periods of metrics in \'usingMetrics\' for Math expression \'e1 + m1\' have been overridden to 180 seconds.',
+      'CloudWatch:Math:UnknownIdentifier': expect.stringContaining("'n1 + n2' references unknown identifiers"),
+    });
+  });
+
+  test('don\'t warn if a period is not specified in usingMetrics', () => {
+    const m = new MathExpression({
+      expression: 'm1',
+      usingMetrics: {
+        m1: new Metric({ namespace: 'Test', metricName: 'ACount' }),
+      },
+      period: Duration.minutes(3),
+    });
+
+    expect(m.warningsV2).toBeUndefined();
+  });
+
+  test('don\'t warn if a period is specified in usingMetrics but equal to the value of the period for MathExpression', () => {
+    const m = new MathExpression({
+      expression: 'm1',
+      usingMetrics: {
+        m1: new Metric({ namespace: 'Test', metricName: 'ACount', period: Duration.minutes(3) }),
+      },
+      period: Duration.minutes(3),
+    });
+
+    expect(m.warningsV2).toBeUndefined();
+  });
+
   describe('in graphs', () => {
     test('MathExpressions can be added to a graph', () => {
       // GIVEN
@@ -142,7 +232,6 @@ describe('Metric Math', () => {
         ['Test', 'ACount', { visible: false, id: 'a' }],
         ['Test', 'BCount', { visible: false, id: 'b' }],
       ]);
-
     });
 
     test('can nest MathExpressions in a graph', () => {
@@ -170,7 +259,6 @@ describe('Metric Math', () => {
         ['Test', 'BCount', { visible: false, id: 'b' }],
         ['Test', 'CCount', { visible: false, id: 'c' }],
       ]);
-
     });
 
     test('can add the same metric under different ids', () => {
@@ -196,7 +284,6 @@ describe('Metric Math', () => {
         ['Test', 'ACount', { visible: false, id: 'b' }],
         ['Test', 'CCount', { visible: false, id: 'c' }],
       ]);
-
     });
 
     test('passing an empty string as the label of a MathExpressions does not emit a label', () => {
@@ -216,7 +303,6 @@ describe('Metric Math', () => {
         [{ expression: 'a + e' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
       ]);
-
     });
 
     test('can reuse identifiers in MathExpressions if metrics are the same', () => {
@@ -242,7 +328,6 @@ describe('Metric Math', () => {
         [{ expression: 'a + c', visible: false, id: 'e' }],
         ['Test', 'CCount', { visible: false, id: 'c' }],
       ]);
-
     });
 
     test('MathExpression and its constituent metrics can both be added to a graph', () => {
@@ -262,7 +347,6 @@ describe('Metric Math', () => {
         [{ label: 'a + b', expression: 'a + b' }],
         ['Test', 'BCount', { visible: false, id: 'b' }],
       ]);
-
     });
 
     test('MathExpression controls period of metrics directly used in it', () => {
@@ -285,7 +369,6 @@ describe('Metric Math', () => {
         ['Test', 'ACount', { visible: false, id: 'a' }],
         ['Test', 'BCount', { visible: false, id: 'b' }],
       ]);
-
     });
 
     test('top level period in a MathExpression is respected in its metrics', () => {
@@ -307,7 +390,6 @@ describe('Metric Math', () => {
         ['Test', 'ACount', { visible: false, id: 'a', period: 60 }],
         ['Test', 'BCount', { visible: false, id: 'b', period: 60 }],
       ]);
-
     });
 
     test('MathExpression controls period of metrics transitively used in it', () => {
@@ -336,7 +418,6 @@ describe('Metric Math', () => {
         [{ expression: 'a + b', visible: false, id: 'e' }],
         ['Test', 'BCount', { visible: false, id: 'b' }],
       ]);
-
     });
 
     test('can use percentiles in expression metrics in graphs', () => {
@@ -356,7 +437,6 @@ describe('Metric Math', () => {
         ['Test', 'ACount', { visible: false, id: 'a' }],
         ['Test', 'BCount', { visible: false, id: 'b99', stat: 'p99' }],
       ]);
-
     });
 
     test('can reuse the same metric between left and right axes', () => {
@@ -382,7 +462,6 @@ describe('Metric Math', () => {
         ['Test', 'ACount', { visible: false, id: 'a' }],
         [{ label: 'a + 2', expression: 'a + 2', yAxis: 'right' }],
       ]);
-
     });
 
     test('detect name conflicts between left and right axes', () => {
@@ -406,7 +485,6 @@ describe('Metric Math', () => {
       expect(() => {
         graphMetricsAre(graph, []);
       }).toThrow(/Cannot have two different metrics share the same id \('m1'\)/);
-
     });
   });
 
@@ -454,7 +532,6 @@ describe('Metric Math', () => {
         },
 
       ]);
-
     });
 
     test('can nest MathExpressions in an alarm', () => {
@@ -522,7 +599,6 @@ describe('Metric Math', () => {
           ReturnData: false,
         },
       ]);
-
     });
 
     test('MathExpression controls period of metrics transitively used in it with alarms', () => {
@@ -592,7 +668,6 @@ describe('Metric Math', () => {
           ReturnData: false,
         },
       ]);
-
     });
 
     test('MathExpression without inner metrics emits its own period', () => {
@@ -614,7 +689,6 @@ describe('Metric Math', () => {
           Period: 300,
         },
       ]);
-
     });
 
     test('annotation for a mathexpression alarm is calculated based upon constituent metrics', () => {
@@ -634,7 +708,6 @@ describe('Metric Math', () => {
 
       // THEN
       expect(alarmLabel).toEqual('a + b >= 1 for 1 datapoints within 10 minutes');
-
     });
 
     test('can use percentiles in expression metrics in alarms', () => {
@@ -679,7 +752,6 @@ describe('Metric Math', () => {
           ReturnData: false,
         },
       ]);
-
     });
   });
 });

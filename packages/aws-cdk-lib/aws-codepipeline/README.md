@@ -1,6 +1,5 @@
 # AWS CodePipeline Construct Library
 
-
 ## Pipeline
 
 To construct an empty Pipeline:
@@ -585,7 +584,7 @@ The triggers can only be used with pipeline type V2.
 ### Push filter
 
 Pipelines can be started based on push events. You can specify the `pushFilter` property to
-filter the push events. The `pushFilter` can specify Git tags.
+filter the push events. The `pushFilter` can specify Git tags and branches.
 
 In the case of Git tags, your pipeline starts when a Git tag is pushed.
 You can filter with glob patterns. The `tagsExcludes` takes priority over the `tagsIncludes`.
@@ -613,6 +612,72 @@ new codepipeline.Pipeline(this, 'Pipeline', {
       pushFilter: [{
         tagsExcludes: ['exclude1', 'exclude2'],
         tagsIncludes: ['include*'],
+      }],
+    },
+  }],
+});
+```
+
+In the case of branches, your pipeline starts when a commit is pushed on the specified branches.
+You can filter with glob patterns. The `branchesExcludes` takes priority over the `branchesIncludes`.
+
+```ts
+declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
+declare const buildAction: codepipeline_actions.CodeBuildAction;
+
+new codepipeline.Pipeline(this, 'Pipeline', {
+  pipelineType: codepipeline.PipelineType.V2,
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Build',
+      actions: [buildAction],
+    },
+  ],
+  triggers: [{
+    providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+    gitConfiguration: {
+      sourceAction,
+      pushFilter: [{
+        branchesExcludes: ['exclude1', 'exclude2'],
+        branchesIncludes: ['include*'],
+      }],
+    },
+  }],
+});
+```
+
+File paths can also be specified along with the branches to start the pipeline.
+You can filter with glob patterns. The `filePathsExcludes` takes priority over the `filePathsIncludes`.
+
+```ts
+declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
+declare const buildAction: codepipeline_actions.CodeBuildAction;
+
+new codepipeline.Pipeline(this, 'Pipeline', {
+  pipelineType: codepipeline.PipelineType.V2,
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Build',
+      actions: [buildAction],
+    },
+  ],
+  triggers: [{
+    providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+    gitConfiguration: {
+      sourceAction,
+      pushFilter: [{
+        branchesExcludes: ['exclude1', 'exclude2'],
+        branchesIncludes: ['include1', 'include2'],
+        filePathsExcludes: ['/path/to/exclude1', '/path/to/exclude2'],
+        filePathsIncludes: ['/path/to/include1', '/path/to/include1'],
       }],
     },
   }],
@@ -757,6 +822,90 @@ new codepipeline.Pipeline(this, 'Pipeline', {
   executionMode: codepipeline.ExecutionMode.PARALLEL,
 });
 ```
+
+## Stage Level Condition
+
+Conditions are used for specific types of expressions and each has specific options for results available as follows:
+
+  Entry - The conditions for making checks that, if met, allow entry to a stage. Rules are engaged with the following result options: Fail or Skip
+
+  On Failure - The conditions for making checks for the stage when it fails. Rules are engaged with the following result option: Rollback
+
+  On Success - The conditions for making checks for the stage when it succeeds. Rules are engaged with the following result options: Rollback or Fail
+
+Conditions are supported by a set of rules for each type of condition.
+
+For each type of condition, there are specific actions that are set up by the condition. The action is the result of the succeeded or failed condition check. For example, the condition for entry (entry condition) encounters an alarm (rule), then the check is successful and the result (action) is that the stage entry is blocked.
+
+```ts
+declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
+declare const buildAction: codepipeline_actions.CodeBuildAction;
+
+new codepipeline.Pipeline(this, 'Pipeline', {
+  pipelineType: codepipeline.PipelineType.V2,
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Build',
+      actions: [buildAction],
+      // BeforeEntry condition - checks before entering the stage
+      beforeEntry: {
+        conditions: [{
+          rules: [ new codepipeline.Rule({
+            name: 'LambdaCheck',
+            provider: 'LambdaInvoke',
+            version: '1',
+            configuration: {
+              FunctionName: 'LambdaFunctionName',
+            },
+          })],
+          result:  codepipeline.Result.FAIL,
+        }],
+      },
+      // OnSuccess condition - checks after successful stage completion
+      onSuccess: {
+        conditions: [{
+          result: codepipeline.Result.FAIL,
+          rules: [new codepipeline.Rule({
+            name: 'CloudWatchCheck',
+            provider: 'LambdaInvoke',
+            version: '1',
+            configuration: {
+              AlarmName: 'AlarmName1',
+              WaitTime: '300', // 5 minutes
+              FunctionName: 'funcName2'
+            },
+          })],
+        }],
+      },
+      // OnFailure condition - handles stage failure
+      onFailure: {
+        conditions: [{
+          result: codepipeline.Result.ROLLBACK,
+            rules: [new codepipeline.Rule({
+            name: 'RollBackOnFailure',
+            provider: 'LambdaInvoke',
+            version: '1',
+            configuration: {
+              AlarmName: 'Alarm',
+              WaitTime: '300', // 5 minutes
+              FunctionName: 'funcName1'
+            },
+          })],
+        }],
+      },
+    },
+  ],
+
+});
+```
+
+## Use pipeline service role as default action role in pipeline
+
+You could enable this field to use pipeline service role as default action role in Codepipeline by set `usePipelineServiceRoleForActions` as true if no action role provided.
 
 ## Migrating a pipeline type from V1 to V2
 

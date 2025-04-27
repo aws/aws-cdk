@@ -3,13 +3,19 @@
   "SubnetTest3296A161": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
-    "CidrBlock": "10.0.0.0/16",
+    "CidrBlock": "10.1.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha-new/SubnetTest"
+     }
+    ]
    }
   },
-  "SubnetTestSecondaryTestBDE45F82": {
+  "SubnetTestSecondaryTest2AB12223": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -24,9 +30,8 @@
   "testSubnet1Subnet72087287": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2a",
-    "CidrBlock": "10.0.0.0/24",
+    "CidrBlock": "10.1.0.0/20",
     "VpcId": {
      "Fn::GetAtt": [
       "SubnetTest3296A161",
@@ -35,12 +40,18 @@
     }
    },
    "DependsOn": [
-    "SubnetTestSecondaryTestBDE45F82"
+    "SubnetTestSecondaryTest2AB12223"
    ]
   },
   "testSubnet1RouteTableB5FDDF81": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "SubnetTest3296A161",
@@ -49,7 +60,7 @@
     }
    },
    "DependsOn": [
-    "SubnetTestSecondaryTestBDE45F82"
+    "SubnetTestSecondaryTest2AB12223"
    ]
   },
   "testSubnet1RouteTableAssociation1DA9E185": {
@@ -66,7 +77,7 @@
     }
    },
    "DependsOn": [
-    "SubnetTestSecondaryTestBDE45F82"
+    "SubnetTestSecondaryTest2AB12223"
    ]
   },
   "InstanceInstanceSecurityGroupF0E2D5BE": {
@@ -219,9 +230,8 @@
   "testSubnet2Subnet4681911A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2a",
-    "CidrBlock": "10.0.1.0/24",
+    "CidrBlock": "10.1.128.0/20",
     "VpcId": {
      "Fn::GetAtt": [
       "SubnetTest3296A161",
@@ -230,7 +240,7 @@
     }
    },
    "DependsOn": [
-    "SubnetTestSecondaryTestBDE45F82"
+    "SubnetTestSecondaryTest2AB12223"
    ]
   },
   "testSubnet2RouteTableAssociation40DCE4CD": {
@@ -247,7 +257,7 @@
     }
    },
    "DependsOn": [
-    "SubnetTestSecondaryTestBDE45F82"
+    "SubnetTestSecondaryTest2AB12223"
    ]
   }
  },

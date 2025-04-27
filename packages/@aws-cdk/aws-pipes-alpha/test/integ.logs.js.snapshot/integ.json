@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "integtest-pipes-logs/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-logs"
+      ],
+      "assertionStack": "integtest-pipes-logs/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipeslogsDefaultTestDeployAssert461F2E1A"
+    }
+  }
+}

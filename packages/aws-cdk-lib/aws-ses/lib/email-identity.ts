@@ -5,7 +5,9 @@ import { CfnEmailIdentity } from './ses.generated';
 import { Grant, IGrantable } from '../../aws-iam';
 import { IPublicHostedZone } from '../../aws-route53';
 import * as route53 from '../../aws-route53';
-import { IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
+import { ArnFormat, IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * An email identity
@@ -187,19 +189,19 @@ export interface DkimIdentityConfig {
   readonly domainSigningPrivateKey?: string;
 
   /**
-    * A string that's used to identify a public key in the DNS configuration for
-    * a domain
-    *
-    * @default - use Easy DKIM
-    */
+   * A string that's used to identify a public key in the DNS configuration for
+   * a domain
+   *
+   * @default - use Easy DKIM
+   */
   readonly domainSigningSelector?: string;
 
   /**
-    * The key length of the future DKIM key pair to be generated. This can be changed
-    * at most once per day.
-    *
-    * @default EasyDkimSigningKeyLength.RSA_2048_BIT
-    */
+   * The key length of the future DKIM key pair to be generated. This can be changed
+   * at most once per day.
+   *
+   * @default EasyDkimSigningKeyLength.RSA_2048_BIT
+   */
   readonly nextSigningKeyLength?: EasyDkimSigningKeyLength;
 }
 
@@ -398,6 +400,27 @@ export class EmailIdentity extends EmailIdentityBase {
     return new Import(scope, id);
   }
 
+  /**
+   * Import an email identity by ARN
+   */
+  public static fromEmailIdentityArn(scope: Construct, id: string, emailIdentityArn: string): IEmailIdentity {
+    // emailIdentityArn is in the format 'arn:aws:ses:{region}:{account}:identity/{name}'
+    const stack = Stack.of(scope);
+    const parsedArn = stack.splitArn(emailIdentityArn, ArnFormat.SLASH_RESOURCE_NAME);
+
+    if (parsedArn.service !== 'ses' || parsedArn.resource !== 'identity' || !parsedArn.resourceName) {
+      throw new ValidationError(`Invalid email identity ARN: ${emailIdentityArn}`, scope);
+    }
+
+    const emailIdentityName = parsedArn.resourceName;
+
+    class Import extends EmailIdentityBase {
+      public readonly emailIdentityName = emailIdentityName;
+      public readonly emailIdentityArn = emailIdentityArn;
+    }
+    return new Import(scope, id);
+  }
+
   public readonly emailIdentityName: string;
 
   public readonly emailIdentityArn: string;
@@ -457,6 +480,8 @@ export class EmailIdentity extends EmailIdentityBase {
 
   constructor(scope: Construct, id: string, props: EmailIdentityProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const dkimIdentity = props.dkimIdentity ?? DkimIdentity.easyDkim();
 

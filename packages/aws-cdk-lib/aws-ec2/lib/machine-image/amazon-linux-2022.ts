@@ -88,5 +88,4 @@ export class AmazonLinux2022ImageSsmParameter extends AmazonLinuxImageSsmParamet
       userData: props.userData,
     });
   }
-
 }

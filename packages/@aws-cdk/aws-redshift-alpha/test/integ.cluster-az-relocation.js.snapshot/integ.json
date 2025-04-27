@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "AzRelocationClusterStackInteg/DefaultTest": {
+      "stacks": [
+        "AzRelocationClusterStack"
+      ],
+      "assertionStack": "AzRelocationClusterStackInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "AzRelocationClusterStackIntegDefaultTestDeployAssert8A9859B5"
+    }
+  }
+}

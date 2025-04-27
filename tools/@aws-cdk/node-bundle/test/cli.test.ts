@@ -1,9 +1,10 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import { cliMain } from '../src/cli-main';
 import { Package } from './_package';
-import { shell } from '../src/api/_shell';
+import * as util from 'util';
 
-test('validate', () => {
+test('validate', async () => {
 
   const pkg = Package.create({ name: 'consumer', licenses: ['Apache-2.0'], circular: true });
   const dep1 = pkg.addDependency({ name: 'dep1', licenses: ['INVALID'] });
@@ -14,15 +15,14 @@ test('validate', () => {
 
   try {
     const command = [
-      whereami(),
       '--entrypoint', pkg.entrypoint,
       '--resource', 'missing:bin/missing',
-      '--license', 'Apache-2.0',
+      '--allowed-license', 'Apache-2.0',
       'validate',
-    ].join(' ');
-    shell(command, { cwd: pkg.dir, quiet: true });
+    ];
+    await runCliMain(pkg.dir, command);
   } catch (e: any) {
-    const violations = new Set(e.stderr.toString().trim().split('\n').filter((l: string) => l.startsWith('-')));
+    const violations = new Set(e.message.trim().split('\n').filter((l: string) => l.startsWith('-')));
     const expected = new Set([
       `- invalid-license: Dependency ${dep1.name}@${dep1.version} has an invalid license: UNKNOWN`,
       `- multiple-license: Dependency ${dep2.name}@${dep2.version} has multiple licenses: Apache-2.0,MIT`,
@@ -35,7 +35,7 @@ test('validate', () => {
 
 });
 
-test('write', () => {
+test('write', async () => {
 
   const pkg = Package.create({ name: 'consumer', licenses: ['Apache-2.0'] });
   pkg.addDependency({ name: 'dep1', licenses: ['MIT'] });
@@ -45,13 +45,12 @@ test('write', () => {
   pkg.install();
 
   const command = [
-    whereami(),
     '--entrypoint', pkg.entrypoint,
-    '--license', 'Apache-2.0',
-    '--license', 'MIT',
+    '--allowed-license', 'Apache-2.0',
+    '--allowed-license', 'MIT',
     'write',
-  ].join(' ');
-  const bundleDir = shell(command, { cwd: pkg.dir, quiet: true });
+  ];
+  const bundleDir = await runCliMain(pkg.dir, command);
 
   expect(fs.existsSync(path.join(bundleDir, pkg.entrypoint))).toBeTruthy();
   expect(fs.existsSync(path.join(bundleDir, 'package.json'))).toBeTruthy();
@@ -67,7 +66,7 @@ test('write', () => {
 
 });
 
-test('validate and fix', () => {
+test('validate and fix', async () => {
 
   const pkg = Package.create({ name: 'consumer', licenses: ['Apache-2.0'] });
   pkg.addDependency({ name: 'dep1', licenses: ['MIT'] });
@@ -76,33 +75,32 @@ test('validate and fix', () => {
   pkg.write();
   pkg.install();
 
-  const run = (sub: string) => {
+  const run = (sub: string[]) => {
     const command = [
-      whereami(),
       '--entrypoint', pkg.entrypoint,
-      '--license', 'Apache-2.0',
-      '--license', 'MIT',
-      sub,
-    ].join(' ');
-    shell(command, { cwd: pkg.dir, quiet: true });
+      '--allowed-license', 'Apache-2.0',
+      '--allowed-license', 'MIT',
+      ...sub,
+    ];
+    return runCliMain(pkg.dir, command);
   };
 
   try {
-    run('pack');
+    await run(['pack']);
     throw new Error('Expected packing to fail before fixing');
   } catch {
     // this should fix the fact we don't generate
     // the project with the correct attributions
-    run('validate --fix');
+    await run(['validate', '--fix']);
   }
 
-  run('pack');
+  await run(['pack']);
   const tarball = path.join(pkg.dir, `${pkg.name}-${pkg.version}.tgz`);
   expect(fs.existsSync(tarball)).toBeTruthy();
 
 });
 
-test('pack', () => {
+test('pack', async () => {
 
   const pkg = Package.create({ name: 'consumer', licenses: ['Apache-2.0'] });
   const dep1 = pkg.addDependency({ name: 'dep1', licenses: ['MIT'] });
@@ -127,19 +125,34 @@ test('pack', () => {
   pkg.install();
 
   const command = [
-    whereami(),
     '--entrypoint', pkg.entrypoint,
-    '--license', 'Apache-2.0',
-    '--license', 'MIT',
+    '--allowed-license', 'Apache-2.0',
+    '--allowed-license', 'MIT',
     'pack',
-  ].join(' ');
-  shell(command, { cwd: pkg.dir, quiet: true });
+  ];
+  await runCliMain(pkg.dir, command);
 
   const tarball = path.join(pkg.dir, `${pkg.name}-${pkg.version}.tgz`);
   expect(fs.existsSync(tarball)).toBeTruthy();
 
 });
 
-function whereami() {
-  return path.join(path.join(__dirname, '..', 'bin', 'node-bundle'));
+async function runCliMain(cwd: string, command: string[]): Promise<string> {
+  const log: string[] = []
+  const spy = jest
+    .spyOn(console, 'log')
+    .mockImplementation((...args) => {
+      log.push(util.format(...args));
+    });
+
+  const curdir = process.cwd();
+  process.chdir(cwd);
+  try {
+    await cliMain(command);
+
+    return log.join('\n');
+  } finally {
+    process.chdir(curdir);
+    spy.mockRestore();
+  }
 }

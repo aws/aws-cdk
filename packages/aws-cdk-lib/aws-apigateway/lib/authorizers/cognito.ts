@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { IdentitySource } from './identity-source';
 import * as cognito from '../../../aws-cognito';
 import { Duration, FeatureFlags, Lazy, Names, Stack } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID } from '../../../cx-api';
 import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
@@ -71,6 +73,8 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
 
   constructor(scope: Construct, id: string, props: CognitoUserPoolsAuthorizerProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const restApiId = this.lazyRestApiId();
 
@@ -102,7 +106,7 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
    */
   public _attachToApi(restApi: IRestApi): void {
     if (this.restApiId && this.restApiId !== restApi.restApiId) {
-      throw new Error('Cannot attach authorizer to two different rest APIs');
+      throw new ValidationError('Cannot attach authorizer to two different rest APIs', restApi);
     }
 
     this.restApiId = restApi.restApiId;
@@ -126,7 +130,7 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
     return Lazy.string({
       produce: () => {
         if (!this.restApiId) {
-          throw new Error(`Authorizer (${this.node.path}) must be attached to a RestApi`);
+          throw new ValidationError(`Authorizer (${this.node.path}) must be attached to a RestApi`, this);
         }
         return this.restApiId;
       },

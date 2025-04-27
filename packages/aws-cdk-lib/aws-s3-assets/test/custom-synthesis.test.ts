@@ -7,6 +7,7 @@
 import * as path from 'path';
 import { Template } from '../../assertions';
 import { StackSynthesizer, FileAssetSource, FileAssetLocation, DockerImageAssetSource, DockerImageAssetLocation, ISynthesisSession, App, Stack, AssetManifestBuilder, CfnParameter, CfnResource } from '../../core';
+import { UnscopedValidationError } from '../../core/lib/errors';
 import { AssetManifestArtifact } from '../../cx-api';
 import { Asset } from '../lib';
 
@@ -62,6 +63,31 @@ test('use custom synthesizer', () => {
   }));
 });
 
+test.each([
+  [undefined, 'MyAsset'],
+  ['Some name', 'Some name'],
+])('when input display name is %p, passes display name %p to synthesizer', (given, expected) => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack', {
+    synthesizer: new CustomSynthesizer(),
+  });
+  const addFileAsset = jest.spyOn(CustomSynthesizer.prototype, 'addFileAsset');
+
+  // WHEN
+  new Asset(stack, 'MyAsset', {
+    path: path.join(__dirname, 'file-asset.txt'),
+    displayName: given,
+  });
+
+  // THEN
+  expect(addFileAsset).toHaveBeenCalledWith(expect.objectContaining({
+    displayName: expected,
+  }));
+
+  addFileAsset.mockRestore();
+});
+
 class CustomSynthesizer extends StackSynthesizer {
   private readonly manifest = new AssetManifestBuilder();
   private parameter?: CfnParameter;
@@ -84,7 +110,7 @@ class CustomSynthesizer extends StackSynthesizer {
 
   addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
     void(asset);
-    throw new Error('Docker images are not supported here');
+    throw new UnscopedValidationError('Docker images are not supported here');
   }
 
   synthesize(session: ISynthesisSession): void {

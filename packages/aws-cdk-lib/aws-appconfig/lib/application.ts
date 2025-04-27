@@ -6,6 +6,7 @@ import { Environment, EnvironmentOptions, IEnvironment } from './environment';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import * as ecs from '../../aws-ecs';
 import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Defines the platform for the AWS AppConfig Lambda extension.
@@ -145,6 +146,15 @@ export interface IApplication extends cdk.IResource {
    * @param options Options for the extension
    */
   onDeploymentRolledBack(eventDestination: IEventDestination, options?: ExtensionOptions): void;
+
+  /**
+   * Adds an AT_DEPLOYMENT_TICK extension with the provided event destination and
+   * also creates an extension association to an application.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions): void;
 
   /**
    * Adds an extension association to the application.
@@ -298,6 +308,17 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication, IEx
   }
 
   /**
+   * Adds an AT_DEPLOYMENT_TICK extension with the provided event destination and
+   * also creates an extension association to an application.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  public atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions) {
+    this.extensible.atDeploymentTick(eventDestination, options);
+  }
+
+  /**
    * Adds an extension association to the application.
    *
    * @param extension The extension to create an association for
@@ -325,7 +346,7 @@ export class Application extends ApplicationBase {
     const parsedArn = cdk.Stack.of(scope).splitArn(applicationArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
     const applicationId = parsedArn.resourceName;
     if (!applicationId) {
-      throw new Error('Missing required application id from application ARN');
+      throw new cdk.ValidationError('Missing required application id from application ARN', scope);
     }
 
     class Import extends ApplicationBase {
@@ -413,6 +434,8 @@ export class Application extends ApplicationBase {
 
   constructor(scope: Construct, id: string, props: ApplicationProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.description = props.description;
     this.name = props.applicationName || cdk.Names.uniqueResourceName(this, {

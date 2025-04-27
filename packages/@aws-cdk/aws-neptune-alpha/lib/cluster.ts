@@ -10,6 +10,7 @@ import { InstanceType } from './instance';
 import { CfnDBCluster, CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
 import { IClusterParameterGroup, IParameterGroup } from './parameter-group';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Possible Instances Types to use in Neptune cluster
@@ -104,6 +105,34 @@ export class EngineVersion {
    * Neptune engine version 1.3.3.0
    */
   public static readonly V1_3_3_0 = new EngineVersion('1.3.3.0');
+  /**
+   * Neptune engine version 1.3.4.0
+   */
+  public static readonly V1_3_4_0 = new EngineVersion('1.3.4.0');
+  /**
+   * Neptune engine version 1.4.0.0
+   */
+  public static readonly V1_4_0_0 = new EngineVersion('1.4.0.0');
+  /**
+   * Neptune engine version 1.4.1.0
+   */
+  public static readonly V1_4_1_0 = new EngineVersion('1.4.1.0');
+  /**
+   * Neptune engine version 1.4.2.0
+   */
+  public static readonly V1_4_2_0 = new EngineVersion('1.4.2.0');
+  /**
+   * Neptune engine version 1.4.3.0
+   */
+  public static readonly V1_4_3_0 = new EngineVersion('1.4.3.0');
+  /**
+   * Neptune engine version 1.4.4.0
+   */
+  public static readonly V1_4_4_0 = new EngineVersion('1.4.4.0');
+  /**
+   * Neptune engine version 1.4.5.0
+   */
+  public static readonly V1_4_5_0 = new EngineVersion('1.4.5.0');
 
   /**
    * Constructor for specifying a custom engine version
@@ -450,7 +479,6 @@ export interface DatabaseClusterAttributes {
  * A new or imported database cluster.
  */
 export abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster {
-
   /**
    * Import an existing DatabaseCluster from properties
    */
@@ -542,7 +570,6 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
  * @resource AWS::Neptune::DBCluster
  */
 export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
-
   /**
    * The default number of instances in the Neptune cluster if none are
    * specified
@@ -590,6 +617,8 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
 
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
@@ -728,7 +757,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       throw new Error(`ServerlessScalingConfiguration minCapacity must be greater or equal than 1, received ${serverlessScalingConfiguration.minCapacity}`);
     }
     if (serverlessScalingConfiguration.maxCapacity < 2.5 || serverlessScalingConfiguration.maxCapacity > 128) {
-      throw new Error(`ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, reveived ${serverlessScalingConfiguration.maxCapacity}`);
+      throw new Error(`ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, received ${serverlessScalingConfiguration.maxCapacity}`);
     }
     if (serverlessScalingConfiguration.minCapacity >= serverlessScalingConfiguration.maxCapacity) {
       throw new Error(`ServerlessScalingConfiguration minCapacity ${serverlessScalingConfiguration.minCapacity} ` +

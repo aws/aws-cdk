@@ -546,7 +546,6 @@ describe('tokens', () => {
     restoreStackTraceColection(previousValue);
     expect(token.creationTrace.find(x => x.includes('fn1'))).toBeDefined();
     expect(token.creationTrace.find(x => x.includes('fn2'))).toBeDefined();
-
   });
 
   test('newError returns an error with the creation stack trace', () => {

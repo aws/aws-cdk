@@ -19,7 +19,6 @@ export default async function submodulesGen(modules: ModuleMap, outPath: string)
 }
 
 async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
-
   // README.md
   const readmePath = path.join(modulePath, 'README.md');
   if (!fs.existsSync(readmePath)) {

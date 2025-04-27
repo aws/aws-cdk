@@ -1,0 +1,163 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "lambda-event-source-metrics-config-dynamodb.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambda-event-source-metrics-config-dynamodb.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambda-event-source-metrics-config-dynamodb": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-event-source-metrics-config-dynamodb.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ba285c3d32df9eb5784aa37a7742b096033c91381c3f2ba7d10f22061c8468d7.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambda-event-source-metrics-config-dynamodb.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambda-event-source-metrics-config-dynamodb.assets"
+      ],
+      "metadata": {
+        "/lambda-event-source-metrics-config-dynamodb/F/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRole3AC82EE1"
+          }
+        ],
+        "/lambda-event-source-metrics-config-dynamodb/F/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRoleDefaultPolicy17A19BFA"
+          }
+        ],
+        "/lambda-event-source-metrics-config-dynamodb/F/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FC4345940"
+          }
+        ],
+        "/lambda-event-source-metrics-config-dynamodb/F/DynamoDBEventSource:lambdaeventsourcemetricsconfigdynamodbT8ABCAB8C/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FDynamoDBEventSourcelambdaeventsourcemetricsconfigdynamodbT8ABCAB8CB3F48FC4"
+          }
+        ],
+        "/lambda-event-source-metrics-config-dynamodb/T/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TD925BC7E"
+          }
+        ],
+        "/lambda-event-source-metrics-config-dynamodb/F5/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F5ServiceRole2E897519"
+          }
+        ],
+        "/lambda-event-source-metrics-config-dynamodb/F5/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F5ServiceRoleDefaultPolicyF3745DE6"
+          }
+        ],
+        "/lambda-event-source-metrics-config-dynamodb/F5/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F5B560B5F9"
+          }
+        ],
+        "/lambda-event-source-metrics-config-dynamodb/F5/DynamoDBEventSource:lambdaeventsourcemetricsconfigdynamodbT8ABCAB8C/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F5DynamoDBEventSourcelambdaeventsourcemetricsconfigdynamodbT8ABCAB8CD0816D3E"
+          }
+        ],
+        "/lambda-event-source-metrics-config-dynamodb/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-event-source-metrics-config-dynamodb/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-event-source-metrics-config-dynamodb"
+    },
+    "lambdaeventsourcedynamodbwithmetricsDefaultTestDeployAssertC1C197C4.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambdaeventsourcedynamodbwithmetricsDefaultTestDeployAssertC1C197C4.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambdaeventsourcedynamodbwithmetricsDefaultTestDeployAssertC1C197C4": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambdaeventsourcedynamodbwithmetricsDefaultTestDeployAssertC1C197C4.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambdaeventsourcedynamodbwithmetricsDefaultTestDeployAssertC1C197C4.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambdaeventsourcedynamodbwithmetricsDefaultTestDeployAssertC1C197C4.assets"
+      ],
+      "metadata": {
+        "/lambda-event-source-dynamodb-with-metrics/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-event-source-dynamodb-with-metrics/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-event-source-dynamodb-with-metrics/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

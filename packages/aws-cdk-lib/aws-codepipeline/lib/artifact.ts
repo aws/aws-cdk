@@ -1,6 +1,6 @@
 import * as validation from './private/validation';
 import * as s3 from '../../aws-s3';
-import { Lazy, Token } from '../../core';
+import { Lazy, Token, UnscopedValidationError } from '../../core';
 
 /**
  * An output artifact of an action. Artifacts can be used as input by some actions.
@@ -11,22 +11,48 @@ export class Artifact {
    * Mainly meant to be used from `decdk`.
    *
    * @param name the (required) name of the Artifact
+   * @param files file paths that you want to export as the output artifact for the action.
+   * This property can only be used in the artifact for `CommandsAction`.
+   * The length of the files array must be between 1 and 10.
    */
-  public static artifact(name: string): Artifact {
-    return new Artifact(name);
+  public static artifact(name: string, files?: string[]): Artifact {
+    return new Artifact(name, files);
   }
 
   private _artifactName?: string;
+  private _artifactFiles?: string[];
   private readonly metadata: { [key: string]: any } = {};
 
-  constructor(artifactName?: string) {
+  /**
+   * An output artifact of an action. Artifacts can be used as input by some actions.
+   *
+   * @param artifactName the (required) name of the Artifact
+   * @param artifactFiles file paths that you want to export as the output artifact for the action.
+   * This property can only be used in the artifact for `CommandsAction`.
+   * The length of the artifactFiles array must be between 1 and 10.
+   */
+  constructor(artifactName?: string, artifactFiles?: string[]) {
     validation.validateArtifactName(artifactName);
 
+    if (artifactFiles !== undefined && (artifactFiles.length < 1 || artifactFiles.length > 10)) {
+      throw new UnscopedValidationError(`The length of the artifactFiles array must be between 1 and 10, got: ${artifactFiles.length}`);
+    }
+
     this._artifactName = artifactName;
+    this._artifactFiles = artifactFiles;
   }
 
   public get artifactName(): string | undefined {
     return this._artifactName;
+  }
+
+  /**
+   * The file paths that you want to export as the output artifact for the action.
+   *
+   * This property can only be used in artifacts for `CommandsAction`.
+   */
+  public get artifactFiles(): string[] | undefined {
+    return this._artifactFiles;
   }
 
   /**
@@ -107,7 +133,7 @@ export class Artifact {
   /** @internal */
   protected _setName(name: string) {
     if (this._artifactName) {
-      throw new Error(`Artifact already has name '${this._artifactName}', cannot override it`);
+      throw new UnscopedValidationError(`Artifact already has name '${this._artifactName}', cannot override it`);
     } else {
       this._artifactName = name;
     }

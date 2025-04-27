@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "ivs-recording-configuration-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ivs-recording-configuration-test"
+      ],
+      "assertionStack": "ivs-recording-configuration-test/DefaultTest/DeployAssert",
+      "assertionStackName": "ivsrecordingconfigurationtestDefaultTestDeployAssert4AB65A05"
+    }
+  }
+}

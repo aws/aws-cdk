@@ -28,7 +28,7 @@ export class StepFunctionsStateMachineAction implements iot.IAction {
   private readonly role?: iam.IRole;
 
   /**
-   * @param stateMachine The Step Functions Start Machine which shoud be executed.
+   * @param stateMachine The Step Functions Start Machine which should be executed.
    * @param props Optional properties to not use default
    */
   constructor(private readonly stateMachine: stepfunctions.IStateMachine, props?: StepFunctionsStateMachineActionProps) {

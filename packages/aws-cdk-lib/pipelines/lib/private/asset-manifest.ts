@@ -2,6 +2,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { AssetManifest, AwsDestination, DockerImageDestination, DockerImageSource, FileDestination, FileSource, Manifest } from '../../../cloud-assembly-schema';
+import { UnscopedValidationError } from '../../../core';
 
 /**
  * A manifest of assets
@@ -21,7 +22,7 @@ export class AssetManifestReader {
 
       return new AssetManifestReader(path.dirname(fileName), obj);
     } catch (e: any) {
-      throw new Error(`Cannot read asset manifest '${fileName}': ${e.message}`);
+      throw new UnscopedValidationError(`Cannot read asset manifest '${fileName}': ${e.message}`);
     }
   }
 
@@ -35,7 +36,7 @@ export class AssetManifestReader {
     try {
       st = fs.statSync(filePath);
     } catch (e: any) {
-      throw new Error(`Cannot read asset manifest at '${filePath}': ${e.message}`);
+      throw new UnscopedValidationError(`Cannot read asset manifest at '${filePath}': ${e.message}`);
     }
     if (st.isDirectory()) {
       return AssetManifestReader.fromFile(path.join(filePath, AssetManifestReader.DEFAULT_FILENAME));
@@ -114,18 +115,26 @@ export class AssetManifestReader {
     ];
 
     function makeEntries<A, B, C>(
-      assets: Record<string, { source: A; destinations: Record<string, B> }>,
-      ctor: new (id: DestinationIdentifier, source: A, destination: B) => C): C[] {
-
+      assets: Record<string, AssetLike<A, B>>,
+      ctor: new (id: DestinationIdentifier, source: A, destination: B, displayName?: string) => C): C[] {
       const ret = new Array<C>();
       for (const [assetId, asset] of Object.entries(assets)) {
         for (const [destId, destination] of Object.entries(asset.destinations)) {
-          ret.push(new ctor(new DestinationIdentifier(assetId, destId), asset.source, destination));
+          ret.push(new ctor(new DestinationIdentifier(assetId, destId), asset.source, destination, asset.displayName));
         }
       }
       return ret;
     }
   }
+}
+
+/**
+ * A data structure that has the general shape of an asset in the asset manifest
+ */
+interface AssetLike<A, B> {
+  readonly source: A;
+  readonly destinations: Record<string, B>;
+  readonly displayName?: string;
 }
 
 type AssetType = 'files' | 'dockerImages';
@@ -155,6 +164,11 @@ export interface IManifestEntry {
    * Type-dependent destination data
    */
   readonly destination: AwsDestination;
+
+  /**
+   * A display name for this asset manifest entry, if given
+   */
+  readonly displayName?: string;
 }
 
 /**
@@ -171,6 +185,8 @@ export class FileManifestEntry implements IManifestEntry {
     public readonly source: FileSource,
     /** Destination for the file asset */
     public readonly destination: FileDestination,
+    /** Display name for the file asset */
+    public readonly displayName?: string,
   ) {
     this.genericSource = source;
   }
@@ -190,6 +206,8 @@ export class DockerImageManifestEntry implements IManifestEntry {
     public readonly source: DockerImageSource,
     /** Destination for the file asset */
     public readonly destination: DockerImageDestination,
+    /** Display name for the file asset */
+    public readonly displayName?: string,
   ) {
     this.genericSource = source;
   }
@@ -240,11 +258,11 @@ export class DestinationPattern {
    * Parse a ':'-separated string into an asset/destination identifier
    */
   public static parse(s: string) {
-    if (!s) { throw new Error('Empty string is not a valid destination identifier'); }
+    if (!s) { throw new UnscopedValidationError('Empty string is not a valid destination identifier'); }
     const parts = s.split(':').map(x => x !== '*' ? x : undefined);
     if (parts.length === 1) { return new DestinationPattern(parts[0]); }
     if (parts.length === 2) { return new DestinationPattern(parts[0] || undefined, parts[1] || undefined); }
-    throw new Error(`Asset identifier must contain at most 2 ':'-separated parts, got '${s}'`);
+    throw new UnscopedValidationError(`Asset identifier must contain at most 2 ':'-separated parts, got '${s}'`);
   }
 
   /**

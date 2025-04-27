@@ -95,7 +95,6 @@ export interface NestedStackProps {
  *
  */
 export class NestedStack extends Stack {
-
   /**
    * Checks if `x` is an object of type `NestedStack`.
    */
@@ -227,6 +226,8 @@ export class NestedStack extends Stack {
       packaging: FileAssetPackaging.FILE,
       sourceHash: templateHash,
       fileName: this.templateFile,
+      // this.stackName is a Token for nested stacks, so use something else
+      displayName: `${Names.stackRelativeConstructPath(this)} Nested Stack Template`,
     });
 
     this.addResourceMetadata(this.resource, 'TemplateURL');

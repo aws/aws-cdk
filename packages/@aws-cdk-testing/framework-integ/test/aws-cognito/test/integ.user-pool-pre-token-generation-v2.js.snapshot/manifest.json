@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "integ-user-pool-pre-token-generation-v2.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/99c1cd9f462b0eb4468998585bd7b2a90a4d3c254b5390023fb0414afc4e2279.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1cdb32097246d178618be8053189f6c775342d392a655a940b5884cf880491e6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,38 @@
         "integ-user-pool-pre-token-generation-v2.assets"
       ],
       "metadata": {
+        "/integ-user-pool-pre-token-generation-v2/preTokenGenerationLambda": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/integ-user-pool-pre-token-generation-v2/preTokenGenerationLambda/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool-pre-token-generation-v2/preTokenGenerationLambda/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-user-pool-pre-token-generation-v2/preTokenGenerationLambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -46,6 +78,26 @@
             "data": "preTokenGenerationLambda1F130400"
           }
         ],
+        "/integ-user-pool-pre-token-generation-v2/pool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "advancedSecurityMode": "ENFORCED",
+              "featurePlan": "PLUS"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addTrigger": [
+                {},
+                "*",
+                "V2_0"
+              ]
+            }
+          }
+        ],
         "/integ-user-pool-pre-token-generation-v2/pool/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -56,6 +108,17 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "poolPreTokenGenerationConfigCognito310B2A58"
+          }
+        ],
+        "/integ-user-pool-pre-token-generation-v2/pool/client": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "authFlows": {
+                "userSrp": true
+              }
+            }
           }
         ],
         "/integ-user-pool-pre-token-generation-v2/pool/client/Resource": [

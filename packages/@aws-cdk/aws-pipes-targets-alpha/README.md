@@ -26,10 +26,12 @@ For more details see the [service documentation](https://docs.aws.amazon.com/eve
 Pipe targets are the end point of an EventBridge Pipe. The following targets are supported:
 
 * `targets.ApiDestinationTarget`: [Send event source to an EventBridge API destination](#amazon-eventbridge-api-destination)
+* `targets.ApiGatewayTarget`: [Send event source to an API Gateway REST API](#amazon-api-gateway-rest-api)
 * `targets.CloudWatchLogsTarget`: [Send event source to a CloudWatch Logs log group](#amazon-cloudwatch-logs-log-group)
 * `targets.EventBridgeTarget`: [Send event source to an EventBridge event bus](#amazon-eventbridge-event-bus)
 * `targets.KinesisTarget`: [Send event source to a Kinesis data stream](#amazon-kinesis-data-stream)
 * `targets.LambdaFunction`: [Send event source to a Lambda function](#aws-lambda-function)
+* `targets.SageMakerTarget`: [Send event source to a SageMaker pipeline](#amazon-sagemaker-pipeline)
 * `targets.SfnStateMachine`: [Invoke a Step Functions state machine from an event source](#aws-step-functions-state-machine)
 * `targets.SqsTarget`: [Send event source to an SQS queue](#amazon-sqs)
 
@@ -57,6 +59,51 @@ declare const sourceQueue: sqs.Queue;
 declare const dest: events.ApiDestination;
 
 const apiTarget = new targets.ApiDestinationTarget(dest, {
+  inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: apiTarget,
+});
+```
+
+### Amazon API Gateway Rest API
+
+A REST API can be used as a target for a pipe. 
+The REST API will receive the (enriched/filtered) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+
+const fn = new lambda.Function( this, 'MyFunc', {
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_LATEST,
+  code: lambda.Code.fromInline( 'exports.handler = e => {}' ),
+});
+
+const restApi = new api.LambdaRestApi( this, 'MyRestAPI', { handler: fn } );
+const apiTarget = new targets.ApiGatewayTarget(restApi);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: apiTarget,
+});
+```
+
+The input to the target REST API can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+
+const fn = new lambda.Function( this, 'MyFunc', {
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_LATEST,
+  code: lambda.Code.fromInline( 'exports.handler = e => {}' ),
+});
+
+const restApi = new api.LambdaRestApi( this, 'MyRestAPI', { handler: fn } );
+const apiTarget = new targets.ApiGatewayTarget(restApi, {
   inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
 });
 
@@ -214,6 +261,39 @@ const pipeTarget = new targets.LambdaFunction(targetFunction, {
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SqsSource(sourceQueue),
     target: pipeTarget
+});
+```
+
+### Amazon SageMaker Pipeline
+
+A SageMaker pipeline can be used as a target for a pipe. 
+The pipeline will receive the (enriched/filtered) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetPipeline: sagemaker.IPipeline;
+
+const pipelineTarget = new targets.SageMakerTarget(targetPipeline);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: pipelineTarget,
+});
+```
+
+The input to the target pipeline can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetPipeline: sagemaker.IPipeline;
+
+const pipelineTarget = new targets.SageMakerTarget(targetPipeline, {
+  inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: pipelineTarget,
 });
 ```
 

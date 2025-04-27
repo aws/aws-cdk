@@ -1,4 +1,4 @@
-import { IResolvable, IResolveContext, Token, Tokenization } from '../../../core';
+import { IResolvable, IResolveContext, Token, Tokenization, ValidationError } from '../../../core';
 import { Step } from '../blueprint/step';
 
 const STEP_OUTPUT_SYM = Symbol.for('@aws-cdk/pipelines.StepOutput');
@@ -100,9 +100,9 @@ export class StepOutput implements IResolvable {
     this.resolution = value;
   }
 
-  public resolve(_context: IResolveContext) {
+  public resolve(context: IResolveContext) {
     if (this.resolution === undefined) {
-      throw new Error(`Output for step ${this.step} not configured. Either the step is not in the pipeline, the step implementation did not call 'this.discoverReferencedOutputs()', or this engine does not support Outputs for this step.`);
+      throw new ValidationError(`Output for step ${this.step} not configured. Either the step is not in the pipeline, the step implementation did not call 'this.discoverReferencedOutputs()', or this engine does not support Outputs for this step.`, context.scope);
     }
     return this.resolution;
   }

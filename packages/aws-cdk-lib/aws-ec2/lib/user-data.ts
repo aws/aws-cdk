@@ -1,6 +1,6 @@
 import { OperatingSystemType } from './machine-image';
 import { IBucket } from '../../aws-s3';
-import { Fn, Resource, Stack, CfnResource } from '../../core';
+import { Fn, Resource, Stack, CfnResource, UnscopedValidationError } from '../../core';
 
 /**
  * Options when constructing UserData for Linux
@@ -113,7 +113,7 @@ export abstract class UserData {
     switch (os) {
       case OperatingSystemType.LINUX: return UserData.forLinux();
       case OperatingSystemType.WINDOWS: return UserData.forWindows();
-      case OperatingSystemType.UNKNOWN: throw new Error('Cannot determine UserData for unknown operating system type');
+      case OperatingSystemType.UNKNOWN: throw new UnscopedValidationError('Cannot determine UserData for unknown operating system type');
     }
   }
 
@@ -148,7 +148,6 @@ export abstract class UserData {
    * Adds a command which will send a cfn-signal when the user data script ends
    */
   public abstract addSignalOnExitCommand( resource: Resource ): void;
-
 }
 
 /**
@@ -281,7 +280,7 @@ class CustomUserData extends UserData {
   }
 
   public addOnExitCommands(): void {
-    throw new Error('CustomUserData does not support addOnExitCommands, use UserData.forLinux() or UserData.forWindows() instead.');
+    throw new UnscopedValidationError('CustomUserData does not support addOnExitCommands, use UserData.forLinux() or UserData.forWindows() instead.');
   }
 
   public render(): string {
@@ -289,15 +288,15 @@ class CustomUserData extends UserData {
   }
 
   public addS3DownloadCommand(): string {
-    throw new Error('CustomUserData does not support addS3DownloadCommand, use UserData.forLinux() or UserData.forWindows() instead.');
+    throw new UnscopedValidationError('CustomUserData does not support addS3DownloadCommand, use UserData.forLinux() or UserData.forWindows() instead.');
   }
 
   public addExecuteFileCommand(): void {
-    throw new Error('CustomUserData does not support addExecuteFileCommand, use UserData.forLinux() or UserData.forWindows() instead.');
+    throw new UnscopedValidationError('CustomUserData does not support addExecuteFileCommand, use UserData.forLinux() or UserData.forWindows() instead.');
   }
 
   public addSignalOnExitCommand(): void {
-    throw new Error('CustomUserData does not support addSignalOnExitCommand, use UserData.forLinux() or UserData.forWindows() instead.');
+    throw new UnscopedValidationError('CustomUserData does not support addSignalOnExitCommand, use UserData.forLinux() or UserData.forWindows() instead.');
   }
 }
 
@@ -477,7 +476,7 @@ export class MultipartUserData extends UserData {
     // Validate separator
     if (opts?.partsSeparator != null) {
       if (new RegExp(MultipartUserData.BOUNDRY_PATTERN).test(opts!.partsSeparator)) {
-        throw new Error(`Invalid characters in separator. Separator has to match pattern ${MultipartUserData.BOUNDRY_PATTERN}`);
+        throw new UnscopedValidationError(`Invalid characters in separator. Separator has to match pattern ${MultipartUserData.BOUNDRY_PATTERN}`);
       } else {
         partsSeparator = opts!.partsSeparator;
       }
@@ -556,7 +555,7 @@ export class MultipartUserData extends UserData {
     if (this.defaultUserData) {
       return this.defaultUserData.addS3DownloadCommand(params);
     } else {
-      throw new Error(MultipartUserData.USE_PART_ERROR);
+      throw new UnscopedValidationError(MultipartUserData.USE_PART_ERROR);
     }
   }
 
@@ -564,7 +563,7 @@ export class MultipartUserData extends UserData {
     if (this.defaultUserData) {
       this.defaultUserData.addExecuteFileCommand(params);
     } else {
-      throw new Error(MultipartUserData.USE_PART_ERROR);
+      throw new UnscopedValidationError(MultipartUserData.USE_PART_ERROR);
     }
   }
 
@@ -572,7 +571,7 @@ export class MultipartUserData extends UserData {
     if (this.defaultUserData) {
       this.defaultUserData.addSignalOnExitCommand(resource);
     } else {
-      throw new Error(MultipartUserData.USE_PART_ERROR);
+      throw new UnscopedValidationError(MultipartUserData.USE_PART_ERROR);
     }
   }
 
@@ -580,7 +579,7 @@ export class MultipartUserData extends UserData {
     if (this.defaultUserData) {
       this.defaultUserData.addCommands(...commands);
     } else {
-      throw new Error(MultipartUserData.USE_PART_ERROR);
+      throw new UnscopedValidationError(MultipartUserData.USE_PART_ERROR);
     }
   }
 
@@ -588,7 +587,7 @@ export class MultipartUserData extends UserData {
     if (this.defaultUserData) {
       this.defaultUserData.addOnExitCommands(...commands);
     } else {
-      throw new Error(MultipartUserData.USE_PART_ERROR);
+      throw new UnscopedValidationError(MultipartUserData.USE_PART_ERROR);
     }
   }
 }

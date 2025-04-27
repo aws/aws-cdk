@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { ContainerOverride } from './ecs-task-properties';
+import { ContainerOverride, EphemeralStorageOverride, InferenceAcceleratorOverride } from './ecs-task-properties';
 import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 import * as ec2 from '../../aws-ec2';
 import * as ecs from '../../aws-ecs';
@@ -8,8 +8,8 @@ import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 
 /**
-  * Metadata that you apply to a resource to help categorize and organize the resource. Each tag consists of a key and an optional value, both of which you define.
-  */
+ * Metadata that you apply to a resource to help categorize and organize the resource. Each tag consists of a key and an optional value, both of which you define.
+ */
 export interface Tag {
 
   /**
@@ -49,6 +49,54 @@ export interface EcsTaskProps extends TargetBaseProps {
    * values you want to override.
    */
   readonly containerOverrides?: ContainerOverride[];
+
+  /**
+   * The CPU override for the task.
+   *
+   * @default - The task definition's CPU value
+   */
+  readonly cpu?: string;
+
+  /**
+   * The ephemeral storage setting override for the task.
+   *
+   * NOTE: This parameter is only supported for tasks hosted on Fargate that use the following platform versions:
+   *  - Linux platform version 1.4.0 or later.
+   *  - Windows platform version 1.0.0 or later.
+   *
+   * @default - The task definition's ephemeral storage value
+   */
+  readonly ephemeralStorage?: EphemeralStorageOverride;
+
+  /**
+   * The execution role for the task.
+   *
+   * The Amazon Resource Name (ARN) of the task execution role override for the task.
+   *
+   * @default - The task definition's execution role
+   */
+  readonly executionRole?: iam.IRole;
+
+  /**
+   * The Elastic Inference accelerator override for the task.
+   *
+   * @default - The task definition's inference accelerator overrides
+   */
+  readonly inferenceAcceleratorOverrides?: InferenceAcceleratorOverride[];
+
+  /**
+   * The memory override for the task.
+   *
+   * @default - The task definition's memory value
+   */
+  readonly memory?: string;
+
+  /**
+   * The IAM role for the task.
+   *
+   * @default - The task definition's task role
+   */
+  readonly taskRole?: iam.IRole;
 
   /**
    * In what subnets to place the task's ENIs
@@ -105,33 +153,33 @@ export interface EcsTaskProps extends TargetBaseProps {
   readonly assignPublicIp?: boolean;
 
   /**
-    * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
-    *
-    * @default - Tags will not be propagated
-    */
+   * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
+   *
+   * @default - Tags will not be propagated
+   */
   readonly propagateTags?: ecs.PropagatedTagSource;
 
   /**
-     * The metadata that you apply to the task to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define.
-     *
-     * @default - No additional tags are applied to the task
-     */
+   * The metadata that you apply to the task to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define.
+   *
+   * @default - No additional tags are applied to the task
+   */
   readonly tags?: Tag[];
 
   /**
-    * Whether or not to enable the execute command functionality for the containers in this task.
-    * If true, this enables execute command functionality on all containers in the task.
-    *
-    * @default - false
-    */
+   * Whether or not to enable the execute command functionality for the containers in this task.
+   * If true, this enables execute command functionality on all containers in the task.
+   *
+   * @default - false
+   */
   readonly enableExecuteCommand?: boolean;
 
   /**
-    * Specifies the launch type on which your task is running. The launch type that you specify here
-    * must match one of the launch type (compatibilities) of the target task.
-    *
-    * @default - 'EC2' if `isEc2Compatible` for the `taskDefinition` is true, otherwise 'FARGATE'
-    */
+   * Specifies the launch type on which your task is running. The launch type that you specify here
+   * must match one of the launch type (compatibilities) of the target task.
+   *
+   * @default - 'EC2' if `isEc2Compatible` for the `taskDefinition` is true, otherwise 'FARGATE'
+   */
   readonly launchType?: ecs.LaunchType;
 }
 
@@ -222,14 +270,12 @@ export class EcsTask implements events.IRuleTarget {
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const arn = this.cluster.clusterArn;
     const role = this.role;
-    const containerOverrides = this.props.containerOverrides && this.props.containerOverrides
-      .map(({ containerName, ...overrides }) => ({ name: containerName, ...overrides }));
-    const input = { containerOverrides };
     const taskCount = this.taskCount;
     const taskDefinitionArn = this.taskDefinition.taskDefinitionArn;
     const propagateTags = this.propagateTags;
     const tagList = this.tags;
     const enableExecuteCommand = this.enableExecuteCommand;
+    const input = this.createInput();
 
     const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
 
@@ -243,7 +289,7 @@ export class EcsTask implements events.IRuleTarget {
 
     if (assignPublicIp === 'ENABLED' && launchType !== 'FARGATE') {
       throw new Error('assignPublicIp is only supported for FARGATE tasks');
-    };
+    }
 
     const baseEcsParameters = { taskCount, taskDefinitionArn, propagateTags, tagList, enableExecuteCommand };
 
@@ -273,6 +319,31 @@ export class EcsTask implements events.IRuleTarget {
       ecsParameters,
       input: events.RuleTargetInput.fromObject(input),
       targetResource: this.taskDefinition,
+    };
+  }
+
+  private createInput(): Record<string, any> {
+    const containerOverrides = this.props.containerOverrides && this.props.containerOverrides
+      .map(({ containerName, ...overrides }) => ({ name: containerName, ...overrides }));
+
+    if (this.props.ephemeralStorage) {
+      const ephemeralStorage = this.props.ephemeralStorage;
+      if (ephemeralStorage.sizeInGiB < 20 || ephemeralStorage.sizeInGiB > 200) {
+        throw new Error('Ephemeral storage size must be between 20 GiB and 200 GiB.');
+      }
+    }
+
+    // See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_TaskOverride.html
+    return {
+      // In prior versions, containerOverrides was passed even when undefined, so we always set it for backward compatibility.
+      containerOverrides,
+
+      ...(this.props.cpu && { cpu: this.props.cpu }),
+      ...(this.props.ephemeralStorage && { ephemeralStorage: this.props.ephemeralStorage }),
+      ...(this.props.executionRole?.roleArn && { executionRole: this.props.executionRole.roleArn }),
+      ...(this.props.inferenceAcceleratorOverrides && { inferenceAcceleratorOverrides: this.props.inferenceAcceleratorOverrides }),
+      ...(this.props.memory && { memory: this.props.memory }),
+      ...(this.props.taskRole?.roleArn && { taskRole: this.props.taskRole.roleArn }),
     };
   }
 

@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "48cf06ed9dfbc62f5e0225887741d30dca747e7ae3fcda0cb25f83c07f8c64bc": {
+      "source": {
+        "path": "codebuild-github-org-webhook.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "48cf06ed9dfbc62f5e0225887741d30dca747e7ae3fcda0cb25f83c07f8c64bc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,6 +1,0 @@
-{
-  "app": "node bin/test-app.js",
-  "context": {
-    
-  }
-}

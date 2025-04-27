@@ -1,8 +1,9 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from 'aws-cdk-lib/core';
+import { ArnFormat, IResource, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnPlaceIndex } from 'aws-cdk-lib/aws-location';
 import { DataSource, generateUniqueId } from './util';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A Place Index
@@ -74,39 +75,12 @@ export enum IntendedUse {
   STORAGE = 'Storage',
 }
 
-abstract class PlaceIndexBase extends Resource implements IPlaceIndex {
-  public abstract readonly placeIndexName: string;
-  public abstract readonly placeIndexArn: string;
-
-  /**
-   * Grant the given principal identity permissions to perform the actions on this place index.
-   */
-  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: grantee,
-      actions: actions,
-      resourceArns: [this.placeIndexArn],
-    });
-  }
-
-  /**
-   * Grant the given identity permissions to search using this index
-   */
-  public grantSearch(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'geo:SearchPlaceIndexForPosition',
-      'geo:SearchPlaceIndexForSuggestions',
-      'geo:SearchPlaceIndexForText',
-    );
-  }
-}
-
 /**
  * A Place Index
  *
  * @see https://docs.aws.amazon.com/location/latest/developerguide/places-concepts.html
  */
-export class PlaceIndex extends PlaceIndexBase {
+export class PlaceIndex extends Resource implements IPlaceIndex {
   /**
    * Use an existing place index by name
    */
@@ -127,10 +101,10 @@ export class PlaceIndex extends PlaceIndexBase {
     const parsedArn = Stack.of(scope).splitArn(placeIndexArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new Error(`Place Index Arn ${placeIndexArn} does not have a resource name.`);
+      throw new UnscopedValidationError(`Place Index Arn ${placeIndexArn} does not have a resource name.`);
     }
 
-    class Import extends PlaceIndexBase {
+    class Import extends Resource implements IPlaceIndex {
       public readonly placeIndexName = parsedArn.resourceName!;
       public readonly placeIndexArn = placeIndexArn;
     }
@@ -160,17 +134,25 @@ export class PlaceIndex extends PlaceIndexBase {
   public readonly placeIndexUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: PlaceIndexProps = {}) {
-    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
-    }
-
-    if (props.placeIndexName && !Token.isUnresolved(props.placeIndexName) && !/^[-.\w]{1,100}$/.test(props.placeIndexName)) {
-      throw new Error(`Invalid place index name. The place index name must be between 1 and 100 characters and contain only alphanumeric characters, hyphens, periods and underscores. Received: ${props.placeIndexName}`);
-    }
-
     super(scope, id, {
       physicalName: props.placeIndexName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
+      throw new ValidationError(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
+    }
+
+    if (props.placeIndexName !== undefined && !Token.isUnresolved(props.placeIndexName)) {
+      if (props.placeIndexName.length < 1 || props.placeIndexName.length > 100) {
+        throw new ValidationError(`\`placeIndexName\` must be between 1 and 100 characters, got: ${props.placeIndexName.length} characters.`, this);
+      }
+
+      if (!/^[-._\w]+$/.test(props.placeIndexName)) {
+        throw new ValidationError(`\`placeIndexName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.placeIndexName}.`, this);
+      }
+    }
 
     const placeIndex = new CfnPlaceIndex(this, 'Resource', {
       indexName: this.physicalName,
@@ -187,4 +169,27 @@ export class PlaceIndex extends PlaceIndexBase {
     this.placeIndexUpdateTime = placeIndex.attrUpdateTime;
   }
 
+  /**
+   * Grant the given principal identity permissions to perform the actions on this place index.
+   */
+  @MethodMetadata()
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: grantee,
+      actions: actions,
+      resourceArns: [this.placeIndexArn],
+    });
+  }
+
+  /**
+   * Grant the given identity permissions to search using this index
+   */
+  @MethodMetadata()
+  public grantSearch(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee,
+      'geo:SearchPlaceIndexForPosition',
+      'geo:SearchPlaceIndexForSuggestions',
+      'geo:SearchPlaceIndexForText',
+    );
+  }
 }

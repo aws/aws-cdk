@@ -17,6 +17,8 @@ const table = new ddb.TableV2(stack, 'MyTable', {
 const dlqQueue = new cdk.aws_sqs.Queue(stack, 'DlqQueue');
 const targetQueue = new cdk.aws_sqs.Queue(stack, 'TargetQueue');
 
+// When this module is promoted from alpha, TestTarget should
+// be replaced with SqsTarget from @aws-cdk/aws-pipes-targets-alpha
 class TestTarget implements ITarget {
   targetArn: string;
 

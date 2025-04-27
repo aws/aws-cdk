@@ -3,6 +3,8 @@ import { IHttpApi } from './api';
 import { CfnStage } from '.././index';
 import { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import { Stack } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { StageOptions, IStage, StageAttributes } from '../common';
 import { IApi } from '../common/api';
 import { StageBase } from '../common/base';
@@ -144,11 +146,11 @@ export class HttpStage extends HttpStageBase {
       public readonly api = attrs.api;
 
       get url(): string {
-        throw new Error('url is not available for imported stages.');
+        throw new ValidationError('url is not available for imported stages.', scope);
       }
 
       get domainUrl(): string {
-        throw new Error('domainUrl is not available for imported stages.');
+        throw new ValidationError('domainUrl is not available for imported stages.', scope);
       }
     }
     return new Import(scope, id);
@@ -162,15 +164,19 @@ export class HttpStage extends HttpStageBase {
     super(scope, id, {
       physicalName: props.stageName ? props.stageName : DEFAULT_STAGE_NAME,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     new CfnStage(this, 'Resource', {
       apiId: props.httpApi.apiId,
       stageName: this.physicalName,
+      accessLogSettings: this._validateAccessLogSettings(props.accessLogSettings),
       autoDeploy: props.autoDeploy,
-      defaultRouteSettings: !props.throttle ? undefined : {
+      defaultRouteSettings: props.throttle || props.detailedMetricsEnabled ? {
         throttlingBurstLimit: props.throttle?.burstLimit,
         throttlingRateLimit: props.throttle?.rateLimit,
-      },
+        detailedMetricsEnabled: props.detailedMetricsEnabled,
+      } : undefined,
       description: props.description,
     });
 
@@ -194,7 +200,7 @@ export class HttpStage extends HttpStageBase {
 
   public get domainUrl(): string {
     if (!this._apiMapping) {
-      throw new Error('domainUrl is not available when no API mapping is associated with the Stage');
+      throw new ValidationError('domainUrl is not available when no API mapping is associated with the Stage', this);
     }
 
     return `https://${this._apiMapping.domainName.name}/${this._apiMapping.mappingKey ?? ''}`;

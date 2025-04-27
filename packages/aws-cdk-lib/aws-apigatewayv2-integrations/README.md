@@ -6,11 +6,13 @@
   - [Lambda Integration](#lambda)
   - [HTTP Proxy Integration](#http-proxy)
   - [StepFunctions Integration](#stepfunctions-integration)
+  - [SQS Integration](#sqs-integration)
   - [Private Integration](#private-integration)
   - [Request Parameters](#request-parameters)
 - [WebSocket APIs](#websocket-apis)
   - [Lambda WebSocket Integration](#lambda-websocket-integration)
   - [AWS WebSocket Integration](#aws-websocket-integration)
+  - [Mock WebSocket Integration](#mock-websocket-integration)
 - [Import Issues](#import-issues)
   - [DotNet Namespace](#dotnet-namespace)
   - [Java Package](#java-package)
@@ -120,6 +122,97 @@ httpApi.addRoutes({
 
 - The `executionArn` parameter is required for the `STOP_EXECUTION` subtype. It is necessary to specify the `executionArn` in the `parameterMapping` property of the `HttpStepFunctionsIntegration` object.
 - `START_SYNC_EXECUTION` subtype is only supported for EXPRESS type state machine.
+
+### SQS Integration
+
+SQS integrations enable integrating an HTTP API route with AWS SQS.
+This allows the HTTP API to send, receive and delete messages from an SQS queue.
+
+The following code configures a SQS integrations:
+
+```ts
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { HttpSqsIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
+declare const queue: sqs.IQueue;
+declare const httpApi: apigwv2.HttpApi;
+
+// default integration (send message)
+httpApi.addRoutes({
+  path: '/default',
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpSqsIntegration('defaultIntegration', {
+    queue,
+  }),
+});
+// send message integration
+httpApi.addRoutes({
+  path: '/send-message',
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpSqsIntegration('sendMessageIntegration', {
+    queue,
+    subtype: apigwv2.HttpIntegrationSubtype.SQS_SEND_MESSAGE,
+  }),
+});
+// receive message integration
+httpApi.addRoutes({
+  path: '/receive-message',
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpSqsIntegration('receiveMessageIntegration', {
+    queue,
+    subtype: apigwv2.HttpIntegrationSubtype.SQS_RECEIVE_MESSAGE,
+  }),
+});
+// delete message integration
+httpApi.addRoutes({
+  path: '/delete-message',
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpSqsIntegration('deleteMessageIntegration', {
+    queue,
+    subtype: apigwv2.HttpIntegrationSubtype.SQS_DELETE_MESSAGE,
+  }),
+});
+// purge queue integration
+httpApi.addRoutes({
+  path: '/purge-queue',
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpSqsIntegration('purgeQueueIntegration', {
+    queue,
+    subtype: apigwv2.HttpIntegrationSubtype.SQS_PURGE_QUEUE,
+  }),
+});
+```
+
+#### SQS integration parameter mappings
+
+You can configure the custom parameter mappings of the SQS integration using the `parameterMapping` property of the `HttpSqsIntegration` object.
+
+The default parameter mapping settings for each subtype are as follows:
+
+```ts
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+declare const queue: sqs.IQueue;
+
+// SQS_SEND_MESSAGE
+new apigwv2.ParameterMapping()
+  .custom('QueueUrl', queue.queueUrl)
+  // The `MessageBody` is expected to be in the request body.
+  .custom('MessageBody', '$request.body.MessageBody');
+
+// SQS_RECEIVE_MESSAGE
+new apigwv2.ParameterMapping()
+  .custom('QueueUrl', queue.queueUrl);
+
+// SQS_DELETE_MESSAGE
+new apigwv2.ParameterMapping()
+  .custom('QueueUrl', queue.queueUrl)
+  // The `ReceiptHandle` is expected to be in the request body.
+  .custom('ReceiptHandle', '$request.body.ReceiptHandle');
+
+// SQS_PURGE_QUEUE
+new apigwv2.ParameterMapping()
+  .custom('QueueUrl', queue.queueUrl);
+```
 
 ### Private Integration
 
@@ -311,6 +404,30 @@ webSocketApi.addRoute('$connect', {
 
 You can also set additional properties to change the behavior of your integration, such as `contentHandling`.
 See [Working with binary media types for WebSocket APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-binary-media-types.html).
+
+### Mock WebSocket Integration
+
+API Gateway also allows the creation of mock integrations, allowing you to generate API responses without the need for an integration backend. These responses can range in complexity from a static message to a templated response with parameters extracted from the input request or the integration's context. See [Set up data mapping for WebSocket APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-mapping-template-reference.html) and [WebSocket API mapping template reference for API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-mapping-template-reference.html) for more information.
+
+```ts
+import { WebSocketMockIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
+new apigwv2.WebSocketStage(this, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+  autoDeploy: true,
+});
+
+
+webSocketApi.addRoute('sendMessage', {
+  integration: new WebSocketMockIntegration('DefaultIntegration', {
+    requestTemplates: { 'application/json': JSON.stringify({ statusCode: 200 }) },
+    templateSelectionExpression: '\\$default',
+  }),
+  returnResponse: true,
+});
+```
 
 ## Import Issues
 

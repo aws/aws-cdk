@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "SourceKMSKeyArn/DefaultTest": {
+      "stacks": [
+        "CMCMK-Stack"
+      ],
+      "assertionStack": "SourceKMSKeyArn/DefaultTest/DeployAssert",
+      "assertionStackName": "SourceKMSKeyArnDefaultTestDeployAssertA9940761"
+    }
+  }
+}

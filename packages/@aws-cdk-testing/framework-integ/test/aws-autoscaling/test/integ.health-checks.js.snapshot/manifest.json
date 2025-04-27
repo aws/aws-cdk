@@ -1,0 +1,341 @@
+{
+  "version": "36.0.5",
+  "artifacts": {
+    "integ-health-checks.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-health-checks.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-health-checks": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-health-checks.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ef7061115e98ba6f0acd0111a051ef90e571f3296b8897efb16bdd2efd0fe426.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-health-checks.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-health-checks.assets"
+      ],
+      "metadata": {
+        "/integ-health-checks/myVpcAuto/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAuto1A4B61E2"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet1Subnet3516098F"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet1RouteTable3D618310"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet1RouteTableAssociationB3A6EFAC"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet1DefaultRoute2791173D"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet1EIP15D99CAF"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet1NATGatewayF3EA78A2"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet2Subnet297C7839"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet2RouteTable17ECF2AC"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet2RouteTableAssociationE21B7B6C"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet2DefaultRouteE9454F16"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet2EIPA484FACE"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPublicSubnet2NATGatewayF670624F"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPrivateSubnet1SubnetCF0D49B2"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPrivateSubnet1RouteTableDC61148B"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPrivateSubnet1RouteTableAssociation9848EFFB"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPrivateSubnet1DefaultRouteF007F5E7"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPrivateSubnet2Subnet592674AC"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPrivateSubnet2RouteTableE10F6006"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPrivateSubnet2RouteTableAssociation05CC4CEB"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoPrivateSubnet2DefaultRouteDA295DF0"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoIGW08055396"
+          }
+        ],
+        "/integ-health-checks/myVpcAuto/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myVpcAutoVPCGWEC42CD12"
+          }
+        ],
+        "/integ-health-checks/EC2HealthChecks/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EC2HealthChecksInstanceSecurityGroupB5E28934"
+          }
+        ],
+        "/integ-health-checks/EC2HealthChecks/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EC2HealthChecksInstanceRole330231BD"
+          }
+        ],
+        "/integ-health-checks/EC2HealthChecks/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EC2HealthChecksInstanceProfile0F3A6CD0"
+          }
+        ],
+        "/integ-health-checks/EC2HealthChecks/LaunchTemplate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EC2HealthChecksLaunchTemplate1F05DB09"
+          }
+        ],
+        "/integ-health-checks/EC2HealthChecks/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EC2HealthChecksASG86AE6FB7"
+          }
+        ],
+        "/integ-health-checks/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/integ-health-checks/AdditionalHealthChecks/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdditionalHealthChecksInstanceSecurityGroup7ABFD032"
+          }
+        ],
+        "/integ-health-checks/AdditionalHealthChecks/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdditionalHealthChecksInstanceRole8F52F51E"
+          }
+        ],
+        "/integ-health-checks/AdditionalHealthChecks/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdditionalHealthChecksInstanceProfile71F64498"
+          }
+        ],
+        "/integ-health-checks/AdditionalHealthChecks/LaunchTemplate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdditionalHealthChecksLaunchTemplateCCCFDD89"
+          }
+        ],
+        "/integ-health-checks/AdditionalHealthChecks/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdditionalHealthChecksASG30451BBE"
+          }
+        ],
+        "/integ-health-checks/HealthChecksWithoutGrace/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthChecksWithoutGraceInstanceSecurityGroup9496DAB2"
+          }
+        ],
+        "/integ-health-checks/HealthChecksWithoutGrace/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthChecksWithoutGraceInstanceRole253C2D6A"
+          }
+        ],
+        "/integ-health-checks/HealthChecksWithoutGrace/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthChecksWithoutGraceInstanceProfileE1C43D1C"
+          }
+        ],
+        "/integ-health-checks/HealthChecksWithoutGrace/LaunchTemplate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthChecksWithoutGraceLaunchTemplate907174BB"
+          }
+        ],
+        "/integ-health-checks/HealthChecksWithoutGrace/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthChecksWithoutGraceASG4A11A476"
+          }
+        ],
+        "/integ-health-checks/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-health-checks/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-health-checks"
+    },
+    "AutoScalingGroupHealthChecksDefaultTestDeployAssert9AAA1F3B.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AutoScalingGroupHealthChecksDefaultTestDeployAssert9AAA1F3B.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AutoScalingGroupHealthChecksDefaultTestDeployAssert9AAA1F3B": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AutoScalingGroupHealthChecksDefaultTestDeployAssert9AAA1F3B.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AutoScalingGroupHealthChecksDefaultTestDeployAssert9AAA1F3B.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AutoScalingGroupHealthChecksDefaultTestDeployAssert9AAA1F3B.assets"
+      ],
+      "metadata": {
+        "/AutoScalingGroupHealthChecks/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AutoScalingGroupHealthChecks/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AutoScalingGroupHealthChecks/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

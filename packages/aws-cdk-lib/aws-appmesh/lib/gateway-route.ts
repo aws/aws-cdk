@@ -4,6 +4,7 @@ import { GatewayRouteSpec } from './gateway-route-spec';
 import { renderMeshOwner } from './private/utils';
 import { IVirtualGateway, VirtualGateway } from './virtual-gateway';
 import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Interface for which all GatewayRoute based classes MUST implement
@@ -107,6 +108,8 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
     super(scope, id, {
       physicalName: props.gatewayRouteName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.virtualGateway = props.virtualGateway;
     const routeSpecConfig = props.routeSpec.bind(this);

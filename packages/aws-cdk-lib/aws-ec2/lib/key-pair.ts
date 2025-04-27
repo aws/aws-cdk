@@ -2,7 +2,8 @@ import { Construct } from 'constructs';
 import { CfnKeyPair } from './ec2.generated';
 import { OperatingSystemType } from './machine-image';
 import { StringParameter, IStringParameter } from '../../aws-ssm';
-import { Resource, ResourceProps, Names, Lazy, IResource } from '../../core';
+import { Resource, ResourceProps, Names, Lazy, IResource, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The format of the Key Pair
@@ -202,9 +203,11 @@ export class KeyPair extends Resource implements IKeyPair {
         produce: () => Names.uniqueResourceName(this, { maxLength: 255 }),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props?.publicKeyMaterial && props?.type) {
-      throw new Error('Cannot specify \'type\' for keys with imported material');
+      throw new ValidationError('Cannot specify \'type\' for keys with imported material', this);
     }
 
     this._isImport = !!props?.publicKeyMaterial;
@@ -241,7 +244,7 @@ export class KeyPair extends Resource implements IKeyPair {
    */
   public get privateKey(): IStringParameter {
     if (this._isImport) {
-      throw new Error('An SSM parameter with private key material is not created for imported keys');
+      throw new ValidationError('An SSM parameter with private key material is not created for imported keys', this);
     }
     if (!this._privateKeySsm) {
       // This parameter is created by the underlying CloudFormation resource with a defined

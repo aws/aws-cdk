@@ -7,6 +7,7 @@ import {
   CorsHttpMethod, DomainName,
   HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
   HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, HttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
+  IpAddressType,
 } from '../../lib';
 
 describe('HttpApi', () => {
@@ -139,7 +140,7 @@ describe('HttpApi', () => {
           allowCredentials: true,
           allowOrigins: ['*'],
         },
-      })).toThrowError(/allowCredentials is not supported/);
+      })).toThrow(/allowCredentials is not supported/);
     });
 
     test('get metric', () => {
@@ -205,6 +206,19 @@ describe('HttpApi', () => {
       expect(countMetric.metricName).toEqual(metricName);
       expect(countMetric.dimensions).toEqual({ ApiId: apiId });
       expect(countMetric.statistic).toEqual(statistic);
+    });
+  });
+
+  test.each([IpAddressType.IPV4, IpAddressType.DUAL_STACK])('ipAddressType is set', (ipAddressType) => {
+    const stack = new Stack();
+    new HttpApi(stack, 'api', {
+      ipAddressType,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'HTTP',
+      IpAddressType: ipAddressType,
     });
   });
 

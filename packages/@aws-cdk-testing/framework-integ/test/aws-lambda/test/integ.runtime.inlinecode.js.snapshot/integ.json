@@ -1,14 +1,12 @@
 {
-  "version": "35.0.0",
+  "version": "38.0.1",
   "testCases": {
-    "integ.runtime.inlinecode": {
+    "lambda-runtime-inlinecode/DefaultTest": {
       "stacks": [
         "aws-cdk-lambda-runtime-inlinecode"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "lambda-runtime-inlinecode/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdaruntimeinlinecodeDefaultTestDeployAssert2C40D679"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

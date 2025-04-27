@@ -1,7 +1,8 @@
 {
-  "version": "36.0.5",
+  "version": "41.0.0",
   "files": {
-    "8b4b159425cc7d11fa6fd993c53e299319dd2fcea18d745e873a18d3ee156a50": {
+    "3ab221db752c5eef528b6c6ae122f045d3315ad84920e41c0d2a4a5afb615b63": {
+      "displayName": "DynamodbEndpointVpc Template",
       "source": {
         "path": "aws-cdk-routev2-dynamodbendpoint-alpha.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8b4b159425cc7d11fa6fd993c53e299319dd2fcea18d745e873a18d3ee156a50.json",
+          "objectKey": "3ab221db752c5eef528b6c6ae122f045d3315ad84920e41c0d2a4a5afb615b63.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

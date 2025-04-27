@@ -16,8 +16,11 @@ module.exports = {
     '@typescript-eslint',
     'import',
     '@cdklabs',
+    '@stylistic',
     'jest',
+    "jsdoc",
   ],
+  overrides: [],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: '2018',
@@ -47,14 +50,18 @@ module.exports = {
     '@cdklabs/no-invalid-path': [ 'error' ],
     '@cdklabs/promiseall-no-unbounded-parallelism': [ 'error' ],
 
+    // Error handling
+    'no-throw-literal': [ 'error' ],
+
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': ['error'],
-    '@typescript-eslint/indent': ['error', 2],
+    '@stylistic/indent': ['error', 2],
 
     // Style
     'quotes': ['error', 'single', { avoidEscape: true }],
-    '@typescript-eslint/member-delimiter-style': ['error'], // require semicolon delimiter
-    '@typescript-eslint/comma-dangle': ['error', 'always-multiline'], // ensures clean diffs, see https://medium.com/@nikgraf/why-you-should-enforce-dangling-commas-for-multiline-statements-d034c98e36f8
+    '@stylistic/member-delimiter-style': ['error'], // require semicolon delimiter
+    '@stylistic/comma-dangle': ['error', 'always-multiline'], // ensures clean diffs, see https://medium.com/@nikgraf/why-you-should-enforce-dangling-commas-for-multiline-statements-d034c98e36f8
+    '@stylistic/no-extra-semi': ['error'], // no extra semicolons
     'comma-spacing': ['error', { before: false, after: true }], // space after, no space before
     'no-multi-spaces': ['error', { ignoreEOLComments: false }], // no multi spaces
     'array-bracket-spacing': ['error', 'never'], // [1, 2, 3]
@@ -66,6 +73,15 @@ module.exports = {
     'brace-style': ['error', '1tbs', { allowSingleLine: true }], // enforce one true brace style
     'space-before-blocks': 'error', // require space before blocks
     'curly': ['error', 'multi-line', 'consistent'], // require curly braces for multiline control statements
+    'eol-last': ['error', 'always'], // require a newline a the end of files
+    '@stylistic/spaced-comment': ['error', 'always', { 'exceptions': ['/', '*'], 'markers': ['/'] }], // require a whitespace at the beginninng of each comment
+    '@stylistic/padded-blocks': ['error', { 'classes': 'never', 'blocks': 'never', 'switches': 'never'}],
+
+    // JSDoc
+    'jsdoc/require-param-description': ['error'],
+    'jsdoc/require-property-description': ['error'],
+    'jsdoc/require-returns-description': ['error'],
+    'jsdoc/check-alignment': ['error'],
 
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [
@@ -207,6 +223,9 @@ module.exports = {
         'method',
       ],
     }],
+
+    // Too easy to make mistakes
+    '@typescript-eslint/unbound-method': 'error',
 
     // Overrides for plugin:jest/recommended
     "jest/expect-expect": "off",

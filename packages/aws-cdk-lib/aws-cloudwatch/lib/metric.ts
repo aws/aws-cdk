@@ -6,6 +6,7 @@ import { normalizeStatistic, pairStatisticToString, parseStatistic, singleStatis
 import { Stats } from './stats';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import { makeEnumerable } from './private/make-enumerable';
 
 export type DimensionHash = { [dim: string]: any };
 
@@ -115,6 +116,20 @@ export interface CommonMetricOptions {
    * @default - Deployment region.
    */
   readonly region?: string;
+
+  /**
+   * Account of the stack this metric is attached to.
+   *
+   * @default - Deployment account.
+   */
+  readonly stackAccount?: string;
+
+  /**
+   * Region of the stack this metric is attached to.
+   *
+   * @default - Deployment region.
+   */
+  readonly stackRegion?: string;
 }
 
 /**
@@ -226,6 +241,35 @@ export interface MathExpressionProps extends MathExpressionOptions {
    * The key is the identifier that represents the given metric in the
    * expression, and the value is the actual Metric object.
    *
+   * The `period` of each metric in `usingMetrics` is ignored and instead overridden
+   * by the `period` specified for the `MathExpression` construct. Even if no `period`
+   * is specified for the `MathExpression`, it will be overridden by the default
+   * value (`Duration.minutes(5)`).
+   *
+   * Example:
+   *
+   * ```ts
+   * declare const metrics: elbv2.IApplicationLoadBalancerMetrics;
+   * new cloudwatch.MathExpression({
+   *   expression:  'm1+m2',
+   *   label: 'AlbErrors',
+   *   usingMetrics: {
+   *     m1: metrics.custom('HTTPCode_ELB_500_Count', {
+   *       period: Duration.minutes(1), // <- This period will be ignored
+   *       statistic: 'Sum',
+   *       label: 'HTTPCode_ELB_500_Count',
+   *     }),
+   *     m2: metrics.custom('HTTPCode_ELB_502_Count', {
+   *       period: Duration.minutes(1), // <- This period will be ignored
+   *       statistic: 'Sum',
+   *       label: 'HTTPCode_ELB_502_Count',
+   *     }),
+   *   },
+   *   period: Duration.minutes(3), // <- This overrides the period of each metric in `usingMetrics`
+   *                                //    (Even if not specified, it is overridden by the default value)
+   * });
+   * ```
+   *
    * @default - Empty map.
    */
   readonly usingMetrics?: Record<string, IMetric>;
@@ -277,11 +321,17 @@ export class Metric implements IMetric {
   /** Unit of the metric. */
   public readonly unit?: Unit;
 
-  /** Account which this metric comes from */
-  public readonly account?: string;
+  /** Account of the stack this metric is attached to. */
+  readonly #stackAccount?: string;
 
-  /** Region which this metric comes from. */
-  public readonly region?: string;
+  /** Region of the stack this metric is attached to. */
+  readonly #stackRegion?: string;
+
+  /** Account set directly on the metric, taking precedence over the stack account. */
+  readonly #accountOverride?: string;
+
+  /** Region set directly on the metric, taking precedence over the stack region. */
+  readonly #regionOverride?: string;
 
   /**
    * Warnings attached to this metric.
@@ -296,7 +346,7 @@ export class Metric implements IMetric {
     this.period = props.period || cdk.Duration.minutes(5);
     const periodSec = this.period.toSeconds();
     if (periodSec !== 1 && periodSec !== 5 && periodSec !== 10 && periodSec !== 30 && periodSec % 60 !== 0) {
-      throw new Error(`'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`);
+      throw new cdk.UnscopedValidationError(`'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`);
     }
 
     this.warnings = undefined;
@@ -323,8 +373,14 @@ export class Metric implements IMetric {
     this.label = props.label;
     this.color = props.color;
     this.unit = props.unit;
-    this.account = props.account;
-    this.region = props.region;
+    this.#accountOverride = props.account;
+    this.#regionOverride = props.region;
+    this.#stackAccount = props.stackAccount;
+    this.#stackRegion = props.stackRegion;
+
+    // Make getters enumerable.
+    makeEnumerable(Metric.prototype, this, 'account');
+    makeEnumerable(Metric.prototype, this, 'region');
   }
 
   /**
@@ -340,8 +396,10 @@ export class Metric implements IMetric {
       && (props.color === undefined || props.color === this.color)
       && (props.statistic === undefined || props.statistic === this.statistic)
       && (props.unit === undefined || props.unit === this.unit)
-      && (props.account === undefined || props.account === this.account)
-      && (props.region === undefined || props.region === this.region)
+      && (props.account === undefined || props.account === this.#accountOverride)
+      && (props.region === undefined || props.region === this.#regionOverride)
+      && (props.stackAccount === undefined || props.stackAccount === this.#stackAccount)
+      && (props.stackRegion === undefined || props.stackRegion === this.#stackRegion)
       // For these we're not going to do deep equality, misses some opportunity for optimization
       // but that's okay.
       && (props.dimensions === undefined)
@@ -359,8 +417,10 @@ export class Metric implements IMetric {
       unit: ifUndefined(props.unit, this.unit),
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
-      account: ifUndefined(props.account, this.account),
-      region: ifUndefined(props.region, this.region),
+      account: ifUndefined(props.account, this.#accountOverride),
+      region: ifUndefined(props.region, this.#regionOverride),
+      stackAccount: ifUndefined(props.stackAccount, this.#stackAccount),
+      stackRegion: ifUndefined(props.stackRegion, this.#stackRegion),
     });
   }
 
@@ -380,9 +440,23 @@ export class Metric implements IMetric {
     const stack = cdk.Stack.of(scope);
 
     return this.with({
-      region: cdk.Token.isUnresolved(stack.region) ? undefined : stack.region,
-      account: cdk.Token.isUnresolved(stack.account) ? undefined : stack.account,
+      stackAccount: cdk.Token.isUnresolved(stack.account) ? undefined : stack.account,
+      stackRegion: cdk.Token.isUnresolved(stack.region) ? undefined : stack.region,
     });
+  }
+
+  /**
+   * Account which this metric comes from.
+   */
+  public get account(): string | undefined {
+    return this.#accountOverride || this.#stackAccount;
+  }
+
+  /**
+   * Region which this metric comes from.
+   */
+  public get region(): string | undefined {
+    return this.#regionOverride || this.#stackRegion;
   }
 
   public toMetricConfig(): MetricConfig {
@@ -397,6 +471,8 @@ export class Metric implements IMetric {
         unitFilter: this.unit,
         account: this.account,
         region: this.region,
+        accountOverride: this.#accountOverride,
+        regionOverride: this.#regionOverride,
       },
       renderingProperties: {
         color: this.color,
@@ -409,7 +485,7 @@ export class Metric implements IMetric {
   public toAlarmConfig(): MetricAlarmConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+      throw new cdk.UnscopedValidationError('Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
     const parsed = parseStatistic(metricConfig.metricStat.statistic);
@@ -438,7 +514,7 @@ export class Metric implements IMetric {
   public toGraphConfig(): MetricGraphConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+      throw new cdk.UnscopedValidationError('Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
     return {
@@ -510,20 +586,20 @@ export class Metric implements IMetric {
 
     var dimsArray = Object.keys(dims);
     if (dimsArray?.length > 30) {
-      throw new Error(`The maximum number of dimensions is 30, received ${dimsArray.length}`);
+      throw new cdk.UnscopedValidationError(`The maximum number of dimensions is 30, received ${dimsArray.length}`);
     }
 
     dimsArray.map(key => {
       if (dims[key] === undefined || dims[key] === null) {
-        throw new Error(`Dimension value of '${dims[key]}' is invalid`);
-      };
+        throw new cdk.UnscopedValidationError(`Dimension value of '${dims[key]}' is invalid for key: ${key}`);
+      }
       if (key.length < 1 || key.length > 255) {
-        throw new Error(`Dimension name must be at least 1 and no more than 255 characters; received ${key}`);
-      };
+        throw new cdk.UnscopedValidationError(`Dimension name must be at least 1 and no more than 255 characters; received ${key}`);
+      }
 
       if (dims[key].length < 1 || dims[key].length > 255) {
-        throw new Error(`Dimension value must be at least 1 and no more than 255 characters; received ${dims[key]}`);
-      };
+        throw new cdk.UnscopedValidationError(`Dimension value must be at least 1 and no more than 255 characters; received ${dims[key]}`);
+      }
     });
 
     return dims;
@@ -533,7 +609,7 @@ export class Metric implements IMetric {
 function asString(x?: unknown): string | undefined {
   if (x === undefined) { return undefined; }
   if (typeof x !== 'string') {
-    throw new Error(`Expected string, got ${x}`);
+    throw new cdk.UnscopedValidationError(`Expected string, got ${x}`);
   }
   return x;
 }
@@ -605,15 +681,22 @@ export class MathExpression implements IMetric {
   constructor(props: MathExpressionProps) {
     this.period = props.period || cdk.Duration.minutes(5);
     this.expression = props.expression;
-    this.usingMetrics = changeAllPeriods(props.usingMetrics ?? {}, this.period);
     this.label = props.label;
     this.color = props.color;
     this.searchAccount = props.searchAccount;
     this.searchRegion = props.searchRegion;
 
+    const { record, overridden } = changeAllPeriods(props.usingMetrics ?? {}, this.period);
+    this.usingMetrics = record;
+
+    const warnings: { [id: string]: string } = {};
+    if (overridden) {
+      warnings['CloudWatch:Math:MetricsPeriodsOverridden'] = `Periods of metrics in 'usingMetrics' for Math expression '${this.expression}' have been overridden to ${this.period.toSeconds()} seconds.`;
+    }
+
     const invalidVariableNames = Object.keys(this.usingMetrics).filter(x => !validVariableName(x));
     if (invalidVariableNames.length > 0) {
-      throw new Error(`Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
+      throw new cdk.UnscopedValidationError(`Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
     }
 
     this.validateNoIdConflicts();
@@ -624,8 +707,7 @@ export class MathExpression implements IMetric {
     // we can add warnings.
     const missingIdentifiers = allIdentifiersInExpression(this.expression).filter(i => !this.usingMetrics[i]);
 
-    const warnings: { [id: string]: string } = {};
-    if (!this.expression.toUpperCase().match('\\s*INSIGHT_RULE_METRIC|SELECT|SEARCH|METRICS\\s.*') && missingIdentifiers.length > 0) {
+    if (!this.expression.toUpperCase().match('\\b(INSIGHT_RULE_METRIC|SELECT|SEARCH|METRICS)\\b') && missingIdentifiers.length > 0) {
       warnings['CloudWatch:Math:UnknownIdentifier'] = `Math expression '${this.expression}' references unknown identifiers: ${missingIdentifiers.join(', ')}. Please add them to the 'usingMetrics' map.`;
     }
 
@@ -674,14 +756,14 @@ export class MathExpression implements IMetric {
    * @deprecated use toMetricConfig()
    */
   public toAlarmConfig(): MetricAlarmConfig {
-    throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+    throw new cdk.UnscopedValidationError('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
   /**
    * @deprecated use toMetricConfig()
    */
   public toGraphConfig(): MetricGraphConfig {
-    throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+    throw new cdk.UnscopedValidationError('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
   public toMetricConfig(): MetricConfig {
@@ -740,7 +822,7 @@ export class MathExpression implements IMetric {
           for (const [id, subMetric] of Object.entries(expr.usingMetrics)) {
             const existing = seen.get(id);
             if (existing && metricKey(existing) !== metricKey(subMetric)) {
-              throw new Error(`The ID '${id}' used for two metrics in the expression: '${subMetric}' and '${existing}'. Rename one.`);
+              throw new cdk.UnscopedValidationError(`The ID '${id}' used for two metrics in the expression: '${subMetric}' and '${existing}'. Rename one.`);
             }
             seen.set(id, subMetric);
             visit(subMetric);
@@ -879,26 +961,36 @@ function ifUndefined<T>(x: T | undefined, def: T | undefined): T | undefined {
 /**
  * Change periods of all metrics in the map
  */
-function changeAllPeriods(metrics: Record<string, IMetric>, period: cdk.Duration): Record<string, IMetric> {
-  const ret: Record<string, IMetric> = {};
-  for (const [id, metric] of Object.entries(metrics)) {
-    ret[id] = changePeriod(metric, period);
+function changeAllPeriods(metrics: Record<string, IMetric>, period: cdk.Duration): { record: Record<string, IMetric>; overridden: boolean } {
+  const retRecord: Record<string, IMetric> = {};
+  let retOverridden = false;
+  for (const [id, m] of Object.entries(metrics)) {
+    const { metric, overridden } = changePeriod(m, period);
+    retRecord[id] = metric;
+    if (overridden) {
+      retOverridden = true;
+    }
   }
-  return ret;
+  return { record: retRecord, overridden: retOverridden };
 }
 
 /**
- * Return a new metric object which is the same type as the input object, but with the period changed
+ * Return a new metric object which is the same type as the input object but with the period changed,
+ * and a flag to indicate whether the period has been overwritten.
  *
  * Relies on the fact that implementations of `IMetric` are also supposed to have
  * an implementation of `with` that accepts an argument called `period`. See `IModifiableMetric`.
  */
-function changePeriod(metric: IMetric, period: cdk.Duration): IMetric {
+function changePeriod(metric: IMetric, period: cdk.Duration): { metric: IMetric; overridden: boolean} {
   if (isModifiableMetric(metric)) {
-    return metric.with({ period });
+    const overridden =
+      isMetricWithPeriod(metric) && // always true, as the period property is set with a default value even if it is not specified
+      metric.period.toSeconds() !== cdk.Duration.minutes(5).toSeconds() && // exclude the default value of a metric, assuming the user has not specified it
+      metric.period.toSeconds() !== period.toSeconds();
+    return { metric: metric.with({ period }), overridden };
   }
 
-  throw new Error(`Metric object should also implement 'with': ${metric}`);
+  throw new cdk.UnscopedValidationError(`Metric object should also implement 'with': ${metric}`);
 }
 
 /**
@@ -925,6 +1017,14 @@ interface IModifiableMetric {
 
 function isModifiableMetric(m: any): m is IModifiableMetric {
   return typeof m === 'object' && m !== null && !!m.with;
+}
+
+interface IMetricWithPeriod {
+  period: cdk.Duration;
+}
+
+function isMetricWithPeriod(m: any): m is IMetricWithPeriod {
+  return typeof m === 'object' && m !== null && !!m.period;
 }
 
 // Polyfill for string.matchAll(regexp)

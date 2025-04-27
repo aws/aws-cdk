@@ -240,7 +240,6 @@ test('action has right settings for cross-account deployment', () => {
 });
 
 test('action has right settings for cross-region deployment', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     crossAccountKeys: true,
   });

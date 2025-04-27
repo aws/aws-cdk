@@ -49,7 +49,6 @@ export class ElasticBeanstalkDeployAction extends Action {
     _stage: codepipeline.IStage,
     options: codepipeline.ActionBindOptions,
   ): codepipeline.ActionConfig {
-
     // Per https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/AWSHowTo.iam.managed-policies.html
     // it doesn't seem we can scope this down further for the codepipeline action.
     options.role.addManagedPolicy({ managedPolicyArn: `arn:${Aws.PARTITION}:iam::aws:policy/AdministratorAccess-AWSElasticBeanstalk` });

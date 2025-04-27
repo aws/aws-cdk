@@ -66,6 +66,7 @@
      "ALLOW_ADMIN_USER_PASSWORD_AUTH",
      "ALLOW_CUSTOM_AUTH",
      "ALLOW_USER_SRP_AUTH",
+     "ALLOW_USER_AUTH",
      "ALLOW_REFRESH_TOKEN_AUTH"
     ],
     "GenerateSecret": true,
@@ -128,7 +129,7 @@
        {
         "Ref": "myuserpoolmyuserpoolclientAFB2274E"
        },
-       "\"}}"
+       "\"},\"logApiResponseData\":false}"
       ]
      ]
     },
@@ -152,7 +153,7 @@
        {
         "Ref": "myuserpoolmyuserpoolclientAFB2274E"
        },
-       "\"}}"
+       "\"},\"logApiResponseData\":false}"
       ]
      ]
     },
@@ -228,7 +229,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
+     "S3Key": "695130a6c8132c255e833e84e8482a4a144a4a1261c979bd7e3cb7b8258e8876.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -314,10 +315,10 @@
     "value": "nodejs20.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "eu-central-1": {
     "value": "nodejs20.x"
@@ -368,10 +369,10 @@
     "value": "nodejs20.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"
@@ -380,6 +381,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {

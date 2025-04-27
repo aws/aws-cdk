@@ -87,6 +87,45 @@ zp2mwJn2NYB7AZ7+imp0azDZb+8YG2aUCiyqb6PnnA==
       ],
       filterEncryption: myKey,
     }));
+
+    const fn3 = new TestFunction(this, 'F3');
+    rootCASecret.grantRead(fn3);
+    clientCertificatesSecret.grantRead(fn3);
+
+    fn3.addEventSource(new SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'my-test-topic3',
+      consumerGroupId: 'myTestConsumerGroup3',
+      secret: clientCertificatesSecret,
+      authenticationMethod: AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
+      rootCACertificate: rootCASecret,
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      filters: [
+        lambda.FilterCriteria.filter({
+          numericEquals: lambda.FilterRule.isEqual(1),
+        }),
+      ],
+      provisionedPollerConfig: {
+        minimumPollers: 1,
+        maximumPollers: 3,
+      },
+    }));
+
+    const fn4 = new TestFunction(this, 'F4');
+    rootCASecret.grantRead(fn4);
+    clientCertificatesSecret.grantRead(fn4);
+
+    fn4.addEventSource(new SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'my-test-topic4',
+      consumerGroupId: 'myTestConsumerGroup4',
+      secret: clientCertificatesSecret,
+      authenticationMethod:
+        AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
+      rootCACertificate: rootCASecret,
+      startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1730270400,
+    }));
   }
 }
 

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Annotations } from '../../../core';
+import { Annotations, ValidationError } from '../../../core';
 import { CfnInstance, CfnLaunchTemplate } from '../ec2.generated';
 import { BlockDevice, EbsDeviceVolumeType } from '../volume';
 
@@ -24,34 +24,33 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
     let finalEbs: CfnLaunchTemplate.EbsProperty | CfnInstance.EbsProperty | undefined;
 
     if (ebs) {
-
       const { iops, throughput, volumeType, kmsKey, ...rest } = ebs;
 
       if (throughput) {
         if (volumeType !== EbsDeviceVolumeType.GP3) {
-          throw new Error(`'throughput' requires 'volumeType': ${EbsDeviceVolumeType.GP3}, got: ${volumeType}.`);
+          throw new ValidationError(`'throughput' requires 'volumeType': ${EbsDeviceVolumeType.GP3}, got: ${volumeType}.`, construct);
         }
 
         if (!Number.isInteger(throughput)) {
-          throw new Error(`'throughput' must be an integer, got: ${throughput}.`);
+          throw new ValidationError(`'throughput' must be an integer, got: ${throughput}.`, construct);
         }
 
         if (throughput < 125 || throughput > 1000) {
-          throw new Error(`'throughput' must be between 125 and 1000, got ${throughput}.`);
+          throw new ValidationError(`'throughput' must be between 125 and 1000, got ${throughput}.`, construct);
         }
 
         const maximumThroughputRatio = 0.25;
         if (iops) {
           const iopsRatio = (throughput / iops);
           if (iopsRatio > maximumThroughputRatio) {
-            throw new Error(`Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`);
+            throw new ValidationError(`Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`, construct);
           }
         }
       }
 
       if (!iops) {
         if (volumeType === EbsDeviceVolumeType.IO1 || volumeType === EbsDeviceVolumeType.IO2) {
-          throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1 and EbsDeviceVolumeType.IO2');
+          throw new ValidationError('iops property is required with volumeType: EbsDeviceVolumeType.IO1 and EbsDeviceVolumeType.IO2', construct);
         }
       } else if (volumeType !== EbsDeviceVolumeType.IO1 && volumeType !== EbsDeviceVolumeType.IO2 && volumeType !== EbsDeviceVolumeType.GP3) {
         Annotations.of(construct).addWarningV2('@aws-cdk/aws-ec2:iopsIgnored', 'iops will be ignored without volumeType: IO1, IO2, or GP3');
@@ -69,7 +68,6 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
         volumeType,
         kmsKeyId: kmsKey?.keyArn,
       };
-
     } else {
       finalEbs = undefined;
     }

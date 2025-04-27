@@ -655,6 +655,27 @@ describe('CDK Include', () => {
     );
   });
 
+  test('All AutoScalingRollingUpdate properties are correctly parsed', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'autoscaling-rolling-update-all-properties.json');
+    const cfnAsg = cfnTemplate.getResource('ASG');
+
+    expect(cfnAsg.cfnOptions.updatePolicy).toBeDefined();
+    expect(cfnAsg.cfnOptions.updatePolicy?.autoScalingRollingUpdate).toBeDefined();
+
+    // Verify all properties are correctly parsed
+    expect(cfnAsg.cfnOptions.updatePolicy?.autoScalingRollingUpdate?.maxBatchSize).toBeDefined();
+    expect(cfnAsg.cfnOptions.updatePolicy?.autoScalingRollingUpdate?.minInstancesInService).toBeDefined();
+    expect(cfnAsg.cfnOptions.updatePolicy?.autoScalingRollingUpdate?.minSuccessfulInstancesPercent).toBeDefined();
+    expect(cfnAsg.cfnOptions.updatePolicy?.autoScalingRollingUpdate?.minActiveInstancesPercent).toBeDefined();
+    expect(cfnAsg.cfnOptions.updatePolicy?.autoScalingRollingUpdate?.pauseTime).toBeDefined();
+    expect(cfnAsg.cfnOptions.updatePolicy?.autoScalingRollingUpdate?.suspendProcesses).toBeDefined();
+    expect(cfnAsg.cfnOptions.updatePolicy?.autoScalingRollingUpdate?.waitOnResourceSignals).toBeDefined();
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('autoscaling-rolling-update-all-properties.json'),
+    );
+  });
+
   test('Intrinsics can be used in the leaf nodes of autoscaling replacing update policy', () => {
     const cfnTemplate = includeTestTemplate(stack, 'intrinsics-update-policy-autoscaling-replacing-update.json');
     const cfnBucket = cfnTemplate.getResource('ASG');
@@ -704,6 +725,20 @@ describe('CDK Include', () => {
 
     Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('non-existent-resource-attribute.json'),
+    );
+  });
+
+  test('preserves unknown policy attributes', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'non-existent-policy-attribute.json');
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('non-existent-policy-attribute.json'),
+    );
+  });
+
+  test('correctly handles string arrays in policy attributes', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'string-arrays-in-policy.json');
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('string-arrays-in-policy.json'),
     );
   });
 

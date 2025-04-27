@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "998b57e37bcf994290ce68c0286b8d944276f023124cc7ced134c74bfb41c5fd": {
+      "source": {
+        "path": "ses-configuration-set-event-bus.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "998b57e37bcf994290ce68c0286b8d944276f023124cc7ced134c74bfb41c5fd.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

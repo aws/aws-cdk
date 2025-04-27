@@ -9,6 +9,7 @@ import { defaultDiscoveryType } from './private/utils';
 import { CfnService } from './servicediscovery.generated';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { Duration, IResource, Resource } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 export interface IService extends IResource {
   /**
@@ -166,7 +167,6 @@ export interface ServiceAttributes {
  * Define a CloudMap Service
  */
 export class Service extends ServiceBase {
-
   public static fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IService {
     class Import extends ServiceBase {
       public namespace: INamespace = attrs.namespace;
@@ -218,6 +218,8 @@ export class Service extends ServiceBase {
 
   constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const namespaceType = props.namespace.type;
     const discoveryType = props.discoveryType || defaultDiscoveryType(props.namespace);
@@ -323,7 +325,8 @@ export class Service extends ServiceBase {
   /**
    * Registers an ELB as a new instance with unique name instanceId in this service.
    */
-  public registerLoadBalancer(id: string, loadBalancer: elbv2.ILoadBalancerV2, customAttributes?: {[key: string]: string}): IInstance {
+  @MethodMetadata()
+  public registerLoadBalancer(id: string, loadBalancer: elbv2.ILoadBalancerV2, customAttributes?: { [key: string]: string }): IInstance {
     return new AliasTargetInstance(this, id, {
       service: this,
       dnsName: loadBalancer.loadBalancerDnsName,
@@ -334,6 +337,7 @@ export class Service extends ServiceBase {
   /**
    * Registers a resource that is accessible using values other than an IP address or a domain name (CNAME).
    */
+  @MethodMetadata()
   public registerNonIpInstance(id: string, props: NonIpInstanceBaseProps): IInstance {
     return new NonIpInstance(this, id, {
       service: this,
@@ -344,6 +348,7 @@ export class Service extends ServiceBase {
   /**
    * Registers a resource that is accessible using an IP address.
    */
+  @MethodMetadata()
   public registerIpInstance(id: string, props: IpInstanceBaseProps): IInstance {
     return new IpInstance(this, id, {
       service: this,
@@ -354,6 +359,7 @@ export class Service extends ServiceBase {
   /**
    * Registers a resource that is accessible using a CNAME.
    */
+  @MethodMetadata()
   public registerCnameInstance(id: string, props: CnameInstanceBaseProps): IInstance {
     return new CnameInstance(this, id, {
       service: this,

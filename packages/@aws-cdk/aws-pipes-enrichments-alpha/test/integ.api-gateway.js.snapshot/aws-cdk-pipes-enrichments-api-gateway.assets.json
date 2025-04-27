@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "2c323d66ab7fb0f243c74e3ee47b631bc10d2399f3182a9c3294e4172bbe3f9d": {
+      "source": {
+        "path": "aws-cdk-pipes-enrichments-api-gateway.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2c323d66ab7fb0f243c74e3ee47b631bc10d2399f3182a9c3294e4172bbe3f9d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,32 @@
+# Re-evaluate the PR linter after reviews. This is used to upgrade the label
+# of a PR to `needs-maintainer-review` after a trusted community members leaves
+# an approving review.
+#
+# Unprivileged workflow that runs in the context of the PR, when a review is changed.
+#
+# Save the PR number, and download it again in the PR Linter workflow which
+# needs to run in privileged `workflow_run` context (but then must restore the
+# PR context).
+name: PR Linter Trigger
+
+on:
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Save PR number
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          mkdir -p ./pr
+          echo $PR_NUMBER > ./pr/pr_number
+          echo $PR_SHA > ./pr/pr_sha
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pr_info
+          path: pr/

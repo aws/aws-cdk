@@ -274,7 +274,6 @@ describe('custom resource provider', () => {
         },
       },
     });
-
   });
 
   test('asset metadata added to custom resource that contains code definition', () => {
@@ -299,7 +298,6 @@ describe('custom resource provider', () => {
       // The asset path should be a temporary folder prefixed with 'cdk-custom-resource'
       'aws:asset:path': expect.stringMatching(/^.*\/cdk-custom-resource\w{6}\/?$/),
     });
-
   });
 
   test('custom resource provided creates asset in new-style synthesis with relative path', () => {
@@ -335,7 +333,6 @@ describe('custom resource provider', () => {
     if (!assetFilename || assetFilename.startsWith(path.sep)) {
       throw new Error(`Asset filename must be a relative path, got: ${assetFilename}`);
     }
-
   });
 
   test('policyStatements can be used to add statements to the inline policy', () => {
@@ -362,7 +359,6 @@ describe('custom resource provider', () => {
         Statement: [{ statement1: 123 }, { statement2: { foo: 111 } }],
       },
     }]);
-
   });
 
   test('addToRolePolicy() can be used to add statements to the inline policy', () => {
@@ -411,7 +407,6 @@ describe('custom resource provider', () => {
     expect(lambda.Properties.MemorySize).toEqual(2048);
     expect(lambda.Properties.Timeout).toEqual(300);
     expect(lambda.Properties.Description).toEqual('veni vidi vici');
-
   });
 
   test('environment variables', () => {
@@ -437,7 +432,6 @@ describe('custom resource provider', () => {
         B: 'b',
       }),
     });
-
   });
 
   test('roleArn', () => {
@@ -457,7 +451,6 @@ describe('custom resource provider', () => {
         'Arn',
       ],
     });
-
   });
 });
 
@@ -508,10 +501,10 @@ describe('latest Lambda node runtime', () => {
         value: 'nodejs20.x',
       },
       'cn-north-1': {
-        value: 'nodejs18.x',
+        value: 'nodejs20.x',
       },
       'cn-northwest-1': {
-        value: 'nodejs18.x',
+        value: 'nodejs20.x',
       },
       'eu-central-1': {
         value: 'nodejs20.x',
@@ -556,10 +549,10 @@ describe('latest Lambda node runtime', () => {
         value: 'nodejs20.x',
       },
       'us-gov-east-1': {
-        value: 'nodejs18.x',
+        value: 'nodejs20.x',
       },
       'us-gov-west-1': {
-        value: 'nodejs18.x',
+        value: 'nodejs20.x',
       },
       'us-iso-east-1': {
         value: 'nodejs18.x',
@@ -617,7 +610,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs20.x',
       },
     });
   });
@@ -632,7 +625,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs20.x',
       },
     });
   });

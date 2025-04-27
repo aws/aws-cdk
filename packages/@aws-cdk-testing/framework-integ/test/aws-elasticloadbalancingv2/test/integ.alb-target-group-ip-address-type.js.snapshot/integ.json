@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "AlbTargetGroupIpAddressTypeTestInteg/DefaultTest": {
+      "stacks": [
+        "AlbTargetGroupIpAddressTypeTestStack"
+      ],
+      "assertionStack": "AlbTargetGroupIpAddressTypeTestInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "AlbTargetGroupIpAddressTypeTestIntegDefaultTestDeployAssert7B27CD73"
+    }
+  }
+}

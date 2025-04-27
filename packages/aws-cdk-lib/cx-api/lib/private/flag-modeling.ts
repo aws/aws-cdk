@@ -2,17 +2,20 @@ export enum FlagType {
   /**
    * Change the default behavior of the API
    *
-   * The old behavior is not disrecommended, and possible to achieve with source
-   * code changes. Also valid for changes that don't affect CloudFormation, but
-   * the CXAPI contract.
+   * The old behavior is still valid, and possible to achieve with source
+   * code changes, but we recommend the new behavior instead.
+   *
+   * Also valid for changes that don't affect CloudFormation, but the CXAPI
+   * contract.
    */
   ApiDefault,
 
   /**
-   * Address a bug/introduce a recommended change
+   * Address a bug in a way that requires contract breaking or has availability implications for existing infrastructure
    *
-   * The old behavior is no longer recommended. The only way to achieve it is by
-   * keeping the flag at the legacy value.
+   * The old behavior is not recommended, and shouldn't have been possible in the first place.
+   * We only have this flag because we can't roll out the fix to everyone
+   * automatically for fear of breakage.
    */
   BugFix,
 
@@ -20,7 +23,12 @@ export enum FlagType {
    * Advertise the presence of this context option in `cdk.json`
    */
   VisibleContext,
-};
+
+  /**
+   * Use this type for flags that are to be removed on a set date
+   */
+  Temporary,
+}
 
 export interface FlagInfoBase {
   /** Single-line description for the flag */
@@ -30,21 +38,23 @@ export interface FlagInfoBase {
   /** Version number the flag was introduced in each version line. `undefined` means flag does not exist in that line. */
   readonly introducedIn: { v1?: string; v2?: string };
   /** Default value, if flag is unset by user. Adding a flag with a default may not change behavior after GA! */
-  readonly defaults?: { v2?: any };
+  readonly defaults?: { v1?: any; v2?: any };
   /** Default in new projects */
   readonly recommendedValue: any;
-};
+}
 
 /** Flag information, adding required fields if present */
 export type FlagInfo = FlagInfoBase & (
   | { readonly type: FlagType.ApiDefault;
 
-    /** Describe restoring old behavior or dealing with the change (Markdown) */
+    /** Describe how to use the API to achieve pre-flag behavior, if the flag is set (Markdown) */
     readonly compatibilityWithOldBehaviorMd: string; }
   | { readonly type: FlagType.BugFix;
-    /** Describe restoring old behavior or dealing with the change (Markdown) */
+    /** Describe how to deal with the change if the flag is set (Markdown) */
     readonly compatibilityWithOldBehaviorMd?: string; }
   | { readonly type: FlagType.VisibleContext }
+  | { readonly type: FlagType.Temporary;
+    readonly compatibilityWithOldBehaviorMd?: string; }
 );
 
 /**

@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "AppRunnerVpcIngressConnection/DefaultTest": {
+      "stacks": [
+        "integ-apprunner-vpc-ingress-connection"
+      ],
+      "assertionStack": "AppRunnerVpcIngressConnection/DefaultTest/DeployAssert",
+      "assertionStackName": "AppRunnerVpcIngressConnectionDefaultTestDeployAssertC725050C"
+    }
+  }
+}

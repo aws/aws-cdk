@@ -6,10 +6,16 @@
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-routev2-virtualprivategw-alpha/vpgw"
+     }
+    ]
    }
   },
-  "vpgwAmazonIpv6C872FF1E": {
+  "vpgwAmazonIpv6D24D8752": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -48,29 +54,16 @@
       "RouteTableId"
      ]
     }
-   }
-  },
-  "TestRoottablevpgwRouteGWAttachmentDD0077EE": {
-   "Type": "AWS::EC2::VPCGatewayAttachment",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "vpgw2AB64B6B",
-      "VpcId"
-     ]
-    },
-    "VpnGatewayId": {
-     "Fn::GetAtt": [
-      "testVPGWIGW816C7C4F",
-      "VPNGatewayId"
-     ]
-    }
-   }
+   },
+   "DependsOn": [
+    "testVPGWIGW816C7C4F",
+    "testVPGWRoutePropagationD01C7942",
+    "testVPGWVPCVPNGWF1D3DC88"
+   ]
   },
   "vpgwSubnet5E7F36AD": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-east-1a",
     "CidrBlock": "10.0.0.0/24",
     "Ipv6CidrBlock": {
@@ -92,7 +85,7 @@
     }
    },
    "DependsOn": [
-    "vpgwAmazonIpv6C872FF1E"
+    "vpgwAmazonIpv6D24D8752"
    ]
   },
   "vpgwSubnetRouteTableAssociation49921F90": {
@@ -109,7 +102,7 @@
     }
    },
    "DependsOn": [
-    "vpgwAmazonIpv6C872FF1E"
+    "vpgwAmazonIpv6D24D8752"
    ]
   },
   "testVPGWIGW816C7C4F": {
@@ -117,6 +110,38 @@
    "Properties": {
     "Type": "ipsec.1"
    }
+  },
+  "testVPGWVPCVPNGWF1D3DC88": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpgw2AB64B6B",
+      "VpcId"
+     ]
+    },
+    "VpnGatewayId": {
+     "Fn::GetAtt": [
+      "testVPGWIGW816C7C4F",
+      "VPNGatewayId"
+     ]
+    }
+   }
+  },
+  "testVPGWRoutePropagationD01C7942": {
+   "Type": "AWS::EC2::VPNGatewayRoutePropagation",
+   "Properties": {
+    "RouteTableIds": [],
+    "VpnGatewayId": {
+     "Fn::GetAtt": [
+      "testVPGWIGW816C7C4F",
+      "VPNGatewayId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "testVPGWVPCVPNGWF1D3DC88"
+   ]
   }
  },
  "Parameters": {

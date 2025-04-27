@@ -5,7 +5,7 @@ import { MAGIC_V2NEXT, compareVersions } from '../lib/private/flag-modeling';
 
 test('all future flags have defaults configured', () => {
   Object.keys(feats.FLAGS).forEach(flag => {
-    expect(typeof(feats.futureFlagDefault(flag))).toEqual('boolean');
+    expect(typeof (feats.futureFlagDefault(flag))).toEqual('boolean');
   });
 });
 
@@ -39,7 +39,11 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
     [feats.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE]: true,
     [feats.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true,
+    [feats.PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE]: true,
+    [feats.PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE]: true,
     // Add new disabling feature flags below this line
+    [feats.ASPECT_STABILIZATION]: true,
+    [feats.LOG_USER_POOL_CLIENT_SECRET_VALUE]: false,
   });
 });
 

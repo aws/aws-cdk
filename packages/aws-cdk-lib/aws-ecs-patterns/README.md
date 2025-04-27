@@ -30,6 +30,7 @@ const loadBalancedEcsService = new ecsPatterns.ApplicationLoadBalancedEc2Service
     entryPoint: ['entry', 'point'],
   },
   desiredCount: 2,
+  minHealthyPercent: 100,
 });
 ```
 
@@ -46,6 +47,9 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
     command: ['command'],
     entryPoint: ['entry', 'point'],
   },
+  containerCpu: 256,
+  containerMemoryLimitMiB: 512,
+  minHealthyPercent: 100,
 });
 
 loadBalancedFargateService.targetGroup.configureHealthCheck({
@@ -69,6 +73,10 @@ Fargate services use the default VPC Security Group unless one or more are provi
 By setting `redirectHTTP` to true, CDK will automatically create a listener on port 80 that redirects HTTP traffic to the HTTPS port.
 
 If you specify the option `recordType` you can decide if you want the construct to use CNAME or Route53-Aliases as record sets.
+
+To set the minimum number of CPU units to reserve for the container, you can use the `containerCpu` property.
+
+To set the amount of memory (in MiB) to provide to the container, you can use the `containerMemoryLimitMiB` property.
 
 If you need to encrypt the traffic between the load balancer and the ECS tasks, you can set the `targetProtocol` to `HTTPS`.
 
@@ -142,6 +150,7 @@ const loadBalancedEcsService = new ecsPatterns.NetworkLoadBalancedEc2Service(thi
     },
   },
   desiredCount: 2,
+  minHealthyPercent: 100,
 });
 ```
 
@@ -156,6 +165,7 @@ const loadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateSer
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
+  minHealthyPercent: 100,
 });
 ```
 
@@ -272,6 +282,7 @@ const queueProcessingEc2Service = new ecsPatterns.QueueProcessingEc2Service(this
   },
   maxScalingCapacity: 5,
   containerName: 'test',
+  minHealthyPercent: 100,
 });
 ```
 
@@ -292,6 +303,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
   },
   maxScalingCapacity: 5,
   containerName: 'test',
+  minHealthyPercent: 100,
 });
 ```
 
@@ -314,6 +326,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
   },
   maxScalingCapacity: 5,
   containerName: 'test',
+  minHealthyPercent: 100,
   disableCpuBasedScaling: true,
 });
 ```
@@ -332,6 +345,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
   environment: {},
   maxScalingCapacity: 5,
   containerName: 'test',
+  minHealthyPercent: 100,
   cpuTargetUtilizationPercent: 90,
 });
 ```
@@ -392,6 +406,7 @@ declare const cluster: ecs.Cluster;
 const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
   vpc,
   cluster,
+  minHealthyPercent: 100,
   certificate,
   sslPolicy: SslPolicy.RECOMMENDED,
   domainName: 'api.example.com',
@@ -414,6 +429,7 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
+  minHealthyPercent: 100,
   capacityProviderStrategies: [
     {
       capacityProvider: 'FARGATE_SPOT',
@@ -441,6 +457,7 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
+  minHealthyPercent: 100,
 });
 
 const scalableTarget = loadBalancedFargateService.service.autoScaleTaskCount({
@@ -471,6 +488,7 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
+  minHealthyPercent: 100,
 });
 
 const scalableTarget = loadBalancedFargateService.service.autoScaleTaskCount({
@@ -499,6 +517,7 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
+  minHealthyPercent: 100,
   deploymentController: {
     type: ecs.DeploymentControllerType.CODE_DEPLOY,
   },
@@ -522,6 +541,7 @@ const service = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Ser
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
+  minHealthyPercent: 100,
   circuitBreaker: { rollback: true },
 });
 ```
@@ -553,6 +573,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
   vpc,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
+  minHealthyPercent: 100,
   securityGroups: [securityGroup],
   taskSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
 });
@@ -566,6 +587,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
   vpc,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
+  minHealthyPercent: 100,
   assignPublicIp: true,
 });
 ```
@@ -578,6 +600,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
   vpc,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
+  minHealthyPercent: 100,
   maxReceiveCount: 42,
   retentionPeriod: Duration.days(7),
   visibilityTimeout: Duration.minutes(5),
@@ -595,6 +618,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
   vpc,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
+  minHealthyPercent: 100,
   assignPublicIp: true,
   cooldown: Duration.seconds(500),
 });
@@ -610,6 +634,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
   cluster,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
+  minHealthyPercent: 100,
   capacityProviderStrategies: [
     {
       capacityProvider: 'FARGATE_SPOT',
@@ -632,6 +657,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
   vpc,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
+  minHealthyPercent: 100,
   healthCheck: {
     command: [ "CMD-SHELL", "curl -f http://localhost/ || exit 1" ],
     // the properties below are optional
@@ -664,6 +690,7 @@ const queueProcessingEc2Service = new ecsPatterns.QueueProcessingEc2Service(this
   cluster,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
+  minHealthyPercent: 100,
   capacityProviderStrategies: [
     {
       capacityProvider: capacityProvider.capacityProviderName,
@@ -684,6 +711,7 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
+  minHealthyPercent: 100,
   taskSubnets: {
     subnets: [ec2.Subnet.fromSubnetId(this, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
   },
@@ -702,6 +730,7 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
+  minHealthyPercent: 100,
   idleTimeout: Duration.seconds(120),
 });
 ```
@@ -881,6 +910,7 @@ const applicationLoadBalancedFargateService = new ecsPatterns.ApplicationLoadBal
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
+  minHealthyPercent: 100,
   runtimePlatform: {
     cpuArchitecture: ecs.CpuArchitecture.ARM64,
     operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
@@ -966,6 +996,7 @@ const service = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Ser
   cluster,
   vpc,
   desiredCount: 1,
+  minHealthyPercent: 100,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
     dockerLabels: {
@@ -992,6 +1023,7 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
+  minHealthyPercent: 100,
   taskSubnets: {
     subnets: [ec2.Subnet.fromSubnetId(this, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
   },
@@ -1020,6 +1052,7 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
+  minHealthyPercent: 100,
   enableExecuteCommand: true
 });
 ```
@@ -1095,6 +1128,7 @@ const applicationLoadBalancedFargateService = new ecsPatterns.ApplicationLoadBal
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
+  minHealthyPercent: 100,
 });
 
 const networkLoadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(this, 'NLBFargateServiceWithCustomEphemeralStorage', {
@@ -1105,6 +1139,7 @@ const networkLoadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFar
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
+  minHealthyPercent: 100,
 });
 ```
 
@@ -1119,6 +1154,7 @@ const queueProcessingFargateService = new ecsPatterns.NetworkLoadBalancedFargate
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
+  minHealthyPercent: 100,
   securityGroups: [securityGroup],
 });
 ```
@@ -1195,6 +1231,7 @@ const service = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'myS
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
+  minHealthyPercent: 100,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
 });
 
@@ -1203,6 +1240,7 @@ const applicationLoadBalancedEc2Service = new ecsPatterns.ApplicationLoadBalance
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
+  minHealthyPercent: 100,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
 });
 ```
@@ -1225,6 +1263,7 @@ const networkLoadbalancedFargateService = new ecsPatterns.NetworkLoadBalancedFar
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
+  minHealthyPercent: 100,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
 });
 
@@ -1233,6 +1272,7 @@ const networkLoadbalancedEc2Service = new ecsPatterns.NetworkLoadBalancedEc2Serv
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
+  minHealthyPercent: 100,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
 });
 ```

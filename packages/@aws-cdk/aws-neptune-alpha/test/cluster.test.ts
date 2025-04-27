@@ -9,7 +9,6 @@ import * as cdk from 'aws-cdk-lib';
 import { ClusterParameterGroup, DatabaseCluster, EngineVersion, InstanceType, LogType } from '../lib';
 
 describe('DatabaseCluster', () => {
-
   test('check that instantiation works', () => {
     // GIVEN
     const stack = testStack();
@@ -77,7 +76,7 @@ describe('DatabaseCluster', () => {
         vpc,
         instanceType: InstanceType.R5_LARGE,
       });
-    }).toThrowError('At least one instance is required');
+    }).toThrow('At least one instance is required');
   });
 
   test('errors when only one subnet is specified', () => {
@@ -97,7 +96,7 @@ describe('DatabaseCluster', () => {
         },
         instanceType: InstanceType.R5_LARGE,
       });
-    }).toThrowError('Cluster requires at least 2 subnets, got 1');
+    }).toThrow('Cluster requires at least 2 subnets, got 1');
   });
 
   test('can create a cluster with custom engine version', () => {
@@ -122,6 +121,7 @@ describe('DatabaseCluster', () => {
 
   test.each([
     ['1.1.1.0', EngineVersion.V1_1_1_0], ['1.2.0.0', EngineVersion.V1_2_0_0], ['1.3.0.0', EngineVersion.V1_3_0_0],
+    ['1.4.0.0', EngineVersion.V1_4_0_0],
   ])('can create a cluster for engine version %s', (expected, version) => {
     // GIVEN
     const stack = testStack();
@@ -641,7 +641,6 @@ describe('DatabaseCluster', () => {
   });
 
   test('autoMinorVersionUpgrade is enabled when configured', () => {
-
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -657,11 +656,9 @@ describe('DatabaseCluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
       AutoMinorVersionUpgrade: true,
     });
-
   });
 
   test('autoMinorVersionUpgrade is not enabled when not configured', () => {
-
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -676,7 +673,6 @@ describe('DatabaseCluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
       AutoMinorVersionUpgrade: false,
     });
-
   });
 
   test('cloudwatchLogsExports is enabled when configured', () => {
@@ -835,7 +831,7 @@ describe('DatabaseCluster', () => {
           maxCapacity: 200,
         },
       });
-    }).toThrow(/ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, reveived 200/);
+    }).toThrow(/ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, received 200/);
 
     expect(() => {
       new DatabaseCluster(stack, 'Database3', {

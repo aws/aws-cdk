@@ -1,0 +1,34 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "ea123b4e391a9f352cc5dadc2250aab676981408fc6ccb0efb0d106bbd933ae3": {
+      "displayName": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/Code",
+      "source": {
+        "path": "asset.ea123b4e391a9f352cc5dadc2250aab676981408fc6ccb0efb0d106bbd933ae3",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ea123b4e391a9f352cc5dadc2250aab676981408fc6ccb0efb0d106bbd933ae3.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "e98fcc7c5c7cbda28284597c5171c44c237f4dcfc088cb570d9d27ca1ac0c2bc": {
+      "displayName": "aws-stepfunctions-aws-sdk-cross-region-task-token-integ Template",
+      "source": {
+        "path": "aws-stepfunctions-aws-sdk-cross-region-task-token-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e98fcc7c5c7cbda28284597c5171c44c237f4dcfc088cb570d9d27ca1ac0c2bc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

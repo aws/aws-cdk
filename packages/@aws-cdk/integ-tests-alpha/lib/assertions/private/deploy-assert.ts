@@ -29,7 +29,6 @@ export interface DeployAssertProps {
  * that should be performed on a construct
  */
 export class DeployAssert extends Construct implements IDeployAssert {
-
   /**
    * Returns whether the construct is a DeployAssert construct
    */

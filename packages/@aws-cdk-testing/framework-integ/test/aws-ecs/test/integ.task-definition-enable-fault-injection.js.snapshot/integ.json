@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "TaskDefinitionEnableFaultInjection/DefaultTest": {
+      "stacks": [
+        "aws-ecs-task-definition-enable-fault-injection"
+      ],
+      "assertionStack": "TaskDefinitionEnableFaultInjection/DefaultTest/DeployAssert",
+      "assertionStackName": "TaskDefinitionEnableFaultInjectionDefaultTestDeployAssert16EB808C"
+    }
+  }
+}

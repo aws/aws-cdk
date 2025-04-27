@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "appsync-event-api-iam-auth/DefaultTest": {
+      "stacks": [
+        "EventApiIamAuthStack"
+      ],
+      "assertionStack": "appsync-event-api-iam-auth/DefaultTest/DeployAssert",
+      "assertionStackName": "appsynceventapiiamauthDefaultTestDeployAssertC0FF0265"
+    }
+  }
+}

@@ -4,7 +4,7 @@
     "node": true
   },
   "root": true,
-  "plugins": ["@typescript-eslint", "import"],
+  "plugins": ["@typescript-eslint", "import", "@stylistic"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2018,
@@ -32,8 +32,7 @@
     "coverage"
   ],
   "rules": {
-    "indent": ["off"],
-    "@typescript-eslint/indent": ["error", 2],
+    "@stylistic/indent": ["error", 2],
     "quotes": [
       "error",
       "single",
@@ -41,7 +40,7 @@
         "avoidEscape": true
       }
     ],
-    "comma-dangle": ["error", "always-multiline"],
+    "@stylistic/comma-dangle": ["error", "always-multiline"],
     "comma-spacing": [
       "error",
       {
@@ -81,7 +80,7 @@
     ],
     "space-before-blocks": ["error"],
     "curly": ["error", "multi-line", "consistent"],
-    "@typescript-eslint/member-delimiter-style": ["error"],
+    "@stylistic/member-delimiter-style": ["error"],
     "semi": ["error", "always"],
     "max-len": [
       "error",

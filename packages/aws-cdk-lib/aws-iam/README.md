@@ -125,6 +125,14 @@ const role = iam.Role.fromRoleArn(this, 'Role', 'arn:aws:iam::123456789012:role/
 });
 ```
 
+If you want to lookup roles that actually exist in your account, you can use `Role.fromLookup()`.
+
+```ts
+const role = iam.Role.fromLookup(this, 'Role', {
+  roleName: 'MyExistingRole',
+});
+```
+
 ### Customizing role creation
 
 It is best practice to allow CDK to manage IAM roles and permissions. You can prevent CDK from
@@ -237,6 +245,72 @@ iam.Role.customizeRoles(this, {
 
 For more information on configuring permissions see the [Security And Safety Dev
 Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
+
+#### Policy report generation
+
+When `customizeRoles` is used, the `iam-policy-report.txt` report will contain a list
+of IAM roles and associated permissions that would have been created. This report is
+generated in an attempt to resolve and replace any references with a more user-friendly
+value.
+
+The following are some examples of the value that will appear in the report:
+
+```json
+"Resource": {
+  "Fn::Join": [
+    "",
+    [
+      "arn:",
+      {
+        "Ref": "AWS::Partition"
+      },
+      ":iam::",
+      {
+        "Ref": "AWS::AccountId"
+      },
+      ":role/Role"
+    ]
+  ]
+}
+```
+
+The policy report will instead get:
+
+```json
+"Resource": "arn:(PARTITION):iam::(ACCOUNT):role/Role"
+```
+
+If IAM policy is referencing a resource attribute:
+
+```json
+"Resource": [
+  {
+    "Fn::GetAtt": [
+      "SomeResource",
+      "Arn"
+    ]
+  },
+  {
+    "Ref": "AWS::NoValue",
+  }
+]
+```
+
+The policy report will instead get:
+
+```json
+"Resource": [
+  "(Path/To/SomeResource.Arn)"
+  "(NOVALUE)"
+]
+```
+
+The following pseudo parameters will be converted:
+
+1. `{ 'Ref': 'AWS::AccountId' }` -> `(ACCOUNT)
+2. `{ 'Ref': 'AWS::Partition' }` -> `(PARTITION)
+3. `{ 'Ref': 'AWS::Region' }` -> `(REGION)
+4. `{ 'Ref': 'AWS::NoValue' }` -> `(NOVALUE)
 
 #### Generating a permissions report
 
@@ -640,6 +714,14 @@ You can specify an optional list of `thumbprints`. If not specified, the
 thumbprint of the root certificate authority (CA) will automatically be obtained
 from the host as described
 [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html).
+
+Byy default, the custom resource enforces strict security practices by rejecting
+any unauthorized connections when downloading CA thumbprints from the issuer URL.
+If you need to connect to an unauthorized OIDC identity provider and understand the
+implications, you can disable this behavior by setting the feature flag
+`IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS` to `false` in your `cdk.context.json`
+or `cdk.json`. Visit [CDK Feature Flag](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html)
+for more information on how to configure feature flags.
 
 Once you define an OpenID connect provider, you can use it with AWS services
 that expect an IAM OIDC provider. For example, when you define an [Amazon

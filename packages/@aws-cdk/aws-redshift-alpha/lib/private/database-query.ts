@@ -18,6 +18,13 @@ export interface DatabaseQueryProps<HandlerProps> extends DatabaseOptions {
    * @default cdk.RemovalPolicy.Destroy
    */
   readonly removalPolicy?: cdk.RemovalPolicy;
+
+  /**
+   * The handler timeout duration
+   *
+   * @default cdk.Duration.minutes(1)
+   */
+  readonly timeout?: cdk.Duration;
 }
 
 export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrantable {
@@ -29,6 +36,15 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
   constructor(scope: Construct, id: string, props: DatabaseQueryProps<HandlerProps>) {
     super(scope, id);
 
+    if (props.timeout && !cdk.Token.isUnresolved(props.timeout)) {
+      if (props.timeout.toMilliseconds() < cdk.Duration.seconds(1).toMilliseconds()) {
+        throw new Error(`The timeout for the handler must be BETWEEN 1 second and 15 minutes, got ${props.timeout.toMilliseconds()} milliseconds.`);
+      }
+      if (props.timeout.toSeconds() > cdk.Duration.minutes(15).toSeconds()) {
+        throw new Error(`The timeout for the handler must be between 1 second and 15 minutes, got ${props.timeout.toSeconds()} seconds.`);
+      }
+    }
+
     const adminUser = this.getAdminUser(props);
     const handler = new lambda.SingletonFunction(this, 'Handler', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'database-query-provider'), {
@@ -36,7 +52,7 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
       }),
       runtime: lambda.determineLatestNodeRuntime(this),
       handler: 'index.handler',
-      timeout: cdk.Duration.minutes(1),
+      timeout: props.timeout ?? cdk.Duration.minutes(1),
       uuid: '3de5bea7-27da-4796-8662-5efb56431b5f',
       lambdaPurpose: 'Query Redshift Database',
     });
@@ -48,6 +64,7 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
 
     const provider = new customresources.Provider(this, 'Provider', {
       onEventHandler: handler,
+      role: this.getOrCreateInvokerRole(handler),
     });
 
     const queryHandlerProps: DatabaseQueryHandlerProps & HandlerProps = {
@@ -99,5 +116,20 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
       }
     }
     return adminUser;
+  }
+
+  /**
+   * Get or create the IAM role for the singleton lambda function.
+   * We only need one function since it's just acting as an invoker.
+   * */
+  private getOrCreateInvokerRole(handler: lambda.SingletonFunction): iam.IRole {
+    const id = handler.constructName + 'InvokerRole';
+    const existing = cdk.Stack.of(this).node.tryFindChild(id);
+    return existing != null
+      ? existing as iam.Role
+      : new iam.Role(cdk.Stack.of(this), id, {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+      });
   }
 }

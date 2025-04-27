@@ -19,12 +19,11 @@ describe('Task utils', () => {
 
       expect( () => {
         validatePatternSupported(IntegrationPattern.WAIT_FOR_TASK_TOKEN, supportedPatterns);
-      }).toThrowError(/Unsupported service integration pattern. Supported Patterns: RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
+      }).toThrow(/Unsupported service integration pattern. Supported Patterns: RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
     });
   });
 
   describe('integration resource Arn', () => {
-
     let service: string;
     let api: string;
     let stack: cdk.Stack;
@@ -97,5 +96,4 @@ describe('Task utils', () => {
       }).toThrow(/Both 'service' and 'api' must be provided to build the resource ARN./);
     });
   });
-
 });

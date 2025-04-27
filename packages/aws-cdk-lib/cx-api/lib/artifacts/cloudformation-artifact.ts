@@ -4,6 +4,7 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { CloudArtifact } from '../cloud-artifact';
 import type { CloudAssembly } from '../cloud-assembly';
 import { Environment, EnvironmentUtils } from '../environment';
+import { CloudAssemblyError } from '../private/error';
 const CLOUDFORMATION_STACK_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.CloudFormationStackArtifact');
 
 export class CloudFormationStackArtifact extends CloudArtifact {
@@ -56,7 +57,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   /**
    * SNS Topics that will receive stack events.
    */
-  public readonly notificationArns: string[];
+  public readonly notificationArns?: string[];
 
   /**
    * The physical name of this stack.
@@ -162,10 +163,10 @@ export class CloudFormationStackArtifact extends CloudArtifact {
 
     const properties = (this.manifest.properties || {}) as cxschema.AwsCloudFormationStackProperties;
     if (!properties.templateFile) {
-      throw new Error('Invalid CloudFormation stack artifact. Missing "templateFile" property in cloud assembly manifest');
+      throw new CloudAssemblyError('Invalid CloudFormation stack artifact. Missing "templateFile" property in cloud assembly manifest');
     }
     if (!artifact.environment) {
-      throw new Error('Invalid CloudFormation stack artifact. Missing environment');
+      throw new CloudAssemblyError('Invalid CloudFormation stack artifact. Missing environment');
     }
     this.environment = EnvironmentUtils.parse(artifact.environment);
     this.templateFile = properties.templateFile;
@@ -174,7 +175,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     // We get the tags from 'properties' if available (cloud assembly format >= 6.0.0), otherwise
     // from the stack metadata
     this.tags = properties.tags ?? this.tagsFromMetadata();
-    this.notificationArns = properties.notificationArns ?? [];
+    this.notificationArns = properties.notificationArns;
     this.assumeRoleArn = properties.assumeRoleArn;
     this.assumeRoleExternalId = properties.assumeRoleExternalId;
     this.assumeRoleAdditionalOptions = properties.assumeRoleAdditionalOptions;

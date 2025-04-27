@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { testFixture } from './util';
 import { Template, Match } from '../../assertions';
 import * as iam from '../../aws-iam';
@@ -12,6 +13,7 @@ test.each(versions)('support AlbControllerVersion (%s)', (version) => {
 
   const cluster = new Cluster(stack, 'Cluster', {
     version: KubernetesVersion.V1_27,
+    kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
   });
   AlbController.create(stack, {
     cluster,
@@ -46,11 +48,9 @@ test('all vended policies are valid', () => {
     if (addOn.startsWith('alb-iam_policy')) {
       const policy = JSON.parse(fs.readFileSync(path.join(addOnsDir, addOn)).toString());
       try {
-
         for (const statement of policy.Statement) {
           iam.PolicyStatement.fromJson(statement);
         }
-
       } catch (error) {
         throw new Error(`Invalid policy: ${addOn}: ${error}`);
       }
@@ -63,6 +63,7 @@ test('can configure a custom repository', () => {
 
   const cluster = new Cluster(stack, 'Cluster', {
     version: KubernetesVersion.V1_27,
+    kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
   });
 
   AlbController.create(stack, {
@@ -96,18 +97,20 @@ test('throws when a policy is not defined for a custom version', () => {
 
   const cluster = new Cluster(stack, 'Cluster', {
     version: KubernetesVersion.V1_27,
+    kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
   });
 
   expect(() => AlbController.create(stack, {
     cluster,
     version: AlbControllerVersion.of('custom'),
-  })).toThrowError("'albControllerOptions.policy' is required when using a custom controller version");
+  })).toThrow("'albControllerOptions.policy' is required when using a custom controller version");
 });
 
 test.each(['us-gov-west-1', 'cn-north-1'])('stack does not include hard-coded partition', (region) => {
   const { stack } = testFixture(region);
   const cluster = new Cluster(stack, 'Cluster', {
     version: KubernetesVersion.V1_27,
+    kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
   });
 
   AlbController.create(stack, {
@@ -124,6 +127,7 @@ test('correct helm chart version is set for selected alb controller version', ()
 
   const cluster = new Cluster(stack, 'Cluster', {
     version: KubernetesVersion.V1_27,
+    kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
   });
 
   AlbController.create(stack, {
@@ -159,6 +163,7 @@ describe('AlbController AwsAuth creation', () => {
     const cluster = new Cluster(stack, 'Cluster', {
       version: KubernetesVersion.V1_27,
       authenticationMode,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     AlbController.create(stack, {
       cluster,

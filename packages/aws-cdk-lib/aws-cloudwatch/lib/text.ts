@@ -9,8 +9,8 @@ export enum TextWidgetBackground {
    */
   SOLID = 'solid',
   /**
-  * Transparent background
-  */
+   * Transparent background
+   */
   TRANSPARENT = 'transparent',
 }
 

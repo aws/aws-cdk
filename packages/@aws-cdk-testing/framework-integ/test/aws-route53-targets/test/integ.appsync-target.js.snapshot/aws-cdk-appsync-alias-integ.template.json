@@ -1,0 +1,142 @@
+{
+ "Resources": {
+  "apiC8550315": {
+   "Type": "AWS::AppSync::GraphQLApi",
+   "Properties": {
+    "AuthenticationType": "API_KEY",
+    "Name": "api"
+   }
+  },
+  "apiSchema0EA92056": {
+   "Type": "AWS::AppSync::GraphQLSchema",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "apiC8550315",
+      "ApiId"
+     ]
+    },
+    "Definition": "type test {\n  version: String!\n}\ntype Query {\n  getTests: [test]!\n}\ntype Mutation {\n  addTest(version: String!): test\n}\n"
+   }
+  },
+  "apiDomainNameBBFE36A4": {
+   "Type": "AWS::AppSync::DomainName",
+   "Properties": {
+    "CertificateArn": "arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "domain for api at ",
+       {
+        "Fn::GetAtt": [
+         "apiC8550315",
+         "GraphQLUrl"
+        ]
+       }
+      ]
+     ]
+    },
+    "DomainName": "*.example.com"
+   }
+  },
+  "apiDomainAssociation1CF2F52A": {
+   "Type": "AWS::AppSync::DomainNameApiAssociation",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "apiC8550315",
+      "ApiId"
+     ]
+    },
+    "DomainName": "*.example.com"
+   },
+   "DependsOn": [
+    "apiDomainNameBBFE36A4"
+   ]
+  },
+  "apiDefaultApiKey6AB8D7C4": {
+   "Type": "AWS::AppSync::ApiKey",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "apiC8550315",
+      "ApiId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "apiSchema0EA92056"
+   ]
+  },
+  "Alias325C5727": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "apiDomainNameBBFE36A4",
+       "AppSyncDomainName"
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::FindInMap": [
+       "AWSCloudFrontPartitionHostedZoneIdMap",
+       {
+        "Ref": "AWS::Partition"
+       },
+       "zoneId"
+      ]
+     }
+    },
+    "HostedZoneId": "Z23ABC4XYZL05B",
+    "Name": "*.example.com.",
+    "Type": "A"
+   }
+  }
+ },
+ "Mappings": {
+  "AWSCloudFrontPartitionHostedZoneIdMap": {
+   "aws": {
+    "zoneId": "Z2FDTNDATAQYW2"
+   },
+   "aws-cn": {
+    "zoneId": "Z3RFFRIM2A3IF5"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

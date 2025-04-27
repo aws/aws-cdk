@@ -29,12 +29,14 @@ export * from './cfn-dynamic-reference';
 export * from './cfn-tag';
 export * from './cfn-json';
 export * from './removal-policy';
+export * from './removal-policies';
 export * from './arn';
 export * from './duration';
 export * from './expiration';
 export * from './size';
 export * from './stack-trace';
 export { Element } from './deps';
+export * from './errors';
 
 export * from './app';
 export * from './context-provider';

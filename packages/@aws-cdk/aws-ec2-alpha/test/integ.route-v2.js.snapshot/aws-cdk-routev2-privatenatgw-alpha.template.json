@@ -6,10 +6,16 @@
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-routev2-privatenatgw-alpha/natgw_priv"
+     }
+    ]
    }
   },
-  "natgwprivAmazonIpv6915E8E4F": {
+  "natgwprivAmazonIpv68FE21C45": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -48,12 +54,14 @@
       "RouteTableId"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "testNATgwNATGateway1533420D"
+   ]
   },
   "natgwprivSubnetE547C5A0": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-east-1a",
     "CidrBlock": "10.0.0.0/24",
     "Ipv6CidrBlock": {
@@ -75,7 +83,7 @@
     }
    },
    "DependsOn": [
-    "natgwprivAmazonIpv6915E8E4F"
+    "natgwprivAmazonIpv68FE21C45"
    ]
   },
   "natgwprivSubnetRouteTableAssociation9E115869": {
@@ -92,7 +100,7 @@
     }
    },
    "DependsOn": [
-    "natgwprivAmazonIpv6915E8E4F"
+    "natgwprivAmazonIpv68FE21C45"
    ]
   },
   "testNATgwNATGateway1533420D": {

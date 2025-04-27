@@ -139,3 +139,40 @@ new iot.AccountAuditConfiguration(this, 'AuditConfiguration', {
   },
 });
 ```
+
+### Scheduled Audit
+
+You can create a [scheduled audit](https://docs.aws.amazon.com/iot-device-defender/latest/devguide/AuditCommands.html#device-defender-AuditCommandsManageSchedules) that is run at a specified time interval. Checks must be enabled for your account by creating `AccountAuditConfiguration`.
+
+```ts
+declare const config: iot.AccountAuditConfiguration;
+
+// Daily audit
+const dailyAudit = new iot.ScheduledAudit(this, 'DailyAudit', {
+  accountAuditConfiguration: config,
+  frequency: iot.Frequency.DAILY,
+  auditChecks: [
+    iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK,
+  ],
+})
+
+// Weekly audit
+const weeklyAudit = new iot.ScheduledAudit(this, 'WeeklyAudit', {
+  accountAuditConfiguration: config,
+  frequency: iot.Frequency.WEEKLY,
+  dayOfWeek: iot.DayOfWeek.SUNDAY,
+  auditChecks: [
+    iot.AuditCheck.CA_CERTIFICATE_EXPIRING_CHECK,
+  ],
+});
+
+// Monthly audit
+const monthlyAudit = new iot.ScheduledAudit(this, 'MonthlyAudit', {
+  accountAuditConfiguration: config,
+  frequency: iot.Frequency.MONTHLY,
+  dayOfMonth: iot.DayOfMonth.of(1),
+  auditChecks: [
+    iot.AuditCheck.CA_CERTIFICATE_KEY_QUALITY_CHECK,
+  ],
+});
+```

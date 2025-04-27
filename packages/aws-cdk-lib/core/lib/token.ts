@@ -59,7 +59,7 @@ export class Token {
    *
    * @param obj The object to test.
    */
-  public static isUnresolved(obj: any): boolean {
+  public static isUnresolved(this: void, obj: any): boolean {
     return unresolved(obj);
   }
 
@@ -144,7 +144,7 @@ export class Tokenization {
   public static reverseCompleteString(s: string): IResolvable | undefined {
     const fragments = Tokenization.reverseString(s);
     if (fragments.length !== 1) {
-      throw new Error(`Tokenzation.reverseCompleteString: argument must not be a concatentation, got '${s}'`);
+      throw new Error(`Tokenzation.reverseCompleteString: argument must not be a concatenation, got '${s}'`);
     }
     return fragments.firstToken;
   }

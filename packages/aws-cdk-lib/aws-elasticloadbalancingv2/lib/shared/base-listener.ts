@@ -3,6 +3,7 @@ import { IListenerAction } from './listener-action';
 import { Attributes, mapTagMapToCxschema, renderAttributes } from './util';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Annotations, ContextProvider, IResource, Lazy, Resource, Token } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
 import * as cxapi from '../../../cx-api';
 import { CfnListener } from '../elasticloadbalancingv2.generated';
 
@@ -87,7 +88,7 @@ export abstract class BaseListener extends Resource implements IListener {
     if (Token.isUnresolved(options.userOptions.loadBalancerArn)
       || Object.values(options.userOptions.loadBalancerTags ?? {}).some(Token.isUnresolved)
       || Token.isUnresolved(options.userOptions.listenerPort)) {
-      throw new Error('All arguments to look up a load balancer listener must be concrete (no Tokens)');
+      throw new ValidationError('All arguments to look up a load balancer listener must be concrete (no Tokens)', scope);
     }
 
     let cxschemaTags: cxschema.Tag[] | undefined;

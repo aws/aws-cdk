@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "integtest-pipe-target-api-gw/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-targets-api-gw"
+      ],
+      "assertionStack": "integtest-pipe-target-api-gw/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipetargetapigwDefaultTestDeployAssertCBE10CAE"
+    }
+  }
+}

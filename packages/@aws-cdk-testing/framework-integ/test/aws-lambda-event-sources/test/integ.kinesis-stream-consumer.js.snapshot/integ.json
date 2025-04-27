@@ -1,0 +1,13 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "integ-lambda-event-source-kinesis-stream-consumer/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-kinesis-stream-consumer"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integ-lambda-event-source-kinesis-stream-consumer/DefaultTest/DeployAssert",
+      "assertionStackName": "integlambdaeventsourcekinesisstreamconsumerDefaultTestDeployAssert4042E41C"
+    }
+  }
+}

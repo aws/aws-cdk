@@ -43,7 +43,7 @@ export interface ApiDestinationTargetParameters {
 }
 
 /**
- * A EventBridge Pipes target that sends messages to an EventBridge API destination.
+ * An EventBridge Pipes target that sends messages to an EventBridge API destination.
  */
 export class ApiDestinationTarget implements ITarget {
   private destination: IApiDestination;

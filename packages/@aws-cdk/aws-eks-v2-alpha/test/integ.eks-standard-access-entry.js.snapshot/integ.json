@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "aws-cdk-eks-standard-access-entry-integ/DefaultTest": {
+      "stacks": [
+        "EKSStandardAccessEntry"
+      ],
+      "diffAssets": false,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "aws-cdk-eks-standard-access-entry-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksstandardaccessentryintegDefaultTestDeployAssert5983936D"
+    }
+  }
+}

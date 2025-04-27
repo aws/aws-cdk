@@ -134,17 +134,22 @@ set to an email, all of the rules in that configuration set are applied to the e
 Use the `ConfigurationSet` construct to create a configuration set:
 
 ```ts
+import { Duration } from 'aws-cdk-lib';
+
 declare const myPool: ses.IDedicatedIpPool;
 
 new ses.ConfigurationSet(this, 'ConfigurationSet', {
   customTrackingRedirectDomain: 'track.cdk.dev',
-  suppressionReasons: ses.SuppressionReasons.COMPLAINTS_ONLY,
   tlsPolicy: ses.ConfigurationSetTlsPolicy.REQUIRE,
   dedicatedIpPool: myPool,
+  // Specify maximum delivery time
+  // This configuration can be useful in such cases as time-sensitive emails (like those containing a one-time-password),
+  // transactional emails, and email that you want to ensure isn't delivered during non-business hours.
+  maxDeliveryDuration: Duration.minutes(10),
 });
 ```
 
-Use `addEventDestination()` to publish email sending events to Amazon SNS or Amazon CloudWatch:
+Use `addEventDestination()` to publish email sending events to Amazon SNS, Amazon CloudWatch, Amazon Data Firehose or Amazon EventBridge:
 
 ```ts
 declare const myConfigurationSet: ses.ConfigurationSet;
@@ -153,6 +158,82 @@ declare const myTopic: sns.Topic;
 myConfigurationSet.addEventDestination('ToSns', {
   destination: ses.EventDestination.snsTopic(myTopic),
 })
+```
+
+**Note**: For EventBridge, you must specify the default EventBus:
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+
+declare const myConfigurationSet: ses.ConfigurationSet;
+
+const bus = events.EventBus.fromEventBusName(this, 'EventBus', 'default');
+
+myConfigurationSet.addEventDestination('ToEventBus', {
+  destination: ses.EventDestination.eventBus(bus),
+})
+```
+
+For Firehose, if you don't specify IAM Role ARN for Amazon SES to send events. An IAM Role will be created automatically following https://docs.aws.amazon.com/ses/latest/dg/event-publishing-add-event-destination-firehose.html.
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+
+declare const myConfigurationSet: ses.ConfigurationSet;
+declare const firehoseDeliveryStream: firehose.IDeliveryStream;
+declare const iamRole: iam.IRole;
+
+// Create IAM Role automatically
+myConfigurationSet.addEventDestination('ToFirehose', {
+  destination: ses.EventDestination.firehoseDeliveryStream({
+    deliveryStream: firehoseDeliveryStream,
+  }),
+})
+
+// Specify your IAM Role
+myConfigurationSet.addEventDestination('ToFirehose', {
+  destination: ses.EventDestination.firehoseDeliveryStream({
+    deliveryStream: firehoseDeliveryStream,
+    role: iamRole,
+  }),
+})
+```
+
+### Override account-level suppression list settings
+
+You can customize account-level suppression list separately for different configuration sets by overriding it
+with configuration set-level suppression.
+
+For details, see [Using configuration set-level suppression to override your account-level suppression list](https://docs.aws.amazon.com/ses/latest/dg/sending-email-suppression-list-config-level.html).
+
+By default, the configuration set uses your account-level suppression list settings.
+
+You can disable account-level suppression list by specifying `disableSuppressionList` to true. Email sent with this configuration set will not use any suppression settings at all.
+
+``` ts
+new ses.ConfigurationSet(this, 'ConfigurationSet', {
+  disableSuppressionList: true,
+});
+```
+
+You can also override account level settings with configuration set-level suppression enabled. Email sent with this configuration set will only use the suppression conditions you enabled for it (bounces, complaints, or bounces and complaints) - regardless of what your account-level suppression list settings are, it will override them.
+
+``` ts
+// Only bounces will be suppressed.
+new ses.ConfigurationSet(this, 'ConfigurationSet', {
+  suppressionReasons: ses.SuppressionReasons.BOUNCES_ONLY,
+});
+
+// Only complaints will be suppressed.
+new ses.ConfigurationSet(this, 'ConfigurationSet', {
+  suppressionReasons: ses.SuppressionReasons.COMPLAINTS_ONLY,
+});
+
+// Both bounces and complaints will be suppressed.
+new ses.ConfigurationSet(this, 'ConfigurationSet', {
+  suppressionReasons: ses.SuppressionReasons.BOUNCES_AND_COMPLAINTS,
+});
 ```
 
 ### Email identity
@@ -224,6 +305,21 @@ const identity = new ses.EmailIdentity(this, 'Identity', {
 });
 
 identity.grantSendEmail(user);
+```
+
+You can also reference an existing email identity using its ARN and grant permissions to it:
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const user: iam.User;
+
+// Imports an existing email identity using its ARN.
+// This is one way to reference an existing identity; another option is using its name via fromEmailIdentityName.
+const importedIdentity = ses.EmailIdentity.fromEmailIdentityArn(this, 'ImportedIdentity', 
+  'arn:aws:ses:us-east-1:123456789012:identity/example.com');
+
+// Grant send email permission to the imported identity
+importedIdentity.grantSendEmail(user);
 ```
 
 ### Virtual Deliverability Manager (VDM)

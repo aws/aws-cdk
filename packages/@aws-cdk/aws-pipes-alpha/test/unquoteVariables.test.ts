@@ -10,7 +10,6 @@ describe('unquote', () => {
     const result = unquote(stringValue);
 
     expect(result).toBe('{"pipeName":"some-name"}');
-
   });
 
   it('should unquote single variables', () => {
@@ -21,7 +20,6 @@ describe('unquote', () => {
     const result = unquote(stringValue);
 
     expect(result).toBe('{"pipeName":<aws.pipes.pipe-name>}');
-
   });
 
   it('should unquote multiple variables', () => {
@@ -33,7 +31,6 @@ describe('unquote', () => {
     const result = unquote(stringValue);
 
     expect(result).toBe('{"pipeName":<aws.pipes.pipe-name>,"pipeArn":<aws.pipes.pipe-arn>}');
-
   });
 
   it('should unquote single event path expression', () => {
@@ -44,7 +41,6 @@ describe('unquote', () => {
     const result = unquote(stringValue);
 
     expect(result).toBe('{"pipeName":<$.foo.bar>}');
-
   });
 
   it('should unquote multiple event path expressions', () => {
@@ -56,7 +52,6 @@ describe('unquote', () => {
     const result = unquote(stringValue);
 
     expect(result).toBe('{"pipeName":<$.foo.bar>,"second":<$.foo.baz>}');
-
   });
 
   it('should unquote variables and event path expressions', () => {
@@ -69,5 +64,4 @@ describe('unquote', () => {
 
     expect(result).toBe('{"pipeName":<$.foo.bar>,"second":<$.foo.baz>}');
   });
-
 });

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "lambda-test-current-version.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "lambda-test-current-version.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/61b0974bafbfa008a2d6bb82456f04de1660fec67633ec97ef5d638d7616e54f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6bffecb42665ae86387d9a6c2a7c2afbcd1304be43a8649a1fe8a3e4327031c1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -49,7 +50,7 @@
         "/lambda-test-current-version/MyLambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CC59bdb67fa1659795f5310ce1074a431e"
+            "data": "MyLambdaCurrentVersionE7A382CC45f41452e4af8108d62930f8af7039ec"
           }
         ],
         "/lambda-test-current-version/MyLambda/CurrentVersion/EventInvokeConfig/Resource": [
@@ -79,10 +80,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "MyLambdaCurrentVersionE7A382CC2ea27ea57e328c1e5be4991bd1bd072d": [
+        "MyLambdaCurrentVersionE7A382CC59bdb67fa1659795f5310ce1074a431e": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CC2ea27ea57e328c1e5be4991bd1bd072d",
+            "data": "MyLambdaCurrentVersionE7A382CC59bdb67fa1659795f5310ce1074a431e",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

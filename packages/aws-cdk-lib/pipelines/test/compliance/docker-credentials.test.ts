@@ -31,7 +31,6 @@ afterEach(() => {
 });
 
 test('synth action receives install commands and access to relevant credentials', () => {
-
   const pipeline = new ModernPipelineWithCreds(pipelineStack, 'Cdk');
   pipeline.addStage(new DockerAssetApp(app, 'App1'));
 
@@ -156,7 +155,6 @@ test('self-update receives install commands and access to relevant credentials',
 });
 
 test('asset publishing receives install commands and access to relevant credentials', () => {
-
   const pipeline = new ModernPipelineWithCreds(pipelineStack, 'Cdk');
   pipeline.addStage(new DockerAssetApp(app, 'App1'));
 

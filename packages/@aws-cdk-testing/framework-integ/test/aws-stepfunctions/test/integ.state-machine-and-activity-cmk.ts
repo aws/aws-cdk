@@ -47,7 +47,7 @@ const testCase = new IntegTest(app, 'StateMachineAndActivityWithCMKEncryptionCon
   testCases: [stack],
 });
 
-//Start execution
+// Start execution
 const start = testCase.assertions.awsApiCall('StepFunctions', 'startExecution', {
   stateMachineArn: stack.stateMachine.stateMachineArn,
 });

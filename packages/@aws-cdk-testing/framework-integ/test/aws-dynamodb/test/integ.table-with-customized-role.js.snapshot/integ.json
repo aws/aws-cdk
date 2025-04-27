@@ -1,0 +1,14 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "cdk-dynamodb-customized-role-integ/DefaultTest": {
+      "stacks": [
+        "cdk-table-with-customized-role",
+        "cdk-table-with-customized-role2"
+      ],
+      "diffAssets": true,
+      "assertionStack": "cdk-dynamodb-customized-role-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkdynamodbcustomizedroleintegDefaultTestDeployAssertD6C925FC"
+    }
+  }
+}

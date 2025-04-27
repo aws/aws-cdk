@@ -663,7 +663,6 @@ describe('stage', () => {
         },
       ],
     });
-
   });
 
   describe('Metrics', () => {
