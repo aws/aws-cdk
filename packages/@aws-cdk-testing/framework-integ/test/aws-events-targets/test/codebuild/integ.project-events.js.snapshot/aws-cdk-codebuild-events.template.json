@@ -74,7 +74,53 @@
         "detail-referenceName": "$.detail.referenceName"
        },
        "InputTemplate": "\"A commit was pushed to the repository <detail-repositoryName> on branch <detail-referenceName>\""
+      },
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "MyRepoOnCommitEventsRole678B5EA7",
+        "Arn"
+       ]
       }
+     }
+    ]
+   }
+  },
+  "MyRepoOnCommitEventsRole678B5EA7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyRepoOnCommitEventsRoleDefaultPolicy289F290E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "MyTopic86869434"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyRepoOnCommitEventsRoleDefaultPolicy289F290E",
+    "Roles": [
+     {
+      "Ref": "MyRepoOnCommitEventsRole678B5EA7"
      }
     ]
    }
@@ -219,6 +265,10 @@
     "Artifacts": {
      "Type": "NO_ARTIFACTS"
     },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
      "Image": "aws/codebuild/standard:7.0",
@@ -240,11 +290,7 @@
       ]
      },
      "Type": "CODECOMMIT"
-    },
-    "Cache": {
-     "Type": "NO_CACHE"
-    },
-    "EncryptionKey": "alias/aws/s3"
+    }
    }
   },
   "MyProjectStateChange2DAB75B7": {
@@ -271,7 +317,53 @@
       "Arn": {
        "Ref": "MyTopic86869434"
       },
-      "Id": "Target0"
+      "Id": "Target0",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "MyProjectStateChangeEventsRole53D59F5D",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "MyProjectStateChangeEventsRole53D59F5D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyProjectStateChangeEventsRoleDefaultPolicy952D36B7": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "MyTopic86869434"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProjectStateChangeEventsRoleDefaultPolicy952D36B7",
+    "Roles": [
+     {
+      "Ref": "MyProjectStateChangeEventsRole53D59F5D"
      }
     ]
    }
@@ -306,7 +398,53 @@
         "detail-completed-phase": "$.detail.completed-phase"
        },
        "InputTemplate": "\"Build phase changed to <detail-completed-phase>\""
+      },
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "MyProjectPhaseChangeEventsRole2899C2C5",
+        "Arn"
+       ]
       }
+     }
+    ]
+   }
+  },
+  "MyProjectPhaseChangeEventsRole2899C2C5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyProjectPhaseChangeEventsRoleDefaultPolicyACBBB31B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "MyTopic86869434"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProjectPhaseChangeEventsRoleDefaultPolicyACBBB31B",
+    "Roles": [
+     {
+      "Ref": "MyProjectPhaseChangeEventsRole2899C2C5"
      }
     ]
    }
@@ -396,19 +534,21 @@
   },
   "MyQueueawscdkcodebuildeventsMyTopic550011DCF72DE3ED": {
    "Type": "AWS::SNS::Subscription",
-   "DependsOn": "MyQueuePolicy6BBEDDAC",
    "Properties": {
-    "Protocol": "sqs",
-    "TopicArn": {
-     "Ref": "MyTopic86869434"
-    },
     "Endpoint": {
      "Fn::GetAtt": [
       "MyQueueE6CA6235",
       "Arn"
      ]
+    },
+    "Protocol": "sqs",
+    "TopicArn": {
+     "Ref": "MyTopic86869434"
     }
-   }
+   },
+   "DependsOn": [
+    "MyQueuePolicy6BBEDDAC"
+   ]
   },
   "DeadLetterQueue9F481546": {
    "Type": "AWS::SQS::Queue",
