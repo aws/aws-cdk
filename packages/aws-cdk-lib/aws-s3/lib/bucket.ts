@@ -912,19 +912,14 @@ export abstract class BucketBase extends Resource implements IBucket {
 
     // add permissions to the role
     // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
-    iam.Grant.addToPrincipalOrResource({
-      grantee: identity,
-      actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
-      resourceArns: [Lazy.string({ produce: () => this.bucketArn })],
-      resource: this,
-    });
+    this.grant(identity, ['s3:GetReplicationConfiguration', 's3:ListBucket'], [], Lazy.string({ produce: () => this.bucketArn }));
 
-    iam.Grant.addToPrincipalOrResource({
-      grantee: identity,
-      actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
-      resourceArns: [Lazy.string({ produce: () => this.arnForObjects('*') })],
-      resource: this,
-    });
+    this.grant(
+      identity,
+      ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
+      [],
+      Lazy.string({ produce: () => this.arnForObjects('*') })
+    );
 
     const destinationBuckets = props.destinations.map(destination => destination.bucket);
     if (destinationBuckets.length > 0) {
