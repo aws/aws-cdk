@@ -144,6 +144,9 @@ export enum UnreferencedFileRemovalStatus {
   DISABLED = 'Disabled',
 }
 
+/**
+ * Controls Server Side Encryption (SSE) for this TableBucket.
+ */
 export enum TableBucketEncryption {
   /**
    * Use a customer defined KMS key for encryption
@@ -579,7 +582,8 @@ export class TableBucket extends TableBucketBase {
 
     TableBucket.validateTableBucketName(props.tableBucketName);
     TableBucket.validateUnreferencedFileRemoval(props.unreferencedFileRemoval);
-    const { bucketEncryption, encryptionKey, keyCreated } = this.parseEncryption(props);
+    const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
+    this.encryptionKey = encryptionKey;
 
     this._resource = new s3tables.CfnTableBucket(this, id, {
       tableBucketName: props.tableBucketName,
@@ -594,10 +598,6 @@ export class TableBucket extends TableBucketBase {
     this.tableBucketName = this.getResourceNameAttribute(this._resource.ref);
     this.tableBucketArn = this._resource.attrTableBucketArn;
     this._resource.applyRemovalPolicy(props.removalPolicy);
-
-    if (keyCreated && encryptionKey) {
-      this.allowMaintenanceAccessToKey(encryptionKey);
-    }
   }
 
   /**
@@ -616,7 +616,6 @@ export class TableBucket extends TableBucketBase {
   private parseEncryption(props: TableBucketProps): {
     bucketEncryption?: s3tables.CfnTableBucket.EncryptionConfigurationProperty;
     encryptionKey?: kms.IKey;
-    keyCreated?: boolean;
   } {
     const encryptionType = props.encryption;
     let key = props.encryptionKey;
@@ -641,6 +640,7 @@ export class TableBucket extends TableBucketBase {
           description: `Created by ${this.node.path}`,
           enableKeyRotation: true,
         });
+        this.allowTablesMaintenanceAccessToKey(key);
       }
       return {
         bucketEncryption: {
@@ -671,7 +671,7 @@ export class TableBucket extends TableBucketBase {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-kms-permissions.html
    * @param encryptionKey The key to provide access to
    */
-  private allowMaintenanceAccessToKey(encryptionKey: kms.IKey) {
+  private allowTablesMaintenanceAccessToKey(encryptionKey: kms.IKey) {
     encryptionKey.addToResourcePolicy(new iam.PolicyStatement({
       sid: 'AllowS3TablesMaintenanceAccess',
       effect: iam.Effect.ALLOW,
@@ -682,12 +682,7 @@ export class TableBucket extends TableBucketBase {
         'kms:GenerateDataKey',
         'kms:Decrypt',
       ],
-      resources: [encryptionKey.keyArn],
-      conditions: {
-        StringLike: {
-          'kms:EncryptionContext:aws:s3:arn': `${this.tableBucketArn}/*`,
-        },
-      },
+      resources: ['*'],
     }));
   }
 }

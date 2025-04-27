@@ -28,8 +28,8 @@ export const KEY_READ_ACCESS = [
 ];
 
 export const KEY_WRITE_ACCESS = [
-  'kms:GenerateDataKey*',
   'kms:Decrypt',
+  'kms:GenerateDataKey*',
 ];
 
 export const KEY_READ_WRITE_ACCESS = [...new Set([
