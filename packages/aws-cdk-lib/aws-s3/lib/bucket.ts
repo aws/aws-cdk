@@ -919,7 +919,7 @@ export abstract class BucketBase extends Resource implements IBucket {
       identity,
       ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
       [],
-      Lazy.string({ produce: () => this.arnForObjects('*') })
+      Lazy.string({ produce: () => this.arnForObjects('*') }),
     );
     result = result.combine(g1);
 
