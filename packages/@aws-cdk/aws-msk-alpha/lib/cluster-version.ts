@@ -13,6 +13,8 @@ export interface KafkaVersionFeatures {
 
 /**
  * Kafka cluster version
+ *
+ * @see https://docs.aws.amazon.com/msk/latest/developerguide/supported-kafka-versions.html
  */
 export class KafkaVersion {
   /**
@@ -210,6 +212,21 @@ export class KafkaVersion {
    * @see https://docs.aws.amazon.com/msk/latest/developerguide/metadata-management.html#kraft-intro
    */
   public static readonly V3_8_X_KRAFT = KafkaVersion.of('3.8.x.kraft', { tieredStorage: true });
+
+  /**
+   * Kafka version 3.9.x with ZooKeeper metadata mode support
+   *
+   * @see https://docs.aws.amazon.com/msk/latest/developerguide/metadata-management.html#msk-get-connection-string
+   */
+  public static readonly V3_9_X = KafkaVersion.of('3.9.x', { tieredStorage: true });
+
+  /**
+   * Kafka version 3.9.x with KRaft (Apache Kafka Raft) metadata mode support
+   *
+   * @see https://docs.aws.amazon.com/msk/latest/developerguide/metadata-management.html#kraft-intro
+   */
+  public static readonly V3_9_X_KRAFT = KafkaVersion.of('3.9.x.kraft', { tieredStorage: true });
+
   /**
    * Custom cluster version
    * @param version custom version number
