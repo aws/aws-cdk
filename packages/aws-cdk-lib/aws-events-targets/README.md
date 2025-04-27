@@ -659,7 +659,7 @@ const rule = new events.Rule(this, 'Rule', {
   schedule: events.Schedule.rate(cdk.Duration.hours(1)),
 });
 
-const role = new iam.Role(stack, 'Role', {
+const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
 });
 
