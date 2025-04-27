@@ -273,8 +273,9 @@ export interface IBucket extends IResource {
    *
    * @param identity The principal
    * @param props The properties of the replication source and destination buckets.
+   * @returns The `iam.Grant` object, which represents the grant of permissions.
    */
-  grantReplicationPermission(identity: iam.IGrantable, props: GrantReplicationPermissionProps): void;
+  grantReplicationPermission(identity: iam.IGrantable, props: GrantReplicationPermissionProps): iam.Grant;
 
   /**
    * Allows unrestricted access to objects from this bucket.
