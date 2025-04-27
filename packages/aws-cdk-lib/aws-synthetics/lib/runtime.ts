@@ -254,7 +254,7 @@ export class Runtime {
    * - Chromium version 131.0.6778.264
    *
    * New Features:
-   * - **Bug fixes** Bug fix related to date ranges and pending requests in HAR files.
+   * - **Bug fixes** The bug related to closing the browser that took excessively long is fixed.
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-10.0
    */
