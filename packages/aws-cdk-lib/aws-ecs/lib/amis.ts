@@ -39,6 +39,15 @@ export enum WindowsOptimizedVersion {
   SERVER_2022 = '2022',
   SERVER_2019 = '2019',
   SERVER_2016 = '2016',
+  SERVER_2022_CORE = '2022-Core',
+  SERVER_2019_CORE = '2019-Core',
+}
+
+/**
+ * The kernel version for Amazon Linux 2 ECS-optimized AMI.
+ */
+export enum AmiLinux2KernelVersion {
+  KERNEL_5_10 = '5.10',
 }
 
 const BR_IMAGE_SYMBOL = Symbol.for(
@@ -97,6 +106,13 @@ export interface EcsOptimizedAmiProps {
    * @default false
    */
   readonly cachedInContext?: boolean;
+
+  /**
+   * The kernel version to use for Amazon Linux 2.
+   *
+   * @default - undefined, uses the default kernel
+   */
+  readonly kernel?: AmiLinux2KernelVersion;
 }
 
 /*
@@ -140,16 +156,39 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
     }
 
     // set the SSM parameter name
-    this.amiParameterName = '/aws/service/'
-      + (this.windowsVersion ? 'ami-windows-latest/' : 'ecs/optimized-ami/')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 ? 'amazon-linux-2023/' : '')
-      + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
-      + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
-      + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
-      + (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '')
-      + (this.windowsVersion ? 'image_id' : 'recommended/image_id');
+    this.amiParameterName =
+      '/aws/service/' +
+      (this.windowsVersion ? 'ami-windows-latest/' : 'ecs/optimized-ami/') +
+      (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX
+        ? 'amazon-linux/'
+        : '') +
+      (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2
+        ? 'amazon-linux-2/'
+        : '') +
+      (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023
+        ? 'amazon-linux-2023/'
+        : '');
+
+    if (this.windowsVersion) {
+      // Check if this is a Core variant
+      const isCore = this.windowsVersion.toString().includes('Core');
+
+      // Extract the base version (e.g., '2022' from '2022-Core')
+      const baseVersion = isCore
+        ? this.windowsVersion.toString().split('-')[0]
+        : this.windowsVersion;
+
+      // Use 'English-Core' for Core variants, 'English-Full' for others
+      const editionType = isCore ? 'English-Core' : 'English-Full';
+
+      this.amiParameterName += `Windows_Server-${baseVersion}-${editionType}-ECS_Optimized/`;
+    }
+
+    this.amiParameterName +=
+      (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '') +
+      (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '') +
+      (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '') +
+      (this.windowsVersion ? 'image_id' : 'recommended/image_id');
 
     this.cachedInContext = props?.cachedInContext ?? false;
   }
@@ -216,12 +255,19 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    * Construct an Amazon Linux 2 image from the latest ECS Optimized AMI published in SSM
    *
    * @param hardwareType ECS-optimized AMI variant to use
+   * @param options Additional options
+   * @param kernel Kernel version to use
    */
-  public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD, options: EcsOptimizedImageOptions = {}): EcsOptimizedImage {
+  public static amazonLinux2(
+    hardwareType = AmiHardwareType.STANDARD,
+    options: EcsOptimizedImageOptions = {},
+    kernel?: AmiLinux2KernelVersion,
+  ): EcsOptimizedImage {
     return new EcsOptimizedImage({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
       hardwareType,
       cachedInContext: options.cachedInContext,
+      kernel,
     });
   }
 
@@ -269,17 +315,55 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     }
 
     // set the SSM parameter name
-    this.amiParameterName = '/aws/service/'
-      + (this.windowsVersion ? 'ami-windows-latest/' : 'ecs/optimized-ami/')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 ? 'amazon-linux-2023/' : '')
-      + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
-      + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
-      + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
-      + (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '')
-      + (this.windowsVersion ? 'image_id' : 'recommended/image_id');
+    let basePath = '/aws/service/';
 
+    if (this.windowsVersion) {
+      basePath += 'ami-windows-latest/';
+
+      // Check if this is a Core variant
+      const isCore = this.windowsVersion.toString().includes('Core');
+
+      // Extract the base version (e.g., '2022' from '2022-Core')
+      const baseVersion = isCore
+        ? this.windowsVersion.toString().split('-')[0]
+        : this.windowsVersion;
+
+      // Use 'English-Core' for Core variants, 'English-Full' for others
+      const editionType = isCore ? 'English-Core' : 'English-Full';
+
+      basePath += `Windows_Server-${baseVersion}-${editionType}-ECS_Optimized/`;
+      basePath += 'image_id';
+    } else {
+      basePath += 'ecs/optimized-ami/';
+
+      if (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX) {
+        basePath += 'amazon-linux/';
+      } else if (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2) {
+        basePath += 'amazon-linux-2/';
+
+        // Add kernel version for Amazon Linux 2 if specified
+        if (props.kernel) {
+          basePath += `kernel-${props.kernel}/`;
+        }
+      } else if (
+        this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023
+      ) {
+        basePath += 'amazon-linux-2023/';
+      }
+
+      // Add hardware type
+      if (this.hwType === AmiHardwareType.GPU) {
+        basePath += 'gpu/';
+      } else if (this.hwType === AmiHardwareType.ARM) {
+        basePath += 'arm64/';
+      } else if (this.hwType === AmiHardwareType.NEURON) {
+        basePath += 'inf/';
+      }
+
+      basePath += 'recommended/image_id';
+    }
+
+    this.amiParameterName = basePath;
     this.cachedInContext = props?.cachedInContext ?? false;
   }
 

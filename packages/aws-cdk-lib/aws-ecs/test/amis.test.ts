@@ -19,9 +19,151 @@ describe('amis', () => {
 
     // THEN
     const assembly = app.synth();
-    const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-    expect(Object.entries(parameters).some(
-      ([k, v]) => k.startsWith(ssmKey) && (v as any).Default.includes(`/bottlerocket/${variant}/x86_64/`),
-    )).toEqual(true);
+    const parameters = assembly.getStackByName(stack.stackName).template
+      .Parameters;
+    expect(
+      Object.entries(parameters).some(
+        ([k, v]) =>
+          k.startsWith(ssmKey) &&
+          (v as any).Default.includes(`/bottlerocket/${variant}/x86_64/`),
+      ),
+    ).toEqual(true);
+  });
+
+  test.each([
+    [ecs.WindowsOptimizedVersion.SERVER_2022_CORE, '2022', 'Core'],
+    [ecs.WindowsOptimizedVersion.SERVER_2019_CORE, '2019', 'Core'],
+  ])(
+    'Windows Server Core variants with %s',
+    (windowsVersion, baseVersion, editionType) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+
+      // WHEN
+      ecs.EcsOptimizedImage.windows(windowsVersion).getImage(stack);
+
+      // THEN
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template
+        .Parameters;
+      expect(
+        Object.entries(parameters).some(
+          ([k, v]) =>
+            k.startsWith('SsmParameterValue') &&
+            (v as any).Default.includes(
+              `/ami-windows-latest/Windows_Server-${baseVersion}-English-${editionType}-ECS_Optimized/`,
+            ),
+        ),
+      ).toEqual(true);
+    },
+  );
+
+  test('Amazon Linux 2 with kernel 5.10', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+
+    // WHEN
+    ecs.EcsOptimizedImage.amazonLinux2(
+      ecs.AmiHardwareType.STANDARD,
+      {},
+      ecs.AmiLinux2KernelVersion.KERNEL_5_10,
+    ).getImage(stack);
+
+    // THEN
+    const assembly = app.synth();
+    const parameters = assembly.getStackByName(stack.stackName).template
+      .Parameters;
+    expect(
+      Object.entries(parameters).some(
+        ([k, v]) =>
+          k.startsWith('SsmParameterValue') &&
+          (v as any).Default.includes(
+            '/ecs/optimized-ami/amazon-linux-2/kernel-5.10/',
+          ),
+      ),
+    ).toEqual(true);
+  });
+
+  test('Amazon Linux 2 ARM with kernel 5.10', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+
+    // WHEN
+    ecs.EcsOptimizedImage.amazonLinux2(
+      ecs.AmiHardwareType.ARM,
+      {},
+      ecs.AmiLinux2KernelVersion.KERNEL_5_10,
+    ).getImage(stack);
+
+    // THEN
+    const assembly = app.synth();
+    const parameters = assembly.getStackByName(stack.stackName).template
+      .Parameters;
+    expect(
+      Object.entries(parameters).some(
+        ([k, v]) =>
+          k.startsWith('SsmParameterValue') &&
+          (v as any).Default.includes(
+            '/ecs/optimized-ami/amazon-linux-2/kernel-5.10/arm64/',
+          ),
+      ),
+    ).toEqual(true);
+  });
+
+  test('Amazon Linux 2 GPU with kernel 5.10', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+
+    // WHEN
+    ecs.EcsOptimizedImage.amazonLinux2(
+      ecs.AmiHardwareType.GPU,
+      {},
+      ecs.AmiLinux2KernelVersion.KERNEL_5_10,
+    ).getImage(stack);
+
+    // THEN
+    const assembly = app.synth();
+    const parameters = assembly.getStackByName(stack.stackName).template
+      .Parameters;
+    expect(
+      Object.entries(parameters).some(
+        ([k, v]) =>
+          k.startsWith('SsmParameterValue') &&
+          (v as any).Default.includes(
+            '/ecs/optimized-ami/amazon-linux-2/kernel-5.10/gpu/',
+          ),
+      ),
+    ).toEqual(true);
+  });
+
+  test('Amazon Linux 2 Neuron with kernel 5.10', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+
+    // WHEN
+    ecs.EcsOptimizedImage.amazonLinux2(
+      ecs.AmiHardwareType.NEURON,
+      {},
+      ecs.AmiLinux2KernelVersion.KERNEL_5_10,
+    ).getImage(stack);
+
+    // THEN
+    const assembly = app.synth();
+    const parameters = assembly.getStackByName(stack.stackName).template
+      .Parameters;
+    expect(
+      Object.entries(parameters).some(
+        ([k, v]) =>
+          k.startsWith('SsmParameterValue') &&
+          (v as any).Default.includes(
+            '/ecs/optimized-ami/amazon-linux-2/kernel-5.10/inf/',
+          ),
+      ),
+    ).toEqual(true);
   });
 });
