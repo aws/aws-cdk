@@ -878,7 +878,7 @@ written to a file called `cdk.context.json`.
 You must commit this file to source control so that the lookup values are available in non-privileged
 environments such as CI build steps, and to ensure your template builds are repeatable.
 
-To customize the cache key, use the `additionalCacheKey` parameter.
+To customize the cache key, use the `additionalCacheKey` property of the `options` parameter.
 This allows you to have multiple lookups with the same parameters
 cache their values separately. This can be useful if you want to
 scope the context variable to a construct (ie, using `additionalCacheKey: this.node.path`),

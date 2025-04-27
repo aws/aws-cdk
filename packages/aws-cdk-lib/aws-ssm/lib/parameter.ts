@@ -458,6 +458,18 @@ export interface SecureStringParameterAttributes extends CommonStringParameterAt
 }
 
 /**
+ * Additional properties for looking up an existing StringParameter
+ */
+export interface StringParameterLookupOptions {
+  /**
+  * Adds an additional discriminator to the `cdk.context.json` cache key.
+  *
+  * @default - no additional cache key
+  */
+  readonly additionalCacheKey?: string;
+}
+
+/**
  * Creates a new String SSM Parameter.
  * @resource AWS::SSM::Parameter
  *
@@ -581,7 +593,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * if the SSM Parameter is not found in the account at synth time.
    */
 
-  public static valueFromLookup(scope: Construct, parameterName: string, defaultValue?: string, additionalCacheKey?: string): string {
+  public static valueFromLookup(scope: Construct, parameterName: string, defaultValue?: string, options?: StringParameterLookupOptions): string {
     const value = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: {
@@ -589,7 +601,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       },
       dummyValue: defaultValue || `dummy-value-for-${parameterName}`,
       mustExist: defaultValue === undefined,
-      additionalCacheKey,
+      additionalCacheKey: options?.additionalCacheKey,
     }).value;
 
     return value;

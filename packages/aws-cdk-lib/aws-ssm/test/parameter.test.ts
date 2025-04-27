@@ -766,7 +766,7 @@ test('fromLookup will use the SSM context provider to read value during synthesi
   const stack = new cdk.Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
 
   // WHEN
-  const value = ssm.StringParameter.valueFromLookup(stack, 'my-param-name', undefined, 'extraKey');
+  const value = ssm.StringParameter.valueFromLookup(stack, 'my-param-name', undefined, { additionalCacheKey: 'extraKey' });
 
   // THEN
   expect(value).toEqual('dummy-value-for-my-param-name');

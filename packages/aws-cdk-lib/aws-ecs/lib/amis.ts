@@ -161,6 +161,10 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
 
     this.cachedInContext = props?.cachedInContext ?? false;
     this.additionalCacheKey = props?.additionalCacheKey;
+
+    if (this.additionalCacheKey !== undefined && !this.cachedInContext) {
+      throw new Error('"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
+    }
   }
 
   /**
@@ -299,6 +303,10 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
 
     this.cachedInContext = props.cachedInContext ?? false;
     this.additionalCacheKey = props.additionalCacheKey;
+
+    if (this.additionalCacheKey !== undefined && !this.cachedInContext) {
+      throw new Error('"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
+    }
   }
 
   /**
@@ -423,6 +431,10 @@ export class BottleRocketImage implements ec2.IMachineImage {
 
     this.cachedInContext = props.cachedInContext ?? false;
     this.additionalCacheKey = props.additionalCacheKey;
+
+    if (this.additionalCacheKey !== undefined && !this.cachedInContext) {
+      throw new Error('"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
+    }
   }
 
   /**
@@ -447,6 +459,6 @@ Object.defineProperty(BottleRocketImage.prototype, BR_IMAGE_SYMBOL, {
 
 function lookupImage(scope: Construct, cachedInContext: boolean | undefined, parameterName: string, additionalCacheKey?: string) {
   return cachedInContext
-    ? ssm.StringParameter.valueFromLookup(scope, parameterName, undefined, additionalCacheKey)
+    ? ssm.StringParameter.valueFromLookup(scope, parameterName, undefined, { additionalCacheKey })
     : ssm.StringParameter.valueForTypedStringParameterV2(scope, parameterName, ssm.ParameterValueType.AWS_EC2_IMAGE_ID);
 }

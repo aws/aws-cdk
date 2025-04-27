@@ -369,22 +369,22 @@ export class SecurityGroup extends SecurityGroupBase {
    *
    * @deprecated Use `fromLookupById()` instead
    */
-  public static fromLookup(scope: Construct, id: string, securityGroupId: string, additionalCacheKey?: string) {
-    return this.fromLookupAttributes(scope, id, { securityGroupId, additionalCacheKey });
+  public static fromLookup(scope: Construct, id: string, securityGroupId: string, options?: BaseSecurityGroupLookupOptions) {
+    return this.fromLookupAttributes(scope, id, { securityGroupId, ...options });
   }
 
   /**
    * Look up a security group by id.
    */
-  public static fromLookupById(scope: Construct, id: string, securityGroupId: string, additionalCacheKey?: string) {
-    return this.fromLookupAttributes(scope, id, { securityGroupId, additionalCacheKey });
+  public static fromLookupById(scope: Construct, id: string, securityGroupId: string, options?: BaseSecurityGroupLookupOptions) {
+    return this.fromLookupAttributes(scope, id, { securityGroupId, ...options });
   }
 
   /**
    * Look up a security group by name.
    */
-  public static fromLookupByName(scope: Construct, id: string, securityGroupName: string, vpc: IVpc, additionalCacheKey?: string) {
-    return this.fromLookupAttributes(scope, id, { securityGroupName, vpc, additionalCacheKey });
+  public static fromLookupByName(scope: Construct, id: string, securityGroupName: string, vpc: IVpc, options?: BaseSecurityGroupLookupOptions) {
+    return this.fromLookupAttributes(scope, id, { securityGroupName, vpc, ...options });
   }
 
   /**
@@ -817,11 +817,23 @@ function isAllTrafficRule(rule: any) {
 }
 
 /**
+ * Base properties for looking up an existing SecurityGroup.
+ */
+export interface BaseSecurityGroupLookupOptions {
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
+}
+
+/**
  * Properties for looking up an existing SecurityGroup.
  *
  * Either `securityGroupName` or `securityGroupId` has to be specified.
  */
-interface SecurityGroupLookupOptions {
+interface SecurityGroupLookupOptions extends BaseSecurityGroupLookupOptions {
   /**
    * The name of the security group
    *
