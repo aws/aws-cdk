@@ -40,7 +40,7 @@ const inlineAsset = new Canary(stack, 'InlineAsset', {
   }),
   schedule: Schedule.rate(cdk.Duration.minutes(1)),
   artifactsBucketLocation: { bucket, prefix },
-  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
   cleanup: Cleanup.LAMBDA,
 });
 
@@ -49,7 +49,7 @@ const directoryAsset = new Canary(stack, 'DirectoryAsset', {
     handler: 'canary.handler',
     code: Code.fromAsset(path.join(__dirname, 'canaries')),
   }),
-  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
   environmentVariables: {
     URL: api.url,
   },
@@ -61,7 +61,7 @@ const folderAsset = new Canary(stack, 'FolderAsset', {
     handler: 'folder/canary.functionName',
     code: Code.fromAsset(path.join(__dirname, 'canaries')),
   }),
-  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
   environmentVariables: {
     URL: api.url,
   },
@@ -78,7 +78,7 @@ const zipAsset = new Canary(stack, 'ZipAsset', {
       expiration: cdk.Duration.days(30),
     },
   ],
-  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
   cleanup: Cleanup.LAMBDA,
 });
 
@@ -102,6 +102,8 @@ const puppeteer70 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_7
 const puppeteer80 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0);
 const puppeteer90 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_0);
 const puppeteer91 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1);
+const puppeteer10 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0);
+
 const playwright10 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0);
 const playwright10_with_handler_name = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0, 'playwright/canary.handler');
 
@@ -126,6 +128,7 @@ const test = new IntegTest(app, 'IntegCanaryTest', {
   puppeteer80,
   puppeteer90,
   puppeteer91,
+  puppeteer10,
   playwright10,
   playwright10_with_handler_name,
   selenium21,
