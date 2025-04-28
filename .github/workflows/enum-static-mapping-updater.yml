@@ -53,7 +53,7 @@ jobs:
 
           git add .  # Add all files changed
           git commit -m "chore: update enum static mapping"
-          git push origin "$branchName"
+          git push -f origin "$branchName"
 
           gh pr create --title "chore: update enum static mapping" \
            --body "This PR updates the CDK enum mapping file." \
