@@ -317,9 +317,9 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     Tags.of(subnet).add(NAME_TAG, overridenSubnetNameTag, { includeResourceTypes });
     Tags.of(subnet).add(SUBNETTYPE_TAG, defaultSubnetName(props.subnetType), { includeResourceTypes });
 
-    if (props.vpc.vpcName) {
-      Tags.of(subnet).add(VPCNAME_TAG, props.vpc.vpcName);
-    }
+    // if (props.vpc.vpcName) {
+    //   Tags.of(subnet).add(VPCNAME_TAG, props.vpc.vpcName);
+    // }
 
     if (props.routeTable) {
       this._routeTable = props.routeTable;
