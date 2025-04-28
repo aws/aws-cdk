@@ -10,55 +10,70 @@ describe('CidrRoutingConfig', () => {
     expect(config.locationName).toBe('valid-location');
   });
 
-  test('throws error with invalid collectionId format', () => {
-    expect(() => {
-      new CidrRoutingConfig('invalid-uuid', 'valid-location');
-    }).toThrow('collectionId is required and must be a valid UUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (8-4-4-4-12 digits)');
+  describe('accepts valid locationName with asterisk/underscore', () => {
+    test.each([
+      {
+        name: 'asterisk',
+        locationName: 'valid*location',
+        expected: 'valid*location'
+      },
+      {
+        name: 'underscore',
+        locationName: 'valid_location',
+        expected: 'valid_location'
+      }
+    ])('$name', ({ locationName, expected }) => {
+      const config = new CidrRoutingConfig(
+        '12345678-1234-1234-1234-123456789012',
+        locationName
+      );
+      expect(config.collectionId).toBe('12345678-1234-1234-1234-123456789012');
+      expect(config.locationName).toBe(expected);
+    });
   });
 
-  test('throws error with invalid locationName format', () => {
-    expect(() => {
-      new CidrRoutingConfig('12345678-1234-1234-1234-123456789012', 'invalid@location');
-    }).toThrow('locationName is required and must be 1-16 characters long, containing only letters, numbers, underscores, hyphens, or asterisks');
-  });
-
-  test('throws error with empty collectionId', () => {
-    expect(() => {
-      new CidrRoutingConfig('', 'valid-location');
-    }).toThrow('collectionId is required and must be a valid UUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (8-4-4-4-12 digits)');
-  });
-
-  test('throws error with empty locationName', () => {
-    expect(() => {
-      new CidrRoutingConfig('12345678-1234-1234-1234-123456789012', '');
-    }).toThrow('locationName is required and must be 1-16 characters long, containing only letters, numbers, underscores, hyphens, or asterisks');
-  });
-
-  test('throws error with null collectionId', () => {
-    expect(() => {
-      new CidrRoutingConfig(null as any, 'valid-location');
-    }).toThrow('collectionId is required and must be a valid UUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (8-4-4-4-12 digits)');
-  });
-
-  test('throws error with null locationName', () => {
-    expect(() => {
-      new CidrRoutingConfig('12345678-1234-1234-1234-123456789012', null as any);
-    }).toThrow('locationName is required and must be 1-16 characters long, containing only letters, numbers, underscores, hyphens, or asterisks');
-  });
-
-  test('accepts valid locationName with asterisk', () => {
-    const config = new CidrRoutingConfig(
-      '12345678-1234-1234-1234-123456789012',
-      'valid*location'
-    );
-    expect(config.locationName).toBe('valid*location');
-  });
-
-  test('accepts valid locationName with underscore', () => {
-    const config = new CidrRoutingConfig(
-      '12345678-1234-1234-1234-123456789012',
-      'valid_location'
-    );
-    expect(config.locationName).toBe('valid_location');
+  describe('throws error with invalid parameters', () => {
+    test.each([
+      {
+        name: 'invalid collectionId format',
+        collectionId: 'invalid-uuid',
+        locationName: 'valid-location',
+        expectedError: 'collectionId is required and must be a valid UUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (8-4-4-4-12 digits)'
+      },
+      {
+        name: 'invalid locationName format',
+        collectionId: '12345678-1234-1234-1234-123456789012',
+        locationName: 'invalid@location',
+        expectedError: 'locationName is required and must be 1-16 characters long, containing only letters, numbers, underscores, hyphens, or asterisks'
+      },
+      {
+        name: 'empty collectionId',
+        collectionId: '',
+        locationName: 'valid-location',
+        expectedError: 'collectionId is required and must be a valid UUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (8-4-4-4-12 digits)'
+      },
+      {
+        name: 'empty locationName',
+        collectionId: '12345678-1234-1234-1234-123456789012',
+        locationName: '',
+        expectedError: 'locationName is required and must be 1-16 characters long, containing only letters, numbers, underscores, hyphens, or asterisks'
+      },
+      {
+        name: 'null collectionId',
+        collectionId: null as any,
+        locationName: 'valid-location',
+        expectedError: 'collectionId is required and must be a valid UUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (8-4-4-4-12 digits)'
+      },
+      {
+        name: 'null locationName',
+        collectionId: '12345678-1234-1234-1234-123456789012',
+        locationName: null as any,
+        expectedError: 'locationName is required and must be 1-16 characters long, containing only letters, numbers, underscores, hyphens, or asterisks'
+      }
+    ])('$name', ({ collectionId, locationName, expectedError }) => {
+      expect(() => {
+        new CidrRoutingConfig(collectionId, locationName);
+      }).toThrow(expectedError);
+    });
   });
 });
