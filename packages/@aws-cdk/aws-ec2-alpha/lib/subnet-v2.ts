@@ -367,7 +367,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
   /**
    * Return the Route Table associated with this subnet
    */
-  public get routeTable(): IRouteTable {
+  public get routeTable(): RouteTable {
     return this._routeTable;
   }
 
