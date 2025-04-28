@@ -145,6 +145,10 @@ export enum VpcEndpointDnsRecordIpType {
    * The IP address type must be Dualstack.
    */
   SERVICE_DEFINED = 'service-defined',
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  NOT_SPECIFIED = 'not-specified',
 }
 
 /**
