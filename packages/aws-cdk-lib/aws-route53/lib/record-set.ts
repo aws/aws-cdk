@@ -11,6 +11,7 @@ import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
 import { DeleteExistingRecordSetProvider } from '../../custom-resource-handlers/dist/aws-route53/delete-existing-record-set-provider.generated';
+import { CidrRoutingConfig } from './cidr-routing-config';
 
 const CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE = 'Custom::CrossAccountZoneDelegation';
 const DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE = 'Custom::DeleteExistingRecordSet';
@@ -276,6 +277,16 @@ export interface RecordSetOptions {
    * @default - No health check configured
    */
   readonly healthCheck?: IHealthCheck;
+
+  /**
+   * The object that is specified in resource record set object when you are linking a resource record set to a CIDR location.
+   * 
+   * A LocationName with an asterisk “*” can be used to create a default CIDR record. CollectionId is still required for default record.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53-recordset.html#cfn-route53-recordset-cidrroutingconfig
+   * @default - No CIDR routing configured
+   */
+  readonly cidrRoutingConfig?: CidrRoutingConfig;
 }
 
 /**
@@ -393,6 +404,7 @@ export class RecordSet extends Resource implements IRecordSet {
       weight: props.weight,
       region: props.region,
       healthCheckId: props.healthCheck?.healthCheckId,
+      cidrRoutingConfig: props.cidrRoutingConfig,
     });
 
     this.domainName = recordSet.ref;
