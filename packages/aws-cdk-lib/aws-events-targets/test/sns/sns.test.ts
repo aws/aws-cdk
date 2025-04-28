@@ -46,6 +46,7 @@ test('sns topic as an event rule target', () => {
     ],
   });
 
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [{
@@ -57,6 +58,7 @@ test('sns topic as an event rule target', () => {
     },
   });
 
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 1);
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [{
@@ -180,3 +182,66 @@ test('role is explicitly passed', () => {
     },
   });
 });
+
+test('multiple topics as targets for a single event rule results in a single role and policy', () => {
+  // GIVEN
+  const stack = new Stack();
+  const topicA = new sns.Topic(stack, 'MyTopicA');
+  const topicB = new sns.Topic(stack, 'MyTopicB');
+  const rule = new events.Rule(stack, 'MyRule', {
+    schedule: events.Schedule.rate(Duration.hours(1)),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.SnsTopic(topicA));
+  rule.addTarget(new targets.SnsTopic(topicB));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: { Ref: 'MyTopicA5E3E2E83' },
+        Id: 'Target0',
+        RoleArn: { 'Fn::GetAtt': ['MyRuleEventsRoleF186CAE5', 'Arn'] },
+      },
+      {
+        Arn: { Ref: 'MyTopicBE570F033' },
+        Id: 'Target1',
+        RoleArn: { 'Fn::GetAtt': ['MyRuleEventsRoleF186CAE5', 'Arn'] },
+      },
+    ],
+  });
+
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [{
+        Action: 'sts:AssumeRole',
+        Effect: 'Allow',
+        Principal: { Service: 'events.amazonaws.com' },
+      }],
+      Version: '2012-10-17',
+    },
+  });
+
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 1);
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'sns:Publish',
+          Effect: 'Allow',
+          Resource: { Ref: 'MyTopicA5E3E2E83' },
+        },
+        {
+          Action: 'sns:Publish',
+          Effect: 'Allow',
+          Resource: { Ref: 'MyTopicBE570F033' },
+        },
+      ],
+    },
+  });
+},
+);
