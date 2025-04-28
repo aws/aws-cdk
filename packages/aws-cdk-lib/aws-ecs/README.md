@@ -290,6 +290,26 @@ cluster.addCapacity('graviton-cluster', {
 });
 ```
 
+### Amazon Linux 2 Kernel Versions
+
+You can specify a specific kernel version for your Amazon Linux 2 ECS-optimized AMI using the `AmiLinux2KernelVersion` enum.
+
+```ts
+declare const cluster: ecs.Cluster;
+
+cluster.addCapacity('al2-kernel-5.10-cluster', {
+  minCapacity: 2,
+  instanceType: new ec2.InstanceType('c5.large'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(
+    ecs.AmiHardwareType.STANDARD,
+    {},
+    ecs.AmiLinux2KernelVersion.KERNEL_5_10
+  ),
+});
+```
+
+This is particularly useful when you need to ensure your ECS tasks run on instances with a specific kernel version for compatibility or feature requirements.
+
 ### Amazon Linux 2 (Neuron) Instances
 
 To launch Amazon EC2 Inf1, Trn1 or Inf2 instances, you can use the Amazon ECS optimized Amazon Linux 2 (Neuron) AMI. It comes pre-configured with AWS Inferentia and AWS Trainium drivers and the AWS Neuron runtime for Docker which makes running machine learning inference workloads easier on Amazon ECS.

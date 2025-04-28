@@ -47,6 +47,9 @@ export enum WindowsOptimizedVersion {
  * The kernel version for Amazon Linux 2 ECS-optimized AMI.
  */
 export enum AmiLinux2KernelVersion {
+  /**
+   * Kernel version 5.10
+   */
   KERNEL_5_10 = '5.10',
 }
 
