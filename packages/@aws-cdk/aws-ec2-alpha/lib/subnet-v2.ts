@@ -310,7 +310,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
 
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
 
-    props.subnetName ? Tags.of(this).add(SUBNETNAME_TAG, props.subnetName) : Tags.of(this).add(NAME_TAG, subnet.node.path);
+    props.subnetName ? Tags.of(subnet).add(SUBNETNAME_TAG, props.subnetName) : Tags.of(subnet).add(NAME_TAG, subnet.node.path);
 
     const includeResourceTypes = [CfnSubnet.CFN_RESOURCE_TYPE_NAME];
     const overridenSubnetNameTag = props.vpc.node.path + props.subnetName + 'Subnet';
