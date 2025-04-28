@@ -1,8 +1,8 @@
 name: CDK Enums Auto Updater
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * 1'
+  schedule: # Runs every Monday at 1pm PT
+    - cron: '0 13 * * 1'
 
 jobs:
   update-l2-enums:
@@ -25,11 +25,6 @@ jobs:
       - name: Install dependencies
         run: cd tools/@aws-cdk/enum-updater && yarn install --frozen-lockfile && yarn build
 
-      - name: Update enum static mapping
-        run: |
-          cd tools/@aws-cdk/enum-updater
-          ./bin/update-static-enum-mapping
-
       - name: Check for changes
         id: static-mapping-check
         run: |
@@ -39,29 +34,6 @@ jobs:
           else
             echo "changes=false" >> $GITHUB_OUTPUT
           fi
-      
-      - name: Create PR for static mapping changes
-        if: steps.static-mapping-check.outputs.changes == 'true'
-        run: |
-          cd tools/@aws-cdk/enum-updater
-          git config --global user.name 'aws-cdk-automation'
-          git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
-
-          # Create a new branch for the module
-          branchName="enum-update/static-mapping-update"
-          git checkout -b "$branchName"
-
-          git add .  # Add all files changed
-          git commit -m "chore: update enum static mapping"
-          git push origin "$branchName"
-
-          gh pr create --title "chore: update enum static mapping" \
-           --body "This PR updates the CDK enum mapping file." \
-           --base main \
-           --head "$branchName" \
-           --label "contribution/core,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Identify Missing Values and Apply Code Changes
         run: |
@@ -83,8 +55,16 @@ jobs:
           # Iterate through each module directory that has changes
           git config --global user.name 'aws-cdk-automation'
           git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
+
+          # Store the original branch name
+          original_branch=$(git rev-parse --abbrev-ref HEAD)
+
           for module in $(git diff --name-only | grep -E '^packages/(@aws-cdk|aws-cdk-lib)/.*' | sed -E 's|^packages/(@aws-cdk\|aws-cdk-lib)/([^/]+).*|\2|' | sort -u); do
             moduleName=$(basename $module)
+
+            # Reset to clean state
+            git reset --hard HEAD
+            git clean -fd
                         
             # Determine the correct path for the module
             if [[ -d "packages/aws-cdk-lib/$module" ]]; then
@@ -105,21 +85,30 @@ jobs:
               gh pr close "$prExists" --confirm  # Close the PR by its number
             fi
           
-            # Create a new branch for the module
+            # Create/switch to branch for the module
             branchName="enum-update/${moduleName#aws-}"
-            git checkout -b "$branchName"
+            git checkout -B "$branchName" $original_branch  # -B forces branch creation/reset
+
+            # Re-run the update script for this specific module
+            cd tools/@aws-cdk/enum-updater
+            ./bin/update-missing-enums
+            cd ../../..
             
             # Stage, commit, and push changes for the module
             git add "$modulePath"  # Using the correct path
             git commit -m "chore(${moduleName#aws-}): add new enum values for ${moduleName#aws-}"
             git push origin "$branchName"
           
-          # Create a new pull request
-          gh pr create --title "chore(${moduleName#aws-}): add new enum values for ${moduleName#aws-}" \
-           --body "This PR updates the enum values for ${moduleName#aws-}." \
-           --base main \
-           --head "$branchName" \
-           --label "contribution/core,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test"
+            # Create a new pull request
+            gh pr create --title "chore(${moduleName#aws-}): add new enum values for ${moduleName#aws-}" \
+            --body "This PR updates the enum values for ${moduleName#aws-}." \
+            --base main \
+            --head "$branchName" \
+            --label "contribution/core,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test"
+
+            # Return to original branch
+            git checkout $original_branch
+
           done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
