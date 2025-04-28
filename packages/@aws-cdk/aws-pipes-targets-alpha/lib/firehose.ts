@@ -19,24 +19,24 @@ export interface FirehoseTargetParameters {
  * An EventBridge Pipes target that sends messages to an Amazon Data Firehose delivery stream.
  */
 export class FirehoseTarget implements ITarget {
-  private stream: IDeliveryStream;
-  private streamParameters: FirehoseTargetParameters;
+  private deliveryStream: IDeliveryStream;
+  private deliveryStreamParameters: FirehoseTargetParameters;
   public readonly targetArn: string;
 
-  constructor(stream: IDeliveryStream, parameters: FirehoseTargetParameters = {}) {
-    this.stream = stream;
-    this.targetArn = stream.deliveryStreamArn;
-    this.streamParameters = parameters;
+  constructor(deliveryStream: IDeliveryStream, parameters: FirehoseTargetParameters = {}) {
+    this.deliveryStream = deliveryStream;
+    this.targetArn = deliveryStream.deliveryStreamArn;
+    this.deliveryStreamParameters = parameters;
   }
 
   grantPush(grantee: IRole): void {
-    this.stream.grantPutRecords(grantee);
+    this.deliveryStream.grantPutRecords(grantee);
   }
 
   bind(pipe: IPipe): TargetConfig {
     return {
       targetParameters: {
-        inputTemplate: this.streamParameters.inputTransformation?.bind(pipe).inputTemplate,
+        inputTemplate: this.deliveryStreamParameters.inputTransformation?.bind(pipe).inputTemplate,
       },
     };
   }

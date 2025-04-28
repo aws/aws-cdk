@@ -189,27 +189,27 @@ The delivery stream will receive the (enriched/filtered) source payload.
 declare const sourceQueue: sqs.Queue;
 declare const targetDeliveryStream: firehose.DeliveryStream;
 
-const streamTarget = new targets.FirehoseTarget(targetDeliveryStream);
+const deliveryStreamTarget = new targets.FirehoseTarget(targetDeliveryStream);
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
   source: new SqsSource(sourceQueue),
-  target: streamTarget,
+  target: deliveryStreamTarget,
 });
 ```
 
-The input to the target data stream can be transformed:
+The input to the target delivery stream can be transformed:
 
 ```ts
 declare const sourceQueue: sqs.Queue;
 declare const targetDeliveryStream: firehose.DeliveryStream;
 
-const streamTarget = new targets.FirehoseTarget(targetDeliveryStream, {
+const deliveryStreamTarget = new targets.FirehoseTarget(targetDeliveryStream, {
   inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
 });
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
   source: new SqsSource(sourceQueue),
-  target: streamTarget,
+  target: deliveryStreamTarget,
 });
 ```
 

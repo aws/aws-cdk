@@ -14,7 +14,7 @@ const bucket = new s3.Bucket(stack, 'Bucket', {
   autoDeleteObjects: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
-const targetStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
+const targetDeliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
   destination: new firehose.S3Bucket(bucket, {
     loggingConfig: new firehose.DisableLogging(),
     bufferingInterval: cdk.Duration.seconds(30),
@@ -42,7 +42,7 @@ class TestSource implements ISource {
 
 new Pipe(stack, 'Pipe', {
   source: new TestSource(sourceQueue),
-  target: new FirehoseTarget(targetStream),
+  target: new FirehoseTarget(targetDeliveryStream),
 });
 
 const integTest = new IntegTest(app, 'integtest-pipe-target-firehose', {

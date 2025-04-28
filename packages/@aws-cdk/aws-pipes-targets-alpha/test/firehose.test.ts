@@ -12,11 +12,11 @@ describe('Firehose', () => {
     const app = new App();
     const stack = new Stack(app, 'TestStack');
     const bucket = new Bucket(stack, 'Bucket');
-    const stream = new DeliveryStream(stack, 'MyStream', {
+    const deliveryStream = new DeliveryStream(stack, 'MyDeliveryStream', {
       destination: new S3Bucket(bucket),
     });
 
-    const target = new FirehoseTarget(stream);
+    const target = new FirehoseTarget(deliveryStream);
 
     new Pipe(stack, 'MyPipe', {
       source: new TestSource(),
@@ -30,7 +30,7 @@ describe('Firehose', () => {
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Target: {
         'Fn::GetAtt': [
-          'MyStream5C050E93',
+          'MyDeliveryStream79822137',
           'Arn',
         ],
       },
@@ -42,14 +42,14 @@ describe('Firehose', () => {
     const app = new App();
     const stack = new Stack(app, 'TestStack');
     const bucket = new Bucket(stack, 'Bucket');
-    const stream = new DeliveryStream(stack, 'MyStream', {
+    const deliveryStream = new DeliveryStream(stack, 'MyDeliveryStream', {
       destination: new S3Bucket(bucket),
     });
 
     const inputTransformation = InputTransformation.fromObject({
       key: 'value',
     });
-    const target = new FirehoseTarget(stream, {
+    const target = new FirehoseTarget(deliveryStream, {
       inputTransformation,
     });
 
@@ -74,11 +74,11 @@ describe('Firehose', () => {
     const app = new App();
     const stack = new Stack(app, 'TestStack');
     const bucket = new Bucket(stack, 'Bucket');
-    const stream = new DeliveryStream(stack, 'MyStream', {
+    const deliveryStream = new DeliveryStream(stack, 'MyDeliveryStream', {
       destination: new S3Bucket(bucket),
     });
 
-    const target = new FirehoseTarget(stream);
+    const target = new FirehoseTarget(deliveryStream);
 
     new Pipe(stack, 'MyPipe', {
       source: new TestSource(),
@@ -94,7 +94,7 @@ describe('Firehose', () => {
         Statement: [
           {
             Action: ['firehose:PutRecord', 'firehose:PutRecordBatch'],
-            Resource: { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] },
+            Resource: { 'Fn::GetAtt': ['MyDeliveryStream79822137', 'Arn'] },
           },
         ],
       },
