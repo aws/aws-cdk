@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.192.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.191.0-alpha.0...v2.192.0-alpha.0) (2025-04-24)
+
+
+### Features
+
+* **applicationsignals-alpha:** introduce Application Signals L2 constructs ([#32931](https://github.com/aws/aws-cdk/issues/32931)) ([e7a6e14](https://github.com/aws/aws-cdk/commit/e7a6e14d7c3ddfbff8b1fd3f583abeefeed1258a))
+
 ## [2.191.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.190.0-alpha.0...v2.191.0-alpha.0) (2025-04-22)
 
 
