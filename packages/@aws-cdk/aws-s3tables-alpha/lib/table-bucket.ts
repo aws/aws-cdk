@@ -231,7 +231,7 @@ abstract class TableBucketBase extends Resource implements ITableBucket {
     return this.grant(
       identity,
       perms.TABLE_BUCKET_WRITE_ACCESS,
-      perms.KEY_WRITE_ACCESS,
+      perms.KEY_READ_WRITE_ACCESS,
       this.tableBucketArn,
       this.getTableArn(tableId),
     );
@@ -426,7 +426,7 @@ export class TableBucket extends TableBucketBase {
       public readonly tableBucketPolicy?: TableBucketPolicy;
       public readonly region = region;
       public readonly account = account;
-      public readonly encryptionKey?: kms.IKey | undefined;
+      public readonly encryptionKey?: kms.IKey = attrs.encryptionKey;
       protected autoCreatePolicy: boolean = false;
 
       /**
@@ -662,7 +662,7 @@ export class TableBucket extends TableBucketBase {
         throw new UnscopedValidationError('Expected encryption = `KMS` with user provided encryption key');
       }
     }
-    throw new UnscopedValidationError('Expected encryption = `KMS` with user provided encryption key');
+    throw new UnscopedValidationError(`Unknown encryption configuration detected: ${props.encryption} with key ${props.encryptionKey}`);
   }
 
   /**
