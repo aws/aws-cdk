@@ -360,7 +360,7 @@ export class RecordSet extends Resource implements IRecordSet {
     if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
       throw new ValidationError(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`, this);
     }
-    if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer) {
+    if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer && !props.cidrRoutingConfig) {
       throw new ValidationError('setIdentifier can only be specified for non-simple routing policies', this);
     }
     if (props.multiValueAnswer && props.target.aliasTarget) {
@@ -372,6 +372,7 @@ export class RecordSet extends Resource implements IRecordSet {
       props.region,
       props.weight,
       props.multiValueAnswer,
+      props.cidrRoutingConfig,
     ].filter((variable) => variable !== undefined).length;
     if (nonSimpleRoutingPolicies > 1) {
       throw new ValidationError('Only one of region, weight, multiValueAnswer or geoLocation can be defined', this);
