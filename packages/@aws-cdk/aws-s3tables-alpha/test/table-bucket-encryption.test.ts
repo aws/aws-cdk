@@ -24,7 +24,7 @@ const RESOURCES_WITH_WILDCARD = getResourcesWithTablesArn('*');
 /* Allow quotes in the object keys used for CloudFormation template assertions */
 /* eslint-disable quote-props */
 
-describe('TableBucket is created', () => {
+describe('TableBucket with encryption', () => {
   let stack: core.Stack;
   let tableBucket: s3tables.TableBucket;
   let role: iam.Role;
