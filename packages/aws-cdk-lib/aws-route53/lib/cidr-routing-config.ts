@@ -1,5 +1,10 @@
 import { UnscopedValidationError } from "../../core";
 
+/**
+ * Configuration for CIDR routing in Route 53 resource record set objects.
+ * 
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53-recordset.html#cfn-route53-recordset-cidrroutingconfig
+ */
 export class CidrRoutingConfig {
   /**
    * The CIDR collection ID.
