@@ -1,6 +1,22 @@
 /* eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
 
-import { ISubnet } from 'aws-cdk-lib/aws-ec2';
+import { ISubnet, SubnetType } from 'aws-cdk-lib/aws-ec2';
+
+/**
+ * The default names for every subnet type
+ */
+export function defaultSubnetName(type: SubnetType) {
+  switch (type) {
+    case SubnetType.PUBLIC: return 'Public';
+    case SubnetType.PRIVATE_WITH_NAT:
+    case SubnetType.PRIVATE_WITH_EGRESS:
+    case SubnetType.PRIVATE:
+      return 'Private';
+    case SubnetType.PRIVATE_ISOLATED:
+    case SubnetType.ISOLATED:
+      return 'Isolated';
+  }
+}
 
 /**
  * Return a subnet name from its construct ID

@@ -2,10 +2,9 @@ import { Resource, Names, Lazy, Tags, Token, ValidationError, UnscopedValidation
 import { CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
-import { CidrBlock, CidrBlockIpv6 } from './util';
+import { CidrBlock, CidrBlockIpv6, defaultSubnetName } from './util';
 import { RouteTable } from './route';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { defaultSubnetName } from 'aws-cdk-lib/aws-ec2/lib/util';
 
 /**
  * Interface to define subnet CIDR
@@ -73,7 +72,7 @@ export interface SubnetV2Props {
    *
    * @default - a default route table created
    */
-  readonly routeTable?: IRouteTable;
+  readonly routeTable?: RouteTable;
 
   /**
    * The type of Subnet to configure.
@@ -245,7 +244,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
 
   private _networkAcl: INetworkAcl;
 
-  private _routeTable: IRouteTable;
+  private _routeTable: RouteTable;
 
   /**
    * Constructs a new SubnetV2 instance.
@@ -311,11 +310,12 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
 
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
 
-    props.subnetName ? Tags.of(this).add(NAME_TAG, props.subnetName) : Tags.of(this).add(NAME_TAG, subnet.node.path);
+    props.subnetName ? Tags.of(this).add(SUBNETNAME_TAG, props.subnetName) : Tags.of(this).add(NAME_TAG, subnet.node.path);
 
     const includeResourceTypes = [CfnSubnet.CFN_RESOURCE_TYPE_NAME];
-    Tags.of(this).add(SUBNETNAME_TAG, defaultSubnetName(props.subnetType), { includeResourceTypes });
-    Tags.of(subnet).add(SUBNETTYPE_TAG, subnetConfig(props.subnetType), { includeResourceTypes });
+    const overridenSubnetNameTag = props.vpc.node.path + props.subnetName + 'Subnet';
+    Tags.of(this).add(NAME_TAG, overridenSubnetNameTag, { includeResourceTypes });
+    Tags.of(subnet).add(SUBNETTYPE_TAG, defaultSubnetName(props.subnetType), { includeResourceTypes });
 
     if (props.vpc.vpcName) {
       Tags.of(this).add(VPCNAME_TAG, props.vpc.vpcName);
@@ -601,15 +601,4 @@ function validateOverlappingCidrRangesipv6(vpc: IVpcV2, ipv6CidrBlock: string): 
   }
 
   return result;
-}
-
-function subnetConfig(subnetType: SubnetType) {
-  if (subnetType === SubnetType.PUBLIC) {
-    return 'public';
-  } else if (subnetType === SubnetType.PRIVATE_WITH_EGRESS ||
-             subnetType === SubnetType.PRIVATE_WITH_NAT) {
-    return 'private';
-  } else {
-    return 'isolated';
-  }
 }

@@ -298,6 +298,10 @@ export class InternetGateway extends Resource implements IRouteTarget {
       Tags.of(this).add(NAME_TAG, props.internetGatewayName);
     }
 
+    if (props.vpc.vpcName) {
+      Tags.of(this).add('Name', props.vpc.vpcName);
+    }
+
     new CfnVPCGatewayAttachment(this, 'GWAttachment', {
       vpcId: this.vpcId,
       internetGatewayId: this.routerTargetId,
@@ -428,6 +432,11 @@ export class NatGateway extends Resource implements IRouteTarget {
    */
   public readonly resource: CfnNatGateway;
 
+  /**
+   * Elastic IP created for allocation
+   */
+  public readonly eip?: CfnEIP;
+
   constructor(scope: Construct, id: string, props: NatGatewayProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
@@ -452,10 +461,10 @@ export class NatGateway extends Resource implements IRouteTarget {
     var aId: string | undefined;
     if (this.connectivityType === NatConnectivityType.PUBLIC) {
       if (!props.allocationId) {
-        let eip = new CfnEIP(this, 'EIP', {
+        this.eip = new CfnEIP(this, 'EIP', {
           domain: 'vpc',
         });
-        aId = eip.attrAllocationId;
+        aId = this.eip.attrAllocationId;
       } else {
         aId = props.allocationId;
       }
@@ -469,12 +478,15 @@ export class NatGateway extends Resource implements IRouteTarget {
       ...props,
     });
     FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
-      this.natGatewayId = this.resource.ref :this.natGatewayId = this.resource.attrNatGatewayId;
+      this.natGatewayId = this.resource.ref : this.natGatewayId = this.resource.attrNatGatewayId;
 
     Tags.of(this).add('Name', props.subnet.node.path);
-    this.routerTargetId = this.resource.attrNatGatewayId;
+
+    FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
+      this.routerTargetId = this.resource.ref : this.routerTargetId = this.resource.attrNatGatewayId;
+
     this.node.defaultChild = this.resource;
-    this.node.addDependency(props.subnet.internetConnectivityEstablished);
+    this.resource.node.addDependency(props.subnet.internetConnectivityEstablished);
   }
 }
 
