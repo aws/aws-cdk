@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.192.0](https://github.com/aws/aws-cdk/compare/v2.191.0...v2.192.0) (2025-04-24)
+
+
+### Features
+
+* **apigateway:** add `mode` property for `SpecRestApi` ([#34198](https://github.com/aws/aws-cdk/issues/34198)) ([feadd8c](https://github.com/aws/aws-cdk/commit/feadd8c79b9857b65453bea5e8519cdfa218ed46))
+* **events:** `Rule` support role ([#33779](https://github.com/aws/aws-cdk/issues/33779)) ([9e4c9a9](https://github.com/aws/aws-cdk/commit/9e4c9a9f886354edd0c01b94a8cdae205fbe8f5a)), closes [#33722](https://github.com/aws/aws-cdk/issues/33722)
+* **iam:** support `Role.fromLookup()` method ([#33603](https://github.com/aws/aws-cdk/issues/33603)) ([9e3cbf6](https://github.com/aws/aws-cdk/commit/9e3cbf65f71ddcf98c79f9a20a7e82ae8bf4d7da)), closes [#33602](https://github.com/aws/aws-cdk/issues/33602)
+* **rds:** add support for SQL Server engine versions 15.00.4430.1.v1 and 16.00.4185.3.v1 ([#34175](https://github.com/aws/aws-cdk/issues/34175)) ([63f09f1](https://github.com/aws/aws-cdk/commit/63f09f1c713f08a814bfa0c378f1c3c29f5b5669))
+* **ses:** add fromEmailIdentityArn ([#33984](https://github.com/aws/aws-cdk/issues/33984)) ([72ee4a7](https://github.com/aws/aws-cdk/commit/72ee4a78829b3c35d0adf488f0eef86fc06e9a8f)), closes [#33981](https://github.com/aws/aws-cdk/issues/33981)
+
+
+### Bug Fixes
+
+* **eks:** update aws-node-termination-handler chart version ([#34218](https://github.com/aws/aws-cdk/issues/34218)) ([3380742](https://github.com/aws/aws-cdk/commit/3380742ce6aa9ec929cbe842aa27855f6cc93b0f)), closes [/github.com/aws/aws-cdk/blob/58c2631de585b300cf8573ab423dcc75791cc3d2/packages/aws-cdk-lib/aws-eks/lib/cluster.ts#L1184-L1188](https://github.com/aws//github.com/aws/aws-cdk/blob/58c2631de585b300cf8573ab423dcc75791cc3d2/packages/aws-cdk-lib/aws-eks/lib/cluster.ts/issues/L1184-L1188)
+
+## [2.191.0](https://github.com/aws/aws-cdk/compare/v2.190.0...v2.191.0) (2025-04-22)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **cloudformation:** Some L1 resources experienced breaking changes due to
+updated CloudFormation resources. Please check the notes for each
+specific module for more information.
+* **neptune-alpha**: `Id` attribute is being removed from the
+AWS::Neptune::DBClusterParameterGroup and AWS::Neptune::DBParameterGroup
+resources
+* **aws-launchwizard**: `specifications` prop moved from required to
+optional in CfnDeployment
+* **aws-ses**: `attribute` attribute moved from required to optional in
+RuleBooleanToEvaluateProperty
+
+### Features
+
+* **cloudformation:** update L1 CloudFormation resource definitions ([#34207](https://github.com/aws/aws-cdk/issues/34207)) ([adfa416](https://github.com/aws/aws-cdk/commit/adfa416fba36a5cf25a6dcb1dbdbec18029d9860))
+* update L1 CloudFormation resource definitions ([e3483c2](https://github.com/aws/aws-cdk/commit/e3483c2dc947d41059b127db77a6382ad1ed6f62))
+* **codebuild:** add additional build images for lambda ([#34197](https://github.com/aws/aws-cdk/issues/34197)) ([5a265d1](https://github.com/aws/aws-cdk/commit/5a265d1f6f3ebfcade0cf2807b720a35845a0d60))
+* **rds:** add Aurora MySQL versions 2.12.4, 3.08.2 ([#34045](https://github.com/aws/aws-cdk/issues/34045)) ([1dd993e](https://github.com/aws/aws-cdk/commit/1dd993e51dc90b13cec18809173275944075afdb))
+
 ## [2.190.0](https://github.com/aws/aws-cdk/compare/v2.189.1...v2.190.0) (2025-04-16)
 
 
