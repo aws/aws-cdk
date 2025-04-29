@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "appsync-eventapi-eventbridge-test/DefaultTest": {
+      "stacks": [
+        "EventApiEventBridgeStack"
+      ],
+      "assertionStack": "appsync-eventapi-eventbridge-test/DefaultTest/DeployAssert",
+      "assertionStackName": "appsynceventapieventbridgetestDefaultTestDeployAssert48B68D1D"
+    }
+  }
+}
