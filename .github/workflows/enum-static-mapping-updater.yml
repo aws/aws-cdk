@@ -1,4 +1,4 @@
-name: CDK Enums Auto Updater
+name: CDK Enums Static Mapping Updater
 on:
   workflow_dispatch:
   schedule: # Runs every Monday at 12am PT
