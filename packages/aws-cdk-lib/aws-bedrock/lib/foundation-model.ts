@@ -440,6 +440,12 @@ export class FoundationModelIdentifier {
   /** Base model "stability.stable-image-core-v1:1". */
   public static readonly STABILITY_STABLE_IMAGE_CORE_V1_1 = new FoundationModelIdentifier('stability.stable-image-core-v1:1');
 
+  /** Base model "writer.palmyra-x4-v1:0". */
+  public static readonly WRITER_PALMYRA_X4_V1_0 = new FoundationModelIdentifier('writer.palmyra-x4-v1:0');
+
+  /** Base model "writer.palmyra-x5-v1:0". */
+  public static readonly WRITER_PALMYRA_X5_V1_0 = new FoundationModelIdentifier('writer.palmyra-x5-v1:0');
+
   /**
    * Constructor for foundation model identifier
    * @param modelId the model identifier
