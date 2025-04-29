@@ -31,150 +31,150 @@ describe('Fields', () => {
       ],
     });
   }),
-    test('exercise contextpaths', () => {
-      expect(
-        FieldUtils.renderObject({
-          str: JsonPath.stringAt('$$.Execution.StartTime'),
-          count: JsonPath.numberAt('$$.State.RetryCount'),
-          token: JsonPath.taskToken,
-          entire: JsonPath.entireContext,
-          execId: JsonPath.executionId,
-          input: JsonPath.executionInput,
-          execName: JsonPath.executionName,
-          roleArn: JsonPath.executionRoleArn,
-          startTime: JsonPath.executionStartTime,
-          enteredTime: JsonPath.stateEnteredTime,
-          stateName: JsonPath.stateName,
-          retryCount: JsonPath.stateRetryCount,
-          stateMachineId: JsonPath.stateMachineId,
-          stateMachineName: JsonPath.stateMachineName,
-        }),
-      ).toStrictEqual({
-        'str.$': '$$.Execution.StartTime',
-        'count.$': '$$.State.RetryCount',
-        'token.$': '$$.Task.Token',
-        'entire.$': '$$',
-        'execId.$': '$$.Execution.Id',
-        'input.$': '$$.Execution.Input',
-        'execName.$': '$$.Execution.Name',
-        'roleArn.$': '$$.Execution.RoleArn',
-        'startTime.$': '$$.Execution.StartTime',
-        'enteredTime.$': '$$.State.EnteredTime',
-        'stateName.$': '$$.State.Name',
-        'retryCount.$': '$$.State.RetryCount',
-        'stateMachineId.$': '$$.StateMachine.Id',
-        'stateMachineName.$': '$$.StateMachine.Name',
-      });
-    }),
-    test('find all referenced paths', () => {
-      expect(
-        FieldUtils.findReferencedPaths({
-          bool: false,
-          literal: 'literal',
-          field: JsonPath.stringAt('$.stringField'),
-          listField: JsonPath.listAt('$.listField'),
-          deep: [
-            'literal',
-            {
-              field: JsonPath.stringAt('$.stringField'),
-              deepField: JsonPath.numberAt('$.numField'),
-            },
-          ],
-        }),
-      ).toStrictEqual(['$.listField', '$.numField', '$.stringField']);
-    }),
-    test('JsonPath.listAt before Parallel', () => {
-      expect(
-        FieldUtils.findReferencedPaths({
-          listAt: JsonPath.listAt('$[0].stringList'),
-        }),
-      ).toStrictEqual(['$[0].stringList']);
+  test('exercise contextpaths', () => {
+    expect(
+      FieldUtils.renderObject({
+        str: JsonPath.stringAt('$$.Execution.StartTime'),
+        count: JsonPath.numberAt('$$.State.RetryCount'),
+        token: JsonPath.taskToken,
+        entire: JsonPath.entireContext,
+        execId: JsonPath.executionId,
+        input: JsonPath.executionInput,
+        execName: JsonPath.executionName,
+        roleArn: JsonPath.executionRoleArn,
+        startTime: JsonPath.executionStartTime,
+        enteredTime: JsonPath.stateEnteredTime,
+        stateName: JsonPath.stateName,
+        retryCount: JsonPath.stateRetryCount,
+        stateMachineId: JsonPath.stateMachineId,
+        stateMachineName: JsonPath.stateMachineName,
+      }),
+    ).toStrictEqual({
+      'str.$': '$$.Execution.StartTime',
+      'count.$': '$$.State.RetryCount',
+      'token.$': '$$.Task.Token',
+      'entire.$': '$$',
+      'execId.$': '$$.Execution.Id',
+      'input.$': '$$.Execution.Input',
+      'execName.$': '$$.Execution.Name',
+      'roleArn.$': '$$.Execution.RoleArn',
+      'startTime.$': '$$.Execution.StartTime',
+      'enteredTime.$': '$$.State.EnteredTime',
+      'stateName.$': '$$.State.Name',
+      'retryCount.$': '$$.State.RetryCount',
+      'stateMachineId.$': '$$.StateMachine.Id',
+      'stateMachineName.$': '$$.StateMachine.Name',
     });
+  }),
+  test('find all referenced paths', () => {
+    expect(
+      FieldUtils.findReferencedPaths({
+        bool: false,
+        literal: 'literal',
+        field: JsonPath.stringAt('$.stringField'),
+        listField: JsonPath.listAt('$.listField'),
+        deep: [
+          'literal',
+          {
+            field: JsonPath.stringAt('$.stringField'),
+            deepField: JsonPath.numberAt('$.numField'),
+          },
+        ],
+      }),
+    ).toStrictEqual(['$.listField', '$.numField', '$.stringField']);
+  }),
+  test('JsonPath.listAt before Parallel', () => {
+    expect(
+      FieldUtils.findReferencedPaths({
+        listAt: JsonPath.listAt('$[0].stringList'),
+      }),
+    ).toStrictEqual(['$[0].stringList']);
+  });
   test('cannot have JsonPath fields in arrays', () => {
     expect(() => FieldUtils.renderObject({
       deep: [JsonPath.stringAt('$.hello')],
     })).toThrow(/Cannot use JsonPath fields in an array/);
   }),
-    test('datafield path must be correct', () => {
-      expect(JsonPath.stringAt('$')).toBeDefined();
-      expect(JsonPath.stringAt('States.Format')).toBeDefined();
-      expect(JsonPath.stringAt('States.StringToJson')).toBeDefined();
-      expect(JsonPath.stringAt('States.JsonToString')).toBeDefined();
-      expect(JsonPath.stringAt('States.Array')).toBeDefined();
-      expect(JsonPath.stringAt('States.ArrayPartition')).toBeDefined();
-      expect(JsonPath.stringAt('States.ArrayContains')).toBeDefined();
-      expect(JsonPath.stringAt('States.ArrayRange')).toBeDefined();
-      expect(JsonPath.stringAt('States.ArrayGetItem')).toBeDefined();
-      expect(JsonPath.stringAt('States.ArrayLength')).toBeDefined();
-      expect(JsonPath.stringAt('States.ArrayUnique')).toBeDefined();
-      expect(JsonPath.stringAt('States.Base64Encode')).toBeDefined();
-      expect(JsonPath.stringAt('States.Base64Decode')).toBeDefined();
-      expect(JsonPath.stringAt('States.Hash')).toBeDefined();
-      expect(JsonPath.stringAt('States.JsonMerge')).toBeDefined();
-      expect(JsonPath.stringAt('States.MathRandom')).toBeDefined();
-      expect(JsonPath.stringAt('States.MathAdd')).toBeDefined();
-      expect(JsonPath.stringAt('States.StringSplit')).toBeDefined();
-      expect(JsonPath.stringAt('States.UUID')).toBeDefined();
+  test('datafield path must be correct', () => {
+    expect(JsonPath.stringAt('$')).toBeDefined();
+    expect(JsonPath.stringAt('States.Format')).toBeDefined();
+    expect(JsonPath.stringAt('States.StringToJson')).toBeDefined();
+    expect(JsonPath.stringAt('States.JsonToString')).toBeDefined();
+    expect(JsonPath.stringAt('States.Array')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayPartition')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayContains')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayRange')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayGetItem')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayLength')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayUnique')).toBeDefined();
+    expect(JsonPath.stringAt('States.Base64Encode')).toBeDefined();
+    expect(JsonPath.stringAt('States.Base64Decode')).toBeDefined();
+    expect(JsonPath.stringAt('States.Hash')).toBeDefined();
+    expect(JsonPath.stringAt('States.JsonMerge')).toBeDefined();
+    expect(JsonPath.stringAt('States.MathRandom')).toBeDefined();
+    expect(JsonPath.stringAt('States.MathAdd')).toBeDefined();
+    expect(JsonPath.stringAt('States.StringSplit')).toBeDefined();
+    expect(JsonPath.stringAt('States.UUID')).toBeDefined();
 
-      expect(() => JsonPath.stringAt('$hello')).not.toThrow(jsonPathValidationErrorMsg);
-      expect(() => JsonPath.stringAt('hello')).toThrow(jsonPathValidationErrorMsg);
-      expect(() => JsonPath.stringAt('States.FooBar')).toThrow(jsonPathValidationErrorMsg);
-    }),
-    test('context path must be correct', () => {
-      expect(JsonPath.stringAt('$$')).toBeDefined();
+    expect(() => JsonPath.stringAt('$hello')).not.toThrow(jsonPathValidationErrorMsg);
+    expect(() => JsonPath.stringAt('hello')).toThrow(jsonPathValidationErrorMsg);
+    expect(() => JsonPath.stringAt('States.FooBar')).toThrow(jsonPathValidationErrorMsg);
+  }),
+  test('context path must be correct', () => {
+    expect(JsonPath.stringAt('$$')).toBeDefined();
 
-      expect(() => JsonPath.stringAt('$$hello')).not.toThrow(jsonPathValidationErrorMsg);
-      expect(() => JsonPath.stringAt('hello')).toThrow(jsonPathValidationErrorMsg);
-    }),
-    test('datafield path with array must be correct', () => {
-      expect(JsonPath.stringAt('$[0]')).toBeDefined();
-      expect(JsonPath.stringAt("$['abc']")).toBeDefined();
-    }),
-    test('test contains task token', () => {
-      expect(true).toEqual(
-        FieldUtils.containsTaskToken({
-          field: JsonPath.taskToken,
-        }),
-      );
+    expect(() => JsonPath.stringAt('$$hello')).not.toThrow(jsonPathValidationErrorMsg);
+    expect(() => JsonPath.stringAt('hello')).toThrow(jsonPathValidationErrorMsg);
+  }),
+  test('datafield path with array must be correct', () => {
+    expect(JsonPath.stringAt('$[0]')).toBeDefined();
+    expect(JsonPath.stringAt("$['abc']")).toBeDefined();
+  }),
+  test('test contains task token', () => {
+    expect(true).toEqual(
+      FieldUtils.containsTaskToken({
+        field: JsonPath.taskToken,
+      }),
+    );
 
-      expect(true).toEqual(
-        FieldUtils.containsTaskToken({
-          field: JsonPath.stringAt('$$.Task'),
-        }),
-      );
+    expect(true).toEqual(
+      FieldUtils.containsTaskToken({
+        field: JsonPath.stringAt('$$.Task'),
+      }),
+    );
 
-      expect(true).toEqual(
-        FieldUtils.containsTaskToken({
-          field: JsonPath.entireContext,
-        }),
-      );
+    expect(true).toEqual(
+      FieldUtils.containsTaskToken({
+        field: JsonPath.entireContext,
+      }),
+    );
 
-      expect(false).toEqual(
-        FieldUtils.containsTaskToken({
-          oops: 'not here',
-        }),
-      );
+    expect(false).toEqual(
+      FieldUtils.containsTaskToken({
+        oops: 'not here',
+      }),
+    );
 
-      expect(false).toEqual(
-        FieldUtils.containsTaskToken({
-          oops: JsonPath.stringAt('$$.Execution.StartTime'),
-        }),
-      );
-    }),
-    test('arbitrary JSONPath fields are not replaced', () => {
-      expect(
-        FieldUtils.renderObject({
-          field: '$.content',
-        }),
-      ).toStrictEqual({
+    expect(false).toEqual(
+      FieldUtils.containsTaskToken({
+        oops: JsonPath.stringAt('$$.Execution.StartTime'),
+      }),
+    );
+  }),
+  test('arbitrary JSONPath fields are not replaced', () => {
+    expect(
+      FieldUtils.renderObject({
         field: '$.content',
-      });
-    }),
-    test('fields cannot be used somewhere in a string interpolation', () => {
-      expect(() => FieldUtils.renderObject({
-        field: `contains ${JsonPath.stringAt('$.hello')}`,
-      })).toThrow(/Field references must be the entire string/);
+      }),
+    ).toStrictEqual({
+      field: '$.content',
     });
+  }),
+  test('fields cannot be used somewhere in a string interpolation', () => {
+    expect(() => FieldUtils.renderObject({
+      field: `contains ${JsonPath.stringAt('$.hello')}`,
+    })).toThrow(/Field references must be the entire string/);
+  });
   test('infinitely recursive object graphs do not break referenced path finding', () => {
     const deepObject = {
       field: JsonPath.stringAt('$.stringField'),
