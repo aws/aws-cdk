@@ -11,13 +11,21 @@ class TestStack extends Stack {
       zoneName: 'cdk.test'
     });
 
+    const cidrCollection = new route53.CfnCidrCollection(this, 'CidrCollection', {
+      name: 'test-collection',
+      locations: [{
+        cidrList: ['192.168.1.0/24'],
+        locationName: 'test_location',
+      }]
+    });
+
     new route53.ARecord(this, 'CidrRoutingConfig', {
       zone: zone,
       target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
       setIdentifier: 'test',
       cidrRoutingConfig: {
-        collectionId: '12345678-1234-1234-1234-123456789012',
-        locationName: 'valid_location'
+        collectionId: cidrCollection.attrId,
+        locationName: 'test_location'
       },
     })
   }  

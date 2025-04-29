@@ -1,0 +1,158 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "CidrRoutingConfig.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CidrRoutingConfig.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CidrRoutingConfig": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "CidrRoutingConfig.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/55319b0ec2be0792760090e536d97fd785f29ddd7f8191dacb8b9838540b8e54.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CidrRoutingConfig.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CidrRoutingConfig.assets"
+      ],
+      "metadata": {
+        "/CidrRoutingConfig/HostedZone": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          }
+        ],
+        "/CidrRoutingConfig/HostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDB99F866"
+          }
+        ],
+        "/CidrRoutingConfig/CidrCollection": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CidrCollection"
+          }
+        ],
+        "/CidrRoutingConfig/CidrRoutingConfig": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "target": "*",
+              "setIdentifier": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "target": "*",
+              "setIdentifier": "*"
+            }
+          }
+        ],
+        "/CidrRoutingConfig/CidrRoutingConfig/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CidrRoutingConfig2AF5DEDB"
+          }
+        ],
+        "/CidrRoutingConfig/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CidrRoutingConfig/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CidrRoutingConfig"
+    },
+    "CidrRoutingConfigIntegDefaultTestDeployAssert2D4BBAED.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CidrRoutingConfigIntegDefaultTestDeployAssert2D4BBAED.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CidrRoutingConfigIntegDefaultTestDeployAssert2D4BBAED": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "CidrRoutingConfigIntegDefaultTestDeployAssert2D4BBAED.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CidrRoutingConfigIntegDefaultTestDeployAssert2D4BBAED.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CidrRoutingConfigIntegDefaultTestDeployAssert2D4BBAED.assets"
+      ],
+      "metadata": {
+        "/CidrRoutingConfigInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CidrRoutingConfigInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CidrRoutingConfigInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}
