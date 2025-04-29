@@ -521,7 +521,8 @@ test('find task token even if nested in intrinsic functions', () => {
 
   // Even if it's a hand-written literal and doesn't use our constructors
   expect(FieldUtils.containsTaskToken({ x: JsonPath.stringAt('States.Array($$.Task.Token)') })).toEqual(true);
+});
 
-  // Should handle task tokens together with null values
+test('find task token should handle null values', () => {
   expect(FieldUtils.containsTaskToken({ x: JsonPath.array(JsonPath.taskToken), y: null })).toEqual(true);
 });
