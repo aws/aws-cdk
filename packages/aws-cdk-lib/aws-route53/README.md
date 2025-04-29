@@ -204,7 +204,30 @@ new route53.ARecord(this, 'ARecordMultiValue1', {
 });
 ```
 
-To specify a unique identifier to differentiate among multiple resource record sets that have the same combination of name and type, use the `setIdentifier` parameter:
+To enable [IP-based routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-ipbased.html), use the `cidrRoutingConfig` parameter:
+
+```ts
+declare const myZone: route53.HostedZone;
+
+const cidrCollection = new route53.CfnCidrCollection(this, 'CidrCollection', {
+  name: 'test-collection',
+  locations: [{
+    cidrList: ['192.168.1.0/24'],
+    locationName: 'my_location',
+  }]
+});
+
+new route53.ARecord(this, 'ARecordCIDR', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+  cidrRoutingConfig: {
+    collectionId: cidrCollection.attrId,
+    locationName: 'my_location',
+  },
+});
+```
+
+To specify a unique identifier to differentiate among multiple resource record sets that have the same combination of name and type, use the `setIdentifier` parameter:
 
 ```ts
 declare const myZone: route53.HostedZone;
