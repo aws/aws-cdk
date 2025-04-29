@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "d465219bb51ab49e119b1d8d2d3c22ec083704dd8980a8e15d1f9f00f4050268": {
+      "displayName": "sesconfigurationsettrackingoptionsintegIdentityStack5770606B Template",
+      "source": {
+        "path": "sesconfigurationsettrackingoptionsintegIdentityStack5770606B.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d465219bb51ab49e119b1d8d2d3c22ec083704dd8980a8e15d1f9f00f4050268.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

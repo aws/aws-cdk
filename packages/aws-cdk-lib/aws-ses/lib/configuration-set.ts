@@ -84,6 +84,11 @@ export interface ConfigurationSetProps {
   readonly customTrackingRedirectDomain?: string;
 
   /**
+   * The https policy to use for tracking open and click events.
+   */
+  readonly customTrackingHttpsPolicy?: HttpsPolicy;
+
+  /**
    * The Virtual Deliverability Manager (VDM) options that apply to the configuration set
    *
    * @default - VDM options not configured at the configuration set level. In this case, use account level settings. (To set the account level settings using CDK, use the `VdmAttributes` Construct.)
@@ -130,6 +135,28 @@ export enum ConfigurationSetTlsPolicy {
 
   /**
    * Messages can be delivered in plain text if a TLS connection can't be established
+   */
+  OPTIONAL = 'OPTIONAL',
+}
+
+/**
+ * HTTPS policy option for the protocol of the open and click tracking links for your custom redirect domain.
+ */
+export enum HttpsPolicy {
+  /**
+   * Open and Click tracking links will both be wrapped using HTTPS.
+   */
+  REQUIRE = 'REQUIRE',
+
+  /**
+   * Open tracking links will be wrapped using HTTPS.
+   * Click tracking links will be wrapped using the original protocol of the link.
+   */
+  REQUIRE_OPEN_ONLY = 'REQUIRE_OPEN_ONLY',
+
+  /**
+   * Open tracking links will be wrapped using HTTP.
+   * Click tracking links will be wrapped using the original protocol of the link.
    */
   OPTIONAL = 'OPTIONAL',
 }
@@ -208,6 +235,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
       }),
       trackingOptions: undefinedIfNoKeys({
         customRedirectDomain: props.customTrackingRedirectDomain,
+        httpsPolicy: props.customTrackingHttpsPolicy,
       }),
       vdmOptions: undefinedIfNoKeys({
         dashboardOptions: props.vdmOptions?.engagementMetrics !== undefined ? {
