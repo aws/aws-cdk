@@ -102,13 +102,13 @@ export class MissingEnumsUpdater {
         const cdkValues = cdkEnums[module][enumName].values;
         const sdkValues = sdkEnums[mapping.sdk_service][mapping.sdk_enum_name];
 
-        let exclusion = [];
+        let exclusion = new Set();
         if (exclusions[module] && exclusions[module][enumName]) {
           const exclusionDict = exclusions[module][enumName];
           if (!exclusionDict["values"]) {
             continue;
           }
-          exclusion = exclusionDict["values"];
+          exclusion = normalizeEnumValues(exclusionDict["values"]);
         }
         
         // Get normalized sets of values
@@ -117,7 +117,7 @@ export class MissingEnumsUpdater {
         
         // Find missing values using normalized comparison
         const missingNormalized = [...normalizedSdkValues].filter(sdkValue => 
-          !normalizedCdkValues.has(sdkValue) && !exclusion.includes(sdkValue)
+          !normalizedCdkValues.has(sdkValue) && !exclusion.has(sdkValue)
         );
         
         if (missingNormalized.length > 0) {
