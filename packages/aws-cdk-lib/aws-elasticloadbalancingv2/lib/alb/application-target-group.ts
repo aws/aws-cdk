@@ -107,6 +107,22 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#automatic-target-weights
    */
   readonly enableAnomalyMitigation?: boolean;
+
+  /**
+   * Indicates whether the target group supports multi-value headers.
+   *
+   * If the value is true, the request and response headers exchanged between
+   * the load balancer and the Lambda function include arrays of values or strings.
+   * The possible values are true or false.
+   * The default value is false.
+   *
+   * Only applicable for Lambda targets.
+   *
+   * @default false
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-attributes
+   */
+  readonly multiValueHeadersEnabled?: boolean;
 }
 
 /**
@@ -365,6 +381,15 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       if (props.loadBalancingAlgorithmType) {
         this.setAttribute('load_balancing.algorithm.type', props.loadBalancingAlgorithmType);
       }
+
+      if (props.multiValueHeadersEnabled) {
+        if (this.targetType === TargetType.LAMBDA) {
+          this.setAttribute('lambda.multi_value_headers.enabled', 'true');
+        } else {
+          throw new ValidationError('multiValueHeadersEnabled is only supported for Lambda targets.', this);
+        }
+      }
+
       this.addTarget(...(props.targets || []));
 
       if (props.enableAnomalyMitigation !== undefined) {

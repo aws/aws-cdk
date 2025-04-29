@@ -772,6 +772,26 @@ listener.addTargets('Targets', {
 
 Only a single Lambda function can be added to a single listener rule.
 
+### Multi-Value Headers with Lambda Targets
+
+When using a Lambda function as a target, you can enable multi-value headers to allow the load balancer to send headers with multiple values:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const lambdaFunction: lambda.Function;
+
+// Create a target group with multi-value headers enabled
+const targetGroup = new elbv2.ApplicationTargetGroup(this, 'LambdaTargetGroup', {
+  vpc,
+  targets: [new targets.LambdaTarget(lambdaFunction)],
+
+  // Enable multi-value headers
+  multiValueHeadersEnabled: true,
+});
+```
+
+When multi-value headers are enabled, the request and response headers exchanged between the load balancer and the Lambda function include headers with multiple values. If this option is disabled (the default) and the request contains a duplicate header field name, the load balancer uses the last value sent by the client.
+
 ## Using Application Load Balancer Targets
 
 To use a single application load balancer as a target for the network load balancer, use the integration class in the
