@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "aws-cdk-eks-nodegroup-repair-config-test.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/26efc3643e0f447ec34ea546f1f0e700d7745dbfe1ee5f60f2cd9ed46e60ee2d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6cbd936a7c220435e7536655c4af36a85ae0fd539318fa0772b8f4f6f9b2b0f3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -342,7 +342,8 @@
                 "*",
                 {
                   "amiType": "AL2023_x86_64_STANDARD",
-                  "instanceType": "*"
+                  "instanceType": "*",
+                  "enableNodeAutoRepair": true
                 }
               ]
             }
@@ -825,7 +826,8 @@
             "data": {
               "cluster": "*",
               "amiType": "AL2023_x86_64_STANDARD",
-              "instanceType": "*"
+              "instanceType": "*",
+              "enableNodeAutoRepair": true
             }
           },
           {
@@ -2357,7 +2359,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0f43c8e8fe469c05ea58c5a9442819967c4e81c51d4f554f25d5c0b5d28d8f34.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8807a7bed2d0b29519edd7fbbccbd2fa83daf7419f0b4f103a4c2396d8ab1d38.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -2439,5 +2441,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

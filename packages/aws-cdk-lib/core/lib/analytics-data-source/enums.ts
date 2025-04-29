@@ -2437,6 +2437,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'cjs',
     'esm'
   ],
+  'OutputType': [
+    'JSON',
+    'JSONL'
+  ],
   'ParameterDataType': [
     'text',
     'aws:ec2:image'
@@ -2818,6 +2822,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'resume-cluster',
     'failover-primary-compute'
   ],
+  'RestApiMode': [
+    'overwrite',
+    'merge'
+  ],
   'Result': [
     'ROLLBACK',
     'FAIL',
@@ -2914,7 +2922,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   'SSLMethod': [
     'sni-only',
-    'vip'
+    'vip',
+    'static-ip'
   ],
   'ScalingEvent': [
     'autoscaling:EC2_INSTANCE_LAUNCH',
@@ -3439,6 +3448,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
+  'Transformation': [
+    'NONE',
+    'COMPACT',
+    'FLATTEN'
+  ],
   'TransitGatewayFeatureStatus': [
     'enable',
     'disable'
@@ -3519,6 +3533,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Count/Second',
     'None'
   ],
+  'UnreferencedFileRemovalStatus': [
+    'Enabled',
+    'Disabled'
+  ],
   'UntrustedArtifactOnDeployment': [
     'Enforce',
     'Warn'
@@ -3577,6 +3595,21 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'Visibility': [
     'GLOBAL',
     'PRIVATE'
+  ],
+  'VpcEndpointDnsRecordIpType': [
+    'ipv4',
+    'ipv6',
+    'dualstack',
+    'service-defined'
+  ],
+  'VpcEndpointIpAddressType': [
+    'ipv4',
+    'ipv6',
+    'dualstack'
+  ],
+  'VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint': [
+    'AllResolvers',
+    'OnlyInboundResolver'
   ],
   'VpcEndpointType': [
     'Interface',

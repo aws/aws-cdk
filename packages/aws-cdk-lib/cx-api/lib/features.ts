@@ -22,21 +22,25 @@ import { FlagInfo, FlagType } from './private/flag-modeling';
 //
 // There are three types of flags: ApiDefault, BugFix, and VisibleContext flags.
 //
-// - ApiDefault flags: change the behavior or defaults of the construct library. When
-//   set, the infrastructure that is generated may be different but there is
-//   a way to get the old infrastructure setup by using the API in a different way.
+// - ApiDefault flags: change the behavior or defaults of the construct library.
+//   It is still possible to achieve the old behavior via the official API
+//   but changes are necessary (e.g. passing a boolean flag).
 //
-// - BugFix flags: the old infra we used to generate is no longer recommended,
-//   and there is no way to achieve that result anymore except by making sure the
-//   flag is unset, or set to `false`. Mostly used for infra-impacting bugfixes or
-//   enhanced security defaults.
+//   Implications for future Major Version:
+//   - The recommended value will become the default value.
+//   - Flags of this type will be removed (code changes will become mandatory).
+//
+// - BugFix flags: the old infra we used to generate is no longer recommended.
+//   The old behavior cannot be achieved anymore using the official API (only
+//   by making sure the feature flag is unset). Mostly used for infra-impacting
+//   bugfixes or enhanced security defaults.
+//
+//   Implications for future Major Version:
+//   - The recommended value will become the default value.
+//   - Flag will never be removed (no other way to achieve legacy behavior).
 //
 // - VisibleContext flags: not really a feature flag, but configurable context which is
 //   advertised by putting the context in the `cdk.json` file of new projects.
-//
-// In future major versions, the "newProjectValues" will become the version
-// default for both DefaultBehavior and BugFix flags, and DefaultBehavior flags
-// will be removed (i.e., their new behavior will become the *only* behavior).
 //
 // See https://github.com/aws/aws-cdk-rfcs/blob/master/text/0055-feature-flags.md
 // --------------------------------------------------------------------------------
@@ -115,6 +119,7 @@ export const USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY = '@aws-cdk/aws
 export const CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS = '@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics';
 export const LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES = '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages';
 export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy';
+export const STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2 = '@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2';
 export const BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT = '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault';
 export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
 export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
@@ -127,8 +132,10 @@ export const LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY = '@aws-cdk/aws-lam
 export const SET_UNIQUE_REPLICATION_ROLE_NAME = '@aws-cdk/aws-s3:setUniqueReplicationRoleName';
 export const PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceStageRoleTrustScope';
 export const EVENTBUS_POLICY_SID_REQUIRED = '@aws-cdk/aws-events:requireEventBusPolicySid';
+export const ASPECT_PRIORITIES_MUTATING = '@aws-cdk/core:aspectPrioritiesMutating';
 export const DYNAMODB_TABLE_RETAIN_TABLE_REPLICA = '@aws-cdk/aws-dynamodb:retainTableReplica';
-export const LOG_USER_POOL_CLIENT_SECRET_VALUE ='@aws-cdk/cognito:logUserPoolClientSecretValue';
+export const LOG_USER_POOL_CLIENT_SECRET_VALUE = '@aws-cdk/cognito:logUserPoolClientSecretValue';
+export const PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1157,8 +1164,8 @@ export const FLAGS: Record<string, FlagInfo> = {
       '**Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**',
     detailsMd: `
     In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-    accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this 
-    feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot 
+    accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this
+    feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot
     guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
     It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
     `,
@@ -1176,9 +1183,9 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
     In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
     accessing IMDS. CDK cannot guarantee the correct execution of the feature in all platforms. Setting this feature flag
-    to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the 
+    to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the
     IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
-    
+
     It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
     `,
     introducedIn: { v2: '2.175.0' },
@@ -1371,7 +1378,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       When this feature flag is enabled, the default behaviour of OIDC Provider's custom resource handler will
       default to reject unauthorized connections when downloading CA Certificates.
-      
+
       When this feature flag is disabled, the behaviour will be the same as current and will allow downloading
       thumbprints from unsecure connections.`,
     introducedIn: { v2: '2.177.0' },
@@ -1386,7 +1393,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
     When this feature flag is enabled, CDK expands the scope of usage data collection to include the following:
       * L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
-      * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted. 
+      * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted.
       * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
     `,
     introducedIn: { v2: '2.178.0' },
@@ -1398,12 +1405,12 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: '[Deprecated] When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement',
     detailsMd: `
-      [Deprecated default feature] When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+      [Deprecated default feature] When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy.
       The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
       This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
-      However in the current implementation, we have removed a dependency of the lambda function on the policy. In addition to this, a Role will be attached to the Policy instead of an inline policy being attached to the role. 
-      This will create a data race condition in the CloudFormation template because the creation of the Lambda function no longer waits for the policy to be created. Having said that, we are not deprecating the feature (we are defaulting the feature flag to false for new stacks) since this feature can still be used to get around the circular dependency issue (issue-7016) particularly in cases where the lambda resource creation doesnt need to depend on the policy resource creation. 
-      We recommend to unset the feature flag if already set which will restore the original behavior. 
+      However in the current implementation, we have removed a dependency of the lambda function on the policy. In addition to this, a Role will be attached to the Policy instead of an inline policy being attached to the role.
+      This will create a data race condition in the CloudFormation template because the creation of the Lambda function no longer waits for the policy to be created. Having said that, we are not deprecating the feature (we are defaulting the feature flag to false for new stacks) since this feature can still be used to get around the circular dependency issue (issue-7016) particularly in cases where the lambda resource creation doesnt need to depend on the policy resource creation.
+      We recommend to unset the feature flag if already set which will restore the original behavior.
     `,
     introducedIn: { v2: '2.180.0' },
     recommendedValue: false,
@@ -1429,6 +1436,9 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       When this feature flag is enabled, the root account principal will not be added to the trust policy of stage role.
       When this feature flag is disabled, it will keep the root account principal in the trust policy.
+
+      For cross-account cases, when this feature flag is enabled the trust policy will be scoped to the role only.
+      If you are providing a custom role, you will need to ensure 'roleName' is specified or set to PhysicalName.GENERATE_IF_NEEDED.
     `,
     introducedIn: { v2: '2.184.0' },
     defaults: { v2: true },
@@ -1441,13 +1451,13 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals.',
     detailsMd: `
-      Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails 
-      because service principals require resource policies with Statement IDs. 
+      Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails
+      because service principals require resource policies with Statement IDs.
 
       When this flag is enabled:
       - Resource policies will be created with Statement IDs for service principals
       - The operation will succeed as expected
-      
+
       When this flag is disabled:
       - A warning will be emitted
       - The grant operation will be dropped
@@ -1460,6 +1470,43 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
+  [ASPECT_PRIORITIES_MUTATING]: {
+    type: FlagType.ApiDefault,
+    summary: 'When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING.',
+    detailsMd: `
+      Custom Aspects you add have a priority of DEFAULT (500) if you don't
+      assign a more specific priority, which is higher than MUTATING (200). This
+      is relevant if a custom Aspect you add and an Aspect added by CDK try to
+      configure the same value.
+
+      If this flag is set to false (old behavior), Aspects added by CDK are also
+      added with a priority of DEFAULT; because their priorities are equal, the
+      Aspects that is closest to the target construct executes last (either
+      yours or the Aspect added by the CDK).
+
+      If this flag is set to true (recommended behavior), Aspects added by CDK are added
+      with a priority of MUTATING, and custom Aspects you add with DEFAULT
+      priority will always execute last and "win" the write. If you need Aspects
+      added by CDK to run after yours, your Aspect needs to have a priority of
+      MUTATING or lower.
+
+      This setting only applies to Aspects that were already being added for you
+      before version 2.172.0. Aspects introduced since that version will always
+      be added with a priority of MUTATING, independent of this feature flag.
+    `,
+    introducedIn: { v2: '2.189.1' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: `
+      To add mutating Aspects controlling construct values that can be overridden
+      by Aspects added by CDK, give them MUTATING priority:
+
+      \`\`\`
+      Aspects.of(stack).add(new MyCustomAspect(), {
+        priority: AspectPriority.MUTATING,
+      });
+      \`\`\`
+    `,
+  },
   [DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: {
     type: FlagType.BugFix,
     summary: 'When enabled, table replica will be default to the removal policy of source table unless specified otherwise.',
@@ -1476,16 +1523,43 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.ApiDefault,
     summary: 'When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.',
     detailsMd: `
-      When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom 
+      When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom
       resource lambda function logs.
-      
-      When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom 
+
+      When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom
       resource lambda function logs.
     `,
     introducedIn: { v2: '2.187.0' },
     defaults: { v2: false },
     recommendedValue: false,
     compatibilityWithOldBehaviorMd: 'Enable the feature flag to keep the old behavior and log the client secret values',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, scopes down the trust policy for the cross-account action role',
+    detailsMd: `
+        When this feature flag is enabled, the trust policy of the cross-account action role will be scoped to the pipeline role.
+        If you are providing a custom role, you will need to ensure 'roleName' is specified or set to PhysicalName.GENERATE_IF_NEEDED.
+        When this feature flag is disabled, it will keep the root account principal in the trust policy.
+      `,
+    introducedIn: { v2: '2.189.0' },
+    defaults: { v2: true },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
+  },
+
+  [STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, the resultWriterV2 property of DistributedMap will be used insted of resultWriter',
+    detailsMd: `
+      When this feature flag is enabled, the resultWriterV2 property is used instead of resultWriter in DistributedMap class.
+      resultWriterV2 uses ResultWriterV2 class in StepFunctions ASL and can have either Bucket/Prefix or WriterConfig or both.
+    `,
+    introducedIn: { v2: '2.188.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag and set resultWriter in DistributedMap',
   },
 };
 
