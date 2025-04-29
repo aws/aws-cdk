@@ -1,0 +1,48 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "339151f0bccc8b7039f0818d076d595a88f76d4ce30e3d6b2878c364b0ed5053": {
+      "displayName": "LambdaDirect/Code",
+      "source": {
+        "path": "asset.339151f0bccc8b7039f0818d076d595a88f76d4ce30e3d6b2878c364b0ed5053",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "339151f0bccc8b7039f0818d076d595a88f76d4ce30e3d6b2878c364b0ed5053.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1": {
+      "displayName": "EventApiLambdaTestFunction/Code",
+      "source": {
+        "path": "asset.cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "ac4bfbb9f4a753926a1abf8073fafbd31773ba46c37c509f0d8774fdee2b91cd": {
+      "displayName": "EventApiLambdaDirectStack Template",
+      "source": {
+        "path": "EventApiLambdaDirectStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ac4bfbb9f4a753926a1abf8073fafbd31773ba46c37c509f0d8774fdee2b91cd.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
