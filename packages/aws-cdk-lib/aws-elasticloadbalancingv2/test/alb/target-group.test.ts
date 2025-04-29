@@ -950,7 +950,7 @@ describe('tests', () => {
             Value: 'true',
           },
         ],
-        Targets: [ { Id: 'arn:aws:lambda:eu-west-1:123456789012:function:myFn' } ],
+        Targets: [{ Id: 'arn:aws:lambda:eu-west-1:123456789012:function:myFn' }],
       });
     });
 
@@ -978,8 +978,38 @@ describe('tests', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
         TargetType: 'lambda',
         TargetGroupAttributes: Match.absent(),
-        Targets: [ { Id: 'arn:aws:lambda:eu-west-1:123456789012:function:myFn' } ],
+        Targets: [{ Id: 'arn:aws:lambda:eu-west-1:123456789012:function:myFn' }],
       });
+    });
+  });
+
+  describe('multiValueHeadersEnabled validation', () => {
+    test('Throws an error when multiValueHeadersEnabled is true for non-Lambda target type (IP)', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN & THEN
+      expect(() => new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        targetType: elbv2.TargetType.IP,
+        multiValueHeadersEnabled: true,
+      })).toThrow('multiValueHeadersEnabled is only supported for Lambda targets.');
+    });
+
+    test('Throws an error when multiValueHeadersEnabled is true for non-Lambda target type (Instance)', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN & THEN
+      expect(() => new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        targetType: elbv2.TargetType.INSTANCE,
+        multiValueHeadersEnabled: true,
+      })).toThrow('multiValueHeadersEnabled is only supported for Lambda targets.');
     });
   });
 });
