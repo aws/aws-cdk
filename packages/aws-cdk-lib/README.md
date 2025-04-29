@@ -1551,22 +1551,12 @@ Annotations.of(this).acknowledgeWarning('IAM:Group:MaxPoliciesExceeded', 'Accoun
 The goal of Blueprint Property Injection is to provide builders an automatic way to set default property values.
 
 Construct authors can declare that a Construct can have it properties injected by adding `@propertyInjectable`
-class decorator and specifying `PROPERTY_INJECTION_ID` readonly property.  For example:
-
-```ts fixture=README-Injectable
-@propertyInjectable
-class ApiKey extends api.ApiKeyBase {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.ApiKey';
-  // rest of class code
-}
-```
+class decorator and specifying `PROPERTY_INJECTION_ID` readonly property.  
+All L2 Constructs will support Property Injection so organizations can write injectors to set their Construct Props.
 
 Organizations can set default property values to a Construct by writing Injectors for builders to consume.
 
-Here is a simple example of an Injector for APiKey.  
+Here is a simple example of an Injector for APiKey that sets enabled to false.  
 
 ```ts fixture=README-Injectable
 class ApiKeyPropsInjector implements IPropertyInjector {
@@ -1579,7 +1569,16 @@ class ApiKeyPropsInjector implements IPropertyInjector {
   inject(originalProps: api.ApiKeyProps, context: InjectionContext): api.ApiKeyProps {
     return {
       enabled: false,
-      ...originalProps,
+      apiKeyName: originalProps.apiKeyName,
+      customerId: originalProps.customerId,
+      defaultCorsPreflightOptions: originalProps.defaultCorsPreflightOptions,
+      defaultIntegration: originalProps.defaultIntegration,
+      defaultMethodOptions: originalProps.defaultMethodOptions,
+      description: originalProps.description,
+      generateDistinctId: originalProps.generateDistinctId,
+      resources: originalProps.resources,
+      stages: originalProps.stages,
+      value: originalProps.value,
     };
   }
 }
