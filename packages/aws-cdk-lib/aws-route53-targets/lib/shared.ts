@@ -5,7 +5,7 @@ export interface IAliasRecordTargetProps {
   /**
    * Target Hosted zone ID.
    *
-   * @default - no hosted zone id, can be auto detected for some kinds of target
+   * @default - hosted zone ID for the EBS endpoint will be retrieved based on the stack's region.
    */
   readonly hostedZoneId?: string;
 
