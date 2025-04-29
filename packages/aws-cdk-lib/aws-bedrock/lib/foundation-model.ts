@@ -380,6 +380,12 @@ export class FoundationModelIdentifier {
   /** Base model "meta.llama3-3-70b-instruct-v1:0". */
   public static readonly META_LLAMA_3_3_70B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-3-70b-instruct-v1:0');
 
+  /** Base model "meta.llama4-maverick-17b-instruct-v1:0". */
+  public static readonly META_LLAMA_4_MAVERICK_17B_INSTRUCT_V1_0 = new FoundationModelIdentifier('meta.llama4-maverick-17b-instruct-v1:0');
+
+  /** Base model "meta.llama4-scout-17b-instruct-v1:0". */
+  public static readonly META_LLAMA_4_SCOUT_17B_INSTRUCT_V1_0 = new FoundationModelIdentifier('meta.llama4-scout-17b-instruct-v1:0');
+
   /** Base model "mistral.mistral-7b-instruct-v0:2". */
   public static readonly MISTRAL_MISTRAL_7B_INSTRUCT_V0_2 = new FoundationModelIdentifier('mistral.mistral-7b-instruct-v0:2');
 
