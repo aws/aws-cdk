@@ -22,12 +22,12 @@ To run the logic for identifying missing enum values and creating the code chang
 ./bin/update-missing-enums
 ```
 
-the logic for this step is in `lib/missing-enum-updater.ts`
+The logic for this step is in `lib/missing-enum-updater.ts`
 
-# Exclusions
-Exclusions should be added to the `/lib/exclude-values.json` file. There are 2 cases where an exclusion may be needed:
+## Exclusions
+Exclusions should be added to the `lib/exclude-values.json` file. There are 2 cases where an exclusion may be needed:
 
-1. If an invalid static mapping is being created in `/lib/static-enum-mapping.json`
+1. If an invalid static mapping is being created in `lib/static-enum-mapping.json`
 2. If an invalid enum value is being added for a correctly mapped enum
 
 For case #1, add an entry with the following format:

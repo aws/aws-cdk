@@ -138,13 +138,12 @@ export class MissingEnumsUpdater {
       }
     }
   
-  
-    const totalEnumsWithMissing = Object.values(missingValues).reduce((sum, moduleEnums) => 
-      sum + Object.keys(moduleEnums).length, 0);
+    const totalEnumsWithMissing = Object.keys(missingValues).reduce((sum, module) => 
+      sum + Object.keys(missingValues[module]).length, 0);
     
-    const totalMissingValues = Object.values(missingValues).reduce((sum, moduleEnums) => 
-      sum + Object.values(moduleEnums).reduce((moduleSum, enumData) => 
-        moduleSum + enumData.missing_values.length, 0), 0);
+    const totalMissingValues = Object.keys(missingValues).reduce((sum, module) => 
+      sum + Object.keys(missingValues[module]).reduce((moduleSum, enumName) => 
+        moduleSum + missingValues[module][enumName].missing_values.length, 0), 0);
   
     console.log(`Enums with missing values: ${totalEnumsWithMissing}`);
     console.log(`Total missing values found: ${totalMissingValues}`);
