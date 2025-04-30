@@ -217,13 +217,14 @@ const cidrCollection = new route53.CfnCidrCollection(this, 'CidrCollection', {
   }]
 });
 
-new route53.ARecord(this, 'ARecordCIDR', {
-  zone: myZone,
+new route53.ARecord(this, 'CidrRoutingConfig', {
+  zone: zone,
   target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
-  cidrRoutingConfig: {
+  setIdentifier: 'test',
+  cidrRoutingConfig: route53.CidrRoutingConfig.new({
     collectionId: cidrCollection.attrId,
-    locationName: 'my_location',
-  },
+    locationName: 'test_location'
+  }),
 });
 ```
 
