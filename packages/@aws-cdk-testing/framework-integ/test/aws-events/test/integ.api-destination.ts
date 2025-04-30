@@ -26,10 +26,12 @@ const destination = new events.ApiDestination(stack, 'Destination', {
   description: 'Calling example.com with API key x-api-key',
 });
 
+// arn:aws:events:{region}:{account}:api-destination/{destination-name}/11111111-1111-1111-1111-111111111111
 new CfnOutput(stack, 'DestinationArn', {
   value: destination.apiDestinationArn,
   description: 'The ARN of the API destination',
 });
+// arn:aws:events:{region}:{account}:api-destination/{destination-name}
 new CfnOutput(stack, 'DestinationArnForPolicy', {
   value: destination.apiDestinationArnForPolicy || '',
   description: 'The ARN of the API destination in resource format',

@@ -118,6 +118,7 @@ export class ApiDestination extends Resource implements IApiDestination {
     class Import extends Resource implements ApiDestination {
       public readonly apiDestinationArn = attrs.apiDestinationArn;
       public readonly apiDestinationName = apiDestinationName!;
+      public readonly apiDestinationArnForPolicy = attrs.apiDestinationArnForPolicy;
       public readonly connection = attrs.connection;
     }
 
