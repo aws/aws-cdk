@@ -331,7 +331,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4fe0aba5e672b596d0f72505a9eec502f98d46906bb30fae2511fbdc1df4956f.zip"
+     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
     },
     "Environment": {
      "Variables": {
@@ -475,6 +475,9 @@
    "us-isob-east-1": {
     "value": "nodejs18.x"
    },
+   "us-isob-west-1": {
+    "value": "nodejs18.x"
+   },
    "us-west-1": {
     "value": "nodejs20.x"
    },
@@ -596,6 +599,9 @@
    },
    "us-isob-east-1": {
     "endpoint": "s3-website.us-isob-east-1.sc2s.sgov.gov"
+   },
+   "us-isob-west-1": {
+    "endpoint": "s3-website.us-isob-west-1.sc2s.sgov.gov"
    },
    "us-west-1": {
     "endpoint": "s3-website-us-west-1.amazonaws.com"
