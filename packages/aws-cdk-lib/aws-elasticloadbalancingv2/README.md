@@ -777,6 +777,9 @@ Only a single Lambda function can be added to a single listener rule.
 When using a Lambda function as a target, you can enable multi-value headers to allow the load balancer to send headers with multiple values:
 
 ```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as targets from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
+
 declare const vpc: ec2.Vpc;
 declare const lambdaFunction: lambda.Function;
 
