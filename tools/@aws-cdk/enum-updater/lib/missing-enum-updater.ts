@@ -13,7 +13,7 @@ const DIRECTORIES_TO_SKIP = [
   "test",
 ];
 
-const EXCLUDE_FILE = "exclude_values.json";
+const EXCLUDE_FILE = "exclude-values.json";
 export const EXCLUDE_ENUMS = path.join(__dirname, EXCLUDE_FILE);
 
 interface MissingValuesEntry {
