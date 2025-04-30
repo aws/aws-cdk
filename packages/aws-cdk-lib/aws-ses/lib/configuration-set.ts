@@ -85,6 +85,8 @@ export interface ConfigurationSetProps {
 
   /**
    * The https policy to use for tracking open and click events.
+   *
+   * @default - HttpsPolicy.OPTIONAL if customTrackingRedirectDomain is set, otherwise undefined
    */
   readonly customTrackingHttpsPolicy?: HttpsPolicy;
 
