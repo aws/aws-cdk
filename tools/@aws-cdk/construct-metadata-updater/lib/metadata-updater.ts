@@ -1,4 +1,4 @@
-import { ClassDeclaration, IndentationText, Project, PropertyDeclaration, QuoteKind, SourceFile, Symbol, SyntaxKind } from "ts-morph";
+import { ClassDeclaration, IndentationText, Project, PropertyDeclaration, QuoteKind, Scope, SourceFile, Symbol, SyntaxKind } from "ts-morph";
 import * as path from "path";
 import * as fs from "fs";
 // import { exec } from "child_process";
@@ -152,10 +152,134 @@ export class ConstructsUpdater extends MetadataUpdater {
       const classes = this.getCdkResourceClasses(sourceFile.getFilePath());
       for (const resource of classes) {
         this.addImportAndMetadataStatement(resource.sourceFile, resource.filePath, resource.node);
+        this.makeConstructsPropInjectable(resource.sourceFile, resource.filePath, resource.node);
       }
     });
   }
 
+  /**
+   * This makes a Construct Property Injectable by doing 3 things:
+   *  - add PROPERTY_INJECTION_ID property
+   *  - import propertyInjectable from core/lib/prop-injectable
+   *  - add class decorator @propertyInjectable
+   *
+   * If the Construct already has PROPERTY_INJECTION_ID, then skip it.
+   */
+  private makeConstructsPropInjectable(sourceFile: SourceFile, filePath: string, node: ClassDeclaration) {
+    console.log(`path: ${filePath}, class: ${node.getName()}`);
+
+    if (this.isAlreadyInjectable(node)) {
+      return; // do nothing
+    }
+
+    // Add PROPERTY_INJECTION_ID
+    node.addProperty({
+      scope: Scope.Public,
+      isStatic: true,
+      isReadonly: true,
+      name: 'PROPERTY_INJECTION_ID',
+      type: "string",
+      initializer: this.filePathToInjectionId(filePath, node.getName()),
+    });
+    console.log('  Added PROPERTY_INJECTION_ID')
+
+    // Add Decorator
+    node.addDecorator({
+      name: "propertyInjectable",
+    });
+    console.log('  Added @propertyInjectable')
+
+    // import propertyInjectable
+    this.importPropertyInjectable(sourceFile, filePath);
+
+    // Write the updated file back to disk
+    sourceFile.saveSync();
+  }
+
+  /**
+   * If the Construct already has PROPERTY_INJECTION_ID, then it is injectable already.
+   */
+  private isAlreadyInjectable(classDeclaration: ClassDeclaration): boolean {
+    const properties: PropertyDeclaration[] = classDeclaration.getProperties();
+    for (const prop of properties) {
+      if (prop.getName() === 'PROPERTY_INJECTION_ID') {
+        console.log(`Skipping ${classDeclaration.getName()}. It is already injectable`);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * This converts the filePath
+   * '<HOME_DIR>/<CDK_HOME>/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/api-key.ts'
+   * and className 'ApiKey'
+   * to 'aws-cdk-lib.aws-apigateway.ApiKey'
+   */
+  private filePathToInjectionId(filePath: string, className: string | undefined): string {
+    if (!className) {
+      throw new Error('Could not build PROPERTY_INJECTION_ID if className is undefined');
+    }
+
+    const start = 'packages/aws-cdk-lib/';
+    const startIndex = filePath.indexOf(start);
+    const subPath = filePath.substring(startIndex + start.length);
+    const parts: string[] = subPath.split('\/');
+    if (parts.length < 2) {
+      throw new Error(`Could not build PROPERTY_INJECTION_ID for ${filePath} ${className}`);
+    }
+    return `'aws-cdk-lib.${parts[0]}.${className}'`;
+  }
+
+  /**
+   * This returns the relative path of prop-injectable.ts. 
+   */
+  private getRelativePathForPropInjectionImport(filePath: string): string {
+    const absoluteFilePath = path.resolve(filePath);
+    const absoluteTargetPath = path.resolve(__dirname, '../../../../packages/aws-cdk-lib/core/lib/prop-injectable.ts');
+    let relativePath = path.relative(path.dirname(absoluteFilePath), absoluteTargetPath).replace(/\\/g, "/").replace(/.ts/, "");
+    if (absoluteFilePath.includes('@aws-cdk')) {
+      relativePath = 'aws-cdk-lib/core/lib/prop-injectable'
+    }
+    return relativePath;
+  }
+
+  /**
+   * This adds import of prop-injectable to the file.
+   */
+  private importPropertyInjectable(sourceFile: SourceFile, filePath: string) {
+    const relativePath = this.getRelativePathForPropInjectionImport(filePath);
+
+    // Check if an import from 'prop-injectable' already exists
+    const existingImport = sourceFile.getImportDeclarations().find((stmt: any) => {
+      return stmt.getModuleSpecifier().getText().includes('/prop-injectable');
+    });
+    if (existingImport) {
+      return;
+    }
+
+    // Find the correct insertion point (after the last import before the new one)
+    const importDeclarations = sourceFile.getImportDeclarations();
+    let insertIndex = importDeclarations.length; // Default to appending
+
+    for (let i = importDeclarations.length - 1; i >= 0; i--) {
+      const existingImport = importDeclarations[i].getModuleSpecifier().getLiteralText();
+
+      // Insert the new import before the first one that is lexicographically greater
+      if (existingImport.localeCompare(relativePath) > 0) {
+        insertIndex = i;
+      } else {
+        break;
+      }
+    }
+
+    // Insert the new import at the correct index
+    sourceFile.insertImportDeclaration(insertIndex, {
+      moduleSpecifier: relativePath,
+      namedImports: [{ name: "propertyInjectable" }],
+    });
+    console.log(`  Added import for propertyInjectable in file: ${filePath} with relative path: ${relativePath}`);
+  }
 
   /**
    * Add the import statement for MetadataType to the file.

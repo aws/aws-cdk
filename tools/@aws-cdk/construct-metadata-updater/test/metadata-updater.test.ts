@@ -183,6 +183,217 @@ describe('ResourceMetadataUpdater', () => {
       expect(mockConstructor.insertStatements).toHaveBeenCalled();
     });
   });
+
+  describe('filePathToInjectionId', () => {
+    it('should return successfully', () => {
+      // GIVEN
+      const filePath = '/local/home/user/cdk/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/api-key.ts';
+      const className = 'ApiKey';
+
+      // WHEN
+      const injectionId = (updater as any).filePathToInjectionId(filePath, className);
+
+      // THEN
+      expect(injectionId).toEqual("'aws-cdk-lib.aws-apigateway.ApiKey'");
+    });
+
+    it('should throw error for bad filepath', () => {
+      // GIVEN
+      const filePath = 'cdk/aws-cdk/packages/aws-cdk-lib/aws-apigateway';
+      const className = 'ApiKey';
+
+      // WHEN THEN
+      expect(() => (updater as any).filePathToInjectionId(filePath, className))
+      .toThrow('Could not build PROPERTY_INJECTION_ID for cdk/aws-cdk/packages/aws-cdk-lib/aws-apigateway ApiKey');
+    });
+
+    it('should throw error for undefined className', () => {
+      // GIVEN
+      const filePath = 'cdk/aws-cdk/packages/aws-cdk-lib/aws-apigateway';
+      const className = undefined;
+
+      // WHEN THEN
+      expect(() => (updater as any).filePathToInjectionId(filePath, className))
+      .toThrow('Could not build PROPERTY_INJECTION_ID if className is undefined');
+    });
+  });
+
+  describe('isAlreadyInjectable', () => {
+    it('should return true', () => {
+      // GIVEN
+      const mockProperty1 = {
+        getName: jest.fn().mockReturnValue('Property1'),
+      } as any;
+
+      const mockProperty2 = {
+        getName: jest.fn().mockReturnValue('PROPERTY_INJECTION_ID'),
+      } as any;
+
+      mockClassDeclaration = {
+        getName: jest.fn().mockReturnValue('TestClass'),
+        getProperties: jest.fn().mockReturnValue([mockProperty1, mockProperty2])
+      } as any;
+
+      // WHEN
+      const result = (updater as any).isAlreadyInjectable(mockClassDeclaration);
+
+      //THEN
+      expect(result).toBe(true);
+    });
+
+    it('should return false', () => {
+      // GIVEN
+      const mockProperty1 = {
+        getName: jest.fn().mockReturnValue('Property1'),
+      } as any;
+
+      const mockProperty2 = {
+        getName: jest.fn().mockReturnValue('INJECTION_ID'),
+      } as any;
+
+      mockClassDeclaration = {
+        getName: jest.fn().mockReturnValue('TestClass'),
+        getProperties: jest.fn().mockReturnValue([mockProperty1, mockProperty2])
+      } as any;
+
+      // WHEN
+      const result = (updater as any).isAlreadyInjectable(mockClassDeclaration);
+
+      // THEN
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('importPropertyInjectable', () => {
+    it('should be inserted in the correct place', () => {
+      // GIVEN
+      const filePath = '/local/home/user/cdk/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/api-key.ts';
+      const relativePath = '../../core/lib/prop-injectable';
+
+      const module1 = {
+        getText: jest.fn().mockReturnValue('../../core/lib/errors'),
+        getLiteralText: jest.fn().mockReturnValue('../../core/lib/errors'),
+      } as any;
+      const import1 = {
+        getModuleSpecifier: jest.fn().mockReturnValue(module1),
+      } as any;
+
+      const module2 = {
+        getText: jest.fn().mockReturnValue('../../core/lib/removal-policies'),
+        getLiteralText: jest.fn().mockReturnValue('../../core/lib/removal-policies'),
+      } as any;
+      const import2 = {
+        getModuleSpecifier: jest.fn().mockReturnValue(module2),
+      } as any;
+
+      mockSourceFile = {
+        forEachChild: jest.fn((callback) => callback(mockClassDeclaration)),
+        getImportDeclarations: jest.fn().mockReturnValue([import1, import2]),
+        addImportDeclaration: jest.fn(),
+        saveSync: jest.fn(),
+        insertImportDeclaration: jest.fn()
+      } as any;
+
+      // Setup spies to return the relative path
+      const updaterSpy = jest.spyOn(updater as any, 'getRelativePathForPropInjectionImport');
+      updaterSpy.mockReturnValueOnce(relativePath);
+
+      // WHEN
+      (updater as any).importPropertyInjectable(mockSourceFile, filePath);
+
+      // THEN
+      expect(mockSourceFile.insertImportDeclaration).toHaveBeenCalledWith(
+        1,
+        {
+          moduleSpecifier: relativePath,
+          namedImports: [{ name: "propertyInjectable" }],
+        },
+      );
+    });
+  });
+
+  describe('makeConstructsPropInjectable', () => {
+    it('should skip because class already has PROPERTY_INJECTION_ID', () => {
+      // GIVEN
+      const filePath = '/local/home/user/cdk/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/api-key.ts';
+
+      const mockProperty1 = {
+        getName: jest.fn().mockReturnValue('Property1'),
+      } as any;
+
+      const mockProperty2 = {
+        getName: jest.fn().mockReturnValue('PROPERTY_INJECTION_ID'),
+      } as any;
+
+      mockClassDeclaration = {
+        getName: jest.fn().mockReturnValue('TestClass'),
+        getProperties: jest.fn().mockReturnValue([mockProperty1, mockProperty2]),
+        addProperty: jest.fn(),
+        addDecorator: jest.fn(),
+      } as any;
+
+      mockSourceFile = {
+        forEachChild: jest.fn((callback) => callback(mockClassDeclaration)),
+        getImportDeclarations: jest.fn().mockReturnValue([]),
+        addImportDeclaration: jest.fn(),
+        saveSync: jest.fn(),
+        insertImportDeclaration: jest.fn()
+      } as any;
+
+      // WHEN
+      (updater as any).makeConstructsPropInjectable(mockSourceFile, filePath, mockClassDeclaration);
+
+      // THEN
+      expect(mockClassDeclaration.addProperty).not.toHaveBeenCalled();
+      expect(mockClassDeclaration.addDecorator).not.toHaveBeenCalled();
+      expect(mockSourceFile.insertImportDeclaration).not.toHaveBeenCalled();
+    });
+
+    it('should add PROPERTY_INJECTION_ID, import and class decorator', () => {
+      // GIVEN
+      const filePath = '/local/home/user/cdk/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/api-key.ts';
+      const relativePath = '../../core/lib/prop-injectable';
+
+      const mockProperty1 = {
+        getName: jest.fn().mockReturnValue('Property1'),
+      } as any;
+
+      mockClassDeclaration = {
+        getName: jest.fn().mockReturnValue('TestClass'),
+        getProperties: jest.fn().mockReturnValue([mockProperty1]),
+        addProperty: jest.fn(),
+        addDecorator: jest.fn(),
+      } as any;
+
+      const module1 = {
+        getText: jest.fn().mockReturnValue('../../core/lib/errors'),
+        getLiteralText: jest.fn().mockReturnValue('../../core/lib/errors'),
+      } as any;
+      const import1 = {
+        getModuleSpecifier: jest.fn().mockReturnValue(module1),
+      } as any;
+
+      mockSourceFile = {
+        forEachChild: jest.fn((callback) => callback(mockClassDeclaration)),
+        getImportDeclarations: jest.fn().mockReturnValue([import1]),
+        addImportDeclaration: jest.fn(),
+        saveSync: jest.fn(),
+        insertImportDeclaration: jest.fn()
+      } as any;
+
+      // Setup spies to return the relative path
+      const updaterSpy = jest.spyOn(updater as any, 'getRelativePathForPropInjectionImport');
+      updaterSpy.mockReturnValueOnce(relativePath);
+
+      // WHEN
+      (updater as any).makeConstructsPropInjectable(mockSourceFile, filePath, mockClassDeclaration);
+
+      // THEN
+      expect(mockClassDeclaration.addProperty).toHaveBeenCalled();
+      expect(mockClassDeclaration.addDecorator).toHaveBeenCalled();
+      expect(mockSourceFile.insertImportDeclaration).toHaveBeenCalled();
+    });
+  });
 });
 
 describe('PropertyUpdater', () => {
