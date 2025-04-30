@@ -1,7 +1,8 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "files": {
     "2d114cb5253dc3c555e256a54323fd599d9d19d006284e186d1904272ea9531a": {
+      "displayName": "redshift-iamrole-integ Template",
       "source": {
         "path": "redshift-iamrole-integ.template.json",
         "packaging": "file"

@@ -1,0 +1,418 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "EventApiLambdaStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EventApiLambdaStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EventApiLambdaStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "EventApiLambdaStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8f5846e9be3b7e0c7211ee0d8fd8b07ddf0ca34692948322176dbd3784addb1f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EventApiLambdaStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EventApiLambdaStack.assets"
+      ],
+      "metadata": {
+        "/EventApiLambdaStack/EventApiLambda": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "apiName": "*"
+            }
+          }
+        ],
+        "/EventApiLambdaStack/EventApiLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLambda6AA4ADA7"
+          }
+        ],
+        "/EventApiLambdaStack/EventApiLambda/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLambdaDefaultApiKeyA456E74C"
+          }
+        ],
+        "/EventApiLambdaStack/EventApiLambda/lambdads/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/EventApiLambdaStack/EventApiLambda/lambdads/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EventApiLambdaStack/EventApiLambda/lambdads/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLambdalambdadsServiceRole252ADB67"
+          }
+        ],
+        "/EventApiLambdaStack/EventApiLambda/lambdads/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/EventApiLambdaStack/EventApiLambda/lambdads/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLambdalambdadsServiceRoleDefaultPolicy10960CD6"
+          }
+        ],
+        "/EventApiLambdaStack/EventApiLambda/lambdads/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLambdalambdads48EEE400"
+          }
+        ],
+        "/EventApiLambdaStack/EventApiLambda/chat": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "api": "*",
+              "channelNamespaceName": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/EventApiLambdaStack/EventApiLambda/chat/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLambdachat46AF0486"
+          }
+        ],
+        "/EventApiLambdaStack/LambdaDs": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "entry": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "entry": "*",
+              "handler": "*"
+            }
+          }
+        ],
+        "/EventApiLambdaStack/LambdaDs/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/EventApiLambdaStack/LambdaDs/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EventApiLambdaStack/LambdaDs/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaDsServiceRoleB6A777D1"
+          }
+        ],
+        "/EventApiLambdaStack/LambdaDs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaDs69120E12"
+          }
+        ],
+        "/EventApiLambdaStack/EventApiLambdaTestFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "environment": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "entry": "*",
+              "handler": "*",
+              "timeout": "*",
+              "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "environment": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "entry": "*",
+              "handler": "*",
+              "timeout": "*"
+            }
+          }
+        ],
+        "/EventApiLambdaStack/EventApiLambdaTestFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/EventApiLambdaStack/EventApiLambdaTestFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EventApiLambdaStack/EventApiLambdaTestFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLambdaTestFunctionServiceRole4E48AAF1"
+          }
+        ],
+        "/EventApiLambdaStack/EventApiLambdaTestFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLambdaTestFunctionF2682C94"
+          }
+        ],
+        "/EventApiLambdaStack/Exports/Output{\"Ref\":\"EventApiLambdaTestFunctionF2682C94\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefEventApiLambdaTestFunctionF2682C946A8B4038"
+          }
+        ],
+        "/EventApiLambdaStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EventApiLambdaStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EventApiLambdaStack"
+    },
+    "appsynceventapilambdatestDefaultTestDeployAssert3741562F.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "appsynceventapilambdatestDefaultTestDeployAssert3741562F.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "appsynceventapilambdatestDefaultTestDeployAssert3741562F": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "appsynceventapilambdatestDefaultTestDeployAssert3741562F.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94ad6608da18a2f78e96760a4e25d0b3b05ff08f9f5fef33076ec2ea93a21b6b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "appsynceventapilambdatestDefaultTestDeployAssert3741562F.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EventApiLambdaStack",
+        "appsynceventapilambdatestDefaultTestDeployAssert3741562F.assets"
+      ],
+      "metadata": {
+        "/appsync-eventapi-lambda-test/DefaultTest/DeployAssert/LambdaInvoke8db171baba9145ec7c9ee45bb73d4bcf/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/appsync-eventapi-lambda-test/DefaultTest/DeployAssert/LambdaInvoke8db171baba9145ec7c9ee45bb73d4bcf/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke8db171baba9145ec7c9ee45bb73d4bcf"
+          }
+        ],
+        "/appsync-eventapi-lambda-test/DefaultTest/DeployAssert/LambdaInvoke8db171baba9145ec7c9ee45bb73d4bcf/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke8db171baba9145ec7c9ee45bb73d4bcfInvoke47847565"
+          }
+        ],
+        "/appsync-eventapi-lambda-test/DefaultTest/DeployAssert/LambdaInvoke8db171baba9145ec7c9ee45bb73d4bcf/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke8db171baba9145ec7c9ee45bb73d4bcf"
+          }
+        ],
+        "/appsync-eventapi-lambda-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/appsync-eventapi-lambda-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/appsync-eventapi-lambda-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/appsync-eventapi-lambda-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/appsync-eventapi-lambda-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "appsync-eventapi-lambda-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}

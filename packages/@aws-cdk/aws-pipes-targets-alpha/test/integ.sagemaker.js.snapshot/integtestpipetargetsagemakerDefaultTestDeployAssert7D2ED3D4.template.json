@@ -27,7 +27,7 @@
      "MessageBody": "\"Nebraska\""
     },
     "flattenResponse": "false",
-    "salt": "1727638020040"
+    "salt": "1745534428226"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -107,7 +107,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "da514df694ce3f41453746a766ae6aff13c869c38002598930d6d34e5711985b.zip"
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -161,7 +161,7 @@
     "outputPaths": [
      "PipelineExecutionSummaries.0.PipelineExecutionArn"
     ],
-    "salt": "1727638020041"
+    "salt": "1745534428226"
    },
    "DependsOn": [
     "AwsApiCallSQSsendMessagece34a187bbbeaff4047b3759d5ddf254"
@@ -353,7 +353,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "da514df694ce3f41453746a766ae6aff13c869c38002598930d6d34e5711985b.zip"
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -403,7 +403,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "da514df694ce3f41453746a766ae6aff13c869c38002598930d6d34e5711985b.zip"
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -530,6 +530,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {

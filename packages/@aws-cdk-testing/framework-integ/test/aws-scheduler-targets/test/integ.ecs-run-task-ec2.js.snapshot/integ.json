@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "testCases": {
     "integ-ecs-run-task-ec2/DefaultTest": {
       "stacks": [

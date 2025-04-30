@@ -78,21 +78,6 @@ const integTest = new IntegTest(app, 'appsync-event-api-cognito-auth', {
   testCases: [stack],
 });
 
-// Validate subscribe works with Cognito auth
-integTest.assertions.invokeFunction({
-  functionName: stack.lambdaTestFn.functionName,
-  payload: JSON.stringify({
-    action: 'subscribe',
-    channel: 'default',
-    authMode: 'USER_POOL',
-  }),
-}).expect(ExpectedResult.objectLike({
-  Payload: JSON.stringify({
-    statusCode: 200,
-    msg: 'subscribe_success',
-  }),
-}));
-
 // Validate publish works with Cognito auth
 integTest.assertions.invokeFunction({
   functionName: stack.lambdaTestFn.functionName,
@@ -105,6 +90,21 @@ integTest.assertions.invokeFunction({
   Payload: JSON.stringify({
     statusCode: 200,
     msg: 'publish_success',
+  }),
+}));
+
+// Validate subscribe works with Cognito auth
+integTest.assertions.invokeFunction({
+  functionName: stack.lambdaTestFn.functionName,
+  payload: JSON.stringify({
+    action: 'subscribe',
+    channel: 'default',
+    authMode: 'USER_POOL',
+  }),
+}).expect(ExpectedResult.objectLike({
+  Payload: JSON.stringify({
+    statusCode: 200,
+    msg: 'subscribe_success',
   }),
 }));
 

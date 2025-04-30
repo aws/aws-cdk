@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "aws-cdk-ec2-vpc-reserved-public-subnet.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cd648d83db852472128e3e9489d1afaa67d9b3b5e5f0d8e35d7a821ade0eaaa5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/48cabe1d0b05d3d04c3f18abb38db2ec43d773ae79a9ed8cfdbb630ba720f65d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,54 @@
         "aws-cdk-ec2-vpc-reserved-public-subnet.assets"
       ],
       "metadata": {
+        "/aws-cdk-ec2-vpc-reserved-public-subnet/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "ipAddresses": "*",
+              "subnetConfiguration": [
+                {
+                  "name": "*",
+                  "subnetType": "Public",
+                  "reserved": true
+                },
+                {
+                  "name": "*",
+                  "subnetType": "Isolated"
+                }
+              ],
+              "natGateways": "*"
+            }
+          }
+        ],
         "/aws-cdk-ec2-vpc-reserved-public-subnet/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-reserved-public-subnet/VPC/isolatedSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           }
         ],
         "/aws-cdk-ec2-vpc-reserved-public-subnet/VPC/isolatedSubnet1/Subnet": [
@@ -58,6 +102,30 @@
             "data": "VPCisolatedSubnet1RouteTableAssociation2886DD39"
           }
         ],
+        "/aws-cdk-ec2-vpc-reserved-public-subnet/VPC/isolatedSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          }
+        ],
         "/aws-cdk-ec2-vpc-reserved-public-subnet/VPC/isolatedSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -76,6 +144,12 @@
             "data": "VPCisolatedSubnet2RouteTableAssociation8A6ECC3C"
           }
         ],
+        "/aws-cdk-ec2-vpc-reserved-public-subnet/VPC/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-ec2-vpc-reserved-public-subnet/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -86,6 +160,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-reserved-public-subnet/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/aws-cdk-ec2-vpc-reserved-public-subnet/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
@@ -169,5 +249,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

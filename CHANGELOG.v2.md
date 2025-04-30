@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.193.0](https://github.com/aws/aws-cdk/compare/v2.192.0...v2.193.0) (2025-04-30)
+
+
+### Features
+
+* **appsync:** add support for data source integrations ([#34248](https://github.com/aws/aws-cdk/issues/34248)) ([2fac64e](https://github.com/aws/aws-cdk/commit/2fac64eda44710f6a70661555d0ab84bb76a279c)), closes [#34264](https://github.com/aws/aws-cdk/issues/34264)
+* **codepipeline-actions:** add pipeline invoke action support. ([#34039](https://github.com/aws/aws-cdk/issues/34039)) ([5488048](https://github.com/aws/aws-cdk/commit/5488048e0aa5b7237087cd36a99b0c118e6ba180)), closes [#33818](https://github.com/aws/aws-cdk/issues/33818)
+* **eks:** pass additional helm chart values to aws-load-balancer-controller ([#34077](https://github.com/aws/aws-cdk/issues/34077)) ([6f0605b](https://github.com/aws/aws-cdk/commit/6f0605b5cfb8f4bfe9fa67ef88fb875cb1c589e7)), closes [#29707](https://github.com/aws/aws-cdk/issues/29707) [/github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/helm/aws-load-balancer-controller/values.yaml#L199](https://github.com/aws//github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/helm/aws-load-balancer-controller/values.yaml/issues/L199)
+* **kinesis:** throw `ValidationErrors` instead of untyped Errors ([#34239](https://github.com/aws/aws-cdk/issues/34239)) ([7f378b6](https://github.com/aws/aws-cdk/commit/7f378b6ee87a9ad89772d3cdd77c89d6a9ab8209)), closes [#32569](https://github.com/aws/aws-cdk/issues/32569)
+
+
+### Bug Fixes
+
+* **efs:** support imported subnet ([#34041](https://github.com/aws/aws-cdk/issues/34041)) ([20df8fb](https://github.com/aws/aws-cdk/commit/20df8fb9fdc41f65ce80e45bdb9aa8aa1da83fac)), closes [#33876](https://github.com/aws/aws-cdk/issues/33876)
+* **stepfunctions:** containsTaskToken doesn't handle null values ([#34295](https://github.com/aws/aws-cdk/issues/34295)) ([37a66da](https://github.com/aws/aws-cdk/commit/37a66da60a4fa9626780e63abbe1d3fabaf93258)), closes [#34293](https://github.com/aws/aws-cdk/issues/34293)
+
 ## [2.192.0](https://github.com/aws/aws-cdk/compare/v2.191.0...v2.192.0) (2025-04-24)
 
 

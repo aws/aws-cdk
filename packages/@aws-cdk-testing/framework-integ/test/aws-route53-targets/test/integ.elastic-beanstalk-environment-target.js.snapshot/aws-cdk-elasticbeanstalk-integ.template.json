@@ -114,7 +114,7 @@
      ]
     },
     "Create": "{\"service\":\"ElasticBeanstalk\",\"action\":\"describeEnvironments\",\"parameters\":{\"EnvironmentNames\":[\"MyEnvironment\"]},\"physicalResourceId\":{\"id\":\"EnvironmentUrl\"},\"logApiResponseData\":false}",
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "Environment",
@@ -185,7 +185,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "cde607091ceabfbfb56e643cd4a5647680cfaf19c63f4d59b3f4880df4a71c8d.zip"
+     "S3Key": "695130a6c8132c255e833e84e8482a4a144a4a1261c979bd7e3cb7b8258e8876.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -377,6 +377,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {

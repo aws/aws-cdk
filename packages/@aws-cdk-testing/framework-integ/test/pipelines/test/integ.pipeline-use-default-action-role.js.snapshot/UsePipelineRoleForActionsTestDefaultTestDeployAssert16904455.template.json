@@ -20,7 +20,7 @@
     "outputPaths": [
      "pipeline.name"
     ],
-    "salt": "1743470157421"
+    "salt": "1745526101180"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -219,6 +219,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {

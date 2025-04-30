@@ -18,6 +18,48 @@ beforeEach(() => {
   stack = new cdk.Stack(app);
 });
 
+describe('Event API handles empty array auth modes', () => {
+  test('AppSync Event API throws error when empty array is passed to defaultPublishAuthModeTypes', () => {
+    // WHEN
+    const iamProvider: appsync.AppSyncAuthProvider = {
+      authorizationType: appsync.AppSyncAuthorizationType.IAM,
+    };
+
+    const when = () => {
+      new appsync.EventApi(stack, 'api', {
+        apiName: 'api',
+        authorizationConfig: {
+          authProviders: [iamProvider],
+          defaultPublishAuthModeTypes: [],
+        },
+      });
+    };
+
+    // THEN
+    expect(when).toThrow('Empty AuthModeTypes array is not allowed, if specifying, you must specify a valid mode');
+  });
+
+  test('AppSync Event API throws error when empty array is passed to defaultSubscribeAuthModeTypes', () => {
+    // WHEN
+    const iamProvider: appsync.AppSyncAuthProvider = {
+      authorizationType: appsync.AppSyncAuthorizationType.IAM,
+    };
+
+    const when = () => {
+      new appsync.EventApi(stack, 'api', {
+        apiName: 'api',
+        authorizationConfig: {
+          authProviders: [iamProvider],
+          defaultSubscribeAuthModeTypes: [],
+        },
+      });
+    };
+
+    // THEN
+    expect(when).toThrow('Empty AuthModeTypes array is not allowed, if specifying, you must specify a valid mode');
+  });
+});
+
 describe('AppSync GraphQL API Key Authorization', () => {
   test('AppSync GraphQL API - creates default api key', () => {
     // WHEN

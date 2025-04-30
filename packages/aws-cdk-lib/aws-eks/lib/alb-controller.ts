@@ -8,7 +8,7 @@ import * as iam from '../../aws-iam';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
-import { Aws, Duration, Names, Stack } from '../../core';
+import { Aws, Duration, Names, Stack, ValidationError } from '../../core';
 
 /**
  * Controller version.
@@ -239,6 +239,28 @@ export enum AlbScheme {
 }
 
 /**
+ * Helm chart options that can be set for AlbControllerChart
+ * To add any new supported values refer
+ * https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/helm/aws-load-balancer-controller/values.yaml
+ */
+export interface AlbControllerHelmChartOptions {
+
+  /**
+   * Enable or disable AWS WAFv2 on the ALB ingress controller.
+   *
+   * @default - no value defined for this helm chart option, so it will not be set in the helm chart values
+   */
+  readonly enableWafv2?: boolean;
+
+  /**
+   * Enable or disable AWS WAF on the ALB ingress controller.
+   *
+   * @default - no value defined for this helm chart option, so it will not be set in the helm chart values
+   */
+  readonly enableWaf?: boolean;
+}
+
+/**
  * Options for `AlbController`.
  */
 export interface AlbControllerOptions {
@@ -270,6 +292,13 @@ export interface AlbControllerOptions {
    * @default - Corresponds to the predefined version.
    */
   readonly policy?: any;
+
+  /**
+   * Additional helm chart values for ALB controller
+   *
+   * @default - no additional helm chart values
+   */
+  readonly additionalHelmChartValues?: AlbControllerHelmChartOptions;
 }
 
 /**
@@ -315,7 +344,7 @@ export class AlbController extends Construct {
     const serviceAccount = new ServiceAccount(this, 'alb-sa', { namespace, name: 'aws-load-balancer-controller', cluster: props.cluster });
 
     if (props.version.custom && !props.policy) {
-      throw new Error("'albControllerOptions.policy' is required when using a custom controller version");
+      throw new ValidationError("'albControllerOptions.policy' is required when using a custom controller version", this);
     }
 
     // https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/#iam-permissions
@@ -337,7 +366,6 @@ export class AlbController extends Construct {
       namespace,
       release: 'aws-load-balancer-controller',
       version: props.version.helmChartVersion,
-
       wait: true,
       timeout: Duration.minutes(15),
       values: {
@@ -352,6 +380,7 @@ export class AlbController extends Construct {
           repository: props.repository ?? '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller',
           tag: props.version.version,
         },
+        ...props.additionalHelmChartValues, // additional helm chart options for ALB controller chart
       },
     });
 
