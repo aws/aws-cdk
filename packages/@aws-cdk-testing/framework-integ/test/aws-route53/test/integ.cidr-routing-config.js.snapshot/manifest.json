@@ -37,15 +37,11 @@
         "/CidrRoutingConfig/HostedZone": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "zoneName": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "zoneName": "*"
-            }
+            "data": "*"
           }
         ],
         "/CidrRoutingConfig/HostedZone/Resource": [
@@ -63,19 +59,11 @@
         "/CidrRoutingConfig/CidrRoutingConfig": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "zone": "*",
-              "target": "*",
-              "setIdentifier": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "zone": "*",
-              "target": "*",
-              "setIdentifier": "*"
-            }
+            "data": "*"
           }
         ],
         "/CidrRoutingConfig/CidrRoutingConfig/Resource": [

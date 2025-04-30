@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { AliasRecordTargetConfig, IAliasRecordTarget } from './alias-record-target';
+import { CidrRoutingConfig } from './cidr-routing-config';
 import { GeoLocation } from './geo-location';
 import { IHealthCheck } from './health-check';
 import { IHostedZone } from './hosted-zone-ref';
@@ -11,7 +12,6 @@ import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
 import { DeleteExistingRecordSetProvider } from '../../custom-resource-handlers/dist/aws-route53/delete-existing-record-set-provider.generated';
-import { CidrRoutingConfig } from './cidr-routing-config';
 
 const CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE = 'Custom::CrossAccountZoneDelegation';
 const DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE = 'Custom::DeleteExistingRecordSet';
@@ -280,7 +280,7 @@ export interface RecordSetOptions {
 
   /**
    * The object that is specified in resource record set object when you are linking a resource record set to a CIDR location.
-   * 
+   *
    * A LocationName with an asterisk “*” can be used to create a default CIDR record. CollectionId is still required for default record.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53-recordset.html#cfn-route53-recordset-cidrroutingconfig
@@ -360,7 +360,8 @@ export class RecordSet extends Resource implements IRecordSet {
     if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
       throw new ValidationError(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`, this);
     }
-    if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer && !props.cidrRoutingConfig) {
+    if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer
+      && !props.cidrRoutingConfig) {
       throw new ValidationError('setIdentifier can only be specified for non-simple routing policies', this);
     }
     if (props.multiValueAnswer && props.target.aliasTarget) {

@@ -23,11 +23,11 @@ class TestStack extends Stack {
       zone: zone,
       target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
       setIdentifier: 'test',
-      cidrRoutingConfig: {
+      cidrRoutingConfig: route53.CidrRoutingConfig.new({
         collectionId: cidrCollection.attrId,
         locationName: 'test_location'
-      },
-    })
+      }),
+    });
   }  
 }
 
