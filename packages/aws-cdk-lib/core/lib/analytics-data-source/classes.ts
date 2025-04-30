@@ -918,6 +918,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'subnetType': 'SubnetType',
       'subnetName': '*',
       'assignIpv6AddressOnCreation': 'boolean',
+      'mapPublicIpOnLaunch': 'boolean',
       'associateNetworkAcl': [
         '*',
         {
@@ -3765,6 +3766,35 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'supportsGetObjectRange': 'boolean',
       'supportsGetObjectPartNumber': 'boolean',
       'payload': '*'
+    }
+  },
+  '@aws-cdk.aws-s3tables-alpha': {
+    'TableBucketPolicy': {
+      'tableBucket': {
+        'tableBucketArn': '*',
+        'tableBucketName': '*',
+        'account': '*',
+        'region': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'resourcePolicy': '*',
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'TableBucket': {
+      'tableBucketName': '*',
+      'unreferencedFileRemoval': {
+        'noncurrentDays': '*',
+        'status': 'UnreferencedFileRemovalStatus',
+        'unreferencedDays': '*'
+      },
+      'region': '*',
+      'account': '*',
+      'removalPolicy': 'RemovalPolicy'
     }
   },
   '@aws-cdk.aws-sagemaker-alpha': {
@@ -7394,6 +7424,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'SpecRestApi': {
       'apiDefinition': '*',
       'minCompressionSize': '*',
+      'mode': 'RestApiMode',
       'deploy': 'boolean',
       'deployOptions': {
         'stageName': '*',
@@ -8481,6 +8512,16 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'channelNamespaceName': '*',
       'code': '*',
+      'publishHandlerConfig': {
+        'direct': 'boolean',
+        'dataSource': '*',
+        'lambdaInvokeType': 'LambdaInvokeType'
+      },
+      'subscribeHandlerConfig': {
+        'direct': 'boolean',
+        'dataSource': '*',
+        'lambdaInvokeType': 'LambdaInvokeType'
+      },
       'authorizationConfig': {
         'publishAuthModeTypes': 'AppSyncAuthorizationType',
         'subscribeAuthModeTypes': 'AppSyncAuthorizationType'
@@ -13857,7 +13898,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'connections': '*'
       },
       'open': 'boolean',
-      'lookupSupportedAzs': 'boolean'
+      'lookupSupportedAzs': 'boolean',
+      'ipAddressType': 'VpcEndpointIpAddressType',
+      'dnsRecordIpType': 'VpcEndpointDnsRecordIpType',
+      'privateDnsOnlyForInboundResolverEndpoint': 'VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint'
     },
     'FlowLog': {
       'flowLogName': '*',
@@ -15184,7 +15228,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'albController': {
         'version': '*',
         'repository': '*',
-        'policy': '*'
+        'policy': '*',
+        'additionalHelmChartValues': {
+          'enableWafv2': 'boolean',
+          'enableWaf': 'boolean'
+        }
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'authenticationMode': 'AuthenticationMode',
@@ -15773,7 +15821,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'albController': {
         'version': '*',
         'repository': '*',
-        'policy': '*'
+        'policy': '*',
+        'additionalHelmChartValues': {
+          'enableWafv2': 'boolean',
+          'enableWaf': 'boolean'
+        }
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'authenticationMode': 'AuthenticationMode',
@@ -16389,6 +16441,23 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
       'description': '*',
       'ruleName': '*',
       'eventPattern': {
@@ -16430,6 +16499,23 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'eventBusArn': '*',
         'eventBusPolicy': '*',
         'eventSourceName': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
         'stack': '*',
         'env': {
           'account': '*',
@@ -22453,6 +22539,23 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'archiveAccessTierTime': '*'
       },
       'minimumTLSVersion': '*',
+      'replicationRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
       'replicationRules': {
         'destination': {
           'bucketArn': '*',
@@ -25151,7 +25254,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'burstLimit': '*'
           },
           'description': '*',
-          'detailedMetricsEnabled': 'boolean'
+          'detailedMetricsEnabled': 'boolean',
+          'accessLogSettings': {
+            'destination': '*',
+            'format': '*'
+          }
         }
       ],
       'addRoutes': [
@@ -25296,7 +25403,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'burstLimit': '*'
       },
       'description': '*',
-      'detailedMetricsEnabled': 'boolean'
+      'detailedMetricsEnabled': 'boolean',
+      'accessLogSettings': {
+        'destination': '*',
+        'format': '*'
+      }
     },
     'VpcLink': {
       'vpc': {
@@ -25523,6 +25634,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'description': '*',
       'detailedMetricsEnabled': 'boolean',
+      'accessLogSettings': {
+        'destination': '*',
+        'format': '*'
+      },
       'grantManagementApiAccess': [
         {
           'grantPrincipal': {
@@ -29033,6 +29148,27 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enforceSecurityGroupInboundRulesOnPrivateLinkTraffic': 'boolean',
       'zonalShift': 'boolean',
       'enablePrefixForIpv6SourceNat': 'boolean',
+      'subnetMappings': {
+        'subnet': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'allocationId': '*',
+        'ipv6Address': '*',
+        'privateIpv4Address': '*',
+        'sourceNatIpv6Prefix': '*'
+      },
       'loadBalancerName': '*',
       'vpc': {
         'vpcId': '*',

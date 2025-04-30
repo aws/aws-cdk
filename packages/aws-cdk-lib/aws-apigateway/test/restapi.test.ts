@@ -1,6 +1,6 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { cx_api } from '../..';
-import { Template } from '../../assertions';
+import { Template, Match } from '../../assertions';
 import { UserPool } from '../../aws-cognito';
 import { GatewayVpcEndpoint } from '../../aws-ec2';
 import * as ec2 from '../../aws-ec2';
@@ -1413,6 +1413,26 @@ describe('SpecRestApi', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
       ApiKeyRequired: false,
+    });
+  });
+
+  test.each([
+    [apigw.RestApiMode.OVERWRITE, 'overwrite'],
+    [apigw.RestApiMode.MERGE, 'merge'],
+    [undefined, undefined],
+  ])('mode property is set (%s)', (mode, expectedMode) => {
+    // WHEN
+    const api = new apigw.SpecRestApi(stack, 'api', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      mode,
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      Name: 'api',
+      Mode: expectedMode ?? Match.absent(),
     });
   });
 

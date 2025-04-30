@@ -178,6 +178,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'OPENID_CONNECT',
     'AWS_LAMBDA'
   ],
+  'AppSyncDataSourceType': [
+    'AWS_LAMBDA',
+    'AMAZON_DYNAMODB',
+    'AMAZON_EVENTBRIDGE',
+    'AMAZON_OPENSEARCH_SERVICE',
+    'HTTP',
+    'RELATIONAL_DATABASE',
+    'AMAZON_BEDROCK_RUNTIME'
+  ],
   'AppSyncFieldLogLevel': [
     'NONE',
     'ERROR',
@@ -1312,6 +1321,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'resource-exhausted',
     'unavailable'
   ],
+  'HandlerBehavior': [
+    'CODE',
+    'DIRECT'
+  ],
   'HandlerName': [
     'user',
     'table',
@@ -2036,6 +2049,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Event',
     'DryRun'
   ],
+  'LambdaInvokeType': [
+    'EVENT',
+    'REQUEST_RESPONSE'
+  ],
   'LambdaVersion': [
     'V1_0',
     'V2_0',
@@ -2437,6 +2454,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'cjs',
     'esm'
   ],
+  'OutputType': [
+    'JSON',
+    'JSONL'
+  ],
   'ParameterDataType': [
     'text',
     'aws:ec2:image'
@@ -2818,6 +2839,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'resume-cluster',
     'failover-primary-compute'
   ],
+  'RestApiMode': [
+    'overwrite',
+    'merge'
+  ],
   'Result': [
     'ROLLBACK',
     'FAIL',
@@ -2852,6 +2877,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'RetryMode': [
     'ALL_ACTIONS',
     'FAILED_ACTIONS'
+  ],
+  'RevisionType': [
+    'COMMIT_ID',
+    'IMAGE_DIGEST',
+    'S3_OBJECT_VERSION_ID',
+    'S3_OBJECT_KEY'
   ],
   'RevocationType': [
     'CRL'
@@ -2914,7 +2945,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   'SSLMethod': [
     'sni-only',
-    'vip'
+    'vip',
+    'static-ip'
   ],
   'ScalingEvent': [
     'autoscaling:EC2_INSTANCE_LAUNCH',
@@ -3439,6 +3471,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
+  'Transformation': [
+    'NONE',
+    'COMPACT',
+    'FLATTEN'
+  ],
   'TransitGatewayFeatureStatus': [
     'enable',
     'disable'
@@ -3519,6 +3556,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Count/Second',
     'None'
   ],
+  'UnreferencedFileRemovalStatus': [
+    'Enabled',
+    'Disabled'
+  ],
   'UntrustedArtifactOnDeployment': [
     'Enforce',
     'Warn'
@@ -3577,6 +3618,21 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'Visibility': [
     'GLOBAL',
     'PRIVATE'
+  ],
+  'VpcEndpointDnsRecordIpType': [
+    'ipv4',
+    'ipv6',
+    'dualstack',
+    'service-defined'
+  ],
+  'VpcEndpointIpAddressType': [
+    'ipv4',
+    'ipv6',
+    'dualstack'
+  ],
+  'VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint': [
+    'AllResolvers',
+    'OnlyInboundResolver'
   ],
   'VpcEndpointType': [
     'Interface',
