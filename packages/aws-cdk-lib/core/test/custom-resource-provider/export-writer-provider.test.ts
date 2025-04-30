@@ -120,6 +120,9 @@ describe('export writer provider', () => {
         'us-isob-east-1': {
           value: 'nodejs18.x',
         },
+        'us-isob-west-1': {
+          value: 'nodejs18.x',
+        },
         'us-west-1': {
           value: 'nodejs20.x',
         },
