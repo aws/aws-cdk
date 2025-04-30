@@ -6,7 +6,7 @@ import * as ses from 'aws-cdk-lib/aws-ses';
 
 /**
  * In order to test this you need to have a valid public hosted zone that you can use
- * to request certificates for.
+ * to validate the domain identity.
  */
 const hostedZoneId = process.env.CDK_INTEG_HOSTED_ZONE_ID ?? process.env.HOSTED_ZONE_ID;
 if (!hostedZoneId) throw new Error('For this test you must provide your own HostedZoneId as an env var "HOSTED_ZONE_ID". See framework-integ/README.md for details.');
