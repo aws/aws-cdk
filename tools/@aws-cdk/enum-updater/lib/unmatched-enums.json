@@ -454,6 +454,9 @@
     "EndpointType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts"
     },
+    "RestApiMode": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts"
+    },
     "MethodLoggingLevel": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/stage.ts"
     },
@@ -1672,6 +1675,12 @@
     "CsvDelimiter": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/distributed-map/item-reader.ts"
     },
+    "Transformation": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/distributed-map/result-writer.ts"
+    },
+    "OutputType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/distributed-map/result-writer.ts"
+    },
     "StateType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/private/state-type.ts"
     },
@@ -1842,6 +1851,20 @@
     },
     "TriggerInvalidation": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/triggers/lib/trigger.ts"
+    }
+  },
+  "applicationsignals": {
+    "JavaInstrumentationVersion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts"
+    },
+    "PythonInstrumentationVersion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts"
+    },
+    "DotnetInstrumentationVersion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts"
+    },
+    "NodeInstrumentationVersion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts"
     }
   },
   "neptune": {
