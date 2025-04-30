@@ -21,8 +21,8 @@ A GitHub Action and CLI tool that helps detect broadly scoped IAM principals in 
 
 | Name             | Description                                          | Required | Default               |
 |------------------|------------------------------------------------------|----------|-----------------------|
-| `rule_set_path`  | Local path to the cfn-guard rules file               | Yes      |                       |
-| `show_summary`   | Show summary (`fail`, `warn`, or `none`)             | No       | `fail`                |
+| `rule_set_path`  | Local path to the cfn-guard rules file               | No       | `./rules`             |
+| `show_summary`   | Show summary (`none`, `all`, `pass`, `fail`, `skip`) | No       | `fail`                |
 | `output_format`  | Output format (`single-line-summary`, `json`, etc.)  | No       | `single-line-summary` |
 | `base_sha`       | Commit SHA to compare against                        | No       | `origin/main`         |
 | `head_sha`       | The commit SHA for the head (current) branch or PR   | No       | `HEAD`                |

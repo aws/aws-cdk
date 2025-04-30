@@ -30,4 +30,4 @@ jobs:
           head_sha: ${{ github.event.pull_request.head.sha }}
           rule_set_path: './tools/@aws-cdk/security-guardian/rules'
           show_summary: 'fail'
-          output_format: 'single-line-summary'
+          output_format: 'json'

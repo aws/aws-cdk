@@ -3,7 +3,7 @@ import * as exec from '@actions/exec';
 import * as fs from 'fs';
 import * as path from 'path';
 
-export async function detectChangedTemplates(baseSha: string, headSha: string, outputDir: string): Promise<boolean> {
+export async function detectChangedTemplates(baseSha: string, headSha: string, workingDir: string): Promise<boolean> {
   core.info(`Detecting changed .template.json files from ${baseSha} to ${headSha}`);
 
   let stdout = '';
@@ -28,7 +28,7 @@ export async function detectChangedTemplates(baseSha: string, headSha: string, o
     console.log('fullpath:', fullPath);
     if (fs.existsSync(fullPath)) {
       const safeName = file.replace(/\//g, '_');
-      fs.copyFileSync(fullPath, path.join(outputDir, safeName));
+      fs.copyFileSync(fullPath, path.join(workingDir, safeName));
       core.info(`Copied: ${file}`);
     } else {
       core.warning(`Changed file not found: ${file}`);

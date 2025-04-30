@@ -57,10 +57,10 @@ async function run(): Promise<void> {
   let workingDir: string = './changed_templates';
 
   try {
-    const ruleSetPath = getInput('rule_set_path');
+    const ruleSetPath = getInput('rule_set_path', { default: './rules' });
     const baseSha = getInput('base_sha', { default: 'origin/main' });
     const headSha = getInput('head_sha', { default: 'HEAD' });
-    const outputFormat = getInput('output_format', { default: 'single-line-summary' });
+    const outputFormat = getInput('output_format', { default: 'json' });
     const showSummary = getInput('show_summary', { default: 'fail' });
     setupWorkingDir(workingDir);
     
