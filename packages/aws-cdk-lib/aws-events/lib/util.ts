@@ -1,5 +1,5 @@
-import { UnscopedValidationError } from '../../core';
 import { EventPattern } from './event-pattern';
+import { UnscopedValidationError } from '../../core';
 
 /**
  * Merge the `src` event pattern into the `dest` event pattern by adding all
