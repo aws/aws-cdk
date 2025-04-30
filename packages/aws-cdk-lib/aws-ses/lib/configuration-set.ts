@@ -216,6 +216,9 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
         throw new ValidationError(`The maximum delivery duration must be less than or equal to 14 hours (50400 seconds), got: ${props.maxDeliveryDuration.toSeconds()} seconds.`, this);
       }
     }
+    if (props.customTrackingHttpsPolicy && !props.customTrackingRedirectDomain) {
+      throw new ValidationError('customTrackingHttpsPolicy can only be set when customTrackingRedirectDomain is also set.', this);
+    }
 
     const configurationSet = new CfnConfigurationSet(this, 'Resource', {
       deliveryOptions: undefinedIfNoKeys({

@@ -57,6 +57,15 @@ describe('custom tracking domain', () => {
       },
     });
   });
+
+  test.each([undefined, ''])('throw error for specifying custom tracking https policy without custom tracking domain %s', (customTrackingRedirectDomain) => {
+    expect(() => {
+      new ConfigurationSet(stack, 'ConfigurationSet', {
+        customTrackingRedirectDomain,
+        customTrackingHttpsPolicy: HttpsPolicy.REQUIRE,
+      });
+    }).toThrow('customTrackingHttpsPolicy can only be set when customTrackingRedirectDomain is also set.');
+  });
 });
 
 test('configuration set with both engagement metrics and optimized shared delivery enabled', () => {
