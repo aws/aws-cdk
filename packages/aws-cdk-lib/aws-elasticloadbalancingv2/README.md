@@ -774,7 +774,7 @@ Only a single Lambda function can be added to a single listener rule.
 
 ### Multi-Value Headers with Lambda Targets
 
-When using a Lambda function as a target, you can enable multi-value headers to allow the load balancer to send headers with multiple values:
+When using a Lambda function as a target, you can enable [multi-value headers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/lambda-functions.html#multi-value-headers) to allow the load balancer to send headers with multiple values:
 
 ```ts
 import * as lambda from 'aws-cdk-lib/aws-lambda';

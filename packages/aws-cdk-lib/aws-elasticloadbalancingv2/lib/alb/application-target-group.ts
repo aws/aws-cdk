@@ -113,8 +113,6 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    *
    * If the value is true, the request and response headers exchanged between
    * the load balancer and the Lambda function include arrays of values or strings.
-   * The possible values are true or false.
-   * The default value is false.
    *
    * Only applicable for Lambda targets.
    *

@@ -886,34 +886,15 @@ describe('tests', () => {
       });
     });
 
-    test('lambda.multi_value_headers.enabled is not set when multiValueHeadersEnabled is false', () => {
+    test.each([false, undefined])('lambda.multi_value_headers.enabled is not set when multiValueHeadersEnabled is %s', (multiValueHeadersEnabled) => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'Stack');
-
       // WHEN
       new elbv2.ApplicationTargetGroup(stack, 'TG', {
         targetType: elbv2.TargetType.LAMBDA,
-        multiValueHeadersEnabled: false,
+        multiValueHeadersEnabled,
       });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
-        TargetType: 'lambda',
-        TargetGroupAttributes: Match.absent(),
-      });
-    });
-
-    test('lambda.multi_value_headers.enabled is not set when multiValueHeadersEnabled is not specified', () => {
-      // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
-
-      // WHEN
-      new elbv2.ApplicationTargetGroup(stack, 'TG', {
-        targetType: elbv2.TargetType.LAMBDA,
-      });
-
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
         TargetType: 'lambda',
@@ -984,30 +965,15 @@ describe('tests', () => {
   });
 
   describe('multiValueHeadersEnabled validation', () => {
-    test('Throws an error when multiValueHeadersEnabled is true for non-Lambda target type (IP)', () => {
+    test.each([elbv2.TargetType.IP, elbv2.TargetType.INSTANCE])('Throws an error when multiValueHeadersEnabled is true for non-Lambda target type (%s)', (targetType) => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'Stack');
       const vpc = new ec2.Vpc(stack, 'VPC');
-
       // WHEN & THEN
       expect(() => new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
         vpc,
-        targetType: elbv2.TargetType.IP,
-        multiValueHeadersEnabled: true,
-      })).toThrow('multiValueHeadersEnabled is only supported for Lambda targets.');
-    });
-
-    test('Throws an error when multiValueHeadersEnabled is true for non-Lambda target type (Instance)', () => {
-      // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
-      const vpc = new ec2.Vpc(stack, 'VPC');
-
-      // WHEN & THEN
-      expect(() => new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
-        vpc,
-        targetType: elbv2.TargetType.INSTANCE,
+        targetType,
         multiValueHeadersEnabled: true,
       })).toThrow('multiValueHeadersEnabled is only supported for Lambda targets.');
     });
