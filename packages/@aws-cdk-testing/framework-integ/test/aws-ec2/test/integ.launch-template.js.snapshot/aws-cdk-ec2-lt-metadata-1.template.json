@@ -285,7 +285,6 @@
     ]
    }
   },
-<<<<<<< HEAD
   "pg749EE6ED": {
    "Type": "AWS::EC2::PlacementGroup",
    "Properties": {
@@ -304,14 +303,44 @@
        ]
       }
      },
-=======
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-ec2-lt-metadata-1/LTWithPlacementGroup"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-ec2-lt-metadata-1/LTWithPlacementGroup"
+        }
+       ]
+      }
+     ]
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-ec2-lt-metadata-1/LTWithPlacementGroup"
+       }
+      ]
+     }
+    ]
+   }
+  },
   "LTWithNetworkInterfacesC793C8F4": {
    "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
     "LaunchTemplateData": {
-     "ImageId": {
-      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
-     },
      "NetworkInterfaces": [
       {
        "AssociatePublicIpAddress": false,
@@ -324,18 +353,13 @@
        "DeviceIndex": 1
       }
      ],
->>>>>>> ed392c24e (Add test and test snapshot)
      "TagSpecifications": [
       {
        "ResourceType": "instance",
        "Tags": [
         {
          "Key": "Name",
-<<<<<<< HEAD
-         "Value": "aws-cdk-ec2-lt-metadata-1/LTWithPlacementGroup"
-=======
          "Value": "aws-cdk-ec2-lt-metadata-1/LTWithNetworkInterfaces"
->>>>>>> ed392c24e (Add test and test snapshot)
         }
        ]
       },
@@ -344,22 +368,11 @@
        "Tags": [
         {
          "Key": "Name",
-<<<<<<< HEAD
-         "Value": "aws-cdk-ec2-lt-metadata-1/LTWithPlacementGroup"
-        }
-       ]
-      }
-     ]
-=======
          "Value": "aws-cdk-ec2-lt-metadata-1/LTWithNetworkInterfaces"
         }
        ]
       }
-     ],
-     "UserData": {
-      "Fn::Base64": "#!/bin/bash"
-     }
->>>>>>> ed392c24e (Add test and test snapshot)
+     ]
     },
     "TagSpecifications": [
      {
@@ -367,17 +380,12 @@
       "Tags": [
        {
         "Key": "Name",
-<<<<<<< HEAD
-        "Value": "aws-cdk-ec2-lt-metadata-1/LTWithPlacementGroup"
-=======
         "Value": "aws-cdk-ec2-lt-metadata-1/LTWithNetworkInterfaces"
->>>>>>> ed392c24e (Add test and test snapshot)
        }
       ]
      }
     ]
    }
-<<<<<<< HEAD
   }
  },
  "Mappings": {
@@ -505,18 +513,12 @@
    "us-west-2": {
     "value": "nodejs20.x"
    }
-=======
->>>>>>> ed392c24e (Add test and test snapshot)
   }
  },
  "Parameters": {
   "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
    "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
-  },
-  "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter": {
-   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-   "Default": "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

@@ -3,11 +3,7 @@ import { Connections, IConnectable } from './connections';
 import { CfnLaunchTemplate } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
-import {
-  IMachineImage,
-  MachineImageConfig,
-  OperatingSystemType,
-} from './machine-image';
+import { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
 import { IPlacementGroup } from './placement-group';
 import { launchTemplateBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup } from './security-group';
@@ -30,10 +26,7 @@ import {
   FeatureFlags,
   ValidationError,
 } from '../../core';
-import {
-  addConstructMetadata,
-  MethodMetadata,
-} from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -114,23 +107,11 @@ export interface EnaSrdSpecification
   extends CfnLaunchTemplate.EnaSrdSpecificationProperty { }
 
 /**
- * Specifies an IPv4 prefix for a network interface.
- */
-export interface Ipv4PrefixSpecification
-  extends CfnLaunchTemplate.Ipv4PrefixSpecificationProperty { }
-
-/**
  * Specifies an IPv6 address in an Amazon EC2 launch template.
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-networkinterface.html
  */
 export interface Ipv6Add extends CfnLaunchTemplate.Ipv6AddProperty { }
-
-/**
- * Specifies an IPv6 prefix for a network interface.
- */
-export interface Ipv6PrefixSpecification
-  extends CfnLaunchTemplate.Ipv6PrefixSpecificationProperty { }
 
 /**
  * Specifies a secondary private IPv4 address for a network interface.
@@ -219,7 +200,7 @@ export interface NetworkInterface {
    *
    * @default A single prefix is assigned via `ipv4PrefixCount`
    */
-  readonly ipv4Prefixes?: Ipv4PrefixSpecification[];
+  readonly ipv4Prefixes?: string[];
 
   /**
    * The number of IPv6 addresses to assign to a network interface. Amazon EC2 automatically selects the IPv6 addresses from the subnet range. You can't use this option if specifying specific IPv6 addresses.
@@ -247,7 +228,7 @@ export interface NetworkInterface {
    *
    * @default No prefixes are assigned.
    */
-  readonly ipv6Prefixes?: Ipv6PrefixSpecification[];
+  readonly ipv6Prefixes?: string[];
 
   /**
    * The index of the network card. Some instance types support multiple network cards. The primary network interface must be assigned to network card index 0. The default is network card index 0.
@@ -266,14 +247,14 @@ export interface NetworkInterface {
   /**
    * The primary private IPv4 address of the network interface.
    *
-   * @default A random IP address is assigned from one of the subnets.
+   * @default An IP address is automatically assigned from one of the subnets.
    */
   readonly privateIpAddress?: string;
 
   /**
    * One or more private IPv4 addresses.
    *
-   * @default A random IP address is assigned from one of the subnets.
+   * @default An IP address is automatically assigned from one of the subnets.
    */
   readonly privateIpAddresses?: PrivateIpAdd[];
 
@@ -290,30 +271,6 @@ export interface NetworkInterface {
    * @default No subnets are defined.
    */
   readonly subnet?: ISubnet;
-}
-
-function synthesizeNetworkInterfaces(
-  networkInterfaces: NetworkInterface[],
-): CfnLaunchTemplate.NetworkInterfaceProperty[] {
-  return networkInterfaces.map((networkInterface) => {
-    return {
-      ...networkInterface,
-      groups: Lazy.list({
-        produce: () => {
-          return networkInterface.groups
-            ? networkInterface.groups.map((sg) => sg.securityGroupId)
-            : undefined;
-        },
-      }),
-      subnetId: Lazy.string({
-        produce: () => {
-          return networkInterface.subnet
-            ? networkInterface.subnet.subnetId
-            : undefined;
-        },
-      }),
-    };
-  });
 }
 
 /**
@@ -759,29 +716,19 @@ export interface LaunchTemplateAttributes {
  *
  * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html
  */
-export class LaunchTemplate
-  extends Resource
-  implements ILaunchTemplate, iam.IGrantable, IConnectable {
+export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGrantable, IConnectable {
   /**
    * Import an existing LaunchTemplate.
    */
-  public static fromLaunchTemplateAttributes(
-    scope: Construct,
-    id: string,
-    attrs: LaunchTemplateAttributes,
-  ): ILaunchTemplate {
+  public static fromLaunchTemplateAttributes(scope: Construct, id: string, attrs: LaunchTemplateAttributes): ILaunchTemplate {
     const haveId = Boolean(attrs.launchTemplateId);
     const haveName = Boolean(attrs.launchTemplateName);
     if (haveId == haveName) {
-      throw new ValidationError(
-        'LaunchTemplate.fromLaunchTemplateAttributes() requires exactly one of launchTemplateId or launchTemplateName be provided.',
-        scope,
-      );
+      throw new ValidationError('LaunchTemplate.fromLaunchTemplateAttributes() requires exactly one of launchTemplateId or launchTemplateName be provided.', scope);
     }
 
     class Import extends Resource implements ILaunchTemplate {
-      public readonly versionNumber =
-        attrs.versionNumber ?? LaunchTemplateSpecialVersions.DEFAULT_VERSION;
+      public readonly versionNumber = attrs.versionNumber ?? LaunchTemplateSpecialVersions.DEFAULT_VERSION;
       public readonly launchTemplateId? = attrs.launchTemplateId;
       public readonly launchTemplateName? = attrs.launchTemplateName;
     }
@@ -875,36 +822,16 @@ export class LaunchTemplate
     addConstructMetadata(this, props);
 
     // Basic validation of the provided spot block duration
-    const spotDuration = props?.spotOptions?.blockDuration?.toHours({
-      integral: true,
-    });
+    const spotDuration = props?.spotOptions?.blockDuration?.toHours({ integral: true });
     if (spotDuration !== undefined && (spotDuration < 1 || spotDuration > 6)) {
       // See: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-requests.html#fixed-duration-spot-instances
-      Annotations.of(this).addError(
-        'Spot block duration must be exactly 1, 2, 3, 4, 5, or 6 hours.',
-      );
+      Annotations.of(this).addError('Spot block duration must be exactly 1, 2, 3, 4, 5, or 6 hours.');
     }
 
     // Basic validation of the provided httpPutResponseHopLimit
-    if (
-      props.httpPutResponseHopLimit !== undefined &&
-      (props.httpPutResponseHopLimit < 1 || props.httpPutResponseHopLimit > 64)
-    ) {
+    if (props.httpPutResponseHopLimit !== undefined && (props.httpPutResponseHopLimit < 1 || props.httpPutResponseHopLimit > 64)) {
       // See: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpputresponsehoplimit
-      Annotations.of(this).addError(
-        'HttpPutResponseHopLimit must between 1 and 64',
-      );
-    }
-
-    // Basic validation of the provided network interface cards
-    if (props.networkInterfaces && props.networkInterfaces.length > 1) {
-      if (
-        !props.networkInterfaces.every((nic) => !nic.associatePublicIpAddress)
-      ) {
-        Annotations.of(this).addError(
-          'associatePublicIpAddress must be `false` or `undefined` when defining multiple network interfaces',
-        );
-      }
+      Annotations.of(this).addError('HttpPutResponseHopLimit must between 1 and 64');
     }
 
     // Basic validation of the provided network interface cards
@@ -915,17 +842,11 @@ export class LaunchTemplate
     }
 
     if (props.instanceProfile && props.role) {
-      throw new ValidationError(
-        'You cannot provide both an instanceProfile and a role',
-        this,
-      );
+      throw new ValidationError('You cannot provide both an instanceProfile and a role', this);
     }
 
     if (props.keyName && props.keyPair) {
-      throw new ValidationError(
-        "Cannot specify both of 'keyName' and 'keyPair'; prefer 'keyPair'",
-        this,
-      );
+      throw new ValidationError('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'', this);
     }
 
     // use provided instance profile or create one if a role was provided
@@ -944,47 +865,29 @@ export class LaunchTemplate
     this._grantPrincipal = this.role;
 
     if (props.securityGroup) {
-      this._connections = new Connections({
-        securityGroups: [props.securityGroup],
-      });
+      this._connections = new Connections({ securityGroups: [props.securityGroup] });
     }
     const securityGroupsToken = Lazy.list({
       produce: () => {
         if (this._connections && this._connections.securityGroups.length > 0) {
-          return this._connections.securityGroups.map(
-            (sg) => sg.securityGroupId,
-          );
+          return this._connections.securityGroups.map(sg => sg.securityGroupId);
         }
         return undefined;
       },
     });
 
-    const imageConfig: MachineImageConfig | undefined =
-      props.machineImage?.getImage(this);
+    const imageConfig: MachineImageConfig | undefined = props.machineImage?.getImage(this);
     if (imageConfig) {
       this.osType = imageConfig.osType;
       this.imageId = imageConfig.imageId;
     }
 
-    if (
-      this.osType &&
-      props.keyPair &&
-      !props.keyPair._isOsCompatible(this.osType)
-    ) {
-      throw new ValidationError(
-        `${props.keyPair.type} keys are not compatible with the chosen AMI`,
-        this,
-      );
+    if (this.osType && props.keyPair && !props.keyPair._isOsCompatible(this.osType)) {
+      throw new ValidationError(`${props.keyPair.type} keys are not compatible with the chosen AMI`, this);
     }
 
-    if (
-      FeatureFlags.of(this).isEnabled(
-        cxapi.EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA,
-      ) ||
-      FeatureFlags.of(this).isEnabled(
-        cxapi.AUTOSCALING_GENERATE_LAUNCH_TEMPLATE,
-      )
-    ) {
+    if (FeatureFlags.of(this).isEnabled(cxapi.EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA) ||
+      FeatureFlags.of(this).isEnabled(cxapi.AUTOSCALING_GENERATE_LAUNCH_TEMPLATE)) {
       // priority: prop.userData -> userData from machineImage -> undefined
       this.userData = props.userData ?? imageConfig?.userData;
     } else {
@@ -1008,8 +911,7 @@ export class LaunchTemplate
       marketOptions = {
         marketType: 'spot',
         spotOptions: {
-          blockDurationMinutes:
-            spotDuration !== undefined ? spotDuration * 60 : undefined,
+          blockDurationMinutes: spotDuration !== undefined ? spotDuration * 60 : undefined,
           instanceInterruptionBehavior: props.spotOptions.interruptionBehavior,
           maxPrice: props.spotOptions.maxPrice?.toString(),
           spotInstanceType: props.spotOptions.requestType,
@@ -1017,11 +919,7 @@ export class LaunchTemplate
         },
       };
       // Remove SpotOptions if there are none.
-      if (
-        Object.keys(marketOptions.spotOptions).filter(
-          (k) => marketOptions.spotOptions[k],
-        ).length == 0
-      ) {
+      if (Object.keys(marketOptions.spotOptions).filter((k) => marketOptions.spotOptions[k]).length == 0) {
         marketOptions.spotOptions = undefined;
       }
     }
@@ -1032,14 +930,12 @@ export class LaunchTemplate
       produce: () => {
         if (this.tags.hasTags()) {
           const renderedTags = this.tags.renderTags();
-          const lowerCaseRenderedTags = renderedTags.map(
-            (tag: { [key: string]: string }) => {
-              return {
-                key: tag.Key,
-                value: tag.Value,
-              };
-            },
-          );
+          const lowerCaseRenderedTags = renderedTags.map((tag: { [key: string]: string }) => {
+            return {
+              key: tag.Key,
+              value: tag.Value,
+            };
+          });
           return [
             {
               resourceType: 'instance',
@@ -1059,14 +955,12 @@ export class LaunchTemplate
       produce: () => {
         if (this.tags.hasTags()) {
           const renderedTags = this.tags.renderTags();
-          const lowerCaseRenderedTags = renderedTags.map(
-            (tag: { [key: string]: string }) => {
-              return {
-                key: tag.Key,
-                value: tag.Value,
-              };
-            },
-          );
+          const lowerCaseRenderedTags = renderedTags.map((tag: { [key: string]: string }) => {
+            return {
+              key: tag.Key,
+              value: tag.Value,
+            };
+          });
           return [
             {
               resourceType: 'launch-template',
@@ -1078,21 +972,18 @@ export class LaunchTemplate
       },
     });
 
-    let networkInterfaces: NetworkInterface[] | undefined;
-    if (props.networkInterfaces) {
-      networkInterfaces = props.networkInterfaces;
-    } else {
-      networkInterfaces =
-        props.associatePublicIpAddress !== undefined
+    const networkInterfaces = props.networkInterfaces ?? (
+      props.associatePublicIpAddress !== undefined
+        ? [{
+          deviceIndex: 0,
+          associatePublicIpAddress: props.associatePublicIpAddress,
+          groups: props.securityGroup ? [props.securityGroup] : undefined,
+        }]
+        : undefined
+    );
 
-          ? [
-            {
-              deviceIndex: 0,
-              associatePublicIpAddress: props.associatePublicIpAddress,
-              groups: props.securityGroup ? [props.securityGroup] : undefined,
-            },
-          ]
-          : undefined;
+    if ( props.versionDescription && !Token.isUnresolved(props.versionDescription) && props.versionDescription.length > 255) {
+      throw new ValidationError(`versionDescription must be less than or equal to 255 characters, got ${props.versionDescription.length}`, this );
     }
 
     if (
@@ -1100,21 +991,7 @@ export class LaunchTemplate
       !Token.isUnresolved(props.versionDescription) &&
       props.versionDescription.length > 255
     ) {
-      throw new ValidationError(
-        `versionDescription must be less than or equal to 255 characters, got ${props.versionDescription.length}`,
-        this,
-      );
-    }
-
-    if (
-      props.versionDescription &&
-      !Token.isUnresolved(props.versionDescription) &&
-      props.versionDescription.length > 255
-    ) {
-      throw new ValidationError(
-        `versionDescription must be less than or equal to 255 characters, got ${props.versionDescription.length}`,
-        this,
-      );
+      throw new ValidationError(`versionDescription must be less than or equal to 255 characters, got ${props.versionDescription.length}`, this );
     }
 
     if (props.versionDescription && !Token.isUnresolved(props.versionDescription) && props.versionDescription.length > 255) {
@@ -1125,56 +1002,35 @@ export class LaunchTemplate
       launchTemplateName: props?.launchTemplateName,
       versionDescription: props?.versionDescription,
       launchTemplateData: {
-        blockDeviceMappings:
-          props?.blockDevices !== undefined
-            ? launchTemplateBlockDeviceMappings(this, props.blockDevices)
-            : undefined,
-        creditSpecification:
-          props?.cpuCredits !== undefined
-            ? {
-              cpuCredits: props.cpuCredits,
-            }
-            : undefined,
+        blockDeviceMappings: props?.blockDevices !== undefined ? launchTemplateBlockDeviceMappings(this, props.blockDevices) : undefined,
+        creditSpecification: props?.cpuCredits !== undefined ? {
+          cpuCredits: props.cpuCredits,
+        } : undefined,
         disableApiTermination: props?.disableApiTermination,
         ebsOptimized: props?.ebsOptimized,
-        enclaveOptions:
-          props?.nitroEnclaveEnabled !== undefined
-            ? {
-              enabled: props.nitroEnclaveEnabled,
-            }
-            : undefined,
-        hibernationOptions:
-          props?.hibernationConfigured !== undefined
-            ? {
-              configured: props.hibernationConfigured,
-            }
-            : undefined,
-        iamInstanceProfile:
-          iamProfileArn !== undefined ? { arn: iamProfileArn } : undefined,
+        enclaveOptions: props?.nitroEnclaveEnabled !== undefined ? {
+          enabled: props.nitroEnclaveEnabled,
+        } : undefined,
+        hibernationOptions: props?.hibernationConfigured !== undefined ? {
+          configured: props.hibernationConfigured,
+        } : undefined,
+        iamInstanceProfile: iamProfileArn !== undefined ? { arn: iamProfileArn } : undefined,
         imageId: imageConfig?.imageId,
         instanceType: props?.instanceType?.toString(),
-        instanceInitiatedShutdownBehavior:
-          props?.instanceInitiatedShutdownBehavior,
+        instanceInitiatedShutdownBehavior: props?.instanceInitiatedShutdownBehavior,
         instanceMarketOptions: marketOptions,
         keyName: props.keyPair?.keyPairName ?? props?.keyName,
-        monitoring:
-          props?.detailedMonitoring !== undefined
-            ? {
-              enabled: props.detailedMonitoring,
-            }
-            : undefined,
+        monitoring: props?.detailedMonitoring !== undefined ? {
+          enabled: props.detailedMonitoring,
+        } : undefined,
         securityGroupIds: networkInterfaces ? undefined : securityGroupsToken,
         tagSpecifications: tagsToken,
         userData: userDataToken,
         metadataOptions: this.renderMetadataOptions(props),
-        networkInterfaces: networkInterfaces
-          ? synthesizeNetworkInterfaces(networkInterfaces)
-          : undefined,
-        placement: props.placementGroup
-          ? {
-            groupName: props.placementGroup.placementGroupName,
-          }
-          : undefined,
+        networkInterfaces: networkInterfaces ? this.synthesizeNetworkInterfaces(networkInterfaces) : undefined,
+        placement: props.placementGroup ? {
+          groupName: props.placementGroup.placementGroupName,
+        } : undefined,
 
         // Fields not yet implemented:
         // ==========================
@@ -1224,52 +1080,40 @@ export class LaunchTemplate
     this.versionNumber = Token.asString(resource.getAtt('LatestVersionNumber'));
   }
 
+  private synthesizeNetworkInterfaces(
+    networkInterfaces: NetworkInterface[],
+  ): CfnLaunchTemplate.NetworkInterfaceProperty[] {
+    return networkInterfaces.map((networkInterface) => {
+      return {
+        ...networkInterface,
+        ipv4Prefixes: networkInterface.ipv4Prefixes?.map(p => ({ ipv4Prefix: p })),
+        ipv6Prefixes: networkInterface.ipv6Prefixes?.map(p => ({ ipv6Prefix: p })),
+        groups: networkInterface.groups?.map((sg) => sg.securityGroupId),
+        subnetId: networkInterface.subnet?.subnetId,
+      };
+    });
+  }
+
   private renderMetadataOptions(props: LaunchTemplateProps) {
     let requireMetadataOptions = false;
     // if requireImdsv2 is true, httpTokens must be required.
-    if (
-      props.requireImdsv2 === true &&
-      props.httpTokens === LaunchTemplateHttpTokens.OPTIONAL
-    ) {
-      Annotations.of(this).addError(
-        'httpTokens must be required when requireImdsv2 is true',
-      );
+    if (props.requireImdsv2 === true && props.httpTokens === LaunchTemplateHttpTokens.OPTIONAL) {
+      Annotations.of(this).addError('httpTokens must be required when requireImdsv2 is true');
     }
-    if (
-      props.httpEndpoint !== undefined ||
-      props.httpProtocolIpv6 !== undefined ||
-      props.httpPutResponseHopLimit !== undefined ||
-      props.httpTokens !== undefined ||
-      props.instanceMetadataTags !== undefined ||
-      props.requireImdsv2 === true
-    ) {
+    if (props.httpEndpoint !== undefined || props.httpProtocolIpv6 !== undefined || props.httpPutResponseHopLimit !== undefined ||
+      props.httpTokens !== undefined || props.instanceMetadataTags !== undefined || props.requireImdsv2 === true) {
       requireMetadataOptions = true;
     }
     if (requireMetadataOptions) {
       return {
-        httpEndpoint:
-          props.httpEndpoint === true
-            ? 'enabled'
-            : props.httpEndpoint === false
-              ? 'disabled'
-              : undefined,
-        httpProtocolIpv6:
-          props.httpProtocolIpv6 === true
-            ? 'enabled'
-            : props.httpProtocolIpv6 === false
-              ? 'disabled'
-              : undefined,
+        httpEndpoint: props.httpEndpoint === true ? 'enabled' :
+          props.httpEndpoint === false ? 'disabled' : undefined,
+        httpProtocolIpv6: props.httpProtocolIpv6 === true ? 'enabled' :
+          props.httpProtocolIpv6 === false ? 'disabled' : undefined,
         httpPutResponseHopLimit: props.httpPutResponseHopLimit,
-        httpTokens:
-          props.requireImdsv2 === true
-            ? LaunchTemplateHttpTokens.REQUIRED
-            : props.httpTokens,
-        instanceMetadataTags:
-          props.instanceMetadataTags === true
-            ? 'enabled'
-            : props.instanceMetadataTags === false
-              ? 'disabled'
-              : undefined,
+        httpTokens: props.requireImdsv2 === true ? LaunchTemplateHttpTokens.REQUIRED : props.httpTokens,
+        instanceMetadataTags: props.instanceMetadataTags === true ? 'enabled' :
+          props.instanceMetadataTags === false ? 'disabled' : undefined,
       };
     } else {
       return undefined;
@@ -1284,11 +1128,7 @@ export class LaunchTemplate
   @MethodMetadata()
   public addSecurityGroup(securityGroup: ISecurityGroup): void {
     if (!this._connections) {
-      throw new ValidationError(
-
-        'LaunchTemplate can only be added a securityGroup if another securityGroup is initialized in the constructor.',
-        this,
-      );
+      throw new ValidationError('LaunchTemplate can only be added a securityGroup if another securityGroup is initialized in the constructor.', this);
     }
     this._connections.addSecurityGroup(securityGroup);
   }
@@ -1300,11 +1140,7 @@ export class LaunchTemplate
    */
   public get connections(): Connections {
     if (!this._connections) {
-      throw new ValidationError(
-
-        'LaunchTemplate can only be used as IConnectable if a securityGroup is provided when constructing it.',
-        this,
-      );
+      throw new ValidationError('LaunchTemplate can only be used as IConnectable if a securityGroup is provided when constructing it.', this);
     }
     return this._connections;
   }
@@ -1316,11 +1152,7 @@ export class LaunchTemplate
    */
   public get grantPrincipal(): iam.IPrincipal {
     if (!this._grantPrincipal) {
-      throw new ValidationError(
-
-        'LaunchTemplate can only be used as IGrantable if a role is provided when constructing it.',
-        this,
-      );
+      throw new ValidationError('LaunchTemplate can only be used as IGrantable if a role is provided when constructing it.', this);
     }
     return this._grantPrincipal;
   }
