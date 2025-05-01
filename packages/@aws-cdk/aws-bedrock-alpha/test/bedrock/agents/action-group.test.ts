@@ -155,6 +155,6 @@ describe('AgentActionGroup', () => {
     agent.addActionGroup(actionGroup1);
     expect(() => {
       agent.addActionGroup(actionGroup2);
-    }).toThrow(/An action group with name: DuplicateAction has already been defined/);
+    }).toThrow(/Action group already exists/);
   });
 });

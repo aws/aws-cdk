@@ -205,6 +205,16 @@ export class BedrockFoundationModel implements IInvokable {
   });
 
   /**
+   * Amazon's Nova Premier model, their most advanced Nova model.
+   * Provides highest quality outputs with cross-region support and agent optimization.
+   */
+  public static readonly AMAZON_NOVA_PREMIER_V1 = new BedrockFoundationModel('amazon.nova-premier-v1:0', {
+    supportsAgents: true,
+    supportsCrossRegion: true,
+    optimizedForAgents: true,
+  });
+
+  /**
    * Amazon's Titan Embed Text V1 model for text embeddings.
    * Generates 1536-dimensional floating-point vector embeddings.
    */
@@ -469,6 +479,30 @@ export class BedrockFoundationModel implements IInvokable {
    */
   public static readonly META_LLAMA_3_3_70B_INSTRUCT_V1 = new BedrockFoundationModel(
     'meta.llama3-3-70b-instruct-v1:0',
+    {
+      supportsAgents: true,
+      supportsCrossRegion: true,
+    },
+  );
+
+  /**
+   * Meta's Llama 4 Maverick 70B instruction-tuned model, their most advanced model.
+   * Provides state-of-the-art performance for complex language tasks with cross-region support.
+   */
+  public static readonly META_LLAMA_4_MAVERICK_70B_INSTRUCT_V1 = new BedrockFoundationModel(
+    'meta.llama4-maverick-70b-instruct-v1:0',
+    {
+      supportsAgents: true,
+      supportsCrossRegion: true,
+    },
+  );
+
+  /**
+   * Meta's Llama 4 Scout 17B instruction-tuned model, a mid-sized efficient model.
+   * Balances performance and resource usage with cross-region support.
+   */
+  public static readonly META_LLAMA_4_SCOUT_17B_INSTRUCT_V1 = new BedrockFoundationModel(
+    'meta.llama4-scout-17b-instruct-v1:0',
     {
       supportsAgents: true,
       supportsCrossRegion: true,

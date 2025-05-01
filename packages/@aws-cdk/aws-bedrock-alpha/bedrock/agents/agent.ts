@@ -12,7 +12,7 @@
  */
 
 import * as crypto from 'crypto';
-import { Arn, ArnFormat, Duration, IResource, Lazy, Names, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
+import { Arn, ArnFormat, Duration, IResource, Lazy, Names, Resource, Stack, Token, ValidationError, Aws } from 'aws-cdk-lib/core';
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as events from 'aws-cdk-lib/aws-events';
@@ -619,6 +619,18 @@ export class Agent extends AgentBase implements IAgent {
       sourceArn: this.agentArn,
       sourceAccount: Stack.of(this).account,
     });
+    // Handle permissions to access the schema file from S3
+    if (actionGroup.apiSchema?.s3File) {
+      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['s3:GetObject'],
+        resources: [`arn:${Aws.PARTITION}:s3:::${actionGroup.apiSchema.s3File.bucketName}/${actionGroup.apiSchema.s3File.objectKey}`],
+        conditions: {
+          StringEquals: {
+            'aws:ResourceAccount': Stack.of(this).account,
+          },
+        },
+      }));
+    }
   }
 
   /**
@@ -699,7 +711,7 @@ export class Agent extends AgentBase implements IAgent {
     let errors: string[] = [];
     // Find if there is a conflicting action group name
     if (this.actionGroups?.find(ag => ag.name === actionGroup.name)) {
-      errors.push(`An action group with name: ${actionGroup.name} has already been defined`);
+      errors.push('Action group already exists');
     }
     return errors;
   };

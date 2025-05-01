@@ -316,17 +316,17 @@ export class PromptOverrideConfiguration {
     steps?.forEach(step => {
       const inferenceErrors = this.validateInferenceConfig(step.inferenceConfig);
       if (inferenceErrors.length > 0) {
-        errors.push(`Step ${step.stepType}: ${inferenceErrors.join(', ')}`);
+        errors.push(`Step  ${inferenceErrors.join(', ')}`);
       }
 
       // Validate foundationModel if provided
       if (step.foundationModel !== undefined) {
         if (!step.foundationModel.invokableArn) {
-          errors.push(`Step ${step.stepType}: Foundation model must be a valid IInvokable with an invokableArn`);
+          errors.push('Step Foundation model must be a valid IInvokable with an invokableArn');
         }
         // Only allow foundation model override for ROUTING_CLASSIFIER
         if (step.stepType !== AgentStepType.ROUTING_CLASSIFIER) {
-          errors.push(`Step ${step.stepType}: Foundation model can only be specified for ROUTING_CLASSIFIER step type`);
+          errors.push('Step Foundation model can only be specified for ROUTING_CLASSIFIER step type');
         }
       }
     });
