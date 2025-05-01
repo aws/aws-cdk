@@ -1184,8 +1184,8 @@ abstract class ClusterBase extends Resource implements ICluster {
     if (!this._spotInterruptHandler) {
       this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
         chart: 'aws-node-termination-handler',
-        version: '0.18.0',
-        repository: 'https://aws.github.io/eks-charts',
+        version: '0.27.0',
+        repository: 'oci://public.ecr.aws/aws-ec2/helm/aws-node-termination-handler',
         namespace: 'kube-system',
         values: {
           nodeSelector: {

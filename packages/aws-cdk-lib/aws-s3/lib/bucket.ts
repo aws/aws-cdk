@@ -345,7 +345,7 @@ export interface IBucket extends IResource {
    * that will be matched against the s3 object key. Refer to the S3 Developer Guide
    * for details about allowed filter rules.
    *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#notification-how-to-filtering
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-filtering.html
    *
    * @example
    *
@@ -896,7 +896,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * that will be matched against the s3 object key. Refer to the S3 Developer Guide
    * for details about allowed filter rules.
    *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#notification-how-to-filtering
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-filtering.html
    *
    * @example
    *

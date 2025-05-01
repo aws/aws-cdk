@@ -4,6 +4,8 @@ export const findJsonataExpressions = (value: any): Set<string> => {
   const recursive = (v: any): string[] => {
     if (typeof v === 'string' && isValidJsonataExpression(v)) {
       return [v];
+    } else if (v === null) {
+      return [];
     } else if (Array.isArray(v)) {
       return v.flatMap(recursive);
     } else if (typeof v === 'object') {

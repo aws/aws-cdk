@@ -5,7 +5,7 @@ import { ResourcePolicy } from './resource-policy';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, RemovalPolicy, Resource, ResourceProps, Stack, Token } from '../../core';
+import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, RemovalPolicy, Resource, ResourceProps, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -848,7 +848,7 @@ export class Stream extends StreamBase {
     const streamMode = props.streamMode;
 
     if (streamMode === StreamMode.ON_DEMAND && shardCount !== undefined) {
-      throw new Error(`streamMode must be set to ${StreamMode.PROVISIONED} (default) when specifying shardCount`);
+      throw new ValidationError(`streamMode must be set to ${StreamMode.PROVISIONED} (default) when specifying shardCount`, this);
     }
     if ((streamMode === StreamMode.PROVISIONED || streamMode === undefined) && shardCount === undefined) {
       shardCount = 1;
@@ -857,7 +857,7 @@ export class Stream extends StreamBase {
     const retentionPeriodHours = props.retentionPeriod?.toHours() ?? 24;
     if (!Token.isUnresolved(retentionPeriodHours)) {
       if (retentionPeriodHours < 24 || retentionPeriodHours > 8760) {
-        throw new Error(`retentionPeriod must be between 24 and 8760 hours. Received ${retentionPeriodHours}`);
+        throw new ValidationError(`retentionPeriod must be between 24 and 8760 hours. Received ${retentionPeriodHours}`, this);
       }
     }
 
@@ -922,7 +922,7 @@ export class Stream extends StreamBase {
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== StreamEncryption.KMS && props.encryptionKey) {
-      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+      throw new ValidationError(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`, this);
     }
 
     if (encryptionType === StreamEncryption.UNENCRYPTED) {
@@ -946,7 +946,7 @@ export class Stream extends StreamBase {
       return { encryptionKey, streamEncryption };
     }
 
-    throw new Error(`Unexpected 'encryptionType': ${encryptionType}`);
+    throw new ValidationError(`Unexpected 'encryptionType': ${encryptionType}`, this);
   }
 }
 

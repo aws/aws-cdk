@@ -178,6 +178,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'OPENID_CONNECT',
     'AWS_LAMBDA'
   ],
+  'AppSyncDataSourceType': [
+    'AWS_LAMBDA',
+    'AMAZON_DYNAMODB',
+    'AMAZON_EVENTBRIDGE',
+    'AMAZON_OPENSEARCH_SERVICE',
+    'HTTP',
+    'RELATIONAL_DATABASE',
+    'AMAZON_BEDROCK_RUNTIME'
+  ],
   'AppSyncFieldLogLevel': [
     'NONE',
     'ERROR',
@@ -1312,6 +1321,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'resource-exhausted',
     'unavailable'
   ],
+  'HandlerBehavior': [
+    'CODE',
+    'DIRECT'
+  ],
   'HandlerName': [
     'user',
     'table',
@@ -2035,6 +2048,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'RequestResponse',
     'Event',
     'DryRun'
+  ],
+  'LambdaInvokeType': [
+    'EVENT',
+    'REQUEST_RESPONSE'
   ],
   'LambdaVersion': [
     'V1_0',
@@ -2822,6 +2839,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'resume-cluster',
     'failover-primary-compute'
   ],
+  'RestApiMode': [
+    'overwrite',
+    'merge'
+  ],
   'Result': [
     'ROLLBACK',
     'FAIL',
@@ -2856,6 +2877,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'RetryMode': [
     'ALL_ACTIONS',
     'FAILED_ACTIONS'
+  ],
+  'RevisionType': [
+    'COMMIT_ID',
+    'IMAGE_DIGEST',
+    'S3_OBJECT_VERSION_ID',
+    'S3_OBJECT_KEY'
   ],
   'RevocationType': [
     'CRL'
