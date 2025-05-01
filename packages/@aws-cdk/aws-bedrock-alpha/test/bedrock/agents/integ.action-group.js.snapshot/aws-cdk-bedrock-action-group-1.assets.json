@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "11ee29fec17e22cfde44267cafe77857a1efbdda8d3cee8302feec019df016a1": {
+      "displayName": "aws-cdk-bedrock-action-group-1 Template",
+      "source": {
+        "path": "aws-cdk-bedrock-action-group-1.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "11ee29fec17e22cfde44267cafe77857a1efbdda8d3cee8302feec019df016a1.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
