@@ -111,6 +111,7 @@
       "ApiId"
      ]
     },
+    "HandlerConfigs": {},
     "Name": "default"
    }
   },

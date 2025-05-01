@@ -193,6 +193,7 @@
      ]
     },
     "CodeHandlers": "\n            export function onPublish(ctx) {\n              return ctx.events.filter((event) => event.payload.odds > 0)\n            }\n          ",
+    "HandlerConfigs": {},
     "Name": "AnotherChannelNamespace"
    }
   },
@@ -295,6 +296,7 @@
     "CodeS3Location": {
      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bff8ecf40beff4b39ba4b69d04fa6a5d4e9ba16cf8dcd687165b7ea0493ecae1.js"
     },
+    "HandlerConfigs": {},
     "Name": "ChannelNamespace",
     "PublishAuthModes": [
      {
