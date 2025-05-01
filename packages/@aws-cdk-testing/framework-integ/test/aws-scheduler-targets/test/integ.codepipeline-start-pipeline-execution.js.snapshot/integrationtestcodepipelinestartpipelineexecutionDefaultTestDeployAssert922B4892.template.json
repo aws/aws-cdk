@@ -19,7 +19,7 @@
      "Name": "\"MyParameter\""
     },
     "flattenResponse": "false",
-    "salt": "1745526116025"
+    "salt": "1746117235233"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -355,6 +355,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {
