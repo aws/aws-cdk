@@ -32,7 +32,7 @@
      "Clusters.0.ClusterParameterGroups.0.ParameterGroupName",
      "Clusters.0.ClusterParameterGroups.0.ParameterApplyStatus"
     ],
-    "salt": "1745532664721"
+    "salt": "1746130671491"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -152,7 +152,7 @@
      "Source": "\"user\""
     },
     "flattenResponse": "false",
-    "salt": "1745532664721"
+    "salt": "1746130671491"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -185,7 +185,7 @@
      "Source": "\"engine-default\""
     },
     "flattenResponse": "false",
-    "salt": "1745532664722"
+    "salt": "1746130671492"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -223,6 +223,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {

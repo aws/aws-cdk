@@ -28,7 +28,7 @@
      "Body": "\"object1\""
     },
     "flattenResponse": "false",
-    "salt": "1745526111700"
+    "salt": "1746117288590"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -202,7 +202,7 @@
      "Body": "\"object2\""
     },
     "flattenResponse": "false",
-    "salt": "1745526111700"
+    "salt": "1746117288591"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectf5a0e65dd3078874de655ab8482365ea"
@@ -238,7 +238,7 @@
      "Body": "\"object3\""
     },
     "flattenResponse": "false",
-    "salt": "1745526111700"
+    "salt": "1746117288591"
    },
    "DependsOn": [
     "AwsApiCallS3putObject061241d996e2da10acd3a733bf1d0824"
@@ -287,7 +287,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1745526111701"
+    "salt": "1746117288592"
    },
    "DependsOn": [
     "AwsApiCallS3putObject8ec029ce0f75e35688a113e465fdc40b"
@@ -328,7 +328,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1745526111701"
+    "salt": "1746117288596"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsstartExecutiond238f28138fd4cb79e05478b1d7a72b5"
@@ -493,7 +493,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1745526111702"
+    "salt": "1746117288597"
    },
    "DependsOn": [
     "AwsApiCallS3putObject8ec029ce0f75e35688a113e465fdc40b"
@@ -534,7 +534,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1745526111702"
+    "salt": "1746117288597"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5",
@@ -829,6 +829,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {

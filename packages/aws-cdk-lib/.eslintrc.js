@@ -59,6 +59,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-elasticloadbalancingv2',
   'aws-elasticloadbalancingv2-actions',
   'aws-elasticloadbalancingv2-targets',
+  'aws-events',
   'aws-fsx',
   'aws-kinesis',
   'aws-kinesisfirehose',
