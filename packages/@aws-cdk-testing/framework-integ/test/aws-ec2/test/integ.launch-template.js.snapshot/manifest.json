@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/49f55568b1de8f0ec44db71fc2e7c08688d282144bc748c1c765eef1e15c6587.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7a1854851df3529c0aedf5714ba9cb2bf3309619b0b6e7a5ae6d1b7449e89594.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -191,6 +191,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LTWithPlacementGroup4B40027C"
+          }
+        ],
+        "/aws-cdk-ec2-lt-metadata-1/LTWithNetworkInterfaces": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-ec2-lt-metadata-1/LTWithNetworkInterfaces/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LTWithNetworkInterfacesC793C8F4"
           }
         ],
         "/aws-cdk-ec2-lt-metadata-1/BootstrapVersion": [

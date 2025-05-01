@@ -2479,6 +2479,35 @@ const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
 });
 ```
 
+Following demonstrates how to add multiple network interface cards to launch template.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const sg1 = new ec2.SecurityGroup(this, 'sg1', {
+  vpc: vpc,
+});
+const sg2 = new ec2.SecurityGroup(this, 'sg2', {
+  vpc: vpc,
+});
+
+new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  networkInterfaces: [
+    {
+      associatePublicIpAddress: false,
+      deviceIndex: 0,
+      groups: [sg1],
+    },
+    {
+      associatePublicIpAddress: false,
+      deviceIndex: 1,
+      groups: [sg2],
+    },
+  ],
+});
+```
+
 ### Placement Group
 
 Specify `placementGroup` to enable the placement group support:

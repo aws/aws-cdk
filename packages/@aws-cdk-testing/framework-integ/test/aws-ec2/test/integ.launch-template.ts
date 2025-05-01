@@ -52,6 +52,13 @@ new ec2.LaunchTemplate(stack, 'LTWithPlacementGroup', {
   placementGroup: pg,
 });
 
+new ec2.LaunchTemplate(stack, 'LTWithNetworkInterfaces', {
+  networkInterfaces: [
+    { associatePublicIpAddress: false, deviceIndex: 0, deleteOnTermination: true },
+    { associatePublicIpAddress: false, deviceIndex: 1, deleteOnTermination: true },
+  ],
+});
+
 new integ.IntegTest(app, 'LambdaTest', {
   testCases: [stack],
   diffAssets: true,

@@ -336,6 +336,56 @@
      }
     ]
    }
+  },
+  "LTWithNetworkInterfacesC793C8F4": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "NetworkInterfaces": [
+      {
+       "AssociatePublicIpAddress": false,
+       "DeleteOnTermination": true,
+       "DeviceIndex": 0
+      },
+      {
+       "AssociatePublicIpAddress": false,
+       "DeleteOnTermination": true,
+       "DeviceIndex": 1
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-ec2-lt-metadata-1/LTWithNetworkInterfaces"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-ec2-lt-metadata-1/LTWithNetworkInterfaces"
+        }
+       ]
+      }
+     ]
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-ec2-lt-metadata-1/LTWithNetworkInterfaces"
+       }
+      ]
+     }
+    ]
+   }
   }
  },
  "Mappings": {
