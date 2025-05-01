@@ -292,7 +292,7 @@ cluster.addCapacity('graviton-cluster', {
 
 ### Amazon Linux 2 Kernel Versions
 
-You can specify a specific kernel version for your Amazon Linux 2 ECS-optimized AMI using the `AmiLinux2KernelVersion` enum.
+You can specify a specific kernel version for your Amazon Linux 2 ECS-optimized AMI using the `AmiLinuxKernelVersion` enum.
 
 ```ts
 declare const cluster: ecs.Cluster;
@@ -302,8 +302,7 @@ cluster.addCapacity('al2-kernel-5.10-cluster', {
   instanceType: new ec2.InstanceType('c5.large'),
   machineImage: ecs.EcsOptimizedImage.amazonLinux2(
     ecs.AmiHardwareType.STANDARD,
-    {},
-    ecs.AmiLinux2KernelVersion.KERNEL_5_10
+    { kernel: ecs.AmiLinuxKernelVersion.KERNEL_5_10 },
   ),
 });
 ```

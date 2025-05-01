@@ -65,11 +65,9 @@ describe('amis', () => {
     const stack = new cdk.Stack(app);
 
     // WHEN
-    ecs.EcsOptimizedImage.amazonLinux2(
-      ecs.AmiHardwareType.STANDARD,
-      {},
-      ecs.AmiLinux2KernelVersion.KERNEL_5_10,
-    ).getImage(stack);
+    ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.STANDARD, {
+      kernel: ecs.AmiLinuxKernelVersion.KERNEL_5_10,
+    }).getImage(stack);
 
     // THEN
     const assembly = app.synth();
@@ -92,11 +90,9 @@ describe('amis', () => {
     const stack = new cdk.Stack(app);
 
     // WHEN
-    ecs.EcsOptimizedImage.amazonLinux2(
-      ecs.AmiHardwareType.ARM,
-      {},
-      ecs.AmiLinux2KernelVersion.KERNEL_5_10,
-    ).getImage(stack);
+    ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM, {
+      kernel: ecs.AmiLinuxKernelVersion.KERNEL_5_10,
+    }).getImage(stack);
 
     // THEN
     const assembly = app.synth();
@@ -119,11 +115,9 @@ describe('amis', () => {
     const stack = new cdk.Stack(app);
 
     // WHEN
-    ecs.EcsOptimizedImage.amazonLinux2(
-      ecs.AmiHardwareType.GPU,
-      {},
-      ecs.AmiLinux2KernelVersion.KERNEL_5_10,
-    ).getImage(stack);
+    ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.GPU, {
+      kernel: ecs.AmiLinuxKernelVersion.KERNEL_5_10,
+    }).getImage(stack);
 
     // THEN
     const assembly = app.synth();
@@ -146,11 +140,9 @@ describe('amis', () => {
     const stack = new cdk.Stack(app);
 
     // WHEN
-    ecs.EcsOptimizedImage.amazonLinux2(
-      ecs.AmiHardwareType.NEURON,
-      {},
-      ecs.AmiLinux2KernelVersion.KERNEL_5_10,
-    ).getImage(stack);
+    ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.NEURON, {
+      kernel: ecs.AmiLinuxKernelVersion.KERNEL_5_10,
+    }).getImage(stack);
 
     // THEN
     const assembly = app.synth();
