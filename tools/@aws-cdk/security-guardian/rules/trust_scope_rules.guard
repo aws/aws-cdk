@@ -3,7 +3,7 @@
 
 # Rule to check for overly permissive IAM role trust policies
 rule iam_role_trust_policy_not_overly_permissive {
-  AWS::IAM::Role {
+  when AWS::IAM::Role exists {
     Properties exists
     Properties is_struct
     
