@@ -1,14 +1,14 @@
-import { App, Stack, StackProps } from "aws-cdk-lib";
+import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import * as route53 from "aws-cdk-lib/aws-route53";
-import { IntegTest } from "@aws-cdk/integ-tests-alpha";
+import * as route53 from 'aws-cdk-lib/aws-route53';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const zone = new route53.PublicHostedZone(this, 'HostedZone', {
-      zoneName: 'cdk.test'
+      zoneName: 'cdk.test',
     });
 
     const cidrCollection = new route53.CfnCidrCollection(this, 'CidrCollection', {
@@ -16,7 +16,7 @@ class TestStack extends Stack {
       locations: [{
         cidrList: ['192.168.1.0/24'],
         locationName: 'test_location',
-      }]
+      },]
     });
 
     new route53.ARecord(this, 'CidrRoutingConfig', {
@@ -25,10 +25,10 @@ class TestStack extends Stack {
       setIdentifier: 'test',
       cidrRoutingConfig: route53.CidrRoutingConfig.new({
         collectionId: cidrCollection.attrId,
-        locationName: 'test_location'
+        locationName: 'test_location',
       }),
     });
-  }  
+  }
 }
 
 const app = new App();
