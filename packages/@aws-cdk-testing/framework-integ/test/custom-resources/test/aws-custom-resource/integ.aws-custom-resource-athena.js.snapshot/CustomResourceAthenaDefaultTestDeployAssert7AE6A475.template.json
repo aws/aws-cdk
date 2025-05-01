@@ -13,7 +13,7 @@
     "api": "listWorkGroups",
     "expected": "{\"$ObjectLike\":{\"WorkGroups\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Name\":\"TestWG\"}}]}}}",
     "flattenResponse": "false",
-    "salt": "1745526106642"
+    "salt": "1746117354381"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -112,7 +112,7 @@
      "WorkGroup": "\"TestWG\""
     },
     "flattenResponse": "false",
-    "salt": "1745526106643"
+    "salt": "1746117354382"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -142,6 +142,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {

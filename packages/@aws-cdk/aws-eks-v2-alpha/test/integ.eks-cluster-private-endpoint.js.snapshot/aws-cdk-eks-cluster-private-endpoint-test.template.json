@@ -1215,6 +1215,9 @@
    "ap-east-1": {
     "value": "nodejs20.x"
    },
+   "ap-east-2": {
+    "value": "nodejs20.x"
+   },
    "ap-northeast-1": {
     "value": "nodejs20.x"
    },

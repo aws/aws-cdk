@@ -49,7 +49,7 @@
      "Payload.data.addTest.id",
      "Payload.data.addTest.id"
     ],
-    "salt": "1745526172359"
+    "salt": "1746116589953"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -234,7 +234,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1745526172360"
+    "salt": "1746116589955"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -264,6 +264,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {

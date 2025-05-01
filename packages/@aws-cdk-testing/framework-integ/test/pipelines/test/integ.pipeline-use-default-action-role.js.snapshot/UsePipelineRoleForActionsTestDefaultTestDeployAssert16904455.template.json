@@ -20,7 +20,7 @@
     "outputPaths": [
      "pipeline.name"
     ],
-    "salt": "1745526101180"
+    "salt": "1746117423689"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -111,6 +111,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {
