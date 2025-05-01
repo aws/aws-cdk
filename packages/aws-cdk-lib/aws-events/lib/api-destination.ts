@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { HttpMethod, IConnection } from './connection';
 import { CfnApiDestination } from './events.generated';
-import { ArnFormat, IResource, Resource, Stack } from '../../core';
+import { ArnFormat, IResource, Resource, Stack, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -112,7 +112,7 @@ export class ApiDestination extends Resource implements IApiDestination {
     ).resourceName;
 
     if (!apiDestinationName) {
-      throw new Error(`Could not extract Api Destionation name from ARN: '${attrs.apiDestinationArn}'`);
+      throw new UnscopedValidationError(`Could not extract Api Destionation name from ARN: '${attrs.apiDestinationArn}'`);
     }
 
     class Import extends Resource implements ApiDestination {
