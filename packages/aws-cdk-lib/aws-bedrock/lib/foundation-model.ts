@@ -92,6 +92,9 @@ export class FoundationModelIdentifier {
   /** Base model "amazon.nova-sonic-v1:0". */
   public static readonly AMAZON_NOVA_SONIC_V1_0 = new FoundationModelIdentifier('amazon.nova-sonic-v1:0');
 
+  /** Base model "amazon.nova-premier-v1:0". */
+  public static readonly AMAZON_NOVA_PREMIER_V1_0 = new FoundationModelIdentifier('amazon.nova-premier-v1:0');
+
   /**
    * Base model "ai21.j2-mid".
    * @deprecated use latest version of the model
