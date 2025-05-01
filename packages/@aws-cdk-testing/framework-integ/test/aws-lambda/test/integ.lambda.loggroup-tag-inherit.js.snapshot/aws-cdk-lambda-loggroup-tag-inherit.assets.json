@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "78c5868438efe291ff1147fbd26a6a5764bcb0c74cee84d18ad5c4d219eddad1": {
+      "displayName": "aws-cdk-lambda-loggroup-tag-inherit Template",
+      "source": {
+        "path": "aws-cdk-lambda-loggroup-tag-inherit.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "78c5868438efe291ff1147fbd26a6a5764bcb0c74cee84d18ad5c4d219eddad1.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

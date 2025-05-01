@@ -5074,6 +5074,32 @@ describe('telemetry metadata', () => {
   });
 });
 
+describe('log group behavior', () => {
+  it('log group inherits tags from function when createLogGroup is true', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      createLogGroup: true,
+    });
+
+    cdk.Tags.of(fn).add('Environment', 'Test');
+    cdk.Tags.of(fn).add('Owner', 'CDKTeam');
+
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      Tags: Match.arrayWith([
+        Match.objectLike({ Key: 'Environment', Value: 'Test' }),
+        Match.objectLike({ Key: 'Owner', Value: 'CDKTeam' }),
+      ]),
+    });
+  });
+});
+
 function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),

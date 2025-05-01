@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "integ-tests-lambda-loggroup-tag-inherit/DefaultTest": {
+      "stacks": [
+        "aws-cdk-lambda-loggroup-tag-inherit"
+      ],
+      "assertionStack": "integ-tests-lambda-loggroup-tag-inherit/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestslambdaloggrouptaginheritDefaultTestDeployAssertE0ADECB2"
+    }
+  }
+}
