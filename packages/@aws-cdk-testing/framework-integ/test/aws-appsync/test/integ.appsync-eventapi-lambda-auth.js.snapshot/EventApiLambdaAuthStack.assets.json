@@ -15,7 +15,7 @@
         }
       }
     },
-    "16f26e47ad3b3781eb0e490f0c7468bbf5f8a512f423cc239df450b5c2aef3ee": {
+    "db8bfaa7c18ea753c7c36d24e7dc372242333f5376799a7c2fbaf9f80386f58b": {
       "displayName": "EventApiLambdaAuthStack Template",
       "source": {
         "path": "EventApiLambdaAuthStack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "16f26e47ad3b3781eb0e490f0c7468bbf5f8a512f423cc239df450b5c2aef3ee.json",
+          "objectKey": "db8bfaa7c18ea753c7c36d24e7dc372242333f5376799a7c2fbaf9f80386f58b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

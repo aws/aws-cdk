@@ -37,7 +37,6 @@
       "ApiId"
      ]
     },
-    "HandlerConfigs": {},
     "Name": "default"
    }
   },
@@ -50,7 +49,6 @@
       "ApiId"
      ]
     },
-    "HandlerConfigs": {},
     "Name": "pubsub"
    }
   },
@@ -63,7 +61,6 @@
       "ApiId"
      ]
     },
-    "HandlerConfigs": {},
     "Name": "test1"
    }
   },
@@ -76,7 +73,6 @@
       "ApiId"
      ]
     },
-    "HandlerConfigs": {},
     "Name": "test2"
    }
   },

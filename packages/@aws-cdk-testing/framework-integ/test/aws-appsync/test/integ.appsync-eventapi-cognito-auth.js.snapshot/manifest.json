@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1434ea7905818eb800de1c8539023d50ebecb00266158d2e1d38227472f6a41b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c9e3d38fb3b2e32898804c4a5407fbbbaaef1585088def57c50012eb73a4c722.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -299,7 +299,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/136bd7665754ca5bce9ececd69e4620c602e8881b081887dcbcf123e24362041.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1506c491b80e14702cf60aa8e9588a2034c5239745515b937354280466320918.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -316,56 +316,6 @@
         "appsynceventapicognitoauthDefaultTestDeployAssertE181F852.assets"
       ],
       "metadata": {
-        "/appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c"
-          }
-        ],
-        "/appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98cInvokeC96299DC"
-          }
-        ],
-        "/appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c"
-          }
-        ],
-        "/appsync-event-api-cognito-auth/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/appsync-event-api-cognito-auth/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
         "/appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokebf5141fc88f7c179d94a3e7c6df61400/Default": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -396,6 +346,56 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsLambdaInvokebf5141fc88f7c179d94a3e7c6df61400"
+          }
+        ],
+        "/appsync-event-api-cognito-auth/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/appsync-event-api-cognito-auth/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c"
+          }
+        ],
+        "/appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98cInvokeC96299DC"
+          }
+        ],
+        "/appsync-event-api-cognito-auth/DefaultTest/DeployAssert/LambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvokef05c9a4fbe77d0f7ac85d102d5fbe98c"
           }
         ],
         "/appsync-event-api-cognito-auth/DefaultTest/DeployAssert/BootstrapVersion": [
