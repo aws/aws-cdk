@@ -251,7 +251,7 @@ describe('PropertyInjectors Tree Traversal', () => {
     });
     const stack = new Stack(app, 'MyStack', {
       propertyInjectors: [
-        dn2
+        dn2,
       ],
     });
     const tc2 = new TestConstruct2(stack, 'MyFunc', {});
@@ -461,7 +461,7 @@ describe('Test findInjectorsFromConstruct', () => {
     });
     const stack = new Stack(app, 'MyStack', {
       propertyInjectors: [
-        dn2
+        dn2,
       ],
     });
 
@@ -479,7 +479,7 @@ describe('Test findInjectorsFromConstruct', () => {
     });
     const stack = new Stack(app, 'MyStack', {
       propertyInjectors: [
-        dn2
+        dn2,
       ],
     });
 
