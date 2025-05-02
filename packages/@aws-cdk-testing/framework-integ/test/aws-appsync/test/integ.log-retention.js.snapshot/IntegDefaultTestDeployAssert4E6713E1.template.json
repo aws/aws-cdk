@@ -38,7 +38,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1745526172050"
+    "salt": "1746116593591"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -129,6 +129,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {

@@ -14,7 +14,7 @@
         }
       }
     },
-    "0ed03e52aed94b5cb7b18c5ffc93c1780b9ba976df26f3d8c1d4a078ced84f3b": {
+    "01970e0702e92b1e0a33897d42eb99281bb71b14677c9ca481aeee5fe770e726": {
       "displayName": "CustomResourceAthenaDefaultTestDeployAssert7AE6A475 Template",
       "source": {
         "path": "CustomResourceAthenaDefaultTestDeployAssert7AE6A475.template.json",
@@ -23,7 +23,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0ed03e52aed94b5cb7b18c5ffc93c1780b9ba976df26f3d8c1d4a078ced84f3b.json",
+          "objectKey": "01970e0702e92b1e0a33897d42eb99281bb71b14677c9ca481aeee5fe770e726.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
