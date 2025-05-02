@@ -85,6 +85,8 @@ export interface ApiDestinationAttributes {
   readonly connection: IConnection;
   /**
    * The Amazon Resource Name (ARN) of an API destination in resource format.
+   *
+   * @default undefined
    */
   readonly apiDestinationArnForPolicy?: string;
 }
