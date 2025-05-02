@@ -1457,12 +1457,13 @@ describe('record set', () => {
     { multiValueAnswer: true, weight: 20 },
     { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1', multiValueAnswer: true },
     {
+      weight: 20,
       cidrRoutingConfig: route53.CidrRoutingConfig.new({
         collectionId: '12345678-1234-1234-1234-123456789012',
         locationName: 'test_location',
       }),
     },
-  ])('throw error for the simultaneous definition of weight, geoLocation and region', (props) => {
+  ])('throw error for the simultaneous definition of weight, geoLocation, region, multiValueAnswer and cidrRoutingConfig', (props) => {
     // GIVEN
     const stack = new Stack();
 
