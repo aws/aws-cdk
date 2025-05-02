@@ -203,6 +203,10 @@ async function cleanupTempFiles(zipFile: tmp.FileResult, tmpDir: tmp.DirResult, 
   }
 }
 
+export function extractServiceName(fileName: string) {
+  return fileName.split('-')[1];
+}
+
 /**
  * Parses AWS SDK model JSON files to extract and store enum definitions.
  *
@@ -222,7 +226,7 @@ export async function parseAwsSdkEnums(sdkModelsPath: string): Promise<void> {
         }
         const jsonData = readJsonFile(path.join(sdkModelsPath, file));
 
-        const service = file.split('-')[1];
+        const service = extractServiceName(file);
 
         const enumMap = sdkEnums[service] ?? {};
 
