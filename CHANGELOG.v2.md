@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.194.0](https://github.com/aws/aws-cdk/compare/v2.193.0...v2.194.0) (2025-05-01)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#34278](https://github.com/aws/aws-cdk/issues/34278)) ([e37faed](https://github.com/aws/aws-cdk/commit/e37faed95deb25be05826c2e1f2781b0e51ca26e))
+* **events:** throw `ValidationErrors` instead of untyped Errors ([#34316](https://github.com/aws/aws-cdk/issues/34316)) ([06b463f](https://github.com/aws/aws-cdk/commit/06b463fd5a92aab9ffc9d016d85b977f64379550)), closes [#32569](https://github.com/aws/aws-cdk/issues/32569)
+
 ## [2.193.0](https://github.com/aws/aws-cdk/compare/v2.192.0...v2.193.0) (2025-04-30)
 
 
