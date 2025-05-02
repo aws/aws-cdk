@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnConnection } from './events.generated';
-import { IResource, Resource, Stack, SecretValue } from '../../core';
+import { IResource, Resource, Stack, SecretValue, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -100,7 +100,7 @@ export abstract class Authorization {
    */
   public static oauth(props: OAuthAuthorizationProps): Authorization {
     if (![HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT].includes(props.httpMethod)) {
-      throw new Error('httpMethod must be one of GET, POST, PUT');
+      throw new UnscopedValidationError('httpMethod must be one of GET, POST, PUT');
     }
 
     return new class extends Authorization {
