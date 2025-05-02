@@ -86,7 +86,7 @@ export interface ApiDestinationAttributes {
   /**
    * The Amazon Resource Name (ARN) of an API destination in resource format.
    *
-   * @default undefined
+   * @default undefined - Imported API destination does not have ARN in resource format
    */
   readonly apiDestinationArnForPolicy?: string;
 }
