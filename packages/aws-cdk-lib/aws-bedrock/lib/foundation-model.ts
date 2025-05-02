@@ -92,6 +92,9 @@ export class FoundationModelIdentifier {
   /** Base model "amazon.nova-sonic-v1:0". */
   public static readonly AMAZON_NOVA_SONIC_V1_0 = new FoundationModelIdentifier('amazon.nova-sonic-v1:0');
 
+  /** Base model "amazon.nova-premier-v1:0". */
+  public static readonly AMAZON_NOVA_PREMIER_V1_0 = new FoundationModelIdentifier('amazon.nova-premier-v1:0');
+
   /**
    * Base model "ai21.j2-mid".
    * @deprecated use latest version of the model
@@ -380,6 +383,12 @@ export class FoundationModelIdentifier {
   /** Base model "meta.llama3-3-70b-instruct-v1:0". */
   public static readonly META_LLAMA_3_3_70B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-3-70b-instruct-v1:0');
 
+  /** Base model "meta.llama4-maverick-17b-instruct-v1:0". */
+  public static readonly META_LLAMA_4_MAVERICK_17B_INSTRUCT_V1_0 = new FoundationModelIdentifier('meta.llama4-maverick-17b-instruct-v1:0');
+
+  /** Base model "meta.llama4-scout-17b-instruct-v1:0". */
+  public static readonly META_LLAMA_4_SCOUT_17B_INSTRUCT_V1_0 = new FoundationModelIdentifier('meta.llama4-scout-17b-instruct-v1:0');
+
   /** Base model "mistral.mistral-7b-instruct-v0:2". */
   public static readonly MISTRAL_MISTRAL_7B_INSTRUCT_V0_2 = new FoundationModelIdentifier('mistral.mistral-7b-instruct-v0:2');
 
@@ -439,6 +448,12 @@ export class FoundationModelIdentifier {
 
   /** Base model "stability.stable-image-core-v1:1". */
   public static readonly STABILITY_STABLE_IMAGE_CORE_V1_1 = new FoundationModelIdentifier('stability.stable-image-core-v1:1');
+
+  /** Base model "writer.palmyra-x4-v1:0". */
+  public static readonly WRITER_PALMYRA_X4_V1_0 = new FoundationModelIdentifier('writer.palmyra-x4-v1:0');
+
+  /** Base model "writer.palmyra-x5-v1:0". */
+  public static readonly WRITER_PALMYRA_X5_V1_0 = new FoundationModelIdentifier('writer.palmyra-x5-v1:0');
 
   /**
    * Constructor for foundation model identifier
