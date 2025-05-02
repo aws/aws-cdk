@@ -207,7 +207,7 @@ new route53.ARecord(this, 'ARecordMultiValue1', {
 To enable [IP-based routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-ipbased.html), use the `cidrRoutingConfig` parameter:
 
 ```ts
-declare const myZone: route53.HostedZone;
+declare const zone: route53.HostedZone;
 
 const cidrCollection = new route53.CfnCidrCollection(this, 'CidrCollection', {
   name: 'test-collection',
