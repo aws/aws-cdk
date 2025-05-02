@@ -197,6 +197,44 @@ describe('ResourceMetadataUpdater', () => {
       expect(injectionId).toEqual("'aws-cdk-lib.aws-apigateway.ApiKey'");
     });
 
+    it('should return successfully for alpha', () => {
+      // GIVEN
+      const filePath = '/local/home/user/cdk/aws-cdk/packages/@aws-cdk/aws-amplify-alpha/lib/app.ts';
+      const className = 'App';
+
+      // WHEN
+      const injectionId = (updater as any).filePathToInjectionId(filePath, className);
+
+      // THEN
+      expect(injectionId).toEqual("'@aws-cdk.aws-amplify-alpha.App'");
+    });
+
+    // We should never get an L2 Construct in awslint, but filePathToInjectionId will still work.
+    it('should return successfully for awslint', () => {
+      // GIVEN
+      const filePath = '/local/home/user/cdk/aws-cdk/packages/awslint/lib/app.ts';
+      const className = 'App';
+
+      // WHEN
+      const injectionId = (updater as any).filePathToInjectionId(filePath, className);
+
+      // THEN
+      expect(injectionId).toEqual("'awslint.lib.App'");
+    });
+
+    it('should return successfully for a short path', () => {
+      // GIVEN
+      // This path is missing /lib, but it will still work
+      const filePath = '/local/home/user/cdk/aws-cdk/packages/@aws-cdk/aws-amplify-alpha/app.ts';
+      const className = 'App';
+
+      // WHEN
+      const injectionId = (updater as any).filePathToInjectionId(filePath, className);
+
+      // THEN
+      expect(injectionId).toEqual("'@aws-cdk.aws-amplify-alpha.App'");
+    });
+
     it('should throw error for bad filepath', () => {
       // GIVEN
       const filePath = 'cdk/aws-cdk/packages/aws-cdk-lib/aws-apigateway';
@@ -205,6 +243,16 @@ describe('ResourceMetadataUpdater', () => {
       // WHEN THEN
       expect(() => (updater as any).filePathToInjectionId(filePath, className))
       .toThrow('Could not build PROPERTY_INJECTION_ID for cdk/aws-cdk/packages/aws-cdk-lib/aws-apigateway ApiKey');
+    });
+
+    it('should throw error for bad filepath 2', () => {
+      // GIVEN
+      const filePath = 'cdk/aws-cdk/packages/aws-cdk-lib/api-keys.ts';
+      const className = 'ApiKey';
+
+      // WHEN THEN
+      expect(() => (updater as any).filePathToInjectionId(filePath, className))
+      .toThrow('Could not build PROPERTY_INJECTION_ID for cdk/aws-cdk/packages/aws-cdk-lib/api-keys.ts ApiKey');
     });
 
     it('should throw error for undefined className', () => {
@@ -264,7 +312,7 @@ describe('ResourceMetadataUpdater', () => {
     });
   });
 
-  describe('importPropertyInjectable', () => {
+  describe('importCoreLibFile', () => {
     it('should be inserted in the correct place', () => {
       // GIVEN
       const filePath = '/local/home/user/cdk/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/api-key.ts';
@@ -299,7 +347,7 @@ describe('ResourceMetadataUpdater', () => {
       updaterSpy.mockReturnValueOnce(relativePath);
 
       // WHEN
-      (updater as any).importPropertyInjectable(mockSourceFile, filePath);
+      (updater as any).importCoreLibFile(mockSourceFile, filePath, 'prop-injectable', 'propertyInjectable');
 
       // THEN
       expect(mockSourceFile.insertImportDeclaration).toHaveBeenCalledWith(
