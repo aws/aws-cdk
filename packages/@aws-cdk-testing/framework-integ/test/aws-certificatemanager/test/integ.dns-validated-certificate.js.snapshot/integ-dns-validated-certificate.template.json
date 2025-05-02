@@ -31,6 +31,37 @@
     ]
    }
   },
+  "CertificateCertificateRequestorFunction5E845413": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "8dd3f997ac74aa13ef09bc8bed060ecdbe3111898c6bbc0eb4f2130c9c53233b.zip"
+    },
+    "Handler": "index.certificateRequestHandler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CertificateCertificateRequestorFunctionServiceRoleC04C13DA",
+      "Arn"
+     ]
+    },
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "CertificateCertificateRequestorFunctionServiceRoleC04C13DA"
+   ]
+  },
   "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole02D5DA9E2": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
@@ -125,37 +156,6 @@
     ]
    }
   },
-  "CertificateCertificateRequestorFunction5E845413": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "8dd3f997ac74aa13ef09bc8bed060ecdbe3111898c6bbc0eb4f2130c9c53233b.zip"
-    },
-    "Handler": "index.certificateRequestHandler",
-    "Role": {
-     "Fn::GetAtt": [
-      "CertificateCertificateRequestorFunctionServiceRoleC04C13DA",
-      "Arn"
-     ]
-    },
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
-    "Timeout": 900
-   },
-   "DependsOn": [
-    "CertificateCertificateRequestorFunctionServiceRoleC04C13DA"
-   ]
-  },
   "CertificateCertificateRequestorResource2890C6B7": {
    "Type": "AWS::CloudFormation::CustomResource",
    "Properties": {
@@ -179,6 +179,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {
@@ -287,6 +290,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {
