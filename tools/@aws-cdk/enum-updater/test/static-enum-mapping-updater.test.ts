@@ -13,7 +13,6 @@ import {
 jest.mock('axios');
 jest.mock('fs');
 jest.mock('path');
-jest.mock('path');
 jest.mock('tmp');
 jest.mock('extract-zip');
 
