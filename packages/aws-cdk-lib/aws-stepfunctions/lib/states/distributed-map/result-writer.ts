@@ -284,6 +284,11 @@ export class ResultWriterV2 {
    * Compile policy statements to provide relevent permissions to the state machine
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
+    if (!this.bucket?.bucketName && !this.bucketNamePath) {
+      return [];
+    } else if (this.bucketNamePath) {
+      return buildS3PutObjectPolicyStatements();
+    }
     return buildS3PutObjectPolicyStatements(this.bucket?.bucketName);
   }
 
