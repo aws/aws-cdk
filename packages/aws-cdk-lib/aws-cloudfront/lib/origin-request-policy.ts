@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnOriginRequestPolicy } from './cloudfront.generated';
-import { Names, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
+import { Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -94,7 +94,7 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const originRequestPolicyName = props.originRequestPolicyName ?? Names.uniqueId(this);
+    const originRequestPolicyName = props.originRequestPolicyName ?? `${Names.uniqueId(this).slice(0, 110)}-${Stack.of(this).region}`;
     if (!Token.isUnresolved(originRequestPolicyName) && !originRequestPolicyName.match(/^[\w-]+$/i)) {
       throw new ValidationError(`'originRequestPolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.originRequestPolicyName}'`, this);
     }
