@@ -25,7 +25,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"body\":\"ecb13420-3826-4f11-a1b5-a4ac2f65c7c6\"}}",
     "flattenResponse": "false",
-    "salt": "1745526169970"
+    "salt": "1746116619029"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -97,6 +97,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {

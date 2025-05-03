@@ -32,7 +32,7 @@
      "ContentType": "\"text/plain\""
     },
     "flattenResponse": "false",
-    "salt": "1745526120464"
+    "salt": "1746117184185"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -509,7 +509,7 @@
      "ContentType": "\"text/plain\""
     },
     "flattenResponse": "false",
-    "salt": "1743331723245"
+    "salt": "1746117184187"
    },
    "DependsOn": [
     "AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b",
@@ -694,7 +694,7 @@
      "Key": "\"test-object\""
     },
     "flattenResponse": "false",
-    "salt": "1743331723246"
+    "salt": "1746117184188"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e",
@@ -879,7 +879,7 @@
      "Key": "\"prefix-test-object\""
     },
     "flattenResponse": "false",
-    "salt": "1743331723246"
+    "salt": "1746117184188"
    },
    "DependsOn": [
     "AwsApiCallS3getObjectbee9a118ce8e3c48acff9db8ac213312",
@@ -1064,7 +1064,7 @@
      "Key": "\"prefix-test-object\""
     },
     "flattenResponse": "false",
-    "salt": "1743331723247"
+    "salt": "1746117184189"
    },
    "DependsOn": [
     "AwsApiCallS3getObject43ef9c9a50ae21e2f98a7c7cae837552",
@@ -1226,6 +1226,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {
