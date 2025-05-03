@@ -1354,7 +1354,6 @@ describe('Distributed Map State', () => {
               's3:GetObject',
               's3:ListMultipartUploadParts',
               's3:AbortMultipartUpload',
-              's3:ListBucket',
             ],
             Effect: 'Allow',
             Resource: '*',
