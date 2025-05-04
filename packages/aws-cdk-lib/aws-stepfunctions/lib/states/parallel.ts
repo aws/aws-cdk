@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
 import { AssignableStateOptions, JsonataCommonOptions, JsonPathCommonOptions, renderJsonPath, State, StateBaseProps } from './state';
 import { Chain } from '../chain';
+import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
 
@@ -177,8 +178,21 @@ export class Parallel extends State implements INextable {
       ...this.renderRetryCatch(),
       ...this.renderBranches(),
       ...this.renderResultSelector(),
+      ...this.renderParameters(),
       ...this.renderAssign(topLevelQueryLanguage),
     };
+  }
+
+  /**
+   * Render Parameters in ASL JSON format
+   */
+  private renderParameters(): any {
+    if (!this.parameters) {
+      return undefined;
+    }
+    return FieldUtils.renderObject({
+      Parameters: this.parameters,
+    });
   }
 
   /**
