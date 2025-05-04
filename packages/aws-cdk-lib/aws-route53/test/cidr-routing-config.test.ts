@@ -79,4 +79,20 @@ describe('CidrRoutingConfig', () => {
       }).toThrow(expectedError);
     });
   });
+
+  describe('default method', () => {
+    test('creates config with default locationName as *', () => {
+      const collectionId = '12345678-1234-1234-1234-123456789012';
+      const config = CidrRoutingConfig.default(collectionId);
+      // Check collectionId
+      expect(config.collectionId).toBe(collectionId);
+      // Check locationName is '*'
+      expect(config.locationName).toBe('*');
+    });
+    test('throws error if collectionId is invalid', () => {
+      expect(() => {
+        CidrRoutingConfig.default('invalid-uuid');
+      }).toThrow('collectionId(invalid-uuid) is required and must be a valid UUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx(8-4-4-4-12 digits)');
+    });
+  });
 });

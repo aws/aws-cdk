@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/55319b0ec2be0792760090e536d97fd785f29ddd7f8191dacb8b9838540b8e54.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ddb525b069cf7408ac8f519da5d0e35afec15ef8cedf0438e9edbeae71c21079.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,11 +37,15 @@
         "/CidrRoutingConfig/HostedZone": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "zoneName": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "zoneName": "*"
+            }
           }
         ],
         "/CidrRoutingConfig/HostedZone/Resource": [
@@ -59,17 +63,75 @@
         "/CidrRoutingConfig/CidrRoutingConfig": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "zone": "*",
+              "target": "*",
+              "setIdentifier": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "zone": "*",
+              "target": "*",
+              "setIdentifier": "*"
+            }
           }
         ],
         "/CidrRoutingConfig/CidrRoutingConfig/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CidrRoutingConfig2AF5DEDB"
+          }
+        ],
+        "/CidrRoutingConfig/HostedZone2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          }
+        ],
+        "/CidrRoutingConfig/HostedZone2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZone280C0117C"
+          }
+        ],
+        "/CidrRoutingConfig/DefaultCidrCollection": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCidrCollection"
+          }
+        ],
+        "/CidrRoutingConfig/DefaultCidrRoutingConfig": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "target": "*",
+              "setIdentifier": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "target": "*",
+              "setIdentifier": "*"
+            }
+          }
+        ],
+        "/CidrRoutingConfig/DefaultCidrRoutingConfig/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCidrRoutingConfigF2FD2A05"
           }
         ],
         "/CidrRoutingConfig/BootstrapVersion": [

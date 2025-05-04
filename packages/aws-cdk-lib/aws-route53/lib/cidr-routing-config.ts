@@ -29,6 +29,18 @@ export class CidrRoutingConfig {
   }
 
   /**
+   * Creates a new instance of CidrRoutingConfig for default CIDR record. This method defines the locationName as `*`.
+   * @param collectionId The CIDR collection ID.
+   * @returns A new instance of CidrRoutingConfig with the default location name as `*`.
+   */
+  public static default(collectionId: string): CidrRoutingConfig {
+    return new CidrRoutingConfig({
+      collectionId: collectionId,
+      locationName: '*',
+    });
+  }
+
+  /**
    * The CIDR collection ID.
    */
   readonly collectionId: string;

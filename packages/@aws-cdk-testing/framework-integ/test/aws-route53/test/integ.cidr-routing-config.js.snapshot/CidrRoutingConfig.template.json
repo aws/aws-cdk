@@ -43,6 +43,50 @@
     "TTL": "1800",
     "Type": "A"
    }
+  },
+  "HostedZone280C0117C": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "cdk.test2."
+   }
+  },
+  "DefaultCidrCollection": {
+   "Type": "AWS::Route53::CidrCollection",
+   "Properties": {
+    "Locations": [
+     {
+      "CidrList": [
+       "192.168.1.0/24"
+      ],
+      "LocationName": "default_location"
+     }
+    ],
+    "Name": "default-collection"
+   }
+  },
+  "DefaultCidrRoutingConfigF2FD2A05": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "CidrRoutingConfig": {
+     "CollectionId": {
+      "Fn::GetAtt": [
+       "DefaultCidrCollection",
+       "Id"
+      ]
+     },
+     "LocationName": "*"
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZone280C0117C"
+    },
+    "Name": "cdk.test2.",
+    "ResourceRecords": [
+     "5.6.7.8"
+    ],
+    "SetIdentifier": "test2",
+    "TTL": "1800",
+    "Type": "A"
+   }
   }
  },
  "Parameters": {

@@ -7,7 +7,7 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const zone = new route53.PublicHostedZone(this, 'HostedZone', {
+    const zone1 = new route53.PublicHostedZone(this, 'HostedZone', {
       zoneName: 'cdk.test',
     });
 
@@ -20,13 +20,34 @@ class TestStack extends Stack {
     });
 
     new route53.ARecord(this, 'CidrRoutingConfig', {
-      zone: zone,
+      zone: zone1,
       target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
       setIdentifier: 'test',
       cidrRoutingConfig: route53.CidrRoutingConfig.new({
         collectionId: cidrCollection.attrId,
         locationName: 'test_location',
       }),
+    });
+
+    const zone2 = new route53.PublicHostedZone(this, 'HostedZone2', {
+      zoneName: 'cdk.test2',
+    });
+
+    const defaultCidrCollection = new route53.CfnCidrCollection(this, 'DefaultCidrCollection', {
+      name: 'default-collection',
+      locations: [
+        {
+          cidrList: ['192.168.1.0/24'],
+          locationName: 'default_location',
+        },
+      ],
+    });
+
+    new route53.ARecord(this, 'DefaultCidrRoutingConfig', {
+      zone: zone2,
+      target: route53.RecordTarget.fromIpAddresses('5.6.7.8'),
+      setIdentifier: 'test2',
+      cidrRoutingConfig: route53.CidrRoutingConfig.default(defaultCidrCollection.attrId),
     });
   }
 }
