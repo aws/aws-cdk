@@ -109,11 +109,19 @@
         "/canary-one/ApiGateway/Deployment": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
           }
         ],
         "/canary-one/ApiGateway/Deployment/Resource": [
@@ -125,7 +133,9 @@
         "/canary-one/ApiGateway/DeploymentStage.prod": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/canary-one/ApiGateway/DeploymentStage.prod/Resource": [
@@ -149,11 +159,28 @@
         "/canary-one/ApiGateway/Default/GET": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "methodResponses": [
+                  {
+                    "statusCode": "*"
+                  }
+                ]
+              }
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*"
+                }
+              ]
+            }
           }
         ],
         "/canary-one/ApiGateway/Default/GET/Resource": [
@@ -171,7 +198,14 @@
         "/canary-one/InlineAsset/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/InlineAsset/ServiceRole/ImportServiceRole": [
@@ -255,7 +289,14 @@
         "/canary-one/DirectoryAsset/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/DirectoryAsset/ServiceRole/ImportServiceRole": [
@@ -321,7 +362,14 @@
         "/canary-one/FolderAsset/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/FolderAsset/ServiceRole/ImportServiceRole": [
@@ -391,7 +439,14 @@
         "/canary-one/ZipAsset/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/ZipAsset/ServiceRole/ImportServiceRole": [
@@ -457,7 +512,14 @@
         "/canary-one/SynNodejsPuppeteer52/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/SynNodejsPuppeteer52/ServiceRole/ImportServiceRole": [
@@ -523,7 +585,14 @@
         "/canary-one/SynNodejsPuppeteer62/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/SynNodejsPuppeteer62/ServiceRole/ImportServiceRole": [
@@ -589,7 +658,14 @@
         "/canary-one/SynNodejsPuppeteer70/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/SynNodejsPuppeteer70/ServiceRole/ImportServiceRole": [
@@ -655,7 +731,14 @@
         "/canary-one/SynNodejsPuppeteer80/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/SynNodejsPuppeteer80/ServiceRole/ImportServiceRole": [
@@ -721,7 +804,14 @@
         "/canary-one/SynNodejsPuppeteer90/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/SynNodejsPuppeteer90/ServiceRole/ImportServiceRole": [
@@ -787,7 +877,14 @@
         "/canary-one/SynNodejsPuppeteer91/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/SynNodejsPuppeteer91/ServiceRole/ImportServiceRole": [
@@ -853,7 +950,14 @@
         "/canary-one/SynNodejsPlaywright10/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/SynNodejsPlaywright10/ServiceRole/ImportServiceRole": [
@@ -919,7 +1023,14 @@
         "/canary-one/SynNodejsPlaywright10playwrightCanaryHandler/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/SynNodejsPlaywright10playwrightCanaryHandler/ServiceRole/ImportServiceRole": [
@@ -985,7 +1096,14 @@
         "/canary-one/SynPythonSelenium21/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/SynPythonSelenium21/ServiceRole/ImportServiceRole": [
@@ -1051,7 +1169,14 @@
         "/canary-one/SynPythonSelenium30/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/SynPythonSelenium30/ServiceRole/ImportServiceRole": [
@@ -1117,7 +1242,14 @@
         "/canary-one/SynPythonSelenium40/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/SynPythonSelenium40/ServiceRole/ImportServiceRole": [
@@ -1183,7 +1315,14 @@
         "/canary-one/SynPythonSelenium41/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/SynPythonSelenium41/ServiceRole/ImportServiceRole": [
@@ -1249,7 +1388,14 @@
         "/canary-one/SynPythonSelenium50/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/SynPythonSelenium50/ServiceRole/ImportServiceRole": [
@@ -1315,7 +1461,14 @@
         "/canary-one/SynPythonSelenium51/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
           }
         ],
         "/canary-one/SynPythonSelenium51/ServiceRole/ImportServiceRole": [
@@ -1488,7 +1641,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b1e549ac821c7460591d7f8d1de50def005baa8aa2eb023862b8c53f25cac38e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/88ccac974aeba7b274524a869847d397da4b2b0e9956855d4ef9cffb4337c1b9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
