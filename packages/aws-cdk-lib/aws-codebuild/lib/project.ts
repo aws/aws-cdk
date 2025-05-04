@@ -28,7 +28,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization, UnscopedValidationError, ValidationError } from '../../core';
+import { Annotations, ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
@@ -1072,6 +1072,15 @@ export class Project extends ProjectBase {
 
     this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_7_0;
 
+    const supportedOnDemandEnvironmentRegion = ['us-east-2', 'us-east-1', 'us-west-2', 'ap-southeast-2', 'ap-northeast-1', 'eu-central-1', 'eu-west-1', 'sa-east-1'];
+    if (!props.environment?.fleet && props.environment?.buildImage?.type === WindowsImageType.SERVER_2022
+      && !supportedOnDemandEnvironmentRegion.includes(Aws.REGION)) {
+      // Reference: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment.types
+      // The environment type WINDOWS_SERVER_2022_CONTAINER is only available in these Regions: [...]
+      // The environment type WINDOWS_EC2 (BUILD_GENERAL1_MEDIUM, BUILD_GENERAL1_LARGE) is only available in these Regions: [...]
+      // Last accessed: 2025-04-12
+      Annotations.of(this).addWarningV2('WindowsServerMaybeUnavailable', `Windows Server 2022 images without a fleet may not be supported in ${Stack.of(this).region}`);
+    }
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
     this.source = props.source || new NoSource();
@@ -2242,15 +2251,6 @@ export class WindowsBuildImage implements IBuildImage {
       // The table includes Windows Medium, Large, XLarge, and 2XLarge.
       // Last accessed: 2025-04-12
       errors.push(`Windows images do not support the '${buildEnvironment.computeType}' compute type`);
-    }
-
-    const supportedOnDemandEnvironmentRegion = ['us-east-2', 'us-east-1', 'us-west-2', 'ap-southeast-2', 'ap-northeast-1', 'eu-central-1', 'eu-west-1', 'sa-east-1'];
-    if (!buildEnvironment.fleet && this.type === WindowsImageType.SERVER_2022 && !supportedOnDemandEnvironmentRegion.includes(Aws.REGION)) {
-      // Reference: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment.types
-      // The environment type WINDOWS_SERVER_2022_CONTAINER is only available in these Regions: [...]
-      // The environment type WINDOWS_EC2 (BUILD_GENERAL1_MEDIUM, BUILD_GENERAL1_LARGE) is only available in these Regions: [...]
-      // Last accessed: 2025-04-12
-      errors.push(`Windows Server 2022 images must be used with a fleet in ${Aws.REGION}`);
     }
 
     return errors;
