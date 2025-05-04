@@ -34,7 +34,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237349"
+    "salt": "1746368644322"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -846,7 +846,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237349"
+    "salt": "1746368644325"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1002,7 +1002,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237350"
+    "salt": "1746368644325"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1158,7 +1158,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237350"
+    "salt": "1746368644326"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1314,7 +1314,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237351"
+    "salt": "1746368644327"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1470,7 +1470,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237351"
+    "salt": "1746368644327"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1626,7 +1626,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237351"
+    "salt": "1746368644327"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1782,7 +1782,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237351"
+    "salt": "1746368644328"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1938,7 +1938,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237352"
+    "salt": "1746368644328"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2094,7 +2094,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237352"
+    "salt": "1746368644329"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2250,7 +2250,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237352"
+    "salt": "1746368644329"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2406,7 +2406,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237353"
+    "salt": "1746368644330"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2562,7 +2562,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237353"
+    "salt": "1746368644330"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2718,7 +2718,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237353"
+    "salt": "1746368644330"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2874,7 +2874,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237353"
+    "salt": "1746368644331"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -3030,7 +3030,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237353"
+    "salt": "1746368644331"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -3186,7 +3186,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237353"
+    "salt": "1746368644331"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -3342,7 +3342,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1746361237353"
+    "salt": "1746368644331"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -3617,6 +3617,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {
