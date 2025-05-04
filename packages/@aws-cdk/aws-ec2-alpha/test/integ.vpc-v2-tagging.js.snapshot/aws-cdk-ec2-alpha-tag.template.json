@@ -106,15 +106,10 @@
     "VPCintegtesttagVpnGatewayVPCVPNGW8D48C216"
    ]
   },
-  "VPCintegtesttagNATGatewayEIP485980AA": {
+  "VPCintegtesttagNATGatewaytestsubnetEIP03F9A44C": {
    "Type": "AWS::EC2::EIP",
    "Properties": {
-    "Domain": {
-     "Fn::GetAtt": [
-      "VPCintegtesttag58C3A45F",
-      "VpcId"
-     ]
-    },
+    "Domain": "vpc",
     "Tags": [
      {
       "Key": "Name",
@@ -129,12 +124,12 @@
     "VPCintegtesttagVpnGatewayVPCVPNGW8D48C216"
    ]
   },
-  "VPCintegtesttagNATGatewayCE05D4D3": {
+  "VPCintegtesttagNATGatewaytestsubnetNATGateway36D56DBF": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
     "AllocationId": {
      "Fn::GetAtt": [
-      "VPCintegtesttagNATGatewayEIP485980AA",
+      "VPCintegtesttagNATGatewaytestsubnetEIP03F9A44C",
       "AllocationId"
      ]
     },
@@ -175,7 +170,6 @@
   "testsubnetSubnetDD417829": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2b",
     "CidrBlock": "10.1.0.0/24",
     "Tags": [
@@ -273,15 +267,15 @@
     "Name": "aws-cdk-ec2-alpha-tag:ExportsOutputFnGetAttVPCintegtesttagInternetGatewayIGWC653A733InternetGatewayIdBB15D4AC"
    }
   },
-  "ExportsOutputFnGetAttVPCintegtesttagNATGatewayCE05D4D3NatGatewayId01D930FC": {
+  "ExportsOutputFnGetAttVPCintegtesttagNATGatewaytestsubnetNATGateway36D56DBFNatGatewayId76DD764D": {
    "Value": {
     "Fn::GetAtt": [
-     "VPCintegtesttagNATGatewayCE05D4D3",
+     "VPCintegtesttagNATGatewaytestsubnetNATGateway36D56DBF",
      "NatGatewayId"
     ]
    },
    "Export": {
-    "Name": "aws-cdk-ec2-alpha-tag:ExportsOutputFnGetAttVPCintegtesttagNATGatewayCE05D4D3NatGatewayId01D930FC"
+    "Name": "aws-cdk-ec2-alpha-tag:ExportsOutputFnGetAttVPCintegtesttagNATGatewaytestsubnetNATGateway36D56DBFNatGatewayId76DD764D"
    }
   },
   "ExportsOutputFnGetAttTestRouteTableC34C2E1CRouteTableId4C8A7F39": {

@@ -63,9 +63,9 @@ pull_request_rules:
   - name: label core
     actions:
       label:
-        add: [ contribution/core ]
+        add: [contribution/core]
     conditions:
-      - author~=^(rix0rrr|iliapolo|otaviomacedo|kaizencc|TheRealAmazonKendra|mrgrain|pahud|ashishdhingra|kellertk|moelasmar|paulhcsun|GavinZZ|xazhao|gracelu0|shikha372|QuantumNeuralCoder|godwingrs22|bergjaak|samson-keung|IanKonlog|Leo10Gama|scorbiere|jiayiwang7|saiyush|5d|iankhou|SimonCMoore)$
+      - author~=^(rix0rrr|iliapolo|otaviomacedo|kaizencc|TheRealAmazonKendra|mrgrain|pahud|ashishdhingra|kellertk|moelasmar|paulhcsun|GavinZZ|xazhao|gracelu0|shikha372|QuantumNeuralCoder|godwingrs22|bergjaak|samson-keung|IanKonlog|Leo10Gama|scorbiere|jiayiwang7|saiyush|5d|iankhou|SimonCMoore|Y-JayKim|ykethan)$
       - -label~="contribution/core"
   - name: automatic merge
     actions:
@@ -190,3 +190,14 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
+priority_rules:
+  - name: priority for queue `default-merge`
+    conditions:
+      - -label~=(blocked|do-not-merge)
+      - label~=no-squash
+    priority: 2500
+  - name: priority for queue `priority-squash`
+    conditions:
+      - -label~=(blocked|do-not-merge|no-squash)
+      - label~=priority-pr
+    priority: 2250

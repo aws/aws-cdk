@@ -76,7 +76,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":s3:::integ-cross-account-pipeline-artifact-bucket"
+           ":s3:::cdkpipelinecfnactionstackckartifactbucket2747bf37684bec42004a"
           ]
          ]
         },
@@ -88,7 +88,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":s3:::integ-cross-account-pipeline-artifact-bucket/*"
+           ":s3:::cdkpipelinecfnactionstackckartifactbucket2747bf37684bec42004a/*"
           ]
          ]
         }
@@ -176,7 +176,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":s3:::integ-cross-account-pipeline-artifact-bucket"
+           ":s3:::cdkpipelinecfnactionstackckartifactbucket2747bf37684bec42004a"
           ]
          ]
         },
@@ -188,7 +188,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":s3:::integ-cross-account-pipeline-artifact-bucket/*"
+           ":s3:::cdkpipelinecfnactionstackckartifactbucket2747bf37684bec42004a/*"
           ]
          ]
         }
