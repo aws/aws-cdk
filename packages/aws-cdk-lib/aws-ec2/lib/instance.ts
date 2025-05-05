@@ -19,6 +19,7 @@ import { Annotations, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Reso
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -403,7 +404,13 @@ export interface InstanceProps {
 /**
  * This represents a single EC2 instance
  */
+@propertyInjectable
 export class Instance extends Resource implements IInstance {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.Instance';
+
   /**
    * The type of OS the instance is running.
    */
