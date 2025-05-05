@@ -43,7 +43,7 @@
     "outputPaths": [
      "services.0.schedulingStrategy"
     ],
-    "salt": "1738470244079"
+    "salt": "1746116782468"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -105,7 +105,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0620cd173f15e6874350d35d31917579f8488aac349f5c15062107ebca21d5b6.zip"
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -134,6 +134,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {
@@ -242,6 +245,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {

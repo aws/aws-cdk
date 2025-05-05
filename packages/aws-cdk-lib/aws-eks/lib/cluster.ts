@@ -28,6 +28,7 @@ import * as lambda from '../../aws-lambda';
 import * as ssm from '../../aws-ssm';
 import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -1183,8 +1184,8 @@ abstract class ClusterBase extends Resource implements ICluster {
     if (!this._spotInterruptHandler) {
       this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
         chart: 'aws-node-termination-handler',
-        version: '0.18.0',
-        repository: 'https://aws.github.io/eks-charts',
+        version: '0.27.0',
+        repository: 'oci://public.ecr.aws/aws-ec2/helm/aws-node-termination-handler',
         namespace: 'kube-system',
         values: {
           nodeSelector: {
@@ -1332,7 +1333,13 @@ export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAd
  * This is a fully managed cluster of API Servers (control-plane)
  * The user is still required to create the worker nodes.
  */
+@propertyInjectable
 export class Cluster extends ClusterBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.Cluster';
+
   /**
    * Import an existing cluster
    *

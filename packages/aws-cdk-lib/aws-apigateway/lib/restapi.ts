@@ -20,6 +20,7 @@ import * as iam from '../../aws-iam';
 import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy, Size, Lazy } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
@@ -169,7 +170,7 @@ export interface RestApiBaseProps {
   /**
    * The removal policy applied to the AWS CloudWatch role when this resource
    * is removed from the application.
-   * Requires `cloudWatchRole` to be enabled.
+   * Requires `cloudWatchRole` to be enabled.
    *
    * @default - RemovalPolicy.RETAIN
    */
@@ -298,6 +299,27 @@ export interface SpecRestApiProps extends RestApiBaseProps {
    * @default - Compression is disabled.
    */
   readonly minCompressionSize?: Size;
+
+  /**
+   * The Mode that determines how API Gateway handles resource updates.
+   *
+   * Valid values are `overwrite` or `merge`.
+   *
+   * For `overwrite`, the new API definition replaces the existing one.
+   * The existing API identifier remains unchanged.
+   *
+   * For `merge`, the new API definition is merged with the existing API.
+   *
+   * If you don't specify this property, a default value is chosen:
+   * - For REST APIs created before March 29, 2021, the default is `overwrite`
+   * - For REST APIs created after March 29, 2021, the new API definition takes precedence, but any container types such as endpoint configurations and binary media types are merged with the existing API.
+   *
+   * Use the default mode to define top-level RestApi properties in addition to using OpenAPI.
+   * Generally, it's preferred to use API Gateway's OpenAPI extensions to model these properties.
+   *
+   * @default - `merge` for REST APIs created after March 29, 2021, otherwise `overwrite`
+   */
+  readonly mode?: RestApiMode;
 }
 
 /**
@@ -723,7 +745,13 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
  *
  * @resource AWS::ApiGateway::RestApi
  */
+@propertyInjectable
 export class SpecRestApi extends RestApiBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.SpecRestApi';
+
   /**
    * The ID of this API Gateway RestApi.
    */
@@ -754,6 +782,7 @@ export class SpecRestApi extends RestApiBase {
       endpointConfiguration: this._configureEndpoints(props),
       parameters: props.parameters,
       disableExecuteApiEndpoint: props.disableExecuteApiEndpoint,
+      mode: props.mode,
     });
 
     props.apiDefinition.bindAfterCreate(this, this);
@@ -818,7 +847,13 @@ export interface RestApiAttributes {
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
  */
+@propertyInjectable
 export class RestApi extends RestApiBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.RestApi';
+
   /**
    * Return whether the given object is a `RestApi`
    */
@@ -1056,6 +1091,21 @@ export enum EndpointType {
    * For a private API and its custom domain name.
    */
   PRIVATE = 'PRIVATE',
+}
+
+/**
+ * The Mode that determines how API Gateway handles resource updates when importing an OpenAPI definition.
+ */
+export enum RestApiMode {
+  /**
+   * The new API definition replaces the existing one.
+   */
+  OVERWRITE = 'overwrite',
+
+  /**
+   * The new API definition is merged with the existing API.
+   */
+  MERGE = 'merge',
 }
 
 class RootResource extends ResourceBase {
