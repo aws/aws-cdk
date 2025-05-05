@@ -13,7 +13,7 @@ import { IStage } from './stage';
 import { validateHttpMethod } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { Annotations, ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack } from '../../core';
+import { propertyInjectable, Annotations, ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID } from '../../cx-api';
@@ -163,7 +163,13 @@ export interface MethodProps {
   readonly options?: MethodOptions;
 }
 
+@propertyInjectable
 export class Method extends Resource {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.Method';
+
   /** @attribute */
   public readonly methodId: string;
 
