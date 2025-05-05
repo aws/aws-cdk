@@ -20,7 +20,7 @@
     "outputPaths": [
      "pipeline.name"
     ],
-    "salt": "1742781501413"
+    "salt": "1745663027801"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -132,7 +132,7 @@
     "outputPaths": [
      "pipeline.name"
     ],
-    "salt": "1742781501413"
+    "salt": "1745663027802"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -148,28 +148,12 @@
     },
     "service": "CodePipeline",
     "api": "getPipeline",
-    "expected": "{\"$StringLike\":\"/path/to/exclude2\"}",
-    "actualPath": "pipeline.triggers.0.gitConfiguration.push.0.filePaths.excludes.1",
+    "expected": "{\"$ObjectLike\":{\"pipeline\":{\"name\":\"codepipeline-integ-trigger-test\",\"stages\":[{\"name\":\"Source\"},{\"name\":\"Build\"}],\"triggers\":[{\"providerType\":\"CodeStarSourceConnection\",\"gitConfiguration\":{\"sourceActionName\":\"integ-action-name\",\"push\":[{\"branches\":{\"includes\":[\"include1\",\"include2\"],\"excludes\":[\"exclude1\",\"exclude2\"]},\"filePaths\":{\"includes\":[\"/path/to/include1\",\"/path/to/include2\"],\"excludes\":[\"/path/to/exclude1\",\"/path/to/exclude2\"]}}],\"pullRequest\":[{\"branches\":{\"includes\":[\"includePR1\",\"includePR2\"],\"excludes\":[\"excludePR1\",\"excludePR2\"]},\"filePaths\":{\"includes\":[\"/path/to/includePR1\",\"/path/to/includePR2\"],\"excludes\":[\"/path/to/excludePR1\",\"/path/to/excludePR2\"]}}]}}]}}}",
     "parameters": {
      "name": "\"codepipeline-integ-trigger-test\""
     },
-    "flattenResponse": "true",
-    "outputPaths": [
-     "pipeline.name",
-     "pipeline.stages.0.name",
-     "pipeline.stages.1.name",
-     "pipeline.triggers.0.providerType",
-     "pipeline.triggers.0.gitConfiguration.sourceActionName",
-     "pipeline.triggers.0.gitConfiguration.push.0.branches.includes.0",
-     "pipeline.triggers.0.gitConfiguration.push.0.branches.includes.1",
-     "pipeline.triggers.0.gitConfiguration.push.0.branches.excludes.0",
-     "pipeline.triggers.0.gitConfiguration.push.0.branches.excludes.1",
-     "pipeline.triggers.0.gitConfiguration.push.0.filePaths.includes.0",
-     "pipeline.triggers.0.gitConfiguration.push.0.filePaths.includes.1",
-     "pipeline.triggers.0.gitConfiguration.push.0.filePaths.excludes.0",
-     "pipeline.triggers.0.gitConfiguration.push.0.filePaths.excludes.1"
-    ],
-    "salt": "1742781501413"
+    "flattenResponse": "false",
+    "salt": "1745663027802"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -315,6 +299,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {

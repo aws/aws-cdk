@@ -1987,6 +1987,34 @@
     "Triggers": [
      {
       "GitConfiguration": {
+       "PullRequest": [
+        {
+         "Branches": {
+          "Excludes": [
+           "excludePR1",
+           "excludePR2"
+          ],
+          "Includes": [
+           "includePR1",
+           "includePR2"
+          ]
+         },
+         "Events": [
+          "OPEN",
+          "UPDATED"
+         ],
+         "FilePaths": {
+          "Excludes": [
+           "/path/to/excludePR1",
+           "/path/to/excludePR2"
+          ],
+          "Includes": [
+           "/path/to/includePR1",
+           "/path/to/includePR2"
+          ]
+         }
+        }
+       ],
        "Push": [
         {
          "Branches": {
