@@ -8,6 +8,7 @@ import * as iam from '../../aws-iam';
 import { ArnFormat, IResource as IResourceBase, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * API keys are alphanumeric string values that you distribute to
@@ -145,7 +146,13 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
  * An ApiKey can be distributed to API clients that are executing requests
  * for Method resources that require an Api Key.
  */
+@propertyInjectable
 export class ApiKey extends ApiKeyBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.ApiKey';
+
   /**
    * Import an ApiKey by its Id
    */
