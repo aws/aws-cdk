@@ -12,6 +12,7 @@ import * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
 import { Arn, ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Two types of state machines are available in AWS Step Functions: EXPRESS AND STANDARD.
@@ -412,7 +413,13 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 /**
  * Define a StepFunctions State Machine
  */
+@propertyInjectable
 export class StateMachine extends StateMachineBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-stepfunctions.StateMachine';
+
   /**
    * Execution role of this state machine
    */
