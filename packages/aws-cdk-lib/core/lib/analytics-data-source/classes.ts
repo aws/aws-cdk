@@ -7424,6 +7424,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'SpecRestApi': {
       'apiDefinition': '*',
       'minCompressionSize': '*',
+      'mode': 'RestApiMode',
       'deploy': 'boolean',
       'deployOptions': {
         'stageName': '*',
@@ -8511,6 +8512,16 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'channelNamespaceName': '*',
       'code': '*',
+      'publishHandlerConfig': {
+        'direct': 'boolean',
+        'dataSource': '*',
+        'lambdaInvokeType': 'LambdaInvokeType'
+      },
+      'subscribeHandlerConfig': {
+        'direct': 'boolean',
+        'dataSource': '*',
+        'lambdaInvokeType': 'LambdaInvokeType'
+      },
       'authorizationConfig': {
         'publishAuthModeTypes': 'AppSyncAuthorizationType',
         'subscribeAuthModeTypes': 'AppSyncAuthorizationType'
@@ -15217,7 +15228,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'albController': {
         'version': '*',
         'repository': '*',
-        'policy': '*'
+        'policy': '*',
+        'additionalHelmChartValues': {
+          'enableWafv2': 'boolean',
+          'enableWaf': 'boolean'
+        }
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'authenticationMode': 'AuthenticationMode',
@@ -15806,7 +15821,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'albController': {
         'version': '*',
         'repository': '*',
-        'policy': '*'
+        'policy': '*',
+        'additionalHelmChartValues': {
+          'enableWafv2': 'boolean',
+          'enableWaf': 'boolean'
+        }
       },
       'clusterLogging': 'ClusterLoggingTypes',
       'authenticationMode': 'AuthenticationMode',
@@ -16422,6 +16441,23 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
       'description': '*',
       'ruleName': '*',
       'eventPattern': {
@@ -16463,6 +16499,23 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'eventBusArn': '*',
         'eventBusPolicy': '*',
         'eventSourceName': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
         'stack': '*',
         'env': {
           'account': '*',
