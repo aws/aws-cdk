@@ -1,5 +1,4 @@
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { KubectlV24Layer } from '@aws-cdk/lambda-layer-kubectl-v24';
 import { KubectlV29Layer } from '@aws-cdk/lambda-layer-kubectl-v29';
 import { KubectlV30Layer } from '@aws-cdk/lambda-layer-kubectl-v30';
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
@@ -12,7 +11,6 @@ import * as eks from 'aws-cdk-lib/aws-eks';
 // create the appropriate KubectlLayerVersion instance based on the
 // Kubernetes version.
 const versionMap: { [key: string]: new (scope: Construct, id: string) => lambda.ILayerVersion } = {
-  '1.24': KubectlV24Layer,
   '1.29': KubectlV29Layer,
   '1.30': KubectlV30Layer,
   '1.31': KubectlV31Layer,
@@ -20,7 +18,7 @@ const versionMap: { [key: string]: new (scope: Construct, id: string) => lambda.
 };
 
 export function getClusterVersionConfig(scope: Construct, version?: eks.KubernetesVersion) {
-  const _version = version ?? eks.KubernetesVersion.V1_24;
+  const _version = version ?? eks.KubernetesVersion.V1_32;
   return {
     version: _version,
     // Crazy type-casting is required because KubectlLayer peer depends on
