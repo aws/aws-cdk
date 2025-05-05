@@ -344,8 +344,9 @@ export class PipelineGraph {
       const id = stackAsset.assetType === AssetType.FILE
         ? (this.singlePublisher ? 'FileAsset' : `FileAsset${++this._fileAssetCtr}`)
         : (this.singlePublisher ? 'DockerAsset' : `DockerAsset${++this._dockerAssetCtr}`);
+      const displayName = this.singlePublisher ? id : stackAsset.displayName;
 
-      assetNode = aGraphNode(id, { type: 'publish-assets', assets: [] }, stackAsset.displayName);
+      assetNode = aGraphNode(id, { type: 'publish-assets', assets: [] }, displayName);
       assetsGraph.add(assetNode);
       assetNode.dependOn(this.lastPreparationNode);
 
