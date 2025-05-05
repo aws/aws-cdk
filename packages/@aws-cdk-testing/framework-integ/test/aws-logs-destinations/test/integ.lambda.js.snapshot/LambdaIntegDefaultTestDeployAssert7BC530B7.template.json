@@ -15,7 +15,7 @@
      "Entries": "[{\"Detail\":\"{\\\"foo\\\":\\\"bar\\\"}\",\"DetailType\":\"cdk-integ-custom-rule\",\"Source\":\"cdk-lambda-integ\"}]"
     },
     "flattenResponse": "false",
-    "salt": "1745526129144"
+    "salt": "1746117074374"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -135,7 +135,7 @@
      "WaitTimeSeconds": "20"
     },
     "flattenResponse": "false",
-    "salt": "1745526129145"
+    "salt": "1746117074375"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -147,6 +147,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {
