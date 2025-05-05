@@ -77,6 +77,27 @@ describe('IPAM Test', () => {
     ); // End Template
   });
 
+  test('Creates nested IP Pools', () => {
+    const pool = ipam.privateScope.addPool('Private', {
+      addressFamily: vpc.AddressFamily.IP_V4,
+      ipv4ProvisionedCidrs: ['10.2.0.0/14'],
+      locale: 'us-west-2',
+    });
+    ipam.privateScope.addPool('PrivateChild', {
+      addressFamily: vpc.AddressFamily.IP_V4,
+      ipv4ProvisionedCidrs: ['10.2.0.0/16'],
+      sourceIpamPoolId: pool.ipamPoolId,
+    });
+
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::EC2::IPAMPool',
+      {
+        AddressFamily: 'ipv4',
+        SourceIpamPoolId: { 'Fn::GetAtt': ['IpamPrivate4E8D7A02', 'IpamPoolId'] },
+      },
+    );
+  });
+
   test('Creates IPAM CIDR pool under public scope for IPv6', () => {
     // Create IPAM resources
     const ipamIpv6 = new Ipam(stack, 'TestIpam', {
@@ -182,12 +203,12 @@ describe('IPAM Test', () => {
     });
     Template.fromStack(stack_new).hasResourceProperties(
       'AWS::EC2::IPAM', {
-        OperatingRegions: [
-          {
-            RegionName: 'us-west-2',
-          },
-        ],
-      },
+      OperatingRegions: [
+        {
+          RegionName: 'us-west-2',
+        },
+      ],
+    },
     );
   });
 
@@ -201,12 +222,12 @@ describe('IPAM Test', () => {
     new Ipam(stack_new, 'TestIpam', {});
     Template.fromStack(stack_new).hasResourceProperties(
       'AWS::EC2::IPAM', {
-        OperatingRegions: [
-          {
-            RegionName: 'us-west-2',
-          },
-        ],
-      },
+      OperatingRegions: [
+        {
+          RegionName: 'us-west-2',
+        },
+      ],
+    },
     );
   });
 
@@ -216,14 +237,14 @@ describe('IPAM Test', () => {
     new Ipam(stack_new, 'TestIpam', {});
     Template.fromStack(stack_new).hasResourceProperties(
       'AWS::EC2::IPAM', {
-        OperatingRegions: [
-          {
-            RegionName: {
-              Ref: 'AWS::Region',
-            },
+      OperatingRegions: [
+        {
+          RegionName: {
+            Ref: 'AWS::Region',
           },
-        ],
-      },
+        },
+      ],
+    },
     );
   });
 
@@ -254,12 +275,12 @@ describe('IPAM Test', () => {
     new Ipam(testStack, 'TestIpamNew', {});
     Template.fromStack(testStack).hasResourceProperties(
       'AWS::EC2::IPAM', {
-        OperatingRegions: [
-          {
-            RegionName: 'us-west-1',
-          },
-        ],
-      },
+      OperatingRegions: [
+        {
+          RegionName: 'us-west-1',
+        },
+      ],
+    },
     );
   });
 });// End Test
