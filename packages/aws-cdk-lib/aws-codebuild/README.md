@@ -332,6 +332,12 @@ of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE`,
 `LinuxBuildImage.AMAZON_LINUX_2_5`, `MacBuildImage.BASE_14`, `LinuxArmBuildImage.AMAZON_LINUX_2_ARM`,
 `LinuxLambdaBuildImage.AMAZON_LINUX_2_NODE_18` or `LinuxArmLambdaBuildImage.AMAZON_LINUX_2_NODE_18`.
 
+For ec2 environment types:
+
+* `LINUX_EC2`: `LinuxBuildImage.AMAZON_LINUX_2023_AMI`
+* `ARM_EC2`: `LinuxArmBuildImage.AMAZON_LINUX_2023_AMI`
+* `WINDOWS_EC2`: `WindowsBuildImage.WIN_SERVER_2022_AMI`
+
 Alternatively, you can specify a custom image using one of the static methods on
 `LinuxBuildImage`:
 

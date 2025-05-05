@@ -27,6 +27,7 @@ new IntegTest(app, 'integ-project-windows-images', {
     new ImageTestStack(app, 'WinCore2019-3', WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0),
     // Windows 2022 images are not supported for on-demand build projects
     /* new ImageTestStack(app, 'WinCore2022-3', WindowsBuildImage.WIN_SERVER_CORE_2022_BASE_3_0), */
+    new ImageTestStack(app, 'WinServer2022-1', WindowsBuildImage.WIN_SERVER_2022_AMI),
   ],
 });
 

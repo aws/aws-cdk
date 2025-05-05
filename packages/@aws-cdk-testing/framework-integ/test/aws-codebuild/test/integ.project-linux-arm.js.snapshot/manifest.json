@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "42.0.0",
   "artifacts": {
     "codebuild-project-arm.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fb14db2f3f849c96db420afc9fd158b99550fa4ffa602209cd78e471a282fc4a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1111173b698339c6847c92c24177b6af55b6aeab691b97bac9a404ec8f3221ab.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,117 @@
         "codebuild-project-arm.assets"
       ],
       "metadata": {
+        "/codebuild-project-arm/MyProjectMedium": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "buildSpec": "*",
+              "environment": {
+                "buildImage": {
+                  "defaultComputeType": "BUILD_GENERAL1_LARGE",
+                  "imageId": "*",
+                  "imagePullPrincipalType": "CODEBUILD",
+                  "secretsManagerCredentials": "*",
+                  "repository": "*",
+                  "type": "*"
+                },
+                "computeType": "BUILD_GENERAL1_MEDIUM"
+              }
+            }
+          }
+        ],
+        "/codebuild-project-arm/MyProjectMedium/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/codebuild-project-arm/MyProjectMedium/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/codebuild-project-arm/MyProjectMedium/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProjectMediumRole1F3769C8"
+          }
+        ],
+        "/codebuild-project-arm/MyProjectMedium/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/codebuild-project-arm/MyProjectMedium/Role/DefaultPolicy/Resource": [
@@ -52,10 +159,117 @@
             "data": "MyProjectMediumE40D9677"
           }
         ],
+        "/codebuild-project-arm/MyProjectXLarge": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "buildSpec": "*",
+              "environment": {
+                "buildImage": {
+                  "defaultComputeType": "BUILD_GENERAL1_LARGE",
+                  "imageId": "*",
+                  "imagePullPrincipalType": "CODEBUILD",
+                  "secretsManagerCredentials": "*",
+                  "repository": "*",
+                  "type": "*"
+                },
+                "computeType": "BUILD_GENERAL1_XLARGE"
+              }
+            }
+          }
+        ],
+        "/codebuild-project-arm/MyProjectXLarge/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/codebuild-project-arm/MyProjectXLarge/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/codebuild-project-arm/MyProjectXLarge/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProjectXLargeRoleC17867F7"
+          }
+        ],
+        "/codebuild-project-arm/MyProjectXLarge/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/codebuild-project-arm/MyProjectXLarge/Role/DefaultPolicy/Resource": [
@@ -70,10 +284,117 @@
             "data": "MyProjectXLarge21A68AC6"
           }
         ],
+        "/codebuild-project-arm/MyProjectX2Large": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "buildSpec": "*",
+              "environment": {
+                "buildImage": {
+                  "defaultComputeType": "BUILD_GENERAL1_LARGE",
+                  "imageId": "*",
+                  "imagePullPrincipalType": "CODEBUILD",
+                  "secretsManagerCredentials": "*",
+                  "repository": "*",
+                  "type": "*"
+                },
+                "computeType": "BUILD_GENERAL1_2XLARGE"
+              }
+            }
+          }
+        ],
+        "/codebuild-project-arm/MyProjectX2Large/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/codebuild-project-arm/MyProjectX2Large/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/codebuild-project-arm/MyProjectX2Large/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProjectX2LargeRole65F64577"
+          }
+        ],
+        "/codebuild-project-arm/MyProjectX2Large/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/codebuild-project-arm/MyProjectX2Large/Role/DefaultPolicy/Resource": [
@@ -86,6 +407,256 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProjectX2Large715B77CC"
+          }
+        ],
+        "/codebuild-project-arm/MyProjectARMAL2023": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "buildSpec": "*",
+              "environment": {
+                "buildImage": {
+                  "defaultComputeType": "BUILD_GENERAL1_LARGE",
+                  "imageId": "*",
+                  "imagePullPrincipalType": "CODEBUILD",
+                  "secretsManagerCredentials": "*",
+                  "repository": "*",
+                  "type": "*"
+                },
+                "computeType": "BUILD_GENERAL1_MEDIUM"
+              }
+            }
+          }
+        ],
+        "/codebuild-project-arm/MyProjectARMAL2023/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/codebuild-project-arm/MyProjectARMAL2023/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/codebuild-project-arm/MyProjectARMAL2023/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectARMAL2023Role5A985E72"
+          }
+        ],
+        "/codebuild-project-arm/MyProjectARMAL2023/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/codebuild-project-arm/MyProjectARMAL2023/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectARMAL2023RoleDefaultPolicyC8DD37B3"
+          }
+        ],
+        "/codebuild-project-arm/MyProjectARMAL2023/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectARMAL2023F5F197D0"
+          }
+        ],
+        "/codebuild-project-arm/MyProjectAL2023": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "buildSpec": "*",
+              "environment": {
+                "buildImage": {
+                  "defaultComputeType": "BUILD_GENERAL1_SMALL",
+                  "imageId": "*",
+                  "imagePullPrincipalType": "CODEBUILD",
+                  "secretsManagerCredentials": "*",
+                  "repository": "*",
+                  "type": "*"
+                },
+                "computeType": "BUILD_GENERAL1_MEDIUM"
+              }
+            }
+          }
+        ],
+        "/codebuild-project-arm/MyProjectAL2023/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/codebuild-project-arm/MyProjectAL2023/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/codebuild-project-arm/MyProjectAL2023/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectAL2023Role6007CB95"
+          }
+        ],
+        "/codebuild-project-arm/MyProjectAL2023/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/codebuild-project-arm/MyProjectAL2023/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectAL2023RoleDefaultPolicyD09BE532"
+          }
+        ],
+        "/codebuild-project-arm/MyProjectAL2023/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectAL2023254D5457"
           }
         ],
         "/codebuild-project-arm/BootstrapVersion": [
@@ -157,5 +728,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }
