@@ -966,8 +966,11 @@ describe('Environment', () => {
   });
 
   test.each([
-    ['Base 14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
-  ])('has build image for %s', (_, buildImage, expected) => {
+    ['macOS Base 14', codebuild.EnvironmentType.MAC_ARM, codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
+    ['Linux EC2 AL2023 1.0', codebuild.EnvironmentType.LINUX_EC2, codebuild.LinuxBuildImage.AMAZON_LINUX_2023_1_0_AMI, 'aws/codebuild/ami/amazonlinux-x86_64-base:latest'],
+    ['Arm EC2 AL2023 1.0', codebuild.EnvironmentType.ARM_EC2, codebuild.LinuxArmBuildImage.AMAZON_LINUX_2023_1_0_AMI, 'aws/codebuild/ami/amazonlinux-arm-base:latest'],
+    ['Windows EC2 Server 2022 1.0', codebuild.EnvironmentType.WINDOWS_EC2, codebuild.WindowsBuildImage.WIN_SERVER_2022_1_0_AMI, 'aws/codebuild/ami/windows-base:2022'],
+  ])('has build image for %s', (_, environmentType, buildImage, expected) => {
     // GIVEN
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
@@ -975,7 +978,7 @@ describe('Environment', () => {
       fleetName: 'MyFleet',
       baseCapacity: 1,
       computeType: codebuild.FleetComputeType.MEDIUM,
-      environmentType: codebuild.EnvironmentType.MAC_ARM,
+      environmentType: environmentType,
     });
 
     // WHEN

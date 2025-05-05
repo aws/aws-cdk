@@ -7,6 +7,21 @@ import * as ecr from '../../aws-ecr';
 import * as secretsmanager from '../../aws-secretsmanager';
 
 /**
+ * Environment type for Linux Arm Docker images or AMI
+ */
+export enum LinuxArmImageType {
+  /**
+   * The ARM_CONTAINER environment type
+   */
+  ARM_CONTAINER = EnvironmentType.ARM_CONTAINER,
+
+  /**
+   * The ARM_EC2 environment type
+   */
+  ARM_EC2 = EnvironmentType.ARM_EC2,
+}
+
+/**
  * Construction properties of `LinuxArmBuildImage`.
  * Module-private, as the constructor of `LinuxArmBuildImage` is private.
  */
@@ -15,6 +30,7 @@ interface LinuxArmBuildImageProps {
   readonly imagePullPrincipalType?: ImagePullPrincipalType;
   readonly secretsManagerCredentials?: secretsmanager.ISecret;
   readonly repository?: ecr.IRepository;
+  readonly imageType?: LinuxArmImageType;
 }
 
 /**
@@ -45,6 +61,13 @@ export class LinuxArmBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2023_STANDARD_2_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-standard:2.0');
   /** Image "aws/codebuild/amazonlinux-aarch64-standard:3.0" based on Amazon Linux 2023. */
   public static readonly AMAZON_LINUX_2023_STANDARD_3_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-standard:3.0');
+
+  /** The Amazon Linux arm 1.0 AMI, based on Amazon Linux 2023. */
+  public static readonly AMAZON_LINUX_2023_1_0_AMI: IBuildImage = new LinuxArmBuildImage({
+    imageId: 'aws/codebuild/ami/amazonlinux-arm-base:2023-1.0',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+    imageType: LinuxArmImageType.ARM_EC2,
+  });
 
   /**
    * @returns a aarch-64 Linux build image from a Docker Hub image.
@@ -93,7 +116,7 @@ export class LinuxArmBuildImage implements IBuildImage {
     });
   }
 
-  public readonly type = EnvironmentType.ARM_CONTAINER as string;
+  public readonly type: string;
   public readonly defaultComputeType = ComputeType.LARGE;
   public readonly imageId: string;
   public readonly imagePullPrincipalType?: ImagePullPrincipalType;
@@ -105,6 +128,7 @@ export class LinuxArmBuildImage implements IBuildImage {
     this.imagePullPrincipalType = props.imagePullPrincipalType;
     this.secretsManagerCredentials = props.secretsManagerCredentials;
     this.repository = props.repository;
+    this.type = props.imageType ?? LinuxArmImageType.ARM_CONTAINER;
   }
 
   /**
