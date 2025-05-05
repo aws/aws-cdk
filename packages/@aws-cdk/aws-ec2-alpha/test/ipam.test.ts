@@ -203,12 +203,12 @@ describe('IPAM Test', () => {
     });
     Template.fromStack(stack_new).hasResourceProperties(
       'AWS::EC2::IPAM', {
-      OperatingRegions: [
-        {
-          RegionName: 'us-west-2',
-        },
-      ],
-    },
+        OperatingRegions: [
+          {
+            RegionName: 'us-west-2',
+          },
+        ],
+      },
     );
   });
 
@@ -222,12 +222,12 @@ describe('IPAM Test', () => {
     new Ipam(stack_new, 'TestIpam', {});
     Template.fromStack(stack_new).hasResourceProperties(
       'AWS::EC2::IPAM', {
-      OperatingRegions: [
-        {
-          RegionName: 'us-west-2',
-        },
-      ],
-    },
+        OperatingRegions: [
+          {
+            RegionName: 'us-west-2',
+          },
+        ],
+      },
     );
   });
 
@@ -237,14 +237,14 @@ describe('IPAM Test', () => {
     new Ipam(stack_new, 'TestIpam', {});
     Template.fromStack(stack_new).hasResourceProperties(
       'AWS::EC2::IPAM', {
-      OperatingRegions: [
-        {
-          RegionName: {
-            Ref: 'AWS::Region',
+        OperatingRegions: [
+          {
+            RegionName: {
+              Ref: 'AWS::Region',
+            },
           },
-        },
-      ],
-    },
+        ],
+      },
     );
   });
 
@@ -275,12 +275,12 @@ describe('IPAM Test', () => {
     new Ipam(testStack, 'TestIpamNew', {});
     Template.fromStack(testStack).hasResourceProperties(
       'AWS::EC2::IPAM', {
-      OperatingRegions: [
-        {
-          RegionName: 'us-west-1',
-        },
-      ],
-    },
+        OperatingRegions: [
+          {
+            RegionName: 'us-west-1',
+          },
+        ],
+      },
     );
   });
 });// End Test
