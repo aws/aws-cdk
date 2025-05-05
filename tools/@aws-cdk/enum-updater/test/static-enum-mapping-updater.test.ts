@@ -2,7 +2,6 @@ import axios from 'axios';
 import * as fs from 'fs';
 import * as tmp from 'tmp';
 import { 
-  parseAwsSdkEnums,
   normalizeValue,
   normalizeEnumValues,
   extractModuleName,
@@ -71,41 +70,6 @@ describe('File Operations', () => {
     (tmp.fileSync as jest.Mock).mockReturnValue(mockTmpFile);
     (tmp.dirSync as jest.Mock).mockReturnValue(mockDir);
   });
-
-  describe('parseAwsSdkEnums', () => {
-    const mockShapesData = {
-      "com.amazonaws.apigateway#AccessAssociationSourceType": {
-        "type": "enum",
-        "members": {
-          "VPCE": {
-            "traits": {
-              "smithy.api#enumValue": "VPCE"
-            }
-          }
-        }
-      }
-    };
-
-    beforeEach(() => {
-      (fs.readdirSync as jest.Mock).mockReturnValue(['service.json']);
-      (fs.readFileSync as jest.Mock).mockReturnValue(JSON.stringify({ shapes: mockShapesData }));
-    });
-
-    it('should parse SDK enum definitions', async () => {
-      await parseAwsSdkEnums('/mock/path');
-      expect(fs.writeFileSync).toHaveBeenCalled();
-      const writeCall = (fs.writeFileSync as jest.Mock).mock.calls[0];
-      const writtenContent = JSON.parse(writeCall[1]);
-      expect(writtenContent.apigateway.AccessAssociationSourceType).toContain('VPCE');
-    });
-
-    it('should handle invalid JSON files', async () => {
-      (fs.readFileSync as jest.Mock).mockReturnValueOnce('invalid json');
-      await parseAwsSdkEnums('/mock/path');
-      expect(fs.writeFileSync).toHaveBeenCalled();
-    });
-  });
-});
 
 describe('Enum Matching Functions', () => {
   describe('findMatchingEnum', () => {
@@ -265,5 +229,4 @@ describe('Static Mapping Generation', () => {
       await expect(entryMethod()).resolves.toBeUndefined();
     });
   });
-  
-  
+});

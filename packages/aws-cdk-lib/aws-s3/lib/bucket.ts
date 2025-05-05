@@ -30,6 +30,7 @@ import {
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
 import * as cxapi from '../../cx-api';
 import * as regionInformation from '../../region-info';
@@ -344,7 +345,7 @@ export interface IBucket extends IResource {
    * that will be matched against the s3 object key. Refer to the S3 Developer Guide
    * for details about allowed filter rules.
    *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#notification-how-to-filtering
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-filtering.html
    *
    * @example
    *
@@ -895,7 +896,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * that will be matched against the s3 object key. Refer to the S3 Developer Guide
    * for details about allowed filter rules.
    *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#notification-how-to-filtering
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-filtering.html
    *
    * @example
    *
@@ -1991,7 +1992,13 @@ export interface Tag {
  * });
  *
  */
+@propertyInjectable
 export class Bucket extends BucketBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-s3.Bucket';
+
   public static fromBucketArn(scope: Construct, id: string, bucketArn: string): IBucket {
     return Bucket.fromBucketAttributes(scope, id, { bucketArn });
   }
