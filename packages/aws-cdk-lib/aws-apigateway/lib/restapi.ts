@@ -713,7 +713,14 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
       throw new ValidationError('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed', this);
     }
     if (props.endpointConfiguration) {
+      const endpointConfiguration = props.endpointConfiguration;
+      const isPrivateApi = endpointConfiguration.types.includes(EndpointType.PRIVATE);
+      const isIpv4Only = endpointConfiguration.ipAddressType === IpAddressType.IPV4;
+      if (isPrivateApi && isIpv4Only) {
+        throw new ValidationError('Private APIs can only have a dualstack IP address type.', this);
+      }
       return {
+        ipAddressType: props.endpointConfiguration.ipAddressType,
         types: props.endpointConfiguration.types,
         vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(vpcEndpoint => vpcEndpoint.vpcEndpointId),
       };
@@ -1062,6 +1069,30 @@ export interface EndpointConfiguration {
    * @default - no ALIASes are created for the endpoint.
    */
   readonly vpcEndpoints?: ec2.IVpcEndpoint[];
+
+  /**
+   * The IP address types that can invoke the API.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-ip-address-type.html
+   *
+   * @default undefined - AWS default is DUAL_STACK for private API, IPV4 for all other APIs.
+   */
+  readonly ipAddressType?: IpAddressType;
+}
+
+/**
+ * Supported IP Address Types
+ */
+export enum IpAddressType {
+  /**
+   * IPv4 address type
+   */
+  IPV4 = 'ipv4',
+
+  /**
+   * IPv4 and IPv6 address type
+   */
+  DUAL_STACK = 'dualstack',
 }
 
 export enum ApiKeySourceType {
