@@ -7,6 +7,7 @@ import { IKey } from '../../aws-kms';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The type of authentication protocol or the VPC components for your event source's SourceAccessConfiguration
@@ -375,7 +376,13 @@ export interface IEventSourceMapping extends cdk.IResource {
  * The `SqsEventSource` class will automatically create the mapping, and will also
  * modify the Lambda's execution role so it can consume messages from the queue.
  */
+@propertyInjectable
 export class EventSourceMapping extends cdk.Resource implements IEventSourceMapping {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.EventSourceMapping';
+
   /**
    * Import an event source into this stack from its event source id.
    */
