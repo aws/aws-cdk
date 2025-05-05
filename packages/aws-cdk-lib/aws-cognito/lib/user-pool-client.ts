@@ -235,6 +235,23 @@ export class UserPoolClientIdentityProvider {
 }
 
 /**
+ * The configuration of your app client for refresh token rotation.
+ */
+export interface RefreshTokenRotation {
+  /**
+   * The state of refresh token rotation for the current app client.
+   * @default - undefined (CloudFormation defaults to DISABLED)
+   */
+  readonly feature?: 'ENABLED' | 'DISABLED';
+
+  /**
+   * Grace period for the original refresh token (0-60 seconds).
+   * @default - undefined (CloudFormation defaults value)
+   */
+  readonly retryGracePeriodSeconds?: number;
+}
+
+/**
  * Options to create a UserPoolClient
  */
 export interface UserPoolClientOptions {
@@ -320,6 +337,13 @@ export interface UserPoolClientOptions {
    * @default Duration.minutes(60)
    */
   readonly accessTokenValidity?: Duration;
+
+  /**
+   * Configuration for refresh token rotation
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-refresh-token.html#using-the-refresh-token-rotation
+   * @default - undefined (refresh token rotation is disabled)
+   */
+  refreshTokenRotation?: RefreshTokenRotation;
 
   /**
    * The set of attributes this client will be able to read.
