@@ -867,6 +867,10 @@
       "EDGE",
       "REGIONAL",
       "PRIVATE"
+    ],
+    "RestApiMode": [
+      "overwrite",
+      "merge"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/stage.ts": {
@@ -1200,6 +1204,27 @@
       "AMAZON_COGNITO_USER_POOLS",
       "OPENID_CONNECT",
       "AWS_LAMBDA"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/channel-namespace.ts": {
+    "HandlerBehavior": [
+      "CODE",
+      "DIRECT"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.ts": {
+    "AppSyncDataSourceType": [
+      "AWS_LAMBDA",
+      "AMAZON_DYNAMODB",
+      "AMAZON_EVENTBRIDGE",
+      "AMAZON_OPENSEARCH_SERVICE",
+      "HTTP",
+      "RELATIONAL_DATABASE",
+      "AMAZON_BEDROCK_RUNTIME"
+    ],
+    "LambdaInvokeType": [
+      "EVENT",
+      "REQUEST_RESPONSE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/graphqlapi-base.ts": {
@@ -1553,7 +1578,8 @@
     ],
     "SSLMethod": [
       "sni-only",
-      "vip"
+      "vip",
+      "static-ip"
     ],
     "SecurityPolicyProtocol": [
       "SSLv3",
@@ -1999,6 +2025,14 @@
       "None",
       "Poll",
       "Events"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/codepipeline/invoke-action.ts": {
+    "RevisionType": [
+      "COMMIT_ID",
+      "IMAGE_DIGEST",
+      "S3_OBJECT_VERSION_ID",
+      "S3_OBJECT_KEY"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ecr/build-and-publish-action.ts": {
@@ -2916,6 +2950,21 @@
       "GatewayLoadBalancer",
       "ServiceNetwork",
       "Resource"
+    ],
+    "VpcEndpointIpAddressType": [
+      "ipv4",
+      "ipv6",
+      "dualstack"
+    ],
+    "VpcEndpointDnsRecordIpType": [
+      "ipv4",
+      "ipv6",
+      "dualstack",
+      "service-defined"
+    ],
+    "VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint": [
+      "AllResolvers",
+      "OnlyInboundResolver"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.ts": {
@@ -5052,6 +5101,17 @@
       "SEMICOLON",
       "SPACE",
       "TAB"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/distributed-map/result-writer.ts": {
+    "Transformation": [
+      "NONE",
+      "COMPACT",
+      "FLATTEN"
+    ],
+    "OutputType": [
+      "JSON",
+      "JSONL"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/private/state-type.ts": {

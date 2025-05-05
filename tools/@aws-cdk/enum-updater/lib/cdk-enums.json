@@ -937,6 +937,33 @@
         "Resource"
       ]
     },
+    "VpcEndpointIpAddressType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.ts",
+      "enumLike": false,
+      "values": [
+        "ipv4",
+        "ipv6",
+        "dualstack"
+      ]
+    },
+    "VpcEndpointDnsRecordIpType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.ts",
+      "enumLike": false,
+      "values": [
+        "ipv4",
+        "ipv6",
+        "dualstack",
+        "service-defined"
+      ]
+    },
+    "VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.ts",
+      "enumLike": false,
+      "values": [
+        "AllResolvers",
+        "OnlyInboundResolver"
+      ]
+    },
     "FlowLogTrafficType": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.ts",
       "enumLike": false,
@@ -3431,6 +3458,14 @@
         "PRIVATE"
       ]
     },
+    "RestApiMode": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts",
+      "enumLike": false,
+      "values": [
+        "overwrite",
+        "merge"
+      ]
+    },
     "MethodLoggingLevel": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/stage.ts",
       "enumLike": false,
@@ -4532,7 +4567,8 @@
       "enumLike": false,
       "values": [
         "sni-only",
-        "vip"
+        "vip",
+        "static-ip"
       ]
     },
     "SecurityPolicyProtocol": {
@@ -5174,13 +5210,17 @@
       "values": [
         "AMAZON_LINUX_2_NODE_18",
         "AMAZON_LINUX_2023_NODE_20",
+        "AMAZON_LINUX_2023_NODE_22",
         "AMAZON_LINUX_2_PYTHON_3_11",
         "AMAZON_LINUX_2023_PYTHON_3_12",
+        "AMAZON_LINUX_2023_PYTHON_3_13",
         "AMAZON_LINUX_2_RUBY_3_2",
+        "AMAZON_LINUX_2023_RUBY_3_4",
         "AMAZON_LINUX_2023_CORRETTO_21",
         "AMAZON_LINUX_2_CORRETTO_17",
         "AMAZON_LINUX_2_CORRETTO_11",
         "AMAZON_LINUX_2_GO_1_21",
+        "AMAZON_LINUX_2023_GO_1_24",
         "AMAZON_LINUX_2_DOTNET_6",
         "AMAZON_LINUX_2023_DOTNET_8"
       ]
@@ -5214,13 +5254,17 @@
       "values": [
         "AMAZON_LINUX_2_NODE_18",
         "AMAZON_LINUX_2023_NODE_20",
+        "AMAZON_LINUX_2023_NODE_22",
         "AMAZON_LINUX_2_PYTHON_3_11",
         "AMAZON_LINUX_2023_PYTHON_3_12",
+        "AMAZON_LINUX_2023_PYTHON_3_13",
         "AMAZON_LINUX_2_RUBY_3_2",
+        "AMAZON_LINUX_2023_RUBY_3_4",
         "AMAZON_LINUX_2023_CORRETTO_21",
         "AMAZON_LINUX_2_CORRETTO_17",
         "AMAZON_LINUX_2_CORRETTO_11",
         "AMAZON_LINUX_2_GO_1_21",
+        "AMAZON_LINUX_2023_GO_1_24",
         "AMAZON_LINUX_2_DOTNET_6",
         "AMAZON_LINUX_2023_DOTNET_8"
       ]
@@ -8470,6 +8514,7 @@
         "VER_2_12_1",
         "VER_2_12_2",
         "VER_2_12_3",
+        "VER_2_12_4",
         "VER_3_01_0",
         "VER_3_01_1",
         "VER_3_02_0",
@@ -8492,7 +8537,8 @@
         "VER_3_07_0",
         "VER_3_07_1",
         "VER_3_08_0",
-        "VER_3_08_1"
+        "VER_3_08_1",
+        "VER_3_08_2"
       ]
     },
     "AuroraPostgresEngineVersion": {
@@ -8572,6 +8618,7 @@
         "VER_13_16",
         "VER_13_17",
         "VER_13_18",
+        "VER_13_20",
         "VER_14_3",
         "VER_14_4",
         "VER_14_5",
@@ -8585,6 +8632,7 @@
         "VER_14_13",
         "VER_14_14",
         "VER_14_15",
+        "VER_14_17",
         "VER_15_2",
         "VER_15_3",
         "VER_15_4",
@@ -8594,6 +8642,7 @@
         "VER_15_8",
         "VER_15_9",
         "VER_15_10",
+        "VER_15_12",
         "VER_16_0",
         "VER_16_1",
         "VER_16_2",
@@ -8603,6 +8652,7 @@
         "VER_16_5",
         "VER_16_6",
         "VER_16_6_LIMITLESS",
+        "VER_16_8",
         "VER_17_1",
         "VER_17_2"
       ]
@@ -9212,6 +9262,7 @@
         "VER_15_00_4410_1_V1",
         "VER_15_00_4415_2_V1",
         "VER_15_00_4420_2_V1",
+        "VER_15_00_4430_1_V1",
         "VER_16",
         "VER_16_00_4085_2_V1",
         "VER_16_00_4095_4_V1",
@@ -9224,7 +9275,8 @@
         "VER_16_00_4140_3_V1",
         "VER_16_00_4150_1_V1",
         "VER_16_00_4165_4_V1",
-        "VER_16_00_4175_1_V1"
+        "VER_16_00_4175_1_V1",
+        "VER_16_00_4185_3_V1"
       ]
     },
     "DatabaseInstanceEngine": {
@@ -10266,6 +10318,23 @@
         "TAB"
       ]
     },
+    "Transformation": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/distributed-map/result-writer.ts",
+      "enumLike": false,
+      "values": [
+        "NONE",
+        "COMPACT",
+        "FLATTEN"
+      ]
+    },
+    "OutputType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/distributed-map/result-writer.ts",
+      "enumLike": false,
+      "values": [
+        "JSON",
+        "JSONL"
+      ]
+    },
     "StateType": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/private/state-type.ts",
       "enumLike": false,
@@ -11146,6 +11215,45 @@
       ]
     }
   },
+  "applicationsignals": {
+    "JavaInstrumentationVersion": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts",
+      "enumLike": true,
+      "values": [
+        "V2_10_0",
+        "V1_33_0",
+        "V1_32_6"
+      ]
+    },
+    "PythonInstrumentationVersion": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts",
+      "enumLike": true,
+      "values": [
+        "V0_8_0",
+        "V0_9_0"
+      ]
+    },
+    "DotnetInstrumentationVersion": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts",
+      "enumLike": true,
+      "values": [
+        "V1_6_0",
+        "V1_6_0_WINDOWS2022",
+        "V1_6_0_WINDOWS2019",
+        "V1_7_0",
+        "V1_7_0_WINDOWS2022",
+        "V1_7_0_WINDOWS2019"
+      ]
+    },
+    "NodeInstrumentationVersion": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts",
+      "enumLike": true,
+      "values": [
+        "V0_5_0",
+        "V0_6_0"
+      ]
+    }
+  },
   "neptune": {
     "EngineVersion": {
       "path": "aws-cdk/packages/@aws-cdk/aws-neptune-alpha/lib/cluster.ts",
@@ -11173,7 +11281,13 @@
         "V1_3_2_0",
         "V1_3_2_1",
         "V1_3_3_0",
-        "V1_3_4_0"
+        "V1_3_4_0",
+        "V1_4_0_0",
+        "V1_4_1_0",
+        "V1_4_2_0",
+        "V1_4_3_0",
+        "V1_4_4_0",
+        "V1_4_5_0"
       ]
     },
     "LogType": {
@@ -11249,7 +11363,8 @@
       "values": [
         "NEPTUNE_1",
         "NEPTUNE_1_2",
-        "NEPTUNE_1_3"
+        "NEPTUNE_1_3",
+        "NEPTUNE_1_4"
       ]
     }
   },
@@ -11285,6 +11400,7 @@
         "AMAZON_NOVA_PRO_V1_0_300_K",
         "AMAZON_NOVA_REEL_V1_0",
         "AMAZON_NOVA_REEL_V1_1",
+        "AMAZON_NOVA_SONIC_V1_0",
         "AI21_J2_MID",
         "AI21_LABS_JURASSIC_2_MID_V1",
         "AI21_J2_ULTRA",
@@ -11362,6 +11478,7 @@
         "MISTRAL_LARGE_V0_1",
         "MISTRAL_SMALL_V0_1",
         "MISTRAL_LARGE_2_V0_1",
+        "MISTRAL_PIXTRAL_LARGE_2502_V1_0",
         "STABILITY_STABLE_DIFFUSION_XL",
         "STABILITY_STABLE_DIFFUSION_XL_V0",
         "STABILITY_STABLE_DIFFUSION_XL_V1",
