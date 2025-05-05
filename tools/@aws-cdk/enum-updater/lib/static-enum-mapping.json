@@ -157,7 +157,7 @@
     "VpcEndpointIpAddressType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.ts",
       "sdk_service": "ec2",
-      "sdk_enum_name": "IpAddressType",
+      "sdk_enum_name": "DnsRecordIpType",
       "match_percentage": 1
     },
     "VpcEndpointDnsRecordIpType": {
@@ -506,6 +506,12 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/auth-config.ts",
       "sdk_service": "appsync",
       "sdk_enum_name": "AuthenticationType",
+      "match_percentage": 1
+    },
+    "AppSyncDataSourceType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.ts",
+      "sdk_service": "appsync",
+      "sdk_enum_name": "Type",
       "match_percentage": 1
     },
     "Visibility": {
