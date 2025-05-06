@@ -1,4 +1,4 @@
-import { ClassDeclaration, IndentationText, Project, PropertyDeclaration, QuoteKind, SourceFile, Symbol, SyntaxKind } from "ts-morph";
+import { ClassDeclaration, IndentationText, Project, PropertyDeclaration, QuoteKind, Scope, SourceFile, Symbol, SyntaxKind } from "ts-morph";
 import * as path from "path";
 import * as fs from "fs";
 // import { exec } from "child_process";
@@ -152,10 +152,147 @@ export class ConstructsUpdater extends MetadataUpdater {
       const classes = this.getCdkResourceClasses(sourceFile.getFilePath());
       for (const resource of classes) {
         this.addImportAndMetadataStatement(resource.sourceFile, resource.filePath, resource.node);
+        this.makeConstructsPropInjectable(resource.sourceFile, resource.filePath, resource.node);
       }
     });
   }
 
+  /**
+   * This makes a Construct Property Injectable by doing 3 things:
+   *  - add PROPERTY_INJECTION_ID property
+   *  - import propertyInjectable from core/lib/prop-injectable
+   *  - add class decorator @propertyInjectable
+   *
+   * If the Construct already has PROPERTY_INJECTION_ID, then skip it.
+   */
+  private makeConstructsPropInjectable(sourceFile: SourceFile, filePath: string, node: ClassDeclaration) {
+    console.log(`path: ${filePath}, class: ${node.getName()}`);
+
+    if (this.isAlreadyInjectable(node)) {
+      return; // do nothing
+    }
+
+    // Add PROPERTY_INJECTION_ID
+    node.addProperty({
+      scope: Scope.Public,
+      isStatic: true,
+      isReadonly: true,
+      name: 'PROPERTY_INJECTION_ID',
+      type: "string",
+      initializer: this.filePathToInjectionId(filePath, node.getName()),
+    });
+    console.log('  Added PROPERTY_INJECTION_ID')
+
+    // Add Decorator
+    node.addDecorator({
+      name: "propertyInjectable",
+    });
+    console.log('  Added @propertyInjectable')
+
+    // import propertyInjectable
+    this.importCoreLibFile(sourceFile, filePath, 'prop-injectable', 'propertyInjectable');
+
+    // Write the updated file back to disk
+    sourceFile.saveSync();
+  }
+
+  /**
+   * If the Construct already has PROPERTY_INJECTION_ID, then it is injectable already.
+   */
+  private isAlreadyInjectable(classDeclaration: ClassDeclaration): boolean {
+    const properties: PropertyDeclaration[] = classDeclaration.getProperties();
+    for (const prop of properties) {
+      if (prop.getName() === 'PROPERTY_INJECTION_ID') {
+        console.log(`Skipping ${classDeclaration.getName()}. It is already injectable`);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * This converts the filePath
+   * '<HOME_DIR>/<CDK_HOME>/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/api-key.ts'
+   * and className 'ApiKey'
+   * to 'aws-cdk-lib.aws-apigateway.ApiKey'.
+   *
+   * '<HOME_DIR>/<CDK_HOME>/aws-cdk/packages/@aws-cdk/aws-amplify-alpha/lib/app.ts'
+   * and className 'App'
+   * to '@aws-cdk.aws-amplify-alpha.App
+   */
+  private filePathToInjectionId(filePath: string, className: string | undefined): string {
+    if (!className) {
+      throw new Error('Could not build PROPERTY_INJECTION_ID if className is undefined');
+    }
+
+    const start = '/packages/';
+    const startIndex = filePath.indexOf(start);
+    const subPath = filePath.substring(startIndex + start.length);
+    const parts: string[] = subPath.split('\/');
+    if (parts.length < 3) {
+      throw new Error(`Could not build PROPERTY_INJECTION_ID for ${filePath} ${className}`);
+    }
+
+    // we only care about /packages/aws-cdk-lib/ and /packages/@aws-cdk/, 
+    // but in case there are L2 constructs in other sub dir, it will handle it too.
+    return `'${parts[0]}.${parts[1]}.${className}'`;
+  }
+
+  /**
+   * This returns the relative path of the import file in core/lib. 
+   * For example, importFile is prop-injectable or metadata-resource
+   */
+  private getRelativePathForPropInjectionImport(filePath: string, importFile: string): string {
+    const absoluteFilePath = path.resolve(filePath);
+    const absoluteTargetPath = path.resolve(__dirname, `../../../../packages/aws-cdk-lib/core/lib/${importFile}.ts`);
+    let relativePath = path.relative(path.dirname(absoluteFilePath), absoluteTargetPath).replace(/\\/g, "/").replace(/.ts/, "");
+    if (absoluteFilePath.includes('@aws-cdk')) {
+      relativePath = `aws-cdk-lib/core/lib/${importFile}`
+    }
+    return relativePath;
+  }
+
+  /**
+   * This adds import of a class in aws-cdk-lib/core/lib to the file.
+   */
+  private importCoreLibFile(
+    sourceFile: SourceFile,
+    filePath: string,
+    importfileName: string,
+    importClassName: string
+  ) {
+    const relativePath = this.getRelativePathForPropInjectionImport(filePath, importfileName);
+
+    // Check if an import from the import file already exists
+    const existingImport = sourceFile.getImportDeclarations().find((stmt: any) => {
+      return stmt.getModuleSpecifier().getText().includes(importfileName);
+    });
+    if (existingImport) {
+      return;
+    }
+
+    // Find the correct insertion point (after the last import before the new one)
+    const importDeclarations = sourceFile.getImportDeclarations();
+    let insertIndex = importDeclarations.length; // Default to appending
+
+    for (let i = importDeclarations.length - 1; i >= 0; i--) {
+      const existingImport = importDeclarations[i].getModuleSpecifier().getLiteralText();
+
+      // Insert the new import before the first one that is lexicographically greater
+      if (existingImport.localeCompare(relativePath) > 0) {
+        insertIndex = i;
+      } else {
+        break;
+      }
+    }
+
+    // Insert the new import at the correct index
+    sourceFile.insertImportDeclaration(insertIndex, {
+      moduleSpecifier: relativePath,
+      namedImports: [{ name: importClassName }],
+    });
+    console.log(`  Added import for ${importClassName} in file: ${filePath} with relative path: ${relativePath}`);
+  }
 
   /**
    * Add the import statement for MetadataType to the file.
@@ -166,49 +303,7 @@ export class ConstructsUpdater extends MetadataUpdater {
       return;
     }
 
-    const absoluteFilePath = path.resolve(filePath);
-    const absoluteTargetPath = path.resolve(__dirname, '../../../../packages/aws-cdk-lib/core/lib/metadata-resource.ts');
-
-    let relativePath = path.relative(path.dirname(absoluteFilePath), absoluteTargetPath).replace(/\\/g, "/").replace(/.ts/, "");
-    if (absoluteFilePath.includes('@aws-cdk')) {
-      relativePath = 'aws-cdk-lib/core/lib/metadata-resource'
-    }
-
-    // Check if an import from 'metadata-resource' already exists
-    const existingImport = sourceFile.getImportDeclarations().find((stmt: any) => {
-      return stmt.getModuleSpecifier().getText().includes('/metadata-resource');
-    });
-
-    if (existingImport) {
-      // Check if 'MethodMetadata' is already imported
-      const namedImports = existingImport.getNamedImports().map((imp: any) => imp.getName());
-      if (!namedImports.includes("addConstructMetadata")) {
-        existingImport.addNamedImport({ name: "addConstructMetadata" });
-        console.log(`Merged import for addConstructMetadata in file: ${filePath}`);
-      }
-    } else {
-      // Find the correct insertion point (after the last import before the new one)
-      const importDeclarations = sourceFile.getImportDeclarations();
-      let insertIndex = importDeclarations.length; // Default to appending
-      
-      for (let i = importDeclarations.length - 1; i >= 0; i--) {
-        const existingImport = importDeclarations[i].getModuleSpecifier().getLiteralText();
-
-        // Insert the new import before the first one that is lexicographically greater
-        if (existingImport.localeCompare(relativePath) > 0) {
-          insertIndex = i;
-        } else {
-          break;
-        }
-      }
-    
-      // Insert the new import at the correct index
-      sourceFile.insertImportDeclaration(insertIndex, {
-        moduleSpecifier: relativePath,
-        namedImports: [{ name: "addConstructMetadata" }],
-      });
-      console.log(`Added import for addConstructMetadata in file: ${filePath} with relative path: ${relativePath}`);
-    }
+    this.importCoreLibFile(sourceFile, filePath, 'metadata-resource', 'addConstructMetadata');
 
     // Write the updated file back to disk
     sourceFile.saveSync();
