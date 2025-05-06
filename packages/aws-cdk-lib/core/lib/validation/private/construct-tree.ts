@@ -1,7 +1,7 @@
 import { Construct, IConstruct } from 'constructs';
 import { App } from '../../app';
 import { CfnResource } from '../../cfn-resource';
-import { TreeMetadata, Node } from '../../private/tree-metadata';
+import { constructInfoFromConstruct } from '../../helpers-internal';
 import { Stack } from '../../stack';
 
 /**
@@ -65,19 +65,15 @@ export class ConstructTree {
   /**
    * A cache of the ConstructTrace by node.path. Each construct
    */
-  private readonly _traceCache = new Map<string, ConstructTrace>();
   private readonly _constructByPath = new Map<string, Construct>();
   private readonly _constructByTemplatePathAndLogicalId = new Map<string, Map<string, Construct>>();
-  private readonly treeMetadata: TreeMetadata;
+  private readonly root: IConstruct;
 
   constructor(
-    private readonly root: IConstruct,
+    root: IConstruct,
   ) {
-    if (App.isApp(this.root)) {
-      this.treeMetadata = this.root.node.tryFindChild('Tree') as TreeMetadata;
-    } else {
-      this.treeMetadata = App.of(this.root)?.node.tryFindChild('Tree') as TreeMetadata;
-    }
+    this.root = App.of(root) ?? root;
+
     this._constructByPath.set(this.root.node.path, root);
     // do this once at the start so we don't have to traverse
     // the entire tree everytime we want to find a nested node
@@ -110,126 +106,91 @@ export class ConstructTree {
   }
 
   /**
-   * Get the stack trace from the construct node metadata.
-   * The stack trace only gets recorded if the node is a `CfnResource`,
-   * but the stack trace will have entries for all types of parent construct
-   * scopes
-   */
-  private getTraceMetadata(size: number, node?: Node): string[] {
-    if (node) {
-      const construct = this.getConstructByPath(node.path);
-      if (construct) {
-        let trace;
-        if (CfnResource.isCfnResource(construct)) {
-          trace = construct.node.metadata.find(meta => !!meta.trace)?.trace ?? [];
-        } else {
-          trace = construct.node.defaultChild?.node.metadata.find(meta => !!meta.trace)?.trace ?? [];
-        }
-        // take just the items we need and reverse it since we are
-        // displaying the trace bottom up
-        return Object.create(trace.slice(0, size));
-      }
-    }
-    return [];
-  }
-
-  /**
-   * Only the `CfnResource` constructs contain the trace information
-   * So we need to go down the tree and find that resource (its always the last one)
+   * Turn a construct path into a trace
    *
-   * @param node Node the entire tree where the bottom is the violating resource
-   * @return Node the bottom of the tree which will be the violating resource
+   * The trace contains all constructs from the root to the construct indicated
+   * by the given path. It does not include the root itself.
    */
-  private getNodeWithTrace(node: Node): Node {
-    if (node.children) {
-      return this.getNodeWithTrace(this.getChild(node.children));
+  public traceFromPath(constructPath: string): ConstructTrace {
+    // Deal with a path starting with `/`.
+    const components = constructPath.replace(/^\//, '').split('/');
+
+    const rootPath: Array<ReturnType<ConstructTree['constructTraceLevelFromTreeNode']>> = [];
+    const stackTraces: Array<string[] | undefined> = [];
+    let node: IConstruct | undefined = this.root;
+    while (node) {
+      rootPath.push(this.constructTraceLevelFromTreeNode(node));
+      stackTraces.push(this.stackTrace(node));
+
+      const component = components.shift()!;
+      node = component !== undefined ? node.node.tryFindChild(component) : undefined;
     }
-    return node;
-  }
+    // Remove the root from the levels
+    rootPath.shift();
+    stackTraces.shift();
 
-  /**
-   * @param node - the root node of the tree
-   * @returns the terminal node in the tree
-   */
-  private lastChild(node: Node): Node {
-    if (node.children) {
-      return this.lastChild(this.getChild(node.children));
-    }
-    return node;
-  }
-
-  /**
-   * Get a ConstructTrace from the cache for a given construct
-   *
-   * Construct the stack trace of constructs. This will start with the
-   * root of the tree and go down to the construct that has the violation
-   */
-  public getTrace(node: Node, locations?: string[]): ConstructTrace | undefined {
-    const lastChild = this.lastChild(node);
-    const trace = this._traceCache.get(lastChild.path);
-    if (trace) {
-      return trace;
-    }
-
-    const size = this.nodeSize(node);
-
-    const nodeWithTrace = this.getNodeWithTrace(node);
-    const metadata = (locations ?? this.getTraceMetadata(size, nodeWithTrace));
-    const thisLocation = metadata.pop();
-
-    const constructTrace: ConstructTrace = {
-      id: node.id,
-      path: node.path,
-      // the "child" trace will be the "parent" node
-      // since we are going bottom up
-      child: node.children
-        ? this.getTrace(this.getChild(node.children), metadata)
-        : undefined,
-      construct: node.constructInfo?.fqn,
-      libraryVersion: node.constructInfo?.version,
-      location: thisLocation ?? "Run with '--debug' to include location info",
+    // Now turn the rootpath into a proper ConstructTrace tree by making every next element in the
+    // array the 'child' of the previous one, and adding stack traces.
+    let ret: ConstructTrace = {
+      ...rootPath[rootPath.length - 1],
+      location: stackLocationAt(rootPath.length - 1),
     };
-    // set the cache for the last child path. If the last child path is different then
-    // we have a different tree and need to retrieve the trace again
-    this._traceCache.set(lastChild.path, constructTrace);
-    return constructTrace;
-  }
-
-  /**
-   * Each node will only have a single child so just
-   * return that
-   */
-  private getChild(children: { [key: string]: Node }): Node {
-    return Object.values(children)[0];
-  }
-
-  /**
-   * Get the size of a Node, i.e. how many levels is it
-   */
-  private nodeSize(node: Node): number {
-    let size = 1;
-    if (!node.children) {
-      return size;
+    for (let i = rootPath.length - 2; i >= 0; i--) {
+      ret = {
+        ...rootPath[i],
+        child: ret,
+        location: stackLocationAt(i),
+      };
     }
-    let children: Node | undefined = this.getChild(node.children);
-    do {
-      size++;
-      children = children.children
-        ? this.getChild(children.children)
-        : undefined;
-    } while (children);
+    return ret;
 
-    return size;
+    /**
+     * Get the stack location for construct `i` in the list
+     *
+     * If there is a stack trace for the given construct, then use it and get the
+     * first frame from it. Otherwise, find the first stack trace below this
+     * construct and use the N'th frame from it, where N is the distance from this
+     * construct to the construct with stack trace.
+     *
+     * This assumes all constructs are created without additional functions
+     * calls in the middle.
+     */
+    function stackLocationAt(i: number) {
+      let j = i;
+      while (j < rootPath.length && !stackTraces[j]) {
+        j++;
+      }
+      if (j === rootPath.length) {
+        return STACK_TRACE_HINT;
+      }
+      // Stack traces are closest frame first
+      return stackTraces[j]?.[0 + j - i] ?? STACK_TRACE_HINT;
+    }
   }
 
   /**
-   * Get a specific node in the tree by construct path
+   * Convert a Tree Metadata Node into a ConstructTrace object, except its child and stack trace info
    *
-   * @param path the construct path of the node to return
-   * @returns the TreeMetadata Node
+   * FIXME: This could probably use the construct tree directly.
    */
-  public getTreeNode(path: string): Node | undefined {
-    return this.treeMetadata._getNodeBranch(path);
+  public constructTraceLevelFromTreeNode(node: IConstruct): Omit<ConstructTrace, 'child' | 'location'> {
+    const constructInfo = constructInfoFromConstruct(node);
+
+    return {
+      id: node.node.id,
+      path: node.node.path,
+      construct: constructInfo?.fqn,
+      libraryVersion: constructInfo?.version,
+    };
+  }
+
+  /**
+   * Return the stack trace for a given construct path
+   *
+   * Returns a stack trace if stack trace information is found, or `undefined` if not.
+   */
+  private stackTrace(construct: IConstruct): string[] | undefined {
+    return construct?.node.metadata.find(meta => !!meta.trace)?.trace;
   }
 
   /**
@@ -253,3 +214,5 @@ export class ConstructTree {
     return this._constructByTemplatePathAndLogicalId.get(templateFile)?.get(logicalId);
   }
 }
+
+const STACK_TRACE_HINT = 'Run with \'--debug\' to include location info';
