@@ -136,6 +136,7 @@ export const ASPECT_PRIORITIES_MUTATING = '@aws-cdk/core:aspectPrioritiesMutatin
 export const DYNAMODB_TABLE_RETAIN_TABLE_REPLICA = '@aws-cdk/aws-dynamodb:retainTableReplica';
 export const LOG_USER_POOL_CLIENT_SECRET_VALUE = '@aws-cdk/cognito:logUserPoolClientSecretValue';
 export const PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope';
+export const STEPFUNCTIONS_TASKS_LAMBDA_INVOKE_GRANT_ALL_VERSIONS = '@aws-cdk/aws-stepfunctions-tasks:lambdaInvokeGrantAllVersions';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -338,7 +339,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     summary: 'Enable this feature flag to have elastic file systems encrypted at rest by default.',
     detailsMd: `
       Encryption can also be configured explicitly using the \`encrypted\` property.
-      `,
+    `,
     introducedIn: { v1: '1.98.0' },
     defaults: { v2: true },
     recommendedValue: true,
@@ -1560,6 +1561,28 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.188.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag and set resultWriter in DistributedMap',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [STEPFUNCTIONS_TASKS_LAMBDA_INVOKE_GRANT_ALL_VERSIONS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, LambdaInvoke grants permissions to all versions of a Lambda function by default',
+    detailsMd: `
+      When a Step Function invokes a Lambda function version, it requires IAM permissions specifically for that version. 
+      Currently, the AWS CDK's \`LambdaInvoke\` construct automatically creates IAM permissions for the specific Lambda 
+      version referenced, but these permissions are updated during redeployment to only include the new version, removing
+      access to previous versions.
+      
+      This can cause in-flight Step Function executions to fail when new Lambda versions are deployed.
+      
+      When this feature flag is enabled, the \`LambdaInvoke\` construct will automatically grant permissions to both:
+      - The specific Lambda version referenced
+      - All versions of the Lambda function (using a wildcard)
+      
+      This ensures that in-flight executions continue to work even after deploying updates to Lambda functions.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
   },
 };
 
