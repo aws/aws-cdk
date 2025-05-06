@@ -28,7 +28,7 @@
      "Body": "\"[{\\\"objectId\\\":1},{\\\"objectId\\\":2}]\""
     },
     "flattenResponse": "false",
-    "salt": "1746020205969"
+    "salt": "1746540948933"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -150,7 +150,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1746020205969"
+    "salt": "1746540948934"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectd7c40bfca4f362b2639aa553b509eb20"
@@ -411,6 +411,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {
