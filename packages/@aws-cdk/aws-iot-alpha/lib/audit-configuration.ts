@@ -70,7 +70,7 @@ export interface CheckConfiguration {
    * The duration used to check if a device certificate has been active
    * for a number of days greater than or equal to the number you specify.
    *
-   * Valid values are between 30 and 3652 days.
+   * Valid values range from 30 days (minimum) to 3652 days (10 years, maximum).
    *
    * You cannot specify a value for this check if `deviceCertificateAgeCheck` is set to `false`.
    *
