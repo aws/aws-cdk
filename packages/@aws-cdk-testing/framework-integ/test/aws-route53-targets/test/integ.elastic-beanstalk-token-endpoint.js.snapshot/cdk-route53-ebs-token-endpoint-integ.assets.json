@@ -1,0 +1,36 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "695130a6c8132c255e833e84e8482a4a144a4a1261c979bd7e3cb7b8258e8876": {
+      "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
+      "source": {
+        "path": "asset.695130a6c8132c255e833e84e8482a4a144a4a1261c979bd7e3cb7b8258e8876",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "695130a6c8132c255e833e84e8482a4a144a4a1261c979bd7e3cb7b8258e8876.zip",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    },
+    "f9cd8a7be233ab80f1ee636b17304dacf7bedd65f2abf3e313ac38e0bd40ad28": {
+      "displayName": "cdk-route53-ebs-token-endpoint-integ Template",
+      "source": {
+        "path": "cdk-route53-ebs-token-endpoint-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "f9cd8a7be233ab80f1ee636b17304dacf7bedd65f2abf3e313ac38e0bd40ad28.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
