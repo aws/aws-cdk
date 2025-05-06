@@ -98,6 +98,7 @@ Flags come in three types:
 | [@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2](#aws-cdkaws-stepfunctionsusedistributedmapresultwriterv2) | When enabled, the resultWriterV2 property of DistributedMap will be used insted of resultWriter | 2.188.0 | new default |
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | 2.189.0 | new default |
 | [@aws-cdk/core:aspectPrioritiesMutating](#aws-cdkcoreaspectprioritiesmutating) | When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING. | 2.189.1 | new default |
+| [@aws-cdk/aws-route53-patters:useDistribution](#aws-cdkaws-route53-pattersusedistribution) | Use the `Distribution` resource instead of `CloudFrontWebDistribution` | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -180,7 +181,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-events:requireEventBusPolicySid": true,
     "@aws-cdk/core:aspectPrioritiesMutating": true,
     "@aws-cdk/aws-dynamodb:retainTableReplica": true,
-    "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true
+    "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
+    "@aws-cdk/aws-route53-patters:useDistribution": true
   }
 }
 ```
@@ -2066,6 +2068,24 @@ be added with a priority of MUTATING, independent of this feature flag.
       });
       ```
     
+
+
+### @aws-cdk/aws-route53-patters:useDistribution
+
+*Use the `Distribution` resource instead of `CloudFrontWebDistribution`*
+
+Flag type: New default behavior
+
+Enable this feature flag to use the new `Distribution` resource instead
+of the deprecated `CloudFrontWebDistribution` construct.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Define a `CloudFrontWebDistribution` explicitly
 
 
 <!-- END details -->
