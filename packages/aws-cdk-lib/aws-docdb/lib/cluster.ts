@@ -13,7 +13,6 @@ import { CaCertificate } from '../../aws-rds';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { CfnResource, Duration, RemovalPolicy, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 const MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE = 5;
 
@@ -322,13 +321,7 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
  *
  * @resource AWS::DocDB::DBCluster
  */
-@propertyInjectable
 export class DatabaseCluster extends DatabaseClusterBase {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-docdb.DatabaseCluster';
-
   /**
    * The default number of instances in the DocDB cluster if none are
    * specified
