@@ -136,6 +136,7 @@ export const ASPECT_PRIORITIES_MUTATING = '@aws-cdk/core:aspectPrioritiesMutatin
 export const DYNAMODB_TABLE_RETAIN_TABLE_REPLICA = '@aws-cdk/aws-dynamodb:retainTableReplica';
 export const LOG_USER_POOL_CLIENT_SECRET_VALUE = '@aws-cdk/cognito:logUserPoolClientSecretValue';
 export const PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope';
+export const S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS = '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1560,6 +1561,17 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.188.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag and set resultWriter in DistributedMap',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS]: {
+    type: FlagType.BugFix,
+    summary: 'Add an S3 trust policy to a KMS key resource policy for SNS subscriptions.',
+    detailsMd: `
+      When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
+          `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
   },
 };
 

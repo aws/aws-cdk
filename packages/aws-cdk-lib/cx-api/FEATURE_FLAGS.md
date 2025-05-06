@@ -98,6 +98,7 @@ Flags come in three types:
 | [@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2](#aws-cdkaws-stepfunctionsusedistributedmapresultwriterv2) | When enabled, the resultWriterV2 property of DistributedMap will be used insted of resultWriter | 2.188.0 | new default |
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | 2.189.0 | new default |
 | [@aws-cdk/core:aspectPrioritiesMutating](#aws-cdkcoreaspectprioritiesmutating) | When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING. | 2.189.1 | new default |
+| [@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions](#aws-cdks3-notificationsadds3trustkeypolicyforsnssubscriptions) | Add an S3 trust policy to a KMS key resource policy for SNS subscriptions. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -180,7 +181,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-events:requireEventBusPolicySid": true,
     "@aws-cdk/core:aspectPrioritiesMutating": true,
     "@aws-cdk/aws-dynamodb:retainTableReplica": true,
-    "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true
+    "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
+    "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true
   }
 }
 ```
@@ -2056,7 +2058,7 @@ be added with a priority of MUTATING, independent of this feature flag.
 | (not in v1) |  |  |
 | 2.189.1 | `false` | `true` |
 
-**Compatibility with old behavior:** 
+**Compatibility with old behavior:**
       To add mutating Aspects controlling construct values that can be overridden
       by Aspects added by CDK, give them MUTATING priority:
 
@@ -2065,7 +2067,20 @@ be added with a priority of MUTATING, independent of this feature flag.
         priority: AspectPriority.MUTATING,
       });
       ```
-    
 
+
+### @aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions
+
+*Add an S3 trust policy to a KMS key resource policy for SNS subscriptions.* (fix)
+
+When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to remove the S3 trust policy from the KMS key resource policy.
 
 <!-- END details -->
