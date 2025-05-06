@@ -30,7 +30,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1745526113611"
+    "salt": "1746117263551"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -422,7 +422,7 @@
      "Body": "\"a;b;c\\n1;2;3\\n4;5;6\""
     },
     "flattenResponse": "false",
-    "salt": "1745526113613"
+    "salt": "1746117263553"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -456,7 +456,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1745526113613"
+    "salt": "1746117263553"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectbc473607605d0afcd585355c51af4b06"
@@ -497,7 +497,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1745526113613"
+    "salt": "1746117263554"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa"
@@ -657,6 +657,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {
