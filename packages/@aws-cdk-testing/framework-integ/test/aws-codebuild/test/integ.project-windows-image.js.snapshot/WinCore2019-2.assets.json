@@ -1,7 +1,8 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "files": {
     "5c29023cae8e324b2a79007bfa8b380a864ff1b9e054fe9397c2e901f1a3612c": {
+      "displayName": "WinCore2019-2 Template",
       "source": {
         "path": "WinCore2019-2.template.json",
         "packaging": "file"
