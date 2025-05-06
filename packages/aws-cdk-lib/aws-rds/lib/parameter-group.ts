@@ -4,7 +4,6 @@ import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated
 import { IResource, Lazy, RemovalPolicy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Options for `IParameterGroup.bindToCluster`.
@@ -110,13 +109,7 @@ export interface ParameterGroupProps {
  *
  * @resource AWS::RDS::DBParameterGroup
  */
-@propertyInjectable
 export class ParameterGroup extends Resource implements IParameterGroup {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ParameterGroup';
-
   /**
    * Imports a parameter group
    */

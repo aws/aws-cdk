@@ -9,7 +9,6 @@ import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import { Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for an AWS CloudTrail trail
@@ -201,13 +200,7 @@ export class InsightType {
  * const cloudTrail = new CloudTrail(this, 'MyTrail');
  *
  */
-@propertyInjectable
 export class Trail extends Resource {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudtrail.Trail';
-
   /**
    * Create an event rule for when an event is recorded by any Trail in the account.
    *

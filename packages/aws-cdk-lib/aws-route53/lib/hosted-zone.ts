@@ -12,7 +12,6 @@ import * as cxschema from '../../cloud-assembly-schema';
 import { ContextProvider, Duration, Lazy, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Common properties to create a Route 53 hosted zone
@@ -317,13 +316,7 @@ export interface IPublicHostedZone extends IHostedZone {}
  *
  * @resource AWS::Route53::HostedZone
  */
-@propertyInjectable
 export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.PublicHostedZone';
-
   /**
    * Import a Route 53 public hosted zone defined either outside the CDK, or in a different CDK stack
    *

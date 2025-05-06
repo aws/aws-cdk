@@ -4,7 +4,6 @@ import { CallApiGatewayEndpointBaseProps, CallApiGatewayEndpointJsonataBaseProps
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**
  * Base properties for calling an HTTP API Endpoint
@@ -47,13 +46,7 @@ export interface CallApiGatewayHttpApiEndpointProps extends CallApiGatewayEndpoi
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html
  */
-@propertyInjectable
 export class CallApiGatewayHttpApiEndpoint extends CallApiGatewayEndpointBase {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-stepfunctions-tasks.CallApiGatewayHttpApiEndpoint';
-
   /**
    * Call HTTP API endpoint as a Task using JSONPath
    *

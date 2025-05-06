@@ -4,7 +4,6 @@ import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
 interface SageMakerCreateEndpointConfigOptions {
@@ -61,13 +60,7 @@ export interface SageMakerCreateEndpointConfigProps extends sfn.TaskStateBasePro
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
  */
-@propertyInjectable
 export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-stepfunctions-tasks.SageMakerCreateEndpointConfig';
-
   /**
    * A Step Functions Task using JSONPath to create a SageMaker endpoint configuration
    *

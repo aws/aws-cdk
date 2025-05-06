@@ -10,7 +10,6 @@ import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Specify the secret's version id or version stage
@@ -451,13 +450,7 @@ export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
 /**
  * A container definition is used in a task definition to describe the containers that are launched as part of a task.
  */
-@propertyInjectable
 export class ContainerDefinition extends Construct {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.ContainerDefinition';
-
   public static readonly CONTAINER_PORT_USE_RANGE = 0;
 
   /**

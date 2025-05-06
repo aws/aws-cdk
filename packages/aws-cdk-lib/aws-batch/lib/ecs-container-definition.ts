@@ -8,7 +8,6 @@ import { LogGroup } from '../../aws-logs';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as ssm from '../../aws-ssm';
 import { Lazy, PhysicalName, Size, ValidationError } from '../../core';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 const EFS_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.EfsVolume');
 const HOST_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.HostVolume');
@@ -893,13 +892,7 @@ export interface EcsEc2ContainerDefinitionProps extends EcsContainerDefinitionPr
 /**
  * A container orchestrated by ECS that uses EC2 resources
  */
-@propertyInjectable
 export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase implements IEcsEc2ContainerDefinition {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.EcsEc2ContainerDefinition';
-
   public readonly privileged?: boolean;
   public readonly ulimits: Ulimit[];
   public readonly gpu?: number;
@@ -1049,13 +1042,7 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
 /**
  * A container orchestrated by ECS that uses Fargate resources
  */
-@propertyInjectable
 export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase implements IEcsFargateContainerDefinition {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.EcsFargateContainerDefinition';
-
   public readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
   public readonly assignPublicIp?: boolean;
   public readonly ephemeralStorageSize?: Size;
