@@ -33,7 +33,7 @@ describe(IntegManifestWriter, () => {
 
     const loaded = Manifest.loadIntegManifest(`${tmpDir}/integ.json`);
 
-    expect(loaded).toEqual({ ...manifest, version: Manifest.version() });
+    expect(loaded).toEqual({ ...manifest, version: Manifest.version(), minimumCliVersion: Manifest.cliVersion() });
   });
 
   it('writes manifests to the chosen location', () => {
@@ -41,7 +41,7 @@ describe(IntegManifestWriter, () => {
 
     const loaded = Manifest.loadIntegManifest(`${tmpDir}/custom-name.json`);
 
-    expect(loaded).toEqual({ ...manifest, version: Manifest.version() });
+    expect(loaded).toEqual({ ...manifest, version: Manifest.version(), minimumCliVersion: Manifest.cliVersion() });
   });
 });
 
