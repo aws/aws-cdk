@@ -16,7 +16,6 @@ import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -1352,13 +1351,7 @@ export interface DomainAttributes {
 /**
  * Provides an Amazon OpenSearch Service domain.
  */
-@propertyInjectable
 export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-opensearchservice.Domain';
-
   /**
    * Creates a domain construct that represents an external domain via domain endpoint.
    *

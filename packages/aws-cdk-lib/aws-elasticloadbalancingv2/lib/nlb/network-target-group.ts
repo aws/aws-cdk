@@ -3,7 +3,6 @@ import { INetworkListener } from './network-listener';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import {
   BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
@@ -131,13 +130,7 @@ class NetworkTargetGroupMetrics implements INetworkTargetGroupMetrics {
 /**
  * Define a Network Target Group
  */
-@propertyInjectable
 export class NetworkTargetGroup extends TargetGroupBase implements INetworkTargetGroup {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.NetworkTargetGroup';
-
   /**
    * Import an existing target group
    */
