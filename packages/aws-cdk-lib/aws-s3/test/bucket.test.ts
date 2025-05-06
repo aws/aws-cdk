@@ -4131,6 +4131,50 @@ describe('bucket', () => {
       });
     });
 
+    test('use custom replication role', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const dstBucket = new s3.Bucket(stack, 'DstBucket');
+      const replicationRole = new iam.Role(stack, 'ReplicationRole', {
+        assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+      });
+      (replicationRole.node.defaultChild as iam.CfnRole).overrideLogicalId('CustomReplicationRole');
+      new s3.Bucket(stack, 'SrcBucket', {
+        versioned: true,
+        replicationRole,
+        replicationRules: [
+          { destination: dstBucket },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        VersioningConfiguration: { Status: 'Enabled' },
+        ReplicationConfiguration: {
+          Role: {
+            'Fn::GetAtt': ['CustomReplicationRole', 'Arn'],
+          },
+          Rules: [
+            {
+              Destination: {
+                Bucket: {
+                  'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
+                },
+              },
+              Status: 'Enabled',
+              Filter: {
+                Prefix: '',
+              },
+              DeleteMarkerReplication: {
+                Status: 'Disabled',
+              },
+            },
+          ],
+        },
+      });
+      // assert that the built-in replication role is not created
+      Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+    });
+
     test('cross account', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'stack', {
@@ -4448,6 +4492,37 @@ describe('bucket', () => {
           ],
         });
       }).toThrow('accessControlTranslation is only supported for cross-account replication');
+    });
+
+    describe('throw error when replicationRole is provided without valid replicationRules', () => {
+      test('fails when replicationRules is not specified', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'stack');
+
+        expect(() => {
+          new s3.Bucket(stack, 'SrcBucket', {
+            versioned: true,
+            replicationRole: new iam.Role(stack, 'ReplicationRole', {
+              assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+            }),
+          });
+        }).toThrow('cannot specify replicationRole when replicationRules is empty');
+      });
+
+      test('fails when replicationRules is an empty array', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'stack');
+
+        expect(() => {
+          new s3.Bucket(stack, 'SrcBucket', {
+            versioned: true,
+            replicationRole: new iam.Role(stack, 'ReplicationRole', {
+              assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+            }),
+            replicationRules: [],
+          });
+        }).toThrow('cannot specify replicationRole when replicationRules is empty');
+      });
     });
 
     test('source object encryption', () => {
@@ -4794,4 +4869,139 @@ describe('bucket', () => {
       },
     });
   });
+
+  describe('property injection', () => {
+    test('Compare AccessLog Bucket Injector Templates', () => {
+      // This case is complex because we are creating a bucket within Bucket constructor.
+      // GIVEN - with Injector
+      const app = new cdk.App({
+        propertyInjectors: [
+          accessLogBucketInjector,
+        ],
+      });
+      const stack = new cdk.Stack(app, 'MyStack', {});
+      const b1 = new s3.Bucket(stack, 'my-bucket-1', {});
+      const template = Template.fromStack(stack).toJSON();
+
+      // WHEN - no Injector, but props
+      const app2 = new cdk.App({});
+      const stack2 = new cdk.Stack(app2, 'MyStack', {});
+      const accessLog = new s3.Bucket(stack2, 'access-logging-12345', {
+        accessControl: undefined,
+        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        encryption: s3.BucketEncryption.KMS,
+        enforceSSL: true,
+        publicReadAccess: false,
+        lifecycleRules: [],
+        removalPolicy: cdk.RemovalPolicy.RETAIN,
+      });
+      const b2 = new s3.Bucket(stack2, 'my-bucket-1', {
+        accessControl: undefined,
+        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        encryption: s3.BucketEncryption.KMS,
+        enforceSSL: true,
+        publicReadAccess: false,
+        lifecycleRules: [],
+        serverAccessLogsBucket: accessLog,
+      });
+
+      // THEN
+      Template.fromStack(stack2).templateMatches(
+        Match.exact(template),
+      );
+    });
+
+    test('Compare Bucket Injector Templates', () => {
+      // GIVEN - with Injector
+      const app = new cdk.App({
+        propertyInjectors: [
+          bucketInjector,
+        ],
+      });
+      const stack = new cdk.Stack(app, 'MyStack', {});
+      const b1 = new s3.Bucket(stack, 'my-bucket-1', {});
+      const template = Template.fromStack(stack).toJSON();
+
+      // WHEN - no Injector, but props
+      const app2 = new cdk.App({});
+      const stack2 = new cdk.Stack(app2, 'MyStack', {});
+      const b2 = new s3.Bucket(stack2, 'my-bucket-1', {
+        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        enforceSSL: true,
+      });
+
+      // THEN
+      Template.fromStack(stack2).templateMatches(
+        Match.exact(template),
+      );
+    });
+  });
 });
+
+class AccessBucketInjector implements cdk.IPropertyInjector {
+  public readonly constructUniqueId: string;
+
+  // Skip property injection if this class attribute is set to true
+  private _skip: boolean;
+
+  constructor() {
+    this._skip = false;
+    this.constructUniqueId = s3.Bucket.PROPERTY_INJECTION_ID;
+  }
+
+  inject(originalProps: s3.BucketProps, context: cdk.InjectionContext): s3.BucketProps {
+    const commonInjectionValues = {
+      accessControl: undefined,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      encryption: s3.BucketEncryption.KMS,
+      enforceSSL: true,
+      publicReadAccess: false,
+      lifecycleRules: [],
+    };
+
+    // Don't set up access logging bucket if this._skip=true
+    if (this._skip) {
+      return commonInjectionValues;
+    }
+
+    let accessLoggingBucket = originalProps.serverAccessLogsBucket;
+    if (!accessLoggingBucket) {
+      // Set the _skip flag to disable indefinite access log bucket creation loop
+      this._skip = true;
+
+      accessLoggingBucket = new s3.Bucket(context.scope, 'access-logging-12345', {
+        ...commonInjectionValues,
+        removalPolicy: originalProps.removalPolicy ?? cdk.RemovalPolicy.RETAIN,
+      });
+
+      // reset the _skip flag
+      this._skip = false;
+    }
+    return {
+      ...commonInjectionValues,
+      serverAccessLogsBucket: accessLoggingBucket,
+      ...originalProps,
+    };
+  }
+}
+
+const accessLogBucketInjector = new AccessBucketInjector();
+
+class MyBucketPropsInjector implements cdk.IPropertyInjector {
+  public readonly constructUniqueId: string;
+
+  constructor() {
+    this.constructUniqueId = s3.Bucket.PROPERTY_INJECTION_ID;
+  }
+
+  inject(originalProps: any, _context: cdk.InjectionContext): any {
+    const newProps = {
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      enforceSSL: true,
+      ...originalProps,
+    };
+    return newProps;
+  }
+}
+
+const bucketInjector = new MyBucketPropsInjector();
