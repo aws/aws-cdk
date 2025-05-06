@@ -1,10 +1,12 @@
 {
-  "version": "32.0.0",
+  "version": "41.0.0",
   "testCases": {
     "IntegTest/DefaultTest": {
       "stacks": [
         "Stack1",
-        "Stack2"
+        "Stack2",
+        "Stack3",
+        "Stack4"
       ],
       "assertionStack": "IntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "IntegTestDefaultTestDeployAssertE3E7D2A4"

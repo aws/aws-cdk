@@ -19,6 +19,7 @@ const app = new cdk.App();
 
 interface StackUnderTestProps extends StackProps {
   architecture: Architecture;
+  version: ParamsAndSecretsVersions;
 }
 
 class StackUnderTest extends Stack {
@@ -31,7 +32,7 @@ class StackUnderTest extends Stack {
     });
     const secret = new Secret(this, 'MySecret');
 
-    const paramsAndSecrets = ParamsAndSecretsLayerVersion.fromVersion(ParamsAndSecretsVersions.V1_0_103, {
+    const paramsAndSecrets = ParamsAndSecretsLayerVersion.fromVersion(props.version, {
       cacheSize: 100,
       cacheEnabled: true,
       httpPort: 8080,
@@ -58,9 +59,19 @@ new IntegTest(app, 'IntegTest', {
   testCases: [
     new StackUnderTest(app, 'Stack1', {
       architecture: Architecture.X86_64,
+      version: ParamsAndSecretsVersions.V1_0_103,
     }),
     new StackUnderTest(app, 'Stack2', {
       architecture: Architecture.ARM_64,
+      version: ParamsAndSecretsVersions.V1_0_103,
+    }),
+    new StackUnderTest(app, 'Stack3', {
+      architecture: Architecture.X86_64,
+      version: ParamsAndSecretsVersions.LATEST,
+    }),
+    new StackUnderTest(app, 'Stack4', {
+      architecture: Architecture.ARM_64,
+      version: ParamsAndSecretsVersions.LATEST,
     }),
   ],
 });
