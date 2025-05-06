@@ -309,6 +309,76 @@ describe('params and secrets', () => {
     }).toThrow('Parameters and Secrets Extension is not supported in region eu-central-2 for arm64 architecture');
   });
 
+  test('can enable params and secrets from latest version in non-agnostic stack - x86_64', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-east-1' } });
+
+    // WHEN
+    new lambda.Function (stack, 'Function', {
+      functionName: 'lambda-function',
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+      architecture: lambda.Architecture.X86_64,
+      paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.LATEST),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Layers: ['arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:16'],
+      Environment: {
+        Variables: {
+          PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED: 'true',
+          PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE: '1000',
+          PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: '2773',
+          PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL: 'info',
+          PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS: '3',
+          SECRETS_MANAGER_TIMEOUT_MILLIS: '0',
+          SECRETS_MANAGER_TTL: '300',
+          SSM_PARAMETER_STORE_TIMEOUT_MILLIS: '0',
+          SSM_PARAMETER_STORE_TTL: '300',
+        },
+      },
+    });
+    expect(() => app.synth()).not.toThrow();
+  });
+
+  test('can enable params and secrets from latest version in non-agnostic stack - arm64', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-east-1' } });
+
+    // WHEN
+    new lambda.Function (stack, 'Function', {
+      functionName: 'lambda-function',
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+      architecture: lambda.Architecture.ARM_64,
+      paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.LATEST),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Layers: ['arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:16'],
+      Environment: {
+        Variables: {
+          PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED: 'true',
+          PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE: '1000',
+          PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: '2773',
+          PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL: 'info',
+          PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS: '3',
+          SECRETS_MANAGER_TIMEOUT_MILLIS: '0',
+          SECRETS_MANAGER_TTL: '300',
+          SSM_PARAMETER_STORE_TIMEOUT_MILLIS: '0',
+          SSM_PARAMETER_STORE_TTL: '300',
+        },
+      },
+    });
+    expect(() => app.synth()).not.toThrow();
+  });
+
   test('can enable params and secrets with a provided secret', () => {
     // GIVEN
     const app = new cdk.App();
