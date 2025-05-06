@@ -55,7 +55,7 @@ test('imports an api destination from its arn', () => {
   // THEN
   expect(destination.apiDestinationArn).toEqual(apiDestinationArn);
   expect(destination.apiDestinationArnForPolicy).toEqual(apiDestinationArnForPolicy);
-  expect(destination.apiDestinationName).toEqual('DestinationName');
+  expect(destination.apiDestinationName).toEqual('DestinationName/11111111-1111-1111-1111-111111111111');
 });
 
 test('throws if imported api destination ARN is invalid', () => {
