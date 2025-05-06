@@ -1,3 +1,4 @@
+import { Token } from '../../core';
 import { CidrRoutingConfig } from '../lib/cidr-routing-config';
 
 describe('CidrRoutingConfig', () => {
@@ -84,9 +85,7 @@ describe('CidrRoutingConfig', () => {
     test('creates config with default locationName as *', () => {
       const collectionId = '12345678-1234-1234-1234-123456789012';
       const config = CidrRoutingConfig.default(collectionId);
-      // Check collectionId
       expect(config.collectionId).toBe(collectionId);
-      // Check locationName is '*'
       expect(config.locationName).toBe('*');
     });
     test('throws error if collectionId is invalid', () => {

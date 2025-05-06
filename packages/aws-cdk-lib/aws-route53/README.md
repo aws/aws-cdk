@@ -207,7 +207,7 @@ new route53.ARecord(this, 'ARecordMultiValue1', {
 To enable [IP-based routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-ipbased.html), use the `cidrRoutingConfig` parameter:
 
 ```ts
-declare const zone: route53.HostedZone;
+declare const myZone: route53.HostedZone;
 
 const cidrCollection = new route53.CfnCidrCollection(this, 'CidrCollection', {
   name: 'test-collection',
@@ -218,13 +218,33 @@ const cidrCollection = new route53.CfnCidrCollection(this, 'CidrCollection', {
 });
 
 new route53.ARecord(this, 'CidrRoutingConfig', {
-  zone: zone,
+  zone: myZone,
   target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
   setIdentifier: 'test',
   cidrRoutingConfig: route53.CidrRoutingConfig.new({
     collectionId: cidrCollection.attrId,
     locationName: 'test_location'
   }),
+});
+```
+
+To use the default CIDR record, call the `route53.CidrRoutingConfig.default`. This sets the `locationName` to `*`. The `collectionId` is still required.
+```ts
+declare const myZone: route53.HostedZone;
+
+const cidrCollection = new route53.CfnCidrCollection(this, 'CidrCollection', {
+  name: 'test-collection',
+  locations: [{
+    cidrList: ['192.168.1.0/24'],
+    locationName: 'my_location',
+  }]
+});
+
+new route53.ARecord(this, 'DefaultCidrRoutingConfig', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('5.6.7.8'),
+  setIdentifier: 'default',
+  cidrRoutingConfig: route53.CidrRoutingConfig.default(cidrCollection.attrId),
 });
 ```
 

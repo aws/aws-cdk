@@ -56,7 +56,7 @@ export class CidrRoutingConfig {
     if (!Token.isUnresolved(props.collectionId) && !COLLECTION_ID_REGEX.test(props.collectionId)) {
       throw new UnscopedValidationError(`collectionId(${props.collectionId}) is required and must be a valid UUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx(8-4-4-4-12 digits)`);
     }
-    if (!props.locationName || !LOCATION_NAME_REGEX.test(props.locationName)) {
+    if (!Token.isUnresolved(props.locationName) && !props.locationName || !LOCATION_NAME_REGEX.test(props.locationName)) {
       throw new UnscopedValidationError(`locationName(${props.locationName}) is required and must be 1-16 characters long, containing only letters, numbers, underscores, hyphens, or asterisks`);
     }
     this.collectionId = props.collectionId;
