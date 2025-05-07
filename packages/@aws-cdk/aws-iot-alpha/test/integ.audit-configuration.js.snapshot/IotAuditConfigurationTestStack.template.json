@@ -87,6 +87,12 @@
      "ConflictingClientIdsCheck": {
       "Enabled": true
      },
+     "DeviceCertificateAgeCheck": {
+      "Configuration": {
+       "CertAgeThresholdInDays": "1229"
+      },
+      "Enabled": true
+     },
      "DeviceCertificateExpiringCheck": {
       "Enabled": true
      },

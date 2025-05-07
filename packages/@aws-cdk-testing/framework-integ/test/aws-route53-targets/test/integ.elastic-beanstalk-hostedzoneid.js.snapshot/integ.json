@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "cdk-route53-ebs-hostedzoneid-integ-test/DefaultTest": {
+      "stacks": [
+        "cdk-route53-ebs-hostedzoneid-integ"
+      ],
+      "assertionStack": "cdk-route53-ebs-hostedzoneid-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkroute53ebshostedzoneidintegtestDefaultTestDeployAssert57827FC3"
+    }
+  }
+}

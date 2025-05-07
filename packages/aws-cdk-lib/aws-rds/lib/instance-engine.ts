@@ -973,10 +973,14 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_40 = MysqlEngineVersion.of('8.0.40', '8.0');
   /** Version "8.0.41". */
   public static readonly VER_8_0_41 = MysqlEngineVersion.of('8.0.41', '8.0');
+  /** Version "8.0.42". */
+  public static readonly VER_8_0_42 = MysqlEngineVersion.of('8.0.42', '8.0');
   /** Version "8.4.3". */
   public static readonly VER_8_4_3 = MysqlEngineVersion.of('8.4.3', '8.4');
   /** Version "8.4.4". */
   public static readonly VER_8_4_4 = MysqlEngineVersion.of('8.4.4', '8.4');
+  /** Version "8.4.5". */
+  public static readonly VER_8_4_5 = MysqlEngineVersion.of('8.4.5', '8.4');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.

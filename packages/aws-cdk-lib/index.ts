@@ -261,6 +261,7 @@ export * as aws_sns_subscriptions from './aws-sns-subscriptions';
 export * as aws_sqs from './aws-sqs';
 export * as aws_ssm from './aws-ssm';
 export * as aws_ssmcontacts from './aws-ssmcontacts';
+export * as aws_ssmguiconnect from './aws-ssmguiconnect';
 export * as aws_ssmincidents from './aws-ssmincidents';
 export * as aws_ssmquicksetup from './aws-ssmquicksetup';
 export * as aws_sso from './aws-sso';

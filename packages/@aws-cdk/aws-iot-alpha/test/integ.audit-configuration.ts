@@ -11,6 +11,9 @@ class TestStack extends cdk.Stack {
 
     const config = new iot.AccountAuditConfiguration(this, 'AuditConfiguration', {
       targetTopic,
+      checkConfiguration: {
+        deviceCertificateAgeCheckDuration: cdk.Duration.days(1229),
+      },
     });
 
     new iot.ScheduledAudit(this, 'DailyAudit', {

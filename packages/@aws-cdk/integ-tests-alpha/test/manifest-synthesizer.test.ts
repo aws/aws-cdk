@@ -72,6 +72,7 @@ describe(IntegManifestSynthesizer, () => {
     // THEN
     expect(integManifest).toEqual({
       version: Manifest.version(),
+      minimumCliVersion: Manifest.cliVersion(),
       testCases: {
         ['Integ/DefaultTest']: {
           assertionStack: 'Integ/DefaultTest/DeployAssert',
@@ -111,6 +112,7 @@ describe(IntegManifestSynthesizer, () => {
     // THEN
     expect(integManifest).toEqual({
       version: Manifest.version(),
+      minimumCliVersion: Manifest.cliVersion(),
       enableLookups: true,
       testCases: {
         ['Integ/DefaultTest']: {
@@ -153,6 +155,7 @@ describe(IntegManifestSynthesizer, () => {
     // THEN
     expect(integManifest).toEqual({
       version: Manifest.version(),
+      minimumCliVersion: Manifest.cliVersion(),
       testCases: {
         ['Integ/DefaultTest']: {
           assertionStack: 'Integ/DefaultTest/DeployAssert',

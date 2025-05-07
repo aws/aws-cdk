@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.195.0](https://github.com/aws/aws-cdk/compare/v2.194.0...v2.195.0) (2025-05-07)
+
+
+### Features
+
+* publish 'app-staging-synthesizer-alpha' for Go ([#34364](https://github.com/aws/aws-cdk/issues/34364)) ([4e3df41](https://github.com/aws/aws-cdk/commit/4e3df41b308b277a568efa77e965cea958a63df9))
+* update L1 CloudFormation resource definitions ([#34357](https://github.com/aws/aws-cdk/issues/34357)) ([24a40a9](https://github.com/aws/aws-cdk/commit/24a40a9b8e56e6ce3c37036b3db4d5039c882bba))
+* **apigateway:** dualstack REST API ([#34114](https://github.com/aws/aws-cdk/issues/34114)) ([efdcb9d](https://github.com/aws/aws-cdk/commit/efdcb9ddfebc9c3333745a40fa90eb99b410316d))
+
+
+### Bug Fixes
+
+* **codepipeline:** allow both `pullRequestFilter` and `pushFilter` ([#34267](https://github.com/aws/aws-cdk/issues/34267)) ([1cac5a0](https://github.com/aws/aws-cdk/commit/1cac5a080c78182268128b9b7ad3501179a7e3e1)), closes [#34253](https://github.com/aws/aws-cdk/issues/34253)
+* **route53-targets:** beanstalk allow specifying `hostedZoneId` to support token endpoint with default value derived from stack region or endpointUrl ([#34122](https://github.com/aws/aws-cdk/issues/34122)) ([9e52752](https://github.com/aws/aws-cdk/commit/9e527522c5ea6967d3b51ade75790ad98982dd83)), closes [#31843](https://github.com/aws/aws-cdk/issues/31843)
+* **s3-notifications:** add a key policy to trust S3 for notifications to an SNS topic encrypted with a KMS key (under feature flag) ([#33858](https://github.com/aws/aws-cdk/issues/33858)) ([1e87861](https://github.com/aws/aws-cdk/commit/1e87861b3d0631fd0d24aedd4328d1eb67beb26c)), closes [#16271](https://github.com/aws/aws-cdk/issues/16271)
+
+
+### Reverts
+
+* "chore: make all L2 Constructs property injectable during release" ([#34371](https://github.com/aws/aws-cdk/issues/34371)) ([1e722ad](https://github.com/aws/aws-cdk/commit/1e722ad198952688ba33e4f698456d05dd90d524)), closes [aws/aws-cdk#34328](https://github.com/aws/aws-cdk/issues/34328)
+* "feat: property injection for 122 constructs" ([#34370](https://github.com/aws/aws-cdk/issues/34370)) ([2594f3c](https://github.com/aws/aws-cdk/commit/2594f3cab68e130d0b9f62ae622c9bc7b92cd14e)), closes [aws/aws-cdk#33887](https://github.com/aws/aws-cdk/issues/33887)
+
 ## [2.194.0](https://github.com/aws/aws-cdk/compare/v2.193.0...v2.194.0) (2025-05-01)
 
 
