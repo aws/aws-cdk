@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
 import { NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { FeatureFlags } from '../../../core';
-import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
 import {
@@ -26,13 +25,7 @@ export interface NetworkMultipleTargetGroupsFargateServiceProps extends NetworkM
 /**
  * A Fargate service running on an ECS cluster fronted by a network load balancer.
  */
-@propertyInjectable
 export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTargetGroupsServiceBase {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs-patterns.NetworkMultipleTargetGroupsFargateService';
-
   /**
    * Determines whether the service will be assigned a public IP address.
    */

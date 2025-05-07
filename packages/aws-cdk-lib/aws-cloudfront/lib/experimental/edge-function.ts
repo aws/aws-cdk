@@ -15,7 +15,6 @@ import {
   ValidationError,
 } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CrossRegionStringParamReaderProvider } from '../../../custom-resource-handlers/dist/aws-cloudfront/cross-region-string-param-reader-provider.generated';
 
 /**
@@ -41,13 +40,7 @@ export interface EdgeFunctionProps extends lambda.FunctionProps {
  *
  * @resource AWS::Lambda::Function
  */
-@propertyInjectable
 export class EdgeFunction extends Resource implements lambda.IVersion {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.experimental.EdgeFunction';
-
   private static readonly EDGE_REGION: string = 'us-east-1';
 
   public readonly edgeArn: string;
