@@ -35,10 +35,7 @@ const NAME_TAG: string = 'Name';
 /**
  * VPC Name tag constant
  */
-const VPCNAME_TAG: string = 'VpcName';
-
 const SUBNETTYPE_TAG = 'aws-cdk:subnet-type';
-const SUBNETNAME_TAG = 'aws-cdk:subnet-name';
 
 /**
  * Properties to define subnet for VPC.
@@ -72,7 +69,14 @@ export interface SubnetV2Props {
    *
    * @default - a default route table created
    */
-  readonly routeTable?: RouteTable;
+  readonly routeTable?: IRouteTable;
+
+  /**
+   * Name of the default RouteTable created by CDK to be used for tagging
+   *
+   * @default - default route table name created by CDK as 'DefaultCDKRouteTable'
+   */
+  readonly defaultRouteTableName ?: string;
 
   /**
    * The type of Subnet to configure.
@@ -244,7 +248,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
 
   private _networkAcl: INetworkAcl;
 
-  private _routeTable: RouteTable;
+  private _routeTable: IRouteTable;
 
   /**
    * Constructs a new SubnetV2 instance.
@@ -313,13 +317,11 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     // props.subnetName ? Tags.of(subnet).add(SUBNETNAME_TAG, props.subnetName) : Tags.of(subnet).add(NAME_TAG, subnet.node.path);
 
     const includeResourceTypes = [CfnSubnet.CFN_RESOURCE_TYPE_NAME];
-    // const overridenSubnetNameTag = props.vpc.node.path + props.subnetName + 'Subnet';
-    // Tags.of(subnet).add(NAME_TAG, overridenSubnetNameTag, { includeResourceTypes });
-    Tags.of(subnet).add(SUBNETTYPE_TAG, defaultSubnetName(props.subnetType), { includeResourceTypes });
-
-    // if (props.vpc.vpcName) {
-    //   Tags.of(subnet).add(VPCNAME_TAG, props.vpc.vpcName);
-    // }
+    if (props.subnetName) {
+      Tags.of(subnet).add(NAME_TAG, props.subnetName);
+    }
+    const subnetTypeName = defaultSubnetName(props.subnetType) ?? 'undefined';
+    Tags.of(subnet).add(SUBNETTYPE_TAG, subnetTypeName, { includeResourceTypes });
 
     if (props.routeTable) {
       this._routeTable = props.routeTable;
@@ -327,8 +329,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
       // Assigning a default route table
       this._routeTable = new RouteTable(this, 'RouteTable', {
         vpc: props.vpc,
-        routeTableName: 'DefaultCDKRouteTable',
-        subnetTag: this.node.path,
+        routeTableName: props.defaultRouteTableName ?? 'DefaultCDKRouteTable',
       });
     }
 
@@ -367,7 +368,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
   /**
    * Return the Route Table associated with this subnet
    */
-  public get routeTable(): RouteTable {
+  public get routeTable(): IRouteTable {
     return this._routeTable;
   }
 

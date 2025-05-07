@@ -795,13 +795,6 @@ export interface RouteTableProps {
    * @default - provisioned without a route table name
    */
   readonly routeTableName?: string;
-
-  /**
-   * Tags to be added to route table with subnet Path
-   *
-   * @default - no tag added to route table
-   */
-  readonly subnetTag?: string;
 }
 
 /**
@@ -834,10 +827,6 @@ export class RouteTable extends Resource implements IRouteTable {
 
     FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
       this.routeTableId = this.resource.ref : this.routeTableId = this.resource.attrRouteTableId;
-
-    if (props.subnetTag) {
-      Tags.of(this).add(NAME_TAG, props.subnetTag);
-    }
   }
 
   /**
