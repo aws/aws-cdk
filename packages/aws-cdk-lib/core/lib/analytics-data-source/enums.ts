@@ -127,6 +127,29 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'SPOT_CAPACITY_OPTIMIZED',
     'SPOT_PRICE_CAPACITY_OPTIMIZED'
   ],
+  'AllowMapsAction': [
+    'geo-maps:GetStaticMap',
+    'geo-maps:GetTile',
+    'geo-maps:*'
+  ],
+  'AllowPlacesAction': [
+    'geo-places:Autocomplete',
+    'geo-places:Geocode',
+    'geo-places:GetPlace',
+    'geo-places:ReverseGeocode',
+    'geo-places:SearchNearby',
+    'geo-places:SearchText',
+    'geo-places:Suggest',
+    'geo-places:*'
+  ],
+  'AllowRoutesAction': [
+    'geo-routes:CalculateIsolines',
+    'geo-routes:CalculateRoutes',
+    'geo-routes:CalculateRouteMatrix',
+    'geo-routes:OptimizeWaypoints',
+    'geo-routes:SnapToRoads',
+    'geo-routes:*'
+  ],
   'AlpnPolicy': [
     'HTTP1Only',
     'HTTP2Only',
@@ -1614,6 +1637,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'r7a',
     'memory8-graviton',
     'r8g',
+    'memory8-graviton4-nvme-drive',
+    'r8gd',
     'compute3',
     'c3',
     'compute4',
@@ -1646,6 +1671,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'c6gd',
     'compute7-graviton3-nvme-drive',
     'c7gd',
+    'compute8-graviton4-nvme-drive',
+    'c8gd',
     'compute6-graviton2-high-network-bandwidth',
     'c6gn',
     'compute7-graviton3-high-network-bandwidth',
@@ -1772,6 +1799,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'm8g',
     'standard7-graviton3-nvme-drive',
     'm7gd',
+    'standard8-graviton4-nvme-drive',
+    'm8gd',
     'standard7-intel',
     'm7i',
     'standard7-intel-flex',
