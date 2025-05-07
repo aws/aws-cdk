@@ -57,6 +57,69 @@ export enum HandlerBehavior {
 }
 
 /**
+ * Lambda invocation type configuration for handler integration
+ */
+export interface LambdaConfigOptions {
+  /**
+   * The Lambda invoke type for the integration
+   *
+   * @default - LambdaInvokeType.REQUEST_RESPONSE
+   */
+  readonly invokeType?: LambdaInvokeType;
+}
+
+/**
+ * Integration configuration for handlers
+ */
+export interface IntegrationOptions {
+  /**
+   * Data source to invoke for this integration
+   */
+  readonly dataSourceName: string;
+
+  /**
+   * Configuration for Lambda integration
+   *
+   * @default - No Lambda specific configuration
+   */
+  readonly lambdaConfig?: LambdaConfigOptions;
+}
+
+/**
+ * Configuration for individual event handlers
+ */
+export interface HandlerConfigOptions {
+  /**
+   * The behavior of the handler
+   */
+  readonly behavior: HandlerBehavior;
+
+  /**
+   * Integration configuration for the handler
+   */
+  readonly integration: IntegrationOptions;
+}
+
+/**
+ * Configuration for all handlers in the channel namespace
+ */
+export interface HandlerConfigsOptions {
+  /**
+   * Handler configuration for publish events
+   *
+   * @default - No publish handler configured
+   */
+  readonly onPublish?: HandlerConfigOptions;
+
+  /**
+   * Handler configuration for subscribe events
+   *
+   * @default - No subscribe handler configured
+   */
+  readonly onSubscribe?: HandlerConfigOptions;
+}
+
+/**
  * Handler configuration construct for onPublish and onSubscribe
  */
 export interface HandlerConfig {
@@ -113,6 +176,13 @@ export interface BaseChannelNamespaceProps {
    * @default - no handler config
    */
   readonly subscribeHandlerConfig?: HandlerConfig;
+
+  /**
+   * Direct configuration for handler configs
+   *
+   * @default - Handler configs derived from publishHandlerConfig and subscribeHandlerConfig
+   */
+  readonly handlerConfigs?: HandlerConfigsOptions;
 
   /**
    * Authorization config for channel namespace
@@ -213,38 +283,45 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
 
     let handlerConfig: { [key: string]: any } = {};
 
-    if (props.publishHandlerConfig) {
-      handlerConfig = {
-        onPublish: {
-          behavior: props.publishHandlerConfig?.direct ? HandlerBehavior.DIRECT : HandlerBehavior.CODE,
-          integration: {
-            dataSourceName: props.publishHandlerConfig?.dataSource?.name || '',
-          },
-        },
-      };
-
-      if (handlerConfig.onPublish.behavior === HandlerBehavior.DIRECT) {
-        handlerConfig.onPublish.integration.lambdaConfig = {
-          invokeType: props.publishHandlerConfig?.lambdaInvokeType || LambdaInvokeType.REQUEST_RESPONSE,
-        };
-      }
+    // If direct handlerConfigs is provided, use it
+    if (props.handlerConfigs) {
+      handlerConfig = props.handlerConfigs;
     }
-
-    if (props.subscribeHandlerConfig) {
-      handlerConfig = {
-        ...handlerConfig,
-        onSubscribe: {
-          behavior: props.subscribeHandlerConfig?.direct ? HandlerBehavior.DIRECT : HandlerBehavior.CODE,
-          integration: {
-            dataSourceName: props.subscribeHandlerConfig?.dataSource?.name || '',
+    // Otherwise, build from publishHandlerConfig and subscribeHandlerConfig for backward compatibility
+    else {
+      if (props.publishHandlerConfig) {
+        handlerConfig = {
+          onPublish: {
+            behavior: props.publishHandlerConfig?.direct ? HandlerBehavior.DIRECT : HandlerBehavior.CODE,
+            integration: {
+              dataSourceName: props.publishHandlerConfig?.dataSource?.name || '',
+            },
           },
-        },
-      };
-
-      if (handlerConfig.onSubscribe.behavior === HandlerBehavior.DIRECT) {
-        handlerConfig.onSubscribe.integration.lambdaConfig = {
-          invokeType: props.subscribeHandlerConfig?.lambdaInvokeType || LambdaInvokeType.REQUEST_RESPONSE,
         };
+
+        if (handlerConfig.onPublish.behavior === HandlerBehavior.DIRECT) {
+          handlerConfig.onPublish.integration.lambdaConfig = {
+            invokeType: props.publishHandlerConfig?.lambdaInvokeType || LambdaInvokeType.REQUEST_RESPONSE,
+          };
+        }
+      }
+
+      if (props.subscribeHandlerConfig) {
+        handlerConfig = {
+          ...handlerConfig,
+          onSubscribe: {
+            behavior: props.subscribeHandlerConfig?.direct ? HandlerBehavior.DIRECT : HandlerBehavior.CODE,
+            integration: {
+              dataSourceName: props.subscribeHandlerConfig?.dataSource?.name || '',
+            },
+          },
+        };
+
+        if (handlerConfig.onSubscribe.behavior === HandlerBehavior.DIRECT) {
+          handlerConfig.onSubscribe.integration.lambdaConfig = {
+            invokeType: props.subscribeHandlerConfig?.lambdaInvokeType || LambdaInvokeType.REQUEST_RESPONSE,
+          };
+        }
       }
     }
 
@@ -317,6 +394,17 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   }
 
   private validateHandlerConfig(props?: ChannelNamespaceProps) {
+    // Handle the case when direct handlerConfigs is provided
+    if (props?.handlerConfigs) {
+      // If code is provided when both handlers are direct, it's an error
+      const onPublishDirect = props.handlerConfigs.onPublish?.behavior === HandlerBehavior.DIRECT;
+      const onSubscribeDirect = props.handlerConfigs.onSubscribe?.behavior === HandlerBehavior.DIRECT;
+      if (onPublishDirect && onSubscribeDirect && props.code) {
+        throw new ValidationError('Code handlers are not supported when both publish and subscribe use the Direct data source behavior', this);
+      }
+      return;
+    }
+
     // Handle the case when no handler configs are defined for publish or subscribe
     if (!props?.publishHandlerConfig && !props?.subscribeHandlerConfig) return undefined;
 
