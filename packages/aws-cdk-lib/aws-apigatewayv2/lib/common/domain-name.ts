@@ -1,11 +1,11 @@
 import { Construct } from 'constructs';
+import { IpAddressType } from './api';
 import { CfnDomainName, CfnDomainNameProps } from '.././index';
 import { ICertificate } from '../../../aws-certificatemanager';
 import { IBucket } from '../../../aws-s3';
 import { IResource, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**
  * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.
@@ -127,6 +127,15 @@ export interface EndpointOptions {
    * @default - only required when configuring mTLS
    */
   readonly ownershipCertificate?: ICertificate;
+
+  /**
+   * The IP address types that can invoke the API.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-ip-address-type.html
+   *
+   * @default undefined - AWS default is IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
 }
 
 /**
@@ -153,13 +162,7 @@ export interface MTLSConfig {
 /**
  * Custom domain resource for the API
  */
-@propertyInjectable
 export class DomainName extends Resource implements IDomainName {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.DomainName';
-
   /**
    * Import from attributes
    */
@@ -227,6 +230,7 @@ export class DomainName extends Resource implements IDomainName {
       endpointType: options.endpointType ? options.endpointType?.toString() : 'REGIONAL',
       ownershipVerificationCertificateArn: options.ownershipCertificate?.certificateArn,
       securityPolicy: options.securityPolicy?.toString(),
+      ipAddressType: options.ipAddressType,
     };
 
     this.validateEndpointType(domainNameConfig.endpointType);
