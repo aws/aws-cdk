@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "627e78e04fd37f260942cefbb2b108b87d15321f816f10eaad7f6b0b0a8439f0": {
+      "displayName": "aws-cdk-bedrock-memory-1 Template",
+      "source": {
+        "path": "aws-cdk-bedrock-memory-1.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "627e78e04fd37f260942cefbb2b108b87d15321f816f10eaad7f6b0b0a8439f0.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

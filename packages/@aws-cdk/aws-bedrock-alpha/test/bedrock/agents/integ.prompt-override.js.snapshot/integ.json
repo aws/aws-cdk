@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "BedrockPromptOverride/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-prompt-override-1"
+      ],
+      "assertionStack": "BedrockPromptOverride/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockPromptOverrideDefaultTestDeployAssert7D38F1F4"
+    }
+  }
+}
