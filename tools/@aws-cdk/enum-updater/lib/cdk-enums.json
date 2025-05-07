@@ -3458,6 +3458,14 @@
         "PRIVATE"
       ]
     },
+    "RestApiMode": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts",
+      "enumLike": false,
+      "values": [
+        "overwrite",
+        "merge"
+      ]
+    },
     "MethodLoggingLevel": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/stage.ts",
       "enumLike": false,
@@ -4006,6 +4014,35 @@
         "AMAZON_COGNITO_USER_POOLS",
         "OPENID_CONNECT",
         "AWS_LAMBDA"
+      ]
+    },
+    "HandlerBehavior": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/channel-namespace.ts",
+      "enumLike": false,
+      "values": [
+        "CODE",
+        "DIRECT"
+      ]
+    },
+    "AppSyncDataSourceType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.ts",
+      "enumLike": false,
+      "values": [
+        "AWS_LAMBDA",
+        "AMAZON_DYNAMODB",
+        "AMAZON_EVENTBRIDGE",
+        "AMAZON_OPENSEARCH_SERVICE",
+        "HTTP",
+        "RELATIONAL_DATABASE",
+        "AMAZON_BEDROCK_RUNTIME"
+      ]
+    },
+    "LambdaInvokeType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.ts",
+      "enumLike": false,
+      "values": [
+        "EVENT",
+        "REQUEST_RESPONSE"
       ]
     },
     "Visibility": {
@@ -5202,13 +5239,17 @@
       "values": [
         "AMAZON_LINUX_2_NODE_18",
         "AMAZON_LINUX_2023_NODE_20",
+        "AMAZON_LINUX_2023_NODE_22",
         "AMAZON_LINUX_2_PYTHON_3_11",
         "AMAZON_LINUX_2023_PYTHON_3_12",
+        "AMAZON_LINUX_2023_PYTHON_3_13",
         "AMAZON_LINUX_2_RUBY_3_2",
+        "AMAZON_LINUX_2023_RUBY_3_4",
         "AMAZON_LINUX_2023_CORRETTO_21",
         "AMAZON_LINUX_2_CORRETTO_17",
         "AMAZON_LINUX_2_CORRETTO_11",
         "AMAZON_LINUX_2_GO_1_21",
+        "AMAZON_LINUX_2023_GO_1_24",
         "AMAZON_LINUX_2_DOTNET_6",
         "AMAZON_LINUX_2023_DOTNET_8"
       ]
@@ -5242,13 +5283,17 @@
       "values": [
         "AMAZON_LINUX_2_NODE_18",
         "AMAZON_LINUX_2023_NODE_20",
+        "AMAZON_LINUX_2023_NODE_22",
         "AMAZON_LINUX_2_PYTHON_3_11",
         "AMAZON_LINUX_2023_PYTHON_3_12",
+        "AMAZON_LINUX_2023_PYTHON_3_13",
         "AMAZON_LINUX_2_RUBY_3_2",
+        "AMAZON_LINUX_2023_RUBY_3_4",
         "AMAZON_LINUX_2023_CORRETTO_21",
         "AMAZON_LINUX_2_CORRETTO_17",
         "AMAZON_LINUX_2_CORRETTO_11",
         "AMAZON_LINUX_2_GO_1_21",
+        "AMAZON_LINUX_2023_GO_1_24",
         "AMAZON_LINUX_2_DOTNET_6",
         "AMAZON_LINUX_2023_DOTNET_8"
       ]
@@ -5465,6 +5510,16 @@
         "None",
         "Poll",
         "Events"
+      ]
+    },
+    "RevisionType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/codepipeline/invoke-action.ts",
+      "enumLike": false,
+      "values": [
+        "COMMIT_ID",
+        "IMAGE_DIGEST",
+        "S3_OBJECT_VERSION_ID",
+        "S3_OBJECT_KEY"
       ]
     },
     "RegistryType": {
@@ -8498,6 +8553,7 @@
         "VER_2_12_1",
         "VER_2_12_2",
         "VER_2_12_3",
+        "VER_2_12_4",
         "VER_3_01_0",
         "VER_3_01_1",
         "VER_3_02_0",
@@ -8520,7 +8576,8 @@
         "VER_3_07_0",
         "VER_3_07_1",
         "VER_3_08_0",
-        "VER_3_08_1"
+        "VER_3_08_1",
+        "VER_3_08_2"
       ]
     },
     "AuroraPostgresEngineVersion": {
@@ -8600,6 +8657,7 @@
         "VER_13_16",
         "VER_13_17",
         "VER_13_18",
+        "VER_13_20",
         "VER_14_3",
         "VER_14_4",
         "VER_14_5",
@@ -8613,6 +8671,7 @@
         "VER_14_13",
         "VER_14_14",
         "VER_14_15",
+        "VER_14_17",
         "VER_15_2",
         "VER_15_3",
         "VER_15_4",
@@ -8622,6 +8681,7 @@
         "VER_15_8",
         "VER_15_9",
         "VER_15_10",
+        "VER_15_12",
         "VER_16_0",
         "VER_16_1",
         "VER_16_2",
@@ -8631,6 +8691,7 @@
         "VER_16_5",
         "VER_16_6",
         "VER_16_6_LIMITLESS",
+        "VER_16_8",
         "VER_17_1",
         "VER_17_2"
       ]
@@ -9240,6 +9301,7 @@
         "VER_15_00_4410_1_V1",
         "VER_15_00_4415_2_V1",
         "VER_15_00_4420_2_V1",
+        "VER_15_00_4430_1_V1",
         "VER_16",
         "VER_16_00_4085_2_V1",
         "VER_16_00_4095_4_V1",
@@ -9252,7 +9314,8 @@
         "VER_16_00_4140_3_V1",
         "VER_16_00_4150_1_V1",
         "VER_16_00_4165_4_V1",
-        "VER_16_00_4175_1_V1"
+        "VER_16_00_4175_1_V1",
+        "VER_16_00_4185_3_V1"
       ]
     },
     "DatabaseInstanceEngine": {
@@ -11188,6 +11251,45 @@
       "enumLike": false,
       "values": [
         "WHEN_FUNCTION_CHANGES"
+      ]
+    }
+  },
+  "applicationsignals": {
+    "JavaInstrumentationVersion": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts",
+      "enumLike": true,
+      "values": [
+        "V2_10_0",
+        "V1_33_0",
+        "V1_32_6"
+      ]
+    },
+    "PythonInstrumentationVersion": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts",
+      "enumLike": true,
+      "values": [
+        "V0_8_0",
+        "V0_9_0"
+      ]
+    },
+    "DotnetInstrumentationVersion": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts",
+      "enumLike": true,
+      "values": [
+        "V1_6_0",
+        "V1_6_0_WINDOWS2022",
+        "V1_6_0_WINDOWS2019",
+        "V1_7_0",
+        "V1_7_0_WINDOWS2022",
+        "V1_7_0_WINDOWS2019"
+      ]
+    },
+    "NodeInstrumentationVersion": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts",
+      "enumLike": true,
+      "values": [
+        "V0_5_0",
+        "V0_6_0"
       ]
     }
   },

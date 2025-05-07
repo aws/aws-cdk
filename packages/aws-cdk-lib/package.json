@@ -136,7 +136,7 @@
   },
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.0.3",
-    "@aws-cdk/aws-service-spec": "^0.1.68",
+    "@aws-cdk/aws-service-spec": "^0.1.71",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -477,6 +477,7 @@
     "./aws-sqs": "./aws-sqs/index.js",
     "./aws-ssm": "./aws-ssm/index.js",
     "./aws-ssmcontacts": "./aws-ssmcontacts/index.js",
+    "./aws-ssmguiconnect": "./aws-ssmguiconnect/index.js",
     "./aws-ssmincidents": "./aws-ssmincidents/index.js",
     "./aws-ssmquicksetup": "./aws-ssmquicksetup/index.js",
     "./aws-sso": "./aws-sso/index.js",
