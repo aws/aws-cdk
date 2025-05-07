@@ -177,12 +177,6 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * add the right policies to the instance role, apply the right tags, and add
    * the required user data to the instance's launch configuration.
    *
-   * Spot instances will be labeled `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
-   * If kubectl is enabled, the
-   * [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
-   * daemon will be installed on all spot instances to handle
-   * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
-   *
    * Prefer to use `addAutoScalingGroupCapacity` if possible.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
@@ -811,12 +805,6 @@ abstract class ClusterBase extends Resource implements ICluster {
    * add the right policies to the instance role, apply the right tags, and add
    * the required user data to the instance's launch configuration.
    *
-   * Spot instances will be labeled `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
-   * If kubectl is enabled, the
-   * [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
-   * daemon will be installed on all spot instances to handle
-   * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
-   *
    * Prefer to use `addAutoScalingGroupCapacity` if possible.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
@@ -1428,10 +1416,6 @@ export class Cluster extends ClusterBase {
    * time without notice in case the recommended AMI for your machine image type has been updated by AWS.
    * The default behavior for `updateType` is `None`, which means only new instances will be launched using the new AMI.
    *
-   * Spot instances will be labeled `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
-   * In addition, the [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
-   * daemon will be installed on all spot instances to handle
-   * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
    */
   @MethodMetadata()
   public addAutoScalingGroupCapacity(id: string, options: AutoScalingGroupCapacityOptions): autoscaling.AutoScalingGroup {
