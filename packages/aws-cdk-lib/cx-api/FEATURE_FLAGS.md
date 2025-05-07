@@ -17,6 +17,7 @@ Flags come in three types:
 
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
+| [@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration](#aws-cdkaws-ec2-alphauseresourceidforvpcv2migration) | When enabled, use resource IDs for VPC V2 migration | V2_NEXT | new default |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | fix |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | fix |
 | [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | 2.0.0 | fix |
@@ -98,7 +99,7 @@ Flags come in three types:
 | [@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2](#aws-cdkaws-stepfunctionsusedistributedmapresultwriterv2) | When enabled, the resultWriterV2 property of DistributedMap will be used insted of resultWriter | 2.188.0 | new default |
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | 2.189.0 | new default |
 | [@aws-cdk/core:aspectPrioritiesMutating](#aws-cdkcoreaspectprioritiesmutating) | When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING. | 2.189.1 | new default |
-| [@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions](#aws-cdks3-notificationsadds3trustkeypolicyforsnssubscriptions) | Add an S3 trust policy to a KMS key resource policy for SNS subscriptions. | V2NEXT | (fix) |
+| [@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions](#aws-cdks3-notificationsadds3trustkeypolicyforsnssubscriptions) | Add an S3 trust policy to a KMS key resource policy for SNS subscriptions. | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -431,6 +432,25 @@ Encryption can also be configured explicitly using the `encrypted` property.
 | (default in v2) | `true` |  |
 
 **Compatibility with old behavior:** Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.
+
+
+### @aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration
+
+*When enabled, use resource IDs for VPC V2 migration*
+
+Flag type: New default behavior
+
+When this feature flag is enabled, the VPC V2 migration will use resource IDs instead of getAtt references
+for migrating resources from VPC V1 to VPC V2. This helps ensure a smoother migration path between
+the two versions.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2_NEXT | `false` | `false` |
+
+**Compatibility with old behavior:** Disable the feature flag to use getAtt references for VPC V2 migration
 
 
 ### @aws-cdk/core:newStyleStackSynthesis
@@ -2058,7 +2078,7 @@ be added with a priority of MUTATING, independent of this feature flag.
 | (not in v1) |  |  |
 | 2.189.1 | `false` | `true` |
 
-**Compatibility with old behavior:**
+**Compatibility with old behavior:** 
       To add mutating Aspects controlling construct values that can be overridden
       by Aspects added by CDK, give them MUTATING priority:
 
@@ -2067,11 +2087,14 @@ be added with a priority of MUTATING, independent of this feature flag.
         priority: AspectPriority.MUTATING,
       });
       ```
+    
 
 
 ### @aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions
 
-*Add an S3 trust policy to a KMS key resource policy for SNS subscriptions.* (fix)
+*Add an S3 trust policy to a KMS key resource policy for SNS subscriptions.*
+
+Flag type: Backwards incompatible bugfix
 
 When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
 
@@ -2081,6 +2104,5 @@ When this feature flag is enabled, a S3 trust policy will be added to the KMS ke
 | (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
 
-**Compatibility with old behavior:** Disable the feature flag to remove the S3 trust policy from the KMS key resource policy.
 
 <!-- END details -->

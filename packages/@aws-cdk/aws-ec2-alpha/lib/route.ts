@@ -1,10 +1,11 @@
 import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnVPCPeeringConnection, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, IRouteTable, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, IDependable } from 'constructs';
-import { Annotations, Duration, IResource, Resource, Tags, ValidationError } from 'aws-cdk-lib/core';
+import { Annotations, Duration, FeatureFlags, IResource, Resource, Tags, ValidationError } from 'aws-cdk-lib/core';
 import { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
 import { NetworkUtils, allRouteTableIds, CidrBlock } from './util';
 import { ISubnetV2 } from './subnet-v2';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { cx_api } from 'aws-cdk-lib';
 
 /**
  * Indicates whether the NAT gateway supports public or private connectivity.
@@ -289,11 +290,16 @@ export class InternetGateway extends Resource implements IRouteTarget {
     this.resource = new CfnInternetGateway(this, 'IGW', {});
     this.node.defaultChild = this.resource;
 
-    this.routerTargetId = this.resource.attrInternetGatewayId;
+    FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
+      this.routerTargetId = this.resource.ref : this.routerTargetId = this.resource.attrInternetGatewayId;
     this.vpcId = props.vpc.vpcId;
 
     if (props.internetGatewayName) {
       Tags.of(this).add(NAME_TAG, props.internetGatewayName);
+    }
+
+    if (props.vpc.vpcName) {
+      Tags.of(this).add('Name', props.vpc.vpcName);
     }
 
     new CfnVPCGatewayAttachment(this, 'GWAttachment', {
@@ -426,6 +432,11 @@ export class NatGateway extends Resource implements IRouteTarget {
    */
   public readonly resource: CfnNatGateway;
 
+  /**
+   * Elastic IP created for allocation
+   */
+  public readonly eip?: CfnEIP;
+
   constructor(scope: Construct, id: string, props: NatGatewayProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
@@ -450,10 +461,10 @@ export class NatGateway extends Resource implements IRouteTarget {
     var aId: string | undefined;
     if (this.connectivityType === NatConnectivityType.PUBLIC) {
       if (!props.allocationId) {
-        let eip = new CfnEIP(this, 'EIP', {
+        this.eip = new CfnEIP(this, 'EIP', {
           domain: 'vpc',
         });
-        aId = eip.attrAllocationId;
+        aId = this.eip.attrAllocationId;
       } else {
         aId = props.allocationId;
       }
@@ -466,11 +477,16 @@ export class NatGateway extends Resource implements IRouteTarget {
       secondaryAllocationIds: props.secondaryAllocationIds,
       ...props,
     });
-    this.natGatewayId = this.resource.attrNatGatewayId;
+    FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
+      this.natGatewayId = this.resource.ref : this.natGatewayId = this.resource.attrNatGatewayId;
 
-    this.routerTargetId = this.resource.attrNatGatewayId;
+    Tags.of(this).add('Name', props.subnet.node.path);
+
+    FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
+      this.routerTargetId = this.resource.ref : this.routerTargetId = this.resource.attrNatGatewayId;
+
     this.node.defaultChild = this.resource;
-    this.node.addDependency(props.subnet.internetConnectivityEstablished);
+    this.resource.node.addDependency(props.subnet.internetConnectivityEstablished);
   }
 }
 
@@ -809,7 +825,8 @@ export class RouteTable extends Resource implements IRouteTable {
     }
     this.node.defaultChild = this.resource;
 
-    this.routeTableId = this.resource.attrRouteTableId;
+    FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
+      this.routeTableId = this.resource.ref : this.routeTableId = this.resource.attrRouteTableId;
   }
 
   /**
