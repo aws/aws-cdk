@@ -1,4 +1,4 @@
-import { Token } from '../../core'
+import { Token } from '../../core';
 import { CidrRoutingConfig } from '../lib/cidr-routing-config';
 
 describe('CidrRoutingConfig', () => {
