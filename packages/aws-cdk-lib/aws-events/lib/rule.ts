@@ -8,7 +8,7 @@ import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
 import { mergeEventPattern, renderEventPattern } from './util';
 import { IRole, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations } from '../../core';
+import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -53,6 +53,14 @@ export interface RuleProps extends EventCommonOptions {
    * @default - The default event bus.
    */
   readonly eventBus?: IEventBus;
+
+  /**
+   * The role that is used for target invocation.
+   * Must be assumable by principal `events.amazonaws.com`.
+   *
+   * @default - No role associated
+   */
+  readonly role?: IRole;
 }
 
 /**
@@ -99,7 +107,7 @@ export class Rule extends Resource implements IRule {
     addConstructMetadata(this, props);
 
     if (props.eventBus && props.schedule) {
-      throw new Error('Cannot associate rule with \'eventBus\' when using \'schedule\'');
+      throw new ValidationError('Cannot associate rule with \'eventBus\' when using \'schedule\'', this);
     }
 
     this.description = props.description;
@@ -116,6 +124,7 @@ export class Rule extends Resource implements IRule {
       eventPattern: Lazy.any({ produce: () => this._renderEventPattern() }),
       targets: Lazy.any({ produce: () => this.renderTargets() }),
       eventBusName: props.eventBus && props.eventBus.eventBusName,
+      roleArn: props.role?.roleArn,
     });
 
     this.ruleArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -175,27 +184,27 @@ export class Rule extends Resource implements IRule {
 
         // for cross-account or cross-region events, we require a concrete target account and region
         if (!targetAccount || Token.isUnresolved(targetAccount)) {
-          throw new Error('You need to provide a concrete account for the target stack when using cross-account or cross-region events');
+          throw new ValidationError('You need to provide a concrete account for the target stack when using cross-account or cross-region events', this);
         }
         if (!targetRegion || Token.isUnresolved(targetRegion)) {
-          throw new Error('You need to provide a concrete region for the target stack when using cross-account or cross-region events');
+          throw new ValidationError('You need to provide a concrete region for the target stack when using cross-account or cross-region events', this);
         }
         if (Token.isUnresolved(sourceAccount)) {
-          throw new Error('You need to provide a concrete account for the source stack when using cross-account or cross-region events');
+          throw new ValidationError('You need to provide a concrete account for the source stack when using cross-account or cross-region events', this);
         }
 
         // Don't exactly understand why this code was here (seems unlikely this rule would be violated), but
         // let's leave it in nonetheless.
         const sourceApp = this.node.root;
         if (!sourceApp || !App.isApp(sourceApp)) {
-          throw new Error('Event stack which uses cross-account or cross-region targets must be part of a CDK app');
+          throw new ValidationError('Event stack which uses cross-account or cross-region targets must be part of a CDK app', this);
         }
         const targetApp = Node.of(targetProps.targetResource).root;
         if (!targetApp || !App.isApp(targetApp)) {
-          throw new Error('Target stack which uses cross-account or cross-region event targets must be part of a CDK app');
+          throw new ValidationError('Target stack which uses cross-account or cross-region event targets must be part of a CDK app', this);
         }
         if (sourceApp !== targetApp) {
-          throw new Error('Event stack and target stack must belong to the same CDK app');
+          throw new ValidationError('Event stack and target stack must belong to the same CDK app', this);
         }
 
         // The target of this Rule will be the default event bus of the target environment
@@ -423,7 +432,7 @@ export class Rule extends Resource implements IRule {
     }
 
     // For now, we don't do the work for the support stack yet
-    throw new Error('Cannot create a cross-account or cross-region rule for an imported resource (create a stack with the right environment for the imported resource)');
+    throw new ValidationError('Cannot create a cross-account or cross-region rule for an imported resource (create a stack with the right environment for the imported resource)', this);
   }
 
   /**
