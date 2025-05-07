@@ -7,7 +7,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* property injection for 122 constructs ([#33887](https://github.com/aws/aws-cdk/issues/33887)) ([89ff945](https://github.com/aws/aws-cdk/commit/89ff9459ac3fc6b56726f9e4d97cb19a5b17eb09))
 * publish 'app-staging-synthesizer-alpha' for Go ([#34364](https://github.com/aws/aws-cdk/issues/34364)) ([4e3df41](https://github.com/aws/aws-cdk/commit/4e3df41b308b277a568efa77e965cea958a63df9))
 * update L1 CloudFormation resource definitions ([#34357](https://github.com/aws/aws-cdk/issues/34357)) ([24a40a9](https://github.com/aws/aws-cdk/commit/24a40a9b8e56e6ce3c37036b3db4d5039c882bba))
 * **apigateway:** dualstack REST API ([#34114](https://github.com/aws/aws-cdk/issues/34114)) ([efdcb9d](https://github.com/aws/aws-cdk/commit/efdcb9ddfebc9c3333745a40fa90eb99b410316d))
