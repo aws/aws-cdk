@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnOIDCProvider } from './iam.generated';
-import { Arn, IResource, Resource, Token } from '../../core';
+import { Arn, IResource, Resource, Token, ValidationError } from '../../core';
 
 /**
  * Represents an IAM OpenID Connect provider.
@@ -43,6 +43,8 @@ export interface OidcProviderNativeProps {
    * You cannot register the same provider multiple times in a single AWS
    * account. If you try to submit a URL that has already been used for an
    * OpenID Connect provider in the AWS account, you will get an error.
+   *
+   * Warning: This URL cannot contain any port numbers
    */
   readonly url: string;
 
@@ -67,14 +69,14 @@ export interface OidcProviderNativeProps {
    * identity provider's server certificates.
    *
    * Typically this list includes only one entry. However, IAM lets you have up
-   * to five thumbprints for an OIDC provider. This lets you maintain multiple
+   * to 5 thumbprints for an OIDC provider. This lets you maintain multiple
    * thumbprints if the identity provider is rotating certificates.
    *
    * The server certificate thumbprint is the hex-encoded SHA-1 hash value of
    * the X.509 certificate used by the domain where the OpenID Connect provider
    * makes its keys available. It is always a 40-character string.
    *
-   * You must provide at least one thumbprint when creating an IAM OIDC
+   * You must provide at least 1 thumbprint when creating an IAM OIDC
    * provider. For example, assume that the OIDC provider is server.example.com
    * and the provider stores its keys at
    * https://keys.server.example.com/openid-connect. In that case, the
@@ -158,6 +160,39 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
     id: string,
     props: OidcProviderNativeProps,
   ) {
+
+    if (!props.url) {
+      throw new ValidationError('The URL of the identity provider is required', scope);
+    }
+
+    if (!props.url.startsWith('https://')) {
+      throw new ValidationError(
+        'The URL of the identity provider must start with https://', scope
+      );
+    }
+
+    // clientids cannot be more than 100
+    if (!props.clientIds) {
+      throw new ValidationError('At least 1 client ID is required', scope);
+    }
+
+    if (props.clientIds.length > 100) {
+      throw new ValidationError('The maximum number of client that can be registered is 100', scope);
+    }
+
+    // clientId max length is 255
+    if (props.clientIds.some((clientId) => clientId.length > 255)) {
+      throw new ValidationError('The maximum length of a client ID is 255 characters', scope);
+    }
+
+    if (!props.thumbprints || props.thumbprints.length === 0) {
+      throw new ValidationError('At least 1 thumbprint must be provided', scope);
+    }
+
+    if (props.thumbprints.length > 5) {
+      throw new ValidationError('The maximum number of thumbprints is 5', scope);
+    }
+
     super(scope, id, {
       physicalName: props.oidcProviderName,
     });

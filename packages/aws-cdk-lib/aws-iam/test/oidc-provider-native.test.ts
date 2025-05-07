@@ -112,4 +112,8 @@ describe('OIDC issuer', () => {
       'Fn::Select': [1, { 'Fn::Split': [':oidc-provider/', { Ref: 'ARN' }] }],
     });
   });
+
+  test('ValidationError checks', () => {
+
+  });
 });
