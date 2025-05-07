@@ -5,7 +5,6 @@ import * as ecs from '../../../aws-ecs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY } from '../../../cx-api';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -273,13 +272,7 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps, EcsRunTaskOptio
 /**
  * Run a Task on ECS or Fargate
  */
-@propertyInjectable
 export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-stepfunctions-tasks.EcsRunTask';
-
   /**
    * Run a Task that using JSONPath on ECS or Fargate
    */
