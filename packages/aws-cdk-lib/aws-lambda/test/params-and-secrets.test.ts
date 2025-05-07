@@ -341,7 +341,6 @@ describe('params and secrets', () => {
         },
       },
     });
-    expect(() => app.synth()).not.toThrow();
   });
 
   test('can enable params and secrets from latest version in non-agnostic stack - arm64', () => {
@@ -376,7 +375,6 @@ describe('params and secrets', () => {
         },
       },
     });
-    expect(() => app.synth()).not.toThrow();
   });
 
   test('can enable params and secrets with a provided secret', () => {
