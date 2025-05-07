@@ -35,6 +35,10 @@
         "namespace": "Amazon.CDK.AppStagingSynthesizer.Alpha",
         "packageId": "Amazon.CDK.AppStagingSynthesizer.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "appstagingsynthesizeralpha"
       }
     }
   },

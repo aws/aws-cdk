@@ -157,6 +157,8 @@
       "BOTTLEROCKET_x86_64",
       "BOTTLEROCKET_ARM_64_NVIDIA",
       "BOTTLEROCKET_x86_64_NVIDIA",
+      "BOTTLEROCKET_ARM_64_FIPS",
+      "BOTTLEROCKET_x86_64_FIPS",
       "WINDOWS_CORE_2019_x86_64",
       "WINDOWS_CORE_2022_x86_64",
       "WINDOWS_FULL_2019_x86_64",
@@ -436,7 +438,8 @@
       "WED",
       "THU",
       "FRI",
-      "SAT"
+      "SAT",
+      "UNSET_VALUE"
     ],
     "Frequency": [
       "DAILY",
@@ -736,6 +739,12 @@
       "ZSTD"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.ts": {
+    "UnreferencedFileRemovalStatus": [
+      "Enabled",
+      "Disabled"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts": {
     "InvocationHttpResponseCode": [
       "Invocation4XXErrors",
@@ -858,6 +867,10 @@
       "EDGE",
       "REGIONAL",
       "PRIVATE"
+    ],
+    "RestApiMode": [
+      "overwrite",
+      "merge"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/stage.ts": {
@@ -881,6 +894,12 @@
     "HttpLambdaResponseType": [
       0,
       1
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/common/api.ts": {
+    "IpAddressType": [
+      "ipv4",
+      "dualstack"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/common/domain-name.ts": {
@@ -1185,6 +1204,27 @@
       "AMAZON_COGNITO_USER_POOLS",
       "OPENID_CONNECT",
       "AWS_LAMBDA"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/channel-namespace.ts": {
+    "HandlerBehavior": [
+      "CODE",
+      "DIRECT"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.ts": {
+    "AppSyncDataSourceType": [
+      "AWS_LAMBDA",
+      "AMAZON_DYNAMODB",
+      "AMAZON_EVENTBRIDGE",
+      "AMAZON_OPENSEARCH_SERVICE",
+      "HTTP",
+      "RELATIONAL_DATABASE",
+      "AMAZON_BEDROCK_RUNTIME"
+    ],
+    "LambdaInvokeType": [
+      "EVENT",
+      "REQUEST_RESPONSE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/graphqlapi-base.ts": {
@@ -1538,7 +1578,8 @@
     ],
     "SSLMethod": [
       "sni-only",
-      "vip"
+      "vip",
+      "static-ip"
     ],
     "SecurityPolicyProtocol": [
       "SSLv3",
@@ -1986,6 +2027,20 @@
       "Events"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/codepipeline/invoke-action.ts": {
+    "RevisionType": [
+      "COMMIT_ID",
+      "IMAGE_DIGEST",
+      "S3_OBJECT_VERSION_ID",
+      "S3_OBJECT_KEY"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ecr/build-and-publish-action.ts": {
+    "RegistryType": [
+      "private",
+      "public"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/github/source-action.ts": {
     "GitHubTrigger": [
       "None",
@@ -2121,7 +2176,8 @@
     ],
     "LambdaVersion": [
       "V1_0",
-      "V2_0"
+      "V2_0",
+      "V3_0"
     ],
     "Mfa": [
       "OFF",
@@ -2894,6 +2950,21 @@
       "GatewayLoadBalancer",
       "ServiceNetwork",
       "Resource"
+    ],
+    "VpcEndpointIpAddressType": [
+      "ipv4",
+      "ipv6",
+      "dualstack"
+    ],
+    "VpcEndpointDnsRecordIpType": [
+      "ipv4",
+      "ipv6",
+      "dualstack",
+      "service-defined"
+    ],
+    "VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint": [
+      "AllResolvers",
+      "OnlyInboundResolver"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.ts": {
@@ -3759,6 +3830,8 @@
       "BOTTLEROCKET_x86_64",
       "BOTTLEROCKET_ARM_64_NVIDIA",
       "BOTTLEROCKET_x86_64_NVIDIA",
+      "BOTTLEROCKET_ARM_64_FIPS",
+      "BOTTLEROCKET_x86_64_FIPS",
       "WINDOWS_CORE_2019_x86_64",
       "WINDOWS_CORE_2022_x86_64",
       "WINDOWS_FULL_2019_x86_64",
@@ -4301,6 +4374,10 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts": {
+    "EngineLifecycleSupport": [
+      "open-source-rds-extended-support",
+      "open-source-rds-extended-support-disabled"
+    ],
     "DBClusterStorageType": [
       "aurora",
       "aurora-iopt1"
@@ -5024,6 +5101,17 @@
       "SEMICOLON",
       "SPACE",
       "TAB"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/distributed-map/result-writer.ts": {
+    "Transformation": [
+      "NONE",
+      "COMPACT",
+      "FLATTEN"
+    ],
+    "OutputType": [
+      "JSON",
+      "JSONL"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/private/state-type.ts": {
