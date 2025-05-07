@@ -88,7 +88,7 @@ export interface OidcProviderNativeProps {
    * Obtain the thumbprint of the root certificate authority from the provider's
    * server as described in https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
    *
-   * @default - no thumbprints are allowed. IAM will retrieve and use thumbprint 
+   * @default - no thumbprints are allowed. IAM will retrieve and use thumbprint
    * of idenity provider server cerctificate
    */
   readonly thumbprints?: string[];
