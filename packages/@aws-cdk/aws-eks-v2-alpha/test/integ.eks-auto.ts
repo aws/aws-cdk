@@ -78,7 +78,11 @@ export class EksAutoModeNodePoolsStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 
 const stack1 = new EksAutoModeBaseStack(app, 'eks-auto-mode-stack', { env: { region: 'us-east-1' } });
 const stack2 = new EksAutoModeNodePoolsStack(app, 'eks-auto-mode-empty-nodepools-stack', { env: { region: 'us-east-1' } });
