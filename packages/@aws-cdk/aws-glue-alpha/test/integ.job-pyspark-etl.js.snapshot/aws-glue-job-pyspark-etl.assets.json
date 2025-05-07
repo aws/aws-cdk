@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "40.0.0",
   "files": {
     "432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "6ae52026df1ea2305a8d7321f0dd63581ab7f4c58a118f28964977e2c73af55a": {
+    "7f8a3f6526b1baec270fab32079680dcb65f351c84cd130f096e1deb166f071e": {
       "source": {
         "path": "aws-glue-job-pyspark-etl.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6ae52026df1ea2305a8d7321f0dd63581ab7f4c58a118f28964977e2c73af55a.json",
+          "objectKey": "7f8a3f6526b1baec270fab32079680dcb65f351c84cd130f096e1deb166f071e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
