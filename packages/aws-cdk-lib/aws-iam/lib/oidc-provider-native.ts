@@ -68,25 +68,27 @@ export interface OidcProviderNativeProps {
    * A list of server certificate thumbprints for the OpenID Connect (OIDC)
    * identity provider's server certificates.
    *
-   * Typically this list includes only one entry. However, IAM lets you have up
-   * to 5 thumbprints for an OIDC provider. This lets you maintain multiple
-   * thumbprints if the identity provider is rotating certificates.
+   * Typically this list includes only 1 entry or empty. However, IAM lets
+   * you have up to 5 thumbprints for an OIDC provider. This lets you maintain
+   * multiple thumbprints if the identity provider is rotating certificates.
    *
    * The server certificate thumbprint is the hex-encoded SHA-1 hash value of
    * the X.509 certificate used by the domain where the OpenID Connect provider
    * makes its keys available. It is always a 40-character string.
    *
-   * You must provide at least 1 thumbprint when creating an IAM OIDC
-   * provider. For example, assume that the OIDC provider is server.example.com
-   * and the provider stores its keys at
-   * https://keys.server.example.com/openid-connect. In that case, the
-   * thumbprint string would be the hex-encoded SHA-1 hash value of the
-   * certificate used by https://keys.server.example.com.
+   * For example, assume that the OIDC provider is server.example.com and the
+   * provider stores its keys at https://keys.server.example.com/openid-connect.
+   * In that case, the thumbprint string would be the hex-encoded SHA-1 hash
+   * value of the certificate used by https://keys.server.example.com.
+   *
+   * This property is optional. If it is not included, IAM will retrieve and use
+   * the top intermediate certificate authority (CA) thumbprint of the OpenID
+   * Connect identity provider server certificate.
    *
    * Obtain the thumbprint of the root certificate authority from the provider's
    * server as described in https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
    */
-  readonly thumbprints: string[];
+  readonly thumbprints?: string[];
 }
 
 /**
@@ -160,6 +162,9 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
     id: string,
     props: OidcProviderNativeProps,
   ) {
+    super(scope, id, {
+      physicalName: props.oidcProviderName,
+    });
 
     if (!props.url) {
       throw new ValidationError('The URL of the identity provider is required', scope);
@@ -172,30 +177,29 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
     }
 
     // clientids cannot be more than 100
-    if (!props.clientIds) {
-      throw new ValidationError('At least 1 client ID is required', scope);
-    }
-
-    if (props.clientIds.length > 100) {
+    if (props.clientIds && props.clientIds.length > 100) {
       throw new ValidationError('The maximum number of client that can be registered is 100', scope);
     }
 
     // clientId max length is 255
-    if (props.clientIds.some((clientId) => clientId.length > 255)) {
+    if (props.clientIds?.some((clientId) => clientId.length > 255)) {
       throw new ValidationError('The maximum length of a client ID is 255 characters', scope);
     }
 
-    if (!props.thumbprints || props.thumbprints.length === 0) {
-      throw new ValidationError('At least 1 thumbprint must be provided', scope);
-    }
-
-    if (props.thumbprints.length > 5) {
+    // thumbprints is optional, but if provided, must be 5 or less
+    if (props.thumbprints && props.thumbprints.length > 5) {
       throw new ValidationError('The maximum number of thumbprints is 5', scope);
     }
 
-    super(scope, id, {
-      physicalName: props.oidcProviderName,
-    });
+    // thumbprint length is 40
+    if (props.thumbprints?.some((thumbprint) => thumbprint.length !== 40)) {
+      throw new ValidationError('The length of a thumbprint must be 40 characters', scope);
+    }
+
+    // thumbprint must be hex
+    if (props.thumbprints?.some((thumbprint) => !/^[0-9a-fA-F]+$/.test(thumbprint))) {
+      throw new ValidationError('All thumbprints must be in hexadecimal format', scope);
+    }
 
     const resource = new CfnOIDCProvider(this, 'Resource', {
       url: props.url,
