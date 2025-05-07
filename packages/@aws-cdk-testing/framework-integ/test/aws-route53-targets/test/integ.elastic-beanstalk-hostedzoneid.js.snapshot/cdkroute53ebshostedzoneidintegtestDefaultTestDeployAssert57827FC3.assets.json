@@ -2,9 +2,9 @@
   "version": "41.0.0",
   "files": {
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
-      "displayName": "PropertyInjectorTestDefaultTestDeployAssert271A71E2 Template",
+      "displayName": "cdkroute53ebshostedzoneidintegtestDefaultTestDeployAssert57827FC3 Template",
       "source": {
-        "path": "PropertyInjectorTestDefaultTestDeployAssert271A71E2.template.json",
+        "path": "cdkroute53ebshostedzoneidintegtestDefaultTestDeployAssert57827FC3.template.json",
         "packaging": "file"
       },
       "destinations": {
