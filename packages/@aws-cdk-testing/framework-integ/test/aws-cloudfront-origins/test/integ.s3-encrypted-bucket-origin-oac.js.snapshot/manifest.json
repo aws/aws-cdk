@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "42.0.0",
   "artifacts": {
     "cloudfront-s3-encrypted-bucket-origin-oac.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "cloudfront-s3-encrypted-bucket-origin-oac.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/802c2be34311a9f459877c5972a34f5c7f4c2f9b07b8d8f06409027cd60b68ca.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d5c40b592545333412f8662eb22362d16246081d4709c405cf2070507f959735.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -41,10 +40,30 @@
             "data": "To avoid a circular dependency between the KMS key, Bucket, and Distribution during the initial deployment, a wildcard is used in the Key policy condition to match all Distribution IDs.\nAfter deploying once, it is strongly recommended to further scope down the policy for best security practices by following the guidance in the \"Using OAC for a SSE-KMS encrypted S3 origin\" section in the module README. [ack: @aws-cdk/aws-cloudfront-origins:wildcardKeyPolicyForOac]"
           }
         ],
+        "/cloudfront-s3-encrypted-bucket-origin-oac/myKey": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/cloudfront-s3-encrypted-bucket-origin-oac/myKey/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myKey441A1E73"
+          }
+        ],
+        "/cloudfront-s3-encrypted-bucket-origin-oac/MyBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "encryption": "KMS",
+              "encryptionKey": "*",
+              "objectOwnership": "BucketOwnerEnforced",
+              "autoDeleteObjects": true
+            }
           }
         ],
         "/cloudfront-s3-encrypted-bucket-origin-oac/MyBucket/Resource": [
@@ -53,10 +72,24 @@
             "data": "MyBucketF68F3FF0"
           }
         ],
+        "/cloudfront-s3-encrypted-bucket-origin-oac/MyBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/cloudfront-s3-encrypted-bucket-origin-oac/MyBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyBucketPolicyE7FBAC7B"
+          }
+        ],
+        "/cloudfront-s3-encrypted-bucket-origin-oac/MyBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cloudfront-s3-encrypted-bucket-origin-oac/MyBucket/AutoDeleteObjectsCustomResource/Default": [
@@ -89,6 +122,22 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
+        "/cloudfront-s3-encrypted-bucket-origin-oac/Distribution": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "defaultBehavior": {
+                "origin": "*"
+              }
+            }
+          }
+        ],
+        "/cloudfront-s3-encrypted-bucket-origin-oac/Distribution/Origin1/S3OriginAccessControl": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cloudfront-s3-encrypted-bucket-origin-oac/Distribution/Origin1/S3OriginAccessControl/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -101,10 +150,64 @@
             "data": "Distribution830FAC52"
           }
         ],
+        "/cloudfront-s3-encrypted-bucket-origin-oac/DeployWithInvalidation/AwsCliLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
         "/cloudfront-s3-encrypted-bucket-origin-oac/DeployWithInvalidation/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DeployWithInvalidationAwsCliLayerDEDD5787"
+          }
+        ],
+        "/cloudfront-s3-encrypted-bucket-origin-oac/DeployWithInvalidation/CustomResourceHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "lambdaPurpose": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cloudfront-s3-encrypted-bucket-origin-oac/DeployWithInvalidation/CustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cloudfront-s3-encrypted-bucket-origin-oac/DeployWithInvalidation/CustomResource/Default": [
@@ -115,6 +218,43 @@
         ],
         "/cloudfront-s3-encrypted-bucket-origin-oac/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          },
+          {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
           },
@@ -123,10 +263,118 @@
             "data": 2
           }
         ],
+        "/cloudfront-s3-encrypted-bucket-origin-oac/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/cloudfront-s3-encrypted-bucket-origin-oac/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cloudfront-s3-encrypted-bucket-origin-oac/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          }
+        ],
+        "/cloudfront-s3-encrypted-bucket-origin-oac/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/cloudfront-s3-encrypted-bucket-origin-oac/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
@@ -177,10 +425,9 @@
         "templateFile": "s3encryptedbucketoriginoacDefaultTestDeployAssertFD658B04.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4caf30ce5e20cd926efa8876eb22dec0e9fd1720706f89b2cf8ced9604799132.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9c4dbf1665778e532ef98abe6368b691833c499b72c23204fed500c91fc211bb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -197,6 +444,20 @@
         "s3encryptedbucketoriginoacDefaultTestDeployAssertFD658B04.assets"
       ],
       "metadata": {
+        "/s3-encrypted-bucket-origin-oac/DefaultTest/DeployAssert/HttpApiCall24e58b32a55ff9d7c2a7fcb9e5bd311a/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/s3-encrypted-bucket-origin-oac/DefaultTest/DeployAssert/HttpApiCall24e58b32a55ff9d7c2a7fcb9e5bd311a/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -248,5 +509,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

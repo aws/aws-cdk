@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "aws-cdk-ses-receipt.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ada6a32408b2b7c5d822f30894337173a17a021a5482d4dca8423119c9b81522.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3ff8b91aa879f1d63f5698ffa5ec98eb004c5714a4d6a6d7c424d78f7cfa910a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,48 @@
         "aws-cdk-ses-receipt.assets"
       ],
       "metadata": {
+        "/aws-cdk-ses-receipt/Topic": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-ses-receipt/Topic/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TopicBFC7AF6E"
+          }
+        ],
+        "/aws-cdk-ses-receipt/Function": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/aws-cdk-ses-receipt/Function/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-ses-receipt/Function/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-ses-receipt/Function/ServiceRole/Resource": [
@@ -58,10 +96,24 @@
             "data": "FunctionAllowSes1829904A"
           }
         ],
+        "/aws-cdk-ses-receipt/Bucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-ses-receipt/Bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Bucket83908E77"
+          }
+        ],
+        "/aws-cdk-ses-receipt/Bucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
           }
         ],
         "/aws-cdk-ses-receipt/Bucket/Policy/Resource": [
@@ -70,10 +122,24 @@
             "data": "BucketPolicyE9A3008A"
           }
         ],
+        "/aws-cdk-ses-receipt/Key": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-ses-receipt/Key/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Key961B73FD"
+          }
+        ],
+        "/aws-cdk-ses-receipt/RuleSet": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "dropSpam": true
+            }
           }
         ],
         "/aws-cdk-ses-receipt/RuleSet/Resource": [
@@ -82,16 +148,158 @@
             "data": "RuleSetE30C6C48"
           }
         ],
+        "/aws-cdk-ses-receipt/RuleSet/DropSpam/Function": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addPermission": [
+                "*",
+                {
+                  "action": "*",
+                  "principal": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  },
+                  "sourceAccount": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-ses-receipt/RuleSet/DropSpam/Rule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "actions": "*",
+              "scanEnabled": true,
+              "ruleSet": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAction": [
+                {}
+              ]
+            }
+          }
+        ],
         "/aws-cdk-ses-receipt/RuleSet/DropSpam/Rule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RuleSetDropSpamRule5809F51B"
           }
         ],
+        "/aws-cdk-ses-receipt/RuleSet/FirstRule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "after": "*",
+              "ruleSet": "*",
+              "actions": "*",
+              "receiptRuleName": "*",
+              "recipients": "*",
+              "scanEnabled": true,
+              "tlsPolicy": "Require"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAction": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAction": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAction": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAction": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAction": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAction": [
+                {}
+              ]
+            }
+          }
+        ],
         "/aws-cdk-ses-receipt/RuleSet/FirstRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RuleSetFirstRule0A27C8CC"
+          }
+        ],
+        "/aws-cdk-ses-receipt/RuleSet/SecondRule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "after": "*",
+              "ruleSet": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAction": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-ses-receipt/RuleSet/SecondRule/Resource": [
@@ -104,6 +312,46 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          }
+        ],
+        "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole/Resource": [
@@ -124,16 +372,47 @@
             "data": "SingletonLambda224e77f9a32e4b4dac32983477abba16AllowSesB42DF904"
           }
         ],
+        "/aws-cdk-ses-receipt/NotificationQueue": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-ses-receipt/NotificationQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "NotificationQueue36610CC1"
           }
         ],
+        "/aws-cdk-ses-receipt/NotificationQueue/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "queues": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/aws-cdk-ses-receipt/NotificationQueue/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "NotificationQueuePolicyCC060EA6"
+          }
+        ],
+        "/aws-cdk-ses-receipt/NotificationQueue/awscdksesreceiptTopicE9CA2388": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "topic": "*",
+              "endpoint": "*",
+              "protocol": "sqs",
+              "rawMessageDelivery": "*",
+              "filterPolicy": "*",
+              "filterPolicyWithMessageBody": "*",
+              "region": "*",
+              "deadLetterQueue": "*"
+            }
           }
         ],
         "/aws-cdk-ses-receipt/NotificationQueue/awscdksesreceiptTopicE9CA2388/Resource": [
@@ -163,5 +442,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }
