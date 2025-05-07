@@ -2635,6 +2635,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     }
   },
   '@aws-cdk.aws-location-alpha': {
+    'ApiKey': {
+      'apiKeyName': '*',
+      'description': '*',
+      'expireTime': '*',
+      'forceDelete': 'boolean',
+      'forceUpdate': 'boolean',
+      'noExpiry': 'boolean',
+      'allowMapsActions': 'AllowMapsAction',
+      'allowPlacesActions': 'AllowPlacesAction',
+      'allowRoutesActions': 'AllowRoutesAction',
+      'allowReferers': '*'
+    },
     'GeofenceCollection': {
       'geofenceCollectionName': '*',
       'description': '*',
@@ -6172,7 +6184,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'types': 'EndpointType',
           'vpcEndpoints': {
             'vpcEndpointId': '*'
-          }
+          },
+          'ipAddressType': 'IpAddressType'
         },
         'disableExecuteApiEndpoint': 'boolean',
         'description': '*'
@@ -6311,7 +6324,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'region': '*'
           },
           'node': '*'
-        }
+        },
+        'ipAddressType': 'IpAddressType'
       },
       'disableExecuteApiEndpoint': 'boolean',
       'description': '*',
@@ -7501,7 +7515,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'region': '*'
           },
           'node': '*'
-        }
+        },
+        'ipAddressType': 'IpAddressType'
       },
       'disableExecuteApiEndpoint': 'boolean',
       'description': '*',
@@ -7644,7 +7659,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'region': '*'
           },
           'node': '*'
-        }
+        },
+        'ipAddressType': 'IpAddressType'
       },
       'disableExecuteApiEndpoint': 'boolean',
       'description': '*',
@@ -7960,7 +7976,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'region': '*'
           },
           'node': '*'
-        }
+        },
+        'ipAddressType': 'IpAddressType'
       },
       'disableExecuteApiEndpoint': 'boolean',
       'description': '*',
