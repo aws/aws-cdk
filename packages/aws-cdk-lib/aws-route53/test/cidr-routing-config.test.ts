@@ -1,4 +1,4 @@
-import { Token } from '../../core';
+import { Token } from '../../core'
 import { CidrRoutingConfig } from '../lib/cidr-routing-config';
 
 describe('CidrRoutingConfig', () => {
@@ -92,6 +92,19 @@ describe('CidrRoutingConfig', () => {
       expect(() => {
         CidrRoutingConfig.default('invalid-uuid');
       }).toThrow('collectionId(invalid-uuid) is required and must be a valid UUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx(8-4-4-4-12 digits)');
+    });
+  });
+
+  describe('accepts Token as collectionId or locationName', () => {
+    test('accepts Token as collectionId', () => {
+      const collectionIdToken = Token.asString({ resolve: () => 'dummy' }); // invalid UUID
+      const locationNameToken = Token.asString({ resolve: () => 'dummydummydummydummy' }); // more than 16 characters
+      const config = CidrRoutingConfig.new({
+        collectionId: collectionIdToken,
+        locationName: locationNameToken,
+      });
+      expect(config.collectionId).toBe(collectionIdToken);
+      expect(config.locationName).toBe(locationNameToken);
     });
   });
 });
