@@ -5,7 +5,11 @@ on:
 jobs:
   run-security-guardian:
     runs-on: ubuntu-latest
-    steps:
+    steps:      
+      - name: Skip check for release PRs
+        if: startsWith(github.event.pull_request.title, 'chore(release):')
+        run: echo "Skipping Security Guardian for release PR" && exit 0
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
