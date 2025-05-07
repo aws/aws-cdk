@@ -72,11 +72,11 @@ tableBucket.addToResourcePolicy(permissions);
 
 ### Controlling Table Bucket Encryption Settings
 
-S3 TableBuckets have SSE (server-side encryption) enabled by default with S3 managed keys.
+S3 TableBuckets have SSE (server-side encryption with AES-256) enabled by default with S3 managed keys.
 You can also bring your own KMS key for KMS-SSE or have S3 create a KMS key for you.
 
 If a bucket is encrypted with KMS, grant functions on the bucket will also grant access
-to the TableBucket's associated KMS key
+to the TableBucket's associated KMS key.
 
 ```ts
 // Provide a user defined KMS Key:
@@ -89,16 +89,20 @@ const encryptedBucket = new TableBucket(scope, 'EncryptedTableBucket', {
 // This account principal will also receive kms:Decrypt access to the KMS key
 encryptedBucket.grantRead(new iam.AccountPrincipal('123456789012'), '*');
 
+// Use S3 managed server side encryption (default)
+const encryptedBucketDefault = new TableBucket(scope, 'EncryptedTableBucketDefault', {
+    tableBucketName: 'table-bucket-3',
+    encryption: TableBucketEncryption.S3_MANAGED, // Uses AES-256 encryption by default
+});
+```
+
+When using KMS encryption (`TableBucketEncryption.KMS`), if no encryption key is provided, CDK will automatically create a new KMS key for the table bucket with necessary permissions.
+
+```ts
 // If no key is provided, one will be created automatically
 const encryptedBucketAuto = new TableBucket(scope, 'EncryptedTableBucketAuto', {
     tableBucketName: 'table-bucket-2',
     encryption: TableBucketEncryption.KMS,
-});
-
-// Use S3 managed server side encryption (default)
-const encryptedBucketDefault = new TableBucket(scope, 'EncryptedTableBucketDefault', {
-    tableBucketName: 'table-bucket-3',
-    encryption: TableBucketEncryption.S3_MANAGED,
 });
 ```
 
