@@ -39,6 +39,11 @@ const NAME_TAG: string = 'Name';
 const SUBNETTYPE_TAG = 'aws-cdk:subnet-type';
 
 /**
+ * Subnet Name tag constant
+ */
+const SUBNETNAME_TAG = 'aws-cdk:subnet-name';
+
+/**
  * Properties to define subnet for VPC.
  */
 export interface SubnetV2Props {
@@ -319,8 +324,8 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     /**
      * Do not add tag for migration of VPC to VPCv2 as it needs to be overriden at the time of stack definition
      */
-    if (props.subnetName && !FeatureFlags.of(this).isEnabled(USE_RESOURCEID_FOR_VPCV2_MIGRATION)) {
-      Tags.of(subnet).add(NAME_TAG, props.subnetName);
+    if (props.subnetName) {
+      Tags.of(subnet).add(SUBNETNAME_TAG, props.subnetName);
     }
     const subnetTypeName = defaultSubnetName(props.subnetType) ?? 'undefined';
     Tags.of(subnet).add(SUBNETTYPE_TAG, subnetTypeName, { includeResourceTypes });

@@ -14,6 +14,7 @@ export function defaultSubnetName(type: SubnetType) {
     case SubnetType.PRIVATE_ISOLATED:
       return 'Isolated';
   }
+  return undefined;
 }
 
 /**
