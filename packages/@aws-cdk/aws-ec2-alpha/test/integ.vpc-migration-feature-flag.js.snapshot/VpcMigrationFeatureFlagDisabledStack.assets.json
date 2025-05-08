@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "c9c62d2d4ddf66ad364307b5010bbfecfb4ee1dc490e6935797a52565520db83": {
+      "displayName": "VpcMigrationFeatureFlagDisabledStack Template",
+      "source": {
+        "path": "VpcMigrationFeatureFlagDisabledStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c9c62d2d4ddf66ad364307b5010bbfecfb4ee1dc490e6935797a52565520db83.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -45,6 +45,7 @@ class VpcMigrationFeatureFlagEnabledStack extends cdk.Stack {
     // Create a NAT Gateway
     const natGateway = new ec2alpha.NatGateway(this, 'NatGateway', {
       subnet: publicSubnet,
+      connectivityType: ec2alpha.NatConnectivityType.PRIVATE,
     });
 
     // Create a Route Table
@@ -95,6 +96,7 @@ class VpcMigrationFeatureFlagDisabledStack extends cdk.Stack {
     // Create a NAT Gateway
     const natGateway = new ec2alpha.NatGateway(this, 'NatGateway', {
       subnet: publicSubnet,
+      connectivityType: ec2alpha.NatConnectivityType.PRIVATE,
     });
 
     // Create a Route Table

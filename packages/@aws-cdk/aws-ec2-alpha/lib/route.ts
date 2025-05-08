@@ -448,7 +448,7 @@ export class NatGateway extends Resource implements IRouteTarget {
     this.maxDrainDuration = props.maxDrainDuration || Duration.seconds(350);
 
     if (this.connectivityType === NatConnectivityType.PUBLIC) {
-      if (!props.vpc && !props.allocationId) {
+      if (!props.vpc || !props.allocationId) {
         throw new ValidationError('Either provide vpc or allocationId', this);
       }
     }

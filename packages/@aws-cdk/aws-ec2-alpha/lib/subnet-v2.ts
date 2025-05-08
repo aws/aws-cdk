@@ -1,11 +1,10 @@
-import { Resource, Names, Lazy, Tags, Token, ValidationError, UnscopedValidationError, FeatureFlags } from 'aws-cdk-lib';
+import { Resource, Names, Lazy, Tags, Token, ValidationError, UnscopedValidationError } from 'aws-cdk-lib';
 import { CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
 import { CidrBlock, CidrBlockIpv6, defaultSubnetName } from './util';
 import { RouteTable } from './route';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { USE_RESOURCEID_FOR_VPCV2_MIGRATION } from 'aws-cdk-lib/cx-api';
 
 /**
  * Interface to define subnet CIDR
@@ -27,11 +26,6 @@ export class IpCidr implements ICidr {
     this.cidr = props;
   }
 }
-
-/**
- * Name tag constant
- */
-const NAME_TAG: string = 'Name';
 
 /**
  * VPC Name tag constant
