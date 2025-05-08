@@ -90,7 +90,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/610424a8b18bb9d397c2cc1bc2b0bfd9192556a38b603fc70f7140e91fd9a224.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7af1ffdaa9c46e7d8a539a46d562c407a37cf9c82ad9735d9a005cbf62345c08.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -280,19 +280,19 @@
       },
       "displayName": "OnlyS3ManagedEncryptionTest"
     },
-    "TableBucketWithGrantIntegTestDefaultTestDeployAssert60E58AB6.assets": {
+    "TableBucketEncryptionIntegTestDefaultTestDeployAssert2F88D4F9.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "TableBucketWithGrantIntegTestDefaultTestDeployAssert60E58AB6.assets.json",
+        "file": "TableBucketEncryptionIntegTestDefaultTestDeployAssert2F88D4F9.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "TableBucketWithGrantIntegTestDefaultTestDeployAssert60E58AB6": {
+    "TableBucketEncryptionIntegTestDefaultTestDeployAssert2F88D4F9": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "TableBucketWithGrantIntegTestDefaultTestDeployAssert60E58AB6.template.json",
+        "templateFile": "TableBucketEncryptionIntegTestDefaultTestDeployAssert2F88D4F9.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -301,7 +301,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "TableBucketWithGrantIntegTestDefaultTestDeployAssert60E58AB6.assets"
+          "TableBucketEncryptionIntegTestDefaultTestDeployAssert2F88D4F9.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -310,23 +310,23 @@
         }
       },
       "dependencies": [
-        "TableBucketWithGrantIntegTestDefaultTestDeployAssert60E58AB6.assets"
+        "TableBucketEncryptionIntegTestDefaultTestDeployAssert2F88D4F9.assets"
       ],
       "metadata": {
-        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/TableBucketEncryptionIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/TableBucketWithGrantIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/TableBucketEncryptionIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "TableBucketWithGrantIntegTest/DefaultTest/DeployAssert"
+      "displayName": "TableBucketEncryptionIntegTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

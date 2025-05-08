@@ -299,6 +299,22 @@ describe('TableBucket with encryption', () => {
                 'Service': 'maintenance.s3tables.amazonaws.com',
               },
               'Resource': '*',
+              'Condition': {
+                'StringLike': {
+                  'kms:EncryptionContext:aws:s3:arn': {
+                    'Fn::Join': ['',
+                      [
+                        'arn:',
+                        { 'Ref': 'AWS::Partition' },
+                        ':s3tables:',
+                        { 'Ref': 'AWS::Region' },
+                        ':',
+                        { 'Ref': 'AWS::AccountId' },
+                        `:bucket/${TABLE_BUCKET_NAME}/*`,
+                      ]],
+                  },
+                },
+              },
             },
           ]),
         },

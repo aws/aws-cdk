@@ -640,7 +640,7 @@ export class TableBucket extends TableBucketBase {
           description: `Created by ${this.node.path}`,
           enableKeyRotation: true,
         });
-        this.allowTablesMaintenanceAccessToKey(key);
+        this.allowTablesMaintenanceAccessToKey(key, props.tableBucketName);
       }
       return {
         bucketEncryption: {
@@ -671,7 +671,11 @@ export class TableBucket extends TableBucketBase {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-kms-permissions.html
    * @param encryptionKey The key to provide access to
    */
-  private allowTablesMaintenanceAccessToKey(encryptionKey: kms.IKey) {
+  private allowTablesMaintenanceAccessToKey(encryptionKey: kms.IKey, tableBucketName: string) {
+    const region = this.stack.region;
+    const account = this.stack.account;
+    const partition = this.stack.partition;
+
     encryptionKey.addToResourcePolicy(new iam.PolicyStatement({
       sid: 'AllowS3TablesMaintenanceAccess',
       effect: iam.Effect.ALLOW,
@@ -683,6 +687,11 @@ export class TableBucket extends TableBucketBase {
         'kms:Decrypt',
       ],
       resources: ['*'],
+      conditions: {
+        StringLike: {
+          'kms:EncryptionContext:aws:s3:arn': `arn:${partition}:s3tables:${region}:${account}:bucket/${tableBucketName}/*`,
+        },
+      },
     }));
   }
 }

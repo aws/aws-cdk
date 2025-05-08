@@ -1,7 +1,7 @@
 {
   "version": "41.0.0",
   "files": {
-    "610424a8b18bb9d397c2cc1bc2b0bfd9192556a38b603fc70f7140e91fd9a224": {
+    "7af1ffdaa9c46e7d8a539a46d562c407a37cf9c82ad9735d9a005cbf62345c08": {
       "displayName": "OnlyKMSEncryptionTypeTest Template",
       "source": {
         "path": "OnlyKMSEncryptionTypeTest.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "610424a8b18bb9d397c2cc1bc2b0bfd9192556a38b603fc70f7140e91fd9a224.json",
+          "objectKey": "7af1ffdaa9c46e7d8a539a46d562c407a37cf9c82ad9735d9a005cbf62345c08.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

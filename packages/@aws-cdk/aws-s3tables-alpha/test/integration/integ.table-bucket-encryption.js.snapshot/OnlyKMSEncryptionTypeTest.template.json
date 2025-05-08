@@ -35,6 +35,30 @@
         "kms:Decrypt",
         "kms:GenerateDataKey"
        ],
+       "Condition": {
+        "StringLike": {
+         "kms:EncryptionContext:aws:s3:arn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":s3tables:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":bucket/integ-tb-kms-encryption-type-only/*"
+           ]
+          ]
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "maintenance.s3tables.amazonaws.com"
