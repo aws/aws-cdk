@@ -1974,8 +1974,12 @@ export interface Ipv4IpamAllocation {
    * The netmask length of the IPv4 CIDR to allocate to the subnet.
    *
    * Valid values are between 16 and 28.
+   *
+   * If not specified, the default netmask length configured for the IPAM pool will be used.
+   *
+   * @default - The default netmask length configured in the IPAM pool
    */
-  readonly netmaskLength: number;
+  readonly netmaskLength?: number;
 }
 
 /**
@@ -1991,8 +1995,12 @@ export interface Ipv6IpamAllocation {
    * The netmask length of the IPv6 CIDR to allocate to the subnet.
    *
    * Valid values are between 48 and 64.
+   *
+   * If not specified, the default netmask length configured for the IPAM pool will be used.
+   *
+   * @default - The default netmask length configured in the IPAM pool
    */
-  readonly netmaskLength: number;
+  readonly netmaskLength?: number;
 }
 
 /**

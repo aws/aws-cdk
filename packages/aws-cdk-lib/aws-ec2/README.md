@@ -2621,7 +2621,7 @@ new ec2.Subnet(this, 'Subnet', {
   availabilityZone: 'us-east-1a',
   ipv4IpamAllocation: {
     ipamPoolId: 'ipam-pool-12345',
-    netmaskLength: 24,
+    netmaskLength: 24, // Optional: if not specified, uses the default netmask length from the IPAM pool
   },
 });
 ```
@@ -2636,7 +2636,7 @@ new ec2.Subnet(this, 'Subnet', {
   cidrBlock: '10.0.0.0/24', // IPv4 CIDR is required
   ipv6IpamAllocation: {
     ipamPoolId: 'ipam-pool-67890',
-    netmaskLength: 64,
+    netmaskLength: 64, // Optional: if not specified, uses the default netmask length from the IPAM pool
   },
   assignIpv6AddressOnCreation: true,
 });
@@ -2651,11 +2651,11 @@ new ec2.Subnet(this, 'Subnet', {
   availabilityZone: 'us-east-1a',
   ipv4IpamAllocation: {
     ipamPoolId: 'ipam-pool-12345',
-    netmaskLength: 24,
+    // netmaskLength is optional and will use the IPAM pool's default if not specified
   },
   ipv6IpamAllocation: {
     ipamPoolId: 'ipam-pool-67890',
-    netmaskLength: 64,
+    // netmaskLength is optional and will use the IPAM pool's default if not specified
   },
   assignIpv6AddressOnCreation: true,
 });
@@ -2665,3 +2665,4 @@ Note that:
 - You cannot specify both `cidrBlock` and `ipv4IpamAllocation` at the same time
 - You cannot specify both `ipv6CidrBlock` and `ipv6IpamAllocation` at the same time
 - If you specify `assignIpv6AddressOnCreation: true`, you must also specify either `ipv6CidrBlock` or `ipv6IpamAllocation`
+- The `netmaskLength` property in both `ipv4IpamAllocation` and `ipv6IpamAllocation` is optional. If not specified, the default netmask length configured in the IPAM pool will be used.

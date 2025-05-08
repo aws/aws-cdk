@@ -1,62 +1,62 @@
 import { SubnetIpamTest, SubnetIpamIntegTest } from './integ.subnet-ipam';
 
-// 既存テストスタックの説明
+// Description of the existing test stack
 const literalOutput = `
-# サブネットの機能とIPv6のサポート
+# Subnet Features and IPv6 Support
 
-このテストは、AWS CDKでのサブネットの基本機能とIPv6サポートのテスト例です。
-また、将来的な機能として実装予定のIPAM（IP Address Manager）機能についても説明しています。
+This test demonstrates basic subnet functionality and IPv6 support in AWS CDK.
+It also explains the IPAM (IP Address Manager) features that will be implemented.
 
-## テスト内容
+## Test Contents
 
-1. **基本的なサブネットの作成**
-   - VPC内に標準的なIPv4サブネットを作成
-   - 固定のCIDRブロックを使用
+1. **Basic Subnet Creation**
+   - Creating a standard IPv4 subnet within a VPC
+   - Using fixed CIDR blocks
 
-2. **IPv6サポートの有効化**
-   - 2つ目のサブネットでIPv6アドレスの自動割り当てを有効化
-   - デュアルスタック（IPv4/IPv6）構成の検証
+2. **IPv6 Support Enablement**
+   - Enabling automatic IPv6 address assignment on a second subnet
+   - Validating dual-stack (IPv4/IPv6) configuration
 
-## 将来の機能: IPAM (IP Address Manager) 統合
+## Future Feature: IPAM (IP Address Manager) Integration
 
-AWS IP Address Manager (IPAM) の統合により、以下の機能が利用可能になる予定です:
+AWS IP Address Manager (IPAM) integration will enable the following features:
 
-- IPv4およびIPv6アドレス空間を一元管理
-- IPAMプールからCIDRを動的に割り当て
-- 使用中のCIDRブロックの重複を防止
-- IPアドレスの割り当て履歴を追跡
+- Centralized management of IPv4 and IPv6 address space
+- Dynamic allocation of CIDRs from IPAM pools
+- Prevention of CIDR block overlaps in use
+- Tracking of IP address allocation history
 
-IPAM機能の例（将来のリリースで実装予定）:
+IPAM feature examples (to be implemented in future releases):
 
 \`\`\`typescript
-// IPv4 IPAM割り当てを使用したサブネット
+// Subnet using IPv4 IPAM allocation
 const subnet = new ec2.Subnet(stack, 'Subnet', {
   vpcId: vpc.vpcId,
   availabilityZone: vpc.availabilityZones[0],
   ipv4IpamAllocation: {
-    ipamPoolId: 'ipam-pool-id', // 実際のIPAMプールID
-    netmaskLength: 24,
+    ipamPoolId: 'ipam-pool-id', // Actual IPAM pool ID
+    netmaskLength: 24, // Optional: If not specified, the default netmask length from the IPAM pool will be used
   },
 });
 
-// IPv6 IPAM割り当てを使用したサブネット
+// Subnet using IPv6 IPAM allocation
 const subnetIpv6 = new ec2.Subnet(stack, 'SubnetIpv6', {
   vpcId: vpc.vpcId,
   availabilityZone: vpc.availabilityZones[1],
   cidrBlock: '10.0.1.0/24',
   assignIpv6AddressOnCreation: true,
   ipv6IpamAllocation: {
-    ipamPoolId: 'ipam-pool-id', // 実際のIPAMプールID
-    netmaskLength: 64,
+    ipamPoolId: 'ipam-pool-id', // Actual IPAM pool ID
+    // netmaskLength is optional
   },
 });
 \`\`\`
 
-## テスト実行方法
+## Test Execution Method
 
-このテストは合成のみを行い、実際のデプロイは実行しません。
-IPAM機能を実際にテストするには、AWS組織内で設定されたIPAMプールが必要です。
+This test only performs synthesis and does not actually deploy.
+To actually test IPAM features, you need an IPAM pool configured within your AWS organization.
 `;
 
-// スタックをリエクスポート
+// Re-export stacks
 export = { SubnetIpamTest, SubnetIpamIntegTest, literalOutput };

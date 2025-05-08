@@ -3,7 +3,7 @@ import { App, Stack } from '../../core';
 import * as ec2 from '../lib';
 
 describe('subnet', () => {
-  // IPv4の基本的なケース
+  // Basic IPv4 case
   test('subnet with cidr block', () => {
     // GIVEN
     const stack = new Stack();
@@ -43,6 +43,29 @@ describe('subnet', () => {
       AvailabilityZone: 'eu-west-1a',
       Ipv4IpamPoolId: 'ipam-pool-12345',
       Ipv4NetmaskLength: 24,
+    });
+  });
+
+  test('subnet with IPv4 IPAM allocation without netmaskLength', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new ec2.Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'eu-west-1a',
+      ipv4IpamAllocation: {
+        ipamPoolId: 'ipam-pool-12345',
+        // netmaskLength is not specified
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      VpcId: 'vpc-1234',
+      AvailabilityZone: 'eu-west-1a',
+      Ipv4IpamPoolId: 'ipam-pool-12345',
+      // Ipv4NetmaskLength is not included in the properties
     });
   });
 
@@ -88,7 +111,7 @@ describe('subnet', () => {
     });
   });
 
-  // IPv6の基本的なケース
+  // Basic IPv6 case
   test('subnet with ipv6CidrBlock', () => {
     // GIVEN
     const stack = new Stack();
@@ -139,6 +162,33 @@ describe('subnet', () => {
     });
   });
 
+  test('subnet with IPv6 IPAM allocation without netmaskLength', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new ec2.Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'eu-west-1a',
+      cidrBlock: '10.0.0.0/24',
+      ipv6IpamAllocation: {
+        ipamPoolId: 'ipam-pool-67890',
+        // netmaskLength is not specified
+      },
+      assignIpv6AddressOnCreation: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      VpcId: 'vpc-1234',
+      AvailabilityZone: 'eu-west-1a',
+      CidrBlock: '10.0.0.0/24',
+      Ipv6IpamPoolId: 'ipam-pool-67890',
+      // Ipv6NetmaskLength is not included
+      AssignIpv6AddressOnCreation: true,
+    });
+  });
+
   test('subnet with assignIpv6AddressOnCreation disabled', () => {
     // GIVEN
     const stack = new Stack();
@@ -162,7 +212,7 @@ describe('subnet', () => {
     });
   });
 
-  // 複合ケース（IPv4とIPv6の組み合わせ）
+  // Combined case (IPv4 and IPv6 combination)
   test('subnet with both IPv4 and IPv6 IPAM allocation', () => {
     // GIVEN
     const stack = new Stack();
@@ -194,6 +244,37 @@ describe('subnet', () => {
     });
   });
 
+  test('subnet with both IPv4 and IPv6 IPAM allocation without netmaskLength', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new ec2.Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'eu-west-1a',
+      ipv4IpamAllocation: {
+        ipamPoolId: 'ipam-pool-12345',
+        // netmaskLength is not specified
+      },
+      ipv6IpamAllocation: {
+        ipamPoolId: 'ipam-pool-67890',
+        // netmaskLength is not specified
+      },
+      assignIpv6AddressOnCreation: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      VpcId: 'vpc-1234',
+      AvailabilityZone: 'eu-west-1a',
+      Ipv4IpamPoolId: 'ipam-pool-12345',
+      // Ipv4NetmaskLength is not included
+      Ipv6IpamPoolId: 'ipam-pool-67890',
+      // Ipv6NetmaskLength is not included
+      AssignIpv6AddressOnCreation: true,
+    });
+  });
+
   test('subnet with IPv4 CIDR and IPv6 IPAM allocation', () => {
     // GIVEN
     const stack = new Stack();
@@ -221,7 +302,7 @@ describe('subnet', () => {
     });
   });
 
-  // エラーケース
+  // Error cases
   test('cannot specify both cidrBlock and ipv4IpamAllocation', () => {
     // GIVEN
     const stack = new Stack();
