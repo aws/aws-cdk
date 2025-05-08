@@ -1571,7 +1571,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
           `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.195.0' },
     recommendedValue: true,
   },
 
