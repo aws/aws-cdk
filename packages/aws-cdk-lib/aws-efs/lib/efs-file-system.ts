@@ -6,7 +6,6 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, FeatureFlags, Lazy, Names, RemovalPolicy, Resource, Size, Stack, Tags, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -692,13 +691,7 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
  *
  * @resource AWS::EFS::FileSystem
  */
-@propertyInjectable
 export class FileSystem extends FileSystemBase {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-efs.FileSystem';
-
   /**
    * The default port File System listens on.
    */

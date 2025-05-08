@@ -3,7 +3,6 @@ import { Environment } from './environment';
 import { FeatureFlags } from './feature-flags';
 import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
-import { IPropertyInjector, PropertyInjectors } from './prop-injectors';
 import { IPolicyValidationPluginBeta1 } from './validation';
 import * as cxapi from '../../cx-api';
 
@@ -94,12 +93,6 @@ export interface StageProps {
    * @default - no validation plugins are used
    */
   readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
-
-  /**
-   * A list of IPropertyInjector attached to this Stage.
-   * @default - no PropertyInjectors
-   */
-  readonly propertyInjectors?: IPropertyInjector[];
 }
 
 /**
@@ -186,11 +179,6 @@ export class Stage extends Construct {
 
     if (id !== '' && !/^[a-z][a-z0-9\-\_\.]*$/i.test(id)) {
       throw new Error(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`);
-    }
-
-    if (props.propertyInjectors) {
-      const injectors = PropertyInjectors.of(this);
-      injectors.add(...props.propertyInjectors);
     }
 
     Object.defineProperty(this, STAGE_SYMBOL, { value: true });

@@ -4,7 +4,6 @@ import { IFunction } from '../../../aws-lambda';
 import { ILogGroup, LogGroup } from '../../../aws-logs';
 import { CfnStateMachine, LogLevel } from '../../../aws-stepfunctions';
 import { Duration, Stack } from '../../../core';
-import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**
  * Log Options for the state machine.
@@ -84,13 +83,7 @@ export interface WaiterStateMachineProps {
  * The state machine continuously calls the isCompleteHandler, until it succeeds or times out.
  * The handler is called `maxAttempts` times with an `interval` duration and a `backoffRate` rate.
  */
-@propertyInjectable
 export class WaiterStateMachine extends Construct {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.custom-resources.WaiterStateMachine';
-
   /**
    * The ARN of the state machine.
    */

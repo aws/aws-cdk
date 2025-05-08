@@ -20,7 +20,6 @@ import * as iam from '../../aws-iam';
 import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy, Size, Lazy } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
@@ -752,13 +751,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
  *
  * @resource AWS::ApiGateway::RestApi
  */
-@propertyInjectable
 export class SpecRestApi extends RestApiBase {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.SpecRestApi';
-
   /**
    * The ID of this API Gateway RestApi.
    */
@@ -854,13 +847,7 @@ export interface RestApiAttributes {
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
  */
-@propertyInjectable
 export class RestApi extends RestApiBase {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.RestApi';
-
   /**
    * Return whether the given object is a `RestApi`
    */

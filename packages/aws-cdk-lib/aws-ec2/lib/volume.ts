@@ -6,7 +6,6 @@ import { IKey, ViaServicePrincipal } from '../../aws-kms';
 import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy, FeatureFlags, UnscopedValidationError, ValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -597,13 +596,7 @@ abstract class VolumeBase extends Resource implements IVolume {
 /**
  * Creates a new EBS Volume in AWS EC2.
  */
-@propertyInjectable
 export class Volume extends VolumeBase {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.Volume';
-
   /**
    * Import an existing EBS Volume into the Stack.
    *

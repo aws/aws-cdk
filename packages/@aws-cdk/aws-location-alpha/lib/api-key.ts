@@ -2,6 +2,7 @@ import { ArnFormat, Aws, IResource, Lazy, Resource, Stack, Token, UnscopedValida
 import { Construct } from 'constructs';
 import { CfnAPIKey } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * An API Key
@@ -281,6 +282,8 @@ export class ApiKey extends Resource implements IApiKey {
     super(scope, id, {
       physicalName: props.apiKeyName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
       throw new ValidationError(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);

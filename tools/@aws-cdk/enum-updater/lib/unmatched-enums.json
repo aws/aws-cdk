@@ -595,6 +595,12 @@
     }
   },
   "appsync": {
+    "HandlerBehavior": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/channel-namespace.ts"
+    },
+    "LambdaInvokeType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.ts"
+    },
     "FunctionRuntime": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/runtime.ts"
     }
@@ -891,6 +897,9 @@
     },
     "CodeCommitTrigger": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/codecommit/source-action.ts"
+    },
+    "RevisionType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/codepipeline/invoke-action.ts"
     },
     "RegistryType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ecr/build-and-publish-action.ts"

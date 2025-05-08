@@ -4,7 +4,6 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { IResource, Lazy, Names, PhysicalName, Resource } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
@@ -321,13 +320,7 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
 /**
  * The base class for all task definitions.
  */
-@propertyInjectable
 export class TaskDefinition extends TaskDefinitionBase {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.TaskDefinition';
-
   /**
    * Imports a task definition from the specified task definition ARN.
    *

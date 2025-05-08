@@ -28,7 +28,6 @@ import {
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { Disable_ECS_IMDS_Blocking, Enable_IMDS_Blocking_Deprecated_Feature } from '../../cx-api';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
@@ -144,13 +143,7 @@ const getCanContainersAccessInstanceRoleDefault = (canContainersAccessInstanceRo
 /**
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
-@propertyInjectable
 export class Cluster extends Resource implements ICluster {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.Cluster';
-
   /**
    * Return whether the given object is a Cluster
    */
@@ -1501,13 +1494,7 @@ export interface ManagedStorageConfiguration {
  * tasks, and can ensure that instances are not prematurely terminated while
  * there are still tasks running on them.
  */
-@propertyInjectable
 export class AsgCapacityProvider extends Construct {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.AsgCapacityProvider';
-
   /**
    * Capacity provider name
    * @default Chosen by CloudFormation
