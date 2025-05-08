@@ -37,13 +37,11 @@
         "/AnomalyDetectionAlarmTestStack/DefaultAnomalyAlarm": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "evaluationPeriods": "*",
-              "datapointsToAlarm": "*",
-              "comparisonOperator": "*",
-              "metric": {},
-              "threshold": "*"
-            }
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:info",
+            "data": "Using detected thresholdMetricId \"expr_1\" for anomaly detection alarm"
           }
         ],
         "/AnomalyDetectionAlarmTestStack/DefaultAnomalyAlarm/Resource": [
@@ -55,12 +53,11 @@
         "/AnomalyDetectionAlarmTestStack/ExplicitOperatorAnomalyAlarm": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "evaluationPeriods": "*",
-              "comparisonOperator": "*",
-              "metric": {},
-              "threshold": "*"
-            }
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:info",
+            "data": "Using detected thresholdMetricId \"expr_1\" for anomaly detection alarm"
           }
         ],
         "/AnomalyDetectionAlarmTestStack/ExplicitOperatorAnomalyAlarm/Resource": [
@@ -72,13 +69,11 @@
         "/AnomalyDetectionAlarmTestStack/DescriptiveAnomalyAlarm": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "evaluationPeriods": "*",
-              "alarmDescription": "*",
-              "comparisonOperator": "*",
-              "metric": {},
-              "threshold": "*"
-            }
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:info",
+            "data": "Using detected thresholdMetricId \"expr_1\" for anomaly detection alarm"
           }
         ],
         "/AnomalyDetectionAlarmTestStack/DescriptiveAnomalyAlarm/Resource": [
@@ -137,7 +132,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4a26d513b65463ff9fe622ff85ba37863062b4897a8e797663dd54c7d7054203.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/630897cf0a380808595562c41bc4b2ff022d8723eda2bbe3f8b2bf037106456c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

@@ -399,9 +399,34 @@ CloudWatch anomaly detection applies machine learning algorithms to create a mod
 
 There are two ways to create an alarm based on anomaly detection:
 
-#### Method 1: Using the `createAnomalyDetectionAlarm` helper method
+#### Method 1: Using the `AnomalyDetectionAlarm` class (Recommended)
 
-The simplest way is to use the `createAnomalyDetectionAlarm` method on a `Metric` or `MathExpression` object:
+The most straightforward way is to use the dedicated `AnomalyDetectionAlarm` class, which is specifically designed for anomaly detection:
+
+```ts
+// Create a metric
+const metric = new cloudwatch.Metric({
+  namespace: 'AWS/EC2',
+  metricName: 'CPUUtilization',
+  statistic: 'Average',
+  period: Duration.minutes(5),
+});
+
+// Create an anomaly detection alarm
+const alarm = new cloudwatch.AnomalyDetectionAlarm(this, 'AnomalyAlarm', {
+  metric: metric,
+  evaluationPeriods: 3,
+  stdDevs: 2, // Number of standard deviations for the band (default: 2)
+  comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
+  alarmDescription: 'Alarm when metric is outside the expected band',
+});
+```
+
+This class handles all the complexity of setting up the anomaly detection band and configuring the alarm correctly.
+
+#### Method 2: Using the `createAnomalyDetectionAlarm` helper method
+
+You can also use the `createAnomalyDetectionAlarm` method on a `Metric` or `MathExpression` object:
 
 ```ts
 // Create a metric
@@ -430,38 +455,6 @@ const customAlarm = metric.createAnomalyDetectionAlarm(this, 'CustomAnomalyAlarm
 ```
 
 This method automatically sets up the necessary ANOMALY_DETECTION_BAND expression and configures the alarm correctly for anomaly detection.
-
-#### Method 2: Creating an anomaly detection alarm directly
-
-You can also create an anomaly detection alarm directly by creating a math expression with the ANOMALY_DETECTION_BAND function and then creating an alarm with an anomaly detection comparison operator:
-
-```ts
-// Create a metric
-const metric = new cloudwatch.Metric({
-  namespace: 'AWS/EC2',
-  metricName: 'CPUUtilization',
-  statistic: 'Average',
-  period: Duration.minutes(5),
-});
-
-// Create an anomaly detection band expression
-const anomalyBand = new cloudwatch.MathExpression({
-  expression: 'ANOMALY_DETECTION_BAND(m1, 2)',
-  usingMetrics: { m1: metric },
-  label: 'Anomaly Detection Band',
-});
-
-// Create an alarm using the anomaly detection band
-const alarm = new cloudwatch.Alarm(this, 'AnomalyAlarm', {
-  metric: anomalyBand,
-  evaluationPeriods: 3,
-  // Use THRESHOLD_IGNORED_FOR_ANOMALY_DETECTION constant for clarity
-  threshold: cloudwatch.THRESHOLD_IGNORED_FOR_ANOMALY_DETECTION,
-  comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
-});
-```
-
-Note that anomaly detection alarms don't use a specific threshold value, as the threshold is dynamically determined by the anomaly detection algorithm. It's recommended to use the `THRESHOLD_IGNORED_FOR_ANOMALY_DETECTION` constant to make it clear in your code that the threshold value is not being used for the actual alarm evaluation.
 
 ### Comparison Operators for Anomaly Detection
 

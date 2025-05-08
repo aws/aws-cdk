@@ -1,5 +1,5 @@
 import { Construct, IConstruct } from 'constructs';
-import { Alarm, ComparisonOperator, THRESHOLD_IGNORED_FOR_ANOMALY_DETECTION, TreatMissingData } from './alarm';
+import { Alarm, AnomalyDetectionAlarm, ComparisonOperator, TreatMissingData } from './alarm';
 import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Statistic, Unit } from './metric-types';
 import { dispatchMetric, metricKey } from './private/metric-util';
 import { normalizeStatistic, pairStatisticToString, parseStatistic, singleStatisticToString } from './private/statistic';
@@ -313,28 +313,10 @@ export class Metric implements IMetric {
    * @returns The newly created Alarm
    */
   public static createAnomalyDetectionAlarmFromMetric(scope: Construct, id: string, props: CreateAnomalyDetectionAlarmProps, metric: IMetric): Alarm {
-    // Validate stdDevs
-    if (props.stdDevs !== undefined && props.stdDevs <= 0) {
-      throw new cdk.ValidationError('stdDevs must be greater than 0', scope);
-    }
-
-    if (!Alarm.isAnomalyDetectionOperator(props.comparisonOperator)) {
-      throw new cdk.ValidationError(`Invalid comparison operator for anomaly detection alarm: ${props.comparisonOperator}`, scope);
-    }
-
-    // Create the anomaly detection band expression
-    const anomalyDetectionExpression = new MathExpression({
-      expression: `ANOMALY_DETECTION_BAND(m0, ${props.stdDevs ?? 2})`,
-      usingMetrics: { m0: metric },
-      period: props.period,
-      label: 'Anomaly Detection Band',
-    });
-
-    return new Alarm(scope, id, {
+    // Create the anomaly detection alarm
+    return new AnomalyDetectionAlarm(scope, id, {
       ...props,
-      metric: anomalyDetectionExpression,
-      threshold: THRESHOLD_IGNORED_FOR_ANOMALY_DETECTION, // This value will be ignored for anomaly detection alarms
-      thresholdMetricId: 'expr_1',
+      metric: metric,
     });
   }
 
