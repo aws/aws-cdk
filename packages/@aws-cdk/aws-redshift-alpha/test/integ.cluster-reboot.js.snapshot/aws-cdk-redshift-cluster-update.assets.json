@@ -29,7 +29,7 @@
         }
       }
     },
-    "7e78eb98bf8aae6fbaebb37bd55df8d666ed16d552bc4c864ba14884fd6d891a": {
+    "d2e4d0edd76f8c95ca0f58d3aee2e092d6bc1f081faf936fd76e763e92f2d0e5": {
       "displayName": "aws-cdk-redshift-cluster-reboot-integ Template",
       "source": {
         "path": "aws-cdk-redshift-cluster-update.template.json",
@@ -38,7 +38,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7e78eb98bf8aae6fbaebb37bd55df8d666ed16d552bc4c864ba14884fd6d891a.json",
+          "objectKey": "d2e4d0edd76f8c95ca0f58d3aee2e092d6bc1f081faf936fd76e763e92f2d0e5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
