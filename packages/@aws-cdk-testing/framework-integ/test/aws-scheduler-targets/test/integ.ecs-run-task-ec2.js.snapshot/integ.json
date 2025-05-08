@@ -9,5 +9,6 @@
       "assertionStack": "integ-ecs-run-task-ec2/DefaultTest/DeployAssert",
       "assertionStackName": "integecsruntaskec2DefaultTestDeployAssert078FB53C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

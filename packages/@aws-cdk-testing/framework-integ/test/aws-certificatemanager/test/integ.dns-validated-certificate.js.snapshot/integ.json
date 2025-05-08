@@ -10,5 +10,6 @@
       "assertionStack": "integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "integtestDefaultTestDeployAssert24D5C536"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
