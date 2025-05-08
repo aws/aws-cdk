@@ -321,6 +321,7 @@
       "ApiId"
      ]
     },
+    "HandlerConfigs": {},
     "Name": "default"
    }
   },
@@ -334,6 +335,7 @@
      ]
     },
     "CodeHandlers": "\n            function enrichEvent(event) {\n              return {\n                id: event.id,\n                payload: {\n                  ...event.payload,\n                  newField: 'newField'\n                }\n              }\n            }\n            export function onPublish(ctx) {\n              return ctx.events.map(enrichEvent);\n            }\n          ",
+    "HandlerConfigs": {},
     "Name": "AnotherChannelNamespace"
    }
   },
@@ -453,6 +455,7 @@
     "CodeS3Location": {
      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bff8ecf40beff4b39ba4b69d04fa6a5d4e9ba16cf8dcd687165b7ea0493ecae1.js"
     },
+    "HandlerConfigs": {},
     "Name": "ChannelNamespace",
     "PublishAuthModes": [
      {
@@ -599,7 +602,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "07dd4b9948a8969a8e5fbe975d575ab65ae5b3841bf90c79d8be6415a149e528.zip"
+     "S3Key": "cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1.zip"
     },
     "Environment": {
      "Variables": {
@@ -700,6 +703,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {
