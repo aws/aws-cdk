@@ -29,11 +29,7 @@ class RedshiftStack extends Stack {
   }
 }
 
-const app = new App({
-  postCliContext: {
-    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
-  },
-});
+const app = new App();
 
 new integ.IntegTest(app, 'RedshiftMaintenanceTrackNameInteg', {
   testCases: [new RedshiftStack(app, 'RedshiftMaintenanceTrackNameIntegStack')],
