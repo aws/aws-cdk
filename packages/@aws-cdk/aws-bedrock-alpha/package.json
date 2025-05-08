@@ -16,8 +16,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Aws.Bedrock.Alpha",
-        "packageId": "Amazon.CDK.Aws.Bedrock.Alpha",
+        "namespace": "Amazon.CDK.AWS.Bedrock.Alpha",
+        "packageId": "Amazon.CDK.AWS.Bedrock.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {

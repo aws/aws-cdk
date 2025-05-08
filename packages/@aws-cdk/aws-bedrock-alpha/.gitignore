@@ -12,3 +12,13 @@ junit.xml
 coverage
 nyc.config.js
 !.eslintrc.js
+
+!**/*.snapshot/**/asset.*/*.js
+!**/*.snapshot/**/asset.*/*.d.ts
+
+!**/*.snapshot/**/asset.*/**
+
+*.jsii
+.jsii.tabl.json.gz
+.jsiirc.json
+tsconfig.json

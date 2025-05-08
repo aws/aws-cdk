@@ -1,19 +1,7 @@
-/**
- *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance
- *  with the License. A copy of the License is located at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES
- *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions
- *  and limitations under the License.
- */
-
 import { createHash } from 'crypto';
 import * as cdk from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
+import { ValidationError } from 'aws-cdk-lib';
 
 /**
  * The CFN NAG suppress rule interface
@@ -34,6 +22,7 @@ export const version = require('../../../package.json').version;
  *
  * @summary Creates a physical resource name in the style of the CDK (string+hash) - this value incorporates Stack ID,
  * so it will remain static in multiple updates of a single stack, but will be different in a separate stack instance
+ * @param {IConstruct} scope - the CDK scope of the resource
  * @param {string} prefix - the prefix for the name
  * @param {string[]} parts - the various string components of the name (eg - stackName, solutions construct ID, L2 construct ID)
  * @param {number} maxLength - the longest string that can be returned
@@ -43,6 +32,7 @@ export const version = require('../../../package.json').version;
  * Please use the new function generatePhysicalNameV2 instead.
  */
 export function generatePhysicalName(
+  scope: IConstruct,
   prefix: string,
   parts: string[],
   maxLength: number,
@@ -72,7 +62,7 @@ export function generatePhysicalName(
   }
 
   if (prefix.length + allParts.length + stackIdGuidLength + 1 /* hyphen */ > maxLength) {
-    throw new Error(`The generated name is longer than the maximum length of ${maxLength}`);
+    throw new ValidationError(`The generated name is longer than the maximum length of ${maxLength}`, scope);
   }
 
   return prefix.toLowerCase() + allParts + '-' + uniqueStackIdPart;
@@ -140,7 +130,7 @@ export function generatePhysicalNameV2(
   } = options ?? {};
   const hash = objectToHash(destroyCreate);
   if (maxLength < (prefix + hash + separator).length) {
-    throw new Error('The prefix is longer than the maximum length.');
+    throw new ValidationError('The prefix is longer than the maximum length', scope);
   }
   const uniqueName = cdk.Names.uniqueResourceName(
     scope,
@@ -148,7 +138,7 @@ export function generatePhysicalNameV2(
   );
   const name = `${prefix}${hash}${separator}${uniqueName}`;
   if (name.length > maxLength) {
-    throw new Error(`The generated name is longer than the maximum length of ${maxLength}`);
+    throw new ValidationError(`The generated name is longer than the maximum length of ${maxLength}`, scope);
   }
   return lower ? name.toLowerCase() : name;
 }

@@ -1,16 +1,3 @@
-/**
- *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance
- *  with the License. A copy of the License is located at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES
- *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions
- *  and limitations under the License.
- */
-
 import * as crypto from 'crypto';
 import { Arn, ArnFormat, Duration, IResource, Lazy, Names, Resource, Stack, Token, ValidationError, Aws } from 'aws-cdk-lib/core';
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
@@ -61,6 +48,8 @@ export interface IAgent extends IResource, iam.IGrantable {
 
   /**
    * Grant invoke permissions on this agent to an IAM principal.
+   * Note: This grant will only work when the grantee is in the same AWS account
+   * where the agent is defined. Cross-account invocation is not supported.
    */
   grantInvoke(grantee: iam.IGrantable): iam.Grant;
 
@@ -94,6 +83,15 @@ export abstract class AgentBase extends Resource implements IAgent {
   public abstract readonly agentVersion: string;
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
+  /**
+   * Grant invoke permissions on this agent to an IAM principal.
+   *
+   * @param grantee - The IAM principal to grant invoke permissions to
+   * @default - Default grant configuration:
+   * - actions: ['bedrock:InvokeAgent']
+   * - resourceArns: [this.agentArn]
+   * @returns An IAM Grant object representing the granted permissions
+   */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
@@ -102,7 +100,17 @@ export abstract class AgentBase extends Resource implements IAgent {
     });
   }
 
-  public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
+  /**
+   * Creates an EventBridge rule for agent events.
+   *
+   * @param id - Unique identifier for the rule
+   * @param options - Configuration options for the event rule
+   * @default - Default event pattern:
+   * - source: ['aws.bedrock']
+   * - detail: { 'agent-id': [this.agentId] }
+   * @returns An EventBridge Rule configured for agent events
+   */
+  public onEvent(id: string, options: events.OnEventOptions): events.Rule {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
@@ -114,6 +122,16 @@ export abstract class AgentBase extends Resource implements IAgent {
     return rule;
   }
 
+  /**
+   * Creates a CloudWatch metric for tracking agent invocations.
+   *
+   * @param props - Configuration options for the metric
+   * @default - Default metric configuration:
+   * - namespace: 'AWS/Bedrock'
+   * - metricName: 'Invocations'
+   * - dimensionsMap: { AgentId: this.agentId }
+   * @returns A CloudWatch Metric configured for agent invocation counts
+   */
   public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/Bedrock',
@@ -295,6 +313,15 @@ export interface AgentAttributes {
 export class Agent extends AgentBase implements IAgent {
   /**
    * Static Method for importing an existing Bedrock Agent.
+   */
+  /**
+   * Creates an Agent reference from an existing agent's attributes.
+   *
+   * @param scope - The construct scope
+   * @param id - Identifier of the construct
+   * @param attrs - Attributes of the existing agent
+   * @default - For attrs.agentVersion: 'DRAFT' if no explicit version is provided
+   * @returns An IAgent reference to the existing agent
    */
   public static fromAgentAttributes(scope: Construct, id: string, attrs: AgentAttributes): IAgent {
     class Import extends AgentBase {
@@ -605,7 +632,12 @@ export class Agent extends AgentBase implements IAgent {
   // ------------------------------------------------------
 
   /**
-   * Add an action group to the agent.
+   * Adds an action group to the agent and configures necessary permissions.
+   *
+   * @param actionGroup - The action group to add
+   * @default - Default permissions:
+   * - Lambda function invoke permissions if executor is present
+   * - S3 GetObject permissions if apiSchema.s3File is present
    */
   public addActionGroup(actionGroup: AgentActionGroup) {
     // Do some checks
@@ -634,7 +666,9 @@ export class Agent extends AgentBase implements IAgent {
   }
 
   /**
-   * Add an agent collaborator to the agent.
+   * Adds a collaborator to the agent and grants necessary permissions.
+   *
+   * @param agentCollaborator - The collaborator to add
    */
   public addAgentCollaborator(agentCollaborator: AgentCollaborator) {
     this.agentCollaborators?.push(agentCollaborator);
@@ -642,7 +676,9 @@ export class Agent extends AgentBase implements IAgent {
   }
 
   /**
-   * Add multiple action groups to the agent.
+   * Adds multiple action groups to the agent.
+   *
+   * @param actionGroups - The action groups to add
    */
   public addActionGroups(...actionGroups: AgentActionGroup[]) {
     actionGroups.forEach(ag => this.addActionGroup(ag));
@@ -655,6 +691,8 @@ export class Agent extends AgentBase implements IAgent {
   /**
    * Render the action groups
    *
+   * @returns Array of AgentActionGroupProperty objects in CloudFormation format
+   * @default - Empty array if no action groups are defined
    * @internal This is an internal core function and should not be called directly.
    */
   private renderActionGroups(): bedrock.CfnAgent.AgentActionGroupProperty[] {
@@ -669,6 +707,8 @@ export class Agent extends AgentBase implements IAgent {
   /**
    * Render the agent collaborators.
    *
+   * @returns Array of AgentCollaboratorProperty objects in CloudFormation format, or undefined if no collaborators
+   * @default - undefined if no collaborators are defined or array is empty
    * @internal This is an internal core function and should not be called directly.
    */
   private renderAgentCollaborators(): bedrock.CfnAgent.AgentCollaboratorProperty[] | undefined {
@@ -687,6 +727,8 @@ export class Agent extends AgentBase implements IAgent {
   /**
    * Render the custom orchestration.
    *
+   * @returns CustomOrchestrationProperty object in CloudFormation format, or undefined if no custom orchestration
+   * @default - undefined if no custom orchestration is defined
    * @internal This is an internal core function and should not be called directly.
    */
   private renderCustomOrchestration(): bedrock.CfnAgent.CustomOrchestrationProperty | undefined {
@@ -706,6 +748,9 @@ export class Agent extends AgentBase implements IAgent {
   // ------------------------------------------------------
   /**
    * Check if the action group is valid
+   *
+   * @param actionGroup - The action group to validate
+   * @returns Array of validation error messages, empty if valid
    */
   private validateActionGroup = (actionGroup: AgentActionGroup) => {
     let errors: string[] = [];
@@ -716,6 +761,26 @@ export class Agent extends AgentBase implements IAgent {
     return errors;
   };
 
+  /**
+   * Generates a unique, deterministic name for AWS resources that includes a hash component.
+   * This method ensures consistent naming while avoiding conflicts and adhering to AWS naming constraints.
+   * @param scope - The construct scope used for generating unique names
+   * @param prefix - The prefix to prepend to the generated name
+   * @param options - Configuration options for name generation
+   * @param options.maxLength - Maximum length of the generated name
+   * @default - maxLength: 256
+   * @param options.lower - Convert the generated name to lowercase
+   * @default - lower: false
+   * @param options.separator - Character(s) to use between name components
+   * @default - separator: ''
+   * @param options.allowedSpecialCharacters - String of allowed special characters
+   * @default - undefined
+   * @param options.destroyCreate - Object to include in hash generation for destroy/create operations
+   * @default - undefined
+   * @returns A string containing the generated name with format: prefix + hash + separator + uniqueName
+   * @throws ValidationError if the generated name would exceed maxLength or if prefix is too long
+   * @internal
+   */
   private generatePhysicalNameHash(
     scope: IConstruct,
     prefix: string,
@@ -758,6 +823,16 @@ export class Agent extends AgentBase implements IAgent {
     return lower ? name.toLowerCase() : name;
   }
 
+  /**
+   * Generates a physical name for the agent.
+   *
+   * @returns A unique name for the agent with appropriate length constraints
+   * @default - Generated name format: 'agent-{hash}-{uniqueName}' with:
+   * - maxLength: MAXLENGTH_FOR_ROLE_NAME - '-bedrockagent'.length
+   * - lower: true
+   * - separator: '-'
+   * @protected
+   */
   protected generatePhysicalName(): string {
     const maxLength = this.MAXLENGTH_FOR_ROLE_NAME - this.ROLE_NAME_SUFFIX.length;
     return this.generatePhysicalNameHash(this, 'agent-', {
