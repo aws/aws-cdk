@@ -134,6 +134,25 @@ describe('ValidationError checks', () => {
     ).toThrow('The URL of the identity provider must start with https://');
   });
 
+  test('Maximum length of url is 255', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    expect(() =>
+      // WHEN
+      new iam.OidcProviderNative(stack, 'SomeProvider', {
+        url: `https://${'a'.repeat(255 - 'https://'.length)}`,
+      }),
+      // THEN
+    ).not.toThrow();
+
+    expect(() =>
+      new iam.OidcProviderNative(stack, 'SomeOtherProvider', {
+        url: `https://${'a'.repeat(256 - 'https://'.length)}`,
+      }),
+    ).toThrow('The maximum length allowed for url is 255 characters');
+  });
+
   test('maximum allowed number of clientIds is 100', () => {
     // GIVEN
     const stack = new Stack();

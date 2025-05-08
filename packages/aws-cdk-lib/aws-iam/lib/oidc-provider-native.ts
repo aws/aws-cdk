@@ -175,6 +175,11 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
       );
     }
 
+    // maximum length of url is 255 characters
+    if (props.url.length > 255) {
+      throw new ValidationError('The maximum length allowed for url is 255 characters', scope);
+    }
+
     // clientids cannot be more than 100
     if (props.clientIds && props.clientIds.length > 100) {
       throw new ValidationError('The maximum number of clients that can be registered is 100', scope);
