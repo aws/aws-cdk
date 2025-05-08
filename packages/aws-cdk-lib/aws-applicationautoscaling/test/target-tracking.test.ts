@@ -174,4 +174,61 @@ describe('target tracking', () => {
 
     });
   });
+
+  test('test setup target tracking on math expression', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleToTrackMetric('Tracking', {
+      customMetric: new cloudwatch.MathExpression({
+        label: 'expression',
+        expression: 'm1 + m2',
+        usingMetrics: {
+          m1: new cloudwatch.Metric({ namespace: 'Metric1', metricName: 'Metric1' }),
+          m2: new cloudwatch.Metric({ namespace: 'Metric2', metricName: 'Metric2' }),
+        },
+      }),
+      targetValue: 100,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'TargetTrackingScaling',
+      TargetTrackingScalingPolicyConfiguration: {
+        TargetValue: 100,
+        CustomizedMetricSpecification: {
+          Metrics: [
+            {
+              Id: 'm1',
+              MetricStat: {
+                Metric: {
+                  MetricName: 'Metric1',
+                  Namespace: 'Metric1',
+                },
+                Stat: 'Average',
+              },
+            },
+            {
+              Id: 'm2',
+              MetricStat: {
+                Metric: {
+                  MetricName: 'Metric2',
+                  Namespace: 'Metric2',
+                },
+                Stat: 'Average',
+              },
+            },
+            {
+              Expression: 'm1 + m2',
+              ReturnData: true,
+              Id: 'expression',
+              Label: 'expression',
+            },
+          ],
+        },
+      },
+    });
+  });
 });

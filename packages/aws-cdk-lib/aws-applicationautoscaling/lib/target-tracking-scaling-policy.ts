@@ -127,10 +127,6 @@ export class TargetTrackingScalingPolicy extends Construct {
       throw new ValidationError('Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.', scope);
     }
 
-    if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
-      throw new ValidationError('Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.', scope);
-    }
-
     super(scope, id);
 
     // replace dummy value in DYNAMODB_WRITE_CAPACITY_UTILIZATION due to a jsii bug (https://github.com/aws/jsii/issues/2782)
@@ -159,21 +155,77 @@ export class TargetTrackingScalingPolicy extends Construct {
   }
 }
 
+function validateMetricStatistic(scope: Construct, metricStatistic: cloudwatch.MetricStatConfig) {
+  const statistic = metricStatistic.statistic.toLowerCase();
+  if (statistic.startsWith('p')) {
+    throw new ValidationError(`Cannot use statistic '${statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`, scope);
+  }
+}
+
 function renderCustomMetric(scope: Construct, metric?: cloudwatch.IMetric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
   if (!metric) { return undefined; }
-  const c = metric.toMetricConfig().metricStat!;
 
-  if (c.statistic.startsWith('p')) {
-    throw new ValidationError(`Cannot use statistic '${c.statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`, scope);
+  let metricConfig = metric.toMetricConfig();
+
+  if ('metricStat' in metricConfig) {
+    const metricStat = metricConfig.metricStat!;
+
+    validateMetricStatistic(scope, metricStat);
+    return {
+      dimensions: metricStat.dimensions,
+      metricName: metricStat.metricName,
+      namespace: metricStat.namespace,
+      statistic: metricStat.statistic,
+      unit: metricStat.unitFilter,
+    };
+  } else if ('mathExpression' in metricConfig) {
+    const mathExpression = metricConfig.mathExpression!;
+
+    for (const mathExpressionMetric of Object.values(mathExpression.usingMetrics)) {
+      const mathExpressionMetricConfig = mathExpressionMetric.toMetricConfig();
+      if ('mathExpression' in mathExpressionMetricConfig) {
+        throw new ValidationError('Nested math expressions are not supported', scope);
+      }
+    }
+
+    const metrics: CfnScalingPolicy.TargetTrackingMetricDataQueryProperty[] = [];
+
+    Object.entries(mathExpression.usingMetrics).forEach(([id, mathExpressionMetric]) => {
+      const mathExpressionMetricConfig = mathExpressionMetric.toMetricConfig();
+      if ('metricStat' in mathExpressionMetricConfig) {
+        const metricStat = mathExpressionMetricConfig.metricStat!;
+        validateMetricStatistic(scope, metricStat);
+        metrics.push({
+          id,
+          metricStat: {
+            metric: {
+              dimensions: metricStat.dimensions,
+              metricName: metricStat.metricName,
+              namespace: metricStat.namespace,
+            },
+            stat: metricStat.statistic,
+            unit: metricStat.unitFilter,
+          },
+          returnData: false,
+        });
+      } else {
+        throw new ValidationError('For custom metrics using math expression, only Metric object supported', scope);
+      }
+    });
+
+    metrics.push({
+      id: 'expression',
+      expression: mathExpression.expression,
+      label: metricConfig.renderingProperties?.label as string,
+      returnData: true,
+    });
+
+    return {
+      metrics,
+    };
+  } else {
+    throw new ValidationError('Either MathExpression or Metric Object must be passed', scope);
   }
-
-  return {
-    dimensions: c.dimensions,
-    metricName: c.metricName,
-    namespace: c.namespace,
-    statistic: c.statistic,
-    unit: c.unitFilter,
-  };
 }
 
 /**

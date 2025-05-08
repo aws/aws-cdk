@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { ScalingInterval } from '../../../aws-applicationautoscaling';
+import { MathExpression, Metric, Stats } from '../../../aws-cloudwatch';
 import { IVpc } from '../../../aws-ec2';
 import {
   AwsLogDriver, BaseService, CapacityProviderStrategy, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
@@ -252,6 +253,18 @@ export interface QueueProcessingServiceBaseProps {
    * @default - 50
    */
   readonly cpuTargetUtilizationPercent?: number;
+
+  /**
+   * Flag to enable Backlog per instance based scaling on the service.
+   * @default - false
+   */
+  readonly enableBacklogPerInstanceBasedScaling?: boolean;
+
+  /**
+   * The target Backlog per instance for Backlog per instance based scaling strategy when enabled.
+   * @default - 100
+   */
+  readonly backlogPerInstanceTargetValue?: number;
 }
 
 /**
@@ -329,6 +342,17 @@ export abstract class QueueProcessingServiceBase extends Construct {
   private readonly cpuTargetUtilizationPercent: number;
 
   /**
+   * Flag to enable Backlog per instance based scaling on the service.
+   * This will scale the service based on the number of messages in the queue divided by the number of running tasks.
+   */
+  private readonly enableBacklogPerInstanceBasedScaling: boolean;
+
+  /**
+   * The target Backlog per instance for Backlog per instance based scaling strategy when enabled.
+   */
+  private readonly backlogPerInstanceTargetValue?: number;
+
+  /**
    * Constructs a new instance of the QueueProcessingServiceBase class.
    */
   constructor(scope: Construct, id: string, props: QueueProcessingServiceBaseProps) {
@@ -380,6 +404,21 @@ export abstract class QueueProcessingServiceBase extends Construct {
     this.secrets = props.secrets;
     this.disableCpuBasedScaling = props.disableCpuBasedScaling ?? false;
     this.cpuTargetUtilizationPercent = props.cpuTargetUtilizationPercent ?? 50;
+    this.enableBacklogPerInstanceBasedScaling = props.enableBacklogPerInstanceBasedScaling ?? false;
+
+    if (this.enableBacklogPerInstanceBasedScaling) {
+      if (props.backlogPerInstanceTargetValue === undefined) {
+        this.backlogPerInstanceTargetValue = 100;
+      } else if (
+        !Number.isFinite(props.backlogPerInstanceTargetValue) ||
+        props.backlogPerInstanceTargetValue <= 0 ||
+        props.backlogPerInstanceTargetValue >= 1_000_000_000
+      ) {
+        throw new Error(`Invalid value for 'backlogPerInstanceTargetValue'. It must be a finite number > 0 and < 1_000_000_000. Received: ${props.backlogPerInstanceTargetValue}`);
+      } else {
+        this.backlogPerInstanceTargetValue = props.backlogPerInstanceTargetValue;
+      }
+    }
 
     this.desiredCount = props.desiredTaskCount ?? 1;
 
@@ -418,11 +457,37 @@ export abstract class QueueProcessingServiceBase extends Construct {
         targetUtilizationPercent: this.cpuTargetUtilizationPercent,
       });
     }
-    scalingTarget.scaleOnMetric('QueueMessagesVisibleScaling', {
-      metric: this.sqsQueue.metricApproximateNumberOfMessagesVisible(),
-      scalingSteps: this.scalingSteps,
-      cooldown: this.cooldown,
-    });
+
+    if (this.enableBacklogPerInstanceBasedScaling) {
+      scalingTarget.scaleToTrackCustomMetric('BacklogPerInstanceScaling', {
+        metric: new MathExpression({
+          expression: 'm1 / m2',
+          usingMetrics: {
+            m1: this.sqsQueue.metricApproximateNumberOfMessagesVisible({
+              period: Duration.minutes(1),
+              statistic: Stats.SUM,
+            }),
+            m2: new Metric({
+              namespace: 'ECS/ContainerInsights',
+              metricName: 'RunningTaskCount',
+              dimensionsMap: {
+                ClusterName: this.cluster.clusterName,
+                ServiceName: service.serviceName,
+              },
+              statistic: Stats.AVERAGE,
+              period: Duration.minutes(1),
+            }),
+          },
+        }),
+        targetValue: this.backlogPerInstanceTargetValue!,
+      });
+    } else {
+      scalingTarget.scaleOnMetric('QueueMessagesVisibleScaling', {
+        metric: this.sqsQueue.metricApproximateNumberOfMessagesVisible(),
+        scalingSteps: this.scalingSteps,
+        cooldown: this.cooldown,
+      });
+    }
   }
 
   /**

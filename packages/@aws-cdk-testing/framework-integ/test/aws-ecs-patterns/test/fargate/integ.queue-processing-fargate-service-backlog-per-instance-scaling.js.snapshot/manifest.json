@@ -1,0 +1,1007 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "aws-ecs-patterns-queue-backlog-per-instance-scaling.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-ecs-patterns-queue-backlog-per-instance-scaling.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-ecs-patterns-queue-backlog-per-instance-scaling": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-ecs-patterns-queue-backlog-per-instance-scaling.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9e39fe8a08325ec3ac063b342a98976a5b0337c371d7fcbf6567aac21b95a95d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-ecs-patterns-queue-backlog-per-instance-scaling.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-ecs-patterns-queue-backlog-per-instance-scaling.assets"
+      ],
+      "metadata": {
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/CdkAppQueue": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/CdkAppQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CdkAppQueueFB2A6F8C"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "containerInsightsV2": "enabled"
+            }
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsCluster97242B84"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*"
+            }
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpc779914AB"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPublicSubnet1Subnet4AC37B0F"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPublicSubnet1RouteTable4AE3113D"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPublicSubnet1RouteTableAssociation49C4CDBB"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPublicSubnet1DefaultRoute8C7EFC96"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPublicSubnet1EIP2D3759A3"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPublicSubnet1NATGateway2F1E7764"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPublicSubnet2Subnet4A959A4C"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPublicSubnet2RouteTable89A2F6C5"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPublicSubnet2RouteTableAssociationE4D42FC1"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPublicSubnet2DefaultRoute048730F7"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPublicSubnet2EIP26E3EEEF"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPublicSubnet2NATGatewayBD015416"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPrivateSubnet1SubnetFAB0E487"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPrivateSubnet1RouteTable2EA148EE"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPrivateSubnet1RouteTableAssociationF4E8ACD7"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPrivateSubnet1DefaultRoute0239F5D0"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPrivateSubnet2SubnetC2B7B1BA"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPrivateSubnet2RouteTable1D430E45"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPrivateSubnet2RouteTableAssociation329A2412"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcPrivateSubnet2DefaultRoute27221D27"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcIGW3663B083"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcVPCGW944296C0"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/EcsCluster/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterVpcRestrictDefaultSecurityGroupCustomResource8F588911"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/SQSQueue": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "backlogPerInstanceQueueProcessingFargateServiceTestSQSQueue3EA51BAD"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/SQSQueueArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "backlogPerInstanceQueueProcessingFargateServiceTestSQSQueueArn97B53CD1"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingTaskDef": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingTaskDef/TaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingTaskDef/TaskRole/ImportTaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingTaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "backlogPerInstanceQueueProcessingFargateServiceTestQueueProcessingTaskDefTaskRole924E9B5D"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingTaskDef/TaskRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingTaskDef/TaskRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "backlogPerInstanceQueueProcessingFargateServiceTestQueueProcessingTaskDefTaskRoleDefaultPolicy992E1F4A"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingTaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "backlogPerInstanceQueueProcessingFargateServiceTestQueueProcessingTaskDef60168D59",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingTaskDef/QueueProcessingContainer/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "retention": "*"
+            }
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingTaskDef/QueueProcessingContainer/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "backlogPerInstanceQueueProcessingFargateServiceTestQueueProcessingTaskDefQueueProcessingContainerLogGroup17540BDB"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingTaskDef/ExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "roleName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingTaskDef/ExecutionRole/ImportExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingTaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "backlogPerInstanceQueueProcessingFargateServiceTestQueueProcessingTaskDefExecutionRole15D95A8A"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingTaskDef/ExecutionRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingTaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "backlogPerInstanceQueueProcessingFargateServiceTestQueueProcessingTaskDefExecutionRoleDefaultPolicy602765AC"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingFargateService": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingFargateService/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "backlogPerInstanceQueueProcessingFargateServiceTestQueueProcessingFargateService561006C6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingFargateService/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingFargateService/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "backlogPerInstanceQueueProcessingFargateServiceTestQueueProcessingFargateServiceSecurityGroup98225034",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingFargateService/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingFargateService/TaskCount/Target": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "serviceNamespace": "ecs",
+              "scalableDimension": "*",
+              "resourceId": "*",
+              "role": "*",
+              "minCapacity": "*",
+              "maxCapacity": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "scaleToTrackMetric": [
+                "*",
+                {
+                  "customMetric": {
+                    "warnings": "*",
+                    "warningsV2": "*"
+                  },
+                  "targetValue": "*",
+                  "policyName": "*",
+                  "disableScaleIn": "*",
+                  "scaleInCooldown": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingFargateService/TaskCount/Target/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "backlogPerInstanceQueueProcessingFargateServiceTestQueueProcessingFargateServiceTaskCountTarget5F708D31",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/backlogPerInstanceQueueProcessingFargateServiceTest/QueueProcessingFargateService/TaskCount/Target/BacklogPerInstanceScaling/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "backlogPerInstanceQueueProcessingFargateServiceTestQueueProcessingFargateServiceTaskCountTargetBacklogPerInstanceScaling5D6AFAA1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-ecs-patterns-queue-backlog-per-instance-scaling/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "VPCB9E5F0B4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet1SubnetB4246D30": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1SubnetB4246D30",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet1RouteTableFEE4B781": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet1RouteTableAssociation0B0896DC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet1DefaultRoute91CEF279": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet1EIP6AD938E8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1EIP6AD938E8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet1NATGatewayE0556630": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1NATGatewayE0556630",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet2Subnet74179F39": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2Subnet74179F39",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet2RouteTable6F1A15F1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet2RouteTableAssociation5A808732": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet2DefaultRouteB7481BBA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet2EIP4947BC00": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2EIP4947BC00",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet2NATGateway3C070193": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2NATGateway3C070193",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet1Subnet8BCA10E0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet1RouteTableBE8A6027": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet1RouteTableAssociation347902D1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet1DefaultRouteAE1D6490": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet2SubnetCFCDAA7A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet2RouteTable0A19E10E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTable0A19E10E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet2RouteTableAssociation0C73D413": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet2DefaultRouteF4F5CFD2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCIGWB7E252D3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCVPCGW99B986DC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-ecs-patterns-queue-backlog-per-instance-scaling"
+    },
+    "queueProcessingFargateServiceTestDefaultTestDeployAssert73AFD2F6.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "queueProcessingFargateServiceTestDefaultTestDeployAssert73AFD2F6.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "queueProcessingFargateServiceTestDefaultTestDeployAssert73AFD2F6": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "queueProcessingFargateServiceTestDefaultTestDeployAssert73AFD2F6.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "queueProcessingFargateServiceTestDefaultTestDeployAssert73AFD2F6.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "queueProcessingFargateServiceTestDefaultTestDeployAssert73AFD2F6.assets"
+      ],
+      "metadata": {
+        "/queueProcessingFargateServiceTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/queueProcessingFargateServiceTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "queueProcessingFargateServiceTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1008.0"
+}
