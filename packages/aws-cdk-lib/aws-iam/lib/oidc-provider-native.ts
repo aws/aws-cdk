@@ -169,10 +169,6 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
       physicalName: props.oidcProviderName,
     });
 
-    if (!props.url) {
-      throw new ValidationError('The URL of the identity provider is required', scope);
-    }
-
     if (!props.url.startsWith('https://')) {
       throw new ValidationError(
         'The URL of the identity provider must start with https://', scope,
@@ -181,7 +177,7 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
 
     // clientids cannot be more than 100
     if (props.clientIds && props.clientIds.length > 100) {
-      throw new ValidationError('The maximum number of client that can be registered is 100', scope);
+      throw new ValidationError('The maximum number of clients that can be registered is 100', scope);
     }
 
     // clientId max length is 255
@@ -189,7 +185,7 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
       throw new ValidationError('The maximum length of a client ID is 255 characters', scope);
     }
 
-    // thumbprints is optional, but if provided, must be 5 or less
+    // thumbprints[] is optional, but if provided, must be 5 or less
     if (props.thumbprints && props.thumbprints.length > 5) {
       throw new ValidationError('The maximum number of thumbprints is 5', scope);
     }
