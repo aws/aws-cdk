@@ -1,0 +1,17 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "SubnetIpamIntegTest/DefaultTest": {
+      "stacks": [
+        "SubnetIpamTest"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "enabled": false
+        }
+      },
+      "assertionStack": "SubnetIpamIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SubnetIpamIntegTestDefaultTestDeployAssert588F4A40"
+    }
+  }
+}
