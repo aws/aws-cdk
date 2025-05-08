@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "LambdaInvokeAllVersionsIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-tasks-lambda-invoke-all-versions-integ"
+      ],
+      "assertionStack": "LambdaInvokeAllVersionsIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaInvokeAllVersionsIntegTestDefaultTestDeployAssertA82B09A1"
+    }
+  }
+}
