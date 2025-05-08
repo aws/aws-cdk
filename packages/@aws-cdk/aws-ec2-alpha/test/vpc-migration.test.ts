@@ -1,6 +1,6 @@
 import { App, Stack, cx_api } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { InternetGateway, NatGateway, RouteTable } from '../lib/route';
+import { InternetGateway, NatConnectivityType, NatGateway, RouteTable } from '../lib/route';
 import { VpcV2, IpAddresses } from '../lib/vpc-v2';
 import { IpCidr, SubnetV2 } from '../lib';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
@@ -29,8 +29,8 @@ describe('InternetGateway', () => {
       // Verify that the VPC Gateway Attachment is created with the correct properties
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::EC2::VPCGatewayAttachment', {
-        VpcId: { Ref: 'TestVpc' },
-        InternetGatewayId: { Ref: 'TestIgw' }, // Should use the ref when feature flag is enabled
+        VpcId: { Ref: 'TestVpcE77CE678' },
+        InternetGatewayId: { Ref: 'TestIgwIGW1B907368' }, // Should use the ref when feature flag is enabled
       });
     });
 
@@ -56,8 +56,8 @@ describe('InternetGateway', () => {
       // Verify that the VPC Gateway Attachment is created with the correct properties
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::EC2::VPCGatewayAttachment', {
-        VpcId: { Ref: 'TestVpc' },
-        InternetGatewayId: { 'Fn::GetAtt': ['TestIgw', 'InternetGatewayId'] }, // Should use the attribute when feature flag is disabled
+        VpcId: { 'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'] },
+        InternetGatewayId: { 'Fn::GetAtt': ['TestIgwIGW1B907368', 'InternetGatewayId'] }, // Should use the attribute when feature flag is disabled
       });
     });
   });
@@ -88,6 +88,7 @@ describe('NatGateway', () => {
       // WHEN
       const natGateway = new NatGateway(stack, 'TestNatGateway', {
         subnet: publicSubnet,
+        connectivityType: NatConnectivityType.PRIVATE,
       });
 
       // THEN
@@ -97,8 +98,8 @@ describe('NatGateway', () => {
       // Verify that the NAT Gateway is created with the correct properties
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::EC2::NatGateway', {
-        SubnetId: { Ref: 'PublicSubnet' },
-        AllocationId: { 'Fn::GetAtt': [expect.stringMatching(/TestNatGatewayEIP.*/), 'AllocationId'] },
+        ConnectivityType: 'private',
+        SubnetId: { Ref: 'PublicSubnet1C95672B' },
       });
     });
 
@@ -125,6 +126,7 @@ describe('NatGateway', () => {
       // WHEN
       const natGateway = new NatGateway(stack, 'TestNatGateway', {
         subnet: publicSubnet,
+        vpc: vpc,
       });
 
       // THEN
@@ -134,8 +136,8 @@ describe('NatGateway', () => {
       // Verify that the NAT Gateway is created with the correct properties
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::EC2::NatGateway', {
-        SubnetId: { Ref: 'PublicSubnet' },
-        AllocationId: { 'Fn::GetAtt': [expect.stringMatching(/TestNatGatewayEIP.*/), 'AllocationId'] },
+        SubnetId: { Ref: 'PublicSubnet1C95672B' },
+        AllocationId: { 'Fn::GetAtt': ['TestNatGatewayEIP60E02DDA', 'AllocationId'] },
       });
     });
   });
@@ -165,7 +167,7 @@ describe('RouteTable', () => {
       // Verify that the Route Table is created with the correct properties
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::EC2::RouteTable', {
-        VpcId: { Ref: 'TestVpc' },
+        VpcId: { Ref: 'TestVpcE77CE678' },
       });
     });
 
@@ -191,7 +193,7 @@ describe('RouteTable', () => {
       // Verify that the Route Table is created with the correct properties
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::EC2::RouteTable', {
-        VpcId: { Ref: 'TestVpc' },
+        VpcId: { 'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'] },
       });
     });
   });

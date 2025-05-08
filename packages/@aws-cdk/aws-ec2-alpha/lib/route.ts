@@ -290,8 +290,8 @@ export class InternetGateway extends Resource implements IRouteTarget {
     this.resource = new CfnInternetGateway(this, 'IGW', {});
     this.node.defaultChild = this.resource;
 
-    FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
-      this.routerTargetId = this.resource.ref : this.routerTargetId = this.resource.attrInternetGatewayId;
+    this.routerTargetId = FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
+      this.resource.ref : this.resource.attrInternetGatewayId;
     this.vpcId = props.vpc.vpcId;
 
     if (props.internetGatewayName) {
@@ -448,7 +448,7 @@ export class NatGateway extends Resource implements IRouteTarget {
     this.maxDrainDuration = props.maxDrainDuration || Duration.seconds(350);
 
     if (this.connectivityType === NatConnectivityType.PUBLIC) {
-      if (!props.vpc || !props.allocationId) {
+      if (!props.vpc && !props.allocationId) {
         throw new ValidationError('Either provide vpc or allocationId', this);
       }
     }
@@ -477,13 +477,11 @@ export class NatGateway extends Resource implements IRouteTarget {
       secondaryAllocationIds: props.secondaryAllocationIds,
       ...props,
     });
-    FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
-      this.natGatewayId = this.resource.ref : this.natGatewayId = this.resource.attrNatGatewayId;
+    this.natGatewayId = FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
+      this.resource.ref : this.resource.attrNatGatewayId;
 
-    Tags.of(this).add('Name', props.subnet.node.path);
-
-    FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
-      this.routerTargetId = this.resource.ref : this.routerTargetId = this.resource.attrNatGatewayId;
+    this.routerTargetId = FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
+      this.resource.ref : this.resource.attrNatGatewayId;
 
     this.node.defaultChild = this.resource;
     this.resource.node.addDependency(props.subnet.internetConnectivityEstablished);
@@ -825,8 +823,8 @@ export class RouteTable extends Resource implements IRouteTable {
     }
     this.node.defaultChild = this.resource;
 
-    FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
-      this.routeTableId = this.resource.ref : this.routeTableId = this.resource.attrRouteTableId;
+    this.routeTableId = FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
+      this.resource.ref : this.resource.attrRouteTableId;
   }
 
   /**

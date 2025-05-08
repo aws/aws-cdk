@@ -27,10 +27,7 @@
      }
     ],
     "VpcId": {
-     "Fn::GetAtt": [
-      "VpcWithFeatureFlagEnabled5FB9A58D",
-      "VpcId"
-     ]
+     "Ref": "VpcWithFeatureFlagEnabled5FB9A58D"
     }
    }
   },
@@ -44,10 +41,7 @@
      }
     ],
     "VpcId": {
-     "Fn::GetAtt": [
-      "VpcWithFeatureFlagEnabled5FB9A58D",
-      "VpcId"
-     ]
+     "Ref": "VpcWithFeatureFlagEnabled5FB9A58D"
     }
    }
   },
@@ -72,10 +66,7 @@
      "Ref": "InternetGatewayIGW073A1D76"
     },
     "VpcId": {
-     "Fn::GetAtt": [
-      "VpcWithFeatureFlagEnabled5FB9A58D",
-      "VpcId"
-     ]
+     "Ref": "VpcWithFeatureFlagEnabled5FB9A58D"
     }
    }
   },
@@ -85,13 +76,7 @@
     "ConnectivityType": "private",
     "SubnetId": {
      "Ref": "PublicSubnet1C95672B"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "VpcMigrationFeatureFlagEnabledStack/PublicSubnet"
-     }
-    ]
+    }
    },
    "DependsOn": [
     "PublicSubnetRouteTableAssociation0984B11D"
@@ -101,10 +86,7 @@
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "VpcId": {
-     "Fn::GetAtt": [
-      "VpcWithFeatureFlagEnabled5FB9A58D",
-      "VpcId"
-     ]
+     "Ref": "VpcWithFeatureFlagEnabled5FB9A58D"
     }
    }
   },

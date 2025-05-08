@@ -91,13 +91,7 @@
     "ConnectivityType": "private",
     "SubnetId": {
      "Ref": "PublicSubnet1C95672B"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "VpcMigrationFeatureFlagDisabledStack/PublicSubnet"
-     }
-    ]
+    }
    },
    "DependsOn": [
     "PublicSubnetRouteTableAssociation0984B11D"

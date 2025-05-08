@@ -315,9 +315,6 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
 
     const includeResourceTypes = [CfnSubnet.CFN_RESOURCE_TYPE_NAME];
-    /**
-     * Do not add tag for migration of VPC to VPCv2 as it needs to be overriden at the time of stack definition
-     */
     if (props.subnetName) {
       Tags.of(subnet).add(SUBNETNAME_TAG, props.subnetName);
     }
