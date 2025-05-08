@@ -58,7 +58,7 @@ jobs:
           ncu --upgrade --reject=@types/node,@types/prettier,constructs,jsii,jsii-rosetta,typescript --target=minor
           # Upgrade all the packages
           lerna exec --parallel ncu -- --upgrade --filter=jsii,jsii-rosetta,typescript --target=patch
-          lerna exec --parallel ncu -- --upgrade --reject='@types/conventional-commits-parser,@types/node,@types/prettier,constructs,jsii,jsii-rosetta,typescript,aws-sdk-mock,@aws-sdk/*,@aws-cdk/aws-service-spec,@aws-cdk/service-spec-types,${{ steps.list-packages.outputs.list }}' --target=minor
+          lerna exec --parallel ncu -- --upgrade --reject='@aws-cdk/asset-awscli-v1,@types/conventional-commits-parser,@types/node,@types/prettier,constructs,jsii,jsii-rosetta,typescript,aws-sdk-mock,@aws-sdk/*,@aws-cdk/aws-service-spec,@aws-cdk/service-spec-types,${{ steps.list-packages.outputs.list }}' --target=minor
           # Upgrade package.json files in init templates
           for pj in $(find packages/aws-cdk/lib/init-templates -name package.json); do
             (cd $(dirname $pj) && ncu --upgrade --reject='constructs,${{ steps.list-packages.outputs.list }}')
