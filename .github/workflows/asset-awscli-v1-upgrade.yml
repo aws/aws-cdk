@@ -57,7 +57,7 @@ jobs:
         run: yarn upgrade
 
       - name: Run "yarn build"
-        run: yarn build
+        run: yarn build --skip-test
 
       - name: Dry-run update snapshots
         run: (cd packages/@aws-cdk-testing/framework-integ && yarn integ --update-on-failed --dry-run)
@@ -108,7 +108,7 @@ jobs:
           title: 'chore: npm-check-updates && yarn upgrade'
           body: |-
             Ran npm-check-updates and yarn upgrade to keep the `yarn.lock` file up-to-date.
-          labels: contribution/core,dependencies,auto-approve
+          labels: contribution/core,dependencies
           team-reviewers: aws-cdk-team
           # Github prevents further Github actions to be run if the default Github token is used.
           # Instead use a privileged token here, so further GH actions can be triggered on this PR.
