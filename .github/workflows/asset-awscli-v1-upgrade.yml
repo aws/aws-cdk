@@ -84,16 +84,14 @@ jobs:
     steps:
       - name: Check Out
         uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - name: Download patch
         uses: actions/download-artifact@v4
         with:
           name: upgrade.patch
           path: ${{ runner.temp }}
-
-      - name: Git Pull LFS
-        run: |-
-          git lfs pull
 
       - name: Apply patch
         run: '[ -s ${{ runner.temp }}/upgrade.patch ] && git apply --binary ${{ runner.temp
