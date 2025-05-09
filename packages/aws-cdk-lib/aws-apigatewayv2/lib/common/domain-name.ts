@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { IpAddressType } from './api';
 import { CfnDomainName, CfnDomainNameProps } from '.././index';
 import { ICertificate } from '../../../aws-certificatemanager';
 import { IBucket } from '../../../aws-s3';
@@ -121,6 +122,14 @@ export interface EndpointOptions {
   readonly securityPolicy?: SecurityPolicy;
 
   /**
+   * The IP address types that can invoke this domain name.
+   * Use 'ipv4' to allow only IPv4 addresses to invoke the domain name, or use 'dualstack'
+   * to allow both IPv4 and IPv6 addresses to invoke the domain name.
+   * @default - undefined - AWS default is IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
+
+  /**
    * A public certificate issued by ACM to validate that you own a custom domain. This parameter is required
    * only when you configure mutual TLS authentication and you specify an ACM imported or private CA certificate
    * for `certificate`. The ownership certificate validates that you have permissions to use the domain name.
@@ -227,6 +236,7 @@ export class DomainName extends Resource implements IDomainName {
       endpointType: options.endpointType ? options.endpointType?.toString() : 'REGIONAL',
       ownershipVerificationCertificateArn: options.ownershipCertificate?.certificateArn,
       securityPolicy: options.securityPolicy?.toString(),
+      ipAddressType: options.ipAddressType,
     };
 
     this.validateEndpointType(domainNameConfig.endpointType);

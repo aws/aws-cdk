@@ -2,7 +2,7 @@ import { Template } from '../../../assertions';
 import { Certificate } from '../../../aws-certificatemanager';
 import { Bucket } from '../../../aws-s3';
 import { Stack } from '../../../core';
-import { DomainName, EndpointType, HttpApi, SecurityPolicy } from '../../lib';
+import { DomainName, EndpointType, HttpApi, SecurityPolicy, IpAddressType } from '../../lib';
 
 const domainName = 'example.com';
 const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
@@ -267,6 +267,30 @@ describe('DomainName', () => {
         TruststoreUri: 's3://example-bucket/someca.pem',
         TruststoreVersion: 'version',
       },
+    });
+  });
+
+  test('domain name with IP address type set to DUAL_STACK', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      ipAddressType: IpAddressType.DUAL_STACK,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::DomainName', {
+      DomainName: 'example.com',
+      DomainNameConfigurations: [
+        {
+          CertificateArn: 'arn:aws:acm:us-east-1:111111111111:certificate',
+          EndpointType: 'REGIONAL',
+          IpAddressType: 'dualstack',
+        },
+      ],
     });
   });
 
