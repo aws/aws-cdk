@@ -173,12 +173,7 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "s3:AbortMultipartUpload",
-        "s3:GetObject",
-        "s3:ListMultipartUploadParts",
-        "s3:PutObject"
-       ],
+       "Action": "s3:GetObject",
        "Effect": "Allow",
        "Resource": {
         "Fn::Join": [
@@ -223,15 +218,7 @@
        {
         "Ref": "Bucket83908E77"
        },
-       "\",\"Key\":\"my-key.csv\"}},\"ResultWriter\":{\"Resource\":\"arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":states:::s3:putObject\",\"Parameters\":{\"Bucket\":\"",
-       {
-        "Ref": "Bucket83908E77"
-       },
-       "\",\"Prefix\":\"my-prefix\"}}}}}"
+       "\",\"Key\":\"my-key.csv\"}}}}}"
       ]
      ]
     },
@@ -297,6 +284,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {

@@ -119,9 +119,9 @@
     "mime-types"
   ],
   "dependencies": {
-    "@aws-cdk/asset-awscli-v1": "^2.2.229",
+    "@aws-cdk/asset-awscli-v1": "2.2.229",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.0",
-    "@aws-cdk/cloud-assembly-schema": "^41.0.0",
+    "@aws-cdk/cloud-assembly-schema": "^41.2.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.3.0",
@@ -136,7 +136,7 @@
   },
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.0.3",
-    "@aws-cdk/aws-service-spec": "^0.1.69",
+    "@aws-cdk/aws-service-spec": "^0.1.71",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -477,6 +477,7 @@
     "./aws-sqs": "./aws-sqs/index.js",
     "./aws-ssm": "./aws-ssm/index.js",
     "./aws-ssmcontacts": "./aws-ssmcontacts/index.js",
+    "./aws-ssmguiconnect": "./aws-ssmguiconnect/index.js",
     "./aws-ssmincidents": "./aws-ssmincidents/index.js",
     "./aws-ssmquicksetup": "./aws-ssmquicksetup/index.js",
     "./aws-sso": "./aws-sso/index.js",

@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import { FargateService, FargateTaskDefinition, HealthCheck } from '../../../aws-ecs';
-import { FeatureFlags } from '../../../core';
+import { FeatureFlags, Duration } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
@@ -47,6 +47,14 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    * @default false
    */
   readonly assignPublicIp?: boolean;
+
+  /**
+   * The period of time, in seconds, that the Amazon ECS service scheduler ignores unhealthy
+   * Elastic Load Balancing target health checks after a task has first started.
+   *
+   * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
+   */
+  readonly healthCheckGracePeriod?: Duration;
 }
 
 /**
@@ -117,6 +125,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       circuitBreaker: props.circuitBreaker,
       capacityProviderStrategies: props.capacityProviderStrategies,
       enableExecuteCommand: props.enableExecuteCommand,
+      healthCheckGracePeriod: props.healthCheckGracePeriod,
     });
 
     this.configureAutoscalingForService(this.service);
