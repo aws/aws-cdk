@@ -168,6 +168,18 @@ export interface ClientVpnEndpointOptions {
    * @default - no banner is presented to the client
    */
   readonly clientLoginBanner?: string;
+
+  /**
+   * Whether to enable Client Route Enforcement.
+   * Client route enforcement is a feature of the Client VPN service that helps enforce administrator defined routes on devices connected through the VPN.
+   *
+   * This feature helps improve your security posture by ensuring that network traffic originating from a connected client is not inadvertently sent outside the VPN tunnel.
+   *
+   * @see https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-cre.html
+   *
+   * @default undefine - AWS EC2 default is false
+   */
+  readonly enableClientRouteEnforcement?: boolean;
 }
 
 /**
@@ -350,6 +362,9 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       },
       description: props.description,
       dnsServers: props.dnsServers,
+      clientRouteEnforcementOptions: props.enableClientRouteEnforcement !== undefined ? {
+        enforced: props.enableClientRouteEnforcement,
+      } : undefined,
       securityGroupIds: securityGroups.map(s => s.securityGroupId),
       selfServicePortal: booleanToEnabledDisabled(props.selfServicePortal),
       serverCertificateArn: props.serverCertificateArn,
