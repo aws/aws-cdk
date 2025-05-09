@@ -91,6 +91,10 @@ jobs:
           name: upgrade.patch
           path: ${{ runner.temp }}
 
+      - name: Git Pull LFS
+        run: |-
+          git lfs pull
+
       - name: Apply patch
         run: '[ -s ${{ runner.temp }}/upgrade.patch ] && git apply --binary ${{ runner.temp
           }}/upgrade.patch || echo "Empty patch. Skipping."'
