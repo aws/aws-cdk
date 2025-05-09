@@ -67,7 +67,7 @@ jobs:
       - name: Create Patch
         run: |-
           git add .
-          git diff --patch --staged > ${{ runner.temp }}/upgrade.patch
+          git diff --binary --patch --staged > ${{ runner.temp }}/upgrade.patch
       - name: Upload Patch
         uses: actions/upload-artifact@v4
         with:
@@ -92,24 +92,24 @@ jobs:
           path: ${{ runner.temp }}
 
       - name: Apply patch
-        run: '[ -s ${{ runner.temp }}/upgrade.patch ] && git apply ${{ runner.temp
+        run: '[ -s ${{ runner.temp }}/upgrade.patch ] && git apply --binary ${{ runner.temp
           }}/upgrade.patch || echo "Empty patch. Skipping."'
 
       - name: Make Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
           # Git commit details
-          branch: automation/yarn-upgrade
+          branch: automation/yarn-upgrade-asset-awscli-v1
           author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
           commit-message: |-
             chore: npm-check-updates && yarn upgrade
             Ran npm-check-updates and yarn upgrade to keep the `yarn.lock` file up-to-date.
           # Pull Request details
-          title: 'chore: npm-check-updates && yarn upgrade'
+          title: 'chore: yarn upgrade @aws-cdk/asset-awscli-v1'
           body: |-
-            Ran npm-check-updates and yarn upgrade to keep the `yarn.lock` file up-to-date.
+            Ran npm-check-updates and yarn upgrade for `@aws-cdk/asset-awscli-v1`. Updated snapshots with dry-run
           labels: contribution/core,dependencies
           team-reviewers: aws-cdk-team
           # Github prevents further Github actions to be run if the default Github token is used.
           # Instead use a privileged token here, so further GH actions can be triggered on this PR.
-          token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
