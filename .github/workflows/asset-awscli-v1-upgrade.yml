@@ -3,7 +3,7 @@ name: Yarn Upgrade AWSCLI Asset
 on:
   schedule:
     # Every thursday at 13:37 UTC
-    - cron: 37 13 * * 4
+    - cron: 37 13 * * 3
   workflow_dispatch: {}
 
 jobs:
