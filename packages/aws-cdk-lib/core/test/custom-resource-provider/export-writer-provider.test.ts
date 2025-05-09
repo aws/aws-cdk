@@ -130,7 +130,7 @@ describe('export writer provider', () => {
           value: 'nodejs22.x',
         },
         'ap-east-2': {
-          value: 'nodejs20.x',
+          value: 'nodejs22.x',
         },
       },
     },
