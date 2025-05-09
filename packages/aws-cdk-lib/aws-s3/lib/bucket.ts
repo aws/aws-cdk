@@ -344,7 +344,7 @@ export interface IBucket extends IResource {
    * that will be matched against the s3 object key. Refer to the S3 Developer Guide
    * for details about allowed filter rules.
    *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#notification-how-to-filtering
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-filtering.html
    *
    * @example
    *
@@ -895,7 +895,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * that will be matched against the s3 object key. Refer to the S3 Developer Guide
    * for details about allowed filter rules.
    *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#notification-how-to-filtering
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-filtering.html
    *
    * @example
    *
@@ -1924,6 +1924,15 @@ export interface BucketProps {
   readonly minimumTLSVersion?: number;
 
   /**
+   * The role to be used by the replication.
+   *
+   * When setting this property, you must also set `replicationRules`.
+   *
+   * @default - a new role will be created.
+   */
+  readonly replicationRole?: iam.IRole;
+
+  /**
    * A container for one or more replication rules.
    *
    * @default - No replication
@@ -2779,7 +2788,11 @@ export class Bucket extends BucketBase {
   }
 
   private renderReplicationConfiguration(props: BucketProps): CfnBucket.ReplicationConfigurationProperty | undefined {
-    if (!props.replicationRules || props.replicationRules.length === 0) {
+    const replicationRulesIsEmpty = !props.replicationRules || props.replicationRules.length === 0;
+    if (replicationRulesIsEmpty && props.replicationRole) {
+      throw new ValidationError('cannot specify replicationRole when replicationRules is empty', this);
+    }
+    if (replicationRulesIsEmpty) {
       return undefined;
     }
 
@@ -2801,37 +2814,42 @@ export class Bucket extends BucketBase {
     const destinationBuckets = props.replicationRules.map(rule => rule.destination);
     const kmsKeys = props.replicationRules.map(rule => rule.kmsKey).filter(kmsKey => kmsKey !== undefined) as kms.IKey[];
 
-    const replicationRole = new iam.Role(this, 'ReplicationRole', {
-      assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
-      roleName: FeatureFlags.of(this).isEnabled(cxapi.SET_UNIQUE_REPLICATION_ROLE_NAME) ? PhysicalName.GENERATE_IF_NEEDED : 'CDKReplicationRole',
-    });
+    let replicationRole: iam.IRole;
+    if (!props.replicationRole) {
+      replicationRole = new iam.Role(this, 'ReplicationRole', {
+        assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+        roleName: FeatureFlags.of(this).isEnabled(cxapi.SET_UNIQUE_REPLICATION_ROLE_NAME) ? PhysicalName.GENERATE_IF_NEEDED : 'CDKReplicationRole',
+      });
 
-    // add permissions to the role
-    // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
-    replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
-      resources: [Lazy.string({ produce: () => this.bucketArn })],
-      effect: iam.Effect.ALLOW,
-    }));
-    replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
-      resources: [Lazy.string({ produce: () => this.arnForObjects('*') })],
-      effect: iam.Effect.ALLOW,
-    }));
-    if (destinationBuckets.length > 0) {
+      // add permissions to the role
+      // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
       replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
-        resources: destinationBuckets.map(bucket => bucket.arnForObjects('*')),
+        actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
+        resources: [Lazy.string({ produce: () => this.bucketArn })],
         effect: iam.Effect.ALLOW,
       }));
+      replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
+        resources: [Lazy.string({ produce: () => this.arnForObjects('*') })],
+        effect: iam.Effect.ALLOW,
+      }));
+      if (destinationBuckets.length > 0) {
+        replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
+          actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
+          resources: destinationBuckets.map(bucket => bucket.arnForObjects('*')),
+          effect: iam.Effect.ALLOW,
+        }));
+      }
+
+      kmsKeys.forEach(kmsKey => {
+        kmsKey.grantEncrypt(replicationRole);
+      });
+
+      // If KMS key encryption is enabled on the source bucket, configure the decrypt permissions.
+      this.encryptionKey?.grantDecrypt(replicationRole);
+    } else {
+      replicationRole = props.replicationRole;
     }
-
-    kmsKeys.forEach(kmsKey => {
-      kmsKey.grantEncrypt(replicationRole);
-    });
-
-    // If KMS key encryption is enabled on the source bucket, configure the decrypt permissions.
-    this.encryptionKey?.grantDecrypt(replicationRole);
 
     return {
       role: replicationRole.roleArn,

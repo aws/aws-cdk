@@ -12,10 +12,12 @@ async function main() {
       defaultDescription: 'eslint provided by node dependencies',
     })
     .option('fix', {
+      alias: 'f',
       type: 'boolean',
       desc: 'Fix the found issues',
       default: false,
     })
+    .strict()
     .argv;
 
   const options = cdkBuildOptions();

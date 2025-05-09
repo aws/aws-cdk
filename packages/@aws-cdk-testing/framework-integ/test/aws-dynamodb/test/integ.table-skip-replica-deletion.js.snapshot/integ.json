@@ -8,5 +8,6 @@
       "assertionStack": "cdk-dynamodb-skip-replica-deletion-test/DefaultTest/DeployAssert",
       "assertionStackName": "cdkdynamodbskipreplicadeletiontestDefaultTestDeployAssert2E817006"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
