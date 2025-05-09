@@ -454,6 +454,9 @@
     "EndpointType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts"
     },
+    "RestApiMode": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts"
+    },
     "MethodLoggingLevel": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/stage.ts"
     },
@@ -592,6 +595,12 @@
     }
   },
   "appsync": {
+    "HandlerBehavior": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/channel-namespace.ts"
+    },
+    "LambdaInvokeType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.ts"
+    },
     "FunctionRuntime": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/runtime.ts"
     }
@@ -888,6 +897,9 @@
     },
     "CodeCommitTrigger": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/codecommit/source-action.ts"
+    },
+    "RevisionType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/codepipeline/invoke-action.ts"
     },
     "RegistryType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ecr/build-and-publish-action.ts"
@@ -1848,6 +1860,20 @@
     },
     "TriggerInvalidation": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/triggers/lib/trigger.ts"
+    }
+  },
+  "applicationsignals": {
+    "JavaInstrumentationVersion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts"
+    },
+    "PythonInstrumentationVersion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts"
+    },
+    "DotnetInstrumentationVersion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts"
+    },
+    "NodeInstrumentationVersion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts"
     }
   },
   "neptune": {

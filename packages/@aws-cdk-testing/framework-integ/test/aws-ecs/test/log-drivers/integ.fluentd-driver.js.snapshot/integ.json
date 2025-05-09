@@ -8,5 +8,6 @@
       "assertionStack": "cdk-ecs-fluentd-test/DefaultTest/DeployAssert",
       "assertionStackName": "cdkecsfluentdtestDefaultTestDeployAssert52981939"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
