@@ -3,11 +3,11 @@
   "Certificate4E7ABB08": {
    "Type": "AWS::CertificateManager::Certificate",
    "Properties": {
-    "DomainName": "server.naonao.org",
+    "DomainName": "server.example.com",
     "DomainValidationOptions": [
      {
-      "DomainName": "server.naonao.org",
-      "HostedZoneId": "Z09899302SQGPIKAQXEO3"
+      "DomainName": "server.example.com",
+      "HostedZoneId": "Z23ABC4XYZL05B"
      }
     ],
     "Tags": [
@@ -22,11 +22,11 @@
   "ClientCertificateF2C90FA6": {
    "Type": "AWS::CertificateManager::Certificate",
    "Properties": {
-    "DomainName": "client.naonao.org",
+    "DomainName": "client.example.com",
     "DomainValidationOptions": [
      {
-      "DomainName": "client.naonao.org",
-      "HostedZoneId": "Z09899302SQGPIKAQXEO3"
+      "DomainName": "client.example.com",
+      "HostedZoneId": "Z23ABC4XYZL05B"
      }
     ],
     "Tags": [
