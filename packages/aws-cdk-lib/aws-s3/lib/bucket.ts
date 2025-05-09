@@ -2223,9 +2223,9 @@ export class Bucket extends BucketBase {
 
     Bucket.validateBucketName(this.physicalName);
 
-    let blockPublicAccess: BlockPublicAccessOptions | undefined = props.blockPublicAccess;
-    if (props.blockPublicAccess && FeatureFlags.of(this).isEnabled(cxapi.S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE)) {
-      blockPublicAccess = this.setBlockPublicAccessDefaults(props.blockPublicAccess);
+    let publicAccessBlockConfig: BlockPublicAccessOptions | undefined = props.blockPublicAccess;
+    if (props.blockPublicAccess && FeatureFlags.of(this).isEnabled(cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT)) {
+      publicAccessBlockConfig = this.setDefaultPublicAccessBlockConfig(props.blockPublicAccess);
     }
 
     const websiteConfiguration = this.renderWebsiteConfiguration(props);
@@ -2242,7 +2242,7 @@ export class Bucket extends BucketBase {
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
       lifecycleConfiguration: Lazy.any({ produce: () => this.parseLifecycleConfiguration() }),
       websiteConfiguration,
-      publicAccessBlockConfiguration: blockPublicAccess,
+      publicAccessBlockConfiguration: publicAccessBlockConfig,
       metricsConfigurations: Lazy.any({ produce: () => this.parseMetricConfiguration() }),
       corsConfiguration: Lazy.any({ produce: () => this.parseCorsConfiguration() }),
       accessControl: Lazy.string({ produce: () => this.accessControl }),
@@ -3087,7 +3087,7 @@ export class Bucket extends BucketBase {
    * If no blockPublicAccessOptions are specified at all, this is already the case as an s3 default in aws
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html
    */
-  private setBlockPublicAccessDefaults(blockPublicAccessOptions: BlockPublicAccessOptions) {
+  private setDefaultPublicAccessBlockConfig(blockPublicAccessOptions: BlockPublicAccessOptions) {
     return {
       blockPublicAcls: blockPublicAccessOptions.blockPublicAcls ?? true,
       blockPublicPolicy: blockPublicAccessOptions.blockPublicPolicy ?? true,

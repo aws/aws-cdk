@@ -902,10 +902,10 @@ describe('bucket', () => {
   });
 
   describe('bucket with custom block public access setting', () => {
-    test('S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE Disabled', () => {
+    test('S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT Disabled', () => {
       const app = new cdk.App({
         context: {
-          [cxapi.S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE]: false,
+          [cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: false,
         },
       });
       const stack = new cdk.Stack(app);
@@ -929,10 +929,10 @@ describe('bucket', () => {
       });
     });
 
-    test('S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE Enabled', () => {
+    test('S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT Enabled', () => {
       const app = new cdk.App({
         context: {
-          [cxapi.S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE]: true,
+          [cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: true,
         },
       });
       const stack = new cdk.Stack(app);
@@ -1009,10 +1009,10 @@ describe('bucket', () => {
   });
 
   describe('bucket with custom block public access setting', () => {
-    test('S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE Disabled', () => {
+    test('S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT Disabled', () => {
       const app = new cdk.App({
         context: {
-          [cxapi.S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE]: false,
+          [cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: false,
         },
       });
       const stack = new cdk.Stack(app);
@@ -1036,10 +1036,10 @@ describe('bucket', () => {
       });
     });
 
-    test('S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE Enabled', () => {
+    test('S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT Enabled', () => {
       const app = new cdk.App({
         context: {
-          [cxapi.S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE]: true,
+          [cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: true,
         },
       });
       const stack = new cdk.Stack(app);
