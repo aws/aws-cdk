@@ -59,9 +59,6 @@ jobs:
       - name: Run "yarn build"
         run: yarn build --skip-test
 
-      - name: Dry-run update snapshots
-        run: (cd packages/@aws-cdk-testing/framework-integ && yarn integ --update-on-failed --dry-run || exit 0)
-
       # Next, create and upload the changes as a patch file. This will later be downloaded to create a pull request
       # Creating a pull request requires write permissions and it's best to keep write privileges isolated.
       - name: Create Patch
@@ -84,8 +81,6 @@ jobs:
     steps:
       - name: Check Out
         uses: actions/checkout@v4
-        with:
-          lfs: true
 
       - name: Download patch
         uses: actions/download-artifact@v4
@@ -109,7 +104,8 @@ jobs:
           # Pull Request details
           title: 'chore: yarn upgrade @aws-cdk/asset-awscli-v1'
           body: |-
-            Ran npm-check-updates and yarn upgrade for `@aws-cdk/asset-awscli-v1`. Updated snapshots with dry-run
+            Ran npm-check-updates and yarn upgrade for `@aws-cdk/asset-awscli-v1`.
+            Please run integration tests locally to update snapshots.
           labels: contribution/core,dependencies
           team-reviewers: aws-cdk-team
           # Github prevents further Github actions to be run if the default Github token is used.
