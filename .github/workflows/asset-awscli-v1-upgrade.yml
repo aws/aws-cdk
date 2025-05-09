@@ -98,9 +98,13 @@ jobs:
           title: 'chore: yarn upgrade @aws-cdk/asset-awscli-v1'
           body: |-
             Ran npm-check-updates and yarn upgrade for `@aws-cdk/asset-awscli-v1`.
-            Please run integration tests locally to update snapshots.
+            Checkout this branch and run integration tests locally to update snapshots.
+            ```
+            (cd packages/@aws-cdk-testing/framework-integ && yarn integ --update-on-failed)
+            ```
+            See https://www.npmjs.com/package/@aws-cdk/integ-runner for more integ runner options.
           labels: contribution/core,dependencies
           team-reviewers: aws-cdk-team
           # Github prevents further Github actions to be run if the default Github token is used.
           # Instead use a privileged token here, so further GH actions can be triggered on this PR.
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
