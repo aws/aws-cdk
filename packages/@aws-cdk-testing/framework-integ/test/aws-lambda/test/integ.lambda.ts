@@ -17,7 +17,6 @@ const fn = new lambda.Function(stack, 'MyLambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
   runtime: STANDARD_NODEJS_RUNTIME,
-  deadLetterQueueEnabled: true,
 });
 
 fn.addToRolePolicy(new iam.PolicyStatement({
@@ -56,6 +55,13 @@ new lambda.Function(stack, 'MySnapStartLambdaArm', {
   runtime: lambda.Runtime.JAVA_21,
   architecture: lambda.Architecture.ARM_64,
   snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+});
+
+new lambda.Function(stack, 'LambdaWithDlq', {
+  code: new lambda.InlineCode('foo'),
+  handler: 'index.handler',
+  runtime: STANDARD_NODEJS_RUNTIME,
+  deadLetterQueueEnabled: true,
 });
 
 app.synth();
