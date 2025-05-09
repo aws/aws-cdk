@@ -294,7 +294,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    * Construct an Amazon Linux 2 image from the latest ECS Optimized AMI published in SSM
    *
    * @param hardwareType ECS-optimized AMI variant to use
-   * @param options Additional options
+   * @param Additional options to configure `EcsOptimizedImage`
    */
   public static amazonLinux2(
     hardwareType = AmiHardwareType.STANDARD,
@@ -355,7 +355,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     this.amiParameterName = constructSsmParameterPath({
       windowsVersion: this.windowsVersion,
       generation: this.generation,
-      hwType: this.hwType || AmiHardwareType.STANDARD,
+      hwType: this.hwType ?? AmiHardwareType.STANDARD,
       kernel: props.kernel,
     });
 
