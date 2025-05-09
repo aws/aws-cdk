@@ -4016,6 +4016,35 @@
         "AWS_LAMBDA"
       ]
     },
+    "HandlerBehavior": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/channel-namespace.ts",
+      "enumLike": false,
+      "values": [
+        "CODE",
+        "DIRECT"
+      ]
+    },
+    "AppSyncDataSourceType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.ts",
+      "enumLike": false,
+      "values": [
+        "AWS_LAMBDA",
+        "AMAZON_DYNAMODB",
+        "AMAZON_EVENTBRIDGE",
+        "AMAZON_OPENSEARCH_SERVICE",
+        "HTTP",
+        "RELATIONAL_DATABASE",
+        "AMAZON_BEDROCK_RUNTIME"
+      ]
+    },
+    "LambdaInvokeType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.ts",
+      "enumLike": false,
+      "values": [
+        "EVENT",
+        "REQUEST_RESPONSE"
+      ]
+    },
     "Visibility": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/graphqlapi-base.ts",
       "enumLike": false,
@@ -5481,6 +5510,16 @@
         "None",
         "Poll",
         "Events"
+      ]
+    },
+    "RevisionType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/codepipeline/invoke-action.ts",
+      "enumLike": false,
+      "values": [
+        "COMMIT_ID",
+        "IMAGE_DIGEST",
+        "S3_OBJECT_VERSION_ID",
+        "S3_OBJECT_KEY"
       ]
     },
     "RegistryType": {
