@@ -502,7 +502,53 @@
       "Arn": {
        "Ref": "MyTopic86869434"
       },
-      "Id": "Target0"
+      "Id": "Target0",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "MyPipelineSourceCodeCommitSourceOnActionStateChangeEventsRoleD56C86B6",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "MyPipelineSourceCodeCommitSourceOnActionStateChangeEventsRoleD56C86B6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyPipelineSourceCodeCommitSourceOnActionStateChangeEventsRoleDefaultPolicy4701CFE4": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "MyTopic86869434"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyPipelineSourceCodeCommitSourceOnActionStateChangeEventsRoleDefaultPolicy4701CFE4",
+    "Roles": [
+     {
+      "Ref": "MyPipelineSourceCodeCommitSourceOnActionStateChangeEventsRoleD56C86B6"
      }
     ]
    }
@@ -554,7 +600,53 @@
       "Arn": {
        "Ref": "MyTopic86869434"
       },
-      "Id": "Target0"
+      "Id": "Target0",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "MyPipelineSourceOnSourceStateChangeEventsRole79DEE677",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "MyPipelineSourceOnSourceStateChangeEventsRole79DEE677": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyPipelineSourceOnSourceStateChangeEventsRoleDefaultPolicy616A885B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "MyTopic86869434"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyPipelineSourceOnSourceStateChangeEventsRoleDefaultPolicy616A885B",
+    "Roles": [
+     {
+      "Ref": "MyPipelineSourceOnSourceStateChangeEventsRole79DEE677"
      }
     ]
    }
@@ -670,7 +762,53 @@
         "detail-state": "$.detail.state"
        },
        "InputTemplate": "\"Pipeline <detail-pipeline> changed state to <detail-state>\""
+      },
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "MyPipelineOnPipelineStateChangeEventsRoleDFA9E661",
+        "Arn"
+       ]
       }
+     }
+    ]
+   }
+  },
+  "MyPipelineOnPipelineStateChangeEventsRoleDFA9E661": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyPipelineOnPipelineStateChangeEventsRoleDefaultPolicy53C4E1C5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "MyTopic86869434"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyPipelineOnPipelineStateChangeEventsRoleDefaultPolicy53C4E1C5",
+    "Roles": [
+     {
+      "Ref": "MyPipelineOnPipelineStateChangeEventsRoleDFA9E661"
      }
     ]
    }
