@@ -184,7 +184,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-dynamodb:retainTableReplica": true,
     "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
     "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
-    "@aws-cdk/aws-s3:s3publicAccessBlockedByDefault": true
+    "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true
   }
 }
 ```
@@ -2069,6 +2069,7 @@ be added with a priority of MUTATING, independent of this feature flag.
         priority: AspectPriority.MUTATING,
       });
       ```
+    
 
 
 ### @aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions
@@ -2086,7 +2087,7 @@ When this feature flag is enabled, a S3 trust policy will be added to the KMS ke
 | 2.195.0 | `false` | `true` |
 
 
-### @aws-cdk/aws-s3:s3publicAccessBlockedByDefault
+### @aws-cdk/aws-s3:publicAccessBlockedByDefault
 
 *When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined.*
 
@@ -2102,5 +2103,6 @@ The new behavior from this feature will allow a user, for example, to set 1 of t
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
+
 
 <!-- END details -->

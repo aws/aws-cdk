@@ -1,11 +1,11 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';
 import { BlockPublicAccess, Bucket } from 'aws-cdk-lib/aws-s3';
-import { S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE } from 'aws-cdk-lib/cx-api';
+import { S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT } from 'aws-cdk-lib/cx-api';
 
 const app = new App({
   context: {
-    [S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE]: true,
+    [S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: true,
   },
 });
 
