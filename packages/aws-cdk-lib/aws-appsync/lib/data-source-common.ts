@@ -55,6 +55,11 @@ export enum AppSyncDataSourceType {
    * Bedrock runtime data source type
    */
   BEDROCK = 'AMAZON_BEDROCK_RUNTIME',
+
+  /**
+   * Elasticsearch data source type
+   */
+  ELASTICSEARCH = 'AMAZON_ELASTICSEARCH',
 }
 
 /**
