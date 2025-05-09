@@ -52,7 +52,7 @@ describe('TableBucket', () => {
     });
   });
 
-  describe('created with optional properties', () => {
+  describe('created with unreferenced file removal properties', () => {
     const TABLE_BUCKET_PROPS: s3tables.TableBucketProps = {
       account: '0123456789012',
       region: 'us-west-2',
