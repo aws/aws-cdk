@@ -129,6 +129,9 @@ describe('export writer provider', () => {
         'us-west-2': {
           value: 'nodejs22.x',
         },
+        'ap-east-2': {
+          value: 'nodejs20.x',
+        },
       },
     },
   };
