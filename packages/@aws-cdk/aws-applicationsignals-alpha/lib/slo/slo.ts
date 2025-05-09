@@ -117,6 +117,9 @@ export interface KeyAttributesProps {
      * @default - no identifier
      */
     readonly identifier?: string;
+
+    readonly resourceType?: string;
+
 }
 
 /**

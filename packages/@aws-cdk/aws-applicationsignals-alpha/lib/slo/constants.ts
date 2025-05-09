@@ -119,7 +119,20 @@ export enum KeyAttributeType {
     /**
      * External service
      */
-    REMOTE_SERVICE = 'REMOTE_SERVICE'
+    REMOTE_SERVICE = 'REMOTE_SERVICE',
+
+    /**
+     * Resource
+     */
+
+    RESOURCE = 'RESOURCE',
+
+    /**
+     * AWS managed Resource
+     */
+
+    AWS_RESOURCE = 'AWS::RESOURCE'
+
 }
 
 /**

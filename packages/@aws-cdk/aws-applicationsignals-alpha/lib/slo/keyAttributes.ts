@@ -13,18 +13,43 @@ export class KeyAttributes {
     }
 
     private validateProps(props: KeyAttributesProps) {
-        if (!props.name && !props.environment && !props.type) {
-            throw new Error('name or type or environment is required for Application Signals service');
+        if (!props.type) {
+            throw new Error('Type is required for Application Signals service');
+        }
+
+        if ([KeyAttributeType.SERVICE, KeyAttributeType.REMOTE_SERVICE, KeyAttributeType.AWS_SERVICE].includes(props.type)) {
+            if (!props.name || !props.environment) {
+                throw new Error('Name and Environment are required for Service types');
+            }
+        }
+
+        if ([KeyAttributeType.RESOURCE, KeyAttributeType.AWS_RESOURCE].includes(props.type)) {
+            if (props.name) {
+                throw new Error('Name is not allowed for Resource types');
+            }
+            if (props.resourceType === undefined) {
+                throw new Error('ResourceType is required for Resource types');
+            }
         }
     }
 
+
     public bind(): { [key: string]: string } {
-        return {
+        const attributes: { [key: string]: string } = {
             Type: this.props.type,
             Name: this.props.name,
             Environment: this.props.environment,
-            ...(this.props.identifier && { Identifier: this.props.identifier }),
         };
+
+        if (this.props.resourceType) {
+            attributes.ResourceType = this.props.resourceType;
+        }
+
+        if (this.props.identifier) {
+            attributes.Identifier = this.props.identifier;
+        }
+
+        return attributes;
     }
 
     /**
@@ -53,6 +78,26 @@ export class KeyAttributes {
     public static remoteService(props: Omit<KeyAttributesProps, 'type'>): KeyAttributes {
         return new KeyAttributes({
             type: KeyAttributeType.REMOTE_SERVICE,
+            ...props,
+        });
+    }
+
+    /**
+     * Creates key attributes for a resource
+     */
+    public static resource(props: Omit<KeyAttributesProps, 'type'>): KeyAttributes {
+        return new KeyAttributes({
+            type: KeyAttributeType.RESOURCE,
+            ...props,
+        });
+    }
+
+    /**
+     * Creates key attributes for an AWS resource
+     */
+    public static awsResource(props: Omit<KeyAttributesProps, 'type'>): KeyAttributes {
+        return new KeyAttributes({
+            type: KeyAttributeType.AWS_RESOURCE,
             ...props,
         });
     }
