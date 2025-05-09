@@ -24,7 +24,7 @@
        {
         "Ref": "TopicBFC7AF6E"
        },
-       "\"}}"
+       "\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -40,11 +40,11 @@
        {
         "Ref": "TopicBFC7AF6E"
        },
-       "\"}}"
+       "\"},\"logApiResponseData\":true}"
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "PublishCustomResourcePolicyDF696FCA"
@@ -136,9 +136,9 @@
       "Arn"
      ]
     },
-    "Create": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"}}",
-    "Update": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"}}",
-    "InstallLatestAwsSdk": false
+    "Create": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"},\"logApiResponseData\":true}",
+    "Update": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"},\"logApiResponseData\":true}",
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "ListTopicsCustomResourcePolicy31A8396A",
@@ -195,7 +195,7 @@
        {
         "Ref": "Utf8Parameter6C885A19"
        },
-       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"}}"
+       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -207,11 +207,11 @@
        {
         "Ref": "Utf8Parameter6C885A19"
        },
-       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"}}"
+       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"},\"logApiResponseData\":true}"
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "GetParameterCustomResourcePolicyD8E5D455"
@@ -295,7 +295,7 @@
        {
         "Ref": "Utf8Parameter6C885A19"
        },
-       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"}}"
+       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -307,11 +307,11 @@
        {
         "Ref": "Utf8Parameter6C885A19"
        },
-       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"}}"
+       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"},\"logApiResponseData\":true}"
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -325,9 +325,9 @@
       "Arn"
      ]
     },
-    "Create": "{\"service\":\"EKS\",\"action\":\"describeCluster\",\"parameters\":{\"name\":\"fake-cluster\"},\"physicalResourceId\":{\"id\":\"fake-cluster\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
-    "Update": "{\"service\":\"EKS\",\"action\":\"describeCluster\",\"parameters\":{\"name\":\"fake-cluster\"},\"physicalResourceId\":{\"id\":\"fake-cluster\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
-    "InstallLatestAwsSdk": false
+    "Create": "{\"service\":\"EKS\",\"action\":\"describeCluster\",\"parameters\":{\"name\":\"fake-cluster\"},\"physicalResourceId\":{\"id\":\"fake-cluster\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\",\"logApiResponseData\":true}",
+    "Update": "{\"service\":\"EKS\",\"action\":\"describeCluster\",\"parameters\":{\"name\":\"fake-cluster\"},\"physicalResourceId\":{\"id\":\"fake-cluster\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\",\"logApiResponseData\":true}",
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "DescribeClusterCustomResourcePolicyD7730CF4"
@@ -360,112 +360,109 @@
  "Mappings": {
   "LatestNodeRuntimeMap": {
    "af-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-east-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-east-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-northeast-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-northeast-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-northeast-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-south-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-4": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-5": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-7": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ca-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ca-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "cn-north-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-central-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-isoe-west-1": {
     "value": "nodejs18.x"
    },
    "eu-north-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-south-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "il-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "me-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "me-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "mx-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "sa-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-east-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"
@@ -480,10 +477,10 @@
     "value": "nodejs18.x"
    },
    "us-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-west-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    }
   }
  },
