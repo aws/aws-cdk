@@ -8,5 +8,6 @@
       "assertionStack": "DistributedMapCsvDelimiter/DefaultTest/DeployAssert",
       "assertionStackName": "DistributedMapCsvDelimiterDefaultTestDeployAssert47A59939"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
