@@ -1,4 +1,10 @@
 {
+    "appsync": {
+        "AppSyncDataSourceType": {
+            "values": ["NONE"],
+            "comment": "NONE is not supported"
+        }
+    },
     "codebuild": {
         "FleetComputeType": {
             "comment": "They values are already defined in a different place"

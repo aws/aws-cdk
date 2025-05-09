@@ -98,8 +98,8 @@ Flags come in three types:
 | [@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2](#aws-cdkaws-stepfunctionsusedistributedmapresultwriterv2) | When enabled, the resultWriterV2 property of DistributedMap will be used insted of resultWriter | 2.188.0 | new default |
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | 2.189.0 | new default |
 | [@aws-cdk/core:aspectPrioritiesMutating](#aws-cdkcoreaspectprioritiesmutating) | When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING. | 2.189.1 | new default |
-| [@aws-cdk/aws-s3:s3publicAccessBlockedByDefault](#aws-cdkaws-s3s3publicaccessblockedbydefault) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | V2NEXT | fix |
-| [@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions](#aws-cdks3-notificationsadds3trustkeypolicyforsnssubscriptions) | Add an S3 trust policy to a KMS key resource policy for SNS subscriptions. | V2NEXT | fix |
+| [@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions](#aws-cdks3-notificationsadds3trustkeypolicyforsnssubscriptions) | Add an S3 trust policy to a KMS key resource policy for SNS subscriptions. | 2.195.0 | fix |
+| [@aws-cdk/aws-s3:publicAccessBlockedByDefault](#aws-cdkaws-s3publicaccessblockedbydefault) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -2069,7 +2069,21 @@ be added with a priority of MUTATING, independent of this feature flag.
         priority: AspectPriority.MUTATING,
       });
       ```
-    
+
+
+### @aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions
+
+*Add an S3 trust policy to a KMS key resource policy for SNS subscriptions.*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.195.0 | `false` | `true` |
 
 
 ### @aws-cdk/aws-s3:s3publicAccessBlockedByDefault
@@ -2088,21 +2102,5 @@ The new behavior from this feature will allow a user, for example, to set 1 of t
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
-
-
-### @aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions
-
-*Add an S3 trust policy to a KMS key resource policy for SNS subscriptions.*
-
-Flag type: Backwards incompatible bugfix
-
-When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
 
 <!-- END details -->
