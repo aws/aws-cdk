@@ -92,6 +92,11 @@ Owner: CDK support team
 patch file for downloading.
 Owner: Core CDK team
 
+### Dependencies Requiring Intervention Upgrader
+
+[dependencies-requiring-intervention-upgrade.yml](dependencies-requiring-intervention-upgrade.yml): Upgrades specific dependencies that require manual intervention and creates a PR for review.
+Owner: Core CDK team
+
 ### AWS Service Spec Update
 
 [spec-update.yml](spec-update.yml): Updates AWS Service Spec and related packages to their latest versions

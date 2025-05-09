@@ -1,4 +1,4 @@
-name: Yarn Upgrade AWSCLI Asset
+name: Yarn Upgrade Dependencies Requiring Intervention
 
 on:
   schedule:
@@ -13,6 +13,10 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     steps:
+      - name: Dependencies to Upgrade
+        id: dependencies-to-upgrade
+        run: |-
+          echo "list=['@aws-cdk/asset-awscli-v1', 'samson-test']" >> $GITHUB_OUTPUT
       - name: Check Out
         uses: actions/checkout@v4
 
@@ -39,18 +43,18 @@ jobs:
       - name: Install Tools
         run: |-
           npm -g install lerna npm-check-updates
-      - name: List Mono-Repo Packages
-        id: list-packages
-        # These need to be ignored from the `ncu` runs!
-        run: |-
-          echo "list=$(lerna ls --all --json 2>/dev/null | jq -r 'map(.name) | join(",")')" >> $GITHUB_OUTPUT
       - name: Run "ncu -u"
         run: |-
-          # Upgrade @aws-cdk/asset-awscli-v1
-          lerna exec --parallel ncu -- --upgrade --filter='@aws-cdk/asset-awscli-v1' --target=minor
+          # Convert JSON array to comma-separated string for the filter
+          FILTER=$(echo '${{steps.dependencies-to-upgrade.outputs.list}}' | jq -r 'join(",")')
+          lerna exec --parallel ncu -- --upgrade --filter="$FILTER" --target=minor
 
       - name: Run "yarn upgrade"
-        run: yarn upgrade @aws-cdk/asset-awscli-v1 --exact
+        run: |
+          # Convert JSON array to space-separated arguments for yarn upgrade
+          DEPS=$(echo '${{steps.dependencies-to-upgrade.outputs.list}}' | jq -r 'join(" ")')
+          echo "Upgrading dependencies: $DEPS"
+          yarn upgrade $DEPS --exact
 
       # Next, create and upload the changes as a patch file. This will later be downloaded to create a pull request
       # Creating a pull request requires write permissions and it's best to keep write privileges isolated.
@@ -89,15 +93,18 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           # Git commit details
-          branch: automation/yarn-upgrade-asset-awscli-v1
+          branch: automation/yarn-upgrade-dependencies-requiring-intervention
           author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
           commit-message: |-
             chore: npm-check-updates && yarn upgrade
             Ran npm-check-updates and yarn upgrade to keep the `yarn.lock` file up-to-date.
           # Pull Request details
-          title: 'chore: yarn upgrade @aws-cdk/asset-awscli-v1'
+          title: 'chore: yarn upgrade dependencies requiring intervention'
           body: |-
-            Ran npm-check-updates and yarn upgrade for `@aws-cdk/asset-awscli-v1`.
+            Ran npm-check-updates and yarn upgrade for the following dependencies:
+            ```
+            ${{steps.dependencies-to-upgrade.outputs.list}}
+            ```
             Checkout this branch and run integration tests locally to update snapshots.
             ```
             (cd packages/@aws-cdk-testing/framework-integ && yarn integ --update-on-failed)
@@ -107,4 +114,4 @@ jobs:
           team-reviewers: aws-cdk-team
           # Github prevents further Github actions to be run if the default Github token is used.
           # Instead use a privileged token here, so further GH actions can be triggered on this PR.
-          token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
