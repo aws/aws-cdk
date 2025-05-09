@@ -16,7 +16,7 @@ jobs:
       - name: Dependencies to Upgrade
         # For multiple packages, do "DEPS_TO_UPGRADE=p1 p2 p3"
         run: |-
-          echo "DEPS_TO_UPGRADE=@aws-cdk/asset-awscli-v1" >> $GITHUB_ENV
+          echo "DEPS_TO_UPGRADE=@aws-cdk/asset-awscli-v1 samson-test" >> $GITHUB_ENV
       - name: Check Out
         uses: actions/checkout@v4
 
@@ -60,11 +60,22 @@ jobs:
         run: |-
           git add .
           git diff --binary --patch --staged > ${{ runner.temp }}/upgrade.patch
+
+      - name: Save Dependencies List
+        run: |-
+          echo "$DEPS_TO_UPGRADE" > ${{ runner.temp }}/deps-list.txt
+
       - name: Upload Patch
         uses: actions/upload-artifact@v4
         with:
           name: upgrade.patch
           path: ${{ runner.temp }}/upgrade.patch
+
+      - name: Upload Dependencies List
+        uses: actions/upload-artifact@v4
+        with:
+          name: deps-list
+          path: ${{ runner.temp }}/deps-list.txt
 
   pr:
     name: Create Pull Request
@@ -82,6 +93,15 @@ jobs:
         with:
           name: upgrade.patch
           path: ${{ runner.temp }}
+
+      - name: Download Dependencies List
+        uses: actions/download-artifact@v4
+        with:
+          name: deps-list
+          path: ${{ runner.temp }}
+
+      - name: Set Dependencies Environment Variable
+        run: echo "DEPS_TO_UPGRADE=$(cat ${{ runner.temp }}/deps-list.txt)" >> $GITHUB_ENV
 
       - name: Apply patch
         run: '[ -s ${{ runner.temp }}/upgrade.patch ] && git apply --binary ${{ runner.temp
@@ -112,4 +132,4 @@ jobs:
           team-reviewers: aws-cdk-team
           # Github prevents further Github actions to be run if the default Github token is used.
           # Instead use a privileged token here, so further GH actions can be triggered on this PR.
-          token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
