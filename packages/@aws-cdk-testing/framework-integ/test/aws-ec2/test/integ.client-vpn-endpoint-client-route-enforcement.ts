@@ -32,8 +32,12 @@ class TestStack extends Stack {
       zoneName: props.hostedZoneName,
     });
 
-    const certificate = new acm.Certificate(this, 'Certificate', {
-      domainName: `*.${props.domainName}`,
+    const serverCertificate = new acm.Certificate(this, 'Certificate', {
+      domainName: `server.${props.domainName}`,
+      validation: acm.CertificateValidation.fromDns(hostedZone),
+    });
+    const clientCertificate = new acm.Certificate(this, 'ClientCertificate', {
+      domainName: `client.${props.domainName}`,
       validation: acm.CertificateValidation.fromDns(hostedZone),
     });
 
@@ -46,7 +50,8 @@ class TestStack extends Stack {
 
     vpc.addClientVpnEndpoint('Endpoint', {
       cidr: '10.100.0.0/16',
-      serverCertificateArn: certificate.certificateArn,
+      serverCertificateArn: serverCertificate.certificateArn,
+      clientCertificateArn: clientCertificate.certificateArn,
       logGroup,
       enableClientRouteEnforcement: true,
     });
