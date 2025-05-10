@@ -667,6 +667,13 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   readonly launchTemplate?: ec2.ILaunchTemplate;
 
   /**
+   * Whether safety guardrail should be enforced when migrating to the launch template.
+   *
+   * @default false
+   */
+  readonly migrateToLaunchTemplate?: boolean;
+
+  /**
    * Mixed Instances Policy to use.
    *
    * Launch configuration related settings and Launch Template  must not be specified when a
@@ -1361,6 +1368,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     let launchTemplateFromConfig: ec2.LaunchTemplate | undefined = undefined;
     if (props.launchTemplate || props.mixedInstancesPolicy) {
       this.verifyNoLaunchConfigPropIsGiven(props);
+      this.verifyUpdatePolicyIsGiven(props);
 
       const bareLaunchTemplate = props.launchTemplate;
       const mixedInstancesPolicy = props.mixedInstancesPolicy;
@@ -1806,6 +1814,17 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
     if (props.requireImdsv2) {
       throw new ValidationError('Setting \'requireImdsv2\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
+    }
+  }
+
+  private verifyUpdatePolicyIsGiven(props: AutoScalingGroupProps) {
+    if (props.migrateToLaunchTemplate === true && !props.updatePolicy) {
+      throw new ValidationError(
+        'When migrateToLaunchTemplate is true, you must also provide an updatePolicy ' +
+        'to ensure instances are properly replaced during migration. ' +
+        'This prevents instances from referencing a deleted IAM instance profile. ' +
+        'Use UpdatePolicy.rollingUpdate() to define your rolling update settings.',
+        this);
     }
   }
 
