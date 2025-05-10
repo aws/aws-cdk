@@ -1458,7 +1458,7 @@ describe('record set', () => {
     { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1', multiValueAnswer: true },
     {
       weight: 20,
-      cidrRoutingConfig: route53.CidrRoutingConfig.new({
+      cidrRoutingConfig: route53.CidrRoutingConfig.create({
         collectionId: '12345678-1234-1234-1234-123456789012',
         locationName: 'test_location',
       }),

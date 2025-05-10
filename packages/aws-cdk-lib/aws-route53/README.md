@@ -221,7 +221,7 @@ new route53.ARecord(this, 'CidrRoutingConfig', {
   zone: myZone,
   target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
   setIdentifier: 'test',
-  cidrRoutingConfig: route53.CidrRoutingConfig.new({
+  cidrRoutingConfig: route53.CidrRoutingConfig.create({
     collectionId: cidrCollection.attrId,
     locationName: 'test_location'
   }),
@@ -244,7 +244,7 @@ new route53.ARecord(this, 'DefaultCidrRoutingConfig', {
   zone: myZone,
   target: route53.RecordTarget.fromIpAddresses('5.6.7.8'),
   setIdentifier: 'default',
-  cidrRoutingConfig: route53.CidrRoutingConfig.default(cidrCollection.attrId),
+  cidrRoutingConfig: route53.CidrRoutingConfig.withDefaultLocationName(cidrCollection.attrId),
 });
 ```
 
