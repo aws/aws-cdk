@@ -1,4 +1,5 @@
 import { Match, Template } from '../../assertions';
+import * as cert from '../../aws-certificatemanager';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as apigw from '../lib';
@@ -434,5 +435,195 @@ describe('lambda api', () => {
     });
 
     expect(() => app.synth()).toThrow('Validation failed with the following errors:\n  [Default/RestApi] Stage variable value $$$ does not match the regex.');
+  });
+});
+
+describe('LambdaRestApi inherits from RestApi prop injector test ', () => {
+  class RestApiPropsInjector implements cdk.IPropertyInjector {
+    readonly constructUniqueId: string;
+
+    constructor() {
+      this.constructUniqueId = apigw.RestApi.PROPERTY_INJECTION_ID;
+    }
+
+    inject(originalProps: apigw.RestApiProps, context: cdk.InjectionContext): apigw.RestApiProps {
+      return {
+        endpointTypes: [apigw.EndpointType.REGIONAL],
+        deploy: false,
+        restApiName: 'my-rest-api',
+        ...originalProps,
+      };
+    }
+  }
+
+  class LambdaRestApiPropsInjector implements cdk.IPropertyInjector {
+    readonly constructUniqueId: string;
+
+    constructor() {
+      this.constructUniqueId = LambdaRestApi.PROPERTY_INJECTION_ID;
+    }
+
+    inject(originalProps: apigw.LambdaRestApiProps, context: cdk.InjectionContext): apigw.LambdaRestApiProps {
+      const domainCert = new cert.Certificate(context.scope, 'cert', {
+        domainName: 'amazon.com',
+      });
+      return {
+        domainName: {
+          domainName: 'myexample.com',
+          certificate: domainCert,
+        },
+        disableExecuteApiEndpoint: true,
+        restApiName: 'my-lambda-rest-api',
+        ...originalProps,
+      };
+    }
+  }
+
+  test('Applying LambdaRestApi and RestApi', () => {
+    // GIVEN - with Injector
+    const app = new cdk.App({
+    });
+    const stack = new cdk.Stack(app, 'MyStack', {
+    });
+    const cert1 = new cert.Certificate(stack, 'cert', {
+      domainName: 'amazon.com',
+    });
+    const fn = new lambda.Function(stack, 'MyFunc', {
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      code: lambda.Code.fromInline('exports.handler = e => {}'),
+    });
+    new LambdaRestApi(stack, 'MyRestAPI', {
+      handler: fn,
+      // default from RestApi
+      deploy: false,
+      endpointTypes: [apigw.EndpointType.REGIONAL],
+      // default from LambdaRestApi
+      // The restApiName from LambdaRestApiPropsInjector wins
+      restApiName: 'my-lambda-rest-api',
+      domainName: {
+        domainName: 'myexample.com',
+        certificate: cert1,
+      },
+      disableExecuteApiEndpoint: true,
+    });
+    const template = Template.fromStack(stack).toJSON();
+
+    // WHEN
+    const app2 = new cdk.App({
+    });
+    const stack2 = new cdk.Stack(app2, 'MyStack', {
+      propertyInjectors: [
+        new RestApiPropsInjector(),
+        new LambdaRestApiPropsInjector(),
+      ],
+    });
+    const fn2 = new lambda.Function(stack2, 'MyFunc', {
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      code: lambda.Code.fromInline('exports.handler = e => {}'),
+    });
+    new LambdaRestApi(stack2, 'MyRestAPI', {
+      handler: fn2,
+    });
+
+    // THEN
+    Template.fromStack(stack2).templateMatches(
+      Match.exact(template),
+    );
+  });
+
+  test('Applying LambdaRestApi only', () => {
+    // GIVEN - with Injector
+    const app = new cdk.App({
+    });
+    const stack = new cdk.Stack(app, 'MyStack', {
+    });
+    const cert1 = new cert.Certificate(stack, 'cert', {
+      domainName: 'amazon.com',
+    });
+    const fn = new lambda.Function(stack, 'MyFunc', {
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      code: lambda.Code.fromInline('exports.handler = e => {}'),
+    });
+    new LambdaRestApi(stack, 'MyRestAPI', {
+      handler: fn,
+      // default from LambdaRestApi
+      // The restApiName from LambdaRestApiPropsInjector wins
+      restApiName: 'my-lambda-rest-api',
+      domainName: {
+        domainName: 'myexample.com',
+        certificate: cert1,
+      },
+      disableExecuteApiEndpoint: true,
+    });
+    const template = Template.fromStack(stack).toJSON();
+
+    // WHEN
+    const app2 = new cdk.App({
+    });
+    const stack2 = new cdk.Stack(app2, 'MyStack', {
+      propertyInjectors: [
+        new LambdaRestApiPropsInjector(),
+      ],
+    });
+    const fn2 = new lambda.Function(stack2, 'MyFunc', {
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      code: lambda.Code.fromInline('exports.handler = e => {}'),
+    });
+    new LambdaRestApi(stack2, 'MyRestAPI', {
+      handler: fn2,
+    });
+
+    // THEN
+    Template.fromStack(stack2).templateMatches(
+      Match.exact(template),
+    );
+  });
+
+  test('Applying RestApi only', () => {
+    // GIVEN - with Injector
+    const app = new cdk.App({
+    });
+    const stack = new cdk.Stack(app, 'MyStack', {
+    });
+    const fn = new lambda.Function(stack, 'MyFunc', {
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      code: lambda.Code.fromInline('exports.handler = e => {}'),
+    });
+    new LambdaRestApi(stack, 'MyRestAPI', {
+      handler: fn,
+      // default from RestApi
+      deploy: false,
+      // The restApiName from RestApiPropsInjector wins
+      restApiName: 'my-rest-api',
+      endpointTypes: [apigw.EndpointType.REGIONAL],
+    });
+    const template = Template.fromStack(stack).toJSON();
+
+    // WHEN
+    const app2 = new cdk.App({
+    });
+    const stack2 = new cdk.Stack(app2, 'MyStack', {
+      propertyInjectors: [
+        new RestApiPropsInjector(),
+      ],
+    });
+    const fn2 = new lambda.Function(stack2, 'MyFunc', {
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      code: lambda.Code.fromInline('exports.handler = e => {}'),
+    });
+    new LambdaRestApi(stack2, 'MyRestAPI', {
+      handler: fn2,
+    });
+
+    // THEN
+    Template.fromStack(stack2).templateMatches(
+      Match.exact(template),
+    );
   });
 });
