@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "6fccc38d45cb8898e802e6edf4f4e5d273f46f3969065df558b5ff8db20353fb": {
+      "displayName": "aws-cdk-lambda-determine-latest-runtime Template",
+      "source": {
+        "path": "aws-cdk-lambda-determine-latest-runtime.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6fccc38d45cb8898e802e6edf4f4e5d273f46f3969065df558b5ff8db20353fb.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
