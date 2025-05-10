@@ -23,7 +23,7 @@ class TestStack extends Stack {
       zone: zone1,
       target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
       setIdentifier: 'test',
-      cidrRoutingConfig: route53.CidrRoutingConfig.new({
+      cidrRoutingConfig: route53.CidrRoutingConfig.create({
         collectionId: cidrCollection.attrId,
         locationName: 'test_location',
       }),
@@ -47,7 +47,7 @@ class TestStack extends Stack {
       zone: zone2,
       target: route53.RecordTarget.fromIpAddresses('5.6.7.8'),
       setIdentifier: 'test2',
-      cidrRoutingConfig: route53.CidrRoutingConfig.default(defaultCidrCollection.attrId),
+      cidrRoutingConfig: route53.CidrRoutingConfig.withDefaultLocationName(defaultCidrCollection.attrId),
     });
   }
 }

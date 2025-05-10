@@ -3,7 +3,7 @@ import { CidrRoutingConfig } from '../lib/cidr-routing-config';
 
 describe('CidrRoutingConfig', () => {
   test('creates successfully with valid parameters', () => {
-    const config = CidrRoutingConfig.new({
+    const config = CidrRoutingConfig.create({
       collectionId: '12345678-1234-1234-1234-123456789012',
       locationName: 'valid-location',
     });
@@ -24,7 +24,7 @@ describe('CidrRoutingConfig', () => {
         expected: 'valid_location',
       },
     ])('$name', ({ locationName, expected }) => {
-      const config = CidrRoutingConfig.new({
+      const config = CidrRoutingConfig.create({
         collectionId: '12345678-1234-1234-1234-123456789012',
         locationName,
       });
@@ -39,7 +39,7 @@ describe('CidrRoutingConfig', () => {
         name: 'invalid collectionId format',
         collectionId: 'invalid-uuid',
         locationName: 'valid-location',
-        expectedError: 'collectionId(invalid-uuid) is required and must be a valid UUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx(8-4-4-4-12 digits)',
+        expectedError: 'collectionId(invalid-uuid) is required and must be a valid UUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx(8-4-4-4-12 hexadecimal digits)',
       },
       {
         name: 'invalid locationName format',
@@ -51,7 +51,7 @@ describe('CidrRoutingConfig', () => {
         name: 'empty collectionId',
         collectionId: '',
         locationName: 'valid-location',
-        expectedError: 'collectionId() is required and must be a valid UUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx(8-4-4-4-12 digits)',
+        expectedError: 'collectionId() is required and must be a valid UUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx(8-4-4-4-12 hexadecimal digits)',
       },
       {
         name: 'empty locationName',
@@ -63,7 +63,7 @@ describe('CidrRoutingConfig', () => {
         name: 'null collectionId',
         collectionId: null as any,
         locationName: 'valid-location',
-        expectedError: 'collectionId(null) is required and must be a valid UUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx(8-4-4-4-12 digits)',
+        expectedError: 'collectionId(null) is required and must be a valid UUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx(8-4-4-4-12 hexadecimal digits)',
       },
       {
         name: 'null locationName',
@@ -73,7 +73,7 @@ describe('CidrRoutingConfig', () => {
       },
     ])('$name', ({ collectionId, locationName, expectedError }) => {
       expect(() => {
-        CidrRoutingConfig.new({
+        CidrRoutingConfig.create({
           collectionId,
           locationName,
         });
@@ -81,17 +81,17 @@ describe('CidrRoutingConfig', () => {
     });
   });
 
-  describe('default method', () => {
+  describe('withDefaultLocationName method', () => {
     test('creates config with default locationName as *', () => {
       const collectionId = '12345678-1234-1234-1234-123456789012';
-      const config = CidrRoutingConfig.default(collectionId);
+      const config = CidrRoutingConfig.withDefaultLocationName(collectionId);
       expect(config.collectionId).toBe(collectionId);
       expect(config.locationName).toBe('*');
     });
     test('throws error if collectionId is invalid', () => {
       expect(() => {
-        CidrRoutingConfig.default('invalid-uuid');
-      }).toThrow('collectionId(invalid-uuid) is required and must be a valid UUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx(8-4-4-4-12 digits)');
+        CidrRoutingConfig.withDefaultLocationName('invalid-uuid');
+      }).toThrow('collectionId(invalid-uuid) is required and must be a valid UUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx(8-4-4-4-12 hexadecimal digits)');
     });
   });
 
@@ -99,7 +99,7 @@ describe('CidrRoutingConfig', () => {
     test('accepts Token as collectionId', () => {
       const collectionIdToken = Token.asString({ resolve: () => 'dummy' }); // invalid UUID
       const locationNameToken = Token.asString({ resolve: () => 'dummydummydummydummy' }); // more than 16 characters
-      const config = CidrRoutingConfig.new({
+      const config = CidrRoutingConfig.create({
         collectionId: collectionIdToken,
         locationName: locationNameToken,
       });

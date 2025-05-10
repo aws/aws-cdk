@@ -11,8 +11,10 @@ export interface CidrRoutingConfigProps {
 
   /**
    * The CIDR collection location name.
+   *
+   * @default `*`
    */
-  readonly locationName: string;
+  readonly locationName?: string;
 }
 
 /**
@@ -24,7 +26,7 @@ export class CidrRoutingConfig {
   /**
    * Creates a new instance of CidrRoutingConfig
    */
-  public static new(props: CidrRoutingConfigProps): CidrRoutingConfig {
+  public static create(props: CidrRoutingConfigProps): CidrRoutingConfig {
     return new CidrRoutingConfig(props);
   }
 
@@ -33,7 +35,7 @@ export class CidrRoutingConfig {
    * @param collectionId The CIDR collection ID.
    * @returns A new instance of CidrRoutingConfig with the default location name as `*`.
    */
-  public static default(collectionId: string): CidrRoutingConfig {
+  public static withDefaultLocationName(collectionId: string): CidrRoutingConfig {
     return new CidrRoutingConfig({
       collectionId: collectionId,
       locationName: '*',
@@ -51,6 +53,7 @@ export class CidrRoutingConfig {
   readonly locationName: string;
 
   private constructor(props: CidrRoutingConfigProps) {
+    // regex from https://docs.aws.amazon.com/Route53/latest/APIReference/API_CidrRoutingConfig.html
     const COLLECTION_ID_REGEX = /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/;
     const LOCATION_NAME_REGEX = /^[0-9A-Za-z_\-\*]{1,16}$/;
     if (!Token.isUnresolved(props.collectionId) && !COLLECTION_ID_REGEX.test(props.collectionId)) {
@@ -60,6 +63,6 @@ export class CidrRoutingConfig {
       throw new UnscopedValidationError(`locationName(${props.locationName}) is required and must be 1-16 characters long, containing only letters, numbers, underscores, hyphens, or asterisks`);
     }
     this.collectionId = props.collectionId;
-    this.locationName = props.locationName;
+    this.locationName = props.locationName ?? '*';
   }
 }
