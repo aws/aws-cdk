@@ -1786,6 +1786,21 @@ export interface DockerImageOptions {
 }
 
 /**
+ * Environment type for Linux Docker images or AMI
+ */
+export enum LinuxImageType {
+  /**
+   * The LINUX_CONTAINER environment type
+   */
+  LINUX_CONTAINER = EnvironmentType.LINUX_CONTAINER,
+
+  /**
+   * The LINUX_EC2 environment type
+   */
+  LINUX_EC2 = EnvironmentType.LINUX_EC2,
+}
+
+/**
  * Construction properties of `LinuxBuildImage`.
  * Module-private, as the constructor of `LinuxBuildImage` is private.
  */
@@ -1794,6 +1809,7 @@ interface LinuxBuildImageProps {
   readonly imagePullPrincipalType?: ImagePullPrincipalType;
   readonly secretsManagerCredentials?: secretsmanager.ISecret;
   readonly repository?: ecr.IRepository;
+  readonly imageType?: LinuxImageType;
 }
 
 // Keep around to resolve a circular dependency until removing deprecated ARM image constants from LinuxBuildImage
@@ -1860,6 +1876,13 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2023_CORETTO_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:corretto8');
   /** The Amazon Coretto 11 image x86_64, based on Amazon Linux 2023. */
   public static readonly AMAZON_LINUX_2023_CORETTO_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:corretto11');
+
+  /** The Amazon Linux x86_64 latest AMI, based on Amazon Linux 2023. */
+  public static readonly AMAZON_LINUX_2023_AMI: IBuildImage = new LinuxBuildImage({
+    imageId: 'aws/codebuild/ami/amazonlinux-x86_64-base:latest',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+    imageType: LinuxImageType.LINUX_EC2,
+  });
 
   /**
    * Image "aws/codebuild/amazonlinux2-aarch64-standard:1.0".
@@ -2003,7 +2026,7 @@ export class LinuxBuildImage implements IBuildImage {
     });
   }
 
-  public readonly type = EnvironmentType.LINUX_CONTAINER as string;
+  public readonly type: string;
   public readonly defaultComputeType = ComputeType.SMALL;
   public readonly imageId: string;
   public readonly imagePullPrincipalType?: ImagePullPrincipalType;
@@ -2015,6 +2038,7 @@ export class LinuxBuildImage implements IBuildImage {
     this.imagePullPrincipalType = props.imagePullPrincipalType;
     this.secretsManagerCredentials = props.secretsManagerCredentials;
     this.repository = props.repository;
+    this.type = props.imageType ?? EnvironmentType.LINUX_CONTAINER;
   }
 
   public validate(env: BuildEnvironment): string[] {
@@ -2033,7 +2057,7 @@ export class LinuxBuildImage implements IBuildImage {
 }
 
 /**
- * Environment type for Windows Docker images
+ * Environment type for Windows Docker images or AMI
  */
 export enum WindowsImageType {
   /**
@@ -2055,6 +2079,11 @@ export enum WindowsImageType {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
    */
   SERVER_2022 = EnvironmentType.WINDOWS_SERVER_2022_CONTAINER,
+
+  /**
+   * The WINDOWS_EC2 environment type
+   */
+  WINDOWS_EC2 = EnvironmentType.WINDOWS_EC2,
 }
 
 /**
@@ -2148,6 +2177,14 @@ export class WindowsBuildImage implements IBuildImage {
     imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
     imageType: WindowsImageType.SERVER_2022,
   });
+
+  /** The CodeBuild Windows Server 2022 AMI */
+  public static readonly WIN_SERVER_2022_AMI: IBuildImage =
+    new WindowsBuildImage({
+      imageId: 'aws/codebuild/ami/windows-base:2022',
+      imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+      imageType: WindowsImageType.WINDOWS_EC2,
+    });
 
   /**
    * @returns a Windows build image from a Docker Hub image.
