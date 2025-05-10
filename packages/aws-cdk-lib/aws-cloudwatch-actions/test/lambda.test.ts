@@ -1,5 +1,7 @@
-import { Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
+import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
+import * as dynamodb from '../../aws-dynamodb';
 import * as lambda from '../../aws-lambda';
 import { Stack } from '../../core';
 import { LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION } from '../../cx-api';
@@ -149,6 +151,119 @@ def handler(event, context):
   // THEN
   Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::Alarm', 2);
   Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 2);
+});
+
+test('can create alarms of multiple step scaling policy for the same lambda if useUniquePermissionId is set', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  const table = new dynamodb.Table(stack, 'MyTable', {
+    partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  });
+
+  const scalableTarget = table.autoScaleReadCapacity({
+    minCapacity: 1,
+    maxCapacity: 10,
+  });
+
+  const policy1 = new appscaling.StepScalingPolicy(stack, 'Policy1', {
+    scalingTarget: scalableTarget as unknown as appscaling.IScalableTarget, // Double cast
+    metric: table.metricConsumedReadCapacityUnits(),
+    scalingSteps: [
+      { lower: 0, upper: 1, change: -1 },
+      { lower: 5, change: +1 },
+    ],
+  });
+
+  const policy2 = new appscaling.StepScalingPolicy(stack, 'Policy2', {
+    scalingTarget: scalableTarget as unknown as appscaling.IScalableTarget, // Double cast
+    metric: table.metricConsumedReadCapacityUnits(),
+    scalingSteps: [
+      { lower: 0, upper: 2, change: -1 },
+      { lower: 6, change: +1 },
+    ],
+  });
+
+  const alarmLambda = new lambda.Function(stack, 'alarmLambda', {
+    runtime: lambda.Runtime.PYTHON_3_12,
+    functionName: 'alarmLambda',
+    code: lambda.Code.fromInline(`
+def handler(event, context):
+  print('event:', event)
+  print('.............................................')
+  print('context:', context)`),
+    handler: 'index.handler',
+  });
+
+  const alarmLambda2 = new lambda.Function(stack, 'alarmLambda2', {
+    runtime: lambda.Runtime.PYTHON_3_12,
+    functionName: 'alarmLambda',
+    code: lambda.Code.fromInline(`
+def handler(event, context):
+  print('event:', event)
+  print('.............................................')
+  print('context:', context)`),
+    handler: 'index.handler',
+  });
+
+  const lambdaAction = new actions.LambdaAction(alarmLambda, {
+    useUniquePermissionId: true,
+  });
+  const lambdaAction2 = new actions.LambdaAction(alarmLambda2, {
+    useUniquePermissionId: true,
+  });
+
+  // WHEN
+  policy1.lowerAlarm?.addAlarmAction(lambdaAction);
+  policy2.lowerAlarm?.addAlarmAction(lambdaAction);
+  policy1.lowerAlarm?.addAlarmAction(lambdaAction2);
+  policy2.lowerAlarm?.addAlarmAction(lambdaAction2);
+
+  // THEN
+  Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::Alarm', 4);
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 4);
+});
+
+test('throw warning when useUniquePermissionId is not set', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  const table = new dynamodb.Table(stack, 'MyTable', {
+    partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  });
+
+  const scalableTarget = table.autoScaleReadCapacity({
+    minCapacity: 1,
+    maxCapacity: 10,
+  });
+
+  const policy1 = new appscaling.StepScalingPolicy(stack, 'Policy1', {
+    scalingTarget: scalableTarget as unknown as appscaling.IScalableTarget, // Double cast
+    metric: table.metricConsumedReadCapacityUnits(),
+    scalingSteps: [
+      { lower: 0, upper: 1, change: -1 },
+      { lower: 5, change: +1 },
+    ],
+  });
+
+  const alarmLambda = new lambda.Function(stack, 'alarmLambda', {
+    runtime: lambda.Runtime.PYTHON_3_12,
+    functionName: 'alarmLambda',
+    code: lambda.Code.fromInline(`
+def handler(event, context):
+  print('event:', event)
+  print('.............................................')
+  print('context:', context)`),
+    handler: 'index.handler',
+  });
+
+  const lambdaAction = new actions.LambdaAction(alarmLambda);
+
+  // WHEN
+  policy1.lowerAlarm?.addAlarmAction(lambdaAction);
+
+  const annotations = Annotations.fromStack(stack);
+  annotations.hasWarning('*', Match.stringLikeRegexp('Please use \'useUniquePermissionId\' to generate unique Lambda Permission Id'));
 });
 
 test('throws when multiple alarms are created for the same lambda if feature flag is set to false', () => {
