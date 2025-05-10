@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "ddb525b069cf7408ac8f519da5d0e35afec15ef8cedf0438e9edbeae71c21079": {
+      "displayName": "CidrRoutingConfig Template",
+      "source": {
+        "path": "CidrRoutingConfig.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ddb525b069cf7408ac8f519da5d0e35afec15ef8cedf0438e9edbeae71c21079.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
