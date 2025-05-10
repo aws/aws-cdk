@@ -57,4 +57,11 @@ new lambda.Function(stack, 'MySnapStartLambdaArm', {
   snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
 });
 
+new lambda.Function(stack, 'LambdaWithDlq', {
+  code: new lambda.InlineCode('foo'),
+  handler: 'index.handler',
+  runtime: STANDARD_NODEJS_RUNTIME,
+  deadLetterQueueEnabled: true,
+});
+
 app.synth();
