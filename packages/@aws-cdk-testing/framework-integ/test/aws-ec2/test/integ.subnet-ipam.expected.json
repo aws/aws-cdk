@@ -1,0 +1,201 @@
+{
+  "Resources": {
+    "TestVpcB5E992B9": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SubnetIpamTest/TestVpc"
+          }
+        ]
+      }
+    },
+    "TestVpcIGW06BA21A8": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SubnetIpamTest/TestVpc"
+          }
+        ]
+      }
+    },
+    "TestVpcVPCGW2F5991FA": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "TestVpcB5E992B9"
+        },
+        "InternetGatewayId": {
+          "Ref": "TestVpcIGW06BA21A8"
+        }
+      }
+    },
+    "SubnetWithIpv4IpamSubnet9EB1DA41": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "TestVpcB5E992B9"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "Ipv4IpamPoolId": {
+          "Ref": "Ipv4IpamPoolId"
+        },
+        "Ipv4NetmaskLength": 24,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SubnetIpamTest/SubnetWithIpv4Ipam"
+          }
+        ]
+      }
+    },
+    "SubnetWithIpv4IpamRouteTable55C0A16A": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "TestVpcB5E992B9"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SubnetIpamTest/SubnetWithIpv4Ipam"
+          }
+        ]
+      }
+    },
+    "SubnetWithIpv4IpamRouteTableAssociation2E51FD32": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "SubnetWithIpv4IpamRouteTable55C0A16A"
+        },
+        "SubnetId": {
+          "Ref": "SubnetWithIpv4IpamSubnet9EB1DA41"
+        }
+      }
+    },
+    "SubnetWithIpv6IpamSubnet0D0E0DFC": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "TestVpcB5E992B9"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": "10.0.0.0/24",
+        "AssignIpv6AddressOnCreation": true,
+        "Ipv6IpamPoolId": {
+          "Ref": "Ipv6IpamPoolId"
+        },
+        "Ipv6NetmaskLength": 64,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SubnetIpamTest/SubnetWithIpv6Ipam"
+          }
+        ]
+      }
+    },
+    "SubnetWithIpv6IpamRouteTableD6B4C7DA": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "TestVpcB5E992B9"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SubnetIpamTest/SubnetWithIpv6Ipam"
+          }
+        ]
+      }
+    },
+    "SubnetWithIpv6IpamRouteTableAssociation8EAB3F38": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "SubnetWithIpv6IpamRouteTableD6B4C7DA"
+        },
+        "SubnetId": {
+          "Ref": "SubnetWithIpv6IpamSubnet0D0E0DFC"
+        }
+      }
+    }
+  },
+  "Parameters": {
+    "Ipv4IpamPoolId": {
+      "Type": "String",
+      "Description": "The ID of the IPv4 IPAM pool to allocate the CIDR from"
+    },
+    "Ipv6IpamPoolId": {
+      "Type": "String",
+      "Description": "The ID of the IPv6 IPAM pool to allocate the CIDR from"
+    },
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
+    }
+  },
+  "Outputs": {
+    "Ipv4IpamSubnetId": {
+      "Description": "The subnet ID of the subnet with IPv4 IPAM allocation",
+      "Value": {
+        "Ref": "SubnetWithIpv4IpamSubnet9EB1DA41"
+      }
+    },
+    "Ipv6IpamSubnetId": {
+      "Description": "The subnet ID of the subnet with IPv6 IPAM allocation",
+      "Value": {
+        "Ref": "SubnetWithIpv6IpamSubnet0D0E0DFC"
+      }
+    }
+  }
+} 
