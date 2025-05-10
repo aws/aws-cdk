@@ -42,7 +42,6 @@ class TestStack extends Stack {
     });
 
     const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 0 });
-    // vpc.node.addDependency(certificate); // ensure certificate is deleted last, when not in use anymore
 
     const logGroup = new logs.LogGroup(this, 'LogGroup', {
       removalPolicy: RemovalPolicy.DESTROY,
