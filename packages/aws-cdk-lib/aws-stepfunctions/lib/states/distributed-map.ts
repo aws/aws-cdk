@@ -243,6 +243,10 @@ export class DistributedMap extends MapBase implements INextable {
       errors.push(...this.itemReader.validateItemReader());
     }
 
+    if (this.resultWriterV2) {
+      errors.push(...this.resultWriterV2.validateResultWriter());
+    }
+
     if (this.label) {
       if (this.label.length > 40) {
         errors.push('label must be 40 characters or less');
@@ -260,7 +264,7 @@ export class DistributedMap extends MapBase implements INextable {
   protected whenBoundToGraph(graph: StateGraph) {
     super.whenBoundToGraph(graph);
     const resultWriter = this.getResultWriter();
-    if (resultWriter && resultWriter.bucket) {
+    if (resultWriter) {
       resultWriter.providePolicyStatements().forEach(policyStatement => {
         graph.registerPolicyStatement(policyStatement);
       });
