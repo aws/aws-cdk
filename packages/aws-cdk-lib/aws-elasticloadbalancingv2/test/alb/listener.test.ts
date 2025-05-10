@@ -257,6 +257,20 @@ describe('tests', () => {
     });
   });
 
+  test('HTTP listener cannot have a certificate', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    expect(() => lb.addListener('Listener', {
+      port: 80,
+      certificates: [elbv2.ListenerCertificate.fromArn('cert1')],
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
+    })).toThrow(/certificates cannot be specified for HTTP listeners/);
+  });
+
   test('Can configure targetType on TargetGroups', () => {
     // GIVEN
     const stack = new cdk.Stack();
