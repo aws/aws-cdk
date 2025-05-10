@@ -1,0 +1,177 @@
+{
+  "version": "40.0.0",
+  "artifacts": {
+    "aws-cdk-s3-bucket-block-access.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-s3-bucket-block-access.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-s3-bucket-block-access": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-s3-bucket-block-access.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aefc62663564f938fd12042237e967a9ee63d559158d9b019ec6a79638b5a7eb.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-s3-bucket-block-access.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-s3-bucket-block-access.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-s3-bucket-block-access/blockAcls": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "blockPublicAccess": "*"
+            }
+          }
+        ],
+        "/aws-cdk-s3-bucket-block-access/blockAcls/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "blockAcls40B656E5"
+          }
+        ],
+        "/aws-cdk-s3-bucket-block-access/blockAclsOnly": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "blockPublicAccess": "*"
+            }
+          }
+        ],
+        "/aws-cdk-s3-bucket-block-access/blockAclsOnly/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "blockAclsOnly4E7ABDF2"
+          }
+        ],
+        "/aws-cdk-s3-bucket-block-access/blockAll": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "blockPublicAccess": "*"
+            }
+          }
+        ],
+        "/aws-cdk-s3-bucket-block-access/blockAll/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "blockAll363E56BB"
+          }
+        ],
+        "/aws-cdk-s3-bucket-block-access/blockOnly2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "blockPublicAccess": "*"
+            }
+          }
+        ],
+        "/aws-cdk-s3-bucket-block-access/blockOnly2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "blockOnly2C4374FF0"
+          }
+        ],
+        "/aws-cdk-s3-bucket-block-access/blockOnly1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "blockPublicAccess": "*"
+            }
+          }
+        ],
+        "/aws-cdk-s3-bucket-block-access/blockOnly1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "blockOnly1C2CBF6E1"
+          }
+        ],
+        "/aws-cdk-s3-bucket-block-access/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-s3-bucket-block-access/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-s3-bucket-block-access"
+    },
+    "testBlockingBucketAccessDefaultTestDeployAssert2F4ACAD8.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "testBlockingBucketAccessDefaultTestDeployAssert2F4ACAD8.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "testBlockingBucketAccessDefaultTestDeployAssert2F4ACAD8": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "testBlockingBucketAccessDefaultTestDeployAssert2F4ACAD8.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "testBlockingBucketAccessDefaultTestDeployAssert2F4ACAD8.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "testBlockingBucketAccessDefaultTestDeployAssert2F4ACAD8.assets"
+      ],
+      "metadata": {
+        "/testBlockingBucketAccess/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/testBlockingBucketAccess/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "testBlockingBucketAccess/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
