@@ -3,7 +3,7 @@ import { IAlarmAction } from './alarm-action';
 import { AlarmBase, IAlarm } from './alarm-base';
 import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
-import { CreateAlarmOptions } from './metric';
+import { CreateAlarmOptions, CreateAnomalyDetectionAlarmProps, MathExpression } from './metric';
 import { IMetric, MetricExpressionConfig, MetricStatConfig } from './metric-types';
 import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
@@ -16,6 +16,20 @@ import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-re
  * Properties for Alarms
  */
 export interface AlarmProps extends CreateAlarmOptions {
+
+  /**
+   * The metric to add the alarm on
+   *
+   * Metric objects can be obtained from most resources, or you can construct
+   * custom Metric objects by instantiating one.
+   */
+  readonly metric: IMetric;
+}
+
+/**
+ * Properties for Anomaly Detection Alarms
+ */
+export interface AnomalyDetectionAlarmProps extends CreateAnomalyDetectionAlarmProps {
   /**
    * The metric to add the alarm on
    *
@@ -68,12 +82,24 @@ export enum ComparisonOperator {
   LESS_THAN_LOWER_THRESHOLD = 'LessThanLowerThreshold',
 }
 
-const OPERATOR_SYMBOLS: {[key: string]: string} = {
+const OPERATOR_SYMBOLS: { [key: string]: string } = {
   GreaterThanOrEqualToThreshold: '>=',
   GreaterThanThreshold: '>',
   LessThanThreshold: '<',
   LessThanOrEqualToThreshold: '<=',
 };
+
+const ANOMALY_DETECTION_OPERATORS: ComparisonOperator[] = [
+  ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
+  ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD,
+  ComparisonOperator.LESS_THAN_LOWER_THRESHOLD,
+];
+
+/**
+ * Conventional value for the threshold property when creating anomaly detection alarms.
+ * This value is required by the CDK API but completely ignored by CloudWatch for anomaly detection alarms.
+ */
+const THRESHOLD_IGNORED_FOR_ANOMALY_DETECTION = 0;
 
 /**
  * Specify how missing data points are treated during alarm evaluation
@@ -138,6 +164,16 @@ export class Alarm extends AlarmBase {
   }
 
   /**
+   * Determine whether this operator is an anomaly detection operator.
+   *
+   * @param operator the comparison operator for the alarm.
+   * @returns true if the operator is an anomaly detection operator, false otherwise.
+   */
+  public static isAnomalyDetectionOperator(operator?: ComparisonOperator): boolean {
+    return operator !== undefined && ANOMALY_DETECTION_OPERATORS.includes(operator);
+  }
+
+  /**
    * ARN of this alarm
    *
    * @attribute
@@ -170,6 +206,9 @@ export class Alarm extends AlarmBase {
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
 
+    this.validateComparisonOperator(comparisonOperator);
+    this.validateThreshold(props.threshold);
+
     // Render metric, process potential overrides from the alarm
     // (It would be preferable if the statistic etc. was worked into the metric,
     // but hey we're allowing overrides...)
@@ -192,7 +231,8 @@ export class Alarm extends AlarmBase {
 
       // Evaluation
       comparisonOperator,
-      threshold: props.threshold,
+      threshold: this.getThresholdForCfnAlarmProps(props),
+      thresholdMetricId: this.getThresholdMetricIdForCfnAlarmProps(metricProps.metrics as CfnAlarm.MetricDataQueryProperty[]),
       datapointsToAlarm: props.datapointsToAlarm,
       evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
       evaluationPeriods: props.evaluationPeriods,
@@ -208,25 +248,70 @@ export class Alarm extends AlarmBase {
       ...metricProps,
     });
 
+    this.onCfnAlarmCreated(alarm);
+
     this.alarmArn = this.getResourceArnAttribute(alarm.attrArn, {
       service: 'cloudwatch',
       resource: 'alarm',
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+
     this.alarmName = this.getResourceNameAttribute(alarm.ref);
 
     this.metric = props.metric;
-    const datapoints = props.datapointsToAlarm || props.evaluationPeriods;
-    this.annotation = {
-      // eslint-disable-next-line max-len
-      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
-      value: props.threshold,
-    };
+    this.annotation = this.createHorizontalAnnotation(comparisonOperator, props);
 
     for (const [i, message] of Object.entries(this.metric.warningsV2 ?? {})) {
       Annotations.of(this).addWarningV2(i, message);
     }
+  }
+  protected validateComparisonOperator(comparisonOperator: ComparisonOperator): void {
+    if (Alarm.isAnomalyDetectionOperator(comparisonOperator)) {
+      throw new ValidationError(
+        'Anomaly detection operators require to use the construct AnomalyDetectionAlarm.',
+        this,
+      );
+    }
+  }
+  protected validateThreshold(threshold?: number): void {
+    // For standard alarms, we need a threshold
+    if (threshold === undefined) {
+      throw new ValidationError('threshold must be specified for standard alarms', this);
+    }
+  }
+
+  protected onCfnAlarmCreated(_alarm: CfnAlarm): void {
+    // Do nothing in Alarm construct.
+  }
+
+  /**
+   * Gets the threshold value for CloudFormation alarm properties.
+   *
+   * @param props - The alarm properties
+   * @returns The threshold value to use, or undefined if none is applicable
+   */
+  protected getThresholdForCfnAlarmProps(props: AlarmProps): number | undefined {
+    return props.threshold;
+  }
+
+  /**
+   * Gets the thresholdMetricId for CloudFormation alarm properties.
+   *
+   * @param _metrics - The array of metric data queries to validate against
+   * @returns The threshold metric ID to use, or undefined if none is applicable
+   */
+  protected getThresholdMetricIdForCfnAlarmProps(_metrics: CfnAlarm.MetricDataQueryProperty[]): string | undefined {
+    return undefined;
+  }
+
+  protected createHorizontalAnnotation(_comparisonOperator: ComparisonOperator, props: AlarmProps): HorizontalAnnotation {
+    const datapoints = props.datapointsToAlarm || props.evaluationPeriods;
+    return {
+      // eslint-disable-next-line max-len
+      label: `${props.metric} ${OPERATOR_SYMBOLS[_comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
+      value: props.threshold,
+    };
   }
 
   /**
@@ -410,6 +495,149 @@ export class Alarm extends AlarmBase {
     // so will always have the same string value (and even if we guess wrong
     // it will still work).
     return stackAccount !== stat.account;
+  }
+}
+
+/**
+ * CloudWatch Alarm that uses anomaly detection to trigger alarms
+ *
+ * This alarm type is specifically designed for use with anomaly detection operators
+ * like LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD.
+ */
+export class AnomalyDetectionAlarm extends Alarm {
+  /**
+   * Creates an anomaly detection metric from the provided metric
+   *
+   * @param scope The construct scope
+   * @param props The anomaly detection alarm properties
+   * @returns An anomaly detection metric
+   */
+  static createAnomalyDetectionMetric(scope: Construct, props: AnomalyDetectionAlarmProps): IMetric {
+    // Validate stdDevs
+    if (props.stdDevs !== undefined && props.stdDevs <= 0) {
+      throw new ValidationError('stdDevs must be greater than 0', scope);
+    }
+
+    if (!Alarm.isAnomalyDetectionOperator(props.comparisonOperator)) {
+      throw new ValidationError(`Invalid comparison operator for anomaly detection alarm: ${props.comparisonOperator}`, scope);
+    }
+
+    // Create the anomaly detection band expression
+    const anomalyDetectionExpression = new MathExpression({
+      expression: `ANOMALY_DETECTION_BAND(m0, ${props.stdDevs ?? 2})`,
+      usingMetrics: { m0: props.metric },
+      period: props.period,
+      label: 'Anomaly Detection Band',
+    });
+
+    return anomalyDetectionExpression;
+  }
+
+  constructor(scope: Construct, id: string, props: AnomalyDetectionAlarmProps) {
+    super(scope, id, {
+      ...props,
+      metric: AnomalyDetectionAlarm.createAnomalyDetectionMetric(scope, props),
+      threshold: THRESHOLD_IGNORED_FOR_ANOMALY_DETECTION,
+    });
+  }
+
+  protected override onCfnAlarmCreated(alarm: CfnAlarm): void {
+    super.onCfnAlarmCreated(alarm);
+    this.ensureAnomalyMetricsReturnData(alarm);
+  }
+
+  protected override validateComparisonOperator(comparisonOperator: ComparisonOperator): void {
+    if (!Alarm.isAnomalyDetectionOperator(comparisonOperator)) {
+      throw new ValidationError(
+        `Invalid comparison operator for anomaly detection alarm: ${comparisonOperator}`,
+        this,
+      );
+    }
+  }
+
+  protected override validateThreshold(_threshold?: number): void {
+    // There is no real check to be made here since the threshold is set in the constructor.
+  }
+
+  protected override getThresholdForCfnAlarmProps(_props: AlarmProps): number | undefined {
+    return undefined;
+  }
+
+  /**
+   * Override to provide custom logic for determining the thresholdMetricId for anomaly detection alarms.
+   *
+   * @param _metrics - The array of metric data queries to validate against
+   * @returns The threshold metric ID to use for the anomaly detection alarm
+   */
+  protected override getThresholdMetricIdForCfnAlarmProps(_metrics: CfnAlarm.MetricDataQueryProperty[]): string | undefined {
+    // Try to find the correct metric id from metrics
+    const anomalyBandMetric = _metrics?.find(m => m.expression && m.expression.includes('ANOMALY_DETECTION_BAND'));
+
+    if (anomalyBandMetric && anomalyBandMetric.id) {
+      const thresholdMetricId = anomalyBandMetric.id;
+      Annotations.of(this).addInfo(`Using detected thresholdMetricId "${thresholdMetricId}" for anomaly detection alarm`);
+      return thresholdMetricId;
+    } else {
+      // This should never happen with AnomalyDetectionAlarm since we create the metrics internally
+      throw new ValidationError('Could not determine thresholdMetricId for anomaly detection alarm.', this);
+    }
+  }
+
+  protected override createHorizontalAnnotation(_comparisonOperator: ComparisonOperator, _props: AlarmProps): HorizontalAnnotation {
+    return {
+      value: THRESHOLD_IGNORED_FOR_ANOMALY_DETECTION,
+      label: 'Anomaly Detection Band',
+      visible: false,
+    };
+  }
+
+  /**
+   * Ensures that both the anomaly detection band metric and its source metric have returnData set to true.
+   *
+   * For anomaly detection alarms to work correctly, both the anomaly detection band metric and the source metric
+   * it references must have their returnData property set to true. This is because:
+   * 1. The anomaly detection band metric (referenced by thresholdMetricId) needs to return data to be used as the threshold
+   * 2. The source metric needs to return data to be compared against the anomaly band
+   *
+   * This method:
+   * 1. Finds the anomaly detection band metric in the metrics array
+   * 2. Sets returnData: true for the band metric
+   * 3. Extracts the source metric ID from the band's expression
+   * 4. Finds the source metric and sets returnData: true for it
+   *
+   * @param alarm - The CloudWatch alarm to configure
+   * @throws {ValidationError} if the anomaly detection band or source metric cannot be found
+   */
+  private ensureAnomalyMetricsReturnData(alarm: CfnAlarm): void {
+    const cfnMetrics = alarm.metrics as CfnAlarm.MetricDataQueryProperty[];
+    if (!cfnMetrics || cfnMetrics.length < 2) {
+      throw new ValidationError('Anomaly detection alarms require at least two metrics: the source metric and the anomaly detection band.', this);
+    }
+
+    // Find the anomaly detection band metric
+    const anomalyBandMetric = cfnMetrics.find(m => m.expression && m.expression.includes('ANOMALY_DETECTION_BAND'));
+    if (!anomalyBandMetric) {
+      throw new ValidationError('Could not find anomaly detection band metric. Anomaly detection alarms require a metric with an expression containing ANOMALY_DETECTION_BAND.', this);
+    }
+
+    // Set returnData: true for the anomaly band metric
+    (anomalyBandMetric as any).returnData = true;
+
+    // Extract the ID of the source metric from the expression
+    const match = anomalyBandMetric.expression?.match(/ANOMALY_DETECTION_BAND\(([^,]+)/);
+    if (!match || !match[1]) {
+      throw new ValidationError(`Could not extract source metric ID from anomaly detection band expression: ${anomalyBandMetric.expression}`, this);
+    }
+
+    const sourceMetricId = match[1].trim();
+
+    // Find the source metric and set returnData: true
+    const sourceMetric = cfnMetrics.find(m => m.id === sourceMetricId);
+    if (!sourceMetric) {
+      throw new ValidationError(`Could not find source metric with ID "${sourceMetricId}" referenced in anomaly detection band.`, this);
+    }
+
+    (sourceMetric as any).returnData = true;
   }
 }
 
