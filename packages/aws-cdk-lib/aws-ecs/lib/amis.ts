@@ -39,6 +39,18 @@ export enum WindowsOptimizedVersion {
   SERVER_2022 = '2022',
   SERVER_2019 = '2019',
   SERVER_2016 = '2016',
+  SERVER_2022_CORE = '2022',
+  SERVER_2019_CORE = '2019',
+}
+
+/**
+ * The kernel version for Amazon Linux 2 ECS-optimized AMI.
+ */
+export enum AmiLinuxKernelVersion {
+  /**
+   * Kernel version 5.10
+   */
+  KERNEL_5_10 = '5.10',
 }
 
 const BR_IMAGE_SYMBOL = Symbol.for(
@@ -97,6 +109,69 @@ export interface EcsOptimizedAmiProps {
    * @default false
    */
   readonly cachedInContext?: boolean;
+
+  /**
+   * The kernel version to use for Amazon Linux 2.
+   *
+   * @default - kernel value will be undefined
+   */
+  readonly kernel?: AmiLinuxKernelVersion;
+}
+
+/**
+ * Internal utility for constructing the SSM parameter path for ECS AMIs.
+ * Used by both EcsOptimizedAmi and EcsOptimizedImage classes.
+ */
+function constructSsmParameterPath(params: {
+  windowsVersion?: WindowsOptimizedVersion;
+  generation?: ec2.AmazonLinuxGeneration;
+  hwType: AmiHardwareType;
+  kernel?: AmiLinuxKernelVersion;
+}): string {
+  let path = '/aws/service/';
+
+  if (params.windowsVersion) {
+    path += 'ami-windows-latest/';
+
+    // Check if this is a Core variant
+    const isCore =
+      params.windowsVersion === WindowsOptimizedVersion.SERVER_2022_CORE ||
+      params.windowsVersion === WindowsOptimizedVersion.SERVER_2019_CORE;
+
+    // Use 'English-Core' for Core variants, 'English-Full' for others
+    const editionType = isCore ? 'English-Core' : 'English-Full';
+
+    path += `Windows_Server-${params.windowsVersion}-${editionType}-ECS_Optimized/`;
+    path += 'image_id';
+  } else {
+    path += 'ecs/optimized-ami/';
+
+    if (params.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX) {
+      path += 'amazon-linux/';
+    } else if (params.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2) {
+      path += 'amazon-linux-2/';
+
+      // Add kernel version for Amazon Linux 2 if specified
+      if (params.kernel) {
+        path += `kernel-${params.kernel}/`;
+      }
+    } else if (params.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023) {
+      path += 'amazon-linux-2023/';
+    }
+
+    // Add hardware type
+    if (params.hwType === AmiHardwareType.GPU) {
+      path += 'gpu/';
+    } else if (params.hwType === AmiHardwareType.ARM) {
+      path += 'arm64/';
+    } else if (params.hwType === AmiHardwareType.NEURON) {
+      path += 'inf/';
+    }
+
+    path += 'recommended/image_id';
+  }
+
+  return path;
 }
 
 /*
@@ -139,17 +214,13 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
       this.generation = ec2.AmazonLinuxGeneration.AMAZON_LINUX_2;
     }
 
-    // set the SSM parameter name
-    this.amiParameterName = '/aws/service/'
-      + (this.windowsVersion ? 'ami-windows-latest/' : 'ecs/optimized-ami/')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 ? 'amazon-linux-2023/' : '')
-      + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
-      + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
-      + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
-      + (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '')
-      + (this.windowsVersion ? 'image_id' : 'recommended/image_id');
+    // Use the shared utility function to construct the SSM parameter path
+    this.amiParameterName = constructSsmParameterPath({
+      windowsVersion: this.windowsVersion,
+      generation: this.generation,
+      hwType: this.hwType,
+      kernel: props?.kernel,
+    });
 
     this.cachedInContext = props?.cachedInContext ?? false;
   }
@@ -193,6 +264,13 @@ export interface EcsOptimizedImageOptions {
    * @default false
    */
   readonly cachedInContext?: boolean;
+
+  /**
+   * The kernel version to use for Amazon Linux 2.
+   *
+   * @default - kernel value will be undefined
+   */
+  readonly kernel?: AmiLinuxKernelVersion;
 }
 
 /**
@@ -216,12 +294,17 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    * Construct an Amazon Linux 2 image from the latest ECS Optimized AMI published in SSM
    *
    * @param hardwareType ECS-optimized AMI variant to use
+   * @param Additional options to configure `EcsOptimizedImage`
    */
-  public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD, options: EcsOptimizedImageOptions = {}): EcsOptimizedImage {
+  public static amazonLinux2(
+    hardwareType = AmiHardwareType.STANDARD,
+    options: EcsOptimizedImageOptions = {},
+  ): EcsOptimizedImage {
     return new EcsOptimizedImage({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
       hardwareType,
       cachedInContext: options.cachedInContext,
+      kernel: options.kernel,
     });
   }
 
@@ -268,17 +351,13 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       throw new Error('This error should never be thrown');
     }
 
-    // set the SSM parameter name
-    this.amiParameterName = '/aws/service/'
-      + (this.windowsVersion ? 'ami-windows-latest/' : 'ecs/optimized-ami/')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 ? 'amazon-linux-2023/' : '')
-      + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
-      + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
-      + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
-      + (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '')
-      + (this.windowsVersion ? 'image_id' : 'recommended/image_id');
+    // Use the shared utility function to construct the SSM parameter path
+    this.amiParameterName = constructSsmParameterPath({
+      windowsVersion: this.windowsVersion,
+      generation: this.generation,
+      hwType: this.hwType ?? AmiHardwareType.STANDARD,
+      kernel: props.kernel,
+    });
 
     this.cachedInContext = props?.cachedInContext ?? false;
   }
