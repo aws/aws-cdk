@@ -1192,6 +1192,7 @@
     "ClusterName": {
      "Ref": "ClusterEB0386A7"
     },
+    "ConfigurationValues": "{\"replicaCount\":2}",
     "PreserveOnDelete": true
    }
   }
