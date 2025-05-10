@@ -1197,9 +1197,9 @@ describe('Environment', () => {
     }).toThrow('The environment type of the fleet (LINUX_CONTAINER) must match the environment type of the build image (WINDOWS_SERVER_2019_CONTAINER)');
   });
 
-  test('throws when Windows 2022 build image is used without a fleet', () => {
+  test('throws when Windows 2022 build image is used without a fleet in an unsupported region', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-west-1' } });
     const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
 
     // THEN
@@ -1216,9 +1216,51 @@ describe('Environment', () => {
     }).toThrow('Windows Server 2022 images must be used with a fleet');
   });
 
-  test('throws when 2022 WindowsImageType is used without a fleet', () => {
+  test('can use Windows 2022 build image without a fleet in a supported region', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-west-2' } });
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+
+    // THEN
+    expect(() => {
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'path',
+        }),
+        environment: {
+          buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2022_BASE_3_0,
+        },
+      });
+    }).not.toThrow('Windows Server 2022 images must be used with a fleet in us-west-2');
+  });
+
+  test('throws when 2022 WindowsImageType is used without a fleet in an unsupported region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-west-1' } });
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+
+    // THEN
+    expect(() => {
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'path',
+        }),
+        environment: {
+          buildImage: codebuild.WindowsBuildImage.fromDockerRegistry(
+            'aws/codebuild/future-windows-version:2099-9.0',
+            {},
+            codebuild.WindowsImageType.SERVER_2022,
+          ),
+        },
+      });
+    }).toThrow('Windows Server 2022 images must be used with a fleet');
+  });
+
+  test('can use 2022 WindowsImageType without a fleet in a supported region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-west-2' } });
     const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
 
     // THEN
