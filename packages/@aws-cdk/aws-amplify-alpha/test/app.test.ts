@@ -9,7 +9,62 @@ beforeEach(() => {
   stack = new Stack();
 });
 
-test('create an app connected to a GitHub repository', () => {
+test('create an app connected to a GitHub repository with access token', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.unsafePlainText('secret'),
+    }),
+    buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+      version: '1.0',
+      frontend: {
+        phases: {
+          build: {
+            commands: [
+              'npm run build',
+            ],
+          },
+        },
+      },
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    Name: 'App',
+    BuildSpec: 'version: \"1.0\"\nfrontend:\n  phases:\n    build:\n      commands:\n        - npm run build\n',
+    IAMServiceRole: {
+      'Fn::GetAtt': [
+        'AppRole1AF9B530',
+        'Arn',
+      ],
+    },
+    OauthToken: 'secret',
+    Repository: 'https://github.com/aws/aws-cdk',
+    BasicAuthConfig: {
+      EnableBasicAuth: false,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'amplify.amazonaws.com',
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('create an app connected to a GitHub repository with oauth token', () => {
   // WHEN
   new amplify.App(stack, 'App', {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
