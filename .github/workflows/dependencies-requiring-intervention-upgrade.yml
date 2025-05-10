@@ -111,6 +111,7 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           # Git commit details
+          base: main
           branch: automation/yarn-upgrade-dependencies-requiring-intervention
           author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
           commit-message: |-
