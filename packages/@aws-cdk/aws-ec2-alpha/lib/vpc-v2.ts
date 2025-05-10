@@ -1,10 +1,10 @@
 import { CfnVPC, CfnVPCCidrBlock, DefaultInstanceTenancy, ISubnet, SubnetType } from 'aws-cdk-lib/aws-ec2';
-import { Arn, CfnResource, Lazy, Names, Resource, Tags } from 'aws-cdk-lib/core';
+import { Arn, CfnResource, FeatureFlags, Lazy, Names, Resource, Tags } from 'aws-cdk-lib/core';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IpamOptions, IIpamPool } from './ipam';
 import { IVpcV2, VpcV2Base } from './vpc-v2-base';
 import { ISubnetV2, SubnetV2, SubnetV2Attributes } from './subnet-v2';
-import { region_info } from 'aws-cdk-lib';
+import { cx_api, region_info } from 'aws-cdk-lib';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
@@ -521,7 +521,8 @@ export class VpcV2 extends VpcV2Base {
       this.ipv4CidrBlock = vpcOptions.ipv4CidrBlock;
     }
     this.ipv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
-    this.vpcId = this.resource.attrVpcId;
+    this.vpcId = FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
+      this.resource.ref : this.resource.attrVpcId;
     this.vpcArn = Arn.format({
       service: 'ec2',
       resource: 'vpc',

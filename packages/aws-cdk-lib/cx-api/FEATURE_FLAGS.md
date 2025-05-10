@@ -17,6 +17,7 @@ Flags come in three types:
 
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
+| [@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration](#aws-cdkaws-ec2-alphauseresourceidforvpcv2migration) | When enabled, use resource IDs for VPC V2 migration | V2_NEXT | new default |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | fix |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | fix |
 | [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | 2.0.0 | fix |
@@ -431,6 +432,25 @@ Encryption can also be configured explicitly using the `encrypted` property.
 | (default in v2) | `true` |  |
 
 **Compatibility with old behavior:** Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.
+
+
+### @aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration
+
+*When enabled, use resource IDs for VPC V2 migration*
+
+Flag type: New default behavior
+
+When this feature flag is enabled, the VPC V2 migration will use resource IDs instead of getAtt references
+for migrating resources from VPC V1 to VPC V2. This helps ensure a smoother migration path between
+the two versions.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2_NEXT | `false` | `false` |
+
+**Compatibility with old behavior:** Disable the feature flag to use getAtt references for VPC V2 migration
 
 
 ### @aws-cdk/core:newStyleStackSynthesis

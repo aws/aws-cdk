@@ -1,7 +1,7 @@
 {
   "version": "41.0.0",
   "files": {
-    "54ef4d5bb01b16633197e97f01db339c847e57c9804631e2abf12416216b9758": {
+    "ad642b6d2401e9d8e917700e00535a32fe498b4ed292838cb43bd906a53b2849": {
       "displayName": "NatGwPubVpc Template",
       "source": {
         "path": "aws-cdk-routev2-publicnatgw-alpha.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "54ef4d5bb01b16633197e97f01db339c847e57c9804631e2abf12416216b9758.json",
+          "objectKey": "ad642b6d2401e9d8e917700e00535a32fe498b4ed292838cb43bd906a53b2849.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

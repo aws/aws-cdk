@@ -1,7 +1,7 @@
 {
   "version": "41.0.0",
   "files": {
-    "c1f4b75d2d3f2e854e49bd6ff47d0b000d55d12ca8041aeb501a416acd0ee010": {
+    "819e999f3e97f0c86876a4a8ccc9ca0ae0b6072b95d8d4fe8cfefa02d03edb93": {
       "displayName": "vpcv2-import-integ-test Template",
       "source": {
         "path": "vpcv2-import-integ-test.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "current_account-us-west-2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "c1f4b75d2d3f2e854e49bd6ff47d0b000d55d12ca8041aeb501a416acd0ee010.json",
+          "objectKey": "819e999f3e97f0c86876a4a8ccc9ca0ae0b6072b95d8d4fe8cfefa02d03edb93.json",
           "region": "us-west-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
         }

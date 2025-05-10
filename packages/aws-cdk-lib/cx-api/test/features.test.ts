@@ -44,6 +44,7 @@ test('feature flag defaults may not be changed anymore', () => {
     // Add new disabling feature flags below this line
     [feats.ASPECT_STABILIZATION]: true,
     [feats.LOG_USER_POOL_CLIENT_SECRET_VALUE]: false,
+    [feats.USE_RESOURCEID_FOR_VPCV2_MIGRATION]: false,
   });
 });
 

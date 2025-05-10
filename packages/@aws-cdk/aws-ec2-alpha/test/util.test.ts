@@ -1,4 +1,5 @@
-import { CidrBlock, CidrBlockIpv6, NetworkUtils } from '../lib/util';
+import { CidrBlock, CidrBlockIpv6, NetworkUtils, defaultSubnetName } from '../lib/util';
+import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 
 describe('Tests for the CidrBlock.rangesOverlap method to check if IPv4 ranges overlap', () =>{
   test('Should return false for non-overlapping IP ranges', () => {
@@ -69,5 +70,29 @@ describe('Tests for the CidrBlock.rangesOverlap method to check if IPv4 ranges o
     invalidIps.forEach(ip => {
       expect(NetworkUtils.validIp(ip)).toBe(false);
     });
+  });
+});
+
+describe('defaultSubnetName', () => {
+  test('returns correct name for PUBLIC subnet type', () => {
+    expect(defaultSubnetName(SubnetType.PUBLIC)).toBe('Public');
+  });
+
+  test('returns correct name for PRIVATE_WITH_NAT subnet type', () => {
+    expect(defaultSubnetName(SubnetType.PRIVATE_WITH_NAT)).toBe('Private');
+  });
+
+  test('returns correct name for PRIVATE_WITH_EGRESS subnet type', () => {
+    expect(defaultSubnetName(SubnetType.PRIVATE_WITH_EGRESS)).toBe('Private');
+  });
+
+  test('returns correct name for PRIVATE_ISOLATED subnet type', () => {
+    expect(defaultSubnetName(SubnetType.PRIVATE_ISOLATED)).toBe('Isolated');
+  });
+
+  test('returns undefined for unknown subnet type', () => {
+    // Testing with an invalid value to simulate unknown subnet type
+    const unknownSubnetType = 'UNKNOWN' as any;
+    expect(defaultSubnetName(unknownSubnetType)).toBeUndefined();
   });
 });
