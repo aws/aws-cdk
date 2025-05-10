@@ -29,7 +29,10 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
+import {
+  Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy,
+  Names, RemovalPolicy, Size, Stack, Token,
+} from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
@@ -455,6 +458,23 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * Whether to auto-create and tag the log group for this function at deploy time.
+   * If set, a `logs.LogGroup` is synthesized with the default name and attached to this Lambda.
+   * This avoids relying on a custom resource (like `logRetention`) for log group creation.
+   *
+   * @default false
+   */
+  readonly createLogGroup?: boolean;
+
+  /**
+   * When createLogGroup is true, these props configure the created LogGroup.
+   * Ignored if logGroup is explicitly provided.
+   *
+   * @default - Uses default props (retention: INFINITE, removalPolicy: DESTROY)
+   */
+  readonly logGroupProps?: logs.LogGroupProps;
 
   /**
    * The IAM role for the Lambda function associated with the custom resource
@@ -1122,6 +1142,23 @@ export class Function extends FunctionBase {
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
       this._logRetention = logRetention;
+    } else if (!props.logGroup && props.createLogGroup) { // logRetention:f, logGroup:f, createLogGroup:t
+      const defaultLogGroupProps: logs.LogGroupProps = {
+        logGroupName: `/aws/lambda/${props.functionName ?? this.node.id}`,
+        retention: logs.RetentionDays.INFINITE,
+        removalPolicy: RemovalPolicy.DESTROY,
+      };
+      const logGroupProps = {
+        ...defaultLogGroupProps,
+        ...props.logGroupProps, // user overrides
+      };
+      const logGroup = new logs.LogGroup(this, 'LogGroup', logGroupProps);
+      this._logGroup = logGroup;
+
+      // Ensure log group is created before function uses it. Tags will be automatically propagated 
+      // by the aspect when customer writes 
+      // Tags.of(function).add('Owner', 'CDKTeam')
+      resource.node.addDependency(logGroup);
     }
 
     props.code.bindToResource(resource);

@@ -219,6 +219,57 @@ new lambda.Function(this, 'Lambda', {
 
 To use `applicationLogLevelV2` and/or `systemLogLevelV2` you must set `loggingFormat` to `LoggingFormat.JSON`.
 
+## Customizing Log Group Creation
+
+By default, AWS Lambda functions automatically create a CloudWatch log group (named `/aws/lambda/<function-name>`) on first invocation, with log data set to never expire.
+
+This construct introduces two new properties to give you full control over the creation and configuration of this log group:
+
+### `createLogGroup`
+
+Set this property to `true` to instruct the CDK to **eagerly create** the associated CloudWatch log group during deployment. This avoids reliance on runtime behavior and enables tag propagation and property customization without using a custom resource.
+
+### `logGroupProps`
+
+You can customize the created log group (e.g., retention, encryption, tags) by specifying standard [LogGroupProps](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_logs.LogGroupProps.html):
+
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  createLogGroup: true,
+  logGroupProps: {
+    retention: logs.RetentionDays.ONE_WEEK,
+    logGroupName: '/aws/lambda/custom-log-group',
+  },
+});
+```
+
+- If `createLogGroup` is `false` or unset, the log group will be created on first execution as usual.
+- If `logGroupProps` is set but `createLogGroup` is not `true`, it will be ignored.
+- Tags applied to the Lambda function will be propagated to the log group if `createLogGroup` is used.
+
+### Tag Propagation
+
+When a log group is created via `createLogGroup: true`, all tags defined on the Lambda function will be propagated to the log group.
+
+```ts
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  createLogGroup: true,
+  logGroupProps: {
+    retention: logs.RetentionDays.ONE_WEEK,
+  },
+});
+
+Tags.of(fn).add('env', 'dev'); // this tag is also added to the log group
+```
+
 ## Resource-based Policies
 
 AWS Lambda supports resource-based policies for controlling access to Lambda
