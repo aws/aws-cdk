@@ -255,6 +255,21 @@ test('client vpn endpoint with custom session timeout', () => {
   });
 });
 
+test.each([true, false])('client vpn endpoint with client route enforcement %s', (enableClientRouteEnforcement) => {
+  vpc.addClientVpnEndpoint('Endpoint', {
+    cidr: '10.100.0.0/16',
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
+    enableClientRouteEnforcement,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnEndpoint', {
+    ClientRouteEnforcementOptions: {
+      Enforced: enableClientRouteEnforcement,
+    },
+  });
+});
+
 test('client vpn endpoint with client login banner', () => {
   vpc.addClientVpnEndpoint('Endpoint', {
     cidr: '10.100.0.0/16',
