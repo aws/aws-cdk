@@ -97,6 +97,13 @@ export interface EcsOptimizedAmiProps {
    * @default false
    */
   readonly cachedInContext?: boolean;
+  /**
+   * Kernel version used.
+   * Only supported for Amazon Linux 2.
+   *
+   * @default none, uses the recommended kernel version
+   */
+  readonly kernel?: ec2.AmazonLinux2Kernel;
 }
 
 /*
@@ -213,9 +220,25 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
   }
 
   /**
+   * Construct an Amazon Linux 2 image from the latest ECS Optimized AMI published in SSM with kernel 5.10
+   *
+   * @param hardwareType ECS-optimized AMI variant to use
+   */
+  public static amazonLinux2Kernel510(hardwareType = AmiHardwareType.STANDARD, options: EcsOptimizedImageOptions = {}): EcsOptimizedImage {
+    return new EcsOptimizedImage({
+      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+      hardwareType,
+      cachedInContext: options.cachedInContext,
+      kernel: ec2.AmazonLinux2Kernel.KERNEL_5_10,
+    });
+  }
+
+  /**
    * Construct an Amazon Linux 2 image from the latest ECS Optimized AMI published in SSM
    *
    * @param hardwareType ECS-optimized AMI variant to use
+   *
+   * @deprecated use amazonLinux2Kernel510
    */
   public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD, options: EcsOptimizedImageOptions = {}): EcsOptimizedImage {
     return new EcsOptimizedImage({
@@ -227,6 +250,8 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
 
   /**
    * Construct an Amazon Linux AMI image from the latest ECS Optimized AMI published in SSM
+   *
+   * @deprecated use amazonLinux2023 or amazonLinux2Kernel510
    */
   public static amazonLinux(options: EcsOptimizedImageOptions = {}): EcsOptimizedImage {
     return new EcsOptimizedImage({
@@ -268,6 +293,10 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       throw new Error('This error should never be thrown');
     }
 
+    if (props.kernel && props.generation !== ec2.AmazonLinuxGeneration.AMAZON_LINUX_2) {
+      throw new Error('Specifying kernel version is supported only for Amazon Linux 2');
+    }
+
     // set the SSM parameter name
     this.amiParameterName = '/aws/service/'
       + (this.windowsVersion ? 'ami-windows-latest/' : 'ecs/optimized-ami/')
@@ -275,6 +304,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 ? 'amazon-linux-2023/' : '')
       + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
+      + (props.kernel ? `${props.kernel.toString()}/` : '')
       + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
       + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
       + (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '')
