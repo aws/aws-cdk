@@ -553,7 +553,7 @@ new appconfig.Environment(this, 'MyEnvironment', {
 });
 
 // configuration profile with deletion protection check
-new appconfig.HostedConfiguration(stack, 'MyHostedConfigFromFile', {
+new appconfig.HostedConfiguration(this, 'MyHostedConfigFromFile', {
   application,
   content: appconfig.ConfigurationContent.fromFile('config.json'),
   deletionProtectionCheck: appconfig.DeletionProtectionCheck.BYPASS,
