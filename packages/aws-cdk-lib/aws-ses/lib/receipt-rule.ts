@@ -5,7 +5,6 @@ import { CfnReceiptRule } from './ses.generated';
 import * as iam from '../../aws-iam';
 import { Aws, IResource, Lazy, Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { DropSpamSingletonFunction } from '../../custom-resource-handlers/dist/aws-ses/drop-spam-provider.generated';
 
 /**
@@ -104,13 +103,7 @@ export interface ReceiptRuleProps extends ReceiptRuleOptions {
 /**
  * A new receipt rule.
  */
-@propertyInjectable
 export class ReceiptRule extends Resource implements IReceiptRule {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ses.ReceiptRule';
-
   public static fromReceiptRuleName(scope: Construct, id: string, receiptRuleName: string): IReceiptRule {
     class Import extends Resource implements IReceiptRule {
       public readonly receiptRuleName = receiptRuleName;
@@ -174,13 +167,7 @@ export interface DropSpamReceiptRuleProps extends ReceiptRuleProps {
  *
  * @see https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-lambda-example-functions.html
  */
-@propertyInjectable
 export class DropSpamReceiptRule extends Construct {
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ses.DropSpamReceiptRule';
-
   public readonly rule: ReceiptRule;
 
   constructor(scope: Construct, id: string, props: DropSpamReceiptRuleProps) {
