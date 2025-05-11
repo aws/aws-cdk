@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "da9f2a0df5a0064563942052711c38151325932d5d04ce3494f86096fca6a71a": {
+      "displayName": "SubnetIpamTest Template",
+      "source": {
+        "path": "SubnetIpamTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "da9f2a0df5a0064563942052711c38151325932d5d04ce3494f86096fca6a71a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

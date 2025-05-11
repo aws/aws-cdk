@@ -1,0 +1,262 @@
+{
+ "Resources": {
+  "SubnetWithIpv4Subnet6A3CF916": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.0.0/24",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "SubnetIpamTest/SubnetWithIpv4"
+     }
+    ],
+    "VpcId": "vpc-12345"
+   }
+  },
+  "SubnetWithIpv4RouteTable4BEFC5CB": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "SubnetIpamTest/SubnetWithIpv4"
+     }
+    ],
+    "VpcId": "vpc-12345"
+   }
+  },
+  "SubnetWithIpv4RouteTableAssociation6C036027": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "SubnetWithIpv4RouteTable4BEFC5CB"
+    },
+    "SubnetId": {
+     "Ref": "SubnetWithIpv4Subnet6A3CF916"
+    }
+   }
+  },
+  "SubnetWithIpv6SubnetE6FB717A": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": true,
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.1.0/24",
+    "Ipv6CidrBlock": "2001:db8::/64",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "SubnetIpamTest/SubnetWithIpv6"
+     }
+    ],
+    "VpcId": "vpc-12345"
+   }
+  },
+  "SubnetWithIpv6RouteTable8155E30C": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "SubnetIpamTest/SubnetWithIpv6"
+     }
+    ],
+    "VpcId": "vpc-12345"
+   }
+  },
+  "SubnetWithIpv6RouteTableAssociation9AE66EB7": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "SubnetWithIpv6RouteTable8155E30C"
+    },
+    "SubnetId": {
+     "Ref": "SubnetWithIpv6SubnetE6FB717A"
+    }
+   }
+  },
+  "SubnetWithIpv4IpamAllocationSubnetE344B6F8": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "SubnetIpamTest/SubnetWithIpv4IpamAllocation"
+     }
+    ],
+    "VpcId": "vpc-12345"
+   }
+  },
+  "SubnetWithIpv4IpamAllocationRouteTable7BF0AC14": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "SubnetIpamTest/SubnetWithIpv4IpamAllocation"
+     }
+    ],
+    "VpcId": "vpc-12345"
+   }
+  },
+  "SubnetWithIpv4IpamAllocationRouteTableAssociation52618172": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "SubnetWithIpv4IpamAllocationRouteTable7BF0AC14"
+    },
+    "SubnetId": {
+     "Ref": "SubnetWithIpv4IpamAllocationSubnetE344B6F8"
+    }
+   }
+  },
+  "SubnetWithIpv6IpamAllocationSubnetEBB3F93B": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": true,
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.2.0/24",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "SubnetIpamTest/SubnetWithIpv6IpamAllocation"
+     }
+    ],
+    "VpcId": "vpc-12345"
+   }
+  },
+  "SubnetWithIpv6IpamAllocationRouteTable53B4DEF0": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "SubnetIpamTest/SubnetWithIpv6IpamAllocation"
+     }
+    ],
+    "VpcId": "vpc-12345"
+   }
+  },
+  "SubnetWithIpv6IpamAllocationRouteTableAssociation7C60B249": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "SubnetWithIpv6IpamAllocationRouteTable53B4DEF0"
+    },
+    "SubnetId": {
+     "Ref": "SubnetWithIpv6IpamAllocationSubnetEBB3F93B"
+    }
+   }
+  },
+  "SubnetWithBothIpamAllocationsSubnetDE856C7E": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": true,
+    "AvailabilityZone": "us-east-1a",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "SubnetIpamTest/SubnetWithBothIpamAllocations"
+     }
+    ],
+    "VpcId": "vpc-12345"
+   }
+  },
+  "SubnetWithBothIpamAllocationsRouteTable68A44080": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "SubnetIpamTest/SubnetWithBothIpamAllocations"
+     }
+    ],
+    "VpcId": "vpc-12345"
+   }
+  },
+  "SubnetWithBothIpamAllocationsRouteTableAssociationA03EAF59": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "SubnetWithBothIpamAllocationsRouteTable68A44080"
+    },
+    "SubnetId": {
+     "Ref": "SubnetWithBothIpamAllocationsSubnetDE856C7E"
+    }
+   }
+  },
+  "SubnetWithIpamAllocationsWithoutNetmaskSubnetAA3B6850": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": true,
+    "AvailabilityZone": "us-east-1a",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "SubnetIpamTest/SubnetWithIpamAllocationsWithoutNetmask"
+     }
+    ],
+    "VpcId": "vpc-12345"
+   }
+  },
+  "SubnetWithIpamAllocationsWithoutNetmaskRouteTable4408F490": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "SubnetIpamTest/SubnetWithIpamAllocationsWithoutNetmask"
+     }
+    ],
+    "VpcId": "vpc-12345"
+   }
+  },
+  "SubnetWithIpamAllocationsWithoutNetmaskRouteTableAssociation765FABEA": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "SubnetWithIpamAllocationsWithoutNetmaskRouteTable4408F490"
+    },
+    "SubnetId": {
+     "Ref": "SubnetWithIpamAllocationsWithoutNetmaskSubnetAA3B6850"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
