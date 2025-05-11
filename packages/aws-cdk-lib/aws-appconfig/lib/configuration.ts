@@ -18,6 +18,30 @@ import { PhysicalName, Stack, ArnFormat, Names, RemovalPolicy } from '../../core
 import * as mimeTypes from 'mime-types';
 
 /**
+ * Options for deletion protection check.
+ */
+export enum DeletionProtectionCheck {
+  /**
+   * Instructs AWS AppConfig to bypass the deletion protection check and delete
+   * a configuration profile even if deletion protection would have otherwise prevented it.
+   */
+  BYPASS = 'BYPASS',
+
+  /**
+   * Instructs the deletion protection check to run, even if deletion protection
+   * is disabled at the account level. APPLY also forces the deletion protection check to run
+   * against resources created in the past hour, which are normally excluded from deletion protection checks.
+   */
+  APPLY = 'APPLY',
+
+  /**
+   * The default setting, which instructs AWS AppConfig to implement the deletion
+   * protection value specified in the UpdateAccountSettings API.
+   */
+  ACCOUNT_DEFAULT = 'ACCOUNT_DEFAULT',
+}
+
+/**
  * Options for the Configuration construct
  */
 export interface ConfigurationOptions {
@@ -76,6 +100,17 @@ export interface ConfigurationOptions {
    * @default - None.
    */
   readonly deploymentKey?: kms.IKey;
+
+  /**
+   * A parameter to configure deletion protection.
+   * Deletion protection prevents a user from deleting a configuration profile if your application has called
+   * either `GetLatestConfiguration` or `GetConfiguration` for the configuration profile during the specified interval.
+   *
+   * @see https://docs.aws.amazon.com/appconfig/latest/userguide/delete-config-profile.html
+   *
+   * @default DeletionProtectionCheck.ACCOUNT_DEFAULT
+   */
+  readonly deletionProtectionCheck?: DeletionProtectionCheck;
 }
 
 /**
@@ -138,6 +173,11 @@ export interface IConfiguration extends IConstruct {
    * The ID of the configuration profile.
    */
   readonly configurationProfileId: string;
+
+  /**
+   * Configuration for deletion protection behavior.
+   */
+  readonly deletionProtectionCheck?: DeletionProtectionCheck;
 }
 
 abstract class ConfigurationBase extends Construct implements IConfiguration, IExtensible {
@@ -184,6 +224,11 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
    */
   readonly deploymentStrategy?: IDeploymentStrategy;
 
+  /**
+   * Deletion protection check configuration.
+   */
+  readonly deletionProtectionCheck?: DeletionProtectionCheck;
+
   protected applicationId: string;
   protected extensible!: ExtensibleBase;
 
@@ -201,6 +246,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
     this.description = props.description;
     this.deployTo = props.deployTo;
     this.deploymentKey = props.deploymentKey;
+    this.deletionProtectionCheck = props.deletionProtectionCheck;
     this.deploymentStrategy = props.deploymentStrategy || new DeploymentStrategy(this, 'DeploymentStrategy', {
       rolloutStrategy: RolloutStrategy.CANARY_10_PERCENT_20_MINUTES,
     });
@@ -442,6 +488,7 @@ export class HostedConfiguration extends ConfigurationBase {
       description: this.description,
       type: this.type,
       validators: this.validators,
+      deletionProtectionCheck: this.deletionProtectionCheck,
     });
     this.configurationProfileId = this._cfnConfigurationProfile.ref;
     this.configurationProfileArn = Stack.of(this).formatArn({
@@ -584,6 +631,7 @@ export class SourcedConfiguration extends ConfigurationBase {
       retrievalRoleArn: this.retrievalRole?.roleArn,
       type: this.type,
       validators: this.validators,
+      deletionProtectionCheck: this.deletionProtectionCheck,
     });
 
     this.configurationProfileId = this._cfnConfigurationProfile.ref;
