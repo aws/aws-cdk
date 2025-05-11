@@ -326,7 +326,7 @@ describe('params and secrets', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:16'],
+      Layers: ['arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:17'],
       Environment: {
         Variables: {
           PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED: 'true',
@@ -360,7 +360,7 @@ describe('params and secrets', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:16'],
+      Layers: ['arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:17'],
       Environment: {
         Variables: {
           PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED: 'true',
