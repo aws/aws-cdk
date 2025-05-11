@@ -2603,3 +2603,66 @@ new ec2.Instance(this, 'Instance', {
   instanceProfile,
 });
 ```
+
+### Using IPAM for Subnet CIDR Allocation
+
+Instead of specifying a CIDR block directly, you can allocate a CIDR from an [IPAM pool](https://docs.aws.amazon.com/vpc/latest/ipam/what-it-is-ipam.html) for your subnet. This allows for more flexible and managed IP address allocation.
+
+For IPv4, use the `ipv4IpamAllocation` property:
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'Vpc');
+
+// Create a subnet with IPv4 CIDR allocated from an IPAM pool
+new ec2.Subnet(this, 'Subnet', {
+  vpcId: vpc.vpcId,
+  availabilityZone: 'us-east-1a',
+  ipv4IpamAllocation: {
+    ipamPoolId: 'ipam-pool-12345',
+    netmaskLength: 24, // Optional: if not specified, uses the default netmask length from the IPAM pool
+  },
+});
+```
+
+For IPv6, use the `ipv6IpamAllocation` property:
+
+```ts
+// Create a subnet with IPv6 CIDR allocated from an IPAM pool
+new ec2.Subnet(this, 'Subnet', {
+  vpcId: vpc.vpcId,
+  availabilityZone: 'us-east-1a',
+  cidrBlock: '10.0.0.0/24', // IPv4 CIDR is required
+  ipv6IpamAllocation: {
+    ipamPoolId: 'ipam-pool-67890',
+    netmaskLength: 64, // Optional: if not specified, uses the default netmask length from the IPAM pool
+  },
+  assignIpv6AddressOnCreation: true,
+});
+```
+
+You can also use both IPv4 and IPv6 IPAM allocations together:
+
+```ts
+// Create a subnet with both IPv4 and IPv6 CIDR allocated from IPAM pools
+new ec2.Subnet(this, 'Subnet', {
+  vpcId: vpc.vpcId,
+  availabilityZone: 'us-east-1a',
+  ipv4IpamAllocation: {
+    ipamPoolId: 'ipam-pool-12345',
+    // netmaskLength is optional and will use the IPAM pool's default if not specified
+  },
+  ipv6IpamAllocation: {
+    ipamPoolId: 'ipam-pool-67890',
+    // netmaskLength is optional and will use the IPAM pool's default if not specified
+  },
+  assignIpv6AddressOnCreation: true,
+});
+```
+
+Note that:
+- You cannot specify both `cidrBlock` and `ipv4IpamAllocation` at the same time
+- You cannot specify both `ipv6CidrBlock` and `ipv6IpamAllocation` at the same time
+- If you specify `assignIpv6AddressOnCreation: true`, you must also specify either `ipv6CidrBlock` or `ipv6IpamAllocation`
+- The `netmaskLength` property in both `ipv4IpamAllocation` and `ipv6IpamAllocation` is optional. If not specified, the default netmask length configured in the IPAM pool will be used.

@@ -1962,7 +1962,45 @@ function subnetTypeTagValue(type: SubnetType) {
 }
 
 /**
- * Specify configuration parameters for a VPC subnet
+ * IPv4 IPAM pool allocation configuration.
+ */
+export interface Ipv4IpamAllocation {
+  /**
+   * The ID of the IPv4 IPAM pool from which to allocate the CIDR.
+   */
+  readonly ipamPoolId: string;
+
+  /**
+   * The netmask length of the IPv4 CIDR to allocate to the subnet.
+   *
+   * If not specified, the default netmask length configured for the IPAM pool will be used.
+   *
+   * @default - The default netmask length configured in the IPAM pool
+   */
+  readonly netmaskLength?: number;
+}
+
+/**
+ * IPv6 IPAM pool allocation configuration.
+ */
+export interface Ipv6IpamAllocation {
+  /**
+   * The ID of the IPv6 IPAM pool from which to allocate the CIDR.
+   */
+  readonly ipamPoolId: string;
+
+  /**
+   * The netmask length of the IPv6 CIDR to allocate to the subnet.
+   *
+   * If not specified, the default netmask length configured for the IPAM pool will be used.
+   *
+   * @default - The default netmask length configured in the IPAM pool
+   */
+  readonly netmaskLength?: number;
+}
+
+/**
+ * Properties for defining a Subnet.
  */
 export interface SubnetProps {
 
@@ -1978,8 +2016,11 @@ export interface SubnetProps {
 
   /**
    * The CIDR notation for this subnet
+   *
+   * Either `cidrBlock` or `ipv4IpamAllocation` must be specified, but not both.
+   * @default - No CIDR block is specified. Use ipv4IpamAllocation to specify IPv4 allocation.
    */
-  readonly cidrBlock: string;
+  readonly cidrBlock?: string;
 
   /**
    * Controls if a public IP is associated to an instance at launch
@@ -1993,6 +2034,8 @@ export interface SubnetProps {
    *
    * If you specify AssignIpv6AddressOnCreation, you must also specify Ipv6CidrBlock.
    *
+   * Either `ipv6CidrBlock` or `ipv6IpamAllocation` must be specified, but not both.
+   *
    * @default - no IPv6 CIDR block.
    */
   readonly ipv6CidrBlock?: string;
@@ -2000,11 +2043,33 @@ export interface SubnetProps {
   /**
    * Indicates whether a network interface created in this subnet receives an IPv6 address.
    *
-   * If you specify AssignIpv6AddressOnCreation, you must also specify Ipv6CidrBlock.
+   * If you specify AssignIpv6AddressOnCreation, you must also specify Ipv6CidrBlock or ipv6IpamAllocation.
    *
    * @default false
    */
   readonly assignIpv6AddressOnCreation?: boolean;
+
+  /**
+   * IPv4 IPAM pool allocation configuration.
+   *
+   * Use this property to allocate a CIDR from an IPv4 IPAM pool to this subnet.
+   *
+   * Either `cidrBlock` or `ipv4IpamAllocation` must be specified, but not both.
+   *
+   * @default - IPAM is not used for IPv4 address allocation
+   */
+  readonly ipv4IpamAllocation?: Ipv4IpamAllocation;
+
+  /**
+   * IPv6 IPAM pool allocation configuration.
+   *
+   * Use this property to allocate a CIDR from an IPv6 IPAM pool to this subnet.
+   *
+   * Either `ipv6CidrBlock` or `ipv6IpamAllocation` must be specified, but not both.
+   *
+   * @default - IPAM is not used for IPv6 address allocation
+   */
+  readonly ipv6IpamAllocation?: Ipv6IpamAllocation;
 }
 
 /**
@@ -2091,12 +2156,27 @@ export class Subnet extends Resource implements ISubnet {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    // Validate the properties
+    if (props.cidrBlock === undefined && props.ipv4IpamAllocation === undefined) {
+      throw new ValidationError('Either cidrBlock or ipv4IpamAllocation must be specified', this);
+    }
+    if (props.cidrBlock !== undefined && props.ipv4IpamAllocation !== undefined) {
+      throw new ValidationError('Cannot specify both cidrBlock and ipv4IpamAllocation', this);
+    }
+    if (props.ipv6CidrBlock !== undefined && props.ipv6IpamAllocation !== undefined) {
+      throw new ValidationError('Cannot specify both ipv6CidrBlock and ipv6IpamAllocation', this);
+    }
+    if (props.assignIpv6AddressOnCreation && props.ipv6CidrBlock === undefined && props.ipv6IpamAllocation === undefined) {
+      throw new ValidationError('If you specify assignIpv6AddressOnCreation, you must also specify ipv6CidrBlock or ipv6IpamAllocation', this);
+    }
+
     Object.defineProperty(this, VPC_SUBNET_SYMBOL, { value: true });
 
     Tags.of(this).add(NAME_TAG, this.node.path);
 
     this.availabilityZone = props.availabilityZone;
-    this.ipv4CidrBlock = props.cidrBlock;
+    // If ipv4IpamAllocation is used, ipv4CidrBlock will be determined by CloudFormation at runtime
+    this.ipv4CidrBlock = props.cidrBlock ?? '';
     const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpcId,
       cidrBlock: props.cidrBlock,
@@ -2104,6 +2184,12 @@ export class Subnet extends Resource implements ISubnet {
       mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
       ipv6CidrBlock: props.ipv6CidrBlock,
       assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation,
+      // Add IPv4 IPAM properties if provided
+      ipv4IpamPoolId: props.ipv4IpamAllocation?.ipamPoolId,
+      ipv4NetmaskLength: props.ipv4IpamAllocation?.netmaskLength,
+      // Add IPv6 IPAM properties if provided
+      ipv6IpamPoolId: props.ipv6IpamAllocation?.ipamPoolId,
+      ipv6NetmaskLength: props.ipv6IpamAllocation?.netmaskLength,
     });
     this.subnetId = subnet.ref;
     this.subnetVpcId = subnet.attrVpcId;
