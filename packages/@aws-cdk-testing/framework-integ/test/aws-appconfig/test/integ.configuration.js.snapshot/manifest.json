@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "aws-appconfig-configuration.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cd00b7b3dd287a8b36ca070e1353f2426a38e0966dd1f4655079ead5199c4a88.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/efc12c2af974d1ea5af876dc6bfb6021a3f583d323f682d0cdc441c11c6d0a1c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,9 +37,7 @@
         "/aws-appconfig-configuration/MyAppConfig": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "applicationName": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyAppConfig/Resource": [
@@ -51,9 +49,7 @@
         "/aws-appconfig-configuration/MyAppConfig/HostedEnv": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "application": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyAppConfig/HostedEnv/Resource": [
@@ -65,9 +61,7 @@
         "/aws-appconfig-configuration/MyAppConfig/HostedEnvFromJson": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "application": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyAppConfig/HostedEnvFromJson/Resource": [
@@ -79,9 +73,7 @@
         "/aws-appconfig-configuration/MyAppConfig/HostedEnvFromYaml": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "application": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyAppConfig/HostedEnvFromYaml/Resource": [
@@ -93,9 +85,7 @@
         "/aws-appconfig-configuration/MyAppConfig/ParameterEnv": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "application": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyAppConfig/ParameterEnv/Resource": [
@@ -107,9 +97,7 @@
         "/aws-appconfig-configuration/MyAppConfig/DocumentEnv": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "application": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyAppConfig/DocumentEnv/Resource": [
@@ -121,9 +109,7 @@
         "/aws-appconfig-configuration/MyAppConfig/BucketEnv": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "application": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyAppConfig/BucketEnv/Resource": [
@@ -135,9 +121,7 @@
         "/aws-appconfig-configuration/MyAppConfig/SecretEnv": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "application": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyAppConfig/SecretEnv/Resource": [
@@ -149,9 +133,7 @@
         "/aws-appconfig-configuration/MyAppConfig/SecretEnvWithKey": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "application": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyAppConfig/SecretEnvWithKey/Resource": [
@@ -163,9 +145,7 @@
         "/aws-appconfig-configuration/MyDeployStrategy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "rolloutStrategy": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyDeployStrategy/Resource": [
@@ -177,9 +157,7 @@
         "/aws-appconfig-configuration/MyHostedConfigFromFile/DeploymentStrategy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "rolloutStrategy": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyHostedConfigFromFile/DeploymentStrategy/Resource": [
@@ -257,11 +235,7 @@
         "/aws-appconfig-configuration/MyValidatorFunction": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyValidatorFunction/ServiceRole": [
@@ -307,9 +281,7 @@
         "/aws-appconfig-configuration/MyParameter": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "stringValue": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyParameter/Resource": [
@@ -467,7 +439,7 @@
         "/aws-appconfig-configuration/DeployConfigInBucket/AwsCliLayer": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {}
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/DeployConfigInBucket/AwsCliLayer/Resource": [
@@ -479,43 +451,15 @@
         "/aws-appconfig-configuration/DeployConfigInBucket/CustomResourceHandler": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "uuid": "*",
-              "layers": [
-                "*"
-              ],
-              "environment": "*",
-              "lambdaPurpose": "*",
-              "timeout": "*",
-              "role": "*",
-              "memorySize": "*",
-              "ephemeralStorageSize": "*",
-              "vpc": "*",
-              "vpcSubnets": "*",
-              "filesystem": "*",
-              "logGroup": "*",
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addMetadata": [
-                "*",
-                true
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addMetadata": [
-                "*",
-                "*"
-              ]
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/DeployConfigInBucket/CustomResource": [
@@ -541,40 +485,15 @@
         "/aws-appconfig-configuration/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "layers": [
-                "*"
-              ],
-              "environment": "*",
-              "timeout": "*",
-              "role": "*",
-              "memorySize": "*",
-              "ephemeralStorageSize": "*",
-              "vpc": "*",
-              "vpcSubnets": "*",
-              "filesystem": "*",
-              "logGroup": "*",
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEnvironment": [
-                "*",
-                "*"
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLayers": [
-                "*"
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
@@ -714,9 +633,7 @@
         "/aws-appconfig-configuration/MyConfigFromBucket/DeploymentStrategy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "rolloutStrategy": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyConfigFromBucket/DeploymentStrategy/Resource": [
@@ -874,9 +791,7 @@
         "/aws-appconfig-configuration/MyConfigFromBucketWithRole/DeploymentStrategy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "rolloutStrategy": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyConfigFromBucketWithRole/DeploymentStrategy/Resource": [
@@ -894,9 +809,7 @@
         "/aws-appconfig-configuration/MySecret": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "secretStringValue": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MySecret/Resource": [
@@ -908,9 +821,7 @@
         "/aws-appconfig-configuration/MyConfigFromSecret/DeploymentStrategy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "rolloutStrategy": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyConfigFromSecret/DeploymentStrategy/Resource": [
@@ -965,10 +876,7 @@
         "/aws-appconfig-configuration/MySecretWithKey": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "secretStringValue": "*",
-              "encryptionKey": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MySecretWithKey/Resource": [
@@ -980,9 +888,7 @@
         "/aws-appconfig-configuration/MyConfigFromSecretWithKey/DeploymentStrategy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "rolloutStrategy": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyConfigFromSecretWithKey/DeploymentStrategy/Resource": [
@@ -1025,23 +931,7 @@
         "/aws-appconfig-configuration/MyPipeline": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "crossAccountKeys": true,
-              "stages": [
-                {
-                  "stageName": "*",
-                  "actions": [
-                    {}
-                  ]
-                },
-                {
-                  "stageName": "*",
-                  "actions": [
-                    {}
-                  ]
-                }
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:warning",
@@ -1049,23 +939,11 @@
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStage": [
-                {
-                  "stageName": "*"
-                }
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStage": [
-                {
-                  "stageName": "*"
-                }
-              ]
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyPipeline/ArtifactsBucketEncryptionKey": [
@@ -1537,9 +1415,7 @@
         "/aws-appconfig-configuration/MyConfigFromPipeline/DeploymentStrategy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "rolloutStrategy": "*"
-            }
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/MyConfigFromPipeline/DeploymentStrategy/Resource": [
@@ -1624,5 +1500,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1014.0"
 }
