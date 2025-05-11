@@ -127,6 +127,18 @@ export interface ServiceManagedEBSVolumeConfiguration {
    * @default - No tags are specified.
    */
   readonly tagSpecifications?: EBSTagSpecification[];
+
+  /**
+   * Specifies the Amazon EBS Provisioned Rate for Volume Initialization (volume initialization rate), in MiB/s,
+   * at which to download the snapshot blocks from Amazon S3 to the volume.
+   * This is also known as volume initialization.
+   * Specifying a volume initialization rate ensures that the volume is initialized at a predictable and consistent rate after creation.
+   *
+   * Valid values are between 100 and 300 MiB/s.
+   *
+   * @default
+   */
+  readonly volumeInitializationLate?: number;
 }
 
 /**
@@ -308,6 +320,12 @@ export class ServiceManagedVolume extends Construct {
       const { min, max } = iopsRanges[volumeType];
       if ((iops < min || iops > max)) {
         throw new Error(`'${volumeType}' volumes must have 'iops' between ${min} and ${max}, got ${iops}`);
+      }
+    }
+
+    if (volumeConfig?.volumeInitializationLate !== undefined && !Token.isUnresolved(volumeConfig.volumeInitializationLate)) {
+      if (volumeConfig.volumeInitializationLate < 100 || volumeConfig.volumeInitializationLate > 300) {
+        throw new Error(`'volumeInitializationLate' must be between 100 and 300 MiB/s, got ${volumeConfig.volumeInitializationLate} MiB/s`);
       }
     }
   }

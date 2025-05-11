@@ -856,6 +856,7 @@ export abstract class BaseService extends Resource
           snapshotId: spec.config.snapShotId,
           sizeInGiB: spec.config.size?.toGibibytes(),
           tagSpecifications: tagSpecifications,
+          // volumeInitializationRate: spec.config.volumeInitializationLate,
         },
       };
     }
