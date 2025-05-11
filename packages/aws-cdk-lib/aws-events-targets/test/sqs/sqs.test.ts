@@ -451,7 +451,7 @@ test('role arn is added', () => {
 
   // WHEN
   rule.addTarget(new targets.SqsQueue(queue, {
-    role: role,
+    eventRole: role,
   }));
 
   // THEN

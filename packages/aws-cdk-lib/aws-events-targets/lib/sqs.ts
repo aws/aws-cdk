@@ -27,15 +27,6 @@ export interface SqsQueueProps extends TargetBaseProps {
    * @default the entire EventBridge event
    */
   readonly message?: events.RuleTargetInput;
-
-  /**
-   * The IAM role to be used for this target when the rule is
-   * triggered. If one rule triggers multiple targets, you can
-   * use a different IAM role for each target.
-   *
-   * @default - no role defined
-   */
-  readonly role?: iam.Role;
 }
 
 /**
@@ -89,7 +80,6 @@ export class SqsQueue implements events.IRuleTarget {
       input: this.props.message,
       targetResource: this.queue,
       sqsParameters: this.props.messageGroupId ? { messageGroupId: this.props.messageGroupId } : undefined,
-      role: this.props.role,
     };
   }
 }

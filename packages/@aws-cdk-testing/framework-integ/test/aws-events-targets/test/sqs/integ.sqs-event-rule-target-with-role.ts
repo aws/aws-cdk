@@ -22,7 +22,7 @@ const event = new events.Rule(stack, 'MyRule', {
 const queue = new sqs.Queue(stack, 'MyQueue');
 
 event.addTarget(new targets.SqsQueue(queue, {
-  role: role,
+  eventRole: role,
 }));
 
 app.synth();

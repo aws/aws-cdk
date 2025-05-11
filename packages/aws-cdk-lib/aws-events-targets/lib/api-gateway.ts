@@ -59,14 +59,6 @@ export interface ApiGatewayProps extends TargetBaseProps {
    * @default the entire EventBridge event
    */
   readonly postBody?: events.RuleTargetInput;
-
-  /**
-   * The role to assume before invoking the target
-   * (i.e., the pipeline) when the given rule is triggered.
-   *
-   * @default - a new role will be created
-   */
-  readonly eventRole?: iam.IRole;
 }
 
 /**

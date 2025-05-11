@@ -1,7 +1,6 @@
 import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 import * as appsync from '../../aws-appsync';
 import * as events from '../../aws-events';
-import * as iam from '../../aws-iam';
 
 /**
  * Customize the AppSync GraphQL API target
@@ -19,14 +18,6 @@ export interface AppSyncGraphQLApiProps extends TargetBaseProps {
    * @default - The entire event is used
    */
   readonly variables?: events.RuleTargetInput;
-
-  /**
-   * The role to assume before invoking the target
-   * (i.e., the pipeline) when the given rule is triggered.
-   *
-   * @default - a new role with permissions to access mutations will be created
-   */
-  readonly eventRole?: iam.IRole;
 }
 
 /**
