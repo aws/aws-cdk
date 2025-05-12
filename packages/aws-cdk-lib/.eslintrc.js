@@ -29,7 +29,6 @@ const noThrowDefaultErrorNotYetSupported = [
   'aws-lambda-destinations',
   'aws-lambda-event-sources',
   'aws-lambda-nodejs',
-  'aws-opensearchservice',
   'aws-scheduler-targets',
   'aws-scheduler',
   'aws-secretsmanager',
