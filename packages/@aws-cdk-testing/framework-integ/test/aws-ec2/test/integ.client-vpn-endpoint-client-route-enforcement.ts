@@ -66,4 +66,6 @@ new IntegTest(app, 'client-vpn-endpoint-integ', {
       domainName,
     }),
   ],
+  enableLookups: true,
+  stackUpdateWorkflow: false,
 });
