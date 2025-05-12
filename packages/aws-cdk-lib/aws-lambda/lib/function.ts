@@ -31,11 +31,11 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import {
   Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy,
-  Names, RemovalPolicy, Size, Stack, Token,
+  Names, Size, Stack, Token,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
+import { LAMBDA_RECOGNIZE_LAYER_VERSION, USE_CDK_MANAGED_LOGGROUP } from '../../cx-api';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -458,15 +458,6 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
-
-  /**
-   * Whether to auto-create and tag the log group for this function at deploy time.
-   * If set, a `logs.LogGroup` is synthesized with the default name and attached to this Lambda.
-   * This avoids relying on a custom resource (like `logRetention`) for log group creation.
-   *
-   * @default false
-   */
-  readonly createLogGroup?: boolean;
 
   /**
    * When createLogGroup is true, these props configure the created LogGroup.
@@ -1142,23 +1133,10 @@ export class Function extends FunctionBase {
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
       this._logRetention = logRetention;
-    } else if (!props.logGroup && props.createLogGroup) { // logRetention:f, logGroup:f, createLogGroup:t
-      const defaultLogGroupProps: logs.LogGroupProps = {
-        logGroupName: `/aws/lambda/${props.functionName ?? this.node.id}`,
-        retention: logs.RetentionDays.INFINITE,
-        removalPolicy: RemovalPolicy.DESTROY,
-      };
-      const logGroupProps = {
-        ...defaultLogGroupProps,
-        ...props.logGroupProps, // user overrides
-      };
-      const logGroup = new logs.LogGroup(this, 'LogGroup', logGroupProps);
-      this._logGroup = logGroup;
-
-      // Ensure log group is created before function uses it. Tags will be automatically propagated 
-      // by the aspect when customer writes 
-      // Tags.of(function).add('Owner', 'CDKTeam')
-      resource.node.addDependency(logGroup);
+    } else if (!props.logGroup && (FeatureFlags.of(this).isEnabled(USE_CDK_MANAGED_LOGGROUP))) { // logRetention:f/undef, logGroup:f/undef, FF.isEnabled()
+      this._logGroup = new logs.LogGroup(this, 'LogGroup', {
+        logGroupName: `/aws/lambda/${this.functionName}`,
+      });
     }
 
     props.code.bindToResource(resource);

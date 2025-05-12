@@ -5075,15 +5075,14 @@ describe('telemetry metadata', () => {
 });
 
 describe('log group behavior', () => {
-  it('log group inherits tags from function when createLogGroup is true', () => {
-    const app = new cdk.App();
+  it('log group inherits tags from function when USE_CDK_MANAGED_LOGGROUP is enabled', () => {
+    const app = new cdk.App({ context: { [cxapi.USE_CDK_MANAGED_LOGGROUP]: true } });
     const stack = new cdk.Stack(app, 'Stack');
 
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
-      createLogGroup: true,
+      runtime: lambda.Runtime.NODEJS_20_X,
     });
 
     cdk.Tags.of(fn).add('Environment', 'Test');

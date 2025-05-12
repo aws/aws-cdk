@@ -17,6 +17,7 @@ Flags come in three types:
 
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
+| [@aws-cdk/aws-lambda:useCdkManagedLogGroup](#aws-cdkaws-lambdausecdkmanagedloggroup) | When enabled, CDK creates and manages loggroup for the lambda function | V2_NEXT | new default |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | fix |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | fix |
 | [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | 2.0.0 | fix |
@@ -217,6 +218,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 
 | Flag | Summary | Type | Since | v1 default | v2 default |
 | ----- | ----- | ----- | ----- | ----- | ----- |
+| [@aws-cdk/aws-lambda:useCdkManagedLogGroup](#aws-cdkaws-lambdausecdkmanagedloggroup) | When enabled, CDK creates and manages loggroup for the lambda function | new default |  | `false` | `true` |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | fix | 1.39.0 | `false` | `true` |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | fix | 1.58.0 | `false` | `true` |
 | [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | fix | 1.97.0 | `false` | `true` |
@@ -429,6 +431,31 @@ Encryption can also be configured explicitly using the `encrypted` property.
 | (default in v2) | `true` |  |
 
 **Compatibility with old behavior:** Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.
+
+
+### @aws-cdk/aws-lambda:useCdkManagedLogGroup
+
+*When enabled, CDK creates and manages loggroup for the lambda function*
+
+Flag type: New default behavior
+
+When this feature flag is enabled, CDK will create a loggroup for lambda function with default properties
+which supports CDK features Tag propagation, Property Injectors, Aspects
+if the cdk app doesnt pass a 'logRetention' or 'logGroup' explicitly. 
+LogGroups created via 'logRetention' do not support Tag propagation, Property Injectors, Aspects.
+LogGroups created via 'logGroup' created in CDK support Tag propagation, Property Injectors, Aspects.
+
+When this feature flag is disabled, a loggroup is created by Lambda service on first invocation 
+of the function (existing behavior). 
+LogGroups created in this way do not support Tag propagation, Property Injectors, Aspects.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2_NEXT | `true` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to let lambda service create logGroup
 
 
 ### @aws-cdk/core:newStyleStackSynthesis

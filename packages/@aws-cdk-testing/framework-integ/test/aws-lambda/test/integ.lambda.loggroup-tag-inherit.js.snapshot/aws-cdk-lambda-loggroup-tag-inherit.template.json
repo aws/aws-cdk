@@ -35,6 +35,10 @@
       "Value": "Buggy"
      },
      {
+      "Key": "Code2",
+      "Value": "NotBuggy"
+     },
+     {
       "Key": "Environment",
       "Value": "Test"
      },
@@ -69,6 +73,10 @@
       "Value": "Buggy"
      },
      {
+      "Key": "Code2",
+      "Value": "NotBuggy"
+     },
+     {
       "Key": "Environment",
       "Value": "Test"
      },
@@ -83,19 +91,32 @@
     ]
    },
    "DependsOn": [
-    "TaggedFunctionLogGroup3103ADB9",
     "TaggedFunctionServiceRole7DAF0F6D"
    ]
   },
   "TaggedFunctionLogGroup3103ADB9": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "LogGroupName": "/aws/lambda/TaggedFunction",
-    "RetentionInDays": 7,
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "TaggedFunctionC6B68D8A"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731,
     "Tags": [
      {
       "Key": "Code",
       "Value": "Buggy"
+     },
+     {
+      "Key": "Code2",
+      "Value": "NotBuggy"
      },
      {
       "Key": "Environment",
@@ -111,8 +132,8 @@
      }
     ]
    },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "TaggedFunctionCurrentVersion120B8A2B22666b31fbb20be0f0804c68742420c2": {
    "Type": "AWS::Lambda::Version",

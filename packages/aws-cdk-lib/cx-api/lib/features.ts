@@ -136,6 +136,7 @@ export const ASPECT_PRIORITIES_MUTATING = '@aws-cdk/core:aspectPrioritiesMutatin
 export const DYNAMODB_TABLE_RETAIN_TABLE_REPLICA = '@aws-cdk/aws-dynamodb:retainTableReplica';
 export const LOG_USER_POOL_CLIENT_SECRET_VALUE = '@aws-cdk/cognito:logUserPoolClientSecretValue';
 export const PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope';
+export const USE_CDK_MANAGED_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1548,6 +1549,26 @@ export const FLAGS: Record<string, FlagInfo> = {
     defaults: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
+  },
+  //////////////////////////////////////////////////////////////////////
+  [USE_CDK_MANAGED_LOGGROUP]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, CDK creates and manages loggroup for the lambda function',
+    detailsMd: `
+        When this feature flag is enabled, CDK will create a loggroup for lambda function with default properties
+        which supports CDK features Tag propagation, Property Injectors, Aspects
+        if the cdk app doesnt pass a 'logRetention' or 'logGroup' explicitly. 
+        LogGroups created via 'logRetention' do not support Tag propagation, Property Injectors, Aspects.
+        LogGroups created via 'logGroup' created in CDK support Tag propagation, Property Injectors, Aspects.
+        
+        When this feature flag is disabled, a loggroup is created by Lambda service on first invocation 
+        of the function (existing behavior). 
+        LogGroups created in this way do not support Tag propagation, Property Injectors, Aspects.
+      `,
+    introducedIn: { v2: 'V2_NEXT' },
+    defaults: { v2: true },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup',
   },
 
   [STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2]: {
