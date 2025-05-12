@@ -2754,18 +2754,18 @@ describe('vpc', () => {
     const stack = new Stack(app, 'DualStackStack');
 
     // WHEN
-    const vpc = new Vpc(stack, "Vpc", {
+    const vpc = new Vpc(stack, 'Vpc', {
     ipProtocol: IpProtocol.DUAL_STACK,
     subnetConfiguration: [
       {
         subnetType: SubnetType.PUBLIC,
-        name: "public",
+        name: 'public',
       },
     ],
     });
 
     // THEN
-    Template.fromStack(stack).resourceCountIs("AWS::EC2::EgressOnlyInternetGateway",0)
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::EgressOnlyInternetGateway',0)
   });
     test('EgressOnlyInternetGateWay is created when private subnet configured in dual stack', () => {
     // GIVEN
