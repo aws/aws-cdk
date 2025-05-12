@@ -19,7 +19,6 @@ baseConfig.rules['@cdklabs/no-throw-default-error'] = ['error'];
 const noThrowDefaultErrorNotYetSupported = [
   'aws-ecs-patterns',
   'aws-ecs',
-  'aws-eks',
   'aws-elasticsearch',
   'aws-events-targets',
   'aws-globalaccelerator',
