@@ -588,6 +588,7 @@
       "AMAZON_NOVA_REEL_V1_0",
       "AMAZON_NOVA_REEL_V1_1",
       "AMAZON_NOVA_SONIC_V1_0",
+      "AMAZON_NOVA_PREMIER_V1_0",
       "AI21_J2_MID",
       "AI21_LABS_JURASSIC_2_MID_V1",
       "AI21_J2_ULTRA",
@@ -660,6 +661,8 @@
       "META_LLAMA_3_2_11B_INSTRUCT_V1",
       "META_LLAMA_3_2_90B_INSTRUCT_V1",
       "META_LLAMA_3_3_70B_INSTRUCT_V1",
+      "META_LLAMA_4_MAVERICK_17B_INSTRUCT_V1_0",
+      "META_LLAMA_4_SCOUT_17B_INSTRUCT_V1_0",
       "MISTRAL_MISTRAL_7B_INSTRUCT_V0_2",
       "MISTRAL_MIXTRAL_8X7B_INSTRUCT_V0_1",
       "MISTRAL_LARGE_V0_1",
@@ -675,7 +678,9 @@
       "STABILITY_STABLE_IMAGE_ULTRA_V1_0",
       "STABILITY_STABLE_IMAGE_ULTRA_V1_1",
       "STABILITY_STABLE_IMAGE_CORE_V1_0",
-      "STABILITY_STABLE_IMAGE_CORE_V1_1"
+      "STABILITY_STABLE_IMAGE_CORE_V1_1",
+      "WRITER_PALMYRA_X4_V1_0",
+      "WRITER_PALMYRA_X5_V1_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
@@ -2294,7 +2299,8 @@
       "OPENSEARCH_2_11",
       "OPENSEARCH_2_13",
       "OPENSEARCH_2_15",
-      "OPENSEARCH_2_17"
+      "OPENSEARCH_2_17",
+      "OPENSEARCH_2_19"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/ca-certificate.ts": {
@@ -2521,7 +2527,8 @@
       "VER_16_6_LIMITLESS",
       "VER_16_8",
       "VER_17_1",
-      "VER_17_2"
+      "VER_17_2",
+      "VER_17_4"
     ],
     "DatabaseClusterEngine": [
       "AURORA",
@@ -2714,8 +2721,10 @@
       "VER_8_0_39",
       "VER_8_0_40",
       "VER_8_0_41",
+      "VER_8_0_42",
       "VER_8_4_3",
-      "VER_8_4_4"
+      "VER_8_4_4",
+      "VER_8_4_5"
     ],
     "PostgresEngineVersion": [
       "VER_9_5",

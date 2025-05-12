@@ -1,0 +1,109 @@
+{
+ "Resources": {
+  "Certificate4E7ABB08": {
+   "Type": "AWS::CertificateManager::Certificate",
+   "Properties": {
+    "DomainName": "*.example.com",
+    "DomainValidationOptions": [
+     {
+      "DomainName": "*.example.com",
+      "HostedZoneId": "Z23ABC4XYZL05B"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "This is a test name"
+     }
+    ],
+    "ValidationMethod": "DNS"
+   }
+  },
+  "DomainNameEC95A6E9": {
+   "Type": "AWS::ApiGatewayV2::DomainName",
+   "Properties": {
+    "DomainName": "*.example.com",
+    "DomainNameConfigurations": [
+     {
+      "CertificateArn": {
+       "Ref": "Certificate4E7ABB08"
+      },
+      "EndpointType": "REGIONAL",
+      "IpAddressType": "dualstack"
+     }
+    ]
+   }
+  },
+  "HttpApiF5A9A8A7": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "HttpApi",
+    "ProtocolType": "HTTP",
+    "RouteSelectionExpression": "${request.method} ${request.path}"
+   }
+  },
+  "HttpApiDefaultStage3EEB07D6": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "HttpApiF5A9A8A7"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
+   },
+   "DependsOn": [
+    "DomainNameEC95A6E9"
+   ]
+  },
+  "HttpApiDefaultStageawscdkawsapigatewayv2domainnameDomainNameundefined0C10CF26": {
+   "Type": "AWS::ApiGatewayV2::ApiMapping",
+   "Properties": {
+    "ApiId": {
+     "Ref": "HttpApiF5A9A8A7"
+    },
+    "DomainName": {
+     "Ref": "DomainNameEC95A6E9"
+    },
+    "Stage": "$default"
+   },
+   "DependsOn": [
+    "DomainNameEC95A6E9",
+    "HttpApiDefaultStage3EEB07D6"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -21,7 +21,7 @@
      "pipeline.name",
      "pipeline.pipelineType"
     ],
-    "salt": "1745526101180"
+    "salt": "1746117427707"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -112,6 +112,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {

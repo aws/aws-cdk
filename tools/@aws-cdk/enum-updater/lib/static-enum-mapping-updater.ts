@@ -10,7 +10,7 @@ const CFN_LINT_URL = "https://github.com/aws-cloudformation/cfn-lint/archive/ref
 const MODULE_MAPPING = path.join(__dirname, "module-mapping.json");
 const STATIC_MAPPING_FILE_NAME = "static-enum-mapping.json";
 const PARSED_CDK_ENUMS_FILE_NAME = "cdk-enums.json";
-const EXCLUDE_FILE = "exclude_values.json";
+const EXCLUDE_FILE = "exclude-values.json";
 export const PARSED_SDK_ENUMS_FILE_NAME = "sdk-enums.json";
 export const STATIC_MAPPING = path.join(__dirname, STATIC_MAPPING_FILE_NAME);
 export const CDK_ENUMS = path.join(__dirname, PARSED_CDK_ENUMS_FILE_NAME);
@@ -203,6 +203,10 @@ async function cleanupTempFiles(zipFile: tmp.FileResult, tmpDir: tmp.DirResult, 
   }
 }
 
+export function extractServiceName(fileName: string) {
+  return fileName.split('-')[1];
+}
+
 /**
  * Parses AWS SDK model JSON files to extract and store enum definitions.
  *
@@ -222,7 +226,7 @@ export async function parseAwsSdkEnums(sdkModelsPath: string): Promise<void> {
         }
         const jsonData = readJsonFile(path.join(sdkModelsPath, file));
 
-        const service = file.split('-')[1];
+        const service = extractServiceName(file);
 
         const enumMap = sdkEnums[service] ?? {};
 
