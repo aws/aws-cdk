@@ -69,7 +69,7 @@
   "EmailIdentity7187767D": {
    "Type": "AWS::SES::EmailIdentity",
    "Properties": {
-    "EmailIdentity": "naonao.org"
+    "EmailIdentity": "example.com"
    }
   }
  },

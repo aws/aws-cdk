@@ -12,13 +12,10 @@ const hostedZoneId = process.env.CDK_INTEG_HOSTED_ZONE_ID ?? process.env.HOSTED_
 if (!hostedZoneId) throw new Error('For this test you must provide your own HostedZoneId as an env var "HOSTED_ZONE_ID". See framework-integ/README.md for details.');
 const hostedZoneName = process.env.CDK_INTEG_HOSTED_ZONE_NAME ?? process.env.HOSTED_ZONE_NAME;
 if (!hostedZoneName) throw new Error('For this test you must provide your own HostedZoneName as an env var "HOSTED_ZONE_NAME". See framework-integ/README.md for details.');
-const domainName = process.env.CDK_INTEG_HOSTED_ZONE_NAME ?? process.env.DOMAIN_NAME;
-if (!domainName) throw new Error('For this test you must provide your own DomainName as an env var "DOMAIN_NAME". See framework-integ/README.md for details.');
 
 interface TestStackProps extends StackProps {
   hostedZoneId: string;
   hostedZoneName: string;
-  domainName: string;
 }
 
 /**
@@ -51,7 +48,6 @@ class ConfigurationSetStack extends Stack {
     const identityStack = new IdentityStack(this, 'IdentityStack', {
       hostedZoneId: props.hostedZoneId,
       hostedZoneName: props.hostedZoneName,
-      domainName: props.domainName,
     });
 
     new ses.ConfigurationSet(this, 'ConfigurationSet', {
@@ -67,6 +63,7 @@ new integ.IntegTest(app, 'ConfigurationSetInteg', {
   testCases: [new ConfigurationSetStack(app, 'ses-configuration-set-tracking-options-integ', {
     hostedZoneId,
     hostedZoneName,
-    domainName,
   })],
+  enableLookups: true,
+  stackUpdateWorkflow: false,
 });
