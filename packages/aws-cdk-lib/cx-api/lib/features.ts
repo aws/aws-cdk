@@ -1627,7 +1627,6 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, EgressOnlyGateway resource will not be created when you create a vpc with only public subnets. A  
           `,
     introducedIn: { v2: 'V2NEXT' },
-    defaults: { v2: false },
     recommendedValue: true,
   },
 };
