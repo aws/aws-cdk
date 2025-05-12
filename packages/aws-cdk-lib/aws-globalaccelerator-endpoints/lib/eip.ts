@@ -24,7 +24,7 @@ export class CfnEipEndpoint implements ga.IEndpoint {
   public readonly region?: string;
 
   constructor(private readonly eip: ec2.CfnEIP, private readonly options: CfnEipEndpointProps = {}) {
-    validateWeight(options.weight);
+    validateWeight(eip, options.weight);
 
     this.region = Stack.of(eip).region;
   }

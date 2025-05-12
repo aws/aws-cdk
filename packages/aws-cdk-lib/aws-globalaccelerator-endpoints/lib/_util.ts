@@ -1,7 +1,8 @@
-import { Token } from '../../core';
+import { IConstruct } from 'constructs';
+import { Token, ValidationError } from '../../core';
 
-export function validateWeight(x?: number) {
+export function validateWeight(scope: IConstruct, x?: number) {
   if (x !== undefined && !Token.isUnresolved(x) && (x < 0 || x > 255)) {
-    throw new Error(`'weight' must be between 0 and 255, got: ${x}`);
+    throw new ValidationError(`'weight' must be between 0 and 255, got: ${x}`, scope);
   }
 }
