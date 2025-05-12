@@ -221,53 +221,23 @@ To use `applicationLogLevelV2` and/or `systemLogLevelV2` you must set `loggingFo
 
 ## Customizing Log Group Creation
 
-By default, AWS Lambda functions automatically create a CloudWatch log group (named `/aws/lambda/<function-name>`) on first invocation, with log data set to never expire.
+### Log Group Creation Methods
 
-This construct introduces two new properties to give you full control over the creation and configuration of this log group:
+| Method | Description | Tag Propagation | Prop Injection | Aspects | Notes |
+|--------|-------------|-----------------|----------------|---------|-------|
+| **logRetention prop** | Legacy approach using Custom Resource | False | False | False | Does not support TPA |
+| **logGroup prop** | Explicitly supplied by user in CDK app | True | True | True | Full support for TPA |
+| **Lazy creation** | Lambda service creates logGroup on first invocation | False | False | False | Occurs when both logRetention and logGroup are undefined and USE_CDK_MANAGED_LOGGROUP is false |
+| **USE_CDK_MANAGED_LOGGROUP** | CDK Lambda function construct creates log group with default props | True | True | True | Feature flag must be enabled |
 
-### `createLogGroup`
-
-Set this property to `true` to instruct the CDK to **eagerly create** the associated CloudWatch log group during deployment. This avoids reliance on runtime behavior and enables tag propagation and property customization without using a custom resource.
-
-### `logGroupProps`
-
-You can customize the created log group (e.g., retention, encryption, tags) by specifying standard [LogGroupProps](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_logs.LogGroupProps.html):
-
-```ts
-import * as logs from 'aws-cdk-lib/aws-logs';
-
-new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_18_X,
-  handler: 'index.handler',
-  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
-  createLogGroup: true,
-  logGroupProps: {
-    retention: logs.RetentionDays.ONE_WEEK,
-    logGroupName: '/aws/lambda/custom-log-group',
-  },
-});
-```
-
-- If `createLogGroup` is `false` or unset, the log group will be created on first execution as usual.
-- If `logGroupProps` is set but `createLogGroup` is not `true`, it will be ignored.
-- Tags applied to the Lambda function will be propagated to the log group if `createLogGroup` is used.
+*TPA: Tag propagation, Prop Injection, Aspects*
 
 ### Tag Propagation
 
-When a log group is created via `createLogGroup: true`, all tags defined on the Lambda function will be propagated to the log group.
-
-```ts
-const fn = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_18_X,
-  handler: 'index.handler',
-  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
-  createLogGroup: true,
-  logGroupProps: {
-    retention: logs.RetentionDays.ONE_WEEK,
-  },
-});
-
-Tags.of(fn).add('env', 'dev'); // this tag is also added to the log group
+Refer section `Log Group Creation Methods` to find out which modes support tag propagation. 
+As an example, adding the following line in your cdk app will also propagate to the logGroup. 
+```
+Tags.of(fn).add('env', 'dev'); // the tag is also added to the log group
 ```
 
 ## Resource-based Policies

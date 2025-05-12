@@ -460,14 +460,6 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly logRetention?: logs.RetentionDays;
 
   /**
-   * When createLogGroup is true, these props configure the created LogGroup.
-   * Ignored if logGroup is explicitly provided.
-   *
-   * @default - Uses default props (retention: INFINITE, removalPolicy: DESTROY)
-   */
-  readonly logGroupProps?: logs.LogGroupProps;
-
-  /**
    * The IAM role for the Lambda function associated with the custom resource
    * that sets the retention policy.
    *
