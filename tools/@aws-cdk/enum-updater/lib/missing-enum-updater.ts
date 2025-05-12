@@ -13,7 +13,7 @@ const DIRECTORIES_TO_SKIP = [
   "test",
 ];
 
-const EXCLUDE_FILE = "exclude_values.json";
+const EXCLUDE_FILE = "exclude-values.json";
 export const EXCLUDE_ENUMS = path.join(__dirname, EXCLUDE_FILE);
 
 interface MissingValuesEntry {
@@ -102,13 +102,13 @@ export class MissingEnumsUpdater {
         const cdkValues = cdkEnums[module][enumName].values;
         const sdkValues = sdkEnums[mapping.sdk_service][mapping.sdk_enum_name];
 
-        let exclusion = [];
+        let exclusion = new Set();
         if (exclusions[module] && exclusions[module][enumName]) {
           const exclusionDict = exclusions[module][enumName];
           if (!exclusionDict["values"]) {
             continue;
           }
-          exclusion = exclusionDict["values"];
+          exclusion = normalizeEnumValues(exclusionDict["values"]);
         }
         
         // Get normalized sets of values
@@ -117,7 +117,7 @@ export class MissingEnumsUpdater {
         
         // Find missing values using normalized comparison
         const missingNormalized = [...normalizedSdkValues].filter(sdkValue => 
-          !normalizedCdkValues.has(sdkValue) && !exclusion.includes(sdkValue)
+          !normalizedCdkValues.has(sdkValue) && !exclusion.has(sdkValue)
         );
         
         if (missingNormalized.length > 0) {
@@ -138,13 +138,12 @@ export class MissingEnumsUpdater {
       }
     }
   
-  
-    const totalEnumsWithMissing = Object.values(missingValues).reduce((sum, moduleEnums) => 
-      sum + Object.keys(moduleEnums).length, 0);
+    const totalEnumsWithMissing = Object.keys(missingValues).reduce((sum, module) => 
+      sum + Object.keys(missingValues[module]).length, 0);
     
-    const totalMissingValues = Object.values(missingValues).reduce((sum, moduleEnums) => 
-      sum + Object.values(moduleEnums).reduce((moduleSum, enumData) => 
-        moduleSum + enumData.missing_values.length, 0), 0);
+    const totalMissingValues = Object.keys(missingValues).reduce((sum, module) => 
+      sum + Object.keys(missingValues[module]).reduce((moduleSum, enumName) => 
+        moduleSum + missingValues[module][enumName].missing_values.length, 0), 0);
   
     console.log(`Enums with missing values: ${totalEnumsWithMissing}`);
     console.log(`Total missing values found: ${totalMissingValues}`);

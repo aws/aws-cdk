@@ -3,6 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as api from 'aws-cdk-lib/aws-apigateway';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as sagemaker from 'aws-cdk-lib/aws-sagemaker';
 import * as sns from 'aws-cdk-lib/aws-sns';

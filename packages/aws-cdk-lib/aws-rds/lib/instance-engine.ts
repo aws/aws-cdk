@@ -973,10 +973,14 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_40 = MysqlEngineVersion.of('8.0.40', '8.0');
   /** Version "8.0.41". */
   public static readonly VER_8_0_41 = MysqlEngineVersion.of('8.0.41', '8.0');
+  /** Version "8.0.42". */
+  public static readonly VER_8_0_42 = MysqlEngineVersion.of('8.0.42', '8.0');
   /** Version "8.4.3". */
   public static readonly VER_8_4_3 = MysqlEngineVersion.of('8.4.3', '8.4');
   /** Version "8.4.4". */
   public static readonly VER_8_4_4 = MysqlEngineVersion.of('8.4.4', '8.4');
+  /** Version "8.4.5". */
+  public static readonly VER_8_4_5 = MysqlEngineVersion.of('8.4.5', '8.4');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
@@ -2813,6 +2817,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_15_00_4415_2_V1 = SqlServerEngineVersion.of('15.00.4415.2.v1', '15.00');
   /** Version "15.00.4420.2.v1". */
   public static readonly VER_15_00_4420_2_V1 = SqlServerEngineVersion.of('15.00.4420.2.v1', '15.00');
+  /** Version "15.00.4430.1.v1". */
+  public static readonly VER_15_00_4430_1_V1 = SqlServerEngineVersion.of('15.00.4430.1.v1', '15.00');
 
   /** Version "16.00" (only a major version, without a specific minor version). */
   public static readonly VER_16 = SqlServerEngineVersion.of('16.00', '16.00');
@@ -2840,6 +2846,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_16_00_4165_4_V1 = SqlServerEngineVersion.of('16.00.4165.4.v1', '16.00');
   /** Version "16.00.4175.1.v1". */
   public static readonly VER_16_00_4175_1_V1 = SqlServerEngineVersion.of('16.00.4175.1.v1', '16.00');
+  /** Version "16.00.4185.3.v1". */
+  public static readonly VER_16_00_4185_3_V1 = SqlServerEngineVersion.of('16.00.4185.3.v1', '16.00');
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.
