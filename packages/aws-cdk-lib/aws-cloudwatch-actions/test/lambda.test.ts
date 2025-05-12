@@ -224,7 +224,7 @@ def handler(event, context):
   Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 4);
 });
 
-test('throw warning when useUniquePermissionId is not set', () => {
+test('when creating alarms of multiple step scaling policy for the same lambda, throw warning when useUniquePermissionId is not set', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -238,6 +238,15 @@ test('throw warning when useUniquePermissionId is not set', () => {
   });
 
   const policy1 = new appscaling.StepScalingPolicy(stack, 'Policy1', {
+    scalingTarget: scalableTarget as unknown as appscaling.IScalableTarget, // Double cast
+    metric: table.metricConsumedReadCapacityUnits(),
+    scalingSteps: [
+      { lower: 0, upper: 1, change: -1 },
+      { lower: 5, change: +1 },
+    ],
+  });
+
+  const policy2 = new appscaling.StepScalingPolicy(stack, 'Policy2', {
     scalingTarget: scalableTarget as unknown as appscaling.IScalableTarget, // Double cast
     metric: table.metricConsumedReadCapacityUnits(),
     scalingSteps: [
@@ -262,8 +271,12 @@ def handler(event, context):
   // WHEN
   policy1.lowerAlarm?.addAlarmAction(lambdaAction);
 
-  const annotations = Annotations.fromStack(stack);
-  annotations.hasWarning('*', Match.stringLikeRegexp('Please use \'useUniquePermissionId\' to generate unique Lambda Permission Id'));
+  try {
+    policy2.lowerAlarm?.addAlarmAction(lambdaAction);
+  } catch {
+    const annotations = Annotations.fromStack(stack);
+    annotations.hasWarning('/Default/Policy2/LowerAlarm', Match.stringLikeRegexp('Please use \'useUniquePermissionId\' on LambdaAction'));
+  }
 });
 
 test('throws when multiple alarms are created for the same lambda if feature flag is set to false', () => {

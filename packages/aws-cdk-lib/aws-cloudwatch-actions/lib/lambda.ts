@@ -53,8 +53,8 @@ export class LambdaAction implements cloudwatch.IAlarmAction {
     // we skip adding it to avoid an exception being thrown
     // see https://github.com/aws/aws-cdk/issues/29514
     if (permissionNode?.sourceArn !== alarm.alarmArn) {
-      if (!this.props?.useUniquePermissionId) {
-        Annotations.of(scope).addWarningV2(permissionId, 'Please use \'useUniquePermissionId\' to generate unique Lambda Permission Id');
+      if (permissionNode !== undefined && !this.props?.useUniquePermissionId) {
+        Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudwatch-actions:LambdaActionPermissionId', `Please use \'useUniquePermissionId\' on LambdaAction ${this.lambdaFunction.functionName} to generate unique Lambda Permission Id`);
       }
 
       this.lambdaFunction.addPermission(permissionId, {
