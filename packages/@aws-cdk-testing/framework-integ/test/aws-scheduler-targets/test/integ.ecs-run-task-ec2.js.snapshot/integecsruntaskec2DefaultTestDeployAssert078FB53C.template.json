@@ -35,7 +35,7 @@
      "taskArns.0",
      "taskArns.0"
     ],
-    "salt": "1741219117201"
+    "salt": "1746676647931"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -250,7 +250,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6eae57da2b343229b97cfa6b9fd2a70b0a928ebe32bb59e744e59440381146af.zip"
+     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -328,7 +328,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6eae57da2b343229b97cfa6b9fd2a70b0a928ebe32bb59e744e59440381146af.zip"
+     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -378,7 +378,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6eae57da2b343229b97cfa6b9fd2a70b0a928ebe32bb59e744e59440381146af.zip"
+     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -431,7 +431,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1741219117203"
+    "salt": "1746676647934"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -481,7 +481,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1741219117203"
+    "salt": "1746676647934"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -630,6 +630,9 @@
    "ap-east-1": {
     "value": "nodejs20.x"
    },
+   "ap-east-2": {
+    "value": "nodejs20.x"
+   },
    "ap-northeast-1": {
     "value": "nodejs20.x"
    },
@@ -736,6 +739,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {

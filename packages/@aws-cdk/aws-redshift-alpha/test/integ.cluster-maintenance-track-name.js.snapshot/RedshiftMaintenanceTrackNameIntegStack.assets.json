@@ -1,7 +1,8 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
+      "displayName": "RedshiftMaintenanceTrackNameIntegStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
       "source": {
         "path": "asset.a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c",
         "packaging": "zip"
@@ -15,6 +16,7 @@
       }
     },
     "60d6644ca7559903aa3a4516f84720a5f2cc1310aa4f456b1aad45a0c1e28046": {
+      "displayName": "Query Redshift Database3de5bea727da479686625efb56431b5f/Code",
       "source": {
         "path": "asset.60d6644ca7559903aa3a4516f84720a5f2cc1310aa4f456b1aad45a0c1e28046",
         "packaging": "zip"
@@ -28,6 +30,7 @@
       }
     },
     "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6": {
+      "displayName": "User/Resource/Provider/framework-onEvent/Code",
       "source": {
         "path": "asset.39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6",
         "packaging": "zip"
@@ -40,7 +43,8 @@
         }
       }
     },
-    "96bfdf63a0f1e3e52fea7b22ebc932ee98bdea64af6249172a3a0d3f7fdd836a": {
+    "6abf05a3c0c6fe555e7f5646f5e4f0e96be99fdeafebd205014c9b539c210dfa": {
+      "displayName": "RedshiftMaintenanceTrackNameIntegStack Template",
       "source": {
         "path": "RedshiftMaintenanceTrackNameIntegStack.template.json",
         "packaging": "file"
@@ -48,7 +52,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "96bfdf63a0f1e3e52fea7b22ebc932ee98bdea64af6249172a3a0d3f7fdd836a.json",
+          "objectKey": "6abf05a3c0c6fe555e7f5646f5e4f0e96be99fdeafebd205014c9b539c210dfa.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

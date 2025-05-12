@@ -30,7 +30,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1740215985793"
+    "salt": "1746676646654"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -254,7 +254,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "dd00f112868c452fba27bada7b77220e5d1dd5b8df0112cf9080be6ac96c29cf.zip"
+     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -332,7 +332,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "dd00f112868c452fba27bada7b77220e5d1dd5b8df0112cf9080be6ac96c29cf.zip"
+     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -382,7 +382,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "dd00f112868c452fba27bada7b77220e5d1dd5b8df0112cf9080be6ac96c29cf.zip"
+     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -422,7 +422,7 @@
      "Body": "\"a;b;c\\n1;2;3\\n4;5;6\""
     },
     "flattenResponse": "false",
-    "salt": "1740215985797"
+    "salt": "1746676646657"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -456,7 +456,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1740215985798"
+    "salt": "1746676646658"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectbc473607605d0afcd585355c51af4b06"
@@ -497,7 +497,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1740215985798"
+    "salt": "1746676646659"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa"
@@ -659,6 +659,9 @@
    "ap-east-1": {
     "value": "nodejs20.x"
    },
+   "ap-east-2": {
+    "value": "nodejs20.x"
+   },
    "ap-northeast-1": {
     "value": "nodejs20.x"
    },
@@ -765,6 +768,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {
