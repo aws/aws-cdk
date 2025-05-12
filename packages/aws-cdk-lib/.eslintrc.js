@@ -32,8 +32,6 @@ const noThrowDefaultErrorNotYetSupported = [
   'aws-secretsmanager',
   'aws-servicecatalog',
   'aws-sns-subscriptions',
-  'aws-stepfunctions',
-  'aws-stepfunctions-tasks',
   'core',
   'custom-resources',
   'region-info',
