@@ -20,7 +20,6 @@ const noThrowDefaultErrorNotYetSupported = [
   'aws-ecs-patterns',
   'aws-ecs',
   'aws-elasticsearch',
-  'aws-events-targets',
   'aws-globalaccelerator',
   'aws-globalaccelerator-endpoints',
   'aws-iam',
