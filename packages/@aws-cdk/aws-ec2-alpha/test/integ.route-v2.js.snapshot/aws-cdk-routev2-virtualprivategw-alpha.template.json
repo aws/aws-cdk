@@ -77,6 +77,12 @@
       }
      ]
     },
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "vpgw2AB64B6B",

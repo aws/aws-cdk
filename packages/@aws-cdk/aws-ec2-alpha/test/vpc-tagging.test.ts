@@ -61,12 +61,12 @@ describe('Vpc V2 with full control', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
       Tags: [
         {
-          Key: 'Name',
+          Key: 'aws-cdk:subnet-name',
           Value: 'MyTestSubnet',
         },
         {
-          Key: 'VpcName',
-          Value: 'MyTestVpc',
+          Key: 'aws-cdk:subnet-type',
+          Value: 'Private',
         },
       ],
     });
@@ -106,7 +106,7 @@ describe('Vpc V2 with full control', () => {
       Tags: [
         {
           Key: 'Name',
-          Value: 'TestIGW',
+          Value: 'MyTestVpc',
         },
       ],
     });
@@ -246,7 +246,7 @@ describe('Vpc V2 with full control', () => {
       Tags: [
         {
           Key: 'Name',
-          Value: 'TestIGW',
+          Value: 'MyTestVpc',
         },
       ],
     });

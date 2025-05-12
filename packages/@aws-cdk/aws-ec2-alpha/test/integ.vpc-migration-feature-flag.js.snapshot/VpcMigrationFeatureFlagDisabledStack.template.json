@@ -1,0 +1,215 @@
+{
+ "Resources": {
+  "VpcWithFeatureFlagDisabled0CB6925D": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VpcMigrationFeatureFlagDisabledStack/VpcWithFeatureFlagDisabled"
+     }
+    ]
+   }
+  },
+  "PublicSubnet1C95672B": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.0.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VpcWithFeatureFlagDisabled0CB6925D",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "PublicSubnetRouteTable0E6A0E9F": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VpcWithFeatureFlagDisabled0CB6925D",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "PublicSubnetRouteTableAssociation0984B11D": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "PublicSubnetRouteTable0E6A0E9F",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "PublicSubnet1C95672B"
+    }
+   }
+  },
+  "InternetGatewayIGW073A1D76": {
+   "Type": "AWS::EC2::InternetGateway"
+  },
+  "InternetGatewayGWAttachmentF3368F37": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Fn::GetAtt": [
+      "InternetGatewayIGW073A1D76",
+      "InternetGatewayId"
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VpcWithFeatureFlagDisabled0CB6925D",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "NatGatewayNATGateway7D1360DD": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "ConnectivityType": "private",
+    "SubnetId": {
+     "Ref": "PublicSubnet1C95672B"
+    }
+   },
+   "DependsOn": [
+    "PublicSubnetRouteTableAssociation0984B11D"
+   ]
+  },
+  "RouteTableE1378006": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VpcWithFeatureFlagDisabled0CB6925D",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "RouteTableRouteToIgwRoute20AFC0D9": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Fn::GetAtt": [
+      "InternetGatewayIGW073A1D76",
+      "InternetGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "RouteTableE1378006",
+      "RouteTableId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "InternetGatewayGWAttachmentF3368F37",
+    "InternetGatewayIGW073A1D76"
+   ]
+  },
+  "RouteTableRouteToNatRoute5E9F1ACC": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "172.16.0.0/16",
+    "NatGatewayId": {
+     "Fn::GetAtt": [
+      "NatGatewayNATGateway7D1360DD",
+      "NatGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "RouteTableE1378006",
+      "RouteTableId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "NatGatewayNATGateway7D1360DD"
+   ]
+  }
+ },
+ "Outputs": {
+  "IgwRouterId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "InternetGatewayIGW073A1D76",
+     "InternetGatewayId"
+    ]
+   }
+  },
+  "NatGatewayRouterId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "NatGatewayNATGateway7D1360DD",
+     "NatGatewayId"
+    ]
+   }
+  },
+  "RouteTableId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RouteTableE1378006",
+     "RouteTableId"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
