@@ -36,8 +36,6 @@ const noThrowDefaultErrorNotYetSupported = [
   'aws-servicecatalog',
   'aws-servicediscovery',
   'aws-sns-subscriptions',
-  'aws-stepfunctions',
-  'aws-stepfunctions-tasks',
   'core',
   'custom-resources',
   'region-info',
