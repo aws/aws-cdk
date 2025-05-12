@@ -10,9 +10,9 @@ on:
     - cron: 37 13 * * 3
   workflow_dispatch: {}
 
-# For multiple dependencies, do "DEPS_TO_UPGRADE:p1 p2 p3"
+# For multiple dependencies, do `DEPS_TO_UPGRADE:"p1 p2 p3"`
 env:
-  DEPS_TO_UPGRADE: @aws-cdk/asset-awscli-v1 samson-test
+  DEPS_TO_UPGRADE: "@aws-cdk/asset-awscli-v1"
 
 jobs:
   upgrade:
