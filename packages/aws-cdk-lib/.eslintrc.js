@@ -23,6 +23,7 @@ const noThrowDefaultErrorNotYetSupported = [
   'aws-lambda-nodejs',
   'aws-secretsmanager',
   'aws-servicecatalog',
+  'aws-sns-subscriptions',
   'core',
   'custom-resources',
   'region-info',
