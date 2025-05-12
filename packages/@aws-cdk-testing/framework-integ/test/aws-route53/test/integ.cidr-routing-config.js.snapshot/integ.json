@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "CidrRoutingConfigInteg/DefaultTest": {
+      "stacks": [
+        "CidrRoutingConfig"
+      ],
+      "assertionStack": "CidrRoutingConfigInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "CidrRoutingConfigIntegDefaultTestDeployAssert2D4BBAED"
+    }
+  }
+}

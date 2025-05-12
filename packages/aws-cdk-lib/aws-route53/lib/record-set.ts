@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { AliasRecordTargetConfig, IAliasRecordTarget } from './alias-record-target';
+import { CidrRoutingConfig } from './cidr-routing-config';
 import { GeoLocation } from './geo-location';
 import { IHealthCheck } from './health-check';
 import { IHostedZone } from './hosted-zone-ref';
@@ -276,6 +277,16 @@ export interface RecordSetOptions {
    * @default - No health check configured
    */
   readonly healthCheck?: IHealthCheck;
+
+  /**
+   * The object that is specified in resource record set object when you are linking a resource record set to a CIDR location.
+   *
+   * A LocationName with an asterisk “*” can be used to create a default CIDR record. CollectionId is still required for default record.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53-recordset.html#cfn-route53-recordset-cidrroutingconfig
+   * @default - No CIDR routing configured
+   */
+  readonly cidrRoutingConfig?: CidrRoutingConfig;
 }
 
 /**
@@ -349,7 +360,8 @@ export class RecordSet extends Resource implements IRecordSet {
     if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
       throw new ValidationError(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`, this);
     }
-    if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer) {
+    if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer
+      && !props.cidrRoutingConfig) {
       throw new ValidationError('setIdentifier can only be specified for non-simple routing policies', this);
     }
     if (props.multiValueAnswer && props.target.aliasTarget) {
@@ -361,9 +373,10 @@ export class RecordSet extends Resource implements IRecordSet {
       props.region,
       props.weight,
       props.multiValueAnswer,
+      props.cidrRoutingConfig,
     ].filter((variable) => variable !== undefined).length;
     if (nonSimpleRoutingPolicies > 1) {
-      throw new ValidationError('Only one of region, weight, multiValueAnswer or geoLocation can be defined', this);
+      throw new ValidationError('Only one of region, weight, multiValueAnswer, geoLocation or cidrRoutingConfig can be defined', this);
     }
 
     this.geoLocation = props.geoLocation;
@@ -393,6 +406,7 @@ export class RecordSet extends Resource implements IRecordSet {
       weight: props.weight,
       region: props.region,
       healthCheckId: props.healthCheck?.healthCheckId,
+      cidrRoutingConfig: props.cidrRoutingConfig,
     });
 
     this.domainName = recordSet.ref;
