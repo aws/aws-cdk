@@ -60,6 +60,11 @@ export enum AppSyncDataSourceType {
    * Elasticsearch data source type
    */
   ELASTICSEARCH = 'AMAZON_ELASTICSEARCH',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  AMAZON_ELASTICSEARCH = 'AMAZON_ELASTICSEARCH',
 }
 
 /**
