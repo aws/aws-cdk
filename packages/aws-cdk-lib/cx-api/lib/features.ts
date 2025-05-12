@@ -140,6 +140,7 @@ export const S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS = '@aws-cdk/s3-notificati
 export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway';
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
+export const ENABLE_E2_REMOVE_EGRESSONLYGATEWAY_FROM_PUBLIC_SUBNET_VPC = '@aws-cdk/ec2:removeEgressOnlyGatewayFromPublicSubnetVPC';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1615,6 +1616,18 @@ export const FLAGS: Record<string, FlagInfo> = {
       The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
     `,
     introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ENABLE_E2_REMOVE_EGRESSONLYGATEWAY_FROM_PUBLIC_SUBNET_VPC]: {
+    type: FlagType.BugFix,
+    summary: 'Remove EgressOnlyGateway resource when a a double stack vpc has only public subnets',
+    detailsMd: `
+      When this feature flag is enabled, EgressOnlyGateway resource will not be created when you create a vpc with only public subnets. A  
+          `,
+    introducedIn: { v2: '2.196.0' },
+    defaults: { v2: false },
     recommendedValue: true,
   },
 };
