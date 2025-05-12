@@ -2902,10 +2902,9 @@ describe('vpc', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'DualStackStack');
-
+    stack.node.setContext(ENABLE_E2_REMOVE_EGRESSONLYGATEWAY_FROM_PUBLIC_SUBNET_VPC, true);
 
     // WHEN
-    stack.node.setContext(ENABLE_E2_REMOVE_EGRESSONLYGATEWAY_FROM_PUBLIC_SUBNET_VPC, true);
     const vpc = new Vpc(stack, 'Vpc', {
       ipProtocol: IpProtocol.DUAL_STACK,
       subnetConfiguration: [
@@ -2915,6 +2914,7 @@ describe('vpc', () => {
         },
       ],
     });
+    
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::EC2::EgressOnlyInternetGateway', 0);
   });
