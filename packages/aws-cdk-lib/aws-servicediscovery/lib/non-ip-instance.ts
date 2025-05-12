@@ -3,6 +3,7 @@ import { BaseInstanceProps, InstanceBase } from './instance';
 import { defaultDiscoveryType } from './private/utils';
 import { IService, DiscoveryType } from './service';
 import { CfnInstance } from './servicediscovery.generated';
+import { ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface NonIpInstanceBaseProps extends BaseInstanceProps {
@@ -42,11 +43,11 @@ export class NonIpInstance extends InstanceBase {
 
     const discoveryType = props.service.discoveryType || defaultDiscoveryType(props.service.namespace);
     if (discoveryType !== DiscoveryType.API) {
-      throw new Error('This type of instance can only be registered for HTTP namespaces.');
+      throw new ValidationError('This type of instance can only be registered for HTTP namespaces.', this);
     }
 
     if (props.customAttributes === undefined || Object.keys(props.customAttributes).length === 0) {
-      throw new Error('You must specify at least one custom attribute for this instance type.');
+      throw new ValidationError('You must specify at least one custom attribute for this instance type.', this);
     }
 
     const resource = new CfnInstance(this, 'Resource', {

@@ -34,7 +34,6 @@ const noThrowDefaultErrorNotYetSupported = [
   'aws-scheduler',
   'aws-secretsmanager',
   'aws-servicecatalog',
-  'aws-servicediscovery',
   'aws-sns-subscriptions',
   'aws-stepfunctions',
   'aws-stepfunctions-tasks',
