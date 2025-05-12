@@ -2645,9 +2645,9 @@ describe('vpc', () => {
       [{ maxAzs: 2, reservedAzs: 1 }, { maxAzs: 3 }],
       [{ maxAzs: 2, reservedAzs: 2 }, { maxAzs: 3, reservedAzs: 1 }],
       [{ maxAzs: 2, reservedAzs: 1, subnetConfiguration: [{ cidrMask: 22, name: 'Public', subnetType: SubnetType.PUBLIC }, { cidrMask: 23, name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS }] },
-      { maxAzs: 3, subnetConfiguration: [{ cidrMask: 22, name: 'Public', subnetType: SubnetType.PUBLIC }, { cidrMask: 23, name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS }] }],
+        { maxAzs: 3, subnetConfiguration: [{ cidrMask: 22, name: 'Public', subnetType: SubnetType.PUBLIC }, { cidrMask: 23, name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS }] }],
       [{ maxAzs: 2, reservedAzs: 1, subnetConfiguration: [{ cidrMask: 22, name: 'Public', subnetType: SubnetType.PUBLIC }, { cidrMask: 23, name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS, reserved: true }] },
-      { maxAzs: 3, subnetConfiguration: [{ cidrMask: 22, name: 'Public', subnetType: SubnetType.PUBLIC }, { cidrMask: 23, name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS, reserved: true }] }],
+        { maxAzs: 3, subnetConfiguration: [{ cidrMask: 22, name: 'Public', subnetType: SubnetType.PUBLIC }, { cidrMask: 23, name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS, reserved: true }] }],
       [{ maxAzs: 2, reservedAzs: 1, ipAddresses: IpAddresses.cidr('192.168.0.0/16') }, { maxAzs: 3, ipAddresses: IpAddresses.cidr('192.168.0.0/16') }],
       [{ availabilityZones: ['dummy1a', 'dummy1b'], reservedAzs: 1 }, { availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'] }],
     ])('subnets should remain the same going from %p to %p', (propsWithReservedAz, propsWithUsedReservedAz) => {
@@ -2748,47 +2748,47 @@ describe('vpc', () => {
     });
   });
 
-  test('EgressOnlyInternetGateWay is not created when no private subnet configured in dual stack', () => {
+    test('EgressOnlyInternetGateWay is not created when no private subnet configured in dual stack', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'DualStackStack');
 
     // WHEN
     const vpc = new Vpc(stack, "Vpc", {
-      ipProtocol: IpProtocol.DUAL_STACK,
-      subnetConfiguration: [
-        {
-          subnetType: SubnetType.PUBLIC,
-          name: "public",
-        },
-      ],
+    ipProtocol: IpProtocol.DUAL_STACK,
+    subnetConfiguration: [
+      {
+        subnetType: SubnetType.PUBLIC,
+        name: "public",
+      },
+    ],
     });
 
     // THEN
-    Template.fromStack(stack).resourceCountIs("AWS::EC2::EgressOnlyInternetGateway", 0)
+    Template.fromStack(stack).resourceCountIs("AWS::EC2::EgressOnlyInternetGateway",0)
   });
-  test('EgressOnlyInternetGateWay is created when private subnet configured in dual stack', () => {
+    test('EgressOnlyInternetGateWay is created when private subnet configured in dual stack', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'DualStackStack');
 
     // WHEN
-    const vpc = new Vpc(stack, "Vpc", {
-      ipProtocol: IpProtocol.DUAL_STACK,
-      subnetConfiguration: [
-        {
-          subnetType: SubnetType.PUBLIC,
-          name: "public",
-        },
-        {
-          subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-          name: "private",
-        }
-      ],
+    const vpc = new Vpc(stack, 'Vpc', {
+    ipProtocol: IpProtocol.DUAL_STACK,
+    subnetConfiguration: [
+      {
+        subnetType: SubnetType.PUBLIC,
+        name: 'public',
+      },
+      {
+        subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+        name: 'private',
+      },
+    ],
     });
 
     // THEN
-    Template.fromStack(stack).resourceCountIs("AWS::EC2::EgressOnlyInternetGateway", 1)
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::EgressOnlyInternetGateway',1);
   });
 
   test('error should occur if IPv6 properties are provided for a non-dual-stack VPC', () => {
@@ -2807,13 +2807,13 @@ function getTestStack(): Stack {
   return new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
 }
 
-function toCfnTags(tags: any): Array<{ Key: string; Value: string }> {
-  return Object.keys(tags).map(key => {
+function toCfnTags(tags: any): Array<{Key: string; Value: string}> {
+  return Object.keys(tags).map( key => {
     return { Key: key, Value: tags[key] };
   });
 }
 
-function hasTags(expectedTags: Array<{ Key: string; Value: string }>) {
+function hasTags(expectedTags: Array<{Key: string; Value: string}>) {
   return {
     Properties: {
       Tags: Match.arrayWith(expectedTags),
