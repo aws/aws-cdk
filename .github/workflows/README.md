@@ -92,9 +92,10 @@ Owner: CDK support team
 patch file for downloading.
 Owner: Core CDK team
 
-### Dependencies Requiring Intervention Upgrader
+### Yarn Upgrader for deps needing manual work
 
-[dependencies-requiring-intervention-upgrade.yml](dependencies-requiring-intervention-upgrade.yml): Upgrades specific dependencies that require manual intervention and creates a PR for review.
+[yarn-upgrade-need-manual-work.yml](yarn-upgrade-need-manual-work.yml): Upgrades specific dependencies that require manual intervention and creates a PR for review.
+For example, some dependency upgrades require manual updates to the integ test snapshots.
 Owner: Core CDK team
 
 ### AWS Service Spec Update

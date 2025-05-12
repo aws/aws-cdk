@@ -1,10 +1,18 @@
 name: Yarn Upgrade Dependencies Requiring Intervention
+# This workflow upgrade npm dependencies that will require manual work. For example, `@aws-cdk/asset-awscli-v1` upgrade always require manually updating snapshots.
+# When adding deps in this workflow, we must also exclude them in the Yarn Upgrade workflow. This is so that the PR from that workflow can be kept clean (i.e. does not need manual update).
+# See this line on how to exclude deps: https://github.com/aws/aws-cdk/blob/ce7b30775f354c7de774f73c5f8dedd9ce7530d3/.github/workflows/yarn-upgrade.yml#L61
+# If this proves to be too cumbersome, we can refactor both workflow to reference the deps list from a single place.
 
 on:
   schedule:
-    # Every thursday at 13:37 UTC
+    # Every wednesday at 13:37 UTC
     - cron: 37 13 * * 3
   workflow_dispatch: {}
+
+# For multiple dependencies, do "DEPS_TO_UPGRADE:p1 p2 p3"
+env:
+  DEPS_TO_UPGRADE: @aws-cdk/asset-awscli-v1 samson-test
 
 jobs:
   upgrade:
@@ -13,10 +21,6 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     steps:
-      - name: Dependencies to Upgrade
-        # For multiple packages, do "DEPS_TO_UPGRADE=p1 p2 p3"
-        run: |-
-          echo "DEPS_TO_UPGRADE=@aws-cdk/asset-awscli-v1" >> $GITHUB_ENV
       - name: Check Out
         uses: actions/checkout@v4
 
@@ -61,21 +65,11 @@ jobs:
           git add .
           git diff --binary --patch --staged > ${{ runner.temp }}/upgrade.patch
 
-      - name: Save Dependencies List
-        run: |-
-          echo "$DEPS_TO_UPGRADE" > ${{ runner.temp }}/deps-list.txt
-
       - name: Upload Patch
         uses: actions/upload-artifact@v4
         with:
           name: upgrade.patch
           path: ${{ runner.temp }}/upgrade.patch
-
-      - name: Upload Dependencies List
-        uses: actions/upload-artifact@v4
-        with:
-          name: deps-list
-          path: ${{ runner.temp }}/deps-list.txt
 
   pr:
     name: Create Pull Request
@@ -93,15 +87,6 @@ jobs:
         with:
           name: upgrade.patch
           path: ${{ runner.temp }}
-
-      - name: Download Dependencies List
-        uses: actions/download-artifact@v4
-        with:
-          name: deps-list
-          path: ${{ runner.temp }}
-
-      - name: Set Dependencies Environment Variable
-        run: echo "DEPS_TO_UPGRADE=$(cat ${{ runner.temp }}/deps-list.txt)" >> $GITHUB_ENV
 
       - name: Apply patch
         run: '[ -s ${{ runner.temp }}/upgrade.patch ] && git apply --binary ${{ runner.temp
