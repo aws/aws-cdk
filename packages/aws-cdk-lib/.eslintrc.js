@@ -24,7 +24,6 @@ const noThrowDefaultErrorNotYetSupported = [
   'aws-globalaccelerator',
   'aws-globalaccelerator-endpoints',
   'aws-iam',
-  'aws-kms',
   'aws-lambda-destinations',
   'aws-lambda-event-sources',
   'aws-lambda-nodejs',

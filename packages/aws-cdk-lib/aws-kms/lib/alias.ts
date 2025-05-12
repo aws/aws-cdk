@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IKey } from './key';
 import { CfnAlias } from './kms.generated';
 import * as iam from '../../aws-iam';
-import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { KMS_ALIAS_NAME_REF } from '../../cx-api';
 
@@ -192,8 +192,8 @@ export class Alias extends AliasBase {
       public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: aliasName });
       public readonly keyId = aliasName;
       public readonly aliasName = aliasName;
-      public get aliasTargetKey(): IKey { throw new Error('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().'); }
-      public addAlias(_alias: string): Alias { throw new Error('Cannot call addAlias on an Alias imported by Alias.fromAliasName().'); }
+      public get aliasTargetKey(): IKey { throw new ValidationError('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().', this); }
+      public addAlias(_alias: string): Alias { throw new ValidationError('Cannot call addAlias on an Alias imported by Alias.fromAliasName().', this); }
       public addToResourcePolicy(_statement: iam.PolicyStatement, _allowNoOp?: boolean): iam.AddToResourcePolicyResult {
         return { statementAdded: false };
       }
@@ -223,15 +223,15 @@ export class Alias extends AliasBase {
       }
 
       if (aliasName === REQUIRED_ALIAS_PREFIX) {
-        throw new Error(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`);
+        throw new ValidationError(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`, scope);
       }
 
       if (aliasName.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
-        throw new Error(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`);
+        throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
       }
 
       if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
-        throw new Error('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-');
+        throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
       }
     } else if (Tokenization.reverseString(aliasName).firstValue && Tokenization.reverseString(aliasName).firstToken === undefined) {
       const valueInToken = Tokenization.reverseString(aliasName).firstValue;
@@ -241,11 +241,11 @@ export class Alias extends AliasBase {
       }
 
       if (valueInToken.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
-        throw new Error(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`);
+        throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
       }
 
       if (!valueInToken.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
-        throw new Error('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-');
+        throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
       }
     }
 
