@@ -5,6 +5,7 @@ import { DnsRecordType, IService } from './service';
 import { CfnInstance } from './servicediscovery.generated';
 import { ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /*
  * Properties for a CnameInstance used for service#registerCnameInstance
@@ -32,6 +33,7 @@ export interface CnameInstanceProps extends CnameInstanceBaseProps {
  * Instance that is accessible using a domain name (CNAME).
  * @resource AWS::ServiceDiscovery::Instance
  */
+@propertyInjectable
 export class CnameInstance extends InstanceBase {
   /**
    * The Id of the instance
@@ -74,4 +76,6 @@ export class CnameInstance extends InstanceBase {
     this.instanceId = resource.ref;
     this.cname = props.instanceCname;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicediscovery.CnameInstance';
 }

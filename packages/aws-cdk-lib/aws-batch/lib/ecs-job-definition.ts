@@ -6,6 +6,7 @@ import { IJobQueue } from './job-queue';
 import * as iam from '../../aws-iam';
 import { ArnFormat, Stack } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A JobDefinition that uses ECS orchestration
@@ -56,6 +57,7 @@ export interface EcsJobDefinitionProps extends JobDefinitionProps {
  *
  * @resource AWS::Batch::JobDefinition
  */
+@propertyInjectable
 export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefinition {
   /**
    * Import a JobDefinition by its arn.
@@ -126,4 +128,6 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
 
     return [Compatibility.FARGATE];
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.EcsJobDefinition';
 }

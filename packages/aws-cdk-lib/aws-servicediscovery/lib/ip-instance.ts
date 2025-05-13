@@ -4,6 +4,7 @@ import { DnsRecordType, IService } from './service';
 import { CfnInstance } from './servicediscovery.generated';
 import { ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /*
  * Properties for a IpInstance used for service#registerIpInstance
@@ -50,6 +51,7 @@ export interface IpInstanceProps extends IpInstanceBaseProps {
  *
  * @resource AWS::ServiceDiscovery::Instance
  */
+@propertyInjectable
 export class IpInstance extends InstanceBase {
   /**
    * The Id of the instance
@@ -123,4 +125,6 @@ export class IpInstance extends InstanceBase {
     this.ipv6 = props.ipv6 || '';
     this.port = port;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicediscovery.IpInstance';
 }

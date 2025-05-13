@@ -273,6 +273,7 @@ export interface ManagedRuleProps extends RuleProps {
  *
  * @resource AWS::Config::ConfigRule
  */
+@propertyInjectable
 export class ManagedRule extends RuleNew {
   /** @attribute */
   public readonly configRuleName: string;
@@ -317,6 +318,8 @@ export class ManagedRule extends RuleNew {
 
     this.isManaged = true;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-config.ManagedRule';
 }
 
 /**
@@ -404,6 +407,7 @@ export interface CustomRuleProps extends RuleProps {
  *
  * @resource AWS::Config::ConfigRule
  */
+@propertyInjectable
 export class CustomRule extends RuleNew {
   /** @attribute */
   public readonly configRuleName: string;
@@ -498,6 +502,8 @@ export class CustomRule extends RuleNew {
       this.isCustomWithChanges = true;
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-config.CustomRule';
 }
 
 /**

@@ -5,6 +5,7 @@ import { IConnection } from './connection';
 import { Column } from './schema';
 import { PartitionIndex, TableBase, TableBaseProps } from './table-base';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 export interface ExternalTableProps extends TableBaseProps {
   /**
@@ -28,6 +29,7 @@ export interface ExternalTableProps extends TableBaseProps {
  * A Glue table that targets an external data location (e.g. A table in a Redshift Cluster).
  * @resource AWS::Glue::Table
  */
+@propertyInjectable
 export class ExternalTable extends TableBase {
   /**
    * Name of this table.
@@ -145,6 +147,8 @@ export class ExternalTable extends TableBase {
     const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
     return ret;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.ExternalTable';
 }
 
 const readPermissions = [

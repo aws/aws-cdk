@@ -4,6 +4,7 @@ import { CfnFunction } from './cloudfront.generated';
 import { IKeyValueStore } from './key-value-store';
 import { IResource, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents the function's source code
@@ -158,6 +159,7 @@ export interface FunctionProps {
  *
  * @resource AWS::CloudFront::Function
  */
+@propertyInjectable
 export class Function extends Resource implements IFunction {
   /** Imports a function by its name and ARN */
   public static fromFunctionAttributes(scope: Construct, id: string, attrs: FunctionAttributes): IFunction {
@@ -231,6 +233,8 @@ export class Function extends Resource implements IFunction {
       produce: () => Names.uniqueResourceName(this, { maxLength: 40, allowedSpecialCharacters: '-_' }),
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.Function';
 }
 
 /**

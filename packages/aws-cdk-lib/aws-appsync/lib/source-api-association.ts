@@ -4,6 +4,7 @@ import { IGraphqlApi } from './graphqlapi-base';
 import { Effect, IRole, PolicyStatement } from '../../aws-iam';
 import { Fn, IResource, Lazy, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Merge type used to associate the source API
@@ -105,6 +106,7 @@ export interface SourceApiAssociationProps {
  * AppSync SourceApiAssociation which associates an AppSync source API to an AppSync Merged API.
  * The initial creation of the SourceApiAssociation merges the source API into the Merged API schema.
  */
+@propertyInjectable
 export class SourceApiAssociation extends Resource implements ISourceApiAssociation {
   /**
    * Import Appsync Source Api Association from source API, merged api, and merge type.
@@ -192,6 +194,8 @@ export class SourceApiAssociation extends Resource implements ISourceApiAssociat
       addSourceApiAutoMergePermission(this.association, this.mergedApiExecutionRole);
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appsync.SourceApiAssociation';
 }
 
 /**

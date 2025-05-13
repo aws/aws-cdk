@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 import { CfnGeofenceCollection } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * A Geofence Collection
@@ -60,6 +61,7 @@ export interface GeofenceCollectionProps {
  *
  * @see https://docs.aws.amazon.com/location/latest/developerguide/geofence-tracker-concepts.html#geofence-overview
  */
+@propertyInjectable
 export class GeofenceCollection extends Resource implements IGeofenceCollection {
   /**
    * Use an existing geofence collection by name
@@ -169,4 +171,6 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
       'geo:GetGeofence',
     );
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-location-alpha.GeofenceCollection';
 }

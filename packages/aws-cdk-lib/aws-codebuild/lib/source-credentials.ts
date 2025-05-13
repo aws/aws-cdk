@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnSourceCredential } from './codebuild.generated';
 import { Resource, SecretValue } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Creation properties for `GitHubSourceCredentials`.
@@ -22,6 +23,7 @@ export interface GitHubSourceCredentialsProps {
  *
  * @resource AWS::CodeBuild::SourceCredential
  */
+@propertyInjectable
 export class GitHubSourceCredentials extends Resource {
   constructor(scope: Construct, id: string, props: GitHubSourceCredentialsProps) {
     super(scope, id);
@@ -34,6 +36,8 @@ export class GitHubSourceCredentials extends Resource {
       token: props.accessToken.unsafeUnwrap(), // Safe usage
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codebuild.GitHubSourceCredentials';
 }
 
 /**
@@ -56,6 +60,7 @@ export interface GitHubEnterpriseSourceCredentialsProps {
  *
  * @resource AWS::CodeBuild::SourceCredential
  */
+@propertyInjectable
 export class GitHubEnterpriseSourceCredentials extends Resource {
   constructor(scope: Construct, id: string, props: GitHubEnterpriseSourceCredentialsProps) {
     super(scope, id);
@@ -68,6 +73,8 @@ export class GitHubEnterpriseSourceCredentials extends Resource {
       token: props.accessToken.unsafeUnwrap(), // Safe usage
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codebuild.GitHubEnterpriseSourceCredentials';
 }
 
 /**
@@ -90,6 +97,7 @@ export interface BitBucketSourceCredentialsProps {
  *
  * @resource AWS::CodeBuild::SourceCredential
  */
+@propertyInjectable
 export class BitBucketSourceCredentials extends Resource {
   constructor(scope: Construct, id: string, props: BitBucketSourceCredentialsProps) {
     super(scope, id);
@@ -103,4 +111,6 @@ export class BitBucketSourceCredentials extends Resource {
       token: props.password.unsafeUnwrap(), // Safe usage
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codebuild.BitBucketSourceCredentials';
 }

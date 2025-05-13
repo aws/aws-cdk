@@ -3,6 +3,7 @@ import { IKey } from '../../aws-kms';
 import { ISecret, Secret } from '../../aws-secretsmanager';
 import { Aws } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Construction properties for a DatabaseSecret.
@@ -48,6 +49,7 @@ export interface DatabaseSecretProps {
  *
  * @resource AWS::SecretsManager::Secret
  */
+@propertyInjectable
 export class DatabaseSecret extends Secret {
   /**
    * the excluded characters for this Secret
@@ -85,4 +87,6 @@ export class DatabaseSecret extends Secret {
 
     this._excludedCharacters = excludedCharacters;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-docdb.DatabaseSecret';
 }

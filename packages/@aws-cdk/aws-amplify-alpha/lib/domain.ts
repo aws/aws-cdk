@@ -6,6 +6,7 @@ import { CfnDomain } from 'aws-cdk-lib/aws-amplify';
 import { IApp } from './app';
 import { IBranch } from './branch';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Options to add a domain to an application
@@ -66,6 +67,7 @@ export interface DomainProps extends DomainOptions {
 /**
  * An Amplify Console domain
  */
+@propertyInjectable
 export class Domain extends Resource {
   /**
    * The ARN of the domain
@@ -199,6 +201,8 @@ export class Domain extends Resource {
       prefix: s.prefix ?? s.branch.branchName,
     }));
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-amplify-alpha.Domain';
 }
 
 /**

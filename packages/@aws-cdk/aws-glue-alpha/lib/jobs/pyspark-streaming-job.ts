@@ -4,6 +4,7 @@ import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '..
 import { Code } from '../code';
 import { SparkJob, SparkJobProps } from './spark-job';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties for creating a Python Spark ETL job
@@ -67,6 +68,7 @@ export interface PySparkStreamingJobProps extends SparkJobProps {
  * and 4.0 version for streaming jobs which developers can override.
  * We will enable —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
  */
+@propertyInjectable
 export class PySparkStreamingJob extends SparkJob {
   public readonly jobArn: string;
   public readonly jobName: string;
@@ -123,4 +125,6 @@ export class PySparkStreamingJob extends SparkJob {
     this.setupExtraCodeArguments(args, props);
     return args;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.PySparkStreamingJob';
 }

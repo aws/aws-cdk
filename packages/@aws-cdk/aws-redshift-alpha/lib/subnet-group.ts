@@ -3,6 +3,7 @@ import { IResource, RemovalPolicy, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnClusterSubnetGroup } from 'aws-cdk-lib/aws-redshift';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Interface for a cluster subnet group.
@@ -50,6 +51,7 @@ export interface ClusterSubnetGroupProps {
  *
  * @resource AWS::Redshift::ClusterSubnetGroup
  */
+@propertyInjectable
 export class ClusterSubnetGroup extends Resource implements IClusterSubnetGroup {
   /**
    * Imports an existing subnet group by name.
@@ -79,4 +81,6 @@ export class ClusterSubnetGroup extends Resource implements IClusterSubnetGroup 
 
     this.clusterSubnetGroupName = subnetGroup.ref;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-redshift-alpha.ClusterSubnetGroup';
 }

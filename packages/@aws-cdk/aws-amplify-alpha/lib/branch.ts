@@ -18,6 +18,7 @@ import { BasicAuth } from './basic-auth';
 import { renderEnvironmentVariables } from './utils';
 import { AssetDeploymentIsCompleteFunction, AssetDeploymentOnEventFunction } from '../custom-resource-handlers/dist/aws-amplify-alpha/asset-deployment-provider.generated';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * A branch
@@ -139,6 +140,7 @@ export interface BranchProps extends BranchOptions {
 /**
  * An Amplify Console branch
  */
+@propertyInjectable
 export class Branch extends Resource implements IBranch {
   /**
    * Import an existing branch
@@ -211,6 +213,8 @@ export class Branch extends Resource implements IBranch {
     this.environmentVariables[name] = value;
     return this;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-amplify-alpha.Branch';
 }
 
 class AmplifyAssetDeploymentProvider extends NestedStack {

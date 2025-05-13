@@ -14,6 +14,7 @@ import { addressOf } from 'constructs/lib/private/uniqueid';
 import { KafkaVersion } from './';
 import { CfnCluster } from 'aws-cdk-lib/aws-msk';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents a MSK Cluster
@@ -440,6 +441,7 @@ export class ClientAuthentication {
  *
  * @resource AWS::MSK::Cluster
  */
+@propertyInjectable
 export class Cluster extends ClusterBase {
   /**
    * Reference an existing cluster, defined outside of the CDK code, by name.
@@ -884,4 +886,6 @@ export class Cluster extends ClusterBase {
       throw new core.ValidationError('Cannot create users if an authentication KMS key has not been created/provided.', this);
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-msk-alpha.Cluster';
 }

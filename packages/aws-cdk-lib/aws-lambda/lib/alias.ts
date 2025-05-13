@@ -12,6 +12,7 @@ import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IAlias extends IFunction {
   /**
@@ -90,6 +91,7 @@ export interface AliasAttributes {
 /**
  * A new alias to a particular version of a Lambda function.
  */
+@propertyInjectable
 export class Alias extends QualifiedFunctionBase implements IAlias {
   public static fromAliasAttributes(scope: Construct, id: string, attrs: AliasAttributes): IAlias {
     class Imported extends QualifiedFunctionBase implements IAlias {
@@ -293,6 +295,8 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
 
     return { provisionedConcurrentExecutions: props.provisionedConcurrentExecutions };
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.Alias';
 }
 
 /**

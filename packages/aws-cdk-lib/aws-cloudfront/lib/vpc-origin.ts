@@ -5,6 +5,7 @@ import { IInstance } from '../../aws-ec2';
 import { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
 import { ArnFormat, IResource, ITaggableV2, Names, Resource, Stack, TagManager, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a VPC origin.
@@ -140,6 +141,7 @@ export abstract class VpcOriginEndpoint {
  *
  * @resource AWS::CloudFront::VpcOrigin
  */
+@propertyInjectable
 export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
   /**
    * Import an existing VPC origin from its ID.
@@ -236,4 +238,6 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
       throw new ValidationError(`'${attrName}' must be 80, 443, or a value between 1024 and 65535, got ${port}`, this);
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.VpcOrigin';
 }

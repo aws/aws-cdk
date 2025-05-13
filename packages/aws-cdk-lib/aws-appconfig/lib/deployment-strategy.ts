@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnDeploymentStrategy } from './appconfig.generated';
 import { Resource, IResource, Stack, ArnFormat, Names, Duration, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for DeploymentStrategy.
@@ -35,6 +36,7 @@ export interface DeploymentStrategyProps {
  * @resource AWS::AppConfig::DeploymentStrategy
  * @see https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-deployment-strategy.html
  */
+@propertyInjectable
 export class DeploymentStrategy extends Resource implements IDeploymentStrategy {
   /**
    * Imports a deployment strategy into the CDK using its Amazon Resource Name (ARN).
@@ -164,6 +166,8 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
       resourceName: this.deploymentStrategyId,
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appconfig.DeploymentStrategy';
 }
 
 /**

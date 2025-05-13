@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnConnection } from './events.generated';
 import { IResource, Resource, Stack, SecretValue, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * An API Destination Connection
@@ -293,6 +294,7 @@ export interface ConnectionAttributes {
  *
  * @resource AWS::Events::Connection
  */
+@propertyInjectable
 export class Connection extends Resource implements IConnection {
   /**
    * Import an existing connection resource
@@ -367,8 +369,11 @@ export class Connection extends Resource implements IConnection {
     this.connectionArn = connection.attrArn;
     this.connectionSecretArn = connection.attrSecretArn;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.Connection';
 }
 
+@propertyInjectable
 class ImportedConnection extends Resource {
   public readonly connectionArn: string;
   public readonly connectionName: string;
@@ -386,6 +391,8 @@ class ImportedConnection extends Resource {
     this.connectionName = attrs.connectionName;
     this.connectionSecretArn = attrs.connectionSecretArn;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.ImportedConnection';
 }
 
 /**

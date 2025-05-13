@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Initialization properties for `OpenIdConnectProvider`.
@@ -34,6 +35,7 @@ export interface OpenIdConnectProviderProps {
  *
  * @resource AWS::CloudFormation::CustomResource
  */
+@propertyInjectable
 export class OpenIdConnectProvider extends iam.OpenIdConnectProvider {
   /**
    * Defines an OpenID Connect provider.
@@ -51,4 +53,6 @@ export class OpenIdConnectProvider extends iam.OpenIdConnectProvider {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.OpenIdConnectProvider';
 }

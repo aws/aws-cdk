@@ -240,6 +240,7 @@ export interface GatewayVpcEndpointProps extends GatewayVpcEndpointOptions {
  * A gateway VPC endpoint.
  * @resource AWS::EC2::VPCEndpoint
  */
+@propertyInjectable
 export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoint {
   public static fromGatewayVpcEndpointId(scope: Construct, id: string, gatewayVpcEndpointId: string): IGatewayVpcEndpoint {
     class Import extends VpcEndpoint {
@@ -297,6 +298,8 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
     this.vpcEndpointDnsEntries = endpoint.attrDnsEntries;
     this.vpcEndpointNetworkInterfaceIds = endpoint.attrNetworkInterfaceIds;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.GatewayVpcEndpoint';
 }
 
 /**

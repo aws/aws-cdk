@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { IFirewallRuleGroup } from './firewall-rule-group';
 import { CfnFirewallRuleGroupAssociation } from 'aws-cdk-lib/aws-route53resolver';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Options for a Firewall Rule Group Association
@@ -53,6 +54,7 @@ export interface FirewallRuleGroupAssociationProps extends FirewallRuleGroupAsso
 /**
  * A Firewall Rule Group Association
  */
+@propertyInjectable
 export class FirewallRuleGroupAssociation extends Resource {
   /**
    * The ARN (Amazon Resource Name) of the association
@@ -129,4 +131,6 @@ export class FirewallRuleGroupAssociation extends Resource {
     this.firewallRuleGroupAssociationStatus = association.attrStatus;
     this.firewallRuleGroupAssociationStatusMessage = association.attrStatusMessage;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-route53resolver-alpha.FirewallRuleGroupAssociation';
 }

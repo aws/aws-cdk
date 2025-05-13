@@ -3,6 +3,7 @@ import * as ga from './globalaccelerator.generated';
 import { Listener, ListenerOptions } from './listener';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The interface of the Accelerator
@@ -146,6 +147,7 @@ export enum IpAddressType {
 /**
  * The Accelerator construct
  */
+@propertyInjectable
 export class Accelerator extends cdk.Resource implements IAccelerator {
   /**
    * import from attributes
@@ -234,4 +236,6 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
       throw new cdk.ValidationError(`Invalid ipAddresses value [${ipAddresses}], you can specify one or two addresses, got: ${ipAddresses.length}`, this);
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-globalaccelerator.Accelerator';
 }

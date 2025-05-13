@@ -915,6 +915,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'routeTable': {
         'routeTableId': '*'
       },
+      'defaultRouteTableName': '*',
       'subnetType': 'SubnetType',
       'subnetName': '*',
       'assignIpv6AddressOnCreation': 'boolean',
@@ -3806,7 +3807,17 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'region': '*',
       'account': '*',
-      'removalPolicy': 'RemovalPolicy'
+      'removalPolicy': 'RemovalPolicy',
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      }
     }
   },
   '@aws-cdk.aws-sagemaker-alpha': {
@@ -21990,7 +22001,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         },
         'node': '*'
-      }
+      },
+      'cidrRoutingConfig': '*'
     },
     'ARecord': {
       'target': '*',
@@ -22023,7 +22035,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         },
         'node': '*'
-      }
+      },
+      'cidrRoutingConfig': '*'
     },
     'AaaaRecord': {
       'target': '*',
@@ -22056,7 +22069,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         },
         'node': '*'
-      }
+      },
+      'cidrRoutingConfig': '*'
     },
     'CnameRecord': {
       'domainName': '*',
@@ -22089,7 +22103,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         },
         'node': '*'
-      }
+      },
+      'cidrRoutingConfig': '*'
     },
     'TxtRecord': {
       'values': '*',
@@ -22122,7 +22137,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         },
         'node': '*'
-      }
+      },
+      'cidrRoutingConfig': '*'
     },
     'SrvRecord': {
       'values': {
@@ -22160,7 +22176,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         },
         'node': '*'
-      }
+      },
+      'cidrRoutingConfig': '*'
     },
     'CaaRecord': {
       'values': {
@@ -22197,7 +22214,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         },
         'node': '*'
-      }
+      },
+      'cidrRoutingConfig': '*'
     },
     'CaaAmazonRecord': {
       'zone': {
@@ -22229,7 +22247,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         },
         'node': '*'
-      }
+      },
+      'cidrRoutingConfig': '*'
     },
     'MxRecord': {
       'values': {
@@ -22265,7 +22284,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         },
         'node': '*'
-      }
+      },
+      'cidrRoutingConfig': '*'
     },
     'NsRecord': {
       'values': '*',
@@ -22298,7 +22318,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         },
         'node': '*'
-      }
+      },
+      'cidrRoutingConfig': '*'
     },
     'DsRecord': {
       'values': '*',
@@ -22331,7 +22352,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         },
         'node': '*'
-      }
+      },
+      'cidrRoutingConfig': '*'
     },
     'ZoneDelegationRecord': {
       'nameServers': '*',
@@ -22364,7 +22386,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         },
         'node': '*'
-      }
+      },
+      'cidrRoutingConfig': '*'
     }
   },
   'aws-cdk-lib.aws-s3': {
@@ -25229,6 +25252,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'ipAddressType': 'IpAddressType',
       'addEndpoint': [
         {
           'certificate': {
@@ -25242,7 +25266,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           },
           'certificateName': '*',
           'endpointType': 'EndpointType',
-          'securityPolicy': 'SecurityPolicy'
+          'securityPolicy': 'SecurityPolicy',
+          'ipAddressType': 'IpAddressType'
         }
       ]
     },

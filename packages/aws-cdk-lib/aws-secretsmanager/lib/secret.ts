@@ -839,6 +839,7 @@ export interface ISecretTargetAttachment extends ISecret {
 /**
  * An attached secret.
  */
+@propertyInjectable
 export class SecretTargetAttachment extends SecretBase implements ISecretTargetAttachment {
   public static fromSecretTargetAttachmentSecretArn(scope: Construct, id: string, secretTargetAttachmentSecretArn: string): ISecretTargetAttachment {
     class Import extends SecretBase implements ISecretTargetAttachment {
@@ -898,6 +899,8 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
     }
     return super.addToResourcePolicy(statement);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-secretsmanager.SecretTargetAttachment';
 }
 
 /**

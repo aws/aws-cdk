@@ -208,7 +208,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'AMAZON_OPENSEARCH_SERVICE',
     'HTTP',
     'RELATIONAL_DATABASE',
-    'AMAZON_BEDROCK_RUNTIME'
+    'AMAZON_BEDROCK_RUNTIME',
+    'AMAZON_ELASTICSEARCH'
   ],
   'AppSyncFieldLogLevel': [
     'NONE',

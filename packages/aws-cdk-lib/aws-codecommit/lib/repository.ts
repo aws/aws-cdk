@@ -7,6 +7,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Additional options to pass to the notification rule.
@@ -510,6 +511,7 @@ export interface RepositoryProps {
 /**
  * Provides a CodeCommit Repository.
  */
+@propertyInjectable
 export class Repository extends RepositoryBase {
   /**
    * Imports a codecommit repository.
@@ -617,6 +619,8 @@ export class Repository extends RepositoryBase {
     });
     return this;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codecommit.Repository';
 }
 
 /**

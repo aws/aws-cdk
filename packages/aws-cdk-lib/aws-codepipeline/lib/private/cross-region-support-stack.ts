@@ -3,6 +3,7 @@ import * as kms from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import { makeUniqueResourceName } from '../../../core/lib/private/unique-resource-name';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 
@@ -11,6 +12,7 @@ const REQUIRED_ALIAS_PREFIX = 'alias/';
  * limit for the name/ARN of the key in the ArtifactStore.
  * Limits the length of the alias' auto-generated name to 50 characters.
  */
+@propertyInjectable
 class AliasWithShorterGeneratedName extends kms.Alias {
   protected generatePhysicalName(): string {
     let baseName = super.generatePhysicalName();
@@ -23,6 +25,8 @@ class AliasWithShorterGeneratedName extends kms.Alias {
     // and so have a higher chance of not colliding
     return REQUIRED_ALIAS_PREFIX + lastNCharacters(baseName, maxLength);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codepipeline.AliasWithShorterGeneratedName';
 }
 
 function lastNCharacters(str: string, n: number) {

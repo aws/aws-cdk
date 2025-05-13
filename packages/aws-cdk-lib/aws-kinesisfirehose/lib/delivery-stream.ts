@@ -10,6 +10,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { RegionInfo } from '../../region-info';
 
 const PUT_RECORD_ACTIONS = [
@@ -257,6 +258,7 @@ export interface DeliveryStreamAttributes {
  *
  * @resource AWS::KinesisFirehose::DeliveryStream
  */
+@propertyInjectable
 export class DeliveryStream extends DeliveryStreamBase {
   /**
    * Import an existing delivery stream from its name.
@@ -384,6 +386,8 @@ export class DeliveryStream extends DeliveryStreamBase {
     });
     this.deliveryStreamName = this.getResourceNameAttribute(resource.ref);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kinesisfirehose.DeliveryStream';
 }
 
 function setConnections(scope: Construct) {

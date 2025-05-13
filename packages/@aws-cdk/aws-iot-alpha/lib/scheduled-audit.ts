@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import * as iot from 'aws-cdk-lib/aws-iot';
 import { IAccountAuditConfiguration } from './audit-configuration';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents AWS IoT Scheduled Audit
@@ -277,6 +278,7 @@ export interface ScheduledAuditProps {
 /**
  * Defines AWS IoT Scheduled Audit
  */
+@propertyInjectable
 export class ScheduledAudit extends Resource implements IScheduledAudit {
   /**
    * Import an existing AWS IoT Scheduled Audit from its ARN.
@@ -382,5 +384,7 @@ export class ScheduledAudit extends Resource implements IScheduledAudit {
 
     resource.node.addDependency(props.accountAuditConfiguration);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-iot-alpha.ScheduledAudit';
 }
 

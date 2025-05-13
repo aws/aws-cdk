@@ -4,6 +4,7 @@ import { validateName } from './utils';
 import * as iam from '../../../aws-iam';
 import { Resource, IResource, ArnFormat, Arn, Aws } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IBaseDeploymentConfig } from '../base-deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 
@@ -35,6 +36,7 @@ export interface ImportedDeploymentGroupBaseProps {
 /**
  * @internal
  */
+@propertyInjectable
 export class ImportedDeploymentGroupBase extends Resource {
   public readonly deploymentGroupName: string;
   public readonly deploymentGroupArn: string;
@@ -66,6 +68,8 @@ export class ImportedDeploymentGroupBase extends Resource {
   protected _bindDeploymentConfig(config: IBaseDeploymentConfig) {
     return isPredefinedDeploymentConfig(config) ? config.bindEnvironment(this) : config;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.ImportedDeploymentGroupBase';
 }
 
 export interface DeploymentGroupBaseProps {
@@ -95,6 +99,7 @@ export interface DeploymentGroupBaseProps {
 /**
  * @internal
  */
+@propertyInjectable
 export class DeploymentGroupBase extends Resource {
   /**
    * The name of the Deployment Group.
@@ -160,4 +165,6 @@ export class DeploymentGroupBase extends Resource {
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.DeploymentGroupBase';
 }

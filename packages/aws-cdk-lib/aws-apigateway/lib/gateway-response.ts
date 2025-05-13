@@ -3,6 +3,7 @@ import { CfnGatewayResponse, CfnGatewayResponseProps } from './apigateway.genera
 import { IRestApi } from './restapi';
 import { IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents gateway response resource.
@@ -55,6 +56,7 @@ export interface GatewayResponseOptions {
  *
  * @resource AWS::ApiGateway::GatewayResponse
  */
+@propertyInjectable
 export class GatewayResponse extends Resource implements IGatewayResponse {
   constructor(scope: Construct, id: string, props: GatewayResponseProps) {
     super(scope, id);
@@ -95,6 +97,8 @@ export class GatewayResponse extends Resource implements IGatewayResponse {
     }
     return responseParameters;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.GatewayResponse';
 }
 
 /**

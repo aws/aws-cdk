@@ -5,6 +5,7 @@ import { PolicyDocument } from '../../aws-iam';
 import { Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties to associate SQS queues with a policy
@@ -30,6 +31,7 @@ export interface QueuePolicyProps {
  *
  * Prefer to use `addToResourcePolicy()` instead.
  */
+@propertyInjectable
 export class QueuePolicy extends Resource {
   /**
    * The IAM policy document for this policy.
@@ -57,4 +59,6 @@ export class QueuePolicy extends Resource {
   public get queuePolicyId(): string {
     throw new ValidationError('QueuePolicy.queuePolicyId has been removed from CloudFormation', this);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-sqs.QueuePolicy';
 }

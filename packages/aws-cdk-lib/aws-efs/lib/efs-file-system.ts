@@ -932,6 +932,7 @@ export class FileSystem extends FileSystemBase {
   }
 }
 
+@propertyInjectable
 class ImportedFileSystem extends FileSystemBase {
   /**
    * The security groups/rules used to allow network connections to the file system.
@@ -983,4 +984,6 @@ class ImportedFileSystem extends FileSystemBase {
 
     this.mountTargetsAvailable = new DependencyGroup();
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-efs.ImportedFileSystem';
 }

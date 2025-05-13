@@ -16,6 +16,7 @@ import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Options for portfolio share.
@@ -306,6 +307,7 @@ export interface PortfolioProps {
 /**
  * A Service Catalog portfolio.
  */
+@propertyInjectable
 export class Portfolio extends PortfolioBase {
   /**
    * Creates a Portfolio construct that represents an external portfolio.
@@ -384,4 +386,6 @@ export class Portfolio extends PortfolioBase {
     InputValidator.validateLength(this.node.path, 'portfolio provider name', 1, 50, props.providerName);
     InputValidator.validateLength(this.node.path, 'portfolio description', 0, 2000, props.description);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicecatalog.Portfolio';
 }

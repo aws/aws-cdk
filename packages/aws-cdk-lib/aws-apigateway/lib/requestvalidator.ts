@@ -3,6 +3,7 @@ import { CfnRequestValidator, CfnRequestValidatorProps } from './apigateway.gene
 import { IRestApi, RestApi } from './restapi';
 import { IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IRequestValidator extends IResource {
   /**
@@ -49,6 +50,7 @@ export interface RequestValidatorProps extends RequestValidatorOptions {
   readonly restApi: IRestApi;
 }
 
+@propertyInjectable
 export class RequestValidator extends Resource implements IRequestValidator {
   public static fromRequestValidatorId(scope: Construct, id: string, requestValidatorId: string): IRequestValidator {
     class Import extends Resource implements IRequestValidator {
@@ -89,4 +91,6 @@ export class RequestValidator extends Resource implements IRequestValidator {
       deployment.addToLogicalId({ validator: validatorProps });
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.RequestValidator';
 }

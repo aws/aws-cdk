@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { BaseDeploymentConfig, BaseDeploymentConfigOptions, ComputePlatform, IBaseDeploymentConfig } from '../base-deployment-config';
 import { deploymentConfig } from '../private/utils';
 import { TrafficRouting } from '../traffic-routing-config';
@@ -37,6 +38,7 @@ export interface EcsDeploymentConfigProps extends BaseDeploymentConfigOptions {
  *
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
+@propertyInjectable
 export class EcsDeploymentConfig extends BaseDeploymentConfig implements IEcsDeploymentConfig {
   /** CodeDeploy predefined deployment configuration that shifts all traffic to the updated ECS task set at once. */
   public static readonly ALL_AT_ONCE = EcsDeploymentConfig.deploymentConfig('CodeDeployDefault.ECSAllAtOnce');
@@ -74,4 +76,6 @@ export class EcsDeploymentConfig extends BaseDeploymentConfig implements IEcsDep
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.EcsDeploymentConfig';
 }

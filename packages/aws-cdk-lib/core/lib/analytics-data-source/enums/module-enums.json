@@ -1249,7 +1249,8 @@
       "AMAZON_OPENSEARCH_SERVICE",
       "HTTP",
       "RELATIONAL_DATABASE",
-      "AMAZON_BEDROCK_RUNTIME"
+      "AMAZON_BEDROCK_RUNTIME",
+      "AMAZON_ELASTICSEARCH"
     ],
     "LambdaInvokeType": [
       "EVENT",

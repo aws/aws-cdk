@@ -5,6 +5,7 @@ import { Grant, IGrantable } from '../../../aws-iam';
 import { Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { StageOptions, IApi, IStage, StageAttributes } from '../common';
 import { StageBase } from '../common/base';
 
@@ -55,6 +56,7 @@ export interface WebSocketStageAttributes extends StageAttributes {
  * Represents a stage where an instance of the API is deployed.
  * @resource AWS::ApiGatewayV2::Stage
  */
+@propertyInjectable
 export class WebSocketStage extends StageBase implements IWebSocketStage {
   /**
    * Import an existing stage into this CDK app.
@@ -145,4 +147,6 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       resourceArns: [`${arn}/${this.stageName}/*/@connections/*`],
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.WebSocketStage';
 }

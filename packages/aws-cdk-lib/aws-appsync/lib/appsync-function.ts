@@ -7,6 +7,7 @@ import { MappingTemplate } from './mapping-template';
 import { FunctionRuntime } from './runtime';
 import { Resource, IResource, Lazy, Fn, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * the base properties for AppSync Functions
@@ -112,6 +113,7 @@ export interface IAppsyncFunction extends IResource {
  *
  * @resource AWS::AppSync::FunctionConfiguration
  */
+@propertyInjectable
 export class AppsyncFunction extends Resource implements IAppsyncFunction {
   /**
    * Import Appsync Function from arn
@@ -196,4 +198,6 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
     this.function.addDependency(this.dataSource.ds);
     props.api.addSchemaDependency(this.function);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appsync.AppsyncFunction';
 }

@@ -4,6 +4,7 @@ import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
 import { Arn, ArnFormat, IResource, Resource, Size, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Construction properties of a CodeBuild {@link Fleet}.
@@ -141,6 +142,7 @@ export interface IFleet extends IResource {
  *
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
  */
+@propertyInjectable
 export class Fleet extends Resource implements IFleet {
   /**
    * Creates a Fleet construct that represents an external fleet.
@@ -260,6 +262,8 @@ export class Fleet extends Resource implements IFleet {
       throw new ValidationError(`${fieldName} must be a positive integer, got: ${value}`, this);
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codebuild.Fleet';
 }
 
 /**

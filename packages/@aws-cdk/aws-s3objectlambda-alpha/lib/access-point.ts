@@ -5,6 +5,7 @@ import * as core from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnAccessPoint } from 'aws-cdk-lib/aws-s3objectlambda';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * The interface that represents the AccessPoint resource.
@@ -167,6 +168,7 @@ function validateAccessPointName(name: string): void {
  * An S3 object lambda access point for intercepting and
  * transforming `GetObject` requests.
  */
+@propertyInjectable
 export class AccessPoint extends AccessPointBase {
   /**
    * Reference an existing AccessPoint defined outside of the CDK code.
@@ -261,4 +263,6 @@ export class AccessPoint extends AccessPointBase {
       }),
     );
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-s3objectlambda-alpha.AccessPoint';
 }

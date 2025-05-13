@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { Cluster, ClusterCommonOptions, CoreDnsComputeType, DefaultCapacityType } from './cluster';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Configuration props for EKS Fargate.
@@ -23,6 +24,7 @@ export interface FargateClusterProps extends ClusterCommonOptions {
  * "default" and "kube-system" namespaces. You can add additional profiles using
  * `addFargateProfile`.
  */
+@propertyInjectable
 export class FargateCluster extends Cluster {
   /**
    * Fargate Profile that was created with the cluster.
@@ -50,4 +52,6 @@ export class FargateCluster extends Cluster {
       },
     );
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.FargateCluster';
 }

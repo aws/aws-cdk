@@ -6,6 +6,7 @@ import { CfnApiMapping, CfnApiMappingProps } from '.././index';
 import { IResource, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**
  * Represents an ApiGatewayV2 ApiMapping resource
@@ -63,6 +64,7 @@ export interface ApiMappingAttributes {
  * Create a new API mapping for API Gateway API endpoint.
  * @resource AWS::ApiGatewayV2::ApiMapping
  */
+@propertyInjectable
 export class ApiMapping extends Resource implements IApiMapping {
   /**
    * import from API ID
@@ -122,4 +124,6 @@ export class ApiMapping extends Resource implements IApiMapping {
     this.mappingKey = props.apiMappingKey;
     this.domainName = props.domainName;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.ApiMapping';
 }

@@ -7,6 +7,7 @@ import { IResource, Resource, Annotations, withResolved, FeatureFlags, Validatio
 import * as cxapi from '../../cx-api';
 import { isGpuInstanceType } from './private/nodegroup';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * NodeGroup interface
@@ -370,6 +371,7 @@ export interface NodegroupProps extends NodegroupOptions {
 /**
  * The Nodegroup resource class
  */
+@propertyInjectable
 export class Nodegroup extends Resource implements INodegroup {
   /**
    * Import the Nodegroup from attributes
@@ -601,6 +603,8 @@ export class Nodegroup extends Resource implements INodegroup {
       }
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.Nodegroup';
 }
 
 /**

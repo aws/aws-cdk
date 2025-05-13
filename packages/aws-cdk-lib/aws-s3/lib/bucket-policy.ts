@@ -5,6 +5,7 @@ import { PolicyDocument } from '../../aws-iam';
 import { RemovalPolicy, Resource, Token, Tokenization } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface BucketPolicyProps {
   /**
@@ -47,6 +48,7 @@ export interface BucketPolicyProps {
  * new permissions to existing policy.
  *
  */
+@propertyInjectable
 export class BucketPolicy extends Resource {
   /**
    * Create a mutable `BucketPolicy` from a `CfnBucketPolicy`.
@@ -125,4 +127,6 @@ export class BucketPolicy extends Resource {
   public applyRemovalPolicy(removalPolicy: RemovalPolicy) {
     this.resource.applyRemovalPolicy(removalPolicy);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-s3.BucketPolicy';
 }

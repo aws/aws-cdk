@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { CfnRouteCalculator } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId, DataSource } from './util';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * A Route Calculator
@@ -56,6 +57,7 @@ export interface RouteCalculatorProps {
  *
  * @see https://docs.aws.amazon.com/location/latest/developerguide/places-concepts.html
  */
+@propertyInjectable
 export class RouteCalculator extends Resource implements IRouteCalculator {
   /**
    * Use an existing route calculator by name
@@ -165,4 +167,6 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
       'geo:CalculateRoute',
     );
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-location-alpha.RouteCalculator';
 }

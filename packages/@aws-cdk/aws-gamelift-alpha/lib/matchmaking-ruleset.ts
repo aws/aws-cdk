@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { CfnMatchmakingRuleSet } from 'aws-cdk-lib/aws-gamelift';
 import { RuleSetContent } from './matchmaking-ruleset-body';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents a Gamelift matchmaking ruleset
@@ -134,6 +135,7 @@ export abstract class MatchmakingRuleSetBase extends cdk.Resource implements IMa
  *
  * @resource AWS::GameLift::MatchmakingRuleSet
  */
+@propertyInjectable
 export class MatchmakingRuleSet extends MatchmakingRuleSetBase {
   /**
    * Import a ruleSet into CDK using its name
@@ -223,4 +225,6 @@ export class MatchmakingRuleSet extends MatchmakingRuleSetBase {
       arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-gamelift-alpha.MatchmakingRuleSet';
 }

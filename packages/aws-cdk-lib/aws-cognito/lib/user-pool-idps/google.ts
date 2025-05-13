@@ -4,6 +4,7 @@ import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { SecretValue } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 
 /**
@@ -40,6 +41,7 @@ export interface UserPoolIdentityProviderGoogleProps extends UserPoolIdentityPro
  * Represents an identity provider that integrates with Google
  * @resource AWS::Cognito::UserPoolIdentityProvider
  */
+@propertyInjectable
 export class UserPoolIdentityProviderGoogle extends UserPoolIdentityProviderBase {
   public readonly providerName: string;
 
@@ -70,4 +72,6 @@ export class UserPoolIdentityProviderGoogle extends UserPoolIdentityProviderBase
 
     this.providerName = super.getResourceNameAttribute(resource.ref);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito.UserPoolIdentityProviderGoogle';
 }

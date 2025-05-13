@@ -14,6 +14,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 // for files that are part of this package or part of core, we do import individual classes or functions
 import { CfnWaitCondition, CfnWaitConditionHandle, Fn, IResource, RemovalPolicy, Resource, Stack, Token } from 'aws-cdk-lib/core';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { exampleResourceArnComponents } from './private/example-resource-common';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
@@ -339,6 +340,7 @@ export interface ExampleResourceProps {
  *
  * @resource AWS::CloudFormation::WaitConditionHandle
  */
+@propertyInjectable
 export class ExampleResource extends ExampleResourceBase {
   /**
    * Reference an existing ExampleResource,
@@ -513,4 +515,6 @@ export class ExampleResource extends ExampleResourceBase {
       default: RemovalPolicy.RETAIN,
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.example-construct-library.ExampleResource';
 }

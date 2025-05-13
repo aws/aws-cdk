@@ -655,6 +655,7 @@ export class ServerlessCluster extends ServerlessClusterNew {
 /**
  * Represents an imported database cluster.
  */
+@propertyInjectable
 class ImportedServerlessCluster extends ServerlessClusterBase implements IServerlessCluster {
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
@@ -698,6 +699,8 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
     }
     return this._clusterReadEndpoint;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ImportedServerlessCluster';
 }
 
 /**

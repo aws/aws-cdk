@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import { CfnSAMLProvider } from './iam.generated';
 import { IResource, Resource, Token } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A SAML provider
@@ -71,6 +72,7 @@ export abstract class SamlMetadataDocument {
 /**
  * A SAML provider
  */
+@propertyInjectable
 export class SamlProvider extends Resource implements ISamlProvider {
   /**
    * Import an existing provider
@@ -100,4 +102,6 @@ export class SamlProvider extends Resource implements ISamlProvider {
 
     this.samlProviderArn = samlProvider.ref;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.SamlProvider';
 }

@@ -11,6 +11,7 @@ import { MetricSet } from './private/rendering';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
 import { ArnFormat, Lazy, Stack, Token, Annotations, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for Alarms
@@ -103,6 +104,7 @@ export enum TreatMissingData {
 /**
  * An alarm on a CloudWatch metric
  */
+@propertyInjectable
 export class Alarm extends AlarmBase {
   /**
    * Import an existing CloudWatch alarm provided an Name.
@@ -411,6 +413,8 @@ export class Alarm extends AlarmBase {
     // it will still work).
     return stackAccount !== stat.account;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudwatch.Alarm';
 }
 
 function definitelyDifferent(x: string | undefined, y: string) {

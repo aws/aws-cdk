@@ -4,6 +4,7 @@ import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import { Duration, Lazy, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Construction properties for a AccessKeysRotated
@@ -25,6 +26,7 @@ export interface AccessKeysRotatedProps extends RuleProps {
  *
  * @resource AWS::Config::ConfigRule
  */
+@propertyInjectable
 export class AccessKeysRotated extends ManagedRule {
   constructor(scope: Construct, id: string, props: AccessKeysRotatedProps = {}) {
     super(scope, id, {
@@ -41,6 +43,8 @@ export class AccessKeysRotated extends ManagedRule {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-config.AccessKeysRotated';
 }
 
 /**
@@ -73,6 +77,7 @@ export interface CloudFormationStackDriftDetectionCheckProps extends RuleProps {
  *
  * @resource AWS::Config::ConfigRule
  */
+@propertyInjectable
 export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
   private readonly role: iam.IRole;
 
@@ -96,6 +101,8 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
       ],
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-config.CloudFormationStackDriftDetectionCheck';
 }
 
 /**
@@ -118,6 +125,7 @@ export interface CloudFormationStackNotificationCheckProps extends RuleProps {
  *
  * @resource AWS::Config::ConfigRule
  */
+@propertyInjectable
 export class CloudFormationStackNotificationCheck extends ManagedRule {
   constructor(scope: Construct, id: string, props: CloudFormationStackNotificationCheckProps = {}) {
     if (props.topics && props.topics.length > 5) {
@@ -136,4 +144,6 @@ export class CloudFormationStackNotificationCheck extends ManagedRule {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-config.CloudFormationStackNotificationCheck';
 }

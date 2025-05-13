@@ -7,6 +7,7 @@ import { CaCertificate } from '../../aws-rds';
 import { ArnFormat } from '../../core';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A database instance
@@ -192,6 +193,7 @@ export interface DatabaseInstanceProps {
  *
  * @resource AWS::DocDB::DBInstance
  */
+@propertyInjectable
 export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseInstance {
   /**
    * The instance's database cluster
@@ -247,4 +249,6 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
       applyToUpdateReplacePolicy: true,
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-docdb.DatabaseInstance';
 }

@@ -4,6 +4,7 @@ import { BaseServiceProps, Service } from './service';
 import { CfnHttpNamespace } from './servicediscovery.generated';
 import { Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface HttpNamespaceProps extends BaseNamespaceProps {}
 export interface IHttpNamespace extends INamespace { }
@@ -27,6 +28,7 @@ export interface HttpNamespaceAttributes {
 /**
  * Define an HTTP Namespace
  */
+@propertyInjectable
 export class HttpNamespace extends Resource implements IHttpNamespace {
   public static fromHttpNamespaceAttributes(scope: Construct, id: string, attrs: HttpNamespaceAttributes): IHttpNamespace {
     class Import extends Resource implements IHttpNamespace {
@@ -93,4 +95,6 @@ export class HttpNamespace extends Resource implements IHttpNamespace {
       ...props,
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicediscovery.HttpNamespace';
 }

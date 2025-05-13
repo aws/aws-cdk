@@ -9,6 +9,7 @@ import { IFilter } from './filter';
 import { ILogDestination, IncludeExecutionData, LogLevel } from './logs';
 import { ISource, SourceWithDeadLetterTarget } from './source';
 import { ITarget } from './target';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Interface representing a created or an imported `Pipe`.
@@ -184,6 +185,7 @@ abstract class PipeBase extends Resource implements IPipe {
 /**
  * An imported pipe.
  */
+@propertyInjectable
 class ImportedPipe extends PipeBase {
   public readonly pipeName: string ;
   public readonly pipeArn: string;
@@ -202,6 +204,8 @@ class ImportedPipe extends PipeBase {
     });
     this.pipeRole = Role.fromRoleName(this, 'Role', this.pipeName );
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-pipes-alpha.ImportedPipe';
 }
 
 /**
@@ -212,6 +216,7 @@ class ImportedPipe extends PipeBase {
  *
  * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes.html
  */
+@propertyInjectable
 export class Pipe extends PipeBase {
   /**
    * Creates a pipe from the name of a pipe.
@@ -338,4 +343,6 @@ export class Pipe extends PipeBase {
     this.pipeName = resource.ref;
     this.pipeArn = resource.attrArn;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-pipes-alpha.Pipe';
 }

@@ -14,6 +14,7 @@ import { ClusterParameterGroup, IClusterParameterGroup } from './parameter-group
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
 import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Possible Node Types to use in the cluster
@@ -506,6 +507,7 @@ abstract class ClusterBase extends Resource implements ICluster {
  *
  * @resource AWS::Redshift::Cluster
  */
+@propertyInjectable
 export class Cluster extends ClusterBase {
   /**
    * Import an existing DatabaseCluster from properties
@@ -951,4 +953,6 @@ export class Cluster extends ClusterBase {
 
     clusterRoleList.push(role);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-redshift-alpha.Cluster';
 }

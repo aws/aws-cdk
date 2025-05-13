@@ -4,6 +4,7 @@ import { Job, JobProps } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, PythonVersion, MaxCapacity, JobLanguage } from '../constants';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties for creating a Python Shell job
@@ -43,6 +44,7 @@ export interface PythonShellJobProps extends JobProps {
  * depends on the AWS Glue version you are using.
  * This can be used to schedule and run tasks that don't require an Apache Spark environment.
  */
+@propertyInjectable
 export class PythonShellJob extends Job {
   public readonly jobArn: string;
   public readonly jobName: string;
@@ -121,4 +123,6 @@ export class PythonShellJob extends Job {
 
     return args;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.PythonShellJob';
 }

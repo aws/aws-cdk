@@ -4,6 +4,7 @@ import { AclCidr, AclTraffic } from './network-acl-types';
 import { ISubnet, IVpc, SubnetSelection } from './vpc';
 import { IResource, Resource, Tags } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Name tag constant
@@ -86,6 +87,7 @@ export interface NetworkAclProps {
  *
  *
  */
+@propertyInjectable
 export class NetworkAcl extends NetworkAclBase {
   /**
    * Import an existing NetworkAcl into this app.
@@ -146,6 +148,8 @@ export class NetworkAcl extends NetworkAclBase {
       subnet.associateNetworkAcl(id, this);
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.NetworkAcl';
 }
 
 /**
@@ -271,6 +275,7 @@ export interface NetworkAclEntryProps extends CommonNetworkAclEntryOptions {
  *
  *
  */
+@propertyInjectable
 export class NetworkAclEntry extends NetworkAclEntryBase {
   public readonly networkAcl: INetworkAcl;
 
@@ -292,6 +297,8 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
       ...props.cidr.toCidrConfig(),
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.NetworkAclEntry';
 }
 
 /**
@@ -345,6 +352,7 @@ export interface SubnetNetworkAclAssociationProps {
 abstract class SubnetNetworkAclAssociationBase extends Resource implements ISubnetNetworkAclAssociation {
   public abstract readonly subnetNetworkAclAssociationAssociationId: string;
 }
+@propertyInjectable
 export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase {
   public static fromSubnetNetworkAclAssociationAssociationId(
     scope: Construct, id: string,
@@ -391,4 +399,6 @@ export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase
     this.subnet = props.subnet;
     this.subnetNetworkAclAssociationAssociationId = this.association.attrAssociationId;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.SubnetNetworkAclAssociation';
 }

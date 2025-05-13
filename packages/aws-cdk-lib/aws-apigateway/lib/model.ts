@@ -5,6 +5,7 @@ import { IRestApi, RestApi } from './restapi';
 import * as util from './util';
 import { Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IModel {
   /**
@@ -108,6 +109,7 @@ export interface ModelProps extends ModelOptions {
   readonly restApi: IRestApi;
 }
 
+@propertyInjectable
 export class Model extends Resource implements IModel {
   /**
    * Represents a reference to a REST API's Error model, which is available
@@ -186,4 +188,6 @@ export class Model extends Resource implements IModel {
       deployment.addToLogicalId({ model: modelProps });
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.Model';
 }

@@ -3,6 +3,7 @@ import { CfnDBSubnetGroup } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
 import { IResource, RemovalPolicy, Resource, Token } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface for a subnet group.
@@ -57,6 +58,7 @@ export interface SubnetGroupProps {
  *
  * @resource AWS::RDS::DBSubnetGroup
  */
+@propertyInjectable
 export class SubnetGroup extends Resource implements ISubnetGroup {
   /**
    * Imports an existing subnet group by name.
@@ -94,4 +96,6 @@ export class SubnetGroup extends Resource implements ISubnetGroup {
 
     this.subnetGroupName = subnetGroup.ref;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.SubnetGroup';
 }

@@ -11,6 +11,7 @@ import { flinkApplicationConfiguration } from './private/flink-application-confi
 import { validateFlinkApplicationProps as validateApplicationProps } from './private/validation';
 import { LogLevel, MetricsLevel, Runtime } from './types';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * An interface expressing the public properties on both an imported and
@@ -900,6 +901,7 @@ export interface ApplicationProps {
 /**
  * An imported Flink application.
  */
+@propertyInjectable
 class Import extends ApplicationBase {
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly role?: iam.IRole;
@@ -927,6 +929,8 @@ class Import extends ApplicationBase {
       this._connections = new ec2.Connections({ securityGroups });
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-kinesisanalytics-flink-alpha.Import';
 }
 
 /**
@@ -935,6 +939,7 @@ class Import extends ApplicationBase {
  * @resource AWS::KinesisAnalyticsV2::Application
  *
  */
+@propertyInjectable
 export class Application extends ApplicationBase {
   /**
    * Import an existing Flink application defined outside of CDK code by
@@ -1097,6 +1102,8 @@ export class Application extends ApplicationBase {
       default: core.RemovalPolicy.DESTROY,
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-kinesisanalytics-flink-alpha.Application';
 }
 
 function applicationArnComponents(resourceName: string): core.ArnComponents {

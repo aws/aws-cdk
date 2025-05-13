@@ -6,6 +6,7 @@ import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
@@ -130,6 +131,7 @@ export interface LambdaDeploymentGroupProps {
 /**
  * @resource AWS::CodeDeploy::DeploymentGroup
  */
+@propertyInjectable
 export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambdaDeploymentGroup {
   /**
    * Import an Lambda Deployment Group defined either outside the CDK app, or in a different AWS region.
@@ -275,6 +277,8 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
       actions: ['codedeploy:PutLifecycleEventHookExecutionStatus'],
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.LambdaDeploymentGroup';
 }
 
 /**
@@ -303,6 +307,7 @@ export interface LambdaDeploymentGroupAttributes {
   readonly deploymentConfig?: ILambdaDeploymentConfig;
 }
 
+@propertyInjectable
 class ImportedLambdaDeploymentGroup extends ImportedDeploymentGroupBase implements ILambdaDeploymentGroup {
   public readonly application: ILambdaApplication;
   public readonly deploymentConfig: ILambdaDeploymentConfig;
@@ -318,4 +323,6 @@ class ImportedLambdaDeploymentGroup extends ImportedDeploymentGroupBase implemen
     this.application = props.application;
     this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.ImportedLambdaDeploymentGroup';
 }

@@ -605,6 +605,7 @@ export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointS
   addListener(id: string, props: BaseNetworkListenerProps): NetworkListener;
 }
 
+@propertyInjectable
 class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalancer {
   public readonly loadBalancerCanonicalHostedZoneId: string;
   public readonly loadBalancerDnsName: string;
@@ -649,4 +650,6 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
       ...props,
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.LookedUpNetworkLoadBalancer';
 }

@@ -4,6 +4,7 @@ import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '..
 import { Code } from '../code';
 import { SparkJob, SparkJobProps } from './spark-job';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties for creating a Python Spark ETL job
@@ -67,6 +68,7 @@ export interface PySparkEtlJobProps extends SparkJobProps {
  * You can find more details about version, worker type and other features
  * in Glue's public documentation.
  */
+@propertyInjectable
 export class PySparkEtlJob extends SparkJob {
   public readonly jobArn: string;
   public readonly jobName: string;
@@ -123,4 +125,6 @@ export class PySparkEtlJob extends SparkJob {
     this.setupExtraCodeArguments(args, props);
     return args;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.PySparkEtlJob';
 }

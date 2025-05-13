@@ -7,6 +7,7 @@ import * as iam from '../../aws-iam';
 import { Lazy, Resource, Aspects } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Options for a BackupSelection
@@ -68,6 +69,7 @@ export interface BackupSelectionProps extends BackupSelectionOptions {
 /**
  * A backup selection
  */
+@propertyInjectable
 export class BackupSelection extends Resource implements iam.IGrantable {
   /**
    * The identifier of the backup plan.
@@ -153,4 +155,6 @@ export class BackupSelection extends Resource implements iam.IGrantable {
       // in the constructor instead.
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-backup.BackupSelection';
 }

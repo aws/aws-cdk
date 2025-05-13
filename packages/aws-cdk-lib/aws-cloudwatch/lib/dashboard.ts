@@ -5,6 +5,7 @@ import { IVariable } from './variable';
 import { IWidget } from './widget';
 import { Lazy, Resource, Stack, Token, Annotations, Duration, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Specify the period for graphs when the CloudWatch dashboard loads
@@ -98,6 +99,7 @@ export interface DashboardProps {
 /**
  * A CloudWatch dashboard
  */
+@propertyInjectable
 export class Dashboard extends Resource {
   /**
    * The name of this dashboard
@@ -213,6 +215,8 @@ export class Dashboard extends Resource {
   public addVariable(variable: IVariable) {
     this.variables.push(variable);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudwatch.Dashboard';
 }
 
 function allWidgetsDeep(ws: IWidget[]) {

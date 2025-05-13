@@ -8,6 +8,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { Resource, IResource, UnscopedValidationError, RemovalPolicy, Token, Stack } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Interface definition for S3 Table Buckets
@@ -313,6 +314,7 @@ export interface TableBucketAttributes {
  *   },
  * });
  */
+@propertyInjectable
 export class TableBucket extends TableBucketBase {
   /**
    * Defines a TableBucket construct from an external table bucket ARN.
@@ -538,5 +540,7 @@ export class TableBucket extends TableBucketBase {
     this.tableBucketArn = this._resource.attrTableBucketArn;
     this._resource.applyRemovalPolicy(props.removalPolicy);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-s3tables-alpha.TableBucket';
 }
 

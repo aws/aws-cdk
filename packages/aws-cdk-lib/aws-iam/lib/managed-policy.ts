@@ -10,6 +10,7 @@ import { IUser } from './user';
 import { ArnFormat, Resource, Stack, Arn, Aws } from '../../core';
 import { getCustomizeRolesConfig, PolicySynthesizer } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A managed policy
@@ -102,6 +103,7 @@ export interface ManagedPolicyProps {
  * Managed policy
  *
  */
+@propertyInjectable
 export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantable {
   /**
    * Import a customer managed policy from the managedPolicyName.
@@ -327,6 +329,8 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
     }
     return result;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.ManagedPolicy';
 }
 
 class ManagedPolicyGrantPrincipal implements IPrincipal {

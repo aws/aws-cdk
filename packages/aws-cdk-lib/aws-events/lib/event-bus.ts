@@ -469,6 +469,7 @@ export class EventBus extends EventBusBase {
   }
 }
 
+@propertyInjectable
 class ImportedEventBus extends EventBusBase {
   public readonly eventBusArn: string;
   public readonly eventBusName: string;
@@ -499,6 +500,8 @@ class ImportedEventBus extends EventBusBase {
     );
     return { statementAdded: false };
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.ImportedEventBus';
 }
 
 /**
@@ -536,6 +539,7 @@ export interface EventBusPolicyProps {
  *
  * Prefer to use `addToResourcePolicy()` instead.
  */
+@propertyInjectable
 export class EventBusPolicy extends Resource {
   constructor(scope: Construct, id: string, props: EventBusPolicyProps) {
     super(scope, id);
@@ -548,4 +552,6 @@ export class EventBusPolicy extends Resource {
       eventBusName: props.eventBus.eventBusName,
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.EventBusPolicy';
 }

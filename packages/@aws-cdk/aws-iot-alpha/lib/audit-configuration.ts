@@ -4,6 +4,7 @@ import * as iot from 'aws-cdk-lib/aws-iot';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents AWS IoT Audit Configuration
@@ -194,6 +195,7 @@ export interface AccountAuditConfigurationProps {
 /**
  * Defines AWS IoT Audit Configuration
  */
+@propertyInjectable
 export class AccountAuditConfiguration extends Resource implements IAccountAuditConfiguration {
   /**
    * Import an existing AWS IoT Audit Configuration
@@ -325,5 +327,7 @@ export class AccountAuditConfiguration extends Resource implements IAccountAudit
   private renderAuditCheckConfiguration(check?: boolean): iot.CfnAccountAuditConfiguration.AuditCheckConfigurationProperty | undefined {
     return check === false ? undefined : { enabled: true };
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-iot-alpha.AccountAuditConfiguration';
 }
 

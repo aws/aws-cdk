@@ -7,6 +7,7 @@ import * as firehose from '../../aws-kinesisfirehose';
 import * as sns from '../../aws-sns';
 import { Aws, IResource, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A configuration set event destination
@@ -265,6 +266,7 @@ export interface FirehoseDeliveryStreamDestination {
 /**
  * A configuration set event destination
  */
+@propertyInjectable
 export class ConfigurationSetEventDestination extends Resource implements IConfigurationSetEventDestination {
   /**
    * Use an existing configuration set
@@ -378,4 +380,6 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
       }
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ses.ConfigurationSetEventDestination';
 }

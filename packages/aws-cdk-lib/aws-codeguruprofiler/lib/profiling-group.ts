@@ -3,6 +3,7 @@ import { CfnProfilingGroup } from './codeguruprofiler.generated';
 import { Grant, IGrantable } from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The compute platform of the profiling group.
@@ -132,6 +133,7 @@ export interface ProfilingGroupProps {
 /**
  * A new Profiling Group.
  */
+@propertyInjectable
 export class ProfilingGroup extends ProfilingGroupBase {
   /**
    * Import an existing Profiling Group provided a Profiling Group Name.
@@ -210,4 +212,6 @@ export class ProfilingGroup extends ProfilingGroupBase {
     }
     return name;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codeguruprofiler.ProfilingGroup';
 }

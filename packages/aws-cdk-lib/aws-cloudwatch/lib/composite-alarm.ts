@@ -3,6 +3,7 @@ import { AlarmBase, IAlarm, IAlarmRule } from './alarm-base';
 import { CfnCompositeAlarm } from './cloudwatch.generated';
 import { ArnFormat, Lazy, Names, Stack, Duration, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for creating a Composite Alarm
@@ -62,6 +63,7 @@ export interface CompositeAlarmProps {
 /**
  * A Composite Alarm based on Alarm Rule.
  */
+@propertyInjectable
 export class CompositeAlarm extends AlarmBase {
   /**
    * Import an existing CloudWatch composite alarm provided an Name.
@@ -165,4 +167,6 @@ export class CompositeAlarm extends AlarmBase {
     }
     return name;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudwatch.CompositeAlarm';
 }

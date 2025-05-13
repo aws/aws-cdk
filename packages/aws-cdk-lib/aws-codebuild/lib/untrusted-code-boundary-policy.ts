@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Construction properties for UntrustedCodeBoundaryPolicy
@@ -43,6 +44,7 @@ export interface UntrustedCodeBoundaryPolicyProps {
  * declare const project: codebuild.Project;
  * iam.PermissionsBoundary.of(project).apply(new codebuild.UntrustedCodeBoundaryPolicy(this, 'Boundary'));
  */
+@propertyInjectable
 export class UntrustedCodeBoundaryPolicy extends iam.ManagedPolicy {
   constructor(scope: Construct, id: string, props: UntrustedCodeBoundaryPolicyProps = {}) {
     super(scope, id, {
@@ -95,4 +97,6 @@ export class UntrustedCodeBoundaryPolicy extends iam.ManagedPolicy {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codebuild.UntrustedCodeBoundaryPolicy';
 }

@@ -4,6 +4,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { Arn, ArnFormat, Aws, IResource, Names, RemovalPolicy, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for a Schedule Group.
@@ -299,6 +300,7 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
  * A Schedule Group.
  * @resource AWS::Scheduler::ScheduleGroup
  */
+@propertyInjectable
 export class ScheduleGroup extends ScheduleGroupBase {
   /**
    * Import an external schedule group by ARN.
@@ -368,4 +370,6 @@ export class ScheduleGroup extends ScheduleGroupBase {
       resourceName: this.scheduleGroupName,
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-scheduler.ScheduleGroup';
 }

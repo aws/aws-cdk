@@ -6,6 +6,7 @@ import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefi
 import * as ec2 from '../../aws-ec2';
 import { ArnFormat, Lazy, Stack } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Not a real instance type! Indicates that Batch will choose one it determines to be optimal
@@ -123,6 +124,7 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
  *
  * @resource AWS::Batch::JobDefinition
  */
+@propertyInjectable
 export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiNodeJobDefinition {
   /**
    * refer to an existing JobDefinition by its arn
@@ -207,6 +209,8 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
   public addContainer(container: MultiNodeContainer) {
     this.containers.push(container);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.MultiNodeJobDefinition';
 }
 
 function computeNumNodes(containers: MultiNodeContainer[]) {

@@ -5,6 +5,7 @@ import { IStream, Stream } from './stream';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamConsumer',
@@ -152,6 +153,7 @@ export interface StreamConsumerProps {
 /**
  * A Kinesis Stream Consumer
  */
+@propertyInjectable
 export class StreamConsumer extends StreamConsumerBase {
   /**
    * Imports an existing Kinesis Stream Consumer by its arn.
@@ -230,4 +232,6 @@ export class StreamConsumer extends StreamConsumerBase {
     this.streamConsumerName = this.getResourceNameAttribute(streamConsumer.attrConsumerName);
     this.stream = props.stream;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kinesis.StreamConsumer';
 }

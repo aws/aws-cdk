@@ -3,6 +3,7 @@ import { ILogGroup } from './log-group';
 import { CfnLogStream } from './logs.generated';
 import { IResource, RemovalPolicy, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface ILogStream extends IResource {
   /**
@@ -48,6 +49,7 @@ export interface LogStreamProps {
 /**
  * Define a Log Stream in a Log Group
  */
+@propertyInjectable
 export class LogStream extends Resource implements ILogStream {
   /**
    * Import an existing LogGroup
@@ -80,4 +82,6 @@ export class LogStream extends Resource implements ILogStream {
     resource.applyRemovalPolicy(props.removalPolicy);
     this.logStreamName = this.getResourceNameAttribute(resource.ref);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-logs.LogStream';
 }

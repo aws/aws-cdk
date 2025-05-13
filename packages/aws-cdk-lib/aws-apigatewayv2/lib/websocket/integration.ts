@@ -6,6 +6,7 @@ import { IRole } from '../../../aws-iam';
 import { Duration, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IIntegration } from '../common';
 
 /**
@@ -166,6 +167,7 @@ export interface WebSocketIntegrationProps {
  * The integration for an API route.
  * @resource AWS::ApiGatewayV2::Integration
  */
+@propertyInjectable
 export class WebSocketIntegration extends Resource implements IWebSocketIntegration {
   public readonly integrationId: string;
   public readonly webSocketApi: IWebSocketApi;
@@ -195,6 +197,8 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
     this.integrationId = integ.ref;
     this.webSocketApi = props.webSocketApi;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.WebSocketIntegration';
 }
 
 /**

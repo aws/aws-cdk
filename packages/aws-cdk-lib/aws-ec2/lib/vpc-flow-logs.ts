@@ -6,6 +6,7 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, Tags, CfnResource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
 
 /**
@@ -809,6 +810,7 @@ abstract class FlowLogBase extends Resource implements IFlowLog {
  * A VPC flow log.
  * @resource AWS::EC2::FlowLog
  */
+@propertyInjectable
 export class FlowLog extends FlowLogBase {
   /**
    * Import a Flow Log by it's Id
@@ -922,4 +924,6 @@ export class FlowLog extends FlowLogBase {
     this.flowLogId = flowLog.ref;
     this.node.defaultChild = flowLog;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.FlowLog';
 }

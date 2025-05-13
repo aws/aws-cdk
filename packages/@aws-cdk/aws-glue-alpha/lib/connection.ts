@@ -3,6 +3,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import * as constructs from 'constructs';
 import { CfnConnection } from 'aws-cdk-lib/aws-glue';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * The type of the glue connection
@@ -245,6 +246,7 @@ export interface ConnectionProps extends ConnectionOptions {
 /**
  * An AWS Glue connection to a data source.
  */
+@propertyInjectable
 export class Connection extends cdk.Resource implements IConnection {
   /**
    * Creates a Connection construct that represents an external connection.
@@ -339,4 +341,6 @@ export class Connection extends cdk.Resource implements IConnection {
   public addProperty(key: string, value: string): void {
     this.properties[key] = value;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.Connection';
 }

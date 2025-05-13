@@ -5,6 +5,7 @@ import { IService, DiscoveryType } from './service';
 import { CfnInstance } from './servicediscovery.generated';
 import { ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface NonIpInstanceBaseProps extends BaseInstanceProps {
 }
@@ -25,6 +26,7 @@ export interface NonIpInstanceProps extends NonIpInstanceBaseProps {
  *
  * @resource AWS::ServiceDiscovery::Instance
  */
+@propertyInjectable
 export class NonIpInstance extends InstanceBase {
   /**
    * The Id of the instance
@@ -61,4 +63,6 @@ export class NonIpInstance extends InstanceBase {
     this.service = props.service;
     this.instanceId = resource.ref;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicediscovery.NonIpInstance';
 }

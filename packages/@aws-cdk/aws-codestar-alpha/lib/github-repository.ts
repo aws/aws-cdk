@@ -3,6 +3,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import * as codestar from 'aws-cdk-lib/aws-codestar';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * GitHubRepository resource interface
@@ -84,6 +85,7 @@ export interface GitHubRepositoryProps {
 /**
  * The GitHubRepository resource
  */
+@propertyInjectable
 export class GitHubRepository extends cdk.Resource implements IGitHubRepository {
   public readonly owner: string;
   public readonly repo: string;
@@ -112,6 +114,8 @@ export class GitHubRepository extends cdk.Resource implements IGitHubRepository 
     this.owner = cdk.Fn.select(0, cdk.Fn.split('/', resource.ref));
     this.repo = cdk.Fn.select(1, cdk.Fn.split('/', resource.ref));
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-codestar-alpha.GitHubRepository';
 }
 
 /**

@@ -3,6 +3,7 @@ import { CfnCloudFrontOriginAccessIdentity } from './cloudfront.generated';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties of CloudFront OriginAccessIdentity
@@ -78,6 +79,7 @@ abstract class OriginAccessIdentityBase extends cdk.Resource {
  *
  * @resource AWS::CloudFront::CloudFrontOriginAccessIdentity
  */
+@propertyInjectable
 export class OriginAccessIdentity extends OriginAccessIdentityBase implements IOriginAccessIdentity {
   /**
    * Creates a OriginAccessIdentity by providing the OriginAccessIdentityId.
@@ -171,4 +173,6 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
     // interface and does not require constructing the ARN.
     this.grantPrincipal = new iam.CanonicalUserPrincipal(this.cloudFrontOriginAccessIdentityS3CanonicalUserId);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.OriginAccessIdentity';
 }

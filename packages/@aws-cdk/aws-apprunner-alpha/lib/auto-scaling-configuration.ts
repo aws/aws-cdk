@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnAutoScalingConfiguration } from 'aws-cdk-lib/aws-apprunner';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties of the App Runner Auto Scaling Configuration.
@@ -89,6 +90,7 @@ export interface IAutoScalingConfiguration extends cdk.IResource {
  *
  * @resource AWS::AppRunner::AutoScalingConfiguration
  */
+@propertyInjectable
 export class AutoScalingConfiguration extends cdk.Resource implements IAutoScalingConfiguration {
   /**
    * Imports an App Runner Auto Scaling Configuration from attributes
@@ -207,4 +209,6 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
       throw new cdk.ValidationError(`maxConcurrency must be between 1 and 200, got ${props.maxConcurrency}.`, this);
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-apprunner-alpha.AutoScalingConfiguration';
 }

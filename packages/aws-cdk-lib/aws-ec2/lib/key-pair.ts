@@ -4,6 +4,7 @@ import { OperatingSystemType } from './machine-image';
 import { StringParameter, IStringParameter } from '../../aws-ssm';
 import { Resource, ResourceProps, Names, Lazy, IResource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The format of the Key Pair
@@ -121,6 +122,7 @@ export interface IKeyPair extends IResource {
  *
  * @resource AWS::EC2::KeyPair
  */
+@propertyInjectable
 export class KeyPair extends Resource implements IKeyPair {
   /**
    * Imports a key pair based on the name.
@@ -273,4 +275,6 @@ export class KeyPair extends Resource implements IKeyPair {
         return true;
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.KeyPair';
 }

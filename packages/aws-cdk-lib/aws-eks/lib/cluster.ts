@@ -2513,6 +2513,7 @@ export interface RemotePodNetwork {
 /**
  * Import a cluster to use in another stack
  */
+@propertyInjectable
 class ImportedCluster extends ClusterBase {
   public readonly clusterName: string;
   public readonly clusterArn: string;
@@ -2620,6 +2621,8 @@ class ImportedCluster extends ClusterBase {
   public get awsAuth(): AwsAuth {
     throw new ValidationError('"awsAuth" is not supported on imported clusters', this);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.ImportedCluster';
 }
 
 /**

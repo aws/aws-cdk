@@ -10,6 +10,7 @@ import { mergeEventPattern, renderEventPattern } from './util';
 import { IRole, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for defining an EventBridge Rule
@@ -68,6 +69,7 @@ export interface RuleProps extends EventCommonOptions {
  *
  * @resource AWS::Events::Rule
  */
+@propertyInjectable
 export class Rule extends Resource implements IRule {
   /**
    * Import an existing EventBridge Rule provided an ARN
@@ -479,6 +481,8 @@ export class Rule extends Resource implements IRule {
         return false;
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.Rule';
 }
 
 function determineRuleScope(scope: Construct, props: RuleProps): Construct {
@@ -502,6 +506,7 @@ function determineRuleScope(scope: Construct, props: RuleProps): Construct {
 /**
  * A rule that mirrors another rule
  */
+@propertyInjectable
 class MirrorRule extends Rule {
   constructor(scope: Construct, id: string, props: RuleProps, private readonly source: Rule) {
     super(scope, id, props);
@@ -523,4 +528,6 @@ class MirrorRule extends Rule {
   protected validateRule(): string[] {
     return [];
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.MirrorRule';
 }

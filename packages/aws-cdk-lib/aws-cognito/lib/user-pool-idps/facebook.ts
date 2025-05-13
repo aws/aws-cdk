@@ -3,6 +3,7 @@ import { UserPoolIdentityProviderProps } from './base';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**
  * Properties to initialize UserPoolFacebookIdentityProvider
@@ -34,6 +35,7 @@ export interface UserPoolIdentityProviderFacebookProps extends UserPoolIdentityP
  * Represents an identity provider that integrates with Facebook Login
  * @resource AWS::Cognito::UserPoolIdentityProvider
  */
+@propertyInjectable
 export class UserPoolIdentityProviderFacebook extends UserPoolIdentityProviderBase {
   public readonly providerName: string;
 
@@ -59,4 +61,6 @@ export class UserPoolIdentityProviderFacebook extends UserPoolIdentityProviderBa
 
     this.providerName = super.getResourceNameAttribute(resource.ref);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito.UserPoolIdentityProviderFacebook';
 }

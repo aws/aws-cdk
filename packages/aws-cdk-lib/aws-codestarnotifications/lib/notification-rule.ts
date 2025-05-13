@@ -4,6 +4,7 @@ import { INotificationRuleSource } from './notification-rule-source';
 import { INotificationRuleTarget, NotificationRuleTargetConfig } from './notification-rule-target';
 import { IResource, Resource, Names } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The level of detail to include in the notifications for this resource.
@@ -110,6 +111,7 @@ export interface INotificationRule extends IResource {
  *
  * @resource AWS::CodeStarNotifications::NotificationRule
  */
+@propertyInjectable
 export class NotificationRule extends Resource implements INotificationRule {
   /**
    * Import an existing notification rule provided an ARN
@@ -195,4 +197,6 @@ export class NotificationRule extends Resource implements INotificationRule {
       this.events.push(event);
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codestarnotifications.NotificationRule';
 }

@@ -5,6 +5,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnGameServerGroup } from 'aws-cdk-lib/aws-gamelift';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Configuration settings for intelligent automatic scaling that uses target tracking.
@@ -348,6 +349,7 @@ export interface GameServerGroupProps {
  *
  * @resource AWS::GameLift::GameServerGroup
  */
+@propertyInjectable
 export class GameServerGroup extends GameServerGroupBase {
   /**
    * Import an existing game server group from its attributes.
@@ -529,4 +531,6 @@ export class GameServerGroup extends GameServerGroupBase {
       };
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-gamelift-alpha.GameServerGroup';
 }

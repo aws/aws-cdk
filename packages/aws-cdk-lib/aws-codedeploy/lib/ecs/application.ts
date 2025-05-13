@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { ArnFormat, IResource, Resource, Stack, Arn } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CfnApplication } from '../codedeploy.generated';
 import { arnForApplication, validateName } from '../private/utils';
 
@@ -39,6 +40,7 @@ export interface EcsApplicationProps {
  *
  * @resource AWS::CodeDeploy::Application
  */
+@propertyInjectable
 export class EcsApplication extends Resource implements IEcsApplication {
   /**
    * Import an Application defined either outside the CDK, or in a different CDK Stack.
@@ -100,4 +102,6 @@ export class EcsApplication extends Resource implements IEcsApplication {
 
     this.node.addValidation({ validate: () => validateName('Application', this.physicalName) });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.EcsApplication';
 }

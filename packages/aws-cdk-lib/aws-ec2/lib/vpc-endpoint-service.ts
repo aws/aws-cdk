@@ -3,6 +3,7 @@ import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.g
 import { ArnPrincipal } from '../../aws-iam';
 import { Aws, Fn, IResource, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { RegionInfo } from '../../region-info';
 
 /**
@@ -60,6 +61,7 @@ export interface IVpcEndpointService extends IResource {
  * @resource AWS::EC2::VPCEndpointService
  *
  */
+@propertyInjectable
 export class VpcEndpointService extends Resource implements IVpcEndpointService {
   /**
    * The default value for a VPC Endpoint Service name prefix, useful if you do
@@ -168,6 +170,8 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
       });
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.VpcEndpointService';
 }
 
 /**

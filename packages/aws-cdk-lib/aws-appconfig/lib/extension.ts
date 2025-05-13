@@ -8,6 +8,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { ArnFormat, IResource, Names, PhysicalName, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Defines Extension action points.
@@ -382,6 +383,7 @@ export interface ExtensionProps extends ExtensionOptions {
  * @resource AWS::AppConfig::Extension
  * @see https://docs.aws.amazon.com/appconfig/latest/userguide/working-with-appconfig-extensions.html
  */
+@propertyInjectable
 export class Extension extends Resource implements IExtension {
   /**
    * Imports an extension into the CDK using its Amazon Resource Name (ARN).
@@ -564,6 +566,8 @@ export class Extension extends Resource implements IExtension {
 
     return this.executionRole;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appconfig.Extension';
 }
 
 export interface IExtension extends IResource {

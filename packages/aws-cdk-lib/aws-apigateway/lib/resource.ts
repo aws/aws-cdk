@@ -8,6 +8,7 @@ import { IRestApi, RestApi } from './restapi';
 import { IResource as IResourceBase, Resource as ResourceConstruct } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IResource extends IResourceBase {
   /**
@@ -404,6 +405,7 @@ export interface ResourceAttributes {
   readonly path: string;
 }
 
+@propertyInjectable
 export class Resource extends ResourceBase {
   /**
    * Import an existing resource
@@ -496,6 +498,8 @@ export class Resource extends ResourceBase {
     }
     return this.parentResource.restApi;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.Resource';
 }
 
 export interface ProxyResourceOptions extends ResourceOptions {
@@ -520,6 +524,7 @@ export interface ProxyResourceProps extends ProxyResourceOptions {
  * Defines a {proxy+} greedy resource and an ANY method on a route.
  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html
  */
+@propertyInjectable
 export class ProxyResource extends Resource {
   /**
    * If `props.anyMethod` is `true`, this will be the reference to the 'ANY'
@@ -555,6 +560,8 @@ export class ProxyResource extends Resource {
     }
     return super.addMethod(httpMethod, integration, options);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.ProxyResource';
 }
 
 function validateResourcePathPart(part: string, scope: Construct) {

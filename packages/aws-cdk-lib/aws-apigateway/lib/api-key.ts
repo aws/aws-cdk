@@ -259,6 +259,7 @@ export interface RateLimitedApiKeyProps extends ApiKeyProps {
  *
  * @resource AWS::ApiGateway::ApiKey
  */
+@propertyInjectable
 export class RateLimitedApiKey extends ApiKeyBase {
   public readonly keyId: string;
   public readonly keyArn: string;
@@ -284,6 +285,8 @@ export class RateLimitedApiKey extends ApiKeyBase {
     this.keyId = resource.keyId;
     this.keyArn = resource.keyArn;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.RateLimitedApiKey';
 }
 
 const readPermissions = [

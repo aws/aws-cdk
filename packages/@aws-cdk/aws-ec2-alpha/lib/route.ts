@@ -6,6 +6,7 @@ import { NetworkUtils, allRouteTableIds, CidrBlock } from './util';
 import { ISubnetV2 } from './subnet-v2';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { cx_api } from 'aws-cdk-lib';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Indicates whether the NAT gateway supports public or private connectivity.
@@ -220,6 +221,7 @@ const NAME_TAG: string = 'Name';
  * Creates an egress-only internet gateway
  * @resource AWS::EC2::EgressOnlyInternetGateway
  */
+@propertyInjectable
 export class EgressOnlyInternetGateway extends Resource implements IRouteTarget {
   /**
    * The type of router used in the route.
@@ -253,12 +255,15 @@ export class EgressOnlyInternetGateway extends Resource implements IRouteTarget 
 
     this.routerTargetId = this.resource.attrId;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.EgressOnlyInternetGateway';
 }
 
 /**
  * Creates an internet gateway
  * @resource AWS::EC2::InternetGateway
  */
+@propertyInjectable
 export class InternetGateway extends Resource implements IRouteTarget {
   /**
    * The type of router used in the route.
@@ -307,12 +312,15 @@ export class InternetGateway extends Resource implements IRouteTarget {
       internetGatewayId: this.routerTargetId,
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.InternetGateway';
 }
 
 /**
  * Creates a virtual private gateway
  * @resource AWS::EC2::VPNGateway
  */
+@propertyInjectable
 export class VPNGatewayV2 extends Resource implements IRouteTarget {
   /**
    * The type of router used in the route.
@@ -389,12 +397,15 @@ export class VPNGatewayV2 extends Resource implements IRouteTarget {
     // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
     this._routePropagation.node.addDependency(this._attachment);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.VPNGatewayV2';
 }
 
 /**
  * Creates a network address translation (NAT) gateway
  * @resource AWS::EC2::NatGateway
  */
+@propertyInjectable
 export class NatGateway extends Resource implements IRouteTarget {
   /**
    * Id of the NatGateway
@@ -486,12 +497,15 @@ export class NatGateway extends Resource implements IRouteTarget {
     this.node.defaultChild = this.resource;
     this.resource.node.addDependency(props.subnet.internetConnectivityEstablished);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.NatGateway';
 }
 
 /**
  * Creates a peering connection between two VPCs
  * @resource AWS::EC2::VPCPeeringConnection
  */
+@propertyInjectable
 export class VPCPeeringConnection extends Resource implements IRouteTarget {
   /**
    * The type of router used in the route.
@@ -585,6 +599,8 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
 
     return false;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.VPCPeeringConnection';
 }
 
 /**
@@ -693,6 +709,7 @@ export interface RouteProps {
  * Creates a new route with added functionality.
  * @resource AWS::EC2::Route
  */
+@propertyInjectable
 export class Route extends Resource implements IRouteV2 {
   /**
    * The IPv4 or IPv6 CIDR block used for the destination match.
@@ -776,6 +793,8 @@ export class Route extends Resource implements IRouteV2 {
       this.node.addDependency(this.target.endpoint);
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.Route';
 }
 
 /**
@@ -799,6 +818,7 @@ export interface RouteTableProps {
  * Creates a route table for the specified VPC
  * @resource AWS::EC2::RouteTable
  */
+@propertyInjectable
 export class RouteTable extends Resource implements IRouteTable {
   /**
    * The ID of the route table.
@@ -843,6 +863,8 @@ export class RouteTable extends Resource implements IRouteTable {
       routeName: routeName,
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.RouteTable';
 }
 
 function routerTypeToPropName(routerType: RouterType) {

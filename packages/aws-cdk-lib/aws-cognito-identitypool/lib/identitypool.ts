@@ -4,6 +4,7 @@ import { CfnIdentityPool, CfnIdentityPoolRoleAttachment, IUserPool, IUserPoolCli
 import { IOpenIdConnectProvider, ISamlProvider, Role, FederatedPrincipal, IRole } from '../../aws-iam';
 import { Resource, IResource, Stack, ArnFormat, Lazy, Token, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a Cognito Identity Pool
@@ -361,6 +362,7 @@ export interface RoleMappingRule {
  *
  * @resource AWS::Cognito::IdentityPool
  */
+@propertyInjectable
 export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Import an existing Identity Pool from its ID
@@ -537,6 +539,8 @@ export class IdentityPool extends Resource implements IIdentityPool {
       },
     }, 'sts:AssumeRoleWithWebIdentity');
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito-identitypool.IdentityPool';
 }
 
 /**
@@ -583,6 +587,7 @@ interface IdentityPoolRoleAttachmentProps {
  *
  * @resource AWS::Cognito::IdentityPoolRoleAttachment
  */
+@propertyInjectable
 class IdentityPoolRoleAttachment extends Resource implements IIdentityPoolRoleAttachment {
   /**
    * ID of the underlying Identity Pool
@@ -659,4 +664,6 @@ class IdentityPoolRoleAttachment extends Resource implements IIdentityPoolRoleAt
       return acc;
     }, {} as { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito-identitypool.IdentityPoolRoleAttachment';
 }

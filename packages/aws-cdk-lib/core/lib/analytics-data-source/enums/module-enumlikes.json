@@ -2526,6 +2526,7 @@
       "VER_16_6",
       "VER_16_6_LIMITLESS",
       "VER_16_8",
+      "VER_16_8_LIMITLESS",
       "VER_17_1",
       "VER_17_2",
       "VER_17_4"
@@ -2860,6 +2861,7 @@
       "VER_13_18",
       "VER_13_19",
       "VER_13_20",
+      "VER_13_21",
       "VER_14",
       "VER_14_1",
       "VER_14_2",
@@ -2878,6 +2880,7 @@
       "VER_14_15",
       "VER_14_16",
       "VER_14_17",
+      "VER_14_18",
       "VER_15",
       "VER_15_2",
       "VER_15_3",
@@ -2890,6 +2893,7 @@
       "VER_15_10",
       "VER_15_11",
       "VER_15_12",
+      "VER_15_13",
       "VER_16",
       "VER_16_1",
       "VER_16_2",
@@ -2899,11 +2903,13 @@
       "VER_16_6",
       "VER_16_7",
       "VER_16_8",
+      "VER_16_9",
       "VER_17",
       "VER_17_1",
       "VER_17_2",
       "VER_17_3",
-      "VER_17_4"
+      "VER_17_4",
+      "VER_17_5"
     ],
     "OracleLegacyEngineVersion": [
       "VER_11_2",
@@ -3152,7 +3158,8 @@
   "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts": {
     "BlockPublicAccess": [
       "BLOCK_ALL",
-      "BLOCK_ACLS"
+      "BLOCK_ACLS",
+      "BLOCK_ACLS_ONLY"
     ],
     "ReplicationTimeValue": [
       "FIFTEEN_MINUTES"
@@ -3271,7 +3278,9 @@
       "SYNTHETICS_PYTHON_SELENIUM_2_1",
       "SYNTHETICS_PYTHON_SELENIUM_3_0",
       "SYNTHETICS_PYTHON_SELENIUM_4_0",
-      "SYNTHETICS_PYTHON_SELENIUM_4_1"
+      "SYNTHETICS_PYTHON_SELENIUM_4_1",
+      "SYNTHETICS_PYTHON_SELENIUM_5_0",
+      "SYNTHETICS_PYTHON_SELENIUM_5_1"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/cfn-pseudo.ts": {

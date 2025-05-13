@@ -3,6 +3,7 @@ import { HttpMethod, IConnection } from './connection';
 import { CfnApiDestination } from './events.generated';
 import { ArnFormat, IResource, Resource, Stack, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The event API Destination properties
@@ -82,6 +83,7 @@ export interface ApiDestinationAttributes {
  *
  * @resource AWS::Events::ApiDestination
  */
+@propertyInjectable
 export class ApiDestination extends Resource implements IApiDestination {
   /**
    * Create an Api Destination construct from an existing Api Destination ARN.
@@ -149,4 +151,6 @@ export class ApiDestination extends Resource implements IApiDestination {
     this.apiDestinationName = this.getResourceNameAttribute(apiDestination.ref);
     this.apiDestinationArn = apiDestination.attrArn;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.ApiDestination';
 }

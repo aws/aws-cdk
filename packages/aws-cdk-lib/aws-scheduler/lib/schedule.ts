@@ -7,6 +7,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as kms from '../../aws-kms';
 import { Arn, ArnFormat, Duration, IResource, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface representing a created or an imported `Schedule`.
@@ -152,6 +153,7 @@ export interface ScheduleProps {
 /**
  * An EventBridge Schedule
  */
+@propertyInjectable
 export class Schedule extends Resource implements ISchedule {
   /**
    * Return the given named metric for all schedules.
@@ -364,4 +366,6 @@ export class Schedule extends Resource implements ISchedule {
       throw new ValidationError(`start must precede end, got start: ${start.toISOString()}, end: ${end.toISOString()}`, this);
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-scheduler.Schedule';
 }

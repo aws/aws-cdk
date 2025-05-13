@@ -2,6 +2,7 @@ import { CfnIPAM, CfnIPAMPool, CfnIPAMPoolCidr, CfnIPAMScope } from 'aws-cdk-lib
 import { Construct } from 'constructs';
 import { Lazy, Names, Resource, Stack, Tags } from 'aws-cdk-lib';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents the address family for IP addresses in an IPAM pool.
@@ -311,6 +312,7 @@ export interface IIpamScopeBase {
  * @resource AWS::EC2::IPAMPool
  * @internal
  */
+@propertyInjectable
 class IpamPool extends Resource implements IIpamPool {
   /**
    * Pool ID to be passed to the VPC construct
@@ -382,6 +384,8 @@ class IpamPool extends Resource implements IIpamPool {
     this.ipamCidrs.push(cidr);
     return cidr;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.IpamPool';
 }
 
 /**
@@ -390,6 +394,7 @@ class IpamPool extends Resource implements IIpamPool {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
  * @resource AWS::EC2::IPAMScope
  */
+@propertyInjectable
 class IpamScope extends Resource implements IIpamScopeBase {
   /**
    * Stores the reference to newly created Resource
@@ -438,6 +443,8 @@ class IpamScope extends Resource implements IIpamScopeBase {
   addPool(id: string, options: PoolOptions): IIpamPool {
     return createIpamPool(this.scope, id, this.props, options, this.scopeId);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.IpamScope';
 }
 
 /**
@@ -472,6 +479,7 @@ class IpamScopeBase implements IIpamScopeBase {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
  * @resource AWS::EC2::IPAM
  */
+@propertyInjectable
 export class Ipam extends Resource {
   /**
    * Provides access to default public IPAM scope through add pool method.
@@ -560,6 +568,8 @@ export class Ipam extends Resource {
     this.scopes.push(ipamScope);
     return ipamScope;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.Ipam';
 }
 
 /**

@@ -5,6 +5,7 @@ import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { SecretValue } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**
  * Properties to initialize UserPoolAppleIdentityProvider
@@ -47,6 +48,7 @@ export interface UserPoolIdentityProviderAppleProps extends UserPoolIdentityProv
  * Represents an identity provider that integrates with Apple
  * @resource AWS::Cognito::UserPoolIdentityProvider
  */
+@propertyInjectable
 export class UserPoolIdentityProviderApple extends UserPoolIdentityProviderBase {
   public readonly providerName: string;
 
@@ -79,4 +81,6 @@ export class UserPoolIdentityProviderApple extends UserPoolIdentityProviderBase 
 
     this.providerName = super.getResourceNameAttribute(resource.ref);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito.UserPoolIdentityProviderApple';
 }

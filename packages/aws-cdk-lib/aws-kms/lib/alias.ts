@@ -4,6 +4,7 @@ import { CfnAlias } from './kms.generated';
 import * as iam from '../../aws-iam';
 import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { KMS_ALIAS_NAME_REF } from '../../cx-api';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
@@ -162,6 +163,7 @@ export interface AliasAttributes {
  *
  * @resource AWS::KMS::Alias
  */
+@propertyInjectable
 export class Alias extends AliasBase {
   /**
    * Import an existing KMS Alias defined outside the CDK app.
@@ -276,4 +278,6 @@ export class Alias extends AliasBase {
   protected generatePhysicalName(): string {
     return REQUIRED_ALIAS_PREFIX + super.generatePhysicalName();
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kms.Alias';
 }

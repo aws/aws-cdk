@@ -30,6 +30,7 @@ import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
 
@@ -795,6 +796,7 @@ export interface BindToCodePipelineOptions {
 /**
  * A representation of a CodeBuild Project.
  */
+@propertyInjectable
 export class Project extends ProjectBase {
   public static fromProjectArn(scope: Construct, id: string, projectArn: string): IProject {
     const parsedArn = Stack.of(scope).splitArn(projectArn, ArnFormat.SLASH_RESOURCE_NAME);
@@ -1620,6 +1622,8 @@ export class Project extends ProjectBase {
     }
     return errors;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codebuild.Project';
 }
 
 /**

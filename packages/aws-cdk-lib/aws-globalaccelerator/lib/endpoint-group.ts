@@ -6,6 +6,7 @@ import { IListener } from './listener';
 import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The interface of the EndpointGroup
@@ -153,6 +154,7 @@ export interface EndpointGroupProps extends EndpointGroupOptions {
 /**
  * EndpointGroup construct
  */
+@propertyInjectable
 export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
   /**
    * import from ARN
@@ -247,4 +249,6 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
     }
     return cdk.Stack.of(this).region;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-globalaccelerator.EndpointGroup';
 }

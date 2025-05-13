@@ -6,6 +6,7 @@ import { IGameSessionQueue } from './game-session-queue';
 import * as gamelift from 'aws-cdk-lib/aws-gamelift';
 import { MatchmakingConfigurationProps, GameProperty, MatchmakingConfigurationBase, IMatchmakingConfiguration } from './matchmaking-configuration';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties for a new queued matchmaking configuration
@@ -67,6 +68,7 @@ export interface QueuedMatchmakingConfigurationProps extends MatchmakingConfigur
  *
  * @resource AWS::GameLift::MatchmakingConfiguration
  */
+@propertyInjectable
 export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase {
   /**
    * Import an existing matchmaking configuration from its name.
@@ -221,4 +223,6 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
       };
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-gamelift-alpha.QueuedMatchmakingConfiguration';
 }

@@ -1139,6 +1139,7 @@ export enum RestApiMode {
   MERGE = 'merge',
 }
 
+@propertyInjectable
 class RootResource extends ResourceBase {
   public readonly parentResource?: IResource;
   public readonly api: RestApiBase;
@@ -1182,6 +1183,8 @@ class RootResource extends ResourceBase {
     }
     return this._restApi;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.RootResource';
 }
 
 function ignore(_x: any) {

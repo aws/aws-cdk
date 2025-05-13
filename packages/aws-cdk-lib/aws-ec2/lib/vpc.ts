@@ -2463,6 +2463,7 @@ function ifUndefined<T>(value: T | undefined, defaultValue: T): T {
   return value ?? defaultValue;
 }
 
+@propertyInjectable
 class ImportedVpc extends VpcBase {
   public readonly vpcId: string;
   public readonly vpcArn: string;
@@ -2515,8 +2516,11 @@ class ImportedVpc extends VpcBase {
     }
     return this.cidr;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.ImportedVpc';
 }
 
+@propertyInjectable
 class LookedUpVpc extends VpcBase {
   public readonly vpcId: string;
   public readonly vpcArn: string;
@@ -2586,6 +2590,8 @@ class LookedUpVpc extends VpcBase {
     }
     return ret;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.LookedUpVpc';
 }
 
 function flatMap<T, U>(xs: T[], fn: (x: T) => U[]): U[] {
@@ -2628,6 +2634,7 @@ function tap<T>(x: T, fn: (x: T) => void): T {
   return x;
 }
 
+@propertyInjectable
 class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivateSubnet {
   public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
   public readonly subnetId: string;
@@ -2696,6 +2703,8 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       subnet: this,
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.ImportedSubnet';
 }
 
 /**

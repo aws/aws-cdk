@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnReceiptFilter } from './ses.generated';
 import { Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The policy for the receipt filter.
@@ -48,6 +49,7 @@ export interface ReceiptFilterProps {
  * A receipt filter. When instantiated without props, it creates a
  * block all receipt filter.
  */
+@propertyInjectable
 export class ReceiptFilter extends Resource {
   constructor(scope: Construct, id: string, props: ReceiptFilterProps = {}) {
     super(scope, id, {
@@ -66,6 +68,8 @@ export class ReceiptFilter extends Resource {
       },
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ses.ReceiptFilter';
 }
 
 /**

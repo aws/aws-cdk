@@ -7,6 +7,7 @@ import * as iam from '../../aws-iam';
 import { IResource, Lazy, Resource, TimeZone, withResolved } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IScalableTarget extends IResource {
   /**
@@ -73,6 +74,7 @@ export interface ScalableTargetProps {
 /**
  * Define a scalable target
  */
+@propertyInjectable
 export class ScalableTarget extends Resource implements IScalableTarget {
   public static fromScalableTargetId(scope: Construct, id: string, scalableTargetId: string): IScalableTarget {
     class Import extends Resource implements IScalableTarget {
@@ -185,6 +187,8 @@ export class ScalableTarget extends Resource implements IScalableTarget {
   public scaleToTrackMetric(id: string, props: BasicTargetTrackingScalingPolicyProps) {
     return new TargetTrackingScalingPolicy(this, id, { ...props, scalingTarget: this });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-applicationautoscaling.ScalableTarget';
 }
 
 /**

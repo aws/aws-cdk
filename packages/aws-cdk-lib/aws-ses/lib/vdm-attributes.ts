@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnVdmAttributes } from './ses.generated';
 import { IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Virtual Deliverability Manager (VDM) attributes
@@ -37,6 +38,7 @@ export interface VdmAttributesProps {
 /**
  * Virtual Deliverability Manager (VDM) attributes
  */
+@propertyInjectable
 export class VdmAttributes extends Resource implements IVdmAttributes {
   /**
    * Use an existing Virtual Deliverability Manager attributes resource
@@ -74,6 +76,8 @@ export class VdmAttributes extends Resource implements IVdmAttributes {
     this.vdmAttributesName = resource.ref;
     this.vdmAttributesResourceId = resource.attrVdmAttributesResourceId;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ses.VdmAttributes';
 }
 
 function booleanToEnabledDisabled(value: boolean): 'ENABLED' | 'DISABLED' {

@@ -10,6 +10,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import { Fn, Lazy, RemovalPolicy, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IVersion extends IFunction {
   /**
@@ -113,6 +114,7 @@ export interface VersionAttributes {
  * the right deployment, specify the `codeSha256` property while
  * creating the `Version.
  */
+@propertyInjectable
 export class Version extends QualifiedFunctionBase implements IVersion {
   /**
    * Construct a Version object from a Version ARN.
@@ -294,6 +296,8 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
     return { provisionedConcurrentExecutions: props.provisionedConcurrentExecutions };
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.Version';
 }
 
 /**

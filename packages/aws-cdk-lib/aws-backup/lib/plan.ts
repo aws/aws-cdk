@@ -5,6 +5,7 @@ import { BackupSelection, BackupSelectionOptions } from './selection';
 import { BackupVault, IBackupVault } from './vault';
 import { IResource, Lazy, Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A backup plan
@@ -58,6 +59,7 @@ export interface BackupPlanProps {
 /**
  * A backup plan
  */
+@propertyInjectable
 export class BackupPlan extends Resource implements IBackupPlan {
   /**
    * Import an existing backup plan
@@ -241,4 +243,6 @@ export class BackupPlan extends Resource implements IBackupPlan {
 
     return [];
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-backup.BackupPlan';
 }

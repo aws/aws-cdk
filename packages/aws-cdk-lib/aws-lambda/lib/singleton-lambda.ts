@@ -11,6 +11,7 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for a newly created singleton Lambda
@@ -46,6 +47,7 @@ export interface SingletonFunctionProps extends FunctionProps {
  *
  * @resource AWS::Lambda::Function
  */
+@propertyInjectable
 export class SingletonFunction extends FunctionBase {
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly functionName: string;
@@ -208,6 +210,8 @@ export class SingletonFunction extends FunctionBase {
 
     return new LambdaFunction(cdk.Stack.of(this), this.constructName, props);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.SingletonFunction';
 }
 
 function slugify(x: string): string {

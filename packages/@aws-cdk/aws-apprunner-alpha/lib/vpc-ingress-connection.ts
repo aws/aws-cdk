@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { IService } from './service';
 import { CfnVpcIngressConnection } from 'aws-cdk-lib/aws-apprunner';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties of the AppRunner VPC Ingress Connection
@@ -79,6 +80,7 @@ export interface IVpcIngressConnection extends cdk.IResource {
  *
  * @resource AWS::AppRunner::VpcIngressConnection
  */
+@propertyInjectable
 export class VpcIngressConnection extends cdk.Resource implements IVpcIngressConnection {
   /**
    * Import from VPC Ingress Connection from attributes.
@@ -174,4 +176,6 @@ export class VpcIngressConnection extends cdk.Resource implements IVpcIngressCon
     this.domainName = resource.attrDomainName;
     this.status = resource.attrStatus;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-apprunner-alpha.VpcIngressConnection';
 }

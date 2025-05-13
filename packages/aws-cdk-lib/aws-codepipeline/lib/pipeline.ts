@@ -39,6 +39,7 @@ import {
   ValidationError,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -527,6 +528,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
  *
  * // ... add more stages
  */
+@propertyInjectable
 export class Pipeline extends PipelineBase {
   /**
    * Import a pipeline into this app.
@@ -1441,6 +1443,8 @@ export class Pipeline extends PipelineBase {
     }
     return scope;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codepipeline.Pipeline';
 }
 
 /**

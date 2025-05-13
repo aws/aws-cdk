@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnPublicKey } from './cloudfront.generated';
 import { IResource, Names, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a Public Key
@@ -44,6 +45,7 @@ export interface PublicKeyProps {
  *
  * @resource AWS::CloudFront::PublicKey
  */
+@propertyInjectable
 export class PublicKey extends Resource implements IPublicKey {
   /** Imports a Public Key from its id. */
   public static fromPublicKeyId(scope: Construct, id: string, publicKeyId: string): IPublicKey {
@@ -82,4 +84,6 @@ export class PublicKey extends Resource implements IPublicKey {
     }
     return name;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.PublicKey';
 }

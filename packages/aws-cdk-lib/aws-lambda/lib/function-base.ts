@@ -16,6 +16,7 @@ import * as iam from '../../aws-iam';
 import { Annotations, ArnFormat, IResource, Resource, Token, Stack, FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
@@ -796,6 +797,7 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
 /**
  * The $LATEST version of a function, useful when attempting to create aliases.
  */
+@propertyInjectable
 class LatestVersion extends FunctionBase implements IVersion {
   public readonly lambda: IFunction;
   public readonly version = '$LATEST';
@@ -844,6 +846,8 @@ class LatestVersion extends FunctionBase implements IVersion {
   public addAlias(aliasName: string, options: AliasOptions = {}) {
     return addAlias(this, this, aliasName, options);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.LatestVersion';
 }
 
 function requireObject(x: unknown): Record<string, unknown> | undefined {

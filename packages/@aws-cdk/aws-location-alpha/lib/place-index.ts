@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { CfnPlaceIndex } from 'aws-cdk-lib/aws-location';
 import { DataSource, generateUniqueId } from './util';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * A Place Index
@@ -80,6 +81,7 @@ export enum IntendedUse {
  *
  * @see https://docs.aws.amazon.com/location/latest/developerguide/places-concepts.html
  */
+@propertyInjectable
 export class PlaceIndex extends Resource implements IPlaceIndex {
   /**
    * Use an existing place index by name
@@ -192,4 +194,6 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
       'geo:SearchPlaceIndexForText',
     );
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-location-alpha.PlaceIndex';
 }

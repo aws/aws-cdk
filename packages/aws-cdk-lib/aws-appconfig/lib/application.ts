@@ -6,6 +6,7 @@ import { Environment, EnvironmentOptions, IEnvironment } from './environment';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import * as ecs from '../../aws-ecs';
 import * as cdk from '../../core';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -334,6 +335,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication, IEx
  * @resource AWS::AppConfig::Application
  * @see https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-application.html
  */
+@propertyInjectable
 export class Application extends ApplicationBase {
   /**
    * Imports an AWS AppConfig application into the CDK using its Amazon Resource Name (ARN).
@@ -456,6 +458,8 @@ export class Application extends ApplicationBase {
 
     this.extensible = new ExtensibleBase(this, this.applicationArn, this.name);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appconfig.Application';
 }
 
 const lambdaLayerVersions: {[key: string]: {[key: string]: string}} = {

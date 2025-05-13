@@ -6,6 +6,7 @@ import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
 import { findUp } from './util';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties for a GolangFunction
@@ -71,6 +72,7 @@ export interface GoFunctionProps extends lambda.FunctionOptions {
 /**
  * A Golang Lambda function
  */
+@propertyInjectable
 export class GoFunction extends lambda.Function {
   /**
    * The address of the Google Go proxy
@@ -125,5 +127,7 @@ export class GoFunction extends lambda.Function {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-lambda-go-alpha.GoFunction';
 }
 

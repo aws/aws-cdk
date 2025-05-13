@@ -5,6 +5,7 @@ import { IStreamConsumer } from './stream-consumer';
 import { PolicyDocument } from '../../aws-iam';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties to associate a data stream with a policy
@@ -50,6 +51,7 @@ export interface ResourcePolicyProps {
  *
  * Prefer to use `addToResourcePolicy()` instead.
  */
+@propertyInjectable
 export class ResourcePolicy extends Resource {
   /**
    * The IAM policy document for this policy.
@@ -83,4 +85,6 @@ export class ResourcePolicy extends Resource {
       resourceArn,
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kinesis.ResourcePolicy';
 }

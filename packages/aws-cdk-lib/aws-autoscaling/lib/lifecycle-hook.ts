@@ -5,6 +5,7 @@ import { ILifecycleHookTarget } from './lifecycle-hook-target';
 import * as iam from '../../aws-iam';
 import { Duration, IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Basic properties for a lifecycle hook
@@ -86,6 +87,7 @@ export interface ILifecycleHook extends IResource {
 /**
  * Define a life cycle hook
  */
+@propertyInjectable
 export class LifecycleHook extends Resource implements ILifecycleHook {
   private _role?: iam.IRole;
 
@@ -151,6 +153,8 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
 
     this.lifecycleHookName = resource.ref;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-autoscaling.LifecycleHook';
 }
 
 export enum DefaultResult {

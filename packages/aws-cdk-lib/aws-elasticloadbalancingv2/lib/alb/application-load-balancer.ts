@@ -1205,6 +1205,7 @@ export interface ApplicationLoadBalancerAttributes {
 /**
  * An ApplicationLoadBalancer that has been defined elsewhere
  */
+@propertyInjectable
 class ImportedApplicationLoadBalancer extends Resource implements IApplicationLoadBalancer {
   /**
    * Manage connections for this load balancer
@@ -1264,8 +1265,11 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
     // eslint-disable-next-line max-len
     throw new ValidationError(`'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`, this);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.ImportedApplicationLoadBalancer';
 }
 
+@propertyInjectable
 class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLoadBalancer {
   public readonly loadBalancerArn: string;
   public readonly loadBalancerCanonicalHostedZoneId: string;
@@ -1317,6 +1321,8 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
       loadBalancer: this,
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.LookedUpApplicationLoadBalancer';
 }
 
 /**

@@ -6,6 +6,7 @@ import { CfnTracker, CfnTrackerConsumer } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
 import { IGeofenceCollection } from './geofence-collection';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * A Tracker
@@ -119,6 +120,7 @@ export enum PositionFiltering {
  *
  * @see https://docs.aws.amazon.com/location/latest/developerguide/geofence-tracker-concepts.html#tracking-overview
  */
+@propertyInjectable
 export class Tracker extends Resource implements ITracker {
   /**
    * Use an existing tracker by name
@@ -276,4 +278,6 @@ export class Tracker extends Resource implements ITracker {
       resourceArns: [`${this.trackerArn}/*`],
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-location-alpha.Tracker';
 }

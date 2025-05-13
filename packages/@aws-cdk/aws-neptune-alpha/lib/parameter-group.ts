@@ -2,6 +2,7 @@ import { IResource, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from 'aws-cdk-lib/aws-neptune';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * The DB parameter group family that a DB parameter group is compatible with
@@ -94,6 +95,7 @@ export interface IClusterParameterGroup extends IResource {
  *
  * @resource AWS::Neptune::DBClusterParameterGroup
  */
+@propertyInjectable
 export class ClusterParameterGroup extends Resource implements IClusterParameterGroup {
   /**
    * Imports a parameter group
@@ -124,6 +126,8 @@ export class ClusterParameterGroup extends Resource implements IClusterParameter
 
     this.clusterParameterGroupName = resource.ref;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-neptune-alpha.ClusterParameterGroup';
 }
 
 /**
@@ -141,6 +145,7 @@ export interface IParameterGroup extends IResource {
  *
  * @resource AWS::Neptune::DBParameterGroup
  */
+@propertyInjectable
 export class ParameterGroup extends Resource implements IParameterGroup {
   /**
    * Imports a parameter group
@@ -171,4 +176,6 @@ export class ParameterGroup extends Resource implements IParameterGroup {
 
     this.parameterGroupName = resource.ref;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-neptune-alpha.ParameterGroup';
 }

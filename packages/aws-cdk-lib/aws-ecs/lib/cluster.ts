@@ -1038,6 +1038,7 @@ export interface ClusterAttributes {
 /**
  * An Cluster that has been imported
  */
+@propertyInjectable
 class ImportedCluster extends Resource implements ICluster {
   /**
    * Name of the cluster
@@ -1111,6 +1112,8 @@ class ImportedCluster extends Resource implements ICluster {
   public get executeCommandConfiguration(): ExecuteCommandConfiguration | undefined {
     return this._executeCommandConfiguration;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.ImportedCluster';
 }
 
 /**

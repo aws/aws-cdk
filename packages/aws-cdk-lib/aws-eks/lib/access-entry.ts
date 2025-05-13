@@ -5,6 +5,7 @@ import {
   Resource, IResource, Aws, Lazy,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an access entry in an Amazon EKS cluster.
@@ -295,6 +296,7 @@ export interface AccessEntryProps {
  *
  * @implements {IAccessEntry}
  */
+@propertyInjectable
 export class AccessEntry extends Resource implements IAccessEntry {
   /**
    * Imports an `AccessEntry` from its attributes.
@@ -363,4 +365,6 @@ export class AccessEntry extends Resource implements IAccessEntry {
     // add newAccessPolicies to this.accessPolicies
     this.accessPolicies.push(...newAccessPolicies);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.AccessEntry';
 }

@@ -8,6 +8,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for defining a new Step Functions Activity
@@ -31,6 +32,7 @@ export interface ActivityProps {
 /**
  * Define a new Step Functions Activity
  */
+@propertyInjectable
 export class Activity extends Resource implements IActivity {
   /**
    * Construct an Activity from an existing Activity ARN
@@ -252,6 +254,8 @@ export class Activity extends Resource implements IActivity {
       ...props,
     }).attachTo(this);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-stepfunctions.Activity';
 }
 
 /**

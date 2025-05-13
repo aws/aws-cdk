@@ -7,6 +7,7 @@ import { Stage } from './stage';
 import { validateDouble, validateInteger } from './util';
 import { FeatureFlags, IResource, Lazy, Names, Resource, Token } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID } from '../../cx-api';
 
 /**
@@ -212,6 +213,7 @@ abstract class UsagePlanBase extends Resource implements IUsagePlan {
   }
 }
 
+@propertyInjectable
 export class UsagePlan extends UsagePlanBase {
   /**
    * Import an externally defined usage plan using its ARN.
@@ -335,4 +337,6 @@ export class UsagePlan extends UsagePlanBase {
     }
     return ret;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.UsagePlan';
 }

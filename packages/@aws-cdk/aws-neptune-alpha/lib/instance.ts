@@ -7,6 +7,7 @@ import { Endpoint } from './endpoint';
 import { CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
 import { IParameterGroup } from './parameter-group';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Possible Instances Types to use in Neptune cluster
@@ -471,6 +472,7 @@ export abstract class DatabaseInstanceBase extends cdk.Resource implements IData
  *
  * @resource AWS::Neptune::DBInstance
  */
+@propertyInjectable
 export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseInstance {
   /**
    * The instance's database cluster
@@ -524,4 +526,6 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
       applyToUpdateReplacePolicy: true,
     });
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-neptune-alpha.DatabaseInstance';
 }

@@ -4,6 +4,7 @@ import { CfnScheduledAction } from './autoscaling.generated';
 import { Schedule } from './schedule';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for a scheduled scaling action
@@ -90,6 +91,7 @@ export interface ScheduledActionProps extends BasicScheduledActionProps {
 /**
  * Define a scheduled scaling action
  */
+@propertyInjectable
 export class ScheduledAction extends Resource {
   /**
    * The name of the scheduled action.
@@ -123,6 +125,8 @@ export class ScheduledAction extends Resource {
 
     this.scheduledActionName = resource.attrScheduledActionName;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-autoscaling.ScheduledAction';
 }
 
 function formatISO(date?: Date) {

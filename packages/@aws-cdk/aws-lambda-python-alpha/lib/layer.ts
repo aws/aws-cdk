@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties for PythonLayerVersion
@@ -40,6 +41,7 @@ export interface PythonLayerVersionProps extends lambda.LayerVersionOptions {
  * A lambda layer version.
  *
  */
+@propertyInjectable
 export class PythonLayerVersion extends lambda.LayerVersion {
   constructor(scope: Construct, id: string, props: PythonLayerVersionProps) {
     const compatibleRuntimes = props.compatibleRuntimes ?? [lambda.Runtime.PYTHON_3_7];
@@ -74,4 +76,6 @@ export class PythonLayerVersion extends lambda.LayerVersion {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-lambda-python-alpha.PythonLayerVersion';
 }

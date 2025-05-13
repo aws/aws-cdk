@@ -3,6 +3,7 @@ import { ICluster } from './cluster';
 import { CfnAccessEntry } from 'aws-cdk-lib/aws-eks';
 import { Resource, IResource, Aws, Lazy } from 'aws-cdk-lib/core';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents an access entry in an Amazon EKS cluster.
@@ -294,6 +295,7 @@ export interface AccessEntryProps {
  * @implements {IAccessEntry}
  * @resource AWS::EKS::AccessEntry
  */
+@propertyInjectable
 export class AccessEntry extends Resource implements IAccessEntry {
   /**
    * Imports an `AccessEntry` from its attributes.
@@ -361,4 +363,6 @@ export class AccessEntry extends Resource implements IAccessEntry {
     // add newAccessPolicies to this.accessPolicies
     this.accessPolicies.push(...newAccessPolicies);
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.AccessEntry';
 }

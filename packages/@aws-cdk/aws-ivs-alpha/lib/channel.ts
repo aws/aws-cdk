@@ -5,6 +5,7 @@ import { CfnChannel } from 'aws-cdk-lib/aws-ivs';
 import { StreamKey } from './stream-key';
 import { IRecordingConfiguration } from './recording-configuration';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents an IVS Channel
@@ -253,6 +254,7 @@ export interface MultitrackInputConfiguration {
 /**
   A new IVS channel
  */
+@propertyInjectable
 export class Channel extends ChannelBase {
   /**
    * Import an existing channel
@@ -346,4 +348,6 @@ export class Channel extends ChannelBase {
     this.channelIngestEndpoint = resource.attrIngestEndpoint;
     this.channelPlaybackUrl = resource.attrPlaybackUrl;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ivs-alpha.Channel';
 }

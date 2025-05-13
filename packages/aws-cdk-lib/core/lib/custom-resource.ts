@@ -6,6 +6,7 @@ import { addConstructMetadata, MethodMetadata } from './metadata-resource';
 import { RemovalPolicy } from './removal-policy';
 import { Resource } from './resource';
 import { Token } from './token';
+import { propertyInjectable } from 'prop-injectable';
 
 /**
  * Properties to provide a Lambda-backed custom resource
@@ -155,6 +156,7 @@ export interface CustomResourceProps {
  *
  * @resource AWS::CloudFormation::CustomResource
  */
+@propertyInjectable
 export class CustomResource extends Resource {
   private readonly resource: CfnResource;
 
@@ -232,6 +234,8 @@ export class CustomResource extends Resource {
   public getAttString(attributeName: string): string {
     return Token.asString(this.getAtt(attributeName));
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.core.CustomResource';
 }
 
 /**

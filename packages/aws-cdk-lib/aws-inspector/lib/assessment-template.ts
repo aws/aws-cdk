@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnAssessmentTemplate } from './inspector.generated';
 import { IResource, Resource } from '../../core';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface for an Inspector Assessment Template
@@ -25,6 +26,7 @@ export interface AssessmentTemplateProps { }
  * TODO: This class should implement IAssessmentTemplate and "construct-ctor-props-type:aws-cdk-lib.aws_inspector.AssessmentTemplate" should be
  * removed from `awslint.json` when implementing the L2 construct
  */
+@propertyInjectable
 export class AssessmentTemplate extends Resource {
   /**
    * Creates an AssessmentTemplate from an existing CfnAssessmentTemplate.
@@ -42,4 +44,6 @@ export class AssessmentTemplate extends Resource {
       }
     }();
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-inspector.AssessmentTemplate';
 }

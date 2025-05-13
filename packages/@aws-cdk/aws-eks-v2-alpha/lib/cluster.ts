@@ -25,6 +25,7 @@ import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents, Stack } from 'aws-cdk-lib/core';
 import { CfnCluster } from 'aws-cdk-lib/aws-eks';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -914,6 +915,7 @@ export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAd
  * The user is still required to create the worker nodes.
  * @resource AWS::EKS::Cluster
  */
+@propertyInjectable
 export class Cluster extends ClusterBase {
   /**
    * Import an existing cluster
@@ -1771,6 +1773,8 @@ export class Cluster extends ClusterBase {
       k8sPatch.node.addDependency(this._clusterAdminAccess);
     }
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.Cluster';
 }
 
 /**
@@ -1903,6 +1907,7 @@ export interface AutoScalingGroupOptions {
 /**
  * Import a cluster to use in another stack
  */
+@propertyInjectable
 class ImportedCluster extends ClusterBase {
   public readonly clusterName: string;
   public readonly clusterArn: string;
@@ -1986,6 +1991,8 @@ class ImportedCluster extends ClusterBase {
     }
     return this.props.openIdConnectProvider;
   }
+
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.ImportedCluster';
 }
 
 /**
