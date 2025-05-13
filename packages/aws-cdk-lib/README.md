@@ -1546,4 +1546,85 @@ warning by the `id`.
 Annotations.of(this).acknowledgeWarning('IAM:Group:MaxPoliciesExceeded', 'Account has quota increased to 20');
 ```
 
+## Blueprint Property Injection
+
+The goal of Blueprint Property Injection is to provide builders an automatic way to set default property values.
+
+Construct authors can declare that a Construct can have it properties injected by adding `@propertyInjectable`
+class decorator and specifying `PROPERTY_INJECTION_ID` readonly property.  
+All L2 Constructs will support Property Injection so organizations can write injectors to set their Construct Props.
+
+Organizations can set default property values to a Construct by writing Injectors for builders to consume.
+
+Here is a simple example of an Injector for APiKey that sets enabled to false.  
+
+```ts fixture=README-Injectable
+class ApiKeyPropsInjector implements IPropertyInjector {
+  readonly constructUniqueId: string;
+
+  constructor() {
+    this.constructUniqueId = api.ApiKey.PROPERTY_INJECTION_ID;
+  }
+
+  inject(originalProps: api.ApiKeyProps, context: InjectionContext): api.ApiKeyProps {
+    return {
+      enabled: false,
+      apiKeyName: originalProps.apiKeyName,
+      customerId: originalProps.customerId,
+      defaultCorsPreflightOptions: originalProps.defaultCorsPreflightOptions,
+      defaultIntegration: originalProps.defaultIntegration,
+      defaultMethodOptions: originalProps.defaultMethodOptions,
+      description: originalProps.description,
+      generateDistinctId: originalProps.generateDistinctId,
+      resources: originalProps.resources,
+      stages: originalProps.stages,
+      value: originalProps.value,
+    };
+  }
+}
+```
+
+Some notes:
+
+- ApiKey must have a `PROPERTY_INJECTION_ID` property, in addition to having `@propertyInjectable` class decorator.
+- We set ApiKeyProps.enabled to false, if it is not provided; otherwise it would use the value that was passed in.
+- It is also possible to force ApiKeyProps.enabled to false, and not provide a way for the builders to overwrite it.
+
+Here is an example of how builders can use the injector the org created.
+
+```ts fixture=README-blueprints
+const stack = new Stack(app, 'my-stack', {
+  propertyInjectors: [new ApiKeyPropsInjector()],
+});
+new api.ApiKey(stack, 'my-api-key', {});
+```
+
+This is equivalent to:
+
+```ts fixture=README-blueprints
+const stack = new Stack(app, 'my-stack', {});
+new api.ApiKey(stack, 'my-api-key', {
+  enabled: false,
+});
+```
+
+Some notes:
+
+- We attach the injectors to Stack in this example, but we can also attach them to App or Stage.
+- All the ApiKey created in the scope of stack will get `enabled: false`.
+- Builders can overwrite the default value with `new ApiKey(stack, 'my-api-key', {enabled: true});`
+
+If you specify two or more injectors for the same Constructs, the last one is in effect.  In the example below, `ApiKeyPropsInjector` will never be applied.
+
+```ts fixture=README-blueprints
+const stack = new Stack(app, 'my-stack', {
+  propertyInjectors: [
+    new ApiKeyPropsInjector(),
+    new AnotherApiKeyPropsInjector(),
+  ],
+});
+```
+
+For more information, please see the [RFC](https://github.com/aws/aws-cdk-rfcs/blob/main/text/0693-property-injection.md).
+
 <!--END CORE DOCUMENTATION-->
