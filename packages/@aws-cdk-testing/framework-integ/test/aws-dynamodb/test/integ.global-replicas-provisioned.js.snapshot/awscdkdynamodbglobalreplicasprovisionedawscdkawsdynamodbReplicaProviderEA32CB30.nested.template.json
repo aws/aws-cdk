@@ -7,6 +7,9 @@
    "ap-east-1": {
     "value": "nodejs20.x"
    },
+   "ap-east-2": {
+    "value": "nodejs20.x"
+   },
    "ap-northeast-1": {
     "value": "nodejs20.x"
    },
@@ -113,6 +116,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {
@@ -250,7 +256,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "beee194466d406430def0e84ec8b17a0aeb98fe29f5660882cb01e9db355d7c8.zip"
+     "S3Key": "7e256f5e4a92713cc232cd23819cb666756ee6023ce380130abac3b6a3fcea6a.zip"
     },
     "Handler": "index.onEventHandler",
     "Role": {
@@ -313,7 +319,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "beee194466d406430def0e84ec8b17a0aeb98fe29f5660882cb01e9db355d7c8.zip"
+     "S3Key": "7e256f5e4a92713cc232cd23819cb666756ee6023ce380130abac3b6a3fcea6a.zip"
     },
     "Handler": "index.isCompleteHandler",
     "Role": {

@@ -5,10 +5,12 @@ import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
 import { IRole } from '../../aws-iam';
 import { CfnApp } from '../../aws-pinpoint';
-import { IResource, Resource, Duration, Stack, SecretValue, Token } from '../../core';
+import { IResource, Resource, Duration, Stack, SecretValue, Token, FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { AwsCustomResource, AwsCustomResourcePolicy, Logging, PhysicalResourceId } from '../../custom-resources';
+import * as cxapi from '../../cx-api';
 
 /**
  * Types of authentication flow
@@ -426,7 +428,13 @@ export interface IUserPoolClient extends IResource {
 /**
  * Define a UserPool App Client
  */
+@propertyInjectable
 export class UserPoolClient extends Resource implements IUserPoolClient {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito.UserPoolClient';
+
   /**
    * Import a user pool client given its id.
    */
@@ -544,6 +552,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       throw new ValidationError('userPoolClientSecret is available only if generateSecret is set to true.', this);
     }
 
+    const isEnableLogUserPoolClientSecret = FeatureFlags.of(this).isEnabled(cxapi.LOG_USER_POOL_CLIENT_SECRET_VALUE);
+
     // Create the Custom Resource that assists in resolving the User Pool Client secret
     // just once, no matter how many times this method is called
     if (!this._userPoolClientSecret) {
@@ -561,6 +571,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
               ClientId: this.userPoolClientId,
             },
             physicalResourceId: PhysicalResourceId.of(this.userPoolClientId),
+            logging: isEnableLogUserPoolClientSecret ? undefined : Logging.withDataHidden(),
           },
           policy: AwsCustomResourcePolicy.fromSdkCalls({
             resources: [this.userPool.userPoolArn],

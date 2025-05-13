@@ -1,3 +1,5 @@
+import { UnscopedValidationError } from '../../core';
+
 /**
  * What class and generation of instance to use
  *
@@ -459,6 +461,16 @@ export enum InstanceClass {
   R8G = 'r8g',
 
   /**
+   * Memory optimized instances, 8th generation with Graviton4 processors and local NVME drive
+   */
+  MEMORY8_GRAVITON4_NVME_DRIVE = 'memory8-graviton4-nvme-drive',
+
+  /**
+   * Memory optimized instances, 8th generation with Graviton4 processors and local NVME drive
+   */
+  R8GD = 'r8gd',
+
+  /**
    * Compute optimized instances, 3rd generation
    */
   COMPUTE3 = 'compute3',
@@ -627,6 +639,16 @@ export enum InstanceClass {
    * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
    */
   C7GD = 'c7gd',
+
+  /**
+   * Compute optimized instances for high performance computing, 8th generation with Graviton4 processors and local NVME drive
+   */
+  COMPUTE8_GRAVITON4_NVME_DRIVE = 'compute8-graviton4-nvme-drive',
+
+  /**
+   * Compute optimized instances for high performance computing, 8th generation with Graviton4 processors and local NVME drive
+   */
+  C8GD = 'c8gd',
 
   /**
    * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
@@ -1286,6 +1308,16 @@ export enum InstanceClass {
   M7GD = 'm7gd',
 
   /**
+   * Standard instances, 8th generation with Graviton4 processors and local NVME drive
+   */
+  STANDARD8_GRAVITON4_NVME_DRIVE = 'standard8-graviton4-nvme-drive',
+
+  /**
+   * Standard instances, 8th generation with Graviton4 processors and local NVME drive
+   */
+  M8GD = 'm8gd',
+
+  /**
    * Standard instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
    */
   STANDARD7_INTEL = 'standard7-intel',
@@ -1739,6 +1771,8 @@ export class InstanceType {
       [InstanceClass.R7A]: 'r7a',
       [InstanceClass.MEMORY8_GRAVITON]: 'r8g',
       [InstanceClass.R8G]: 'r8g',
+      [InstanceClass.MEMORY8_GRAVITON4_NVME_DRIVE]: 'r8gd',
+      [InstanceClass.R8GD]: 'r8gd',
       [InstanceClass.COMPUTE3]: 'c3',
       [InstanceClass.C3]: 'c3',
       [InstanceClass.COMPUTE4]: 'c4',
@@ -1781,6 +1815,8 @@ export class InstanceType {
       [InstanceClass.C7A]: 'c7a',
       [InstanceClass.COMPUTE8_GRAVITON4]: 'c8g',
       [InstanceClass.C8G]: 'c8g',
+      [InstanceClass.COMPUTE8_GRAVITON4_NVME_DRIVE]: 'c8gd',
+      [InstanceClass.C8GD]: 'c8gd',
       [InstanceClass.STORAGE2]: 'd2',
       [InstanceClass.D2]: 'd2',
       [InstanceClass.STORAGE3]: 'd3',
@@ -1887,6 +1923,8 @@ export class InstanceType {
       [InstanceClass.M8G]: 'm8g',
       [InstanceClass.STANDARD7_GRAVITON3_NVME_DRIVE]: 'm7gd',
       [InstanceClass.M7GD]: 'm7gd',
+      [InstanceClass.STANDARD8_GRAVITON4_NVME_DRIVE]: 'm8gd',
+      [InstanceClass.M8GD]: 'm8gd',
       [InstanceClass.STANDARD7_INTEL]: 'm7i',
       [InstanceClass.M7I]: 'm7i',
       [InstanceClass.STANDARD7_INTEL_FLEX]: 'm7i-flex',
@@ -1954,7 +1992,7 @@ export class InstanceType {
     // capture the family, generation, capabilities, and size portions of the instance type id
     const instanceTypeComponents = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z\-]*)\.([a-z0-9\-]+)$/);
     if (instanceTypeComponents == null) {
-      throw new Error('Malformed instance type identifier');
+      throw new UnscopedValidationError('Malformed instance type identifier');
     }
 
     const family = instanceTypeComponents[1];
@@ -1974,7 +2012,7 @@ export class InstanceType {
     const instanceClassId = this.instanceTypeIdentifier.match(instanceClass);
     const otherInstanceClassId = other.instanceTypeIdentifier.match(instanceClass);
     if (instanceClassId == null || otherInstanceClassId == null) {
-      throw new Error('Malformed instance type identifier');
+      throw new UnscopedValidationError('Malformed instance type identifier');
     }
     return instanceClassId[1] === otherInstanceClassId[1];
   }

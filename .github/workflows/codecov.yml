@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: write  # Required for actions/upload-pages-artifact
+  pages: write     # Required for actions/deploy-pages
+  id-token: write  # Required for actions/deploy-pages
+
 jobs:
   collect:
     name: collect
@@ -13,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
+      contents: read
+      pages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4

@@ -1,7 +1,8 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "files": {
     "a5110b475e7a506b8a1282cdfb3c2f7ae59bcf00ba96273a702339b8819dd17f": {
+      "displayName": "KubectlLayer/Code",
       "source": {
         "path": "asset.a5110b475e7a506b8a1282cdfb3c2f7ae59bcf00ba96273a702339b8819dd17f.zip",
         "packaging": "file"
@@ -15,6 +16,7 @@
       }
     },
     "d7e7dde0df178e20d82e70ae55bb9fb58d53bfb2da9dbb92c07f1437c7bdf841": {
+      "displayName": "Lambda$python3.9/Code",
       "source": {
         "path": "asset.d7e7dde0df178e20d82e70ae55bb9fb58d53bfb2da9dbb92c07f1437c7bdf841",
         "packaging": "zip"
@@ -28,6 +30,7 @@
       }
     },
     "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6": {
+      "displayName": "Providerpython3.9/framework-onEvent/Code",
       "source": {
         "path": "asset.39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6",
         "packaging": "zip"
@@ -40,7 +43,8 @@
         }
       }
     },
-    "b001bd7c277cae5c1ff1745a4fee4c1ff6626914a0562991be2c1b350412b944": {
+    "cb0b325ea38777d904839b58091cf5b9a1a52112d919b7fa1b0b2f81cd92a6b8": {
+      "displayName": "lambda-layer-kubectl-integ-stack Template",
       "source": {
         "path": "lambda-layer-kubectl-integ-stack.template.json",
         "packaging": "file"
@@ -48,7 +52,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b001bd7c277cae5c1ff1745a4fee4c1ff6626914a0562991be2c1b350412b944.json",
+          "objectKey": "cb0b325ea38777d904839b58091cf5b9a1a52112d919b7fa1b0b2f81cd92a6b8.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -144,6 +144,7 @@ describe('synthesis', () => {
     expect(readJson(session.directory, 'foo.json')).toEqual({ bar: 123 });
     expect(session.manifest).toEqual({
       version: cxschema.Manifest.version(),
+      minimumCliVersion: cxschema.Manifest.cliVersion(),
       artifacts: expect.objectContaining({
         'Tree': {
           type: 'cdk:tree',
@@ -203,6 +204,7 @@ describe('synthesis', () => {
     expect(readJson(session.directory, 'foo.json')).toEqual({ bar: 123 });
     expect(session.manifest).toEqual({
       version: cxschema.Manifest.version(),
+      minimumCliVersion: cxschema.Manifest.cliVersion(),
       artifacts: expect.objectContaining({
         'Tree': {
           type: 'cdk:tree',
