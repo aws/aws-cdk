@@ -21,6 +21,7 @@ import {
   ValidationError,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -596,7 +597,13 @@ export interface KeyProps {
  *
  * @resource AWS::KMS::Key
  */
+@propertyInjectable
 export class Key extends KeyBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kms.Key';
+
   /**
    * The default key id of the dummy key.
    *

@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "PropertyInjectorTest/DefaultTest": {
+      "stacks": [
+        "TestStack"
+      ],
+      "assertionStack": "PropertyInjectorTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PropertyInjectorTestDefaultTestDeployAssert271A71E2"
+    }
+  }
+}

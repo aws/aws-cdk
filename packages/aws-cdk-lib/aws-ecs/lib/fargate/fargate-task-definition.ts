@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { Tokenization, Token } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,
@@ -114,7 +115,13 @@ export interface FargateTaskDefinitionAttributes extends CommonTaskDefinitionAtt
  *
  * @resource AWS::ECS::TaskDefinition
  */
+@propertyInjectable
 export class FargateTaskDefinition extends TaskDefinition implements IFargateTaskDefinition {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.FargateTaskDefinition';
+
   /**
    * Imports a task definition from the specified task definition ARN.
    */
