@@ -1,6 +1,8 @@
 # CDK Enum Updater
 
-This tool updates CDK enums with missing enum values on a weekly basis.
+This tool updates CDK enums with missing enum values on a weekly basis. It is triggered by the following two Github workflows:
+ * [Update Enum Static Mapping](../../../.github/workflows/enum-static-mapping-updater.yml) - Runs every week on Monday 12am
+ * [Update Missing Enum Values](../../../.github/workflows/enum-auto-updater.yml) - Runs every week on Monday 1pm
 
 To run the tool locally, run the following commands to install dependencies and build:
 
