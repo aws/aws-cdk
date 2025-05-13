@@ -151,7 +151,7 @@ export class Alarm extends AlarmBase {
    * threshold is 0. You can use `new AnomalyDetectionAlarm()` to avoid having to pass
    * the `threshold` property at all.
    */
-  public static ANOMALY_DETECTION_NO_THRESHOLD = 0;
+  public static readonly ANOMALY_DETECTION_NO_THRESHOLD = 0;
 
   /**
    * Import an existing CloudWatch alarm provided an Name.

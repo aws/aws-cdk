@@ -1,6 +1,9 @@
 import * as cdk from '../../../core';
 import { TreatMissingData } from '../alarm';
 
+/**
+ * Base options for creating CloudWatch alarms
+ */
 export interface CreateAlarmOptionsBase {
   /**
    * The period over which the specified statistic is applied.

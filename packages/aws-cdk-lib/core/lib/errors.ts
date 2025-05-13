@@ -206,6 +206,8 @@ export class UnscopedValidationError extends ConstructError {
  * Some construct code made an assumption somewhere that doesn't hold true
  *
  * This error always indicates a bug in the construct.
+ *
+ * @internal
  */
 export class AssumptionError extends ConstructError {
   public get type(): 'assumption' {

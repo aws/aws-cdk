@@ -294,7 +294,6 @@ export class Metric implements IMetric {
   /**
    * Creates an anomaly detection metric from the provided metric
    *
-   * @param scope The construct scope
    * @param props The anomaly detection alarm properties
    * @returns An anomaly detection metric
    */
