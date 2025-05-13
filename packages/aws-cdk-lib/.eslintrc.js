@@ -17,18 +17,14 @@ baseConfig.rules['import/no-extraneous-dependencies'] = [
 baseConfig.rules['@cdklabs/no-throw-default-error'] = ['error'];
 // not yet supported
 const noThrowDefaultErrorNotYetSupported = [
-  'aws-elasticsearch',
   'aws-globalaccelerator',
   'aws-globalaccelerator-endpoints',
   'aws-iam',
   'aws-lambda-destinations',
   'aws-lambda-event-sources',
   'aws-lambda-nodejs',
-  'aws-scheduler-targets',
-  'aws-scheduler',
   'aws-secretsmanager',
   'aws-servicecatalog',
-  'aws-sns-subscriptions',
   'core',
   'custom-resources',
   'region-info',
