@@ -10,6 +10,8 @@ jobs:
   pr_commented:
     name: PR Comment
     if: ${{ (github.event.issue.pull_request) && (github.event.issue.state == 'open') }}
+    permissions:
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: cdklabs/pr-linter-exemption-labeler@main

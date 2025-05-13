@@ -1,5 +1,5 @@
 import { BaseLogDriverProps } from './base-log-driver';
-import { Duration, SecretValue, Token } from '../../../core';
+import { Duration, SecretValue, Token, UnscopedValidationError } from '../../../core';
 import { TaskDefinition } from '../base/task-definition';
 import { Secret } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
@@ -21,7 +21,7 @@ export function removeEmpty<T>(x: { [key: string]: (T | undefined | string) }): 
  */
 export function ensurePositiveInteger(val: number) {
   if (!Token.isUnresolved(val) && Number.isInteger(val) && val < 0) {
-    throw new Error(`\`${val}\` must be a positive integer.`);
+    throw new UnscopedValidationError(`\`${val}\` must be a positive integer.`);
   }
 }
 
@@ -30,7 +30,7 @@ export function ensurePositiveInteger(val: number) {
  */
 export function ensureInRange(val: number, start: number, end: number) {
   if (!Token.isUnresolved(val) && !(val >= start && val <= end)) {
-    throw new Error(`\`${val}\` must be within range ${start}:${end}`);
+    throw new UnscopedValidationError(`\`${val}\` must be within range ${start}:${end}`);
   }
 }
 
