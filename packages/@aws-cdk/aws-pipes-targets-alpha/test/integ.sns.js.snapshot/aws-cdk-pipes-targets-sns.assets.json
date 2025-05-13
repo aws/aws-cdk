@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "e461800914bb7b68c7b37b41aa3740a7310bd3283013899baf025d10f2d8abae": {
+      "displayName": "aws-cdk-pipes-targets-sns Template",
+      "source": {
+        "path": "aws-cdk-pipes-targets-sns.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e461800914bb7b68c7b37b41aa3740a7310bd3283013899baf025d10f2d8abae.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
