@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "oidc-provider-integ-test.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/604a75b77b74cc43fcd7a1beb3775f4c3afe101346038c1c0f4ba1ae62c54751.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e7c49002904a01e89abc322851ed08f3a170d6aa93f84fe48b71212ae217a72e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,24 @@
         "oidc-provider-integ-test.assets"
       ],
       "metadata": {
+        "/oidc-provider-integ-test/NoClientsNoThumbprint": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "url": "*"
+            }
+          }
+        ],
+        "/oidc-provider-integ-test/NoClientsNoThumbprint/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/oidc-provider-integ-test/NoClientsNoThumbprint/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -64,10 +82,48 @@
             "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
           }
         ],
+        "/oidc-provider-integ-test/Clients": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "url": "*",
+              "clientIds": "*"
+            }
+          }
+        ],
+        "/oidc-provider-integ-test/Clients/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/oidc-provider-integ-test/Clients/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Clients67031123"
+          }
+        ],
+        "/oidc-provider-integ-test/Thumbprints": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "url": "*",
+              "thumbprints": "*"
+            }
+          }
+        ],
+        "/oidc-provider-integ-test/Thumbprints/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/oidc-provider-integ-test/Thumbprints/Resource/Default": [
@@ -163,5 +219,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

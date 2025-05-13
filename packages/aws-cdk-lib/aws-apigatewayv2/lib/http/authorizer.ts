@@ -5,6 +5,7 @@ import { CfnAuthorizer } from '.././index';
 import { Duration, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IAuthorizer } from '../common';
 
 /**
@@ -135,7 +136,13 @@ export interface HttpAuthorizerAttributes {
  * An authorizer for Http Apis
  * @resource AWS::ApiGatewayV2::Authorizer
  */
+@propertyInjectable
 export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.HttpAuthorizer';
+
   /**
    * Import an existing HTTP Authorizer into this CDK app.
    */

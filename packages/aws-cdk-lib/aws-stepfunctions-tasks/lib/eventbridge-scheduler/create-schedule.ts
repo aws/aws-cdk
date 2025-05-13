@@ -3,7 +3,7 @@ import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as sqs from '../../../aws-sqs';
 import * as sfn from '../../../aws-stepfunctions';
-import { Stack, Duration, Token } from '../../../core';
+import { Stack, Duration, Token, ValidationError, UnscopedValidationError } from '../../../core';
 import { integrationResourceArn } from '../private/task-utils';
 import { Schedule } from '../schedule';
 
@@ -230,7 +230,7 @@ export class EventBridgeSchedulerTarget {
 
   private validateProps(props: EventBridgeSchedulerTargetProps) {
     if (props.input !== undefined && !Token.isUnresolved(props.input) && props.input.length < 1) {
-      throw new Error('Input must be at least 1 character long.');
+      throw new UnscopedValidationError('Input must be at least 1 character long.');
     }
 
     if (props.retryPolicy) {
@@ -239,13 +239,13 @@ export class EventBridgeSchedulerTarget {
         props.retryPolicy.maximumRetryAttempts < 0 ||
         props.retryPolicy.maximumRetryAttempts > 185
       ) {
-        throw new Error(`MaximumRetryAttempts must be an integer between 0 and 185, got ${props.retryPolicy.maximumRetryAttempts}`);
+        throw new UnscopedValidationError(`MaximumRetryAttempts must be an integer between 0 and 185, got ${props.retryPolicy.maximumRetryAttempts}`);
       }
       if (
         props.retryPolicy.maximumEventAge.toMilliseconds() < Duration.seconds(60).toMilliseconds() ||
         props.retryPolicy.maximumEventAge.toSeconds() > 86400
       ) {
-        throw new Error('MaximumEventAgeInSeconds must be between 60 and 86400 seconds');
+        throw new UnscopedValidationError('MaximumEventAgeInSeconds must be between 60 and 86400 seconds');
       }
     }
   }
@@ -354,20 +354,20 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
 
   private validateProps(props: EventBridgeSchedulerCreateScheduleTaskProps) {
     if (props.startDate && props.endDate && props.startDate >= props.endDate) {
-      throw new Error('\'startDate\' must be before \'endDate\'');
+      throw new ValidationError('\'startDate\' must be before \'endDate\'', this);
     }
 
     if (props.clientToken !== undefined && !Token.isUnresolved(props.clientToken)) {
       if (props.clientToken.length > 64 || props.clientToken.length < 1) {
-        throw new Error(`ClientToken must be between 1 and 64 characters long. Got: ${props.clientToken.length}`);
+        throw new ValidationError(`ClientToken must be between 1 and 64 characters long. Got: ${props.clientToken.length}`, this);
       }
       if (!/^[a-zA-Z0-9-_]+$/.test(props.clientToken)) {
-        throw new Error(`ClientToken must consist of alphanumeric characters, dashes, and underscores only, Got: ${props.clientToken}`);
+        throw new ValidationError(`ClientToken must consist of alphanumeric characters, dashes, and underscores only, Got: ${props.clientToken}`, this);
       }
     }
 
     if (props.description !== undefined && !Token.isUnresolved(props.description) && props.description.length > 512) {
-      throw new Error(`Description must be less than 512 characters long. Got: ${props.description.length}`);
+      throw new ValidationError(`Description must be less than 512 characters long. Got: ${props.description.length}`, this);
     }
 
     if (props.flexibleTimeWindow && (
@@ -375,20 +375,20 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
       props.flexibleTimeWindow.toMilliseconds() < Duration.minutes(1).toMilliseconds() ||
       props.flexibleTimeWindow.toMinutes() > 1440
     )) {
-      throw new Error('FlexibleTimeWindow must be between 1 and 1440 minutes');
+      throw new ValidationError('FlexibleTimeWindow must be between 1 and 1440 minutes', this);
     }
 
     if (props.groupName !== undefined && !Token.isUnresolved(props.groupName)) {
       if (props.groupName.length < 1 || props.groupName.length > 64) {
-        throw new Error(`GroupName must be between 1 and 64 characters long. Got: ${props.groupName.length}`);
+        throw new ValidationError(`GroupName must be between 1 and 64 characters long. Got: ${props.groupName.length}`, this);
       }
       if (!/^[a-zA-Z0-9-_.]+$/.test(props.groupName)) {
-        throw new Error(`GroupName must consist of alphanumeric characters, dashes, underscores, and periods only, Got: ${props.groupName}`);
+        throw new ValidationError(`GroupName must consist of alphanumeric characters, dashes, underscores, and periods only, Got: ${props.groupName}`, this);
       }
     }
 
     if (props.timezone !== undefined && !Token.isUnresolved(props.timezone) && (props.timezone.length < 1 || props.timezone.length > 50)) {
-      throw new Error(`Timezone must be between 1 and 50 characters long. Got: ${props.timezone.length}`);
+      throw new ValidationError(`Timezone must be between 1 and 50 characters long. Got: ${props.timezone.length}`, this);
     }
   }
 }

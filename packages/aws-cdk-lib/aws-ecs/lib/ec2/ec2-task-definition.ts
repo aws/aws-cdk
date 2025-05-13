@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { Stack } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,
@@ -85,7 +86,13 @@ export interface Ec2TaskDefinitionAttributes extends CommonTaskDefinitionAttribu
  *
  * @resource AWS::ECS::TaskDefinition
  */
+@propertyInjectable
 export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinition {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.Ec2TaskDefinition';
+
   /**
    * Imports a task definition from the specified task definition ARN.
    */

@@ -5,8 +5,10 @@ import { CfnEmailIdentity } from './ses.generated';
 import { Grant, IGrantable } from '../../aws-iam';
 import { IPublicHostedZone } from '../../aws-route53';
 import * as route53 from '../../aws-route53';
-import { IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
+import { ArnFormat, IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * An email identity
@@ -382,7 +384,13 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
 /**
  * An email identity
  */
+@propertyInjectable
 export class EmailIdentity extends EmailIdentityBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ses.EmailIdentity';
+
   /**
    * Use an existing email identity
    */
@@ -395,6 +403,27 @@ export class EmailIdentity extends EmailIdentityBase {
         resource: 'identity',
         resourceName: this.emailIdentityName,
       });
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * Import an email identity by ARN
+   */
+  public static fromEmailIdentityArn(scope: Construct, id: string, emailIdentityArn: string): IEmailIdentity {
+    // emailIdentityArn is in the format 'arn:aws:ses:{region}:{account}:identity/{name}'
+    const stack = Stack.of(scope);
+    const parsedArn = stack.splitArn(emailIdentityArn, ArnFormat.SLASH_RESOURCE_NAME);
+
+    if (parsedArn.service !== 'ses' || parsedArn.resource !== 'identity' || !parsedArn.resourceName) {
+      throw new ValidationError(`Invalid email identity ARN: ${emailIdentityArn}`, scope);
+    }
+
+    const emailIdentityName = parsedArn.resourceName;
+
+    class Import extends EmailIdentityBase {
+      public readonly emailIdentityName = emailIdentityName;
+      public readonly emailIdentityArn = emailIdentityArn;
     }
     return new Import(scope, id);
   }

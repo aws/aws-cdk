@@ -4,6 +4,29 @@
       "SINGLE_PAGE_APPLICATION_REDIRECT"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts": {
+    "JavaInstrumentationVersion": [
+      "V2_10_0",
+      "V1_33_0",
+      "V1_32_6"
+    ],
+    "PythonInstrumentationVersion": [
+      "V0_8_0",
+      "V0_9_0"
+    ],
+    "DotnetInstrumentationVersion": [
+      "V1_6_0",
+      "V1_6_0_WINDOWS2022",
+      "V1_6_0_WINDOWS2019",
+      "V1_7_0",
+      "V1_7_0_WINDOWS2022",
+      "V1_7_0_WINDOWS2019"
+    ],
+    "NodeInstrumentationVersion": [
+      "V0_5_0",
+      "V0_6_0"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-apprunner-alpha/lib/service.ts": {
     "Cpu": [
       "QUARTER_VCPU",
@@ -36,15 +59,6 @@
       "PYTHON_3",
       "PYTHON_311",
       "RUBY_31"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-cognito-identitypool-alpha/lib/identitypool.ts": {
-    "IdentityPoolProviderUrl": [
-      "FACEBOOK",
-      "GOOGLE",
-      "AMAZON",
-      "APPLE",
-      "TWITTER"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/access-entry.ts": {
@@ -210,15 +224,6 @@
       "SQL_1_0"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-kinesisfirehose-destinations-alpha/lib/common.ts": {
-    "Compression": [
-      "GZIP",
-      "HADOOP_SNAPPY",
-      "SNAPPY",
-      "ZIP",
-      "UNCOMPRESSED"
-    ]
-  },
   "aws-cdk/packages/@aws-cdk/aws-msk-alpha/lib/cluster-version.ts": {
     "KafkaVersion": [
       "V1_1_1",
@@ -275,7 +280,13 @@
       "V1_3_2_0",
       "V1_3_2_1",
       "V1_3_3_0",
-      "V1_3_4_0"
+      "V1_3_4_0",
+      "V1_4_0_0",
+      "V1_4_1_0",
+      "V1_4_2_0",
+      "V1_4_3_0",
+      "V1_4_4_0",
+      "V1_4_5_0"
     ],
     "LogType": [
       "AUDIT"
@@ -343,7 +354,8 @@
     "ParameterGroupFamily": [
       "NEPTUNE_1",
       "NEPTUNE_1_2",
-      "NEPTUNE_1_3"
+      "NEPTUNE_1_3",
+      "NEPTUNE_1_4"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/accelerator-type.ts": {
@@ -574,6 +586,9 @@
       "AMAZON_NOVA_PRO_V1_0",
       "AMAZON_NOVA_PRO_V1_0_300_K",
       "AMAZON_NOVA_REEL_V1_0",
+      "AMAZON_NOVA_REEL_V1_1",
+      "AMAZON_NOVA_SONIC_V1_0",
+      "AMAZON_NOVA_PREMIER_V1_0",
       "AI21_J2_MID",
       "AI21_LABS_JURASSIC_2_MID_V1",
       "AI21_J2_ULTRA",
@@ -646,11 +661,14 @@
       "META_LLAMA_3_2_11B_INSTRUCT_V1",
       "META_LLAMA_3_2_90B_INSTRUCT_V1",
       "META_LLAMA_3_3_70B_INSTRUCT_V1",
+      "META_LLAMA_4_MAVERICK_17B_INSTRUCT_V1_0",
+      "META_LLAMA_4_SCOUT_17B_INSTRUCT_V1_0",
       "MISTRAL_MISTRAL_7B_INSTRUCT_V0_2",
       "MISTRAL_MIXTRAL_8X7B_INSTRUCT_V0_1",
       "MISTRAL_LARGE_V0_1",
       "MISTRAL_SMALL_V0_1",
       "MISTRAL_LARGE_2_V0_1",
+      "MISTRAL_PIXTRAL_LARGE_2502_V1_0",
       "STABILITY_STABLE_DIFFUSION_XL",
       "STABILITY_STABLE_DIFFUSION_XL_V0",
       "STABILITY_STABLE_DIFFUSION_XL_V1",
@@ -660,7 +678,9 @@
       "STABILITY_STABLE_IMAGE_ULTRA_V1_0",
       "STABILITY_STABLE_IMAGE_ULTRA_V1_1",
       "STABILITY_STABLE_IMAGE_CORE_V1_0",
-      "STABILITY_STABLE_IMAGE_CORE_V1_1"
+      "STABILITY_STABLE_IMAGE_CORE_V1_1",
+      "WRITER_PALMYRA_X4_V1_0",
+      "WRITER_PALMYRA_X5_V1_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
@@ -753,13 +773,17 @@
     "LinuxArmLambdaBuildImage": [
       "AMAZON_LINUX_2_NODE_18",
       "AMAZON_LINUX_2023_NODE_20",
+      "AMAZON_LINUX_2023_NODE_22",
       "AMAZON_LINUX_2_PYTHON_3_11",
       "AMAZON_LINUX_2023_PYTHON_3_12",
+      "AMAZON_LINUX_2023_PYTHON_3_13",
       "AMAZON_LINUX_2_RUBY_3_2",
+      "AMAZON_LINUX_2023_RUBY_3_4",
       "AMAZON_LINUX_2023_CORRETTO_21",
       "AMAZON_LINUX_2_CORRETTO_17",
       "AMAZON_LINUX_2_CORRETTO_11",
       "AMAZON_LINUX_2_GO_1_21",
+      "AMAZON_LINUX_2023_GO_1_24",
       "AMAZON_LINUX_2_DOTNET_6",
       "AMAZON_LINUX_2023_DOTNET_8"
     ]
@@ -789,13 +813,17 @@
     "LinuxLambdaBuildImage": [
       "AMAZON_LINUX_2_NODE_18",
       "AMAZON_LINUX_2023_NODE_20",
+      "AMAZON_LINUX_2023_NODE_22",
       "AMAZON_LINUX_2_PYTHON_3_11",
       "AMAZON_LINUX_2023_PYTHON_3_12",
+      "AMAZON_LINUX_2023_PYTHON_3_13",
       "AMAZON_LINUX_2_RUBY_3_2",
+      "AMAZON_LINUX_2023_RUBY_3_4",
       "AMAZON_LINUX_2023_CORRETTO_21",
       "AMAZON_LINUX_2_CORRETTO_17",
       "AMAZON_LINUX_2_CORRETTO_11",
       "AMAZON_LINUX_2_GO_1_21",
+      "AMAZON_LINUX_2023_GO_1_24",
       "AMAZON_LINUX_2_DOTNET_6",
       "AMAZON_LINUX_2023_DOTNET_8"
     ]
@@ -1640,6 +1668,8 @@
       "LOOKOUT_EQUIPMENT",
       "LOOKOUT_METRICS",
       "LOOKOUT_VISION",
+      "MAILMANAGER",
+      "MAILMANAGER_FIPS",
       "MAINFRAME_MODERNIZATION",
       "MAINFRAME_MODERNIZATION_APP_TEST",
       "MACIE",
@@ -2269,7 +2299,8 @@
       "OPENSEARCH_2_11",
       "OPENSEARCH_2_13",
       "OPENSEARCH_2_15",
-      "OPENSEARCH_2_17"
+      "OPENSEARCH_2_17",
+      "OPENSEARCH_2_19"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/ca-certificate.ts": {
@@ -2360,6 +2391,7 @@
       "VER_2_12_1",
       "VER_2_12_2",
       "VER_2_12_3",
+      "VER_2_12_4",
       "VER_3_01_0",
       "VER_3_01_1",
       "VER_3_02_0",
@@ -2382,7 +2414,8 @@
       "VER_3_07_0",
       "VER_3_07_1",
       "VER_3_08_0",
-      "VER_3_08_1"
+      "VER_3_08_1",
+      "VER_3_08_2"
     ],
     "AuroraPostgresEngineVersion": [
       "VER_9_6_8",
@@ -2458,6 +2491,7 @@
       "VER_13_16",
       "VER_13_17",
       "VER_13_18",
+      "VER_13_20",
       "VER_14_3",
       "VER_14_4",
       "VER_14_5",
@@ -2471,6 +2505,7 @@
       "VER_14_13",
       "VER_14_14",
       "VER_14_15",
+      "VER_14_17",
       "VER_15_2",
       "VER_15_3",
       "VER_15_4",
@@ -2480,6 +2515,7 @@
       "VER_15_8",
       "VER_15_9",
       "VER_15_10",
+      "VER_15_12",
       "VER_16_0",
       "VER_16_1",
       "VER_16_2",
@@ -2489,8 +2525,10 @@
       "VER_16_5",
       "VER_16_6",
       "VER_16_6_LIMITLESS",
+      "VER_16_8",
       "VER_17_1",
-      "VER_17_2"
+      "VER_17_2",
+      "VER_17_4"
     ],
     "DatabaseClusterEngine": [
       "AURORA",
@@ -2683,8 +2721,10 @@
       "VER_8_0_39",
       "VER_8_0_40",
       "VER_8_0_41",
+      "VER_8_0_42",
       "VER_8_4_3",
-      "VER_8_4_4"
+      "VER_8_4_4",
+      "VER_8_4_5"
     ],
     "PostgresEngineVersion": [
       "VER_9_5",
@@ -3071,6 +3111,8 @@
       "VER_15_00_4395_2_V1",
       "VER_15_00_4410_1_V1",
       "VER_15_00_4415_2_V1",
+      "VER_15_00_4420_2_V1",
+      "VER_15_00_4430_1_V1",
       "VER_16",
       "VER_16_00_4085_2_V1",
       "VER_16_00_4095_4_V1",
@@ -3083,7 +3125,8 @@
       "VER_16_00_4140_3_V1",
       "VER_16_00_4150_1_V1",
       "VER_16_00_4165_4_V1",
-      "VER_16_00_4175_1_V1"
+      "VER_16_00_4175_1_V1",
+      "VER_16_00_4185_3_V1"
     ],
     "DatabaseInstanceEngine": [
       "MARIADB",

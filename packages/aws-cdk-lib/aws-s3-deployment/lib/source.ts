@@ -27,6 +27,36 @@ export interface SourceConfig {
    * @default - no markers
    */
   readonly markers?: Record<string, any>;
+
+  /**
+   * A configuration for markers substitution strategy.
+   * @default - no configuration
+   */
+  readonly markersConfig?: MarkersConfig;
+}
+
+/**
+ * A configuration for markers substitution strategy.
+ */
+export interface MarkersConfig {
+  /**
+   * If set to `true`, the marker substitution will make ure the value inserted in the file
+   * will be a valid JSON string.
+   * @default - false
+   */
+  readonly jsonEscape?: boolean;
+}
+
+/**
+ * Define options which can be passed using the method `Source.jsonData()`.
+ */
+export interface JsonProcessingOptions {
+  /**
+   * If set to `true`, the marker substitution will make sure the value inserted in the file
+   * will be a valid JSON string.
+   * @default - false
+   */
+  readonly escape?: boolean;
 }
 
 /**
@@ -158,7 +188,7 @@ export class Source {
    * S3 deployment).
    * @param data The data to be stored in the object.
    */
-  public static data(objectKey: string, data: string): ISource {
+  public static data(objectKey: string, data: string, markersConfig?: MarkersConfig): ISource {
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
         const workdir = FileSystem.mkdtemp('s3-deployment');
@@ -171,6 +201,7 @@ export class Source {
           bucket: asset.bucket,
           zipObjectKey: asset.zipObjectKey,
           markers: rendered.markers,
+          markersConfig: markersConfig,
         };
       },
     };
@@ -184,11 +215,16 @@ export class Source {
    * @param objectKey The destination S3 object key (relative to the root of the
    * S3 deployment).
    * @param obj A JSON object.
+   * @param jsonProcessingOptions Options for how to process the JSON object.
    */
-  public static jsonData(objectKey: string, obj: any): ISource {
+  public static jsonData(objectKey: string, obj: any, jsonProcessingOptions?: JsonProcessingOptions): ISource {
+    let markersConfig: MarkersConfig = {};
+    if (jsonProcessingOptions?.escape) {
+      markersConfig = { jsonEscape: true };
+    }
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
-        return Source.data(objectKey, Stack.of(scope).toJsonString(obj)).bind(scope, context);
+        return Source.data(objectKey, Stack.of(scope).toJsonString(obj), markersConfig).bind(scope, context);
       },
     };
   }

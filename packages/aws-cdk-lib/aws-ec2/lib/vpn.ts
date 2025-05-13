@@ -8,7 +8,7 @@ import {
 } from './ec2.generated';
 import { IVpc, SubnetSelection } from './vpc';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { IResource, Resource, SecretValue, Token } from '../../core';
+import { IResource, Resource, SecretValue, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface IVpnConnection extends IResource {
@@ -294,7 +294,7 @@ export class VpnConnection extends VpnConnectionBase {
     }
 
     if (!Token.isUnresolved(props.ip) && !net.isIPv4(props.ip)) {
-      throw new Error(`The \`ip\` ${props.ip} is not a valid IPv4 address.`);
+      throw new ValidationError(`The \`ip\` ${props.ip} is not a valid IPv4 address.`, this);
     }
 
     const type = VpnConnectionType.IPSEC_1;
@@ -313,34 +313,34 @@ export class VpnConnection extends VpnConnectionBase {
     // Validate tunnel options
     if (props.tunnelOptions) {
       if (props.tunnelOptions.length > 2) {
-        throw new Error('Cannot specify more than two `tunnelOptions`');
+        throw new ValidationError('Cannot specify more than two `tunnelOptions`', this);
       }
 
       if (props.tunnelOptions.length === 2 &&
         props.tunnelOptions[0].tunnelInsideCidr === props.tunnelOptions[1].tunnelInsideCidr &&
         props.tunnelOptions[0].tunnelInsideCidr !== undefined) {
-        throw new Error(`Same ${props.tunnelOptions[0].tunnelInsideCidr} \`tunnelInsideCidr\` cannot be used for both tunnels.`);
+        throw new ValidationError(`Same ${props.tunnelOptions[0].tunnelInsideCidr} \`tunnelInsideCidr\` cannot be used for both tunnels.`, this);
       }
 
       props.tunnelOptions.forEach((options, index) => {
         if (options.preSharedKey && options.preSharedKeySecret) {
-          throw new Error("Specify at most one of 'preSharedKey' and 'preSharedKeySecret'.");
+          throw new ValidationError("Specify at most one of 'preSharedKey' and 'preSharedKeySecret'.", this);
         }
 
         if (options.preSharedKey && !Token.isUnresolved(options.preSharedKey) && !/^[a-zA-Z1-9._][a-zA-Z\d._]{7,63}$/.test(options.preSharedKey)) {
           /* eslint-disable max-len */
-          throw new Error(`The \`preSharedKey\` ${options.preSharedKey} for tunnel ${index + 1} is invalid. Allowed characters are alphanumeric characters and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).`);
+          throw new ValidationError(`The \`preSharedKey\` ${options.preSharedKey} for tunnel ${index + 1} is invalid. Allowed characters are alphanumeric characters and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).`, this);
           /* eslint-enable max-len */
         }
 
         if (options.tunnelInsideCidr) {
           if (RESERVED_TUNNEL_INSIDE_CIDR.includes(options.tunnelInsideCidr)) {
-            throw new Error(`The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is a reserved inside CIDR.`);
+            throw new ValidationError(`The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is a reserved inside CIDR.`, this);
           }
 
           if (!/^169\.254\.\d{1,3}\.\d{1,3}\/30$/.test(options.tunnelInsideCidr)) {
             /* eslint-disable-next-line max-len */
-            throw new Error(`The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is not a size /30 CIDR block from the 169.254.0.0/16 range.`);
+            throw new ValidationError(`The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is not a size /30 CIDR block from the 169.254.0.0/16 range.`, this);
           }
         }
       });

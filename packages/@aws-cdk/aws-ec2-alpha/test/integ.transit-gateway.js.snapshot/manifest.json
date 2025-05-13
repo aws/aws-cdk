@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/abbff3a0484dd36d58296bffebd14d57a957f5202e481df8ef1ba150a399c149.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7108847e7a0133aadbf40463e6362dd3248d047a37412df7d4698cb6ef490f01.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,22 @@
         "aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings.assets"
       ],
       "metadata": {
+        "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/SubnetTest": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/SubnetTest/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SubnetTest3296A161"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/SubnetTest/SecondaryTest": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/SubnetTest/SecondaryTest/SecondaryTest": [
@@ -46,10 +58,22 @@
             "data": "SubnetTestSecondaryTest2AB12223"
           }
         ],
+        "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/testSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/testSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "testSubnet1Subnet72087287"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/testSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/testSubnet1/RouteTable/RouteTable": [
@@ -64,10 +88,22 @@
             "data": "testSubnet1RouteTableAssociation1DA9E185"
           }
         ],
+        "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/TransitGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TransitGateway11B93D57"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/DefaultRouteTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/DefaultRouteTable/DefaultRouteTable": [
@@ -76,10 +112,22 @@
             "data": "TransitGatewayDefaultRouteTable608EC117"
           }
         ],
+        "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/DefaultRouteTable/defaultRTBRoute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/DefaultRouteTable/defaultRTBRoute/TransitGatewayRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TransitGatewayDefaultRouteTabledefaultRTBRouteTransitGatewayRouteAB7CA8FF"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/DefaultRtbAttachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/DefaultRtbAttachment/DefaultRtbAttachment": [
@@ -88,16 +136,34 @@
             "data": "TransitGatewayDefaultRtbAttachment6E19DB55"
           }
         ],
+        "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/RouteTable2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/RouteTable2/RouteTable2": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TransitGatewayRouteTable2047E2A04"
           }
         ],
+        "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/RouteTable2/customRtbAssociation": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/RouteTable2/customRtbAssociation/customRtbAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TransitGatewayRouteTable2customRtbAssociation353F1A21"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/RouteTable2/customRtbPropagation": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/RouteTable2/customRtbPropagation/customRtbPropagation": [
@@ -175,5 +241,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

@@ -1,0 +1,813 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "restapi-ip-address-type-test-stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "restapi-ip-address-type-test-stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "restapi-ip-address-type-test-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "restapi-ip-address-type-test-stack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0986b8dec07b02e274b566c21876b97c85b2f3cbe4cbc753c3727758393abf93.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "restapi-ip-address-type-test-stack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "restapi-ip-address-type-test-stack.assets"
+      ],
+      "metadata": {
+        "/restapi-ip-address-type-test-stack/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "restrictDefaultSecurityGroup": false,
+              "natGateways": "*"
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/IsolatedSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/IsolatedSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet1SubnetE48C5737"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/IsolatedSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet1RouteTable4771E3E5"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/IsolatedSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/IsolatedSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/IsolatedSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet2Subnet16364B91"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/IsolatedSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet2RouteTable1D30AF7D"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/IsolatedSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/VpcEndpoint": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "service": {
+                "privateDnsDefault": true,
+                "name": "*",
+                "port": "*"
+              },
+              "privateDnsEnabled": true
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/VpcEndpoint/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/VpcEndpoint/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVpcEndpointSecurityGroup0E497F39"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/Vpc/VpcEndpoint/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVpcEndpoint697E0D62"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeIpv4Api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "endpointConfiguration": {
+                "types": [
+                  "EDGE"
+                ]
+              }
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeIpv4Api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EdgeIpv4ApiCFB9ED42"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeIpv4Api/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeIpv4Api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EdgeIpv4ApiDeploymentAAA722F1b22002174628ba0e84625e834ba7d7ac"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeIpv4Api/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeIpv4Api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EdgeIpv4ApiDeploymentStageprodD2CA6885"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeIpv4Api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EdgeIpv4ApiEndpoint041D724F"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeIpv4Api/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeIpv4Api/Default/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeIpv4Api/Default/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EdgeIpv4ApiGETFFC4D99B"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeDualStackApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "endpointConfiguration": {
+                "types": [
+                  "EDGE"
+                ]
+              }
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeDualStackApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EdgeDualStackApi70584C34"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeDualStackApi/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeDualStackApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EdgeDualStackApiDeployment257C3F6F7104d13eb1093c3722e3eb2cf05813c8"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeDualStackApi/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeDualStackApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EdgeDualStackApiDeploymentStageprodF8D00A4B"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeDualStackApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EdgeDualStackApiEndpoint07363117"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeDualStackApi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeDualStackApi/Default/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/EdgeDualStackApi/Default/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EdgeDualStackApiGET6F5A20B5"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalIpv4Api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "endpointConfiguration": {
+                "types": [
+                  "REGIONAL"
+                ]
+              }
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalIpv4Api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RegionalIpv4Api7846288A"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalIpv4Api/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalIpv4Api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RegionalIpv4ApiDeployment29258D8A8646fa5566626943f8c2fea6834644cd"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalIpv4Api/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalIpv4Api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RegionalIpv4ApiDeploymentStageprod068741CD"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalIpv4Api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RegionalIpv4ApiEndpoint4DBD9FD1"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalIpv4Api/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalIpv4Api/Default/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalIpv4Api/Default/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RegionalIpv4ApiGET97CBC6B6"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalDualStackApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "endpointConfiguration": {
+                "types": [
+                  "REGIONAL"
+                ]
+              }
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalDualStackApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RegionalDualStackApi8E297664"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalDualStackApi/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalDualStackApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RegionalDualStackApiDeployment29E88BD6051b7fb9f17179f7ec0983f9eb188ea0"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalDualStackApi/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalDualStackApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RegionalDualStackApiDeploymentStageprod5DA52830"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalDualStackApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RegionalDualStackApiEndpoint76388023"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalDualStackApi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalDualStackApi/Default/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/RegionalDualStackApi/Default/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RegionalDualStackApiGET21115B38"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/PrivateDualStackApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "endpointConfiguration": {
+                "types": [
+                  "*"
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToResourcePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToResourcePolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/PrivateDualStackApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateDualStackApi2CCFC682"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/PrivateDualStackApi/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/PrivateDualStackApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateDualStackApiDeploymentB8DAB5721935cdcd96f76b2b894fbe54157fe042"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/PrivateDualStackApi/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/PrivateDualStackApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateDualStackApiDeploymentStageprod0A975547"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/PrivateDualStackApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateDualStackApiEndpointD2C12CE0"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/PrivateDualStackApi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/PrivateDualStackApi/Default/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/PrivateDualStackApi/Default/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateDualStackApiGET41804A3C"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/restapi-ip-address-type-test-stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "restapi-ip-address-type-test-stack"
+    },
+    "restapiipaddresstypetestintegDefaultTestDeployAssertAA7C2A42.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "restapiipaddresstypetestintegDefaultTestDeployAssertAA7C2A42.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "restapiipaddresstypetestintegDefaultTestDeployAssertAA7C2A42": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "restapiipaddresstypetestintegDefaultTestDeployAssertAA7C2A42.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "restapiipaddresstypetestintegDefaultTestDeployAssertAA7C2A42.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "restapiipaddresstypetestintegDefaultTestDeployAssertAA7C2A42.assets"
+      ],
+      "metadata": {
+        "/restapi-ip-address-type-test-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/restapi-ip-address-type-test-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "restapi-ip-address-type-test-integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}

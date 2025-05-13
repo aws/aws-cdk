@@ -15,6 +15,7 @@ import { IBucket } from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 
 /**
  * Options for portfolio share.
@@ -369,7 +370,9 @@ export class Portfolio extends PortfolioBase {
           (c as Portfolio).addBucketPermissionsToSharedAccounts();
         }
       },
-    }, { priority: cdk.AspectPriority.MUTATING });
+    }, {
+      priority: mutatingAspectPrio32333(this),
+    });
   }
 
   protected generateUniqueHash(value: string): string {

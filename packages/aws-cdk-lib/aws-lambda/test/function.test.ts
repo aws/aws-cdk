@@ -223,7 +223,7 @@ describe('function', () => {
       fn.addPermission('S1', { principal: new iam.ServicePrincipal('my-service') });
       fn.addPermission('S2', { principal: new iam.AccountPrincipal('account') });
       fn.addPermission('S3', { principal: new iam.ArnPrincipal('my:arn') });
-      fn.addPermission('S4', { principal: new iam.OrganizationPrincipal('my:org') });
+      fn.addPermission('S4', { principal: new iam.OrganizationPrincipal('o-12345abcde') });
     });
 
     test('does not show warning if skipPermissions is set', () => {
@@ -1730,7 +1730,7 @@ describe('function', () => {
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_LATEST,
       });
-      const org = new iam.OrganizationPrincipal('my-org-id');
+      const org = new iam.OrganizationPrincipal('o-12345abcde');
 
       // WHEN
       fn.grantInvoke(org);
@@ -1745,7 +1745,7 @@ describe('function', () => {
           ],
         },
         Principal: '*',
-        PrincipalOrgID: 'my-org-id',
+        PrincipalOrgID: 'o-12345abcde',
       });
     });
 
@@ -1959,7 +1959,7 @@ describe('function', () => {
         new iam.AccountPrincipal('1234'),
         new iam.ServicePrincipal('apigateway.amazonaws.com'),
         new iam.ArnPrincipal('arn:aws:iam::123456789012:role/someRole'),
-        new iam.OrganizationPrincipal('my-org-id'),
+        new iam.OrganizationPrincipal('o-12345abcde'),
       );
 
       const fn = new lambda.Function(stack, 'Function', {
@@ -2011,7 +2011,7 @@ describe('function', () => {
           ],
         },
         Principal: '*',
-        PrincipalOrgID: 'my-org-id',
+        PrincipalOrgID: 'o-12345abcde',
       });
     });
   });

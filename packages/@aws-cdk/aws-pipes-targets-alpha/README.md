@@ -29,6 +29,7 @@ Pipe targets are the end point of an EventBridge Pipe. The following targets are
 * `targets.ApiGatewayTarget`: [Send event source to an API Gateway REST API](#amazon-api-gateway-rest-api)
 * `targets.CloudWatchLogsTarget`: [Send event source to a CloudWatch Logs log group](#amazon-cloudwatch-logs-log-group)
 * `targets.EventBridgeTarget`: [Send event source to an EventBridge event bus](#amazon-eventbridge-event-bus)
+* `targets.FirehoseTarget`: [Send event source to an Amazon Data Firehose delivery stream](#amazon-data-firehose-delivery-stream)
 * `targets.KinesisTarget`: [Send event source to a Kinesis data stream](#amazon-kinesis-data-stream)
 * `targets.LambdaFunction`: [Send event source to a Lambda function](#aws-lambda-function)
 * `targets.SageMakerTarget`: [Send event source to a SageMaker pipeline](#amazon-sagemaker-pipeline)
@@ -37,7 +38,7 @@ Pipe targets are the end point of an EventBridge Pipe. The following targets are
 
 ### Amazon EventBridge API Destination
 
-An EventBridge API destination can be used as a target for a pipe. 
+An EventBridge API destination can be used as a target for a pipe.
 The API destination will receive the (enriched/filtered) source payload.
 
 ```ts
@@ -70,7 +71,7 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 
 ### Amazon API Gateway Rest API
 
-A REST API can be used as a target for a pipe. 
+A REST API can be used as a target for a pipe.
 The REST API will receive the (enriched/filtered) source payload.
 
 ```ts
@@ -115,7 +116,7 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 
 ### Amazon CloudWatch Logs Log Group
 
-A CloudWatch Logs log group can be used as a target for a pipe. 
+A CloudWatch Logs log group can be used as a target for a pipe.
 The log group will receive the (enriched/filtered) source payload.
 
 ```ts
@@ -148,7 +149,7 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 
 ### Amazon EventBridge Event Bus
 
-An EventBridge event bus can be used as a target for a pipe. 
+An EventBridge event bus can be used as a target for a pipe.
 The event bus will receive the (enriched/filtered) source payload.
 
 ```ts
@@ -179,9 +180,42 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 });
 ```
 
+### Amazon Data Firehose Delivery Stream
+
+An Amazon Data Firehose delivery stream can be used as a target for a pipe.
+The delivery stream will receive the (enriched/filtered) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetDeliveryStream: firehose.DeliveryStream;
+
+const deliveryStreamTarget = new targets.FirehoseTarget(targetDeliveryStream);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: new SqsSource(sourceQueue),
+  target: deliveryStreamTarget,
+});
+```
+
+The input to the target delivery stream can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetDeliveryStream: firehose.DeliveryStream;
+
+const deliveryStreamTarget = new targets.FirehoseTarget(targetDeliveryStream, {
+  inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: new SqsSource(sourceQueue),
+  target: deliveryStreamTarget,
+});
+```
+
 ### Amazon Kinesis Data Stream
 
-A Kinesis data stream can be used as a target for a pipe. 
+A Kinesis data stream can be used as a target for a pipe.
 The data stream will receive the (enriched/filtered) source payload.
 
 ```ts
@@ -217,7 +251,7 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 
 ### AWS Lambda Function
 
-A Lambda function can be used as a target for a pipe. 
+A Lambda function can be used as a target for a pipe.
 The Lambda function will be invoked with the (enriched/filtered) source payload.
 
 ```ts
@@ -266,7 +300,7 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 
 ### Amazon SageMaker Pipeline
 
-A SageMaker pipeline can be used as a target for a pipe. 
+A SageMaker pipeline can be used as a target for a pipe.
 The pipeline will receive the (enriched/filtered) source payload.
 
 ```ts
@@ -299,7 +333,7 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 
 ### AWS Step Functions State Machine
 
-A Step Functions state machine can be used as a target for a pipe. 
+A Step Functions state machine can be used as a target for a pipe.
 The state machine will be invoked with the (enriched/filtered) source payload.
 
 ```ts
@@ -351,7 +385,7 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 
 ### Amazon SQS Queue
 
-An SQS queue can be used as a target for a pipe. 
+An SQS queue can be used as a target for a pipe.
 The queue will receive the (enriched/filtered) source payload.
 
 ```ts
@@ -374,8 +408,8 @@ declare const targetQueue: sqs.Queue;
 
 const pipeTarget = new targets.SqsTarget(targetQueue,
     {
-      inputTransformation: pipes.InputTransformation.fromObject( 
-        { 
+      inputTransformation: pipes.InputTransformation.fromObject(
+        {
             "SomeKey": pipes.DynamicInput.fromEventPath('$.body')
         })
     }

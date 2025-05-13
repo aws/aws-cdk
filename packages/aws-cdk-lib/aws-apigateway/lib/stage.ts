@@ -10,6 +10,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import { ArnFormat, Duration, IResource, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an APIGateway Stage.
@@ -358,7 +359,13 @@ export abstract class StageBase extends Resource implements IStage {
   }
 }
 
+@propertyInjectable
 export class Stage extends StageBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.Stage';
+
   /**
    * Import a Stage by its attributes
    */

@@ -1,0 +1,164 @@
+{
+ "Resources": {
+  "JavaTaskDefinition93F96919": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "DependsOn": [
+       {
+        "Condition": "SUCCESS",
+        "ContainerName": "adot-init"
+       },
+       {
+        "Condition": "START",
+        "ContainerName": "cloudwatch-agent"
+       }
+      ],
+      "Environment": [
+       {
+        "Name": "OTEL_LOGS_EXPORTER",
+        "Value": "none"
+       },
+       {
+        "Name": "OTEL_METRICS_EXPORTER",
+        "Value": "none"
+       },
+       {
+        "Name": "OTEL_EXPORTER_OTLP_PROTOCOL",
+        "Value": "http/protobuf"
+       },
+       {
+        "Name": "OTEL_AWS_APPLICATION_SIGNALS_ENABLED",
+        "Value": "true"
+       },
+       {
+        "Name": "OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT",
+        "Value": "http://localhost:4316/v1/metrics"
+       },
+       {
+        "Name": "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
+        "Value": "http://localhost:4316/v1/traces"
+       },
+       {
+        "Name": "OTEL_TRACES_SAMPLER",
+        "Value": "xray"
+       },
+       {
+        "Name": "OTEL_TRACES_SAMPLER_ARG",
+        "Value": "endpoint=http://localhost:2000"
+       },
+       {
+        "Name": "OTEL_PROPAGATORS",
+        "Value": "tracecontext,baggage,b3,xray"
+       },
+       {
+        "Name": "JAVA_TOOL_OPTIONS",
+        "Value": " -javaagent:/otel-auto-instrumentation/javaagent.jar"
+       },
+       {
+        "Name": "OTEL_SERVICE_NAME",
+        "Value": "java-demo"
+       }
+      ],
+      "Essential": true,
+      "Image": "public.ecr.aws/aws-containers/retail-store-sample-cart:1.1.0",
+      "MountPoints": [
+       {
+        "ContainerPath": "/otel-auto-instrumentation",
+        "ReadOnly": false,
+        "SourceVolume": "opentelemetry-auto-instrumentation"
+       }
+      ],
+      "Name": "app"
+     },
+     {
+      "Command": [
+       "cp",
+       "/javaagent.jar",
+       "/otel-auto-instrumentation/javaagent.jar"
+      ],
+      "Cpu": 0,
+      "Essential": false,
+      "Image": "public.ecr.aws/aws-observability/adot-autoinstrumentation-java:v2.10.0",
+      "Memory": 64,
+      "MountPoints": [
+       {
+        "ContainerPath": "/otel-auto-instrumentation",
+        "ReadOnly": false,
+        "SourceVolume": "opentelemetry-auto-instrumentation"
+       }
+      ],
+      "Name": "adot-init"
+     },
+     {
+      "Cpu": 256,
+      "Environment": [
+       {
+        "Name": "CW_CONFIG_CONTENT",
+        "Value": "{\"logs\":{\"metrics_collected\":{\"application_signals\":{\"enabled\":true}}},\"traces\":{\"traces_collected\":{\"application_signals\":{\"enabled\":true}}}}"
+       }
+      ],
+      "Essential": true,
+      "Image": "public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest",
+      "Memory": 512,
+      "Name": "cloudwatch-agent",
+      "User": "0:1338"
+     }
+    ],
+    "Cpu": "1024",
+    "ExecutionRoleArn": {
+     "Fn::ImportValue": "ApplicationSignalsInfra-Sidecar:ExportsOutputFnGetAttECSTaskExecutionRole911F5A4FArn90EDA8DE"
+    },
+    "Family": "ApplicationSignalsJavaAppSidecarJavaTaskDefinitionD1B2093F",
+    "Memory": "2048",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::ImportValue": "ApplicationSignalsInfra-Sidecar:ExportsOutputFnGetAttECSTaskRoleF2ADB362Arn397CEC35"
+    },
+    "Volumes": [
+     {
+      "Name": "opentelemetry-auto-instrumentation"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

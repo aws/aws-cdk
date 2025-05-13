@@ -102,12 +102,14 @@ Auto build and pull request preview are enabled by default.
 Add custom rules for redirection:
 
 ```ts
+import { CustomRule } from '@aws-cdk/aws-amplify-alpha';
+
 declare const amplifyApp: amplify.App;
-amplifyApp.addCustomRule({
+amplifyApp.addCustomRule(new CustomRule({
   source: '/docs/specific-filename.html',
   target: '/documents/different-filename.html',
   status: amplify.RedirectStatus.TEMPORARY_REDIRECT,
-});
+}));
 ```
 
 When working with a single page application (SPA), use the

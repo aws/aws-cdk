@@ -1,6 +1,6 @@
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
-import { Duration, Stack } from '../../../core';
+import { Duration, Stack, UnscopedValidationError } from '../../../core';
 import { getResourceArn } from '../resource-arn-suffix';
 
 /**
@@ -80,7 +80,7 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Glue.`);
+      throw new UnscopedValidationError(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Glue.`);
     }
   }
 

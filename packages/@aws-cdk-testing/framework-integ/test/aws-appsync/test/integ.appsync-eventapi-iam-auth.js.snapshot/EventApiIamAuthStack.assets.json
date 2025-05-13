@@ -1,20 +1,22 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "files": {
-    "86c1f810188044ee5131336e9c4bd0c97bf5110181d112dfa5de98163adc8a8d": {
+    "cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1": {
+      "displayName": "IAMConfigTestFunction/Code",
       "source": {
-        "path": "asset.86c1f810188044ee5131336e9c4bd0c97bf5110181d112dfa5de98163adc8a8d",
+        "path": "asset.cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1",
         "packaging": "zip"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "86c1f810188044ee5131336e9c4bd0c97bf5110181d112dfa5de98163adc8a8d.zip",
+          "objectKey": "cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "9ca76cb0a39113f88ba3dfab19aaa69b43b02a0baf3a82ce746a4f520ba0d063": {
+    "8668b968e8ce3dedc669a45180546f0b50c3e037f57dd75a3d3691df41abfd28": {
+      "displayName": "EventApiIamAuthStack Template",
       "source": {
         "path": "EventApiIamAuthStack.template.json",
         "packaging": "file"
@@ -22,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9ca76cb0a39113f88ba3dfab19aaa69b43b02a0baf3a82ce746a4f520ba0d063.json",
+          "objectKey": "8668b968e8ce3dedc669a45180546f0b50c3e037f57dd75a3d3691df41abfd28.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

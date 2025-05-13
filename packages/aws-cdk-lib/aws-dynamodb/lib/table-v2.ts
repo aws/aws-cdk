@@ -34,6 +34,7 @@ import {
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 const HASH_KEY_TYPE = 'HASH';
@@ -405,7 +406,13 @@ export interface TableAttributesV2 {
 /**
  * A DynamoDB Table.
  */
+@propertyInjectable
 export class TableV2 extends TableBaseV2 {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-dynamodb.TableV2';
+
   /**
    * Creates a Table construct that represents an external table via table name.
    *

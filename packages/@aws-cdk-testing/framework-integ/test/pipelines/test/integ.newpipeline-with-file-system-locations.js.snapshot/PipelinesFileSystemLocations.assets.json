@@ -15,7 +15,7 @@
         }
       }
     },
-    "fd9ef36ef61823f1d19866dc6cdf055aec4a5ff60ae4af26bdf96348f6da428d": {
+    "f47a7804a747680e00b5479422ca35098f904ac339209547a34a712226bdaa14": {
       "displayName": "PipelinesFileSystemLocations Template",
       "source": {
         "path": "PipelinesFileSystemLocations.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "fd9ef36ef61823f1d19866dc6cdf055aec4a5ff60ae4af26bdf96348f6da428d.json",
+          "objectKey": "f47a7804a747680e00b5479422ca35098f904ac339209547a34a712226bdaa14.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

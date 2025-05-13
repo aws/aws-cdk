@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "aws-cdk-codepipeline-with-pipeline-triggers.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/08ae829f81cdce55af5e3b06c2e64de65602faa72d743ac2d9b3c844ed1f7af3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/63eb584506ddce372b63165ece6970df7e57e2fe95efd69425a5fd08d70d9935.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -356,7 +356,8 @@
               "assumedBy": {
                 "principalAccount": "*",
                 "assumeRoleAction": "*"
-              }
+              },
+              "roleName": "*"
             }
           },
           {
@@ -1078,7 +1079,8 @@
               "assumedBy": {
                 "principalAccount": "*",
                 "assumeRoleAction": "*"
-              }
+              },
+              "roleName": "*"
             }
           },
           {
@@ -1633,7 +1635,24 @@
                   "gitConfiguration": {
                     "sourceAction": {},
                     "pushFilter": [
-                      {}
+                      {
+                        "branchesExcludes": "*",
+                        "branchesIncludes": "*",
+                        "filePathsExcludes": "*",
+                        "filePathsIncludes": "*"
+                      }
+                    ],
+                    "pullRequestFilter": [
+                      {
+                        "branchesExcludes": "*",
+                        "branchesIncludes": "*",
+                        "filePathsExcludes": "*",
+                        "filePathsIncludes": "*",
+                        "events": [
+                          "OPEN",
+                          "UPDATED"
+                        ]
+                      }
                     ]
                   }
                 }
@@ -1669,7 +1688,24 @@
                   "gitConfiguration": {
                     "sourceAction": {},
                     "pushFilter": [
-                      {}
+                      {
+                        "branchesExcludes": "*",
+                        "branchesIncludes": "*",
+                        "filePathsExcludes": "*",
+                        "filePathsIncludes": "*"
+                      }
+                    ],
+                    "pullRequestFilter": [
+                      {
+                        "branchesExcludes": "*",
+                        "branchesIncludes": "*",
+                        "filePathsExcludes": "*",
+                        "filePathsIncludes": "*",
+                        "events": [
+                          "OPEN",
+                          "UPDATED"
+                        ]
+                      }
                     ]
                   }
                 }
@@ -1717,7 +1753,8 @@
               "assumedBy": {
                 "principalAccount": "*",
                 "assumeRoleAction": "*"
-              }
+              },
+              "roleName": "*"
             }
           },
           {
@@ -2111,7 +2148,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aab5c08666e9bd6288a890c82896b3571c8bab677fbcbfca528188bf79c970bf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fcaac3aa0d7ae07d1833132e53d07106ccd21bb8d9689b59504dc991f4366304.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -2238,5 +2275,6 @@
       },
       "displayName": "codepipeline-with-pipeline-triggers-test/DefaultTest/DeployAssert"
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

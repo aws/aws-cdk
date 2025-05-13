@@ -67,6 +67,8 @@ export const AWS_REGIONS_AND_RULES: readonly (string | symbol)[] = [
   'ap-southeast-7', // Asia Pacific (Thailand)
   'mx-central-1', // Mexico (Central)
   'eu-isoe-west-1', // EU ISO-E West
+  'us-isob-west-1', // US ISOB West
+  'ap-east-2', // Asia Pacific (Taipei)
 ];
 
 /**

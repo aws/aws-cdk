@@ -1,7 +1,8 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "files": {
     "659fc275dc398d5f03ea5459bcc3898cca70adfa711dd30a29d749215d2990cb": {
+      "displayName": "ts-decorator-handler-root-user/Code",
       "source": {
         "path": "asset.659fc275dc398d5f03ea5459bcc3898cca70adfa711dd30a29d749215d2990cb",
         "packaging": "zip"
@@ -15,6 +16,7 @@
       }
     },
     "f2d6d8bc7a8564432ce22475e6d83c7916c89034d929af5176430f34ae41bec2": {
+      "displayName": "cdk-integ-bundling-lambda-nodejs Template",
       "source": {
         "path": "cdk-integ-bundling-lambda-nodejs.template.json",
         "packaging": "file"

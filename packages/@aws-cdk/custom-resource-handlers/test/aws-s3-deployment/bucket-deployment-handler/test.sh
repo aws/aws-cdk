@@ -20,4 +20,6 @@ cp -f ${scriptdir}/* $PWD
 
 # this will run our tests inside the right environment
 DOCKER_CMD=${CDK_DOCKER:-docker}
-$DOCKER_CMD build .
+$DOCKER_CMD build --no-cache -t s3-deployment-test .
+
+$DOCKER_CMD run --rm s3-deployment-test

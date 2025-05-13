@@ -15,6 +15,7 @@ import * as lambda from '../../aws-lambda';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -242,7 +243,7 @@ export class UserPoolOperation {
   public static readonly PRE_TOKEN_GENERATION = new UserPoolOperation('preTokenGeneration');
 
   /**
-   * Add or remove attributes in Id tokens
+   * Add or remove attributes in Id tokens and Access tokens
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
    */
   public static readonly PRE_TOKEN_GENERATION_CONFIG = new UserPoolOperation('preTokenGenerationConfig');
@@ -309,6 +310,12 @@ export enum LambdaVersion {
    * This is supported only for PRE_TOKEN_GENERATION trigger.
    */
   V2_0 = 'V2_0',
+  /**
+   * V3_0 trigger
+   *
+   * This is supported only for PRE_TOKEN_GENERATION trigger.
+   */
+  V3_0 = 'V3_0',
 }
 
 /**
@@ -1050,7 +1057,13 @@ abstract class UserPoolBase extends Resource implements IUserPool {
 /**
  * Define a Cognito User Pool
  */
+@propertyInjectable
 export class UserPool extends UserPoolBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito.UserPool';
+
   /**
    * Import an existing user pool based on its id.
    */
@@ -1280,8 +1293,12 @@ export class UserPool extends UserPoolBase {
     if (operation.operationName in this.triggers) {
       throw new ValidationError(`A trigger for the operation ${operation.operationName} already exists.`, this);
     }
-    if (operation !== UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG && lambdaVersion === LambdaVersion.V2_0) {
-      throw new ValidationError('Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 lambda version.', this);
+    if (
+      operation !== UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG &&
+      lambdaVersion !== undefined &&
+      [LambdaVersion.V2_0, LambdaVersion.V3_0].includes(lambdaVersion)
+    ) {
+      throw new ValidationError('Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 and V3_0 lambda version.', this);
     }
 
     this.addLambdaPermission(fn, operation.operationName);

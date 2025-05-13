@@ -72,6 +72,7 @@ class PipelineStack extends Stack {
 const app = new App({
   postCliContext: {
     '@aws-cdk/pipelines:reduceStageRoleTrustScope': true,
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
   },
 });
 const stack = new PipelineStack(app, 'CdkPipelineInvestigationStack');

@@ -1,0 +1,306 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "aws-cdk-ec2-alpha-subnet-map-public-ip.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-ec2-alpha-subnet-map-public-ip.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-ec2-alpha-subnet-map-public-ip": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-ec2-alpha-subnet-map-public-ip.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/93f282062f2d4c296201d7dc8bf00ffbe327e6adbf5d848fd010f7880591f838.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-ec2-alpha-subnet-map-public-ip.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-ec2-alpha-subnet-map-public-ip.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithIp": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithIp/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicSubnetWithIpSubnetE138C159"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithIp/RouteTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithIp/RouteTable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicSubnetWithIpRouteTableFE9B374B"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithIp/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicSubnetWithIpRouteTableAssociationDE6A8683"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithoutIp": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithoutIp/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicSubnetWithoutIpSubnet2AD95043"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithoutIp/RouteTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithoutIp/RouteTable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicSubnetWithoutIpRouteTable0C664965"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithoutIp/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicSubnetWithoutIpRouteTableAssociation94BDCA57"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/PrivateSubnetDefault": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/PrivateSubnetDefault/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateSubnetDefaultSubnet75A313E4"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/PrivateSubnetDefault/RouteTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/PrivateSubnetDefault/RouteTable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateSubnetDefaultRouteTableC3E4815F"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/PrivateSubnetDefault/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateSubnetDefaultRouteTableAssociation134B8A4F"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-subnet-map-public-ip/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-ec2-alpha-subnet-map-public-ip"
+    },
+    "SubnetMapPublicIpIntegDefaultTestDeployAssert628B9886.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SubnetMapPublicIpIntegDefaultTestDeployAssert628B9886.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SubnetMapPublicIpIntegDefaultTestDeployAssert628B9886": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SubnetMapPublicIpIntegDefaultTestDeployAssert628B9886.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1adc26a04d4fa2415d65760caa9aa01d64b5d27988f39fa43c5fdc70a94d77f8.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SubnetMapPublicIpIntegDefaultTestDeployAssert628B9886.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SubnetMapPublicIpIntegDefaultTestDeployAssert628B9886.assets"
+      ],
+      "metadata": {
+        "/SubnetMapPublicIpInteg/DefaultTest/DeployAssert/AwsApiCallec2describeSubnets98d4c9f08d451e5a2fb3b4b512d20ebf/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/SubnetMapPublicIpInteg/DefaultTest/DeployAssert/AwsApiCallec2describeSubnets98d4c9f08d451e5a2fb3b4b512d20ebf/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallec2describeSubnets98d4c9f08d451e5a2fb3b4b512d20ebf"
+          }
+        ],
+        "/SubnetMapPublicIpInteg/DefaultTest/DeployAssert/AwsApiCallec2describeSubnets98d4c9f08d451e5a2fb3b4b512d20ebf/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallec2describeSubnets98d4c9f08d451e5a2fb3b4b512d20ebf"
+          }
+        ],
+        "/SubnetMapPublicIpInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/SubnetMapPublicIpInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/SubnetMapPublicIpInteg/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/SubnetMapPublicIpInteg/DefaultTest/DeployAssert/AwsApiCallec2describeSubnetse859ca6b8064fd26ab61f9f3b6f39489/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/SubnetMapPublicIpInteg/DefaultTest/DeployAssert/AwsApiCallec2describeSubnetse859ca6b8064fd26ab61f9f3b6f39489/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallec2describeSubnetse859ca6b8064fd26ab61f9f3b6f39489"
+          }
+        ],
+        "/SubnetMapPublicIpInteg/DefaultTest/DeployAssert/AwsApiCallec2describeSubnetse859ca6b8064fd26ab61f9f3b6f39489/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallec2describeSubnetse859ca6b8064fd26ab61f9f3b6f39489"
+          }
+        ],
+        "/SubnetMapPublicIpInteg/DefaultTest/DeployAssert/AwsApiCallec2describeSubnetsc8073878e870ab1b106b2c25c7cc40cf/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/SubnetMapPublicIpInteg/DefaultTest/DeployAssert/AwsApiCallec2describeSubnetsc8073878e870ab1b106b2c25c7cc40cf/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallec2describeSubnetsc8073878e870ab1b106b2c25c7cc40cf"
+          }
+        ],
+        "/SubnetMapPublicIpInteg/DefaultTest/DeployAssert/AwsApiCallec2describeSubnetsc8073878e870ab1b106b2c25c7cc40cf/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallec2describeSubnetsc8073878e870ab1b106b2c25c7cc40cf"
+          }
+        ],
+        "/SubnetMapPublicIpInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SubnetMapPublicIpInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SubnetMapPublicIpInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}

@@ -124,7 +124,7 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
         ];
         break;
       default:
-        throw new Error(`Unsupported integration pattern: ${this.integrationPattern}`);
+        throw new cdk.ValidationError(`Unsupported integration pattern: ${this.integrationPattern}`, this);
     }
 
     return policyStatements;

@@ -90,7 +90,7 @@ describe('User Pool Client', () => {
               {
                 Ref: 'clientWithSecretD25031A8',
               },
-              '"}}',
+              '"},"logApiResponseData":false}',
             ],
           ],
         },
@@ -114,7 +114,7 @@ describe('User Pool Client', () => {
               {
                 Ref: 'clientWithSecretD25031A8',
               },
-              '"}}',
+              '"},"logApiResponseData":false}',
             ],
           ],
         },
@@ -195,6 +195,135 @@ describe('User Pool Client', () => {
       expect(Template.fromStack(stack).findResources('AWS::IAM::Policy')).toEqual({});
       expect(Template.fromStack(stack).findResources('AWS::IAM::Role')).toEqual({});
       expect(Template.fromStack(stack).findResources('AWS::Lambda::Function')).toEqual({});
+    });
+
+    test('retrieving secret value does not log the API response data by default', () => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      const clientWithSecret = new UserPoolClient(stack, 'clientWithoutSecret2', {
+        userPool: pool,
+        generateSecret: true,
+      });
+
+      expect(clientWithSecret.userPoolClientSecret).toBeDefined();
+
+      Template.fromStack(stack).hasResourceProperties('Custom::DescribeCognitoUserPoolClient', {
+        Create: {
+          'Fn::Join': [
+            '',
+            [
+              '{"region":"',
+              {
+                Ref: 'AWS::Region',
+              },
+              '","service":"CognitoIdentityServiceProvider","action":"describeUserPoolClient","parameters":{"UserPoolId":"',
+              {
+                Ref: 'PoolD3F588B8',
+              },
+              '","ClientId":"',
+              {
+                Ref: 'clientWithoutSecret29B6DC7A0',
+              },
+              '"},"physicalResourceId":{"id":"',
+              {
+                Ref: 'clientWithoutSecret29B6DC7A0',
+              },
+              '"},"logApiResponseData":false}',
+            ],
+          ],
+        },
+        Update: {
+          'Fn::Join': [
+            '',
+            [
+              '{"region":"',
+              {
+                Ref: 'AWS::Region',
+              },
+              '","service":"CognitoIdentityServiceProvider","action":"describeUserPoolClient","parameters":{"UserPoolId":"',
+              {
+                Ref: 'PoolD3F588B8',
+              },
+              '","ClientId":"',
+              {
+                Ref: 'clientWithoutSecret29B6DC7A0',
+              },
+              '"},"physicalResourceId":{"id":"',
+              {
+                Ref: 'clientWithoutSecret29B6DC7A0',
+              },
+              '"},"logApiResponseData":false}',
+            ],
+          ],
+        },
+      });
+    });
+
+    test('retrieving secret value keeps the existing logging behaviour for the API response with feature flag set to true', () => {
+      const stack = new Stack();
+      stack.node.setContext('@aws-cdk/cognito:logUserPoolClientSecretValue', true);
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      const clientWithSecret = new UserPoolClient(stack, 'clientWithoutSecret2', {
+        userPool: pool,
+        generateSecret: true,
+      });
+
+      expect(clientWithSecret.userPoolClientSecret).toBeDefined();
+
+      Template.fromStack(stack).hasResourceProperties('Custom::DescribeCognitoUserPoolClient', {
+        Create: {
+          'Fn::Join': [
+            '',
+            [
+              '{"region":"',
+              {
+                Ref: 'AWS::Region',
+              },
+              '","service":"CognitoIdentityServiceProvider","action":"describeUserPoolClient","parameters":{"UserPoolId":"',
+              {
+                Ref: 'PoolD3F588B8',
+              },
+              '","ClientId":"',
+              {
+                Ref: 'clientWithoutSecret29B6DC7A0',
+              },
+              '"},"physicalResourceId":{"id":"',
+              {
+                Ref: 'clientWithoutSecret29B6DC7A0',
+              },
+              '"}}',
+            ],
+          ],
+        },
+        Update: {
+          'Fn::Join': [
+            '',
+            [
+              '{"region":"',
+              {
+                Ref: 'AWS::Region',
+              },
+              '","service":"CognitoIdentityServiceProvider","action":"describeUserPoolClient","parameters":{"UserPoolId":"',
+              {
+                Ref: 'PoolD3F588B8',
+              },
+              '","ClientId":"',
+              {
+                Ref: 'clientWithoutSecret29B6DC7A0',
+              },
+              '"},"physicalResourceId":{"id":"',
+              {
+                Ref: 'clientWithoutSecret29B6DC7A0',
+              },
+              '"}}',
+            ],
+          ],
+        },
+      });
     });
 
     test('lacking secret configuration implicitly disables it', () => {

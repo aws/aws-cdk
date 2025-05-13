@@ -1,7 +1,8 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "files": {
     "68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650": {
+      "displayName": "lambda-s3/Code",
       "source": {
         "path": "asset.68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650",
         "packaging": "zip"
@@ -15,6 +16,7 @@
       }
     },
     "60f7c2dac879a9de34a1b00340c5ad12c3ffd444e6c91049832d893f3631b8c4": {
+      "displayName": "synthesize-default-resources Template",
       "source": {
         "path": "synthesize-default-resources.template.json",
         "packaging": "file"
@@ -30,6 +32,7 @@
   },
   "dockerImages": {
     "ecr-asset/1-16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622": {
+      "displayName": "ecr-asset/1",
       "source": {
         "directory": "asset.16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
       },
@@ -42,6 +45,7 @@
       }
     },
     "ecr-asset-2-16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622": {
+      "displayName": "ecr-asset-2",
       "source": {
         "directory": "asset.16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
       },

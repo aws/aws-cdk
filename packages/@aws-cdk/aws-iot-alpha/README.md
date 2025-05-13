@@ -124,6 +124,7 @@ new iot.AccountAuditConfiguration(this, 'AuditConfiguration', {
     // disabled
     caCertificateKeyQualityCheck: false,
     conflictingClientIdsCheck: false,
+    deviceCertificateAgeCheck: false,
     deviceCertificateExpiringCheck: false,
     deviceCertificateKeyQualityCheck: false,
     deviceCertificateSharedCheck: false,
@@ -136,6 +137,21 @@ new iot.AccountAuditConfiguration(this, 'AuditConfiguration', {
     revokedCaCertificateStillActiveCheck: false,
     revokedDeviceCertificateStillActiveCheck: false,
     unauthenticatedCognitoRoleOverlyPermissiveCheck: false,
+  },
+});
+```
+
+To configure [the device certificate age check](https://docs.aws.amazon.com/iot-device-defender/latest/devguide/device-certificate-age-check.html), you can specify the duration for the check:
+
+```ts
+import { Duration } from 'aws-cdk-lib';
+
+new iot.AccountAuditConfiguration(this, 'AuditConfiguration', {
+  checkConfiguration: {
+    deviceCertificateAgeCheck: true,
+    // The default value is 365 days
+    // Valid values range from 30 days (minimum) to 3652 days (10 years, maximum)
+    deviceCertificateAgeCheckDuration: Duration.days(365),
   },
 });
 ```

@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "41.0.0",
   "testCases": {
     "nlb-target-group-cross-zone-test-stack/DefaultTest": {
       "stacks": [

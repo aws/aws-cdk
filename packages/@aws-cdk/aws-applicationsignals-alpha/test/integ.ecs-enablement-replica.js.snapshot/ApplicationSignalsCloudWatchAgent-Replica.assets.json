@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "5730bea116ff2f9738600530cfdc36b878c3210ca7c1cdeed1fff92b436b1b6f": {
+      "displayName": "ApplicationSignalsCloudWatchAgent-Replica Template",
+      "source": {
+        "path": "ApplicationSignalsCloudWatchAgent-Replica.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5730bea116ff2f9738600530cfdc36b878c3210ca7c1cdeed1fff92b436b1b6f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

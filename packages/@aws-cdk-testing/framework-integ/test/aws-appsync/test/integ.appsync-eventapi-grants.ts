@@ -113,7 +113,9 @@ integ.assertions.invokeFunction({
     statusCode: 200,
     msg: 'subscribe_success',
     pubStatusCode: 200,
-    pubMsg: 'Hello World!',
+    pubMsg: [{
+      message: 'Hello World!',
+    }],
   }),
 }));
 
@@ -160,7 +162,9 @@ integ.assertions.invokeFunction({
     statusCode: 200,
     msg: 'subscribe_success',
     pubStatusCode: 200,
-    pubMsg: 'Hello World!',
+    pubMsg: [{
+      message: 'Hello World!',
+    }],
   }),
 }));
 

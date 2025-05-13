@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { ISecurityGroup, SubnetSelection } from '../../../aws-ec2';
 import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
 import { FeatureFlags } from '../../../core';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
 import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
@@ -36,7 +37,13 @@ export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalan
 /**
  * A Fargate service running on an ECS cluster fronted by a network load balancer.
  */
+@propertyInjectable
 export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServiceBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs-patterns.NetworkLoadBalancedFargateService';
+
   public readonly assignPublicIp: boolean;
   /**
    * The Fargate service in this construct.

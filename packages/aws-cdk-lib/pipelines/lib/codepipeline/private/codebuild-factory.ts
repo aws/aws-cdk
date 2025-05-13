@@ -333,11 +333,14 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     // Start all CodeBuild projects from a single (shared) Action Role, so that we don't have to generate an Action Role for each
     // individual CodeBuild Project and blow out the pipeline policy size (and potentially # of resources in the stack).
     const actionRoleCid = 'CodeBuildActionRole';
+
     const actionRole = this.props.actionRole
-      ?? options.pipeline.node.tryFindChild(actionRoleCid) as iam.IRole
+      ?? ( options.pipeline.usePipelineRoleForActions ?
+        undefined :
+        (options.pipeline.node.tryFindChild(actionRoleCid) as iam.IRole
       ?? new iam.Role(options.pipeline, actionRoleCid, {
         assumedBy: options.pipeline.pipeline.role,
-      });
+      })));
 
     stage.addAction(new codepipeline_actions.CodeBuildAction({
       actionName: actionName,

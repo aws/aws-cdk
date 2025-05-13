@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "42.0.0",
   "artifacts": {
     "acceptor-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -34,10 +34,83 @@
         "acceptor-stack.assets"
       ],
       "metadata": {
+        "/acceptor-stack/acceptorVpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/acceptor-stack/acceptorVpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "acceptorVpc5B7D1670"
+          }
+        ],
+        "/acceptor-stack/acceptorVpc/VpcPeeringRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "roleName": "*",
+              "description": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/acceptor-stack/acceptorVpc/VpcPeeringRole/ImportVpcPeeringRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/acceptor-stack/acceptorVpc/VpcPeeringRole/Resource": [
@@ -46,16 +119,66 @@
             "data": "acceptorVpcVpcPeeringRoleF389E47A"
           }
         ],
+        "/acceptor-stack/acceptorVpc/VpcPeeringRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
         "/acceptor-stack/acceptorVpc/VpcPeeringRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "acceptorVpcVpcPeeringRoleDefaultPolicyE79C72D0"
           }
         ],
+        "/acceptor-stack/requestorVpcSameAccount": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/acceptor-stack/requestorVpcSameAccount/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "requestorVpcSameAccountF27E91F7"
+          }
+        ],
+        "/acceptor-stack/requestorVpcSameAccount/sameAccountPeering": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/acceptor-stack/requestorVpcSameAccount/sameAccountPeering/VPCPeeringConnection": [
@@ -112,10 +235,22 @@
         "requestor-stack.assets"
       ],
       "metadata": {
+        "/requestor-stack/requestorVpcCrossAccount": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/requestor-stack/requestorVpcCrossAccount/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "requestorVpcCrossAccount6372A252"
+          }
+        ],
+        "/requestor-stack/requestorVpcCrossAccount/acceptorAccountCrossRegionPeering": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/requestor-stack/requestorVpcCrossAccount/acceptorAccountCrossRegionPeering/VPCPeeringConnection": [
@@ -124,10 +259,26 @@
             "data": "requestorVpcCrossAccountacceptorAccountCrossRegionPeeringVPCPeeringConnection3605B6B0"
           }
         ],
+        "/requestor-stack/RouteTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/requestor-stack/RouteTable/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RouteTableE1378006"
+          }
+        ],
+        "/requestor-stack/RouteTable/vpcPeeringRoute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/requestor-stack/RouteTable/vpcPeeringRoute/Route": [
@@ -205,5 +356,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

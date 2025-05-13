@@ -19,7 +19,7 @@ jobs:
           persist-credentials: false
       - name: Find changed cli files
         id: changed-cli-files
-        uses: step-security/changed-files@3dbe17c78367e7d60f00d78ae6781a35be47b4a1
+        uses: step-security/changed-files@95b56dadb92a30ca9036f16423fd3c088a71ee94
         with:
           base_sha: ${{ github.event.pull_request.base.sha }}
           files_yaml: |

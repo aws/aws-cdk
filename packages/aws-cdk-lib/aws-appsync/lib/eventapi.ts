@@ -17,10 +17,27 @@ import {
   AppSyncAuthProvider,
 } from './auth-config';
 import { ChannelNamespace, ChannelNamespaceOptions } from './channel-namespace';
+import {
+  AppSyncDataSourceOptions,
+  AppSyncHttpDataSourceOptions,
+  AppSyncDynamoDbDataSource,
+  AppSyncHttpDataSource,
+  AppSyncLambdaDataSource,
+  AppSyncRdsDataSource,
+  AppSyncOpenSearchDataSource,
+  AppSyncEventBridgeDataSource,
+} from './data-source-common';
+import { ITable } from '../../aws-dynamodb';
+import { IEventBus } from '../../aws-events';
 import { Grant, IGrantable, ManagedPolicy, ServicePrincipal, Role } from '../../aws-iam';
+import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
+import { IDomain } from '../../aws-opensearchservice';
+import { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
+import { ISecret } from '../../aws-secretsmanager';
 import { Lazy, Names, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Authorization configuration for the Event API
@@ -60,7 +77,7 @@ class AppSyncEventApiAuthConfig implements IAppSyncAuthConfig {
    * @param config - the configuration input for OpenID Connect auth mode
    * @returns CfnApi.OpenIDConnectConfigProperty | undefined
    */
-  setupOpenIdConnectConfig(config?: AppSyncOpenIdConnectConfig) : CfnApi.OpenIDConnectConfigProperty | undefined {
+  setupOpenIdConnectConfig(config?: AppSyncOpenIdConnectConfig): CfnApi.OpenIDConnectConfigProperty | undefined {
     if (!config) return undefined;
     return {
       authTtl: config.tokenExpiryFromAuth,
@@ -75,7 +92,7 @@ class AppSyncEventApiAuthConfig implements IAppSyncAuthConfig {
    * @param config - the configuration input for Cognito auth mode
    * @returns CfnApi.CognitoConfigProperty | undefined
    */
-  setupCognitoConfig(config?: AppSyncCognitoConfig) : CfnApi.CognitoConfigProperty | undefined {
+  setupCognitoConfig(config?: AppSyncCognitoConfig): CfnApi.CognitoConfigProperty | undefined {
     if (!config) return undefined;
     return {
       userPoolId: config.userPool.userPoolId,
@@ -89,7 +106,7 @@ class AppSyncEventApiAuthConfig implements IAppSyncAuthConfig {
    * @param config - the configuration input for Lambda auth mode
    * @returns CfnApi.LambdaAuthorizerConfigProperty | undefined
    */
-  setupLambdaAuthorizerConfig(config?: AppSyncLambdaAuthorizerConfig) : CfnApi.LambdaAuthorizerConfigProperty | undefined {
+  setupLambdaAuthorizerConfig(config?: AppSyncLambdaAuthorizerConfig): CfnApi.LambdaAuthorizerConfigProperty | undefined {
     if (!config) return undefined;
     return {
       authorizerResultTtlInSeconds: config.resultsCacheTtl?.toSeconds(),
@@ -129,6 +146,67 @@ export interface IEventApi extends IApi {
    * @returns the channel namespace
    */
   addChannelNamespace(id: string, options?: ChannelNamespaceOptions): ChannelNamespace;
+
+  /**
+   * Add a new DynamoDB data source to this API
+   *
+   * @param id The data source's id
+   * @param table The DynamoDB table backing this data source
+   * @param options The optional configuration for this data source
+   */
+  addDynamoDbDataSource(id: string, table: ITable, options?: AppSyncDataSourceOptions): AppSyncDynamoDbDataSource;
+
+  /**
+   * add a new http data source to this API
+   *
+   * @param id The data source's id
+   * @param endpoint The http endpoint
+   * @param options The optional configuration for this data source
+   */
+  addHttpDataSource(id: string, endpoint: string, options?: AppSyncHttpDataSourceOptions): AppSyncHttpDataSource;
+
+  /**
+   * Add an EventBridge data source to this api
+   * @param id The data source's id
+   * @param eventBus The EventBridge EventBus on which to put events
+   * @param options The optional configuration for this data source
+   */
+  addEventBridgeDataSource(id: string, eventBus: IEventBus, options?: AppSyncDataSourceOptions): AppSyncEventBridgeDataSource;
+
+  /**
+   * add a new Lambda data source to this API
+   *
+   * @param id The data source's id
+   * @param lambdaFunction The Lambda function to call to interact with this data source
+   * @param options The optional configuration for this data source
+   */
+  addLambdaDataSource(id: string, lambdaFunction: IFunction, options?: AppSyncDataSourceOptions): AppSyncLambdaDataSource;
+
+  /**
+   * add a new Rds data source to this API
+   *
+   * @param id The data source's id
+   * @param serverlessCluster The database cluster to interact with this data source
+   * @param secretStore The secret store that contains the username and password for the database cluster
+   * @param databaseName The optional name of the database to use within the cluster
+   * @param options The optional configuration for this data source
+   */
+  addRdsDataSource(
+    id: string,
+    serverlessCluster: IServerlessCluster | IDatabaseCluster,
+    secretStore: ISecret,
+    databaseName?: string,
+    options?: AppSyncDataSourceOptions
+  ): AppSyncRdsDataSource;
+
+  /**
+   * Add a new OpenSearch data source to this API
+   *
+   * @param id The data source's id
+   * @param domain The OpenSearch domain for this data source
+   * @param options The optional configuration for this data source
+   */
+  addOpenSearchDataSource(id: string, domain: IDomain, options?: AppSyncDataSourceOptions): AppSyncOpenSearchDataSource;
 
   /**
    * Adds an IAM policy statement associated with this Event API to an IAM
@@ -198,6 +276,111 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
       api: this,
       channelNamespaceName: options?.channelNamespaceName ?? id,
       ...options,
+    });
+  }
+
+  /**
+   * add a new DynamoDB data source to this API
+   *
+   * @param id The data source's id
+   * @param table The DynamoDB table backing this data source
+   * @param options The optional configuration for this data source
+   */
+  public addDynamoDbDataSource(id: string, table: ITable, options?: AppSyncDataSourceOptions): AppSyncDynamoDbDataSource {
+    return new AppSyncDynamoDbDataSource(this, id, {
+      api: this,
+      table,
+      name: options?.name,
+      description: options?.description,
+    });
+  }
+
+  /**
+   * add a new http data source to this API
+   *
+   * @param id The data source's id
+   * @param endpoint The http endpoint
+   * @param options The optional configuration for this data source
+   */
+  public addHttpDataSource(id: string, endpoint: string, options?: AppSyncHttpDataSourceOptions): AppSyncHttpDataSource {
+    return new AppSyncHttpDataSource(this, id, {
+      api: this,
+      endpoint,
+      name: options?.name,
+      description: options?.description,
+      authorizationConfig: options?.authorizationConfig,
+    });
+  }
+
+  /**
+   * add a new Lambda data source to this API
+   *
+   * @param id The data source's id
+   * @param lambdaFunction The Lambda function to call to interact with this data source
+   * @param options The optional configuration for this data source
+   */
+  public addLambdaDataSource(id: string, lambdaFunction: IFunction, options?: AppSyncDataSourceOptions): AppSyncLambdaDataSource {
+    return new AppSyncLambdaDataSource(this, id, {
+      api: this,
+      lambdaFunction,
+      name: options?.name,
+      description: options?.description,
+    });
+  }
+
+  /**
+   * add a new Rds data source to this API
+   * @param id The data source's id
+   * @param serverlessCluster The database cluster to interact with this data source
+   * @param secretStore The secret store that contains the username and password for the database cluster
+   * @param databaseName The optional name of the database to use within the cluster
+   * @param options The optional configuration for this data source
+   */
+  public addRdsDataSource(
+    id: string,
+    serverlessCluster: IServerlessCluster | IDatabaseCluster,
+    secretStore: ISecret,
+    databaseName?: string,
+    options?: AppSyncDataSourceOptions,
+  ): AppSyncRdsDataSource {
+    return new AppSyncRdsDataSource(this, id, {
+      api: this,
+      name: options?.name,
+      description: options?.description,
+      serverlessCluster,
+      secretStore,
+      databaseName,
+    });
+  }
+
+  /**
+   * Add an EventBridge data source to this api
+   * @param id The data source's id
+   * @param eventBus The EventBridge EventBus on which to put events
+   * @param options The optional configuration for this data source
+   */
+  addEventBridgeDataSource(id: string, eventBus: IEventBus, options?: AppSyncDataSourceOptions): AppSyncEventBridgeDataSource {
+    return new AppSyncEventBridgeDataSource(this, id, {
+      api: this,
+      eventBus,
+      name: options?.name,
+      description: options?.description,
+    });
+  }
+
+  /**
+   * add a new OpenSearch data source to this API
+   *
+   * @param id The data source's id
+   * @param domain The OpenSearch domain for this data source
+   * @param options The optional configuration for this data source
+   */
+  public addOpenSearchDataSource(id: string, domain: IDomain, options?: AppSyncDataSourceOptions): AppSyncOpenSearchDataSource {
+    return new AppSyncOpenSearchDataSource(this, id, {
+      api: this,
+      name: options?.name,
+      description: options?.description,
+      domain,
     });
   }
 
@@ -312,8 +495,9 @@ export interface EventApiProps {
 export interface EventApiAttributes {
   /**
    * the name of the Event API
+   * @default - not needed to import API
    */
-  readonly apiName: string;
+  readonly apiName?: string;
 
   /**
    * an unique AWS AppSync Event API identifier
@@ -323,8 +507,9 @@ export interface EventApiAttributes {
 
   /**
    * the ARN of the Event API
+   * @default - constructed arn
    */
-  readonly apiArn: string;
+  readonly apiArn?: string;
 
   /**
    * the domain name of the Api's HTTP endpoint.
@@ -348,7 +533,13 @@ export interface EventApiAttributes {
  *
  * @resource AWS::AppSync::Api
  */
+@propertyInjectable
 export class EventApi extends EventApiBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appsync.EventApi';
+
   /**
    * Import a Event API through this function
    *
@@ -637,6 +828,9 @@ export class EventApi extends EventApiBase {
       if (!authProviders.find((authProvider) => authProvider.authorizationType === authType)) {
         throw new ValidationError(`Missing authorization configuration for ${authType}`, this);
       }
+    }
+    if (authTypes.length === 0) {
+      throw new ValidationError('Empty AuthModeTypes array is not allowed, if specifying, you must specify a valid mode', this);
     }
   }
 

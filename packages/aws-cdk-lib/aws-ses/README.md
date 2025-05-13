@@ -307,6 +307,21 @@ const identity = new ses.EmailIdentity(this, 'Identity', {
 identity.grantSendEmail(user);
 ```
 
+You can also reference an existing email identity using its ARN and grant permissions to it:
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const user: iam.User;
+
+// Imports an existing email identity using its ARN.
+// This is one way to reference an existing identity; another option is using its name via fromEmailIdentityName.
+const importedIdentity = ses.EmailIdentity.fromEmailIdentityArn(this, 'ImportedIdentity', 
+  'arn:aws:ses:us-east-1:123456789012:identity/example.com');
+
+// Grant send email permission to the imported identity
+importedIdentity.grantSendEmail(user);
+```
+
 ### Virtual Deliverability Manager (VDM)
 
 Virtual Deliverability Manager is an Amazon SES feature that helps you enhance email deliverability,

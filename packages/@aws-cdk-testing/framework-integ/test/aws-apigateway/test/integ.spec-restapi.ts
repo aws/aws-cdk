@@ -28,6 +28,7 @@ class Test extends cdk.Stack {
           },
         },
       },
+      mode: apigateway.RestApiMode.MERGE,
     });
 
     const handler = new lambda.Function(this, 'MyHandler', {

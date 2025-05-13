@@ -25,6 +25,7 @@ import {
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { DYNAMODB_TABLE_RETAIN_TABLE_REPLICA } from '../../cx-api';
 
 const HASH_KEY_TYPE = 'HASH';
@@ -1060,7 +1061,13 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
 /**
  * Provides a DynamoDB table.
  */
+@propertyInjectable
 export class Table extends TableBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-dynamodb.Table';
+
   /**
    * Permits an IAM Principal to list all DynamoDB Streams.
    * @deprecated Use `#grantTableListStreams` for more granular permission

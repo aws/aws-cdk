@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "testCases": {
     "RedshiftMaintenanceTrackNameInteg/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "RedshiftMaintenanceTrackNameInteg/DefaultTest/DeployAssert",
       "assertionStackName": "RedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert73097553"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

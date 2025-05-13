@@ -12,6 +12,7 @@ import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
 import { IServerlessCluster, IDatabaseCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
 import { IResolvable, Lazy, Stack, Token } from '../../core';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Base properties for an AppSync datasource
@@ -219,7 +220,13 @@ export interface DynamoDbDataSourceProps extends BackedDataSourceProps {
 /**
  * An AppSync datasource backed by a DynamoDB table
  */
+@propertyInjectable
 export class DynamoDbDataSource extends BackedDataSource {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appsync.DynamoDbDataSource';
+
   constructor(scope: Construct, id: string, props: DynamoDbDataSourceProps) {
     super(scope, id, props, {
       type: 'AMAZON_DYNAMODB',
@@ -273,7 +280,13 @@ export interface HttpDataSourceProps extends BackedDataSourceProps {
 /**
  * An AppSync datasource backed by a http endpoint
  */
+@propertyInjectable
 export class HttpDataSource extends BackedDataSource {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appsync.HttpDataSource';
+
   constructor(scope: Construct, id: string, props: HttpDataSourceProps) {
     const authorizationConfig = props.authorizationConfig ? {
       authorizationType: 'AWS_IAM',
@@ -302,7 +315,13 @@ export interface EventBridgeDataSourceProps extends BackedDataSourceProps {
 /**
  * An AppSync datasource backed by EventBridge
  */
+@propertyInjectable
 export class EventBridgeDataSource extends BackedDataSource {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appsync.EventBridgeDataSource';
+
   constructor(scope: Construct, id: string, props: EventBridgeDataSourceProps) {
     super(scope, id, props, {
       type: 'AMAZON_EVENTBRIDGE',
@@ -327,7 +346,13 @@ export interface LambdaDataSourceProps extends BackedDataSourceProps {
 /**
  * An AppSync datasource backed by a Lambda function
  */
+@propertyInjectable
 export class LambdaDataSource extends BackedDataSource {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appsync.LambdaDataSource';
+
   constructor(scope: Construct, id: string, props: LambdaDataSourceProps) {
     super(scope, id, props, {
       type: 'AWS_LAMBDA',
@@ -382,7 +407,13 @@ export interface RdsDataSourcePropsV2 extends BackedDataSourceProps {
 /**
  * An AppSync datasource backed by RDS
  */
+@propertyInjectable
 export class RdsDataSource extends BackedDataSource {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appsync.RdsDataSource';
+
   constructor(scope: Construct, id: string, props: RdsDataSourceProps)
   constructor(scope: Construct, id: string, props: RdsDataSourcePropsV2) {
     super(scope, id, props, {
@@ -473,7 +504,13 @@ export interface OpenSearchDataSourceProps extends BackedDataSourceProps {
 /**
  * An Appsync datasource backed by OpenSearch
  */
+@propertyInjectable
 export class OpenSearchDataSource extends BackedDataSource {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appsync.OpenSearchDataSource';
+
   constructor(scope: Construct, id: string, props: OpenSearchDataSourceProps) {
     super(scope, id, props, {
       type: 'AMAZON_OPENSEARCH_SERVICE',

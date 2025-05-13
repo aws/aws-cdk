@@ -30,6 +30,10 @@ running on AWS Lambda, or any web application.
     - [Cognito User Pools authorizer](#cognito-user-pools-authorizer)
   - [Mutual TLS (mTLS)](#mutual-tls-mtls)
   - [Deployments](#deployments)
+    - [Deploying to an existing stage](#deploying-to-an-existing-stage)
+      - [Using RestApi](#using-restapi)
+      - [Using SpecRestApi](#using-specrestapi)
+    - [Controlled triggering of deployments](#controlled-triggering-of-deployments)
     - [Deep dive: Invalidation of deployments](#deep-dive-invalidation-of-deployments)
   - [Custom Domains](#custom-domains)
     - [Custom Domains with multi-level api mapping](#custom-domains-with-multi-level-api-mapping)
@@ -1472,6 +1476,20 @@ const api = new apigateway.RestApi(this, 'api', {
 });
 ```
 
+You can also configure [endpoint IP address type](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-ip-address-type.html).
+The default value is `IpAddressType.DUAL_STACK` for private API, and `IpAddressType.IPV4` for regional and edge-optimized API.
+
+```ts
+const api = new apigateway.RestApi(this, 'api', {
+  endpointConfiguration: {
+    types: [ apigateway.EndpointType.REGIONAL ],
+    ipAddressType: apigateway.IpAddressType.DUAL_STACK,
+  }
+});
+```
+
+**Note**: If creating a private API, the `IPV4` IP address type is not supported.
+
 You can also create an association between your Rest API and a VPC endpoint. By doing so,
 API Gateway will generate a new
 Route53 Alias DNS record which you can use to invoke your private APIs. More info can be found
@@ -1614,6 +1632,25 @@ for more details.
 **Note:** When starting off with an OpenAPI definition using `SpecRestApi`, it is not possible to configure some
 properties that can be configured directly in the OpenAPI specification file. This is to prevent people duplication
 of these properties and potential confusion.
+
+However, you can control how API Gateway handles resource updates using the `mode` property. Valid values are:
+
+* `overwrite` - The new API definition replaces the existing one. The existing API identifier remains unchanged.
+* `merge` - The new API definition is merged with the existing API.
+
+If you don't specify this property, a default value is chosen:
+* For REST APIs created before March 29, 2021, the default is `overwrite`
+* For REST APIs created after March 29, 2021, the new API definition takes precedence, but any container types such as endpoint configurations and binary media types are merged with the existing API.
+
+Use the default mode to define top-level RestApi properties in addition to using OpenAPI.
+Generally, it's preferred to use API Gateway's OpenAPI extensions to model these properties.
+
+```ts
+const api = new apigateway.SpecRestApi(this, 'books-api', {
+  apiDefinition: apigateway.ApiDefinition.fromAsset('path-to-file.json'),
+  mode: apigateway.RestApiMode.MERGE
+});
+```
 
 ### Endpoint configuration
 

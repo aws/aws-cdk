@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "42.0.0",
   "artifacts": {
     "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/04be5889cfa44a81268106945773c35a89b9acae9c99b9aaa546db21c74dfe4d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5db7dfacb51ea1eaa46a4c9579528e2c89ab8dc2515c6ddbabdbc3897c896651.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -35,10 +34,27 @@
         "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution.assets"
       ],
       "metadata": {
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SourceBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
+          }
+        ],
         "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SourceBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineSourceBucket23FDFC28"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SourceBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
           }
         ],
         "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SourceBucket/Policy/Resource": [
@@ -47,10 +63,25 @@
             "data": "PipelineSourceBucketPolicy017B174D"
           }
         ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SourceBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SourceBucket/AutoDeleteObjectsCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineSourceBucketAutoDeleteObjectsCustomResource041F2E1E"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/OutputBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
           }
         ],
         "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/OutputBucket/Resource": [
@@ -59,16 +90,57 @@
             "data": "PipelineOutputBucket98EA5F71"
           }
         ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/OutputBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/OutputBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineOutputBucketPolicy4566E5A8"
           }
         ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/OutputBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/OutputBucket/AutoDeleteObjectsCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineOutputBucketAutoDeleteObjectsCustomResource0CB6E67C"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SageMakerPipelineRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SageMakerPipelineRole/ImportSageMakerPipelineRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SageMakerPipelineRole/Resource": [
@@ -107,16 +179,97 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Schedule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "schedule": "*",
+              "target": "*"
+            }
+          }
+        ],
         "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Schedule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Schedule83A77FD1"
           }
         ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-91703d": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-91703d/ImportSchedulerRoleForTarget-91703d": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-91703d/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SchedulerRoleForTarget91703d0D95FCAD"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-91703d/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-91703d/DefaultPolicy/Resource": [
@@ -155,10 +308,9 @@
         "templateFile": "integrationtestsagemakerstartpipelineexecutionDefaultTestDeployAssert19EB5121.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d69749ac2cf7d46cdcea6ec2edda46e5a6679bc12f320120c52831006cda616d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d1021984fbd82c9b146aa1b5de5717b22a3f79b82d3315d8c096678417414b74.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -174,6 +326,20 @@
         "integrationtestsagemakerstartpipelineexecutionDefaultTestDeployAssert19EB5121.assets"
       ],
       "metadata": {
+        "/integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -273,5 +439,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

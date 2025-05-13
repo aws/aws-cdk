@@ -1,7 +1,8 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "files": {
     "c9b9e65d95c93e1b71bab759badef04760855f0d23dd78fbc63fe4239fca31e4": {
+      "displayName": "CreateParameterServiceTimeoutStack Template",
       "source": {
         "path": "CreateParameterServiceTimeoutStack.template.json",
         "packaging": "file"

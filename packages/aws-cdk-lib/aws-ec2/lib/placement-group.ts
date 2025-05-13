@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnPlacementGroup } from './ec2.generated';
-import { IResource, Resource } from '../../core';
+import { IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -179,7 +179,7 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
 
     if (this.partitions && this.strategy) {
       if (this.strategy !== PlacementGroupStrategy.PARTITION) {
-        throw new Error(`PlacementGroup '${id}' can only specify 'partitions' with the 'PARTITION' strategy`);
+        throw new ValidationError(`PlacementGroup '${id}' can only specify 'partitions' with the 'PARTITION' strategy`, this);
       }
     } else if (this.partitions && !this.strategy) {
       this.strategy = PlacementGroupStrategy.PARTITION;
@@ -190,7 +190,7 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
         this.strategy = PlacementGroupStrategy.SPREAD;
       }
       if (this.strategy !== PlacementGroupStrategy.SPREAD) {
-        throw new Error(`PlacementGroup '${id}' can only specify 'spreadLevel' with the 'SPREAD' strategy`);
+        throw new ValidationError(`PlacementGroup '${id}' can only specify 'spreadLevel' with the 'SPREAD' strategy`, this);
       }
     }
 

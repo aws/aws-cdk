@@ -1,6 +1,7 @@
 import { Construct, IConstruct } from 'constructs';
 import { Annotations } from './annotations';
-import { IAspect, Aspects, AspectPriority, AspectOptions } from './aspect';
+import { IAspect, Aspects, AspectOptions } from './aspect';
+import { mutatingAspectPrio32333 } from './private/aspect-prio';
 import { ITaggable, ITaggableV2, TagManager } from './tag-manager';
 
 /**
@@ -160,7 +161,7 @@ export class Tags {
    */
   public add(key: string, value: string, props: TagProps = {}) {
     const tag = new Tag(key, value, props);
-    const options: AspectOptions = { priority: AspectPriority.MUTATING };
+    const options: AspectOptions = { priority: mutatingAspectPrio32333(this.scope) };
     Aspects.of(this.scope).add(tag, options);
   }
 
@@ -169,7 +170,7 @@ export class Tags {
    */
   public remove(key: string, props: TagProps = {}) {
     const removeTag = new RemoveTag(key, props);
-    const options: AspectOptions = { priority: AspectPriority.MUTATING };
+    const options: AspectOptions = { priority: mutatingAspectPrio32333(this.scope) };
     Aspects.of(this.scope).add(removeTag, options);
   }
 }

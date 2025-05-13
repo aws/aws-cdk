@@ -30,9 +30,14 @@
   "testSubnet1Subnet72087287": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.1.0.0/20",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "SubnetTest3296A161",
@@ -231,9 +236,14 @@
   "testSubnet2Subnet4681911A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.1.128.0/20",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "SubnetTest3296A161",
