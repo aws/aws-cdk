@@ -35,6 +35,7 @@ class EksClusterStack extends Stack {
     });
     this.cluster.addNodegroupCapacity('BottlerocketNG2', {
       amiType: NodegroupAmiType.BOTTLEROCKET_ARM_64,
+      instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.C6G, ec2.InstanceSize.LARGE)],
     });
   }
 }

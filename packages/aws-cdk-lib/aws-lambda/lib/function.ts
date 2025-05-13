@@ -35,7 +35,11 @@ import {
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+
 import { LAMBDA_RECOGNIZE_LAYER_VERSION, USE_CDK_MANAGED_LOGGROUP } from '../../cx-api';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
+
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -643,7 +647,13 @@ export interface FunctionProps extends FunctionOptions {
  * This construct does not yet reproduce all features from the underlying resource
  * library.
  */
+@propertyInjectable
 export class Function extends FunctionBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.Function';
+
   /**
    * Returns a `lambda.Version` which represents the current version of this
    * Lambda function. A new version will be created every time the function's

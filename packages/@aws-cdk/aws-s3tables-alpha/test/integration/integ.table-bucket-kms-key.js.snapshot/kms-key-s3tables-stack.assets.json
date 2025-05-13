@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "468631fb6c24efd89d7b1b6061454e0f86de36d40d52239419e858a45064d1a6": {
+      "displayName": "kms-key-s3tables-stack Template",
+      "source": {
+        "path": "kms-key-s3tables-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "468631fb6c24efd89d7b1b6061454e0f86de36d40d52239419e858a45064d1a6.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
