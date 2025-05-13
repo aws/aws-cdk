@@ -97,6 +97,10 @@ export enum NodegroupAmiType {
    * Amazon Linux 2023 (ARM-64)
    */
   AL2023_ARM_64_STANDARD = 'AL2023_ARM_64_STANDARD',
+  /**
+   * Amazon Linux 2023 with NVIDIA drivers (ARM-64)
+   */
+  AL2023_ARM_64_NVIDIA = 'AL2023_ARM_64_NVIDIA',
 }
 
 /**
@@ -421,14 +425,14 @@ export class Nodegroup extends Resource implements INodegroup {
     this.minSize = props.minSize ?? 1;
 
     withResolved(this.desiredSize, this.maxSize, (desired, max) => {
-      if (desired === undefined) {return ;}
+      if (desired === undefined) { return; }
       if (desired > max) {
         throw new ValidationError(`Desired capacity ${desired} can't be greater than max size ${max}`, this);
       }
     });
 
     withResolved(this.desiredSize, this.minSize, (desired, min) => {
-      if (desired === undefined) {return ;}
+      if (desired === undefined) { return; }
       if (desired < min) {
         throw new ValidationError(`Minimum capacity ${min} can't be greater than desired size ${desired}`, this);
       }
@@ -467,10 +471,10 @@ export class Nodegroup extends Resource implements INodegroup {
 
       // if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
       if (props.amiType && windowsAmiTypes.includes(props.amiType) &&
-      instanceTypes.filter(isWindowsSupportedInstanceType).length < instanceTypes.length) {
+        instanceTypes.filter(isWindowsSupportedInstanceType).length < instanceTypes.length) {
         throw new ValidationError('The specified instanceType does not support Windows workloads. '
-        + 'Amazon EC2 instance types C3, C4, D2, I2, M4 (excluding m4.16xlarge), M6a.x, and '
-        + 'R3 instances aren\'t supported for Windows workloads.', this);
+          + 'Amazon EC2 instance types C3, C4, D2, I2, M4 (excluding m4.16xlarge), M6a.x, and '
+          + 'R3 instances aren\'t supported for Windows workloads.', this);
       }
     }
 
