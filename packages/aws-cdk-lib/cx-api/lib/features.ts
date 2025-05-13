@@ -138,6 +138,7 @@ export const LOG_USER_POOL_CLIENT_SECRET_VALUE = '@aws-cdk/cognito:logUserPoolCl
 export const PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope';
 export const S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS = '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions';
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
+export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
 export const STEPFUNCTIONS_TASKS_LAMBDA_INVOKE_GRANT_ALL_VERSIONS = '@aws-cdk/aws-stepfunctions-tasks:lambdaInvokeGrantAllVersions';
 export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway';
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
@@ -1593,6 +1594,20 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: false,
     defaults: { v2: false },
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to use getAtt references for VPC V2 migration',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined.',
+    detailsMd: `
+      When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console. 
+      The previous behavior in cdk before this feature was; if only some of the BlockPublicAccessOptions were set (not all 4), then the ones undefined would default to false.
+      This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
+      The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
   },
 
   //////////////////////////////////////////////////////////////////////
