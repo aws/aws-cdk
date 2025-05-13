@@ -27,15 +27,9 @@ jobs:
       - name: Run Core tests
         run: cd packages/aws-cdk-lib && yarn test core
 
-      - name: Save PR number
-        run: |
-          mkdir -p ./pr
-          echo ${{ github.event.number }} > ./pr/NR
-
       - name: Upload Coverage and PR Info
         uses: actions/upload-artifact@v4
         with:
           name: coverage-artifacts
           path: |
             packages/aws-cdk-lib/coverage/cobertura-coverage.xml
-            pr/NR
