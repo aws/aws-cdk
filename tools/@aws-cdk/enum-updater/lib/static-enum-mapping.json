@@ -508,6 +508,24 @@
       "sdk_enum_name": "AuthenticationType",
       "match_percentage": 1
     },
+    "HandlerBehavior": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/channel-namespace.ts",
+      "sdk_service": "appsync",
+      "sdk_enum_name": "HandlerBehavior",
+      "match_percentage": 1
+    },
+    "AppSyncDataSourceType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.ts",
+      "sdk_service": "appsync",
+      "sdk_enum_name": "Type",
+      "match_percentage": 1
+    },
+    "LambdaInvokeType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.ts",
+      "sdk_service": "appsync",
+      "sdk_enum_name": "InvokeType",
+      "match_percentage": 1
+    },
     "Visibility": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/graphqlapi-base.ts",
       "sdk_service": "appsync",
