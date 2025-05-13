@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
 import { AssignableStateOptions, JsonataCommonOptions, JsonPathCommonOptions, renderJsonPath, State, StateBaseProps } from './state';
 import { Chain } from '../chain';
+import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
 
@@ -29,6 +30,16 @@ interface ParallelJsonPathOptions extends JsonPathCommonOptions {
    * @default - None
    */
   readonly resultSelector?: { [key: string]: any };
+
+  /**
+   * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-parameters
+   *
+   * @default No parameters
+   */
+  readonly parameters?: { [name: string]: any };
 }
 interface ParallelJsonataOptions extends JsonataCommonOptions {
   /**
@@ -167,8 +178,21 @@ export class Parallel extends State implements INextable {
       ...this.renderRetryCatch(),
       ...this.renderBranches(),
       ...this.renderResultSelector(),
+      ...this.renderParameters(),
       ...this.renderAssign(topLevelQueryLanguage),
     };
+  }
+
+  /**
+   * Render Parameters in ASL JSON format
+   */
+  private renderParameters(): any {
+    if (!this.parameters) {
+      return undefined;
+    }
+    return FieldUtils.renderObject({
+      Parameters: this.parameters,
+    });
   }
 
   /**
