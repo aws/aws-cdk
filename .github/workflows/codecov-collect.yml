@@ -1,0 +1,41 @@
+name: Codecov Collect
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  collect:
+    name: Collect Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build Library
+        run: npx lerna run build --scope=aws-cdk-lib
+
+      - name: Run Core tests
+        run: cd packages/aws-cdk-lib && yarn test core
+
+      - name: Save PR number
+        run: |
+          mkdir -p ./pr
+          echo ${{ github.event.number }} > ./pr/NR
+
+      - name: Upload Coverage and PR Info
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-artifacts
+          path: |
+            packages/aws-cdk-lib/coverage/cobertura-coverage.xml
+            pr/NR
