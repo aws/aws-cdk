@@ -17,8 +17,6 @@ baseConfig.rules['import/no-extraneous-dependencies'] = [
 baseConfig.rules['@cdklabs/no-throw-default-error'] = ['error'];
 // not yet supported
 const noThrowDefaultErrorNotYetSupported = [
-  'aws-ecs-patterns',
-  'aws-ecs',
   'aws-iam',
   'aws-lambda-destinations',
   'aws-lambda-event-sources',
