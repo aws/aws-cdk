@@ -1013,8 +1013,10 @@ export interface CreateAnomalyDetectionAlarmProps extends CreateAlarmOptionsBase
    * - LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD
    * - GREATER_THAN_UPPER_THRESHOLD
    * - LESS_THAN_LOWER_THRESHOLD
+   *
+   * @default LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD
    */
-  readonly comparisonOperator: ComparisonOperator;
+  readonly comparisonOperator?: ComparisonOperator;
 }
 
 function ifUndefined<T>(x: T | undefined, def: T | undefined): T | undefined {

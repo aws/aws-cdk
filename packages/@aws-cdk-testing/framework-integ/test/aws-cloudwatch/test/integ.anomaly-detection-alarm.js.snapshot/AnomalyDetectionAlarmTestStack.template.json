@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "DefaultAnomalyAlarmC6622B30": {
+  "DefaultOperatorAnomalyAlarm13E81AA2": {
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "LessThanLowerOrGreaterThanUpperThreshold",
@@ -88,12 +88,12 @@
   }
  },
  "Outputs": {
-  "ExportsOutputRefDefaultAnomalyAlarmC6622B30C3592624": {
+  "ExportsOutputRefDefaultOperatorAnomalyAlarm13E81AA2E47BFAEC": {
    "Value": {
-    "Ref": "DefaultAnomalyAlarmC6622B30"
+    "Ref": "DefaultOperatorAnomalyAlarm13E81AA2"
    },
    "Export": {
-    "Name": "AnomalyDetectionAlarmTestStack:ExportsOutputRefDefaultAnomalyAlarmC6622B30C3592624"
+    "Name": "AnomalyDetectionAlarmTestStack:ExportsOutputRefDefaultOperatorAnomalyAlarm13E81AA2E47BFAEC"
    }
   },
   "ExportsOutputRefExplicitOperatorAnomalyAlarm061F9C2BB2D8039E": {

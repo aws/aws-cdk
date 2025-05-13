@@ -13,12 +13,11 @@ const metric = new Metric({
   period: Duration.minutes(5),
 });
 
-// Create an anomaly detection alarm with default settings
-const defaultAlarm = metric.createAnomalyDetectionAlarm(stack, 'DefaultAnomalyAlarm', {
+// Create an anomaly detection alarm with default operator
+const defaultOperatorAlarm = metric.createAnomalyDetectionAlarm(stack, 'DefaultOperatorAnomalyAlarm', {
   stdDevs: 2,
   evaluationPeriods: 3,
   datapointsToAlarm: 2,
-  comparisonOperator: ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
 });
 
 // Create an anomaly detection alarm with explicit operator
@@ -44,7 +43,7 @@ const integ = new IntegTest(app, 'AnomalyDetectionAlarmIntegTest', {
 // Add assertions for each alarm
 integ.assertions
   .awsApiCall('CloudWatch', 'describeAlarms', {
-    AlarmNames: [defaultAlarm.alarmName],
+    AlarmNames: [defaultOperatorAlarm.alarmName],
   })
   .expect(ExpectedResult.objectLike({
     MetricAlarms: Match.arrayWith([

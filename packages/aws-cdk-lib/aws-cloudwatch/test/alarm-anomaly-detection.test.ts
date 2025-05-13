@@ -32,7 +32,7 @@ describe('AnomalyDetectionAlarm', () => {
       new AnomalyDetectionAlarm(stack, 'Alarm', {
         metric,
         evaluationPeriods: 3,
-        comparisonOperator: ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
+        // No comparisonOperator specified - should use default
       });
 
       // THEN

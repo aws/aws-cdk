@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallCloudWatchdescribeAlarms4c6b2ee966dfa8a0158e0c83ec955365": {
+  "AwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe": {
    "Type": "Custom::DeployAssert@SdkCallCloudWatchdescribeAlarms",
    "Properties": {
     "ServiceToken": {
@@ -19,7 +19,7 @@
        [
         "[\"",
         {
-         "Fn::ImportValue": "AnomalyDetectionAlarmTestStack:ExportsOutputRefDefaultAnomalyAlarmC6622B30C3592624"
+         "Fn::ImportValue": "AnomalyDetectionAlarmTestStack:ExportsOutputRefDefaultOperatorAnomalyAlarm13E81AA2E47BFAEC"
         },
         "\"]"
        ]
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1746665717386"
+    "salt": "1747107285739"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -146,7 +146,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1746665717389"
+    "salt": "1747107285742"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -178,17 +178,17 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1746665717390"
+    "salt": "1747107285742"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallCloudWatchdescribeAlarms4c6b2ee966dfa8a0158e0c83ec955365": {
+  "AssertionResultsAwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallCloudWatchdescribeAlarms4c6b2ee966dfa8a0158e0c83ec955365",
+     "AwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe",
      "assertion"
     ]
    }

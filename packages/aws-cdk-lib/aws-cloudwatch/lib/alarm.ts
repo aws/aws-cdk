@@ -606,7 +606,7 @@ export class AnomalyDetectionAlarm extends Alarm {
       throw new ValidationError('stdDevs must be greater than 0', scope);
     }
 
-    if (!Alarm.isAnomalyDetectionOperator(props.comparisonOperator)) {
+    if (props.comparisonOperator !== undefined && !Alarm.isAnomalyDetectionOperator(props.comparisonOperator)) {
       throw new ValidationError(`Invalid comparison operator for anomaly detection alarm: ${props.comparisonOperator}`, scope);
     }
 
@@ -624,6 +624,7 @@ export class AnomalyDetectionAlarm extends Alarm {
   constructor(scope: Construct, id: string, props: AnomalyDetectionAlarmProps) {
     super(scope, id, {
       ...props,
+      comparisonOperator: props.comparisonOperator ?? ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
       metric: AnomalyDetectionAlarm.createAnomalyDetectionMetric(scope, props),
       threshold: THRESHOLD_IGNORED_FOR_ANOMALY_DETECTION,
     });
