@@ -19,7 +19,6 @@ baseConfig.rules['@cdklabs/no-throw-default-error'] = ['error'];
 const noThrowDefaultErrorNotYetSupported = [
   'aws-ecs-patterns',
   'aws-ecs',
-  'aws-elasticsearch',
   'aws-globalaccelerator',
   'aws-globalaccelerator-endpoints',
   'aws-iam',
@@ -28,7 +27,6 @@ const noThrowDefaultErrorNotYetSupported = [
   'aws-lambda-nodejs',
   'aws-secretsmanager',
   'aws-servicecatalog',
-  'aws-sns-subscriptions',
   'core',
   'custom-resources',
   'region-info',
