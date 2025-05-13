@@ -203,14 +203,13 @@ describe('Static Mapping Generation', () => {
         amplify: ['amplify']
       };
   
-      const testManualEnumMappings =       {
+      const testManualEnumMappings = {
         amplify: {
           ManualEnum: {
             cdk_path: "path/to/enum",
             sdk_service: "amplify",
             sdk_enum_name: "OverrideManualEnum",
             match_percentage: 1.0,
-            manual: true
           }
         }
       };

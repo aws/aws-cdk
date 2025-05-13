@@ -86,6 +86,7 @@ export interface StaticMappingEntry {
   sdk_service: string;
   sdk_enum_name: string;
   match_percentage: number;
+  manual?: boolean;
 }
 
 export interface StaticMapping {
@@ -101,16 +102,6 @@ interface UnmatchedEnum {
 interface UnmatchedEnums {
   [module: string]: {
     [enumName: string]: UnmatchedEnum;
-  };
-}
-
-export interface ManualMappingEntry extends StaticMappingEntry {
-  manual: boolean;
-}
-
-export interface ManualEnumMapping {
-  [module: string]: {
-    [enumName: string]: ManualMappingEntry;
   };
 }
 
@@ -471,7 +462,7 @@ export async function generateAndSaveStaticMapping(
   cdkEnums: CdkEnums,
   sdkEnums: SdkEnums,
   moduleMappings: Record<string, string[]>,
-  manualEnumMappings: ManualEnumMapping
+  manualEnumMappings: StaticMapping
 ): Promise<void> {
   const staticMapping: StaticMapping = {};
   const unmatchedEnums: UnmatchedEnums = {};
@@ -499,6 +490,7 @@ export async function generateAndSaveStaticMapping(
           staticMapping[module] = {};
         }
         staticMapping[module][enumName] = manualEnumMappings[module][enumName];
+        staticMapping[module][enumName]["manual"] = true;
         continue;
       }
 

@@ -117,7 +117,6 @@ Manual mappings should be added in the form:
         "sdk_service": "serviceName",
         "sdk_enum_name": "AwsEnumThatWeWantThisToMapTo",
         "match_percentage": 1.0,
-        "manual": true
       }
     }
 }
@@ -132,7 +131,21 @@ For example:
         "sdk_service": "ec2",
         "sdk_enum_name": "IpAddressType",
         "match_percentage": 1.0,
-        "manual": true
+      }
+    }
+}
+```
+
+The entry that is overwritten in the `lib/static-enum-mapping.json` file will contain a field `manual: true`:
+```
+{
+    "ec2": {
+      "VpcEndpointIpAddressType": {
+        "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.ts",
+        "sdk_service": "ec2",
+        "sdk_enum_name": "IpAddressType",
+        "match_percentage": 1.0,
+        "manual": true,
       }
     }
 }
