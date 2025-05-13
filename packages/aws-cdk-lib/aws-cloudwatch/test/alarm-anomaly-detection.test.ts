@@ -174,7 +174,7 @@ describe('AnomalyDetectionAlarm', () => {
           evaluationPeriods: 3,
           comparisonOperator: ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
         });
-      }).toThrow(/Anomaly detection operators require to use the construct AnomalyDetectionAlarm/);
+      }).toThrow(/Anomaly detection operators require an anomaly detection metric. Use the construct AnomalyDetectionAlarm/);
     });
   });
 });
