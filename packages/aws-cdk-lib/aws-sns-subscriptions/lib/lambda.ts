@@ -3,7 +3,7 @@ import { SubscriptionProps } from './subscription';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
-import { ArnFormat, Names, Stack, Token } from '../../core';
+import { ArnFormat, Names, Stack, Token, ValidationError } from '../../core';
 
 /**
  * Properties for a Lambda subscription
@@ -25,7 +25,7 @@ export class LambdaSubscription implements sns.ITopicSubscription {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
     if (!Construct.isConstruct(this.fn)) {
-      throw new Error('The supplied lambda Function object must be an instance of Construct');
+      throw new ValidationError('The supplied lambda Function object must be an instance of Construct', topic);
     }
 
     this.fn.addPermission(`AllowInvoke:${Names.nodeUniqueId(topic.node)}`, {
