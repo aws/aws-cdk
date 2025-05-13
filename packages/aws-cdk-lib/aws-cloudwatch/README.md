@@ -397,11 +397,17 @@ CloudWatch anomaly detection applies machine learning algorithms to create a mod
 
 ### Creating an Anomaly Detection Alarm
 
-There are two ways to create an alarm based on anomaly detection:
+To build an Anomaly Detection Alarm, you should create a MathExpression that
+uses an `ANOMALY_DETECTION_BAND()` function, and use one of the band comparison
+operators (`LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD`,
+`GREATER_THAN_UPPER_THRESHOLD` or `LESS_THAN_LOWER_THRESHOLD`). Anomaly Detection
+Alarms have a dynamic threshold, not a fixed one, so the value for `threshold` is
+ignored. Specify the value `0` or use the symbolic
+`Alarm.ANOMALY_DETECTION_NO_THRESHOLD` value.
 
-#### Method 1: Using the `AnomalyDetectionAlarm` class (Recommended)
-
-The most straightforward way is to use the dedicated `AnomalyDetectionAlarm` class, which is specifically designed for anomaly detection:
+You can use the `AnomalyDetectionAlarm` class for convenience, whcih takes care of
+building the right metric function and passing in a magic value for the treshold
+for you:
 
 ```ts
 // Create a metric
@@ -415,54 +421,23 @@ const metric = new cloudwatch.Metric({
 // Create an anomaly detection alarm
 const alarm = new cloudwatch.AnomalyDetectionAlarm(this, 'AnomalyAlarm', {
   metric: metric,
-  evaluationPeriods: 3,
-  stdDevs: 2, // Number of standard deviations for the band (default: 2)
+  evaluationPeriods: 1,
+
+  // Number of standard deviations for the band (default: 2)
+  stdDevs: 2,
+  // Alarm outside on either side of the band, or just below or above it (default: outside)
   comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
   alarmDescription: 'Alarm when metric is outside the expected band',
 });
 ```
 
-This class handles all the complexity of setting up the anomaly detection band and configuring the alarm correctly.
-
-#### Method 2: Using the `createAnomalyDetectionAlarm` helper method
-
-You can also use the `createAnomalyDetectionAlarm` method on a `Metric` or `MathExpression` object:
-
-```ts
-// Create a metric
-const metric = new cloudwatch.Metric({
-  namespace: 'AWS/EC2',
-  metricName: 'CPUUtilization',
-  statistic: 'Average',
-  period: Duration.minutes(5),
-});
-
-// Create an anomaly detection alarm with default settings
-const alarm = metric.createAnomalyDetectionAlarm(this, 'AnomalyAlarm', {
-  stdDevs: 2, // Number of standard deviations for the band (default: 2)
-  evaluationPeriods: 3,
-  comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
-});
-
-// Or, create an anomaly detection alarm with custom settings
-const customAlarm = metric.createAnomalyDetectionAlarm(this, 'CustomAnomalyAlarm', {
-  stdDevs: 3,
-  evaluationPeriods: 2,
-  datapointsToAlarm: 2,
-  comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD,
-  alarmDescription: 'Alarm when metric exceeds the upper band of expected behavior',
-});
-```
-
-This method automatically sets up the necessary ANOMALY_DETECTION_BAND expression and configures the alarm correctly for anomaly detection.
-
 ### Comparison Operators for Anomaly Detection
 
 When creating an anomaly detection alarm, you must use one of the following comparison operators:
 
-- `LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD`: Alarm when the metric is either below the lower band or above the upper band
-- `GREATER_THAN_UPPER_THRESHOLD`: Alarm only when the metric is above the upper band
-- `LESS_THAN_LOWER_THRESHOLD`: Alarm only when the metric is below the lower band
+- `LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD`: Alarm when the metric is outside the band, on either side of it
+- `GREATER_THAN_UPPER_THRESHOLD`: Alarm only when the metric is above the band
+- `LESS_THAN_LOWER_THRESHOLD`: Alarm only when the metric is below the band
 
 For more information on anomaly detection in CloudWatch, see the [AWS documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Anomaly_Detection.html).
 
@@ -598,7 +573,7 @@ declare const dashboard: cloudwatch.Dashboard;
 
 dashboard.addWidgets(new cloudwatch.TableWidget({
   // ...
-  
+
   layout: cloudwatch.TableLayout.VERTICAL,
 }));
 ```
@@ -612,7 +587,7 @@ declare const dashboard: cloudwatch.Dashboard;
 
 dashboard.addWidgets(new cloudwatch.TableWidget({
   // ...
-  
+
   summary: {
     columns: [cloudwatch.TableSummaryColumn.AVERAGE],
     hideNonSummaryColumns: true,
@@ -628,7 +603,7 @@ declare const dashboard: cloudwatch.Dashboard;
 
 dashboard.addWidgets(new cloudwatch.TableWidget({
   // ...
-  
+
   thresholds: [
     cloudwatch.TableThreshold.above(1000, cloudwatch.Color.RED),
     cloudwatch.TableThreshold.between(500, 1000, cloudwatch.Color.ORANGE),

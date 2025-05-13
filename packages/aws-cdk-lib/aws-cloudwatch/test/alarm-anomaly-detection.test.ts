@@ -91,7 +91,7 @@ describe('AnomalyDetectionAlarm', () => {
           evaluationPeriods: 3,
           comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
         });
-      }).toThrow(/Invalid comparison operator for anomaly detection alarm/);
+      }).toThrow(/Fixed threshold operator GreaterThanThreshold can not be used/);
     });
 
     test('throws error for invalid stdDevs value', () => {
@@ -117,11 +117,19 @@ describe('AnomalyDetectionAlarm', () => {
       });
 
       // THEN
-      const cfnAlarm = alarm.node.defaultChild as CfnAlarm;
-      expect(cfnAlarm.threshold).toBeUndefined();
-      expect(cfnAlarm.thresholdMetricId).toEqual('expr_1');
-      expect(cfnAlarm.metrics).toHaveLength(2);
-      expect(cfnAlarm.metrics![0].expression).toContain('ANOMALY_DETECTION_BAND');
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+        Threshold: Match.absent(),
+        ThresholdMetricId: 'expr_1',
+        Metrics: Match.arrayEquals([
+          Match.objectLike({
+            Expression: Match.stringLikeRegexp('ANOMALY_DETECTION_BAND'),
+            Id: 'expr_1',
+            ReturnData: true,
+          }),
+          Match.anyValue(),
+        ]),
+      });
     });
 
     test('works with complex metric compositions', () => {
@@ -151,19 +159,6 @@ describe('AnomalyDetectionAlarm', () => {
     });
   });
 
-  describe('Integration with Metric Methods', () => {
-    test('metric.createAnomalyDetectionAlarm creates an AnomalyDetectionAlarm instance', () => {
-      // WHEN
-      const alarm = metric.createAnomalyDetectionAlarm(stack, 'Alarm', {
-        evaluationPeriods: 3,
-        comparisonOperator: ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
-      });
-
-      // THEN
-      expect(alarm).toBeInstanceOf(AnomalyDetectionAlarm);
-    });
-  });
-
   describe('Error Cases', () => {
     test('Alarm rejects anomaly detection operators', () => {
       // WHEN/THEN
@@ -174,7 +169,7 @@ describe('AnomalyDetectionAlarm', () => {
           evaluationPeriods: 3,
           comparisonOperator: ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
         });
-      }).toThrow(/Anomaly detection operators require an anomaly detection metric. Use the construct AnomalyDetectionAlarm/);
+      }).toThrow(/Anomaly detection operator LessThanLowerOrGreaterThanUpperThreshold requires an/);
     });
   });
 });

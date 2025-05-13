@@ -1,6 +1,7 @@
 import { Construct, IConstruct } from 'constructs';
-import { Alarm, AnomalyDetectionAlarm, ComparisonOperator, TreatMissingData } from './alarm';
+import { Alarm, ComparisonOperator } from './alarm';
 import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Statistic, Unit } from './metric-types';
+import { CreateAlarmOptionsBase } from './private/alarm-options';
 import { dispatchMetric, metricKey } from './private/metric-util';
 import { normalizeStatistic, pairStatisticToString, parseStatistic, singleStatisticToString } from './private/statistic';
 import { Stats } from './stats';
@@ -291,6 +292,29 @@ export interface MathExpressionProps extends MathExpressionOptions {
  */
 export class Metric implements IMetric {
   /**
+   * Creates an anomaly detection metric from the provided metric
+   *
+   * @param scope The construct scope
+   * @param props The anomaly detection alarm properties
+   * @returns An anomaly detection metric
+   */
+  public static anomalyDetectionFor(props: AnomalyDetectionMetricOptions): MathExpression {
+    // Validate stdDevs
+    if (props.stdDevs !== undefined && props.stdDevs <= 0) {
+      throw new cdk.UnscopedValidationError('stdDevs must be greater than 0');
+    }
+
+    // Create the anomaly detection band expression
+    return new MathExpression({
+      expression: `ANOMALY_DETECTION_BAND(m0, ${props.stdDevs ?? 2})`,
+      usingMetrics: { m0: props.metric },
+      period: props.period,
+      label: 'Anomaly Detection Band',
+      ...props,
+    });
+  }
+
+  /**
    * Grant permissions to the given identity to write metrics.
    *
    * @param grantee The IAM identity to give permissions to.
@@ -300,23 +324,6 @@ export class Metric implements IMetric {
       grantee,
       actions: ['cloudwatch:PutMetricData'],
       resourceArns: ['*'],
-    });
-  }
-
-  /**
-   * Make a new Alarm for this metric using anomaly detection
-   *
-   * @param scope The scope in which to create the alarm
-   * @param id The ID of the alarm
-   * @param props Alarm creation properties for anomaly detection
-   * @param metric The metric to create the alarm for
-   * @returns The newly created Alarm
-   */
-  public static createAnomalyDetectionAlarmFromMetric(scope: Construct, id: string, props: CreateAnomalyDetectionAlarmProps, metric: IMetric): Alarm {
-    // Create the anomaly detection alarm
-    return new AnomalyDetectionAlarm(scope, id, {
-      ...props,
-      metric: metric,
     });
   }
 
@@ -577,17 +584,6 @@ export class Metric implements IMetric {
     });
   }
 
-  /**
-   * Make a new Alarm for this metric using anomaly detection
-   *
-   * @param scope The scope in which to create the alarm
-   * @param id The ID of the alarm
-   * @param props Alarm creation properties for anomaly detection
-   */
-  public createAnomalyDetectionAlarm(scope: Construct, id: string, props: CreateAnomalyDetectionAlarmProps): Alarm {
-    return Metric.createAnomalyDetectionAlarmFromMetric(scope, id, props, this);
-  }
-
   public toString() {
     return this.label || this.metricName;
   }
@@ -833,17 +829,6 @@ export class MathExpression implements IMetric {
     });
   }
 
-  /**
-   * Make a new Alarm for this metric using anomaly detection
-   *
-   * @param scope The scope in which to create the alarm
-   * @param id The ID of the alarm
-   * @param props Alarm creation properties for anomaly detection
-   */
-  public createAnomalyDetectionAlarm(scope: Construct, id: string, props: CreateAnomalyDetectionAlarmProps): Alarm {
-    return Metric.createAnomalyDetectionAlarmFromMetric(scope, id, props, this);
-  }
-
   public toString() {
     return this.label || this.expression;
   }
@@ -891,90 +876,6 @@ function allIdentifiersInExpression(x: string) {
   return Array.from(matchAll(x, FIND_VARIABLE)).map(m => m[0]);
 }
 
-interface CreateAlarmOptionsBase {
-  /**
-   * The period over which the specified statistic is applied.
-   *
-   * Cannot be used with `MathExpression` objects.
-   *
-   * @default - The period from the metric
-   * @deprecated Use `metric.with({ period: ... })` to encode the period into the Metric object
-   */
-  readonly period?: cdk.Duration;
-
-  /**
-   * What function to use for aggregating.
-   *
-   * Can be one of the following:
-   *
-   * - "Minimum" | "min"
-   * - "Maximum" | "max"
-   * - "Average" | "avg"
-   * - "Sum" | "sum"
-   * - "SampleCount | "n"
-   * - "pNN.NN"
-   *
-   * Cannot be used with `MathExpression` objects.
-   *
-   * @default - The statistic from the metric
-   * @deprecated Use `metric.with({ statistic: ... })` to encode the period into the Metric object
-   */
-  readonly statistic?: string;
-
-  /**
-   * Name of the alarm
-   *
-   * @default Automatically generated name
-   */
-  readonly alarmName?: string;
-
-  /**
-   * Description for the alarm
-   *
-   * @default No description
-   */
-  readonly alarmDescription?: string;
-
-  /**
-   * The number of periods over which data is compared to the specified threshold.
-   */
-  readonly evaluationPeriods: number;
-
-  /**
-   * Specifies whether to evaluate the data and potentially change the alarm state if there are too few data points to be statistically significant.
-   *
-   * Used only for alarms that are based on percentiles.
-   *
-   * @default - Not configured.
-   */
-  readonly evaluateLowSampleCountPercentile?: string;
-
-  /**
-   * Sets how this alarm is to handle missing data points.
-   *
-   * @default TreatMissingData.Missing
-   */
-  readonly treatMissingData?: TreatMissingData;
-
-  /**
-   * Whether the actions for this alarm are enabled
-   *
-   * @default true
-   */
-  readonly actionsEnabled?: boolean;
-
-  /**
-   * The number of datapoints that must be breaching to trigger the alarm. This is used only if you are setting an "M
-   * out of N" alarm. In that case, this value is the M. For more information, see Evaluating an Alarm in the Amazon
-   * CloudWatch User Guide.
-   *
-   * @default ``evaluationPeriods``
-   *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarm-evaluation
-   */
-  readonly datapointsToAlarm?: number;
-}
-
 /**
  * Properties needed to make an alarm from a metric
  */
@@ -996,7 +897,15 @@ export interface CreateAlarmOptions extends CreateAlarmOptionsBase {
 /**
  * Properties needed to make an anomaly detection alarm from a metric
  */
-export interface CreateAnomalyDetectionAlarmProps extends CreateAlarmOptionsBase {
+export interface AnomalyDetectionMetricOptions extends MathExpressionOptions {
+  /**
+   * The metric to add the alarm on
+   *
+   * Metric objects can be obtained from most resources, or you can construct
+   * custom Metric objects by instantiating one.
+   */
+  readonly metric: IMetric;
+
   /**
    * The number of standard deviations to use for the anomaly detection band. The higher the value, the wider the band.
    *
@@ -1006,17 +915,6 @@ export interface CreateAnomalyDetectionAlarmProps extends CreateAlarmOptionsBase
    * @default 2
    */
   readonly stdDevs?: number;
-
-  /**
-   * Comparison operator to use to check if metric is breaching.
-   * Must be one of the anomaly detection operators:
-   * - LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD
-   * - GREATER_THAN_UPPER_THRESHOLD
-   * - LESS_THAN_LOWER_THRESHOLD
-   *
-   * @default LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD
-   */
-  readonly comparisonOperator?: ComparisonOperator;
 }
 
 function ifUndefined<T>(x: T | undefined, def: T | undefined): T | undefined {

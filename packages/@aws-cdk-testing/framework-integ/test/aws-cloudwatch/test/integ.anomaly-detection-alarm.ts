@@ -1,6 +1,6 @@
 import { App, Stack, Duration } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
-import { Metric, ComparisonOperator } from 'aws-cdk-lib/aws-cloudwatch';
+import { Metric, ComparisonOperator, AnomalyDetectionAlarm, Alarm } from 'aws-cdk-lib/aws-cloudwatch';
 
 const app = new App();
 const stack = new Stack(app, 'AnomalyDetectionAlarmTestStack');
@@ -14,22 +14,27 @@ const metric = new Metric({
 });
 
 // Create an anomaly detection alarm with default operator
-const defaultOperatorAlarm = metric.createAnomalyDetectionAlarm(stack, 'DefaultOperatorAnomalyAlarm', {
+const defaultOperatorAlarm = new AnomalyDetectionAlarm(stack, 'DefaultOperatorAnomalyAlarm', {
+  metric,
   stdDevs: 2,
   evaluationPeriods: 3,
   datapointsToAlarm: 2,
 });
 
 // Create an anomaly detection alarm with explicit operator
-const explicitOperatorAlarm = metric.createAnomalyDetectionAlarm(stack, 'ExplicitOperatorAnomalyAlarm', {
+const explicitOperatorAlarm = new AnomalyDetectionAlarm(stack, 'ExplicitOperatorAnomalyAlarm', {
+  metric,
   stdDevs: 3,
   evaluationPeriods: 2,
   comparisonOperator: ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD,
 });
 
-// Create an anomaly detection alarm with custom description
-const descriptiveAlarm = metric.createAnomalyDetectionAlarm(stack, 'DescriptiveAnomalyAlarm', {
+// Create an anomaly detection alarm with custom description, using a different way of building the alarm
+const descriptiveAlarm = Metric.anomalyDetectionFor({
+  metric,
   stdDevs: 2.5,
+}).createAlarm(stack, 'DescriptiveAnomalyAlarm', {
+  threshold: Alarm.ANOMALY_DETECTION_NO_THRESHOLD,
   evaluationPeriods: 3,
   alarmDescription: 'Alarm when CPU utilization is outside the expected band',
   comparisonOperator: ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD,

@@ -7,6 +7,7 @@ const CONSTRUCT_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.SynthesisError');
 const VALIDATION_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.ValidationError');
 const ASSERTION_ERROR_SYMBOL = Symbol.for('@aws-cdk/assertions.AssertionError');
 const ASSEMBLY_ERROR_SYMBOL = Symbol.for('@aws-cdk/cx-api.CloudAssemblyError');
+const ASSUMPTION_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.AssumptionError');
 
 /**
  * Helper to check if an error is of a certain type.
@@ -198,5 +199,22 @@ export class UnscopedValidationError extends ConstructError {
     super(msg, undefined, ValidationError.name);
     Object.setPrototypeOf(this, UnscopedValidationError.prototype);
     Object.defineProperty(this, VALIDATION_ERROR_SYMBOL, { value: true });
+  }
+}
+
+/**
+ * Some construct code made an assumption somewhere that doesn't hold true
+ *
+ * This error always indicates a bug in the construct.
+ */
+export class AssumptionError extends ConstructError {
+  public get type(): 'assumption' {
+    return 'assumption';
+  }
+
+  constructor(msg: string) {
+    super(msg, undefined, AssumptionError.name);
+    Object.setPrototypeOf(this, AssumptionError.prototype);
+    Object.defineProperty(this, ASSUMPTION_ERROR_SYMBOL, { value: true });
   }
 }
