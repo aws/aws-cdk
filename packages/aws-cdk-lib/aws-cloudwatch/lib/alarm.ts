@@ -18,7 +18,6 @@ import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-re
  * Properties for Alarms
  */
 export interface AlarmProps extends CreateAlarmOptions {
-
   /**
    * The metric to add the alarm on
    *
@@ -211,15 +210,6 @@ export class Alarm extends AlarmBase {
    */
   private readonly annotation: HorizontalAnnotation;
 
-  /**
-   * The id of the primary metric we rendered
-   *
-   * Only available if we rendered metrics in "modern" style (using the
-   * `metrics[]` array), not in legacy style (using the top-level `metricName`/`namespace`
-   * etc fields).
-   */
-  private primaryMetricId: string | undefined;
-
   constructor(scope: Construct, id: string, props: AlarmProps) {
     super(scope, id, {
       physicalName: props.alarmName,
@@ -248,7 +238,7 @@ export class Alarm extends AlarmBase {
         );
       }
 
-      thresholdMetricId = Lazy.string({ produce: () => this.primaryMetricId });
+      // thresholdMetricId will be assigned below (only becomes available after rendering)
     } else {
       if (isAnomalyDetectionMetric(props.metric)) {
         throw new ValidationError(
@@ -268,8 +258,7 @@ export class Alarm extends AlarmBase {
     // Render metric, process potential overrides from the alarm
     // (It would be preferable if the statistic etc. was worked into the metric,
     // but hey we're allowing overrides...)
-    const rendered = this.renderMetric(props.metric);
-    this.primaryMetricId = rendered.primaryId;
+    const rendered = this.renderMetric(props.metric, isAnomalyDetection);
     const metricProps: Writeable<Partial<CfnAlarmProps>> = rendered.props;
     if (props.period) {
       metricProps.period = props.period.toSeconds();
@@ -280,6 +269,11 @@ export class Alarm extends AlarmBase {
         statistic: renderIfSimpleStatistic(props.statistic),
         extendedStatistic: renderIfExtendedStatistic(props.statistic),
       });
+    }
+
+    if (isAnomalyDetection) {
+      // Only available after rendering
+      thresholdMetricId = rendered.primaryId;
     }
 
     const alarm = new CfnAlarm(this, 'Resource', {
@@ -305,10 +299,6 @@ export class Alarm extends AlarmBase {
       // Metric
       ...metricProps,
     });
-
-    if (isAnomalyDetection) {
-      this.ensureAnomalyMetricsReturnData(alarm);
-    }
 
     this.alarmArn = this.getResourceArnAttribute(alarm.attrArn, {
       service: 'cloudwatch',
@@ -340,55 +330,6 @@ export class Alarm extends AlarmBase {
     for (const [i, message] of Object.entries(this.metric.warningsV2 ?? {})) {
       Annotations.of(this).addWarningV2(i, message);
     }
-  }
-
-  /**
-   * Ensures that both the anomaly detection band metric and its source metric have returnData set to true.
-   *
-   * For anomaly detection alarms to work correctly, both the anomaly detection band metric and the source metric
-   * it references must have their returnData property set to true. This is because:
-   * 1. The anomaly detection band metric (referenced by thresholdMetricId) needs to return data to be used as the threshold
-   * 2. The source metric needs to return data to be compared against the anomaly band
-   *
-   * This method:
-   * 1. Finds the anomaly detection band metric in the metrics array
-   * 2. Sets returnData: true for the band metric
-   * 3. Extracts the source metric ID from the band's expression
-   * 4. Finds the source metric and sets returnData: true for it
-   *
-   * @param alarm - The CloudWatch alarm to configure
-   * @throws {ValidationError} if the anomaly detection band or source metric cannot be found
-   */
-  private ensureAnomalyMetricsReturnData(alarm: CfnAlarm): void {
-    const cfnMetrics = alarm.metrics as CfnAlarm.MetricDataQueryProperty[];
-    if (!cfnMetrics || cfnMetrics.length < 2) {
-      throw new ValidationError('Anomaly detection alarms require at least two metrics: the source metric and the anomaly detection band.', this);
-    }
-
-    // Find the anomaly detection band metric
-    const anomalyBandMetric = cfnMetrics.find(m => m.expression && m.expression.includes('ANOMALY_DETECTION_BAND'));
-    if (!anomalyBandMetric) {
-      throw new ValidationError('Could not find anomaly detection band metric. Anomaly detection alarms require a metric with an expression containing ANOMALY_DETECTION_BAND.', this);
-    }
-
-    // Set returnData: true for the anomaly band metric
-    (anomalyBandMetric as any).returnData = true;
-
-    // Extract the ID of the source metric from the expression
-    const match = anomalyBandMetric.expression?.match(/ANOMALY_DETECTION_BAND\(([^,]+)/);
-    if (!match || !match[1]) {
-      throw new ValidationError(`Could not extract source metric ID from anomaly detection band expression: ${anomalyBandMetric.expression}`, this);
-    }
-
-    const sourceMetricId = match[1].trim();
-
-    // Find the source metric and set returnData: true
-    const sourceMetric = cfnMetrics.find(m => m.id === sourceMetricId);
-    if (!sourceMetric) {
-      throw new ValidationError(`Could not find source metric with ID "${sourceMetricId}" referenced in anomaly detection band.`, this);
-    }
-
-    (sourceMetric as any).returnData = true;
   }
 
   /**
@@ -441,15 +382,48 @@ export class Alarm extends AlarmBase {
   }
 
   /**
-   * Render the given top-level metric to properties of CfnAlarmProps
+   * Render the given metric to properties of CfnAlarmProps
    *
-   * Tries to render to the legacy fields if possible (to not unduly change
-   * existing templates from before the modern fields were added).
+   * - Tries to render to the legacy fields if possible (to not unduly change
+   *   existing templates from before the modern fields were added).
+   * - If the metric is a math expression that depends on other metrics, recursively
+   *   render all of them to the `metrics[]` array.
    *
-   * Returns the fields and the 'id' that was assigned to the primary metric
-   * (if rendering to the modern fields).
+   * Returns the alarm fields, as well as the 'id' that was assigned to the primary metric
+   * (if rendering to the modern fields, because the legacy fields don't have an id).
+   *
+   * The metric we are trying to render (potentially) forms a tree that looks like this
+   * (the example doesn't make sense but it shows the data structures)
+   *
+   * ```
+   *    +-- MathExpression('m1 + m2')
+   *          |
+   *          +--- m1: MetricStat('AWS/DynamoDB', 'Errors', 'SUM')
+   *          +--- m2: MathExpression('m3 * m4')
+   *                     |
+   *                     +--- m3: MetricStat('AWS/DynamoDB', 'BytesWritten', 'AVG')
+   *                     +--- m4: MetricStat('AWS/SQS', 'MessagesReceived', 'MIN')
+   * ```
+   *
+   * `metric` is the root of this metric tree, and we need to render this to a
+   * flat list of 5 `MetricData` objects where we make sure that all metrics
+   * have a (unique) identifier assigned and only the root one has `ReturnData:
+   * true` set.
+   *
+   * ## doubleReturnData
+   *
+   * Normally, exactly one metric in the list needs to have `ReturnData: true` set, and it's
+   * the "primary" metric, i.e., the metric that the actual alarm should trigger on. There is
+   * an exception to this rule: for anomaly detection alarms, both the anomaly detection
+   * math expression *AND* the metric that the expression is based on must have `ReturnData: true`
+   * set.
+   *
+   * This flag controls whether we set `ReturnData: true` only on the top-level math expression, or
+   * on both the top-level and the second-level expression.
    */
-  private renderMetric(metric: IMetric): { props: AlarmMetricFields; primaryId?: string } {
+  private renderMetric(metric: IMetric, doubleReturnData: boolean): { props: AlarmMetricFields; primaryId?: string } {
+    const returnDataLevel = doubleReturnData ? 2 : 1;
+
     const self = this;
     return dispatchMetric(metric, {
       withStat(stat, conf) {
@@ -515,6 +489,8 @@ export class Alarm extends AlarmBase {
               primaryId = id;
             }
 
+            const returnData = entry.level <= returnDataLevel;
+
             return dispatchMetric(entry.metric, {
               withStat(stat, conf) {
                 self.validateMetricStat(stat, entry.metric);
@@ -533,7 +509,7 @@ export class Alarm extends AlarmBase {
                   id,
                   accountId: self.requiresAccountId(stat) ? stat.account : undefined,
                   label: conf.renderingProperties?.label as string,
-                  returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
+                  returnData,
                 };
               },
               withExpression(expr, conf) {
@@ -550,7 +526,7 @@ export class Alarm extends AlarmBase {
                   id,
                   label: conf.renderingProperties?.label as string,
                   period: hasSubmetrics ? undefined : expr.period,
-                  returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
+                  returnData,
                 };
               },
             });

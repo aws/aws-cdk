@@ -399,15 +399,13 @@ CloudWatch anomaly detection applies machine learning algorithms to create a mod
 
 To build an Anomaly Detection Alarm, you should create a MathExpression that
 uses an `ANOMALY_DETECTION_BAND()` function, and use one of the band comparison
-operators (`LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD`,
-`GREATER_THAN_UPPER_THRESHOLD` or `LESS_THAN_LOWER_THRESHOLD`). Anomaly Detection
-Alarms have a dynamic threshold, not a fixed one, so the value for `threshold` is
-ignored. Specify the value `0` or use the symbolic
-`Alarm.ANOMALY_DETECTION_NO_THRESHOLD` value.
+operators (see the next section). Anomaly Detection Alarms have a dynamic
+threshold, not a fixed one, so the value for `threshold` is ignored. Specify the
+value `0` or use the symbolic `Alarm.ANOMALY_DETECTION_NO_THRESHOLD` value.
 
-You can use the `AnomalyDetectionAlarm` class for convenience, whcih takes care of
-building the right metric function and passing in a magic value for the treshold
-for you:
+You can use the `AnomalyDetectionAlarm` class for convenience, which takes care
+of building the right metric math expression and passing in a magic value for
+the treshold for you:
 
 ```ts
 // Create a metric
