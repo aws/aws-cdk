@@ -29,7 +29,6 @@ const noThrowDefaultErrorNotYetSupported = [
   'aws-scheduler',
   'aws-secretsmanager',
   'aws-servicecatalog',
-  'aws-sns-subscriptions',
   'core',
   'custom-resources',
   'region-info',
