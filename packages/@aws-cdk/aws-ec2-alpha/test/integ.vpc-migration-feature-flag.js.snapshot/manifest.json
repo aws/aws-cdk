@@ -1,0 +1,194 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "VpcMigrationFeatureFlagDisabledStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "VpcMigrationFeatureFlagDisabledStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "VpcMigrationFeatureFlagDisabledStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "VpcMigrationFeatureFlagDisabledStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1ace05f44ed28fe50e93b3b4488273963128378aad7e315df87448ed9349316b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "VpcMigrationFeatureFlagDisabledStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "VpcMigrationFeatureFlagDisabledStack.assets"
+      ],
+      "metadata": {
+        "/VpcMigrationFeatureFlagDisabledStack/VpcWithFeatureFlagDisabled": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/VpcWithFeatureFlagDisabled/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcWithFeatureFlagDisabled0CB6925D"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/PublicSubnet": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/PublicSubnet/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicSubnet1C95672B"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/PublicSubnet/RouteTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/PublicSubnet/RouteTable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicSubnetRouteTable0E6A0E9F"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/PublicSubnet/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicSubnetRouteTableAssociation0984B11D"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/InternetGateway": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/InternetGateway/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InternetGatewayIGW073A1D76"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/InternetGateway/GWAttachment": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InternetGatewayGWAttachmentF3368F37"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/NatGateway": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/NatGateway/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NatGatewayNATGateway7D1360DD"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/RouteTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/RouteTable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RouteTableE1378006"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/RouteTable/RouteToIgw": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/RouteTable/RouteToIgw/Route": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RouteTableRouteToIgwRoute20AFC0D9"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/RouteTable/RouteToNat": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/RouteTable/RouteToNat/Route": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RouteTableRouteToNatRoute5E9F1ACC"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/IgwRouterId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IgwRouterId"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/NatGatewayRouterId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NatGatewayRouterId"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/RouteTableId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RouteTableId"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/VpcMigrationFeatureFlagDisabledStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "VpcMigrationFeatureFlagDisabledStack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}
