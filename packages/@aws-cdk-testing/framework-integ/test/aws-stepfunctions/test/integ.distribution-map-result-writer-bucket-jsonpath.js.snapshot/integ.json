@@ -8,5 +8,6 @@
       "assertionStack": "aws-stepfunctions-map-result-writer-bucket-jsonpath-test/DefaultTest/DeployAssert",
       "assertionStackName": "awsstepfunctionsmapresultwriterbucketjsonpathtestDefaultTestDeployAssert0581372F"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
