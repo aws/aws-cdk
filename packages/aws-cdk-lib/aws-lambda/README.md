@@ -232,6 +232,42 @@ To use `applicationLogLevelV2` and/or `systemLogLevelV2` you must set `loggingFo
 
 *TPA: Tag propagation, Prop Injection, Aspects*
 
+#### Order of precedence 
+
+               ┌───────────────────────┐
+               │  logRetention is set  │
+               └──────────┬────────────┘
+                          ▼
+      Highest      Create LogGroup via Custom Resource
+     Precedence    (retention managed, logGroup disallowed)
+
+                          │
+                          ▼
+                ┌────────────────────┐
+                │  logGroup is set   │
+                └─────────┬──────────┘
+                          ▼
+              Use the provided LogGroup instance
+                (logRetention disallowed)
+
+                          │
+                          ▼
+               ┌────────────────────────────────────────────┐
+               │ Feature flag enabled:                      │
+               │ aws-cdk:aws-lambda:useCdkManagedLogGroup   │
+               └─────────┬──────────────────────────────────┘
+                          ▼
+          Create LogGroup at synth time (default settings)
+
+                          │
+                          ▼
+                ┌────────────────────────┐
+                │ Default (no config set)│
+                └─────────┬──────────────┘
+                          ▼
+          Lambda service creates log group at runtime
+        (CDK does not manage the log group resource)
+
 ### Tag Propagation
 
 Refer section `Log Group Creation Methods` to find out which modes support tag propagation. 
