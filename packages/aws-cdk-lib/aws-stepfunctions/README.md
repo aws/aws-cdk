@@ -725,7 +725,8 @@ see [step function comparison operators](https://docs.aws.amazon.com/step-functi
 ### Parallel
 
 A `Parallel` state executes one or more subworkflows in parallel. It can also
-be used to catch and recover from errors in subworkflows.
+be used to catch and recover from errors in subworkflows. The `parameters` property
+can be used to transform the input that is passed to each branch of the parallel execution.
 
 ```ts
 const parallel = new sfn.Parallel(this, 'Do the work in parallel');
