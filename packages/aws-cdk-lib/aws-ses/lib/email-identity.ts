@@ -8,6 +8,7 @@ import * as route53 from '../../aws-route53';
 import { ArnFormat, IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * An email identity
@@ -383,7 +384,13 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
 /**
  * An email identity
  */
+@propertyInjectable
 export class EmailIdentity extends EmailIdentityBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ses.EmailIdentity';
+
   /**
    * Use an existing email identity
    */
