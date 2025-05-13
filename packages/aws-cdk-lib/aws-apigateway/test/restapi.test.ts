@@ -1,6 +1,6 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { cx_api } from '../..';
-import { Template } from '../../assertions';
+import { Template, Match } from '../../assertions';
 import { UserPool } from '../../aws-cognito';
 import { GatewayVpcEndpoint } from '../../aws-ec2';
 import * as ec2 from '../../aws-ec2';
@@ -539,6 +539,39 @@ describe('restapi', () => {
       },
       endpointTypes: [apigw.EndpointType.PRIVATE],
     })).toThrow(/Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed/);
+  });
+
+  test.each([
+    apigw.IpAddressType.IPV4,
+    apigw.IpAddressType.DUAL_STACK,
+  ])('configure ip address type', (ipAddressType) => {
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {
+      endpointConfiguration: {
+        types: [apigw.EndpointType.EDGE],
+        ipAddressType,
+      },
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      EndpointConfiguration: {
+        Types: ['EDGE'],
+        IpAddressType: ipAddressType,
+      },
+    });
+  });
+
+  test('throw error for configuring IPv4 for private endpoint', () => {
+    // THEN
+    expect(() => new apigw.RestApi(stack, 'api', {
+      endpointConfiguration: {
+        types: [apigw.EndpointType.PRIVATE],
+        ipAddressType: apigw.IpAddressType.IPV4,
+      },
+    })).toThrow('Private APIs can only have a dualstack IP address type.');
   });
 
   test('"cloneFrom" can be used to clone an existing API', () => {
@@ -1413,6 +1446,26 @@ describe('SpecRestApi', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
       ApiKeyRequired: false,
+    });
+  });
+
+  test.each([
+    [apigw.RestApiMode.OVERWRITE, 'overwrite'],
+    [apigw.RestApiMode.MERGE, 'merge'],
+    [undefined, undefined],
+  ])('mode property is set (%s)', (mode, expectedMode) => {
+    // WHEN
+    const api = new apigw.SpecRestApi(stack, 'api', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      mode,
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      Name: 'api',
+      Mode: expectedMode ?? Match.absent(),
     });
   });
 

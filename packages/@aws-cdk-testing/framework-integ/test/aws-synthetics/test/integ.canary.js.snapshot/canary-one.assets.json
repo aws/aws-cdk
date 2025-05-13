@@ -1,7 +1,8 @@
 {
-  "version": "38.0.1",
+  "version": "41.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+      "displayName": "canary-one/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
         "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
         "packaging": "zip"
@@ -15,6 +16,7 @@
       }
     },
     "d57a897c2081bda5ce88819548c8b944dff49e721e1f7f7e9e3dd8323e6ccb0d": {
+      "displayName": "canary-one/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider Code",
       "source": {
         "path": "asset.d57a897c2081bda5ce88819548c8b944dff49e721e1f7f7e9e3dd8323e6ccb0d",
         "packaging": "zip"
@@ -28,6 +30,7 @@
       }
     },
     "5178413cfe8db00b2d5dcfa9be417e934c64601d0da3031d88c145c8293bc27f": {
+      "displayName": "DirectoryAsset/Code",
       "source": {
         "path": "asset.5178413cfe8db00b2d5dcfa9be417e934c64601d0da3031d88c145c8293bc27f",
         "packaging": "zip"
@@ -41,6 +44,7 @@
       }
     },
     "b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820": {
+      "displayName": "ZipAsset/Code",
       "source": {
         "path": "asset.b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820.zip",
         "packaging": "file"
@@ -53,7 +57,8 @@
         }
       }
     },
-    "037fc45e44ab16554ebb67e7051c9a8773ce8680ac502448adc6996308ce2aa9": {
+    "5b8222512f4c1016893ec8d314ff4211f5db830984d9624fc7107744055acfd7": {
+      "displayName": "canary-one Template",
       "source": {
         "path": "canary-one.template.json",
         "packaging": "file"
@@ -61,7 +66,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "037fc45e44ab16554ebb67e7051c9a8773ce8680ac502448adc6996308ce2aa9.json",
+          "objectKey": "5b8222512f4c1016893ec8d314ff4211f5db830984d9624fc7107744055acfd7.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

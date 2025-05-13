@@ -136,6 +136,8 @@ export const ASPECT_PRIORITIES_MUTATING = '@aws-cdk/core:aspectPrioritiesMutatin
 export const DYNAMODB_TABLE_RETAIN_TABLE_REPLICA = '@aws-cdk/aws-dynamodb:retainTableReplica';
 export const LOG_USER_POOL_CLIENT_SECRET_VALUE = '@aws-cdk/cognito:logUserPoolClientSecretValue';
 export const PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope';
+export const S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS = '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions';
+export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1560,6 +1562,32 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.188.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag and set resultWriter in DistributedMap',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS]: {
+    type: FlagType.BugFix,
+    summary: 'Add an S3 trust policy to a KMS key resource policy for SNS subscriptions.',
+    detailsMd: `
+      When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
+          `,
+    introducedIn: { v2: '2.195.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [USE_RESOURCEID_FOR_VPCV2_MIGRATION]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, use resource IDs for VPC V2 migration',
+    detailsMd: `
+        When this feature flag is enabled, the VPC V2 migration will use resource IDs instead of getAtt references
+        for migrating resources from VPC V1 to VPC V2. This helps ensure a smoother migration path between
+        the two versions.
+      `,
+    introducedIn: { v2: 'V2_NEXT' },
+    recommendedValue: false,
+    defaults: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to use getAtt references for VPC V2 migration',
   },
 };
 
