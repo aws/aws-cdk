@@ -456,6 +456,7 @@ function isValidMatch(cdkValues: Set<string>, sdkValues: Set<string>): boolean {
  * @param {CdkEnums} cdkEnums - The extracted CDK enums.
  * @param {SdkEnums} sdkEnums - The extracted AWS SDK enums.
  * @param {Record<string, string[]>} moduleMappings - The manually defined service mappings.
+ * @param {StaticMapping} manualEnumMappings - Manually defined overrides for the static enum mappings.
  * @returns {Promise<void>}
  */
 export async function generateAndSaveStaticMapping(
