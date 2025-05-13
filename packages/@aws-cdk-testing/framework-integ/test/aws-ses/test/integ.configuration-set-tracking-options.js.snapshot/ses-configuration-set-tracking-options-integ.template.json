@@ -4,17 +4,7 @@
    "Type": "AWS::SES::ConfigurationSet",
    "Properties": {
     "TrackingOptions": {
-     "CustomRedirectDomain": {
-      "Fn::Join": [
-       "",
-       [
-        "tracking.",
-        {
-         "Fn::ImportValue": "sesconfigurationsettrackingoptionsintegIdentityStack5770606B:ExportsOutputRefEmailIdentity7187767DE6C74978"
-        }
-       ]
-      ]
-     },
+     "CustomRedirectDomain": "tracking.example.com",
      "HttpsPolicy": "REQUIRE"
     }
    }

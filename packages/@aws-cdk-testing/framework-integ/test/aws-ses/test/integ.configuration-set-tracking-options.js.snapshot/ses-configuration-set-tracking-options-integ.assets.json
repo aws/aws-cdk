@@ -1,7 +1,7 @@
 {
   "version": "41.0.0",
   "files": {
-    "6eaf0ca7cb73d371fa362ae48a56859f6eb09447341975df9eb27b6dd33b2c96": {
+    "86057bab9ee2a7522fb13da9bb9e4b35e39ee1e7f76d1abaf54dedaf1bffa4e8": {
       "displayName": "ses-configuration-set-tracking-options-integ Template",
       "source": {
         "path": "ses-configuration-set-tracking-options-integ.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6eaf0ca7cb73d371fa362ae48a56859f6eb09447341975df9eb27b6dd33b2c96.json",
+          "objectKey": "86057bab9ee2a7522fb13da9bb9e4b35e39ee1e7f76d1abaf54dedaf1bffa4e8.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

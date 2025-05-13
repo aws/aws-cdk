@@ -1,90 +1,6 @@
 {
-  "version": "42.0.0",
+  "version": "43.0.0",
   "artifacts": {
-    "sesconfigurationsettrackingoptionsintegIdentityStack5770606B.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "sesconfigurationsettrackingoptionsintegIdentityStack5770606B.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "sesconfigurationsettrackingoptionsintegIdentityStack5770606B": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "sesconfigurationsettrackingoptionsintegIdentityStack5770606B.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d465219bb51ab49e119b1d8d2d3c22ec083704dd8980a8e15d1f9f00f4050268.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "sesconfigurationsettrackingoptionsintegIdentityStack5770606B.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "sesconfigurationsettrackingoptionsintegIdentityStack5770606B.assets"
-      ],
-      "metadata": {
-        "/ses-configuration-set-tracking-options-integ/IdentityStack/EmailIdentity": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/ses-configuration-set-tracking-options-integ/IdentityStack/EmailIdentity/DkimDnsToken1": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EmailIdentityDkimDnsToken1BA32ACB3"
-          }
-        ],
-        "/ses-configuration-set-tracking-options-integ/IdentityStack/EmailIdentity/DkimDnsToken2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EmailIdentityDkimDnsToken2BBEBB8EC"
-          }
-        ],
-        "/ses-configuration-set-tracking-options-integ/IdentityStack/EmailIdentity/DkimDnsToken3": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EmailIdentityDkimDnsToken3BB5E8A49"
-          }
-        ],
-        "/ses-configuration-set-tracking-options-integ/IdentityStack/EmailIdentity/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EmailIdentity7187767D"
-          }
-        ],
-        "/ses-configuration-set-tracking-options-integ/IdentityStack/Exports/Output{\"Ref\":\"EmailIdentity7187767D\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefEmailIdentity7187767DE6C74978"
-          }
-        ],
-        "/ses-configuration-set-tracking-options-integ/IdentityStack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/ses-configuration-set-tracking-options-integ/IdentityStack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
-      "displayName": "ses-configuration-set-tracking-options-integ/IdentityStack"
-    },
     "ses-configuration-set-tracking-options-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -102,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6eaf0ca7cb73d371fa362ae48a56859f6eb09447341975df9eb27b6dd33b2c96.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/86057bab9ee2a7522fb13da9bb9e4b35e39ee1e7f76d1abaf54dedaf1bffa4e8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -115,7 +31,6 @@
         }
       },
       "dependencies": [
-        "sesconfigurationsettrackingoptionsintegIdentityStack5770606B",
         "ses-configuration-set-tracking-options-integ.assets"
       ],
       "metadata": {
@@ -201,5 +116,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1014.0"
 }
