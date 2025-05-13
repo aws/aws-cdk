@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "05b7dfebaf2a0fbf0aeb7087ac8a409be4b1bf16f1a49b76a080b88eb988045f": {
+      "displayName": "aws-cdk-lambda-dlq Template",
+      "source": {
+        "path": "aws-cdk-lambda-dlq.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "05b7dfebaf2a0fbf0aeb7087ac8a409be4b1bf16f1a49b76a080b88eb988045f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
