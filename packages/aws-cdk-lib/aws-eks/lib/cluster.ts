@@ -26,7 +26,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as ssm from '../../aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, ValidationError, UnscopedValidationError } from '../../core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, ValidationError, UnscopedValidationError, Names } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 // defaults are based on https://eksctl.io
@@ -1769,7 +1769,17 @@ export class Cluster extends ClusterBase {
     // add the cluster resource itself as a dependency of the barrier
     this._kubectlReadyBarrier.node.addDependency(this._clusterResource);
 
-    this.clusterName = this.getResourceNameAttribute(resource.ref);
+    // Get the name from CloudFormation, if name is longer than 100 characters
+    // trim it down to a max length of 100 using uniqueResourceName
+    if (this.getResourceNameAttribute(resource.ref).length > 100) {
+      this.clusterName = Names.uniqueResourceName(this, {
+        maxLength: 100,
+        separator: '-',
+      });
+    } else {
+      this.clusterName = this.getResourceNameAttribute(resource.ref);
+    }
+
     this.clusterArn = this.getResourceArnAttribute(resource.attrArn, clusterArnComponents(this.physicalName));
 
     this.clusterEndpoint = resource.attrEndpoint;
