@@ -1,7 +1,7 @@
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 import { IRole, PolicyStatement } from '../../aws-iam';
 import { IScheduleTarget } from '../../aws-scheduler';
-import { Annotations, Aws, Token } from '../../core';
+import { Annotations, Aws, Token, UnscopedValidationError } from '../../core';
 import { awsSdkToIamAction } from '../../custom-resources/lib/helpers-internal';
 
 /**
@@ -80,13 +80,13 @@ export class Universal extends ScheduleTargetBase implements IScheduleTarget {
     const action = props.action;
 
     if (!Token.isUnresolved(service) && service !== service.toLowerCase()) {
-      throw new Error(`API service must be lowercase, got: ${service}`);
+      throw new UnscopedValidationError(`API service must be lowercase, got: ${service}`);
     }
     if (!Token.isUnresolved(action) && !action.startsWith(action[0]?.toLowerCase())) {
-      throw new Error(`API action must be camelCase, got: ${action}`);
+      throw new UnscopedValidationError(`API action must be camelCase, got: ${action}`);
     }
     if (!Token.isUnresolved(action) && NOT_SUPPORTED_ACTION_PREFIX.some(prefix => action.startsWith(prefix))) {
-      throw new Error(`Read-only API action is not supported by EventBridge Scheduler: ${service}:${action}`);
+      throw new UnscopedValidationError(`Read-only API action is not supported by EventBridge Scheduler: ${service}:${action}`);
     }
 
     const arn = `arn:${Aws.PARTITION}:scheduler:::aws-sdk:${service}:${action}`;
