@@ -33,7 +33,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "CDKIntegTestTagIGW"
+      "Value": "CDKintegTestVPC"
      }
     ]
    }
@@ -118,7 +118,6 @@
     ]
    },
    "DependsOn": [
-    "testsubnetRouteTableAssociationC106676D",
     "VPCintegtesttagVpnGatewayIGW22B9A571",
     "VPCintegtesttagVpnGatewayRoutePropagation4E2BFD4D",
     "VPCintegtesttagVpnGatewayVPCVPNGW8D48C216"
@@ -174,12 +173,12 @@
     "CidrBlock": "10.1.0.0/24",
     "Tags": [
      {
-      "Key": "Name",
+      "Key": "aws-cdk:subnet-name",
       "Value": "CDKIntegTestSubnet"
      },
      {
-      "Key": "VpcName",
-      "Value": "CDKintegTestVPC"
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
      }
     ],
     "VpcId": {

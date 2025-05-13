@@ -2,7 +2,7 @@ import {
   IntegrationPattern,
   JsonPath,
 } from '../../../aws-stepfunctions';
-import { Aws } from '../../../core';
+import { Aws, UnscopedValidationError } from '../../../core';
 
 /**
  * Verifies that a validation pattern is supported for a service integration
@@ -10,7 +10,7 @@ import { Aws } from '../../../core';
  */
 export function validatePatternSupported(integrationPattern: IntegrationPattern, supportedPatterns: IntegrationPattern[]) {
   if (!supportedPatterns.includes(integrationPattern)) {
-    throw new Error(`Unsupported service integration pattern. Supported Patterns: ${supportedPatterns}. Received: ${integrationPattern}`);
+    throw new UnscopedValidationError(`Unsupported service integration pattern. Supported Patterns: ${supportedPatterns}. Received: ${integrationPattern}`);
   }
 }
 
@@ -29,7 +29,7 @@ const resourceArnSuffix: Record<IntegrationPattern, string> = {
 
 export function integrationResourceArn(service: string, api: string, integrationPattern?: IntegrationPattern): string {
   if (!service || !api) {
-    throw new Error("Both 'service' and 'api' must be provided to build the resource ARN.");
+    throw new UnscopedValidationError("Both 'service' and 'api' must be provided to build the resource ARN.");
   }
   return `arn:${Aws.PARTITION}:states:::${service}:${api}` +
     (integrationPattern ? resourceArnSuffix[integrationPattern] : '');

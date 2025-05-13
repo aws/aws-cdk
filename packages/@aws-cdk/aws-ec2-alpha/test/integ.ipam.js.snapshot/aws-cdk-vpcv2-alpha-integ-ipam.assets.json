@@ -1,7 +1,7 @@
 {
   "version": "41.0.0",
   "files": {
-    "349634e3d5cf07c230f7ef2f7e39c0e73aae2f553e75b2cc32ecc2e976e47356": {
+    "9d52e6deb231ad56392f9a57afea306ff54a67ec6d014a5f80424718c14b5162": {
       "displayName": "aws-cdk-vpcv2-alpha-integ-ipam Template",
       "source": {
         "path": "aws-cdk-vpcv2-alpha-integ-ipam.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "349634e3d5cf07c230f7ef2f7e39c0e73aae2f553e75b2cc32ecc2e976e47356.json",
+          "objectKey": "9d52e6deb231ad56392f9a57afea306ff54a67ec6d014a5f80424718c14b5162.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

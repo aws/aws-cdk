@@ -725,7 +725,8 @@ see [step function comparison operators](https://docs.aws.amazon.com/step-functi
 ### Parallel
 
 A `Parallel` state executes one or more subworkflows in parallel. It can also
-be used to catch and recover from errors in subworkflows.
+be used to catch and recover from errors in subworkflows. The `parameters` property
+can be used to transform the input that is passed to each branch of the parallel execution.
 
 ```ts
 const parallel = new sfn.Parallel(this, 'Do the work in parallel');
@@ -1040,6 +1041,23 @@ const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
 });
 distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
 ```
+
+* If information about `bucket` is only known while starting execution of `StateMachine` (dynamically or at run-time) via JSON state input:
+```ts
+/**
+ * JSON state input:
+ *  {
+ *    "bucketName": "my-bucket"
+ *  }
+ */
+const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
+  resultWriterV2: new sfn.ResultWriterV2({
+    bucketNamePath: sfn.JsonPath.stringAt('$.bucketName'),
+  }),
+});
+distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
+```
+* Both `bucket` and `bucketNamePath` are mutually exclusive.
 
 If you want to specify the execution type for the ItemProcessor in the DistributedMap, you must set the `mapExecutionType` property in the `DistributedMap` class. When using the `DistributedMap` class, the `ProcessorConfig.executionType` property is ignored.
 

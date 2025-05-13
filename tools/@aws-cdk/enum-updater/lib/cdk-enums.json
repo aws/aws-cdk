@@ -326,6 +326,8 @@
         "r7a",
         "memory8-graviton",
         "r8g",
+        "memory8-graviton4-nvme-drive",
+        "r8gd",
         "compute3",
         "c3",
         "compute4",
@@ -358,6 +360,8 @@
         "c6gd",
         "compute7-graviton3-nvme-drive",
         "c7gd",
+        "compute8-graviton4-nvme-drive",
+        "c8gd",
         "compute6-graviton2-high-network-bandwidth",
         "c6gn",
         "compute7-graviton3-high-network-bandwidth",
@@ -484,6 +488,8 @@
         "m8g",
         "standard7-graviton3-nvme-drive",
         "m7gd",
+        "standard8-graviton4-nvme-drive",
+        "m8gd",
         "standard7-intel",
         "m7i",
         "standard7-intel-flex",
@@ -2810,6 +2816,41 @@
     }
   },
   "location": {
+    "AllowMapsAction": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/api-key.ts",
+      "enumLike": false,
+      "values": [
+        "geo-maps:GetStaticMap",
+        "geo-maps:GetTile",
+        "geo-maps:*"
+      ]
+    },
+    "AllowPlacesAction": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/api-key.ts",
+      "enumLike": false,
+      "values": [
+        "geo-places:Autocomplete",
+        "geo-places:Geocode",
+        "geo-places:GetPlace",
+        "geo-places:ReverseGeocode",
+        "geo-places:SearchNearby",
+        "geo-places:SearchText",
+        "geo-places:Suggest",
+        "geo-places:*"
+      ]
+    },
+    "AllowRoutesAction": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/api-key.ts",
+      "enumLike": false,
+      "values": [
+        "geo-routes:CalculateIsolines",
+        "geo-routes:CalculateRoutes",
+        "geo-routes:CalculateRouteMatrix",
+        "geo-routes:OptimizeWaypoints",
+        "geo-routes:SnapToRoads",
+        "geo-routes:*"
+      ]
+    },
     "CustomLayer": {
       "path": "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/map.ts",
       "enumLike": false,
@@ -3439,6 +3480,14 @@
         "AWS_IAM",
         "CUSTOM",
         "COGNITO_USER_POOLS"
+      ]
+    },
+    "IpAddressType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts",
+      "enumLike": false,
+      "values": [
+        "ipv4",
+        "dualstack"
       ]
     },
     "ApiKeySourceType": {
@@ -8302,7 +8351,8 @@
         "OPENSEARCH_2_11",
         "OPENSEARCH_2_13",
         "OPENSEARCH_2_15",
-        "OPENSEARCH_2_17"
+        "OPENSEARCH_2_17",
+        "OPENSEARCH_2_19"
       ]
     }
   },
@@ -8693,7 +8743,8 @@
         "VER_16_6_LIMITLESS",
         "VER_16_8",
         "VER_17_1",
-        "VER_17_2"
+        "VER_17_2",
+        "VER_17_4"
       ]
     },
     "DatabaseClusterEngine": {
@@ -8896,8 +8947,10 @@
         "VER_8_0_39",
         "VER_8_0_40",
         "VER_8_0_41",
+        "VER_8_0_42",
         "VER_8_4_3",
-        "VER_8_4_4"
+        "VER_8_4_4",
+        "VER_8_4_5"
       ]
     },
     "PostgresEngineVersion": {
@@ -11440,6 +11493,7 @@
         "AMAZON_NOVA_REEL_V1_0",
         "AMAZON_NOVA_REEL_V1_1",
         "AMAZON_NOVA_SONIC_V1_0",
+        "AMAZON_NOVA_PREMIER_V1_0",
         "AI21_J2_MID",
         "AI21_LABS_JURASSIC_2_MID_V1",
         "AI21_J2_ULTRA",
@@ -11512,6 +11566,8 @@
         "META_LLAMA_3_2_11B_INSTRUCT_V1",
         "META_LLAMA_3_2_90B_INSTRUCT_V1",
         "META_LLAMA_3_3_70B_INSTRUCT_V1",
+        "META_LLAMA_4_MAVERICK_17B_INSTRUCT_V1_0",
+        "META_LLAMA_4_SCOUT_17B_INSTRUCT_V1_0",
         "MISTRAL_MISTRAL_7B_INSTRUCT_V0_2",
         "MISTRAL_MIXTRAL_8X7B_INSTRUCT_V0_1",
         "MISTRAL_LARGE_V0_1",
@@ -11527,7 +11583,9 @@
         "STABILITY_STABLE_IMAGE_ULTRA_V1_0",
         "STABILITY_STABLE_IMAGE_ULTRA_V1_1",
         "STABILITY_STABLE_IMAGE_CORE_V1_0",
-        "STABILITY_STABLE_IMAGE_CORE_V1_1"
+        "STABILITY_STABLE_IMAGE_CORE_V1_1",
+        "WRITER_PALMYRA_X4_V1_0",
+        "WRITER_PALMYRA_X5_V1_0"
       ]
     }
   },

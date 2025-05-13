@@ -10,8 +10,9 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
-import { Arn, ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { Arn, ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Two types of state machines are available in AWS Step Functions: EXPRESS AND STANDARD.
@@ -412,7 +413,13 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 /**
  * Define a StepFunctions State Machine
  */
+@propertyInjectable
 export class StateMachine extends StateMachineBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-stepfunctions.StateMachine';
+
   /**
    * Execution role of this state machine
    */
@@ -449,10 +456,10 @@ export class StateMachine extends StateMachineBase {
     addConstructMetadata(this, props);
 
     if (props.definition && props.definitionBody) {
-      throw new Error('Cannot specify definition and definitionBody at the same time');
+      throw new ValidationError('Cannot specify definition and definitionBody at the same time', this);
     }
     if (!props.definition && !props.definitionBody) {
-      throw new Error('You need to specify either definition or definitionBody');
+      throw new ValidationError('You need to specify either definition or definitionBody', this);
     }
 
     if (props.stateMachineName !== undefined) {
@@ -569,18 +576,18 @@ export class StateMachine extends StateMachineBase {
   private validateStateMachineName(stateMachineName: string) {
     if (!Token.isUnresolved(stateMachineName)) {
       if (stateMachineName.length < 1 || stateMachineName.length > 80) {
-        throw new Error(`State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`);
+        throw new ValidationError(`State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`, this);
       }
 
       if (!stateMachineName.match(/^[a-z0-9\+\!\@\.\(\)\-\=\_\']+$/i)) {
-        throw new Error(`State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${stateMachineName}`);
+        throw new ValidationError(`State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${stateMachineName}`, this);
       }
     }
   }
 
   private validateLogOptions(logOptions: LogOptions) {
     if (logOptions.level !== LogLevel.OFF && !logOptions.destination) {
-      throw new Error('Logs destination is required when level is not OFF.');
+      throw new ValidationError('Logs destination is required when level is not OFF.', this);
     }
   }
 

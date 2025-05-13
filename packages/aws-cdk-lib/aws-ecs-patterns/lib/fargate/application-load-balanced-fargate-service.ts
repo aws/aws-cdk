@@ -1,7 +1,8 @@
 import { Construct } from 'constructs';
 import { ISecurityGroup, SubnetSelection } from '../../../aws-ec2';
 import { FargateService, FargateTaskDefinition, HealthCheck } from '../../../aws-ecs';
-import { FeatureFlags, Token } from '../../../core';
+import { FeatureFlags, Token, ValidationError } from '../../../core';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
 import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
@@ -58,7 +59,13 @@ export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationL
 /**
  * A Fargate service running on an ECS cluster fronted by an application load balancer.
  */
+@propertyInjectable
 export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalancedServiceBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs-patterns.ApplicationLoadBalancedFargateService';
+
   /**
    * Determines whether the service will be assigned a public IP address.
    */
@@ -82,7 +89,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
     this.assignPublicIp = props.assignPublicIp ?? false;
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new Error('You must specify either a taskDefinition or an image, not both.');
+      throw new ValidationError('You must specify either a taskDefinition or an image, not both.', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -123,7 +130,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
         containerPort: taskImageOptions.containerPort || 80,
       });
     } else {
-      throw new Error('You must specify one of: taskDefinition or image');
+      throw new ValidationError('You must specify one of: taskDefinition or image', this);
     }
 
     this.validateHealthyPercentage('minHealthyPercent', props.minHealthyPercent);
@@ -136,7 +143,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       !Token.isUnresolved(props.maxHealthyPercent) &&
       props.minHealthyPercent >= props.maxHealthyPercent
     ) {
-      throw new Error('Minimum healthy percent must be less than maximum healthy percent.');
+      throw new ValidationError('Minimum healthy percent must be less than maximum healthy percent.', this);
     }
 
     const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
@@ -170,7 +177,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
   private validateHealthyPercentage(name: string, value?: number) {
     if (value === undefined || Token.isUnresolved(value)) { return; }
     if (!Number.isInteger(value) || value < 0) {
-      throw new Error(`${name}: Must be a non-negative integer; received ${value}`);
+      throw new ValidationError(`${name}: Must be a non-negative integer; received ${value}`, this);
     }
   }
 
@@ -179,11 +186,11 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       return;
     }
     if (containerCpu > cpu) {
-      throw new Error(`containerCpu must be less than to cpu; received containerCpu: ${containerCpu}, cpu: ${cpu}`);
+      throw new ValidationError(`containerCpu must be less than to cpu; received containerCpu: ${containerCpu}, cpu: ${cpu}`, this);
     }
     // If containerCPU is 0, it is not an error.
     if (containerCpu < 0 || !Number.isInteger(containerCpu)) {
-      throw new Error(`containerCpu must be a non-negative integer; received ${containerCpu}`);
+      throw new ValidationError(`containerCpu must be a non-negative integer; received ${containerCpu}`, this);
     }
   }
 
@@ -192,10 +199,10 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       return;
     }
     if (containerMemoryLimitMiB > memoryLimitMiB) {
-      throw new Error(`containerMemoryLimitMiB must be less than to memoryLimitMiB; received containerMemoryLimitMiB: ${containerMemoryLimitMiB}, memoryLimitMiB: ${memoryLimitMiB}`);
+      throw new ValidationError(`containerMemoryLimitMiB must be less than to memoryLimitMiB; received containerMemoryLimitMiB: ${containerMemoryLimitMiB}, memoryLimitMiB: ${memoryLimitMiB}`, this);
     }
     if (containerMemoryLimitMiB <= 0 || !Number.isInteger(containerMemoryLimitMiB)) {
-      throw new Error(`containerMemoryLimitMiB must be a positive integer; received ${containerMemoryLimitMiB}`);
+      throw new ValidationError(`containerMemoryLimitMiB must be a positive integer; received ${containerMemoryLimitMiB}`, this);
     }
   }
 }

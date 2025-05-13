@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { ArnFormat, FeatureFlags, Fn, Resource, Stack, Token } from '../../../core';
+import { ArnFormat, FeatureFlags, Fn, Resource, Stack, Token, ValidationError } from '../../../core';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '../../../cx-api';
 import { IBaseService } from '../base/base-service';
 import { ICluster } from '../cluster';
@@ -30,7 +30,7 @@ export interface ServiceAttributes {
 
 export function fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IBaseService {
   if ((attrs.serviceArn && attrs.serviceName) || (!attrs.serviceArn && !attrs.serviceName)) {
-    throw new Error('You can only specify either serviceArn or serviceName.');
+    throw new ValidationError('You can only specify either serviceArn or serviceName.', scope);
   }
 
   const newArnFormat = FeatureFlags.of(scope).isEnabled(ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME);

@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { Compatibility, NetworkMode, isEc2Compatible, isFargateCompatible, isExternalCompatible } from './task-definition';
 import { IRole } from '../../../aws-iam';
-import { Resource } from '../../../core';
+import { Resource, ValidationError } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { IEc2TaskDefinition } from '../ec2/ec2-task-definition';
 import { IFargateTaskDefinition } from '../fargate/fargate-task-definition';
@@ -89,8 +89,8 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
 
   public get networkMode(): NetworkMode {
     if (this._networkMode == undefined) {
-      throw new Error('This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
-        'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+      throw new ValidationError('This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
+        'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition', this);
     } else {
       return this._networkMode;
     }
@@ -98,8 +98,8 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
 
   public get taskRole(): IRole {
     if (this._taskRole == undefined) {
-      throw new Error('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
-        'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+      throw new ValidationError('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+        'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition', this);
     } else {
       return this._taskRole;
     }

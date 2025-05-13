@@ -2,7 +2,7 @@ import { IConstruct } from 'constructs';
 import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import { Names, Token } from '../../core';
+import { Names, Token, ValidationError } from '../../core';
 
 /**
  * Customize the Batch Job Event Target
@@ -77,7 +77,7 @@ export class BatchJob implements events.IRuleTarget {
    * result from an EventBridge event.
    */
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
-    this.validateJobName(this.props.jobName);
+    this.validateJobName(rule, this.props.jobName);
     const jobName = this.props.jobName ?? Names.uniqueResourceName(rule, {
       maxLength: 128,
     });
@@ -113,9 +113,9 @@ export class BatchJob implements events.IRuleTarget {
     };
   }
 
-  private validateJobName(name?: string) {
+  private validateJobName(rule: events.IRule, name?: string) {
     if (!Token.isUnresolved(name) && name !== undefined && (name.length < 1 || name.length > 128)) {
-      throw new Error(`Invalid jobName value ${name}, must have length between 1 and 128, got: ${name.length}`);
+      throw new ValidationError(`Invalid jobName value ${name}, must have length between 1 and 128, got: ${name.length}`, rule);
     }
   }
 }

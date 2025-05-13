@@ -21,6 +21,7 @@ import * as cxschema from '../../cloud-assembly-schema';
 import { ArnComponents, ArnFormat, ContextProvider, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -1246,7 +1247,13 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
  *
  * @resource AWS::RDS::DBInstance
  */
+@propertyInjectable
 export class DatabaseInstance extends DatabaseInstanceSource implements IDatabaseInstance {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstance';
+
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
@@ -1317,7 +1324,13 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
  *
  * @resource AWS::RDS::DBInstance
  */
+@propertyInjectable
 export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource implements IDatabaseInstance {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstanceFromSnapshot';
+
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
@@ -1415,7 +1428,13 @@ export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceNewPro
  *
  * @resource AWS::RDS::DBInstance
  */
+@propertyInjectable
 export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements IDatabaseInstance {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstanceReadReplica';
+
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;

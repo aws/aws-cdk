@@ -25,9 +25,11 @@ import {
   Token,
   Names,
   FeatureFlags, Annotations,
+  ValidationError,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { Disable_ECS_IMDS_Blocking, Enable_IMDS_Blocking_Deprecated_Feature } from '../../cx-api';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
@@ -143,7 +145,13 @@ const getCanContainersAccessInstanceRoleDefault = (canContainersAccessInstanceRo
 /**
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
+@propertyInjectable
 export class Cluster extends Resource implements ICluster {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.Cluster';
+
   /**
    * Return whether the given object is a Cluster
    */
@@ -169,7 +177,7 @@ export class Cluster extends Resource implements ICluster {
     const clusterName = arn.resourceName;
 
     if (!clusterName) {
-      throw new Error(`Missing required Cluster Name from Cluster ARN: ${clusterArn}`);
+      throw new ValidationError(`Missing required Cluster Name from Cluster ARN: ${clusterArn}`, scope);
     }
 
     const errorSuffix = 'is not available for a Cluster imported using fromClusterArn(), please use fromClusterAttributes() instead.';
@@ -178,13 +186,13 @@ export class Cluster extends Resource implements ICluster {
       public readonly clusterArn = clusterArn;
       public readonly clusterName = clusterName!;
       get hasEc2Capacity(): boolean {
-        throw new Error(`hasEc2Capacity ${errorSuffix}`);
+        throw new ValidationError(`hasEc2Capacity ${errorSuffix}`, this);
       }
       get connections(): ec2.Connections {
-        throw new Error(`connections ${errorSuffix}`);
+        throw new ValidationError(`connections ${errorSuffix}`, this);
       }
       get vpc(): ec2.IVpc {
-        throw new Error(`vpc ${errorSuffix}`);
+        throw new ValidationError(`vpc ${errorSuffix}`, this);
       }
     }
 
@@ -265,7 +273,7 @@ export class Cluster extends Resource implements ICluster {
     addConstructMetadata(this, props);
 
     if ((props.containerInsights !== undefined) && props.containerInsightsV2) {
-      throw new Error('You cannot set both containerInsights and containerInsightsV2');
+      throw new ValidationError('You cannot set both containerInsights and containerInsightsV2', this);
     }
 
     /**
@@ -294,7 +302,7 @@ export class Cluster extends Resource implements ICluster {
     if (props.executeCommandConfiguration) {
       if ((props.executeCommandConfiguration.logging === ExecuteCommandLogging.OVERRIDE) !==
         (props.executeCommandConfiguration.logConfiguration !== undefined)) {
-        throw new Error('Execute command log configuration must only be specified when logging is OVERRIDE.');
+        throw new ValidationError('Execute command log configuration must only be specified when logging is OVERRIDE.', this);
       }
       this._executeCommandConfiguration = props.executeCommandConfiguration;
     }
@@ -401,22 +409,22 @@ export class Cluster extends Resource implements ICluster {
   @MethodMetadata()
   public addDefaultCapacityProviderStrategy(defaultCapacityProviderStrategy: CapacityProviderStrategy[]) {
     if (this._defaultCapacityProviderStrategy.length > 0) {
-      throw new Error('Cluster default capacity provider strategy is already set.');
+      throw new ValidationError('Cluster default capacity provider strategy is already set.', this);
     }
 
     if (defaultCapacityProviderStrategy.some(dcp => dcp.capacityProvider.includes('FARGATE')) && defaultCapacityProviderStrategy.some(dcp => !dcp.capacityProvider.includes('FARGATE'))) {
-      throw new Error('A capacity provider strategy cannot contain a mix of capacity providers using Auto Scaling groups and Fargate providers. Specify one or the other and try again.');
+      throw new ValidationError('A capacity provider strategy cannot contain a mix of capacity providers using Auto Scaling groups and Fargate providers. Specify one or the other and try again.', this);
     }
 
     defaultCapacityProviderStrategy.forEach(dcp => {
       if (!this._capacityProviderNames.includes(dcp.capacityProvider)) {
-        throw new Error(`Capacity provider ${dcp.capacityProvider} must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.`);
+        throw new ValidationError(`Capacity provider ${dcp.capacityProvider} must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.`, this);
       }
     });
 
     const defaultCapacityProvidersWithBase = defaultCapacityProviderStrategy.filter(dcp => !!dcp.base);
     if (defaultCapacityProvidersWithBase.length > 1) {
-      throw new Error('Only 1 capacity provider in a capacity provider strategy can have a nonzero base.');
+      throw new ValidationError('Only 1 capacity provider in a capacity provider strategy can have a nonzero base.', this);
     }
     this._defaultCapacityProviderStrategy = defaultCapacityProviderStrategy;
   }
@@ -439,10 +447,10 @@ export class Cluster extends Resource implements ICluster {
   private renderExecuteCommandLogConfiguration(): CfnCluster.ExecuteCommandLogConfigurationProperty {
     const logConfiguration = this._executeCommandConfiguration?.logConfiguration;
     if (logConfiguration?.s3EncryptionEnabled && !logConfiguration?.s3Bucket) {
-      throw new Error('You must specify an S3 bucket name in the execute command log configuration to enable S3 encryption.');
+      throw new ValidationError('You must specify an S3 bucket name in the execute command log configuration to enable S3 encryption.', this);
     }
     if (logConfiguration?.cloudWatchEncryptionEnabled && !logConfiguration?.cloudWatchLogGroup) {
-      throw new Error('You must specify a CloudWatch log group in the execute command log configuration to enable CloudWatch encryption.');
+      throw new ValidationError('You must specify a CloudWatch log group in the execute command log configuration to enable CloudWatch encryption.', this);
     }
     return {
       cloudWatchEncryptionEnabled: logConfiguration?.cloudWatchEncryptionEnabled,
@@ -461,7 +469,7 @@ export class Cluster extends Resource implements ICluster {
   @MethodMetadata()
   public addDefaultCloudMapNamespace(options: CloudMapNamespaceOptions): cloudmap.INamespace {
     if (this._defaultCloudMapNamespace !== undefined) {
-      throw new Error('Can only add default namespace once.');
+      throw new ValidationError('Can only add default namespace once.', this);
     }
 
     const namespaceType = options.type !== undefined
@@ -487,7 +495,7 @@ export class Cluster extends Resource implements ICluster {
         });
         break;
       default:
-        throw new Error(`Namespace type ${namespaceType} is not supported.`);
+        throw new ValidationError(`Namespace type ${namespaceType} is not supported.`, this);
     }
 
     this._defaultCloudMapNamespace = sdNamespace;
@@ -606,7 +614,7 @@ export class Cluster extends Resource implements ICluster {
     };
 
     if (!(autoScalingGroup instanceof autoscaling.AutoScalingGroup)) {
-      throw new Error('Cannot configure the AutoScalingGroup because it is an imported resource.');
+      throw new ValidationError('Cannot configure the AutoScalingGroup because it is an imported resource.', this);
     }
 
     if (autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS) {
@@ -643,7 +651,7 @@ export class Cluster extends Resource implements ICluster {
           Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:unknownImageType',
             `Unknown ECS Image type: ${optionsClone.machineImageType}.`);
           if (optionsClone.canContainersAccessInstanceRole === false) {
-            throw new Error('The canContainersAccessInstanceRole option is not supported. See https://github.com/aws/aws-cdk/discussions/32609');
+            throw new ValidationError('The canContainersAccessInstanceRole option is not supported. See https://github.com/aws/aws-cdk/discussions/32609', this);
           }
           break;
         }
@@ -713,7 +721,7 @@ export class Cluster extends Resource implements ICluster {
 
     if (options.canContainersAccessInstanceRole === false &&
       FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking)) {
-      throw new Error('The canContainersAccessInstanceRole option is not supported. See https://github.com/aws/aws-cdk/discussions/32609');
+      throw new ValidationError('The canContainersAccessInstanceRole option is not supported. See https://github.com/aws/aws-cdk/discussions/32609', this);
     }
   }
 
@@ -721,7 +729,7 @@ export class Cluster extends Resource implements ICluster {
     options: AddAutoScalingGroupCapacityOptions): void {
     if (options.canContainersAccessInstanceRole === false &&
       FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking)) {
-      throw new Error('The canContainersAccessInstanceRole option is not supported. See https://github.com/aws/aws-cdk/discussions/32609');
+      throw new ValidationError('The canContainersAccessInstanceRole option is not supported. See https://github.com/aws/aws-cdk/discussions/32609', this);
     }
 
     if (options.canContainersAccessInstanceRole === false ||
@@ -755,7 +763,7 @@ export class Cluster extends Resource implements ICluster {
   @MethodMetadata()
   public addCapacityProvider(provider: string) {
     if (!(provider === 'FARGATE' || provider === 'FARGATE_SPOT')) {
-      throw new Error('CapacityProvider not supported');
+      throw new ValidationError('CapacityProvider not supported', this);
     }
 
     if (!this._capacityProviderNames.includes(provider)) {
@@ -804,7 +812,7 @@ export class Cluster extends Resource implements ICluster {
 
     if (options.canContainersAccessInstanceRole === false &&
       FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking)) {
-      throw new Error('The canContainersAccessInstanceRole option is not supported. See https://github.com/aws/aws-cdk/discussions/32609');
+      throw new ValidationError('The canContainersAccessInstanceRole option is not supported. See https://github.com/aws/aws-cdk/discussions/32609', this);
     }
 
     // clear the cache of the agent
@@ -1494,7 +1502,13 @@ export interface ManagedStorageConfiguration {
  * tasks, and can ensure that instances are not prematurely terminated while
  * there are still tasks running on them.
  */
+@propertyInjectable
 export class AsgCapacityProvider extends Construct {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.AsgCapacityProvider';
+
   /**
    * Capacity provider name
    * @default Chosen by CloudFormation
@@ -1546,20 +1560,20 @@ export class AsgCapacityProvider extends Construct {
     }
 
     if (this.enableManagedTerminationProtection && props.enableManagedScaling === false) {
-      throw new Error('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
+      throw new ValidationError('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.', this);
     }
     if (this.enableManagedTerminationProtection) {
       if (this.autoScalingGroup instanceof autoscaling.AutoScalingGroup) {
         this.autoScalingGroup.protectNewInstancesFromScaleIn();
       } else {
-        throw new Error('Cannot enable Managed Termination Protection on a Capacity Provider when providing an imported AutoScalingGroup.');
+        throw new ValidationError('Cannot enable Managed Termination Protection on a Capacity Provider when providing an imported AutoScalingGroup.', this);
       }
     }
 
     const capacityProviderNameRegex = /^(?!aws|ecs|fargate).+/gm;
     if (capacityProviderName) {
       if (!(capacityProviderNameRegex.test(capacityProviderName))) {
-        throw new Error(`Invalid Capacity Provider Name: ${capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`);
+        throw new ValidationError(`Invalid Capacity Provider Name: ${capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`, this);
       }
     } else {
       if (!(capacityProviderNameRegex.test(Stack.of(this).stackName))) {
@@ -1572,7 +1586,7 @@ export class AsgCapacityProvider extends Construct {
 
     if (props.instanceWarmupPeriod && !Token.isUnresolved(props.instanceWarmupPeriod)) {
       if (props.instanceWarmupPeriod < 0 || props.instanceWarmupPeriod > 10000) {
-        throw new Error(`InstanceWarmupPeriod must be between 0 and 10000 inclusive, got: ${props.instanceWarmupPeriod}.`);
+        throw new ValidationError(`InstanceWarmupPeriod must be between 0 and 10000 inclusive, got: ${props.instanceWarmupPeriod}.`, this);
       }
     }
 

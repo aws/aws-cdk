@@ -795,7 +795,8 @@
       "PHP_81",
       "RUBY_31",
       "PYTHON_311",
-      "NODEJS_18"
+      "NODEJS_18",
+      "NODEJS_22"
     ],
     "EgressType": [
       "DEFAULT",
@@ -868,6 +869,14 @@
       "ALL",
       "INFO",
       "DEBUG"
+    ],
+    "HandlerBehavior": [
+      "CODE",
+      "DIRECT"
+    ],
+    "InvokeType": [
+      "REQUEST_RESPONSE",
+      "EVENT"
     ],
     "MetricsConfig": [
       "ENABLED",
@@ -1772,6 +1781,12 @@
       "IN_PROGRESS",
       "FAILED"
     ],
+    "DesiredModality": [
+      "DOCUMENT",
+      "IMAGE",
+      "VIDEO",
+      "AUDIO"
+    ],
     "DocumentExtractionGranularityType": [
       "DOCUMENT",
       "PAGE",
@@ -1985,6 +2000,13 @@
       "BLOCK",
       "NONE"
     ],
+    "PromptRouterStatus": [
+      "AVAILABLE"
+    ],
+    "PromptRouterType": [
+      "custom",
+      "default"
+    ],
     "EmbeddingDataType": [
       "FLOAT32",
       "BINARY"
@@ -2195,7 +2217,8 @@
   "certificatemanager": {
     "ValidationMethod": [
       "DNS",
-      "EMAIL"
+      "EMAIL",
+      "HTTP"
     ]
   },
   "chatbot": {
@@ -2496,6 +2519,7 @@
       "http3"
     ],
     "PriceClass": [
+      "None",
       "PriceClass_100",
       "PriceClass_200",
       "PriceClass_All"
@@ -2784,12 +2808,6 @@
       "sni-only",
       "static-ip",
       "vip"
-    ],
-    "Reason": [
-      "pending-validation",
-      "validation-failed",
-      "pending-activation",
-      "customer-activated"
     ],
     "Status": [
       "active",
@@ -3199,6 +3217,10 @@
       "ALLOW_USER_SRP_AUTH",
       "CUSTOM_AUTH_FLOW_ONLY",
       "USER_PASSWORD_AUTH"
+    ],
+    "Feature": [
+      "ENABLED",
+      "DISABLED"
     ],
     "DesiredDeliveryMediums": [
       "EMAIL",
@@ -4146,6 +4168,9 @@
     "GroupProfileStatus": [
       "ASSIGNED",
       "NOT_ASSIGNED"
+    ],
+    "EntityType": [
+      "DOMAIN_UNIT"
     ],
     "MemberIdentifierType": [
       "USER_IDENTIFIER",
@@ -5752,6 +5777,14 @@
     "FilterType": [
       "PREFIX_MATCH"
     ],
+    "ScanFrequency": [
+      "SCAN_ON_PUSH",
+      "CONTINUOUS_SCAN"
+    ],
+    "ScanType": [
+      "BASIC",
+      "ENHANCED"
+    ],
     "ImageTagMutability": [
       "MUTABLE",
       "IMMUTABLE"
@@ -6976,6 +7009,10 @@
     ],
     "Service": [
       "ECR"
+    ],
+    "DataType": [
+      "text",
+      "aws:ec2:image"
     ],
     "OnFailure": [
       "CONTINUE",
@@ -9102,6 +9139,10 @@
     "OriginManifestType": [
       "SINGLE_PERIOD",
       "MULTI_PERIOD"
+    ],
+    "StreamingMediaFileConditioning": [
+      "TRANSCODE",
+      "NONE"
     ],
     "AccessType": [
       "S3_SIGV4",
@@ -13144,6 +13185,7 @@
       "SUN"
     ]
   },
+  "ssmguiconnect": {},
   "ssmincidents": {
     "TargetAccount": [
       "IMPACTED_ACCOUNT",

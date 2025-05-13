@@ -5,6 +5,7 @@ import { undefinedIfNoKeys } from './private/utils';
 import { CfnConfigurationSet } from './ses.generated';
 import { Duration, IResource, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A configuration set
@@ -158,7 +159,13 @@ export enum SuppressionReasons {
 /**
  * A configuration set
  */
+@propertyInjectable
 export class ConfigurationSet extends Resource implements IConfigurationSet {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ses.ConfigurationSet';
+
   /**
    * Use an existing configuration set
    */

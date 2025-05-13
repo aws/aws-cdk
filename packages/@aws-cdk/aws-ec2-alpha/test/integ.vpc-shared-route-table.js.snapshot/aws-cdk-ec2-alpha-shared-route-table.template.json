@@ -33,7 +33,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "SharedRouteTableIGW"
+      "Value": "SharedRouteTableVPC"
      }
     ]
    }
@@ -133,12 +133,12 @@
     "CidrBlock": "10.1.1.0/24",
     "Tags": [
      {
-      "Key": "Name",
+      "Key": "aws-cdk:subnet-name",
       "Value": "PublicSubnet1"
      },
      {
-      "Key": "VpcName",
-      "Value": "SharedRouteTableVPC"
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
      }
     ],
     "VpcId": {
@@ -176,12 +176,12 @@
     "CidrBlock": "10.1.2.0/24",
     "Tags": [
      {
-      "Key": "Name",
+      "Key": "aws-cdk:subnet-name",
       "Value": "PublicSubnet2"
      },
      {
-      "Key": "VpcName",
-      "Value": "SharedRouteTableVPC"
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
      }
     ],
     "VpcId": {

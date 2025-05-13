@@ -286,6 +286,15 @@
     }
   },
   "location": {
+    "AllowMapsAction": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/api-key.ts"
+    },
+    "AllowPlacesAction": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/api-key.ts"
+    },
+    "AllowRoutesAction": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/api-key.ts"
+    },
     "CustomLayer": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/map.ts"
     },
@@ -451,6 +460,9 @@
     "AuthorizationType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.ts"
     },
+    "IpAddressType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts"
+    },
     "EndpointType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts"
     },
@@ -595,12 +607,6 @@
     }
   },
   "appsync": {
-    "HandlerBehavior": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/channel-namespace.ts"
-    },
-    "LambdaInvokeType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.ts"
-    },
     "FunctionRuntime": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/runtime.ts"
     }

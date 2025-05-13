@@ -23,12 +23,12 @@
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
-      "Key": "Name",
+      "Key": "aws-cdk:subnet-name",
       "Value": "PublicSubnetWithIp"
      },
      {
-      "Key": "VpcName",
-      "Value": "MapPublicIpTestVPC"
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
      }
     ],
     "VpcId": {
@@ -46,10 +46,6 @@
      {
       "Key": "Name",
       "Value": "DefaultCDKRouteTable"
-     },
-     {
-      "Key": "VpcName",
-      "Value": "MapPublicIpTestVPC"
      }
     ],
     "VpcId": {
@@ -82,12 +78,12 @@
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
-      "Key": "Name",
+      "Key": "aws-cdk:subnet-name",
       "Value": "PublicSubnetWithoutIp"
      },
      {
-      "Key": "VpcName",
-      "Value": "MapPublicIpTestVPC"
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
      }
     ],
     "VpcId": {
@@ -105,10 +101,6 @@
      {
       "Key": "Name",
       "Value": "DefaultCDKRouteTable"
-     },
-     {
-      "Key": "VpcName",
-      "Value": "MapPublicIpTestVPC"
      }
     ],
     "VpcId": {
@@ -140,12 +132,12 @@
     "CidrBlock": "10.0.3.0/24",
     "Tags": [
      {
-      "Key": "Name",
+      "Key": "aws-cdk:subnet-name",
       "Value": "PrivateSubnetDefault"
      },
      {
-      "Key": "VpcName",
-      "Value": "MapPublicIpTestVPC"
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
      }
     ],
     "VpcId": {
@@ -163,10 +155,6 @@
      {
       "Key": "Name",
       "Value": "DefaultCDKRouteTable"
-     },
-     {
-      "Key": "VpcName",
-      "Value": "MapPublicIpTestVPC"
      }
     ],
     "VpcId": {

@@ -18,6 +18,7 @@ import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, 
 import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 const MAX_INLINE_SIZE = 10000;
 const MAX_MANAGEDPOL_SIZE = 6000;
@@ -252,7 +253,13 @@ export interface RoleLookupOptions extends FromRoleArnOptions {
  * Defines an IAM role. The role is created with an assume policy document associated with
  * the specified AWS service principal defined in `serviceAssumeRole`.
  */
+@propertyInjectable
 export class Role extends Resource implements IRole {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.Role';
+
   /**
    * Lookup an existing Role.
    */

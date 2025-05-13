@@ -5,6 +5,8 @@ export * from './token';
 export * from './resolvable';
 export * from './type-hints';
 export * from './lazy';
+export * from './prop-injectors';
+export * from './prop-injectable';
 export * from './tag-manager';
 export * from './string-fragments';
 export * from './stack-synthesizers';

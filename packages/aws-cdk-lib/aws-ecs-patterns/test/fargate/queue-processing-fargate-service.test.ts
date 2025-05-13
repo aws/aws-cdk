@@ -1005,3 +1005,23 @@ test('test Fargate queue worker service construct - with no taskDefinition or im
   }).toThrow(new Error('You must specify one of: taskDefinition or image'));
 });
 
+test('test Fargate queue worker service construct - with healthCheckGracePeriod', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  const queue = new sqs.Queue(stack, 'Queue');
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    queue,
+    image: ecs.ContainerImage.fromRegistry('test'),
+    healthCheckGracePeriod: cdk.Duration.seconds(120),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    HealthCheckGracePeriodSeconds: 120,
+  });
+});

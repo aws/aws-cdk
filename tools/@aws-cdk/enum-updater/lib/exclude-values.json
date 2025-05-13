@@ -1,7 +1,17 @@
 {
+    "appsync": {
+        "AppSyncDataSourceType": {
+            "values": ["NONE"],
+            "comment": "NONE is not supported"
+        }
+    },
     "codebuild": {
         "FleetComputeType": {
             "comment": "They values are already defined in a different place"
+        },
+        "ComputeType": {
+            "values": ["CUSTOM_INSTANCE_TYPE"],
+            "comment": "CUSTOM_INSTANCE_TYPE cannot be supported without additional logic. See https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html"
         }
     },
     "eks": {

@@ -861,4 +861,121 @@ describe('tests', () => {
       });
     });
   });
+
+  describe('Lambda target multi_value_headers tests', () => {
+    test('Lambda target should have multi_value_headers.enabled set to true when enabled', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationTargetGroup(stack, 'TG', {
+        targetType: elbv2.TargetType.LAMBDA,
+        multiValueHeadersEnabled: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetType: 'lambda',
+        TargetGroupAttributes: [
+          {
+            Key: 'lambda.multi_value_headers.enabled',
+            Value: 'true',
+          },
+        ],
+      });
+    });
+
+    test.each([false, undefined])('lambda.multi_value_headers.enabled is not set when multiValueHeadersEnabled is %s', (multiValueHeadersEnabled) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      // WHEN
+      new elbv2.ApplicationTargetGroup(stack, 'TG', {
+        targetType: elbv2.TargetType.LAMBDA,
+        multiValueHeadersEnabled,
+      });
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetType: 'lambda',
+        TargetGroupAttributes: Match.absent(),
+      });
+    });
+
+    test('Lambda target with addTarget should preserve multi_value_headers.enabled as true', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+
+      // WHEN
+      const tg = new elbv2.ApplicationTargetGroup(stack, 'TG', {
+        targetType: elbv2.TargetType.LAMBDA,
+        multiValueHeadersEnabled: true,
+      });
+
+      tg.addTarget({
+        attachToApplicationTargetGroup(_targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+          return {
+            targetType: elbv2.TargetType.LAMBDA,
+            targetJson: { id: 'arn:aws:lambda:eu-west-1:123456789012:function:myFn' },
+          };
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetType: 'lambda',
+        TargetGroupAttributes: [
+          {
+            Key: 'lambda.multi_value_headers.enabled',
+            Value: 'true',
+          },
+        ],
+        Targets: [{ Id: 'arn:aws:lambda:eu-west-1:123456789012:function:myFn' }],
+      });
+    });
+
+    test('lambda.multi_value_headers.enabled is not set with addTarget when multiValueHeadersEnabled is false', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+
+      // WHEN
+      const tg = new elbv2.ApplicationTargetGroup(stack, 'TG', {
+        targetType: elbv2.TargetType.LAMBDA,
+        multiValueHeadersEnabled: false,
+      });
+
+      tg.addTarget({
+        attachToApplicationTargetGroup(_targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+          return {
+            targetType: elbv2.TargetType.LAMBDA,
+            targetJson: { id: 'arn:aws:lambda:eu-west-1:123456789012:function:myFn' },
+          };
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetType: 'lambda',
+        TargetGroupAttributes: Match.absent(),
+        Targets: [{ Id: 'arn:aws:lambda:eu-west-1:123456789012:function:myFn' }],
+      });
+    });
+  });
+
+  describe('multiValueHeadersEnabled validation', () => {
+    test.each([elbv2.TargetType.IP, elbv2.TargetType.INSTANCE])('Throws an error when multiValueHeadersEnabled is true for non-Lambda target type (%s)', (targetType) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      // WHEN & THEN
+      expect(() => new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        targetType,
+        multiValueHeadersEnabled: true,
+      })).toThrow('multiValueHeadersEnabled is only supported for Lambda targets.');
+    });
+  });
 });

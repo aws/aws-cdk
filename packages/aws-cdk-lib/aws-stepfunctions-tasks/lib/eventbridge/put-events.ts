@@ -111,7 +111,7 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.entries.map(entry => entry.detail))) {
-        throw new Error('Task Token is required in `entries`. Use JsonPath.taskToken to set the token.');
+        throw new cdk.ValidationError('Task Token is required in `entries`. Use JsonPath.taskToken to set the token.', this);
       }
     }
 
@@ -175,10 +175,10 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
 
   private validateEntries(): void {
     if (this.props.entries.length <= 0) {
-      throw new Error('Value for property `entries` must be a non-empty array.');
+      throw new cdk.ValidationError('Value for property `entries` must be a non-empty array.', this);
     }
     if (this.props.entries.some(e => e.source.startsWith('aws.'))) {
-      throw new Error('Event source cannot start with "aws."');
+      throw new cdk.ValidationError('Event source cannot start with "aws."', this);
     }
   }
 }

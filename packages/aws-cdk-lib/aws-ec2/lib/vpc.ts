@@ -21,6 +21,7 @@ import {
   UnscopedValidationError,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { RestrictDefaultSgProvider } from '../../custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated';
 import * as cxapi from '../../cx-api';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
@@ -1252,7 +1253,13 @@ export interface SubnetConfiguration {
  *
  * @resource AWS::EC2::VPC
  */
+@propertyInjectable
 export class Vpc extends VpcBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.Vpc';
+
   /**
    * The default CIDR range used when creating VPCs.
    * This can be overridden using VpcProps when creating a VPCNetwork resource.
@@ -2012,7 +2019,13 @@ export interface SubnetProps {
  *
  * @resource AWS::EC2::Subnet
  */
+@propertyInjectable
 export class Subnet extends Resource implements ISubnet {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.Subnet';
+
   public static isVpcSubnet(x: any): x is Subnet {
     return VPC_SUBNET_SYMBOL in x;
   }
@@ -2381,7 +2394,13 @@ export interface PublicSubnetAttributes extends SubnetAttributes { }
 /**
  * Represents a public VPC subnet resource
  */
+@propertyInjectable
 export class PublicSubnet extends Subnet implements IPublicSubnet {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.PublicSubnet';
+
   public static fromPublicSubnetAttributes(scope: Construct, id: string, attrs: PublicSubnetAttributes): IPublicSubnet {
     return new ImportedSubnet(scope, id, attrs);
   }
@@ -2422,7 +2441,13 @@ export interface PrivateSubnetAttributes extends SubnetAttributes { }
 /**
  * Represents a private VPC subnet resource
  */
+@propertyInjectable
 export class PrivateSubnet extends Subnet implements IPrivateSubnet {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.PrivateSubnet';
+
   public static fromPrivateSubnetAttributes(scope: Construct, id: string, attrs: PrivateSubnetAttributes): IPrivateSubnet {
     return new ImportedSubnet(scope, id, attrs);
   }
