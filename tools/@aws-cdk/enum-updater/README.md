@@ -104,3 +104,36 @@ All exclusions for a module should be listed together. For example if you want t
     }
 }
 ```
+
+### Manual Static Mapping Overrides
+Sometimes the script will calculate the wrong static enum mapping. You can override this value by adding an entry to the `lib/manual-enum-mapping.json` file. 
+
+Manual mappings should be added in the form:
+```
+{
+    "serviceName": {
+      "CdkEnumName": {
+        "cdk_path": "path/to/cdkEnum",
+        "sdk_service": "serviceName",
+        "sdk_enum_name": "AwsEnumThatWeWantThisToMapTo",
+        "match_percentage": 1.0,
+        "manual": true
+      }
+    }
+}
+```
+
+For example:
+```
+{
+    "ec2": {
+      "VpcEndpointIpAddressType": {
+        "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.ts",
+        "sdk_service": "ec2",
+        "sdk_enum_name": "IpAddressType",
+        "match_percentage": 1.0,
+        "manual": true
+      }
+    }
+}
+```
