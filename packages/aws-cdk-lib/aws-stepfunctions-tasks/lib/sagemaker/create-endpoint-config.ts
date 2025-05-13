@@ -4,8 +4,8 @@ import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ValidationError } from '../../../core';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
 interface SageMakerCreateEndpointConfigOptions {
