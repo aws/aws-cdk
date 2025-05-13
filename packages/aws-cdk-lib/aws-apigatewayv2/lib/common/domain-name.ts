@@ -6,6 +6,7 @@ import { IBucket } from '../../../aws-s3';
 import { IResource, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**
  * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.
@@ -162,7 +163,13 @@ export interface MTLSConfig {
 /**
  * Custom domain resource for the API
  */
+@propertyInjectable
 export class DomainName extends Resource implements IDomainName {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.DomainName';
+
   /**
    * Import from attributes
    */
