@@ -237,7 +237,12 @@ To use `applicationLogLevelV2` and/or `systemLogLevelV2` you must set `loggingFo
 Refer section `Log Group Creation Methods` to find out which modes support tag propagation. 
 As an example, adding the following line in your cdk app will also propagate to the logGroup. 
 ```
-Tags.of(fn).add('env', 'dev'); // the tag is also added to the log group
+const fn = new lambda.Function(this, 'MyFunctionWithFFTrue', {
+  runtime: lambda.Runtime.NODEJS_20_X,
+  handler: 'handler.main',
+  code: lambda.Code.fromAsset('lambda'),
+});
+cdk.Tags.of(fn).add('env', 'dev'); // the tag is also added to the log group
 ```
 
 ## Resource-based Policies
