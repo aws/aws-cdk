@@ -373,19 +373,19 @@ const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
 });
 ```
 
-Block and ignore public ACLs:
+Block and ignore public ACLs (other options remain unblocked):
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
-  blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
+  blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS_ONLY,
 });
 ```
 
-Alternatively, specify the settings manually:
+Alternatively, specify the settings manually (unspecified options will remain blocked):
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
-  blockPublicAccess: new s3.BlockPublicAccess({ blockPublicPolicy: true }),
+  blockPublicAccess: new s3.BlockPublicAccess({ blockPublicPolicy: false }),
 });
 ```
 

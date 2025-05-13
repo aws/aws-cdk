@@ -100,6 +100,7 @@ Flags come in three types:
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | 2.189.0 | new default |
 | [@aws-cdk/core:aspectPrioritiesMutating](#aws-cdkcoreaspectprioritiesmutating) | When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING. | 2.189.1 | new default |
 | [@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions](#aws-cdks3-notificationsadds3trustkeypolicyforsnssubscriptions) | Add an S3 trust policy to a KMS key resource policy for SNS subscriptions. | 2.195.0 | fix |
+| [@aws-cdk/aws-s3:publicAccessBlockedByDefault](#aws-cdkaws-s3publicaccessblockedbydefault) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -183,7 +184,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/core:aspectPrioritiesMutating": true,
     "@aws-cdk/aws-dynamodb:retainTableReplica": true,
     "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
-    "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true
+    "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
+    "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true
   }
 }
 ```
@@ -2103,6 +2105,24 @@ When this feature flag is enabled, a S3 trust policy will be added to the KMS ke
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.195.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-s3:publicAccessBlockedByDefault
+
+*When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined.*
+
+Flag type: Backwards incompatible bugfix
+
+When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console. 
+The previous behavior in cdk before this feature was; if only some of the BlockPublicAccessOptions were set (not all 4), then the ones undefined would default to false.
+This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
+The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
