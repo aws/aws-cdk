@@ -7,11 +7,11 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
  * This integration test verifies the behavior of the EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY feature flag
  * for VPC
  *
- * The test creates two stacks:
+ * The file contains two tests:
  * 1. One with the feature flag enabled
  * 2. One with the feature flag disabled
  *
- * Each stack creates a VPC with a public subnet.
+ * In the stack, a VPC is created with a public subnet.
  */
 
 const app = new cdk.App();
