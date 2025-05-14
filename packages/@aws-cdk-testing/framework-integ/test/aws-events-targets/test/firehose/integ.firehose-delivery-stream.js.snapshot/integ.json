@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "testCases": {
     "firehose-event-target-integ/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "firehose-event-target-integ/DefaultTest/DeployAssert",
       "assertionStackName": "firehoseeventtargetintegDefaultTestDeployAssert453EDADE"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
