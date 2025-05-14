@@ -13,6 +13,19 @@ const DIRECTORIES_TO_SKIP = [
   "test",
 ];
 
+
+// Manually add the L2 constructs that should not be injectable, or it is manually updated
+const NOT_INJECTABLE_CLASSES = [
+  {
+    "filePath": "packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts",
+    "className": "RootResource"
+  },
+  {
+    "filePath": "packages/aws-cdk-lib/aws-lambda/lib/function-base.ts",
+    "className": "LatestVersion"
+  },
+]
+
 interface ResourceClass {
   sourceFile: SourceFile;
   filePath: string;
@@ -95,25 +108,25 @@ export abstract class MetadataUpdater {
   protected getCdkResourceClasses(filePath: string): ResourceClass[] {
     const sourceFile = this.project.getSourceFile(filePath);
     if (!sourceFile) return [];
-  
+
     const resourceClasses: ResourceClass[] = [];
-  
+
     sourceFile.forEachChild((node) => {
       if (node instanceof ClassDeclaration) {
         const symbol = node.getSymbol();
         if (symbol) {
           const className = symbol.getName(); // Correct way to get the name
           const fqnClassName = symbol.getFullyQualifiedName();
-  
+
           // Check if the class is abstract by inspecting modifiers
           const isAbstract = node.getModifiers()?.some((mod) => mod.getText() === "abstract");
           if (isAbstract) {
             return;
           }
-  
+
           // Check if the class or its subclasses extends Resource
           const type = node.getType();
-          if (this.isDescendantOfResource(type)) {            
+          if (this.isDescendantOfResource(type)) {
             resourceClasses.push({ sourceFile, filePath, node, className, fqnClassName });
           }
         }
@@ -126,7 +139,7 @@ export abstract class MetadataUpdater {
   /**
    * Write the file content for the enum metadats.
    * @param outputPath The file to write to
-   * @param values The values, as a nested dictionary, to write. 
+   * @param values The values, as a nested dictionary, to write.
    */
   protected writeFileContent(outputPath: string, values: Record<string, Record<string, (string | number)[]>> = {}) {
     // Sort the keys of the enumlikes object
@@ -168,12 +181,12 @@ export class ConstructsUpdater extends MetadataUpdater {
   private makeConstructsPropInjectable(sourceFile: SourceFile, filePath: string, node: ClassDeclaration) {
     console.log(`path: ${filePath}, class: ${node.getName()}`);
 
-    if (this.isAlreadyInjectable(node)) {
+    if (this.isAlreadyInjectable(node) || this.shouldBeSkippedToBeInjectable(node)) {
       return; // do nothing
     }
 
     // Add PROPERTY_INJECTION_ID
-    node.addProperty({
+    node.insertProperty(0, {
       scope: Scope.Public,
       isStatic: true,
       isReadonly: true,
@@ -210,6 +223,18 @@ export class ConstructsUpdater extends MetadataUpdater {
     return false;
   }
 
+  private shouldBeSkippedToBeInjectable(classDeclaration: ClassDeclaration): boolean {
+    const className = classDeclaration.getName();
+    const filePath = classDeclaration.getSourceFile().getFilePath();
+
+    for(const notInjectableClasses of NOT_INJECTABLE_CLASSES){
+      if (className === notInjectableClasses.className && filePath.endsWith(notInjectableClasses.filePath)){
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * This converts the filePath
    * '<HOME_DIR>/<CDK_HOME>/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/api-key.ts'
@@ -233,19 +258,20 @@ export class ConstructsUpdater extends MetadataUpdater {
       throw new Error(`Could not build PROPERTY_INJECTION_ID for ${filePath} ${className}`);
     }
 
-    // we only care about /packages/aws-cdk-lib/ and /packages/@aws-cdk/, 
+    // we only care about /packages/aws-cdk-lib/ and /packages/@aws-cdk/,
     // but in case there are L2 constructs in other sub dir, it will handle it too.
     return `'${parts[0]}.${parts[1]}.${className}'`;
   }
 
   /**
-   * This returns the relative path of the import file in core/lib. 
+   * This returns the relative path of the import file in core/lib.
    * For example, importFile is prop-injectable or metadata-resource
    */
   private getRelativePathForPropInjectionImport(filePath: string, importFile: string): string {
     const absoluteFilePath = path.resolve(filePath);
     const absoluteTargetPath = path.resolve(__dirname, `../../../../packages/aws-cdk-lib/core/lib/${importFile}.ts`);
-    let relativePath = path.relative(path.dirname(absoluteFilePath), absoluteTargetPath).replace(/\\/g, "/").replace(/.ts/, "");
+    let dirname = path.dirname(absoluteFilePath);
+    let relativePath = path.relative(dirname, absoluteTargetPath).replace(/\\/g, "/").replace(/.ts/, "");
     if (absoluteFilePath.includes('@aws-cdk')) {
       relativePath = `aws-cdk-lib/core/lib/${importFile}`
     }
@@ -288,7 +314,7 @@ export class ConstructsUpdater extends MetadataUpdater {
 
     // Insert the new import at the correct index
     sourceFile.insertImportDeclaration(insertIndex, {
-      moduleSpecifier: relativePath,
+      moduleSpecifier: relativePath === "" ? "./" : relativePath,
       namedImports: [{ name: importClassName }],
     });
     console.log(`  Added import for ${importClassName} in file: ${filePath} with relative path: ${relativePath}`);
@@ -326,7 +352,7 @@ export class ConstructsUpdater extends MetadataUpdater {
 
       // Check if the statement already exists
       const statements = constructor.getStatements();
-      const hasMetadataCall = statements.some(statement => 
+      const hasMetadataCall = statements.some(statement =>
         statement.getText().includes('addConstructMetadata(')
       );
 
@@ -335,10 +361,10 @@ export class ConstructsUpdater extends MetadataUpdater {
       }
 
       // Find the super() call, if it exists
-      const superCall = constructor.getStatements().find(statement => 
+      const superCall = constructor.getStatements().find(statement =>
         statement.getText().includes('super(')
       );
-  
+
       const propName = parameters[2].getName();
       // If a super() call exists, find its index and insert after it
       if (superCall) {
@@ -425,7 +451,7 @@ export class PropertyUpdater extends MetadataUpdater {
 
     // Parse Constructor parameters
     const props = this.parseConstructorProps(node, className);
-    
+
     if (!props) {
       return;
     }
@@ -451,7 +477,7 @@ export class PropertyUpdater extends MetadataUpdater {
 
 export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = $PROPS;
 `;
-    
+
       // Convert the enums object to a JSON string
     const jsonContent = JSON.stringify(this.classProps, null, 2).replace(/"/g, "'");
 
@@ -462,7 +488,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = $PROPS;
       __dirname,
       "../../../../packages/aws-cdk-lib/core/lib/analytics-data-source/classes.ts"
     );
-  
+
     // Write the generated file
     fs.writeFileSync(outputPath, content);
     console.log(`Metadata file written to: ${outputPath}`);
@@ -518,11 +544,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = $PROPS;
       }
       return '*';
     }
-  
+
     if (type.isClass() || type.isInterface()) {
       // Generate a unique identifier for the type to track its processed state
       const typeId = type?.getSymbol()?.getFullyQualifiedName();
-      
+
       // If the type has already been processed, avoid recursion (cycle detection)
       if (typeId && processedTypes.has(typeId)) {
         // TODO: maybe use the cache instead
@@ -542,7 +568,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = $PROPS;
         return this.resolveInterfaceType(type, processedTypes);
       }
     }
-    
+
     return '*';
   }
 
@@ -556,7 +582,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = $PROPS;
         const firstDeclaration = declarations[0];
         const members = firstDeclaration.getType().getProperties();
         const resolvedObject: Record<string, any> = {};
-  
+
         members.forEach((member: Symbol) => {
           const memberType = member.getValueDeclaration()?.getType() || member.getDeclaredType();
           if (memberType.getCallSignatures().length > 0) {
@@ -568,27 +594,27 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = $PROPS;
             resolvedObject[propName] = nestedType;
           }
         });
-  
+
         return Object.keys(resolvedObject).length === 0 ? '*' : resolvedObject;
       }
     }
     return undefined; // If unable to resolve, return undefined
   }
-  
+
   private parseConstructorProps(node: ClassDeclaration, className: string) {
     const constructor = node.getConstructors()?.[0];
-  
+
     if (constructor) {
       const parameters = constructor.getParameters();
       const props = parameters[2];
-  
+
       if (props) {
         const type = props.getType();
-  
+
         if (type?.isObject()) {
           const properties = type.getProperties();
           const propertyTypes: Record<string, any> = {};
-  
+
           properties.forEach((property: Symbol) => {
             const propName = property.getName();
             const nestedType = this.getPropertyType(property.getValueDeclaration()?.getType());
@@ -596,7 +622,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = $PROPS;
               propertyTypes[propName] = nestedType;
             }
           });
-  
+
           return { [className]: propertyTypes };
         }
       }
@@ -649,7 +675,7 @@ export class EnumsUpdater extends MetadataUpdater {
       __dirname,
       "../../../../packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enums.json"
     );
-    
+
     // Write the generated file
     fs.writeFileSync(outputPath, content);
     console.log(`Metadata file written to: ${outputPath}`);
@@ -736,7 +762,7 @@ export class MethodsUpdater extends MetadataUpdater {
       // Find the correct insertion point (after the last import before the new one)
       const importDeclarations = sourceFile.getImportDeclarations();
       let insertIndex = importDeclarations.length; // Default to appending
-      
+
       for (let i = importDeclarations.length - 1; i >= 0; i--) {
         const existingImport = importDeclarations[i].getModuleSpecifier().getLiteralText();
 
@@ -747,7 +773,7 @@ export class MethodsUpdater extends MetadataUpdater {
           break;
         }
       }
-    
+
       // Insert the new import at the correct index
       sourceFile.insertImportDeclaration(insertIndex, {
         moduleSpecifier: relativePath,
@@ -818,7 +844,7 @@ export class EnumLikeUpdater extends MetadataUpdater {
               if (classField instanceof PropertyDeclaration) {
                 // enum-likes have `public static readonly` attributes that map to either new or call expressions
                 const initializerKind = classField.getInitializer()?.getKind();
-                if (initializerKind && classField.getText().startsWith("public static readonly") && 
+                if (initializerKind && classField.getText().startsWith("public static readonly") &&
                   (initializerKind === SyntaxKind.NewExpression || initializerKind === SyntaxKind.CallExpression || initializerKind === SyntaxKind.PropertyAccessExpression)
                 ) {
                   // This is an enum-like; add to blueprint
@@ -843,7 +869,7 @@ export class EnumLikeUpdater extends MetadataUpdater {
       __dirname,
       "../../../../packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enumlikes.json"
     );
-    
+
     // Write the generated file
     this.writeFileContent(outputPath, enumlikeBlueprint);
     console.log(`Metadata file written to: ${outputPath}`);
