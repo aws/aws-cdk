@@ -9,14 +9,15 @@ import * as ses from 'aws-cdk-lib/aws-ses';
  *
  * Step 1: Create a public hosted zone in Route53
  * Step 2: Create a email identity in SES and validate it with the hosted zone
- * Step 3: Set the domain name as an env var "DOMAIN_NAME"
+ * Step 3: Set the hosted zone name as an env var "HOSTED_ZONE_NAME"
  * Step 4: Run this test
+ * Step 5: Correct the hosted zone name in the generated template to `tracking.example.com `
  */
-const domainName = process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME;
-if (!domainName) throw new Error('For this test you must provide your own DomainName as an env var "DOMAIN_NAME". See framework-integ/README.md for details.');
+const hostedZoneName = process.env.CDK_INTEG_HOSTED_ZONE_NAME ?? process.env.HOSTED_ZONE_NAME;
+if (!hostedZoneName) throw new Error('For this test you must provide your own HostedZoneName as an env var "HOSTED_ZONE_NAME". See framework-integ/README.md for details.');
 
 interface TestStackProps extends StackProps {
-  domainName: string;
+  hostedZoneName: string;
 }
 
 class ConfigurationSetStack extends Stack {
@@ -24,7 +25,7 @@ class ConfigurationSetStack extends Stack {
     super(scope, id, props);
 
     new ses.ConfigurationSet(this, 'ConfigurationSet', {
-      customTrackingRedirectDomain: `tracking.${props.domainName}`,
+      customTrackingRedirectDomain: `tracking.${props.hostedZoneName}`,
       customTrackingHttpsPolicy: ses.HttpsPolicy.REQUIRE,
     });
   }
@@ -34,7 +35,7 @@ const app = new App();
 
 new integ.IntegTest(app, 'ConfigurationSetInteg', {
   testCases: [new ConfigurationSetStack(app, 'ses-configuration-set-tracking-options-integ', {
-    domainName,
+    hostedZoneName,
   })],
   stackUpdateWorkflow: false,
 });
