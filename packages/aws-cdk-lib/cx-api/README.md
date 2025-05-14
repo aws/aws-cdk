@@ -732,3 +732,18 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway`
+
+When this feature flag is enabled, EgressOnlyGateway is created only for dual-stack VPC with private subnets
+
+When this feature flag is disabled, EgressOnlyGateway resource is created for all dual-stack VPC regardless of subnet type
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true
+  }
+}
