@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { ISecurityGroup, SubnetSelection } from '../../../aws-ec2';
 import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
-import { FeatureFlags } from '../../../core';
+import { FeatureFlags, ValidationError } from '../../../core';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
@@ -63,7 +63,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
     this.assignPublicIp = props.assignPublicIp ?? false;
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new Error('You must specify either a taskDefinition or an image, not both.');
+      throw new ValidationError('You must specify either a taskDefinition or an image, not both.', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -94,7 +94,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
         containerPort: taskImageOptions.containerPort || 80,
       });
     } else {
-      throw new Error('You must specify one of: taskDefinition or image');
+      throw new ValidationError('You must specify one of: taskDefinition or image', this);
     }
 
     const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
