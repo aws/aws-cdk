@@ -3,7 +3,7 @@ import { SubscriptionProps } from './subscription';
 import * as iam from '../../aws-iam';
 import * as firehose from '../../aws-kinesisfirehose';
 import * as sns from '../../aws-sns';
-import { Names } from '../../core';
+import { Names, ValidationError } from '../../core';
 import { regionFromArn } from './private/util';
 
 /**
@@ -42,7 +42,7 @@ export class FirehoseSubscription implements sns.ITopicSubscription {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
     if (!Construct.isConstruct(this.stream)) {
-      throw new Error('The supplied delivery stream object must be an instance of Construct');
+      throw new ValidationError('The supplied delivery stream object must be an instance of Construct', topic);
     }
 
     // Permissions based on SNS documentation:
