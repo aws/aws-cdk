@@ -179,6 +179,7 @@ export interface AppProps {
   /**
    * The IAM role for an SSR app.
    * The Compute role allows the Amplify Hosting compute service to securely access specific AWS resources based on the role's permissions.
+   *
    * @default undefined - a new role is created when `platform` is `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`, otherwise no compute role
    */
   readonly computeRole?: iam.IRole;
