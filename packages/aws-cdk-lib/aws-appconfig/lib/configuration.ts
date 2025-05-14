@@ -83,7 +83,7 @@ export interface ConfigurationOptions {
    * Deletion protection prevents a user from deleting a configuration profile if your application has called
    * either `GetLatestConfiguration` or `GetConfiguration` for the configuration profile during the specified interval.
    *
-   * @see https://docs.aws.amazon.com/appconfig/latest/userguide/delete-config-profile.html
+   * @see https://docs.aws.amazon.com/appconfig/latest/userguide/deletion-protection.html
    *
    * @default DeletionProtectionCheck.ACCOUNT_DEFAULT
    */
@@ -150,11 +150,6 @@ export interface IConfiguration extends IConstruct {
    * The ID of the configuration profile.
    */
   readonly configurationProfileId: string;
-
-  /**
-   * Configuration for deletion protection behavior.
-   */
-  readonly deletionProtectionCheck?: DeletionProtectionCheck;
 }
 
 abstract class ConfigurationBase extends Construct implements IConfiguration, IExtensible {
@@ -201,13 +196,9 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
    */
   readonly deploymentStrategy?: IDeploymentStrategy;
 
-  /**
-   * Deletion protection check configuration.
-   */
-  readonly deletionProtectionCheck?: DeletionProtectionCheck;
-
   protected applicationId: string;
   protected extensible!: ExtensibleBase;
+  protected deletionProtectionCheck?: DeletionProtectionCheck;
 
   constructor(scope: Construct, id: string, props: ConfigurationProps) {
     super(scope, id);
