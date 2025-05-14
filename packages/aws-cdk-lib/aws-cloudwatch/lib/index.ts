@@ -14,7 +14,6 @@ export * from './widget';
 export * from './alarm-status-widget';
 export * from './stats';
 export * from './variable';
-export * from './private/alarm-options';
 
 // AWS::CloudWatch CloudFormation Resources:
 export * from './cloudwatch.generated';

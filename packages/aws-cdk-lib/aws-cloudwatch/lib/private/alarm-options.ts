@@ -3,6 +3,8 @@ import { TreatMissingData } from '../alarm';
 
 /**
  * Base options for creating CloudWatch alarms
+ *
+ * @internal
  */
 export interface CreateAlarmOptionsBase {
   /**
