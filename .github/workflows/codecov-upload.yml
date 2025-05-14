@@ -24,6 +24,8 @@ jobs:
         with:
           name: coverage-artifacts
           path: ./coverage
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v5
