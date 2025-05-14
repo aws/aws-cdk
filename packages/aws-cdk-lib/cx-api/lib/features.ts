@@ -137,6 +137,7 @@ export const DYNAMODB_TABLE_RETAIN_TABLE_REPLICA = '@aws-cdk/aws-dynamodb:retain
 export const LOG_USER_POOL_CLIENT_SECRET_VALUE = '@aws-cdk/cognito:logUserPoolClientSecretValue';
 export const PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope';
 export const S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS = '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions';
+export const STEPFUNCTIONS_TASKS_LAMBDA_INVOKE_GRANT_ALL_VERSIONS = '@aws-cdk/aws-stepfunctions-tasks:lambdaInvokeGrantAllVersions';
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
 
@@ -341,7 +342,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     summary: 'Enable this feature flag to have elastic file systems encrypted at rest by default.',
     detailsMd: `
       Encryption can also be configured explicitly using the \`encrypted\` property.
-      `,
+    `,
     introducedIn: { v1: '1.98.0' },
     defaults: { v2: true },
     recommendedValue: true,
@@ -1576,8 +1577,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.195.0' },
     recommendedValue: true,
   },
-
-  //////////////////////////////////////////////////////////////////////
   [USE_RESOURCEID_FOR_VPCV2_MIGRATION]: {
     type: FlagType.ApiDefault,
     summary: 'When enabled, use resource IDs for VPC V2 migration',
@@ -1602,6 +1601,28 @@ export const FLAGS: Record<string, FlagInfo> = {
       This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
       The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
     `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+  },
+  
+  //////////////////////////////////////////////////////////////////////
+  [STEPFUNCTIONS_TASKS_LAMBDA_INVOKE_GRANT_ALL_VERSIONS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, LambdaInvoke grants permissions to all versions of a Lambda function by default',
+    detailsMd: `
+      When a Step Function invokes a Lambda function version, it requires IAM permissions specifically for that version. 
+      Currently, the AWS CDK's \`LambdaInvoke\` construct automatically creates IAM permissions for the specific Lambda 
+      version referenced, but these permissions are updated during redeployment to only include the new version, removing
+      access to previous versions.
+      
+      This can cause in-flight Step Function executions to fail when new Lambda versions are deployed.
+      
+      When this feature flag is enabled, the \`LambdaInvoke\` construct will automatically grant permissions to both:
+      - The specific Lambda version referenced
+      - All versions of the Lambda function (using a wildcard)
+      
+      This ensures that in-flight executions continue to work even after deploying updates to Lambda functions.
+          `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
