@@ -34,7 +34,7 @@ describe('AgentActionGroupExecutor', () => {
     const actionGroup = new bedrock.AgentActionGroup({
       name: 'CustomAction',
       enabled: true,
-      executor: bedrock.ActionGroupExecutor.fromlambdaFunction(fn),
+      executor: bedrock.ActionGroupExecutor.fromLambda(fn),
     });
 
     const agent = new bedrock.Agent(stack, 'TestAgent', {
@@ -84,7 +84,7 @@ describe('AgentActionGroupExecutor', () => {
     const actionGroup = new bedrock.AgentActionGroup({
       name: 'CustomAction',
       enabled: true,
-      executor: bedrock.ActionGroupExecutor.fromlambdaFunction(fn),
+      executor: bedrock.ActionGroupExecutor.fromLambda(fn),
     });
 
     const agent = new bedrock.Agent(stack, 'TestAgent', {

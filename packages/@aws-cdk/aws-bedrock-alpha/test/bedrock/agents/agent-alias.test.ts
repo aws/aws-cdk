@@ -42,7 +42,7 @@ describe('AgentAlias', () => {
     // THEN
     const template = assertions.Template.fromStack(stack);
     template.hasResourceProperties('AWS::Bedrock::AgentAlias', {});
-    expect(alias.aliasName).toMatch(/^latest-[a-f0-9]+$/);
+    expect(alias.aliasName).toBe('latest');
   });
 
   test('creates with all properties', () => {

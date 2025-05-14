@@ -7,7 +7,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as bedrock from '../../../lib';
+import * as bedrock from '../../../bedrock';
 
 const app = new cdk.App();
 
@@ -44,12 +44,7 @@ const orchestrationFunction = new lambda.Function(stack, 'OrchestrationFunction'
 });
 
 // Create an orchestration executor using the Lambda function
-const orchestrationExecutor = bedrock.OrchestrationExecutor.fromlambdaFunction(orchestrationFunction);
-
-// Create a custom orchestration configuration
-const customOrchestration = {
-  executor: orchestrationExecutor,
-};
+const customOrchestrationExecutor = bedrock.CustomOrchestrationExecutor.fromLambda(orchestrationFunction);
 
 // Create a Bedrock Agent with custom orchestration
 new bedrock.Agent(stack, 'CustomOrchestrationAgent', {
@@ -57,9 +52,8 @@ new bedrock.Agent(stack, 'CustomOrchestrationAgent', {
   instruction: 'This is an agent using custom orchestration with at least 40 characters of instruction',
   foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
   forceDelete: true,
-  // Specify custom orchestration
-  orchestrationType: bedrock.OrchestrationType.CUSTOM_ORCHESTRATION,
-  customOrchestration: customOrchestration,
+  // Specify orchestration executor
+  customOrchestrationExecutor: customOrchestrationExecutor,
 });
 
 new integ.IntegTest(app, 'BedrockOrchestration', {

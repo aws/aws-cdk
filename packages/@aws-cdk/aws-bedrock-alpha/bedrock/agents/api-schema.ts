@@ -1,6 +1,17 @@
-import * as fs from 'fs';
+import { Construct } from 'constructs';
+import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import { IBucket, Location } from 'aws-cdk-lib/aws-s3';
+
+/**
+ * Error thrown when an ApiSchema is not properly initialized.
+ */
+class ApiSchemaError extends Error {
+  constructor(message: string, public readonly cause?: string) {
+    super(message);
+    this.name = 'ApiSchemaError';
+  }
+}
 
 /******************************************************************************
  *                       API SCHEMA CLASS
@@ -13,8 +24,8 @@ export abstract class ApiSchema {
    * Creates an API Schema from a local file.
    * @param path - the path to the local file containing the OpenAPI schema for the action group
    */
-  public static fromLocalAsset(path: string): InlineApiSchema {
-    return new InlineApiSchema(fs.readFileSync(path, 'utf8'));
+  public static fromLocalAsset(path: string): AssetApiSchema {
+    return new AssetApiSchema(path);
   }
 
   /**
@@ -49,9 +60,6 @@ export abstract class ApiSchema {
    */
   public readonly inlineSchema?: string;
 
-  /**
-   * Constructor accessible only to extending classes.
-   */
   protected constructor(s3File?: Location, inlineSchema?: string) {
     this.s3File = s3File;
     this.inlineSchema = inlineSchema;
@@ -65,8 +73,54 @@ export abstract class ApiSchema {
   public abstract _render(): CfnAgent.APISchemaProperty;
 }
 
-// ------------------------------------------------------
-// Inline Definition
+/**
+ * API Schema from a local asset.
+ *
+ * The asset is uploaded to an S3 staging bucket, then moved to its final location
+ * by CloudFormation during deployment.
+ */
+export class AssetApiSchema extends ApiSchema {
+  private asset?: s3_assets.Asset;
+
+  constructor(private readonly path: string, private readonly options: s3_assets.AssetOptions = {}) {
+    super();
+  }
+
+  /**
+   * Binds this API schema to a construct scope.
+   * This method initializes the S3 asset if it hasn't been initialized yet.
+   * Must be called before rendering the schema as CFN properties.
+   *
+   * @param scope - The construct scope to bind to
+   */
+  public bind(scope: Construct): void {
+    // If the same AssetApiSchema is used multiple times, retain only the first instantiation
+    if (!this.asset) {
+      this.asset = new s3_assets.Asset(scope, 'Schema', {
+        path: this.path,
+        ...this.options,
+      });
+    }
+  }
+
+  /**
+   * Format as CFN properties
+   * @internal This is an internal core function and should not be called directly.
+   */
+  public _render(): CfnAgent.APISchemaProperty {
+    if (!this.asset) {
+      throw new ApiSchemaError('ApiSchema must be bound to a scope before rendering. Call bind() first.', 'Asset not initialized');
+    }
+
+    return {
+      s3: {
+        s3BucketName: this.asset.s3BucketName,
+        s3ObjectKey: this.asset.s3ObjectKey,
+      },
+    };
+  }
+}
+
 // ------------------------------------------------------
 /**
  * Class to define an API Schema from an inline string.

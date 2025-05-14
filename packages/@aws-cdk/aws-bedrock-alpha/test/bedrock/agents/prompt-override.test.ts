@@ -1,6 +1,13 @@
 import { Stack } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { AgentStepType, PromptOverrideConfiguration } from '../../../bedrock/agents/prompt-override';
+import {
+  AgentStepType,
+  PromptOverrideConfiguration,
+  PromptRoutingClassifierConfigCustomParser,
+  PromptPreProcessingConfigCustomParser,
+  PromptOrchestrationConfigCustomParser,
+  PromptPostProcessingConfigCustomParser,
+} from '../../../bedrock/agents/prompt-override';
 import { IInvokable } from '../../../bedrock/models';
 
 describe('PromptOverrideConfiguration', () => {
@@ -54,6 +61,79 @@ describe('PromptOverrideConfiguration', () => {
       });
     });
 
+    test('creates with multiple steps', () => {
+      // WHEN
+      const config = PromptOverrideConfiguration.fromSteps([
+        {
+          stepType: AgentStepType.PRE_PROCESSING,
+          stepEnabled: true,
+          customPromptTemplate: 'pre template',
+        },
+        {
+          stepType: AgentStepType.ORCHESTRATION,
+          stepEnabled: true,
+          customPromptTemplate: 'orchestration template',
+        },
+        {
+          stepType: AgentStepType.POST_PROCESSING,
+          stepEnabled: false,
+          customPromptTemplate: 'post template',
+        },
+      ]);
+
+      // THEN
+      const rendered = config._render();
+      expect(rendered.promptConfigurations).toHaveLength(3);
+      const configs = rendered.promptConfigurations as any[];
+      expect(configs[0].promptType).toBe(AgentStepType.PRE_PROCESSING);
+      expect(configs[1].promptType).toBe(AgentStepType.ORCHESTRATION);
+      expect(configs[2].promptType).toBe(AgentStepType.POST_PROCESSING);
+    });
+
+    test('creates with all step types', () => {
+      // WHEN
+      const config = PromptOverrideConfiguration.fromSteps([
+        {
+          stepType: AgentStepType.PRE_PROCESSING,
+          stepEnabled: true,
+        },
+        {
+          stepType: AgentStepType.ORCHESTRATION,
+          stepEnabled: true,
+        },
+        {
+          stepType: AgentStepType.POST_PROCESSING,
+          stepEnabled: true,
+        },
+        {
+          stepType: AgentStepType.ROUTING_CLASSIFIER,
+          stepEnabled: true,
+          foundationModel: mockFoundationModel,
+        } as PromptRoutingClassifierConfigCustomParser,
+        {
+          stepType: AgentStepType.MEMORY_SUMMARIZATION,
+          stepEnabled: true,
+        },
+        {
+          stepType: AgentStepType.KNOWLEDGE_BASE_RESPONSE_GENERATION,
+          stepEnabled: true,
+        },
+      ]);
+
+      // THEN
+      const rendered = config._render();
+      expect(rendered.promptConfigurations).toHaveLength(6);
+      const configs = rendered.promptConfigurations as any[];
+      expect(configs.map(c => c.promptType)).toEqual([
+        AgentStepType.PRE_PROCESSING,
+        AgentStepType.ORCHESTRATION,
+        AgentStepType.POST_PROCESSING,
+        AgentStepType.ROUTING_CLASSIFIER,
+        AgentStepType.MEMORY_SUMMARIZATION,
+        AgentStepType.KNOWLEDGE_BASE_RESPONSE_GENERATION,
+      ]);
+    });
+
     test('throws error for empty steps', () => {
       // THEN
       expect(() => {
@@ -74,12 +154,10 @@ describe('PromptOverrideConfiguration', () => {
       // WHEN
       const config = PromptOverrideConfiguration.withCustomParser({
         parser,
-        steps: [
-          {
-            stepType: AgentStepType.PRE_PROCESSING,
-            useCustomParser: true,
-          },
-        ],
+        preProcessingStep: {
+          stepType: AgentStepType.PRE_PROCESSING,
+          useCustomParser: true,
+        } as PromptPreProcessingConfigCustomParser,
       });
 
       // THEN
@@ -101,12 +179,10 @@ describe('PromptOverrideConfiguration', () => {
       expect(() => {
         PromptOverrideConfiguration.withCustomParser({
           parser,
-          steps: [
-            {
-              stepType: AgentStepType.PRE_PROCESSING,
-              useCustomParser: false,
-            },
-          ],
+          preProcessingStep: {
+            stepType: AgentStepType.PRE_PROCESSING,
+            useCustomParser: false,
+          } as PromptPreProcessingConfigCustomParser,
         });
       }).toThrow('At least one step must use custom parser');
     });
@@ -211,7 +287,7 @@ describe('PromptOverrideConfiguration', () => {
         {
           stepType: AgentStepType.ROUTING_CLASSIFIER,
           foundationModel: mockFoundationModel,
-        },
+        } as PromptRoutingClassifierConfigCustomParser,
       ]);
 
       // THEN
@@ -227,7 +303,7 @@ describe('PromptOverrideConfiguration', () => {
           {
             stepType: AgentStepType.PRE_PROCESSING,
             foundationModel: mockFoundationModel,
-          },
+          } as PromptPreProcessingConfigCustomParser,
         ]);
       }).toThrow('Foundation model can only be specified for ROUTING_CLASSIFIER step type');
     });
@@ -239,7 +315,7 @@ describe('PromptOverrideConfiguration', () => {
           {
             stepType: AgentStepType.ROUTING_CLASSIFIER,
             foundationModel: {} as IInvokable,
-          },
+          } as PromptRoutingClassifierConfigCustomParser,
         ]);
       }).toThrow('Foundation model must be a valid IInvokable with an invokableArn');
     });
@@ -304,20 +380,18 @@ describe('PromptOverrideConfiguration', () => {
           handler: 'index.handler',
           code: lambda.Code.fromInline('exports.handler = () => {}'),
         }),
-        steps: [
-          {
-            stepType: AgentStepType.PRE_PROCESSING,
-            useCustomParser: true,
-          },
-          {
-            stepType: AgentStepType.ORCHESTRATION,
-            useCustomParser: false,
-          },
-          {
-            stepType: AgentStepType.POST_PROCESSING,
-            useCustomParser: undefined,
-          },
-        ],
+        preProcessingStep: {
+          stepType: AgentStepType.PRE_PROCESSING,
+          useCustomParser: true,
+        } as PromptPreProcessingConfigCustomParser,
+        orchestrationStep: {
+          stepType: AgentStepType.ORCHESTRATION,
+          useCustomParser: false,
+        } as PromptOrchestrationConfigCustomParser,
+        postProcessingStep: {
+          stepType: AgentStepType.POST_PROCESSING,
+          useCustomParser: undefined,
+        } as PromptPostProcessingConfigCustomParser,
       });
 
       // THEN

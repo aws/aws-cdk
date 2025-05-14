@@ -1,16 +1,8 @@
 import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
+import * as crypto from 'crypto';
 import { ActionGroupExecutor } from './api-executor';
 import { ApiSchema } from './api-schema';
-
-/**
- * Error thrown when action group validation fails.
- */
-class ActionGroupValidationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'ActionGroupValidationError';
-  }
-}
+import { ValidationError } from './validation-helpers';
 
 /******************************************************************************
  *                           Signatures
@@ -28,10 +20,8 @@ export class ParentActionGroupSignature {
    */
   public static readonly CODE_INTERPRETER = new ParentActionGroupSignature('AMAZON.CodeInterpreter');
   /**
-   * Constructor should be used as a temporary solution when a new signature is supported
-   * but its implementation in CDK hasn't been added yet.
+   * Constructor should be used as a temporary solution when a new signature is supported but its implementation in CDK hasn't been added yet.
    */
-
   constructor(
     /**
      * The AWS-defined signature value for this action group capability.
@@ -53,8 +43,9 @@ export class ParentActionGroupSignature {
 export interface AgentActionGroupProps {
   /**
    * The name of the action group.
+   * @default - A unique name is generated in the format 'action_group_quick_start_UUID'
    */
-  readonly name: string;
+  readonly name?: string;
 
   /**
    * A description of the action group.
@@ -187,7 +178,7 @@ export class AgentActionGroup {
     // ------------------------------------------------------
     // Set attributes or defaults
     // ------------------------------------------------------
-    this.name = props.name;
+    this.name = props.name ?? `action_group_quick_start_${crypto.randomUUID()}`;
     this.description = props.description;
     this.apiSchema = props.apiSchema;
     this.executor = props.executor;
@@ -199,7 +190,7 @@ export class AgentActionGroup {
 
   private validateProps(props: AgentActionGroupProps) {
     if (props.parentActionGroupSignature && (props.description || props.apiSchema || props.executor)) {
-      throw new ActionGroupValidationError(
+      throw new ValidationError(
         'When parentActionGroupSignature is specified, you must leave the description, ' +
           'apiSchema, and actionGroupExecutor fields blank for this action group',
       );

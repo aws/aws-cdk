@@ -80,7 +80,7 @@ paths:
 `);
 
 // Create an action group executor
-const actionGroupExecutor = bedrock.ActionGroupExecutor.fromlambdaFunction(actionGroupFunction);
+const actionGroupExecutor = bedrock.ActionGroupExecutor.fromLambda(actionGroupFunction);
 
 // Create a Bedrock Agent with custom action groups
 new bedrock.Agent(stack, 'MyAgent', {

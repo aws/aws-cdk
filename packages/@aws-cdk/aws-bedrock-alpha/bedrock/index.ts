@@ -9,7 +9,6 @@ export * from './agents/api-schema';
 export * from './agents/prompt-override';
 export * from './agents/memory';
 export * from './agents/agent-collaborator';
-export * from './agents/orchestration';
+export * from './agents/agent-collaboration';
 export * from './agents/orchestration-executor';
 export * from './models';
-

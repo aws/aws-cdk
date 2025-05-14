@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { Template, Match } from 'aws-cdk-lib/assertions';
-import * as bedrock from '../../../lib';
+import * as bedrock from '../../../bedrock';
 
 describe('Agent', () => {
   let stack: core.Stack;
@@ -25,6 +25,17 @@ describe('Agent', () => {
     };
   });
 
+  test('creates agent with default name when agentName is not provided', () => {
+    new bedrock.Agent(stack, 'TestAgent', {
+      instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+      foundationModel,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
+      AgentName: Match.stringLikeRegexp('agent--teststack-testagent-8d92f3fe-bedrockagent'),
+    });
+  });
+
   test('creates agent with basic properties', () => {
     new bedrock.Agent(stack, 'TestAgent', {
       instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
@@ -34,7 +45,7 @@ describe('Agent', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
       Instruction: Match.stringLikeRegexp('.*at least 40 characters.*'),
       FoundationModel: foundationModel.invokableArn,
-      IdleSessionTTLInSeconds: 3600,
+      IdleSessionTTLInSeconds: 600,
       AutoPrepare: false,
       Description: Match.absent(),
       CustomerEncryptionKeyArn: Match.absent(),
@@ -160,10 +171,7 @@ describe('Agent', () => {
       new bedrock.Agent(stack, 'TestAgent', {
         instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
         foundationModel,
-        orchestrationType: bedrock.OrchestrationType.CUSTOM_ORCHESTRATION,
-        customOrchestration: {
-          executor: bedrock.OrchestrationExecutor.fromlambdaFunction(fn),
-        },
+        customOrchestrationExecutor: bedrock.CustomOrchestrationExecutor.fromLambda(fn),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
@@ -190,35 +198,6 @@ describe('Agent', () => {
           Ref: 'AWS::AccountId',
         },
       });
-    });
-
-    test('throws error when CUSTOM_ORCHESTRATION type is set without customOrchestration', () => {
-      expect(() => {
-        new bedrock.Agent(stack, 'TestAgent', {
-          instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
-          foundationModel,
-          orchestrationType: bedrock.OrchestrationType.CUSTOM_ORCHESTRATION,
-        });
-      }).toThrow(/customOrchestration must be provided when orchestrationType is CUSTOM_ORCHESTRATION/);
-    });
-
-    test('throws error when customOrchestration is provided without CUSTOM_ORCHESTRATION type', () => {
-      const fn = new lambda.Function(stack, 'TestFunction', {
-        runtime: lambda.Runtime.NODEJS_18_X,
-        handler: 'index.handler',
-        code: lambda.Code.fromInline('exports.handler = async () => {};'),
-      });
-
-      expect(() => {
-        new bedrock.Agent(stack, 'TestAgent', {
-          instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
-          foundationModel,
-          orchestrationType: bedrock.OrchestrationType.DEFAULT,
-          customOrchestration: {
-            executor: bedrock.OrchestrationExecutor.fromlambdaFunction(fn),
-          },
-        });
-      }).toThrow(/customOrchestration can only be provided when orchestrationType is CUSTOM_ORCHESTRATION/);
     });
   });
 
@@ -261,7 +240,10 @@ describe('Agent', () => {
       new bedrock.Agent(stack, 'TestAgent', {
         instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
         foundationModel,
-        agentCollaboration: bedrock.AgentCollaboratorType.SUPERVISOR,
+        agentCollaboration: new bedrock.AgentCollaboration({
+          type: bedrock.AgentCollaboratorType.SUPERVISOR,
+          collaborators: [],
+        }),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {

@@ -61,8 +61,8 @@ const s3ActionGroupFunction = new lambda.Function(stack, 'S3ActionGroupFunction'
 });
 
 // Create action group executors
-const inlineActionGroupExecutor = bedrock.ActionGroupExecutor.fromlambdaFunction(inlineActionGroupFunction);
-const s3ActionGroupExecutor = bedrock.ActionGroupExecutor.fromlambdaFunction(s3ActionGroupFunction);
+const inlineActionGroupExecutor = bedrock.ActionGroupExecutor.fromLambda(inlineActionGroupFunction);
+const s3ActionGroupExecutor = bedrock.ActionGroupExecutor.fromLambda(s3ActionGroupFunction);
 
 // Create a simple inline API schema
 const inlineApiSchema = bedrock.ApiSchema.fromInline(`

@@ -1,8 +1,7 @@
 import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import { IGrantable, Grant } from 'aws-cdk-lib/aws-iam';
-import { Construct } from 'constructs';
-import { ValidationError } from 'aws-cdk-lib';
 import { IAgentAlias } from './agent-alias';
+import { ValidationError } from './validation-helpers';
 
 /**
  * Enum for collaborator's relay conversation history types.
@@ -69,13 +68,10 @@ export interface AgentCollaboratorProps {
 }
 
 /******************************************************************************
- *                         DEF - Agent Collaborator Class
+ *                         Agent Collaborator Class
  *****************************************************************************/
 
-export class AgentCollaborator extends Construct {
-  // ------------------------------------------------------
-  // Attributes
-  // ------------------------------------------------------
+export class AgentCollaborator {
   /**
    * The agent alias that this collaborator represents.
    * This is the agent that will be called upon for collaboration.
@@ -99,8 +95,7 @@ export class AgentCollaborator extends Construct {
    */
   public readonly relayConversationHistory?: boolean;
 
-  public constructor(scope: Construct, id: string, props: AgentCollaboratorProps) {
-    super(scope, id);
+  public constructor(props: AgentCollaboratorProps) {
     // Validate Props
     this.validateProps(props);
 
@@ -116,18 +111,19 @@ export class AgentCollaborator extends Construct {
   private validateProps(props: AgentCollaboratorProps) {
     // Validate required properties
     if (!props.agentAlias) {
-      throw new ValidationError('agentAlias is required for AgentCollaborator', this);
+      throw new ValidationError('agentAlias is required for AgentCollaborator');
     }
+
     if (props.agentAlias.aliasId === 'TSTALIASID') {
-      throw new ValidationError('Agent cannot collaborate with TSTALIASID alias of another agent. Use a different alias to collaborate with.', this);
+      throw new ValidationError('Agent cannot collaborate with TSTALIASID alias of another agent');
     }
 
     if (!props.collaborationInstruction || props.collaborationInstruction.trim() === '') {
-      throw new ValidationError('collaborationInstruction is required and cannot be empty for AgentCollaborator', this);
+      throw new ValidationError('collaborationInstruction is required and cannot be empty');
     }
 
     if (!props.collaboratorName || props.collaboratorName.trim() === '') {
-      throw new ValidationError('collaboratorName is required and cannot be empty for AgentCollaborator', this);
+      throw new ValidationError('collaboratorName is required and cannot be empty');
     }
   }
 
@@ -148,9 +144,7 @@ export class AgentCollaborator extends Construct {
   }
 
   /**
-   * Grants the specified principal permissions to get the agent alias and invoke the agent
-   * from this collaborator.
-   *
+   * Grants the given identity permissions to collaborate with the agent
    * @param grantee The principal to grant permissions to
    * @returns The Grant object
    */

@@ -80,8 +80,8 @@ const parserFunction = new lambda.Function(stack, 'ParserFunction', {
 });
 
 // Create action group executors
-const promptOverrideExecutor = bedrock.ActionGroupExecutor.fromlambdaFunction(promptOverrideFunction);
-const customParserExecutor = bedrock.ActionGroupExecutor.fromlambdaFunction(customParserActionFunction);
+const promptOverrideExecutor = bedrock.ActionGroupExecutor.fromLambda(promptOverrideFunction);
+const customParserExecutor = bedrock.ActionGroupExecutor.fromLambda(customParserActionFunction);
 
 // Create a simple API schema
 const apiSchema = bedrock.ApiSchema.fromInline(`
@@ -139,7 +139,7 @@ new bedrock.Agent(stack, 'AgentWithPromptOverride', {
         topP: 0.9,
         topK: 250,
         maximumLength: 2048,
-        stopSequences: ['\n\nHuman:'],
+        stopSequences: [],
       },
     },
     {
@@ -148,7 +148,7 @@ new bedrock.Agent(stack, 'AgentWithPromptOverride', {
       customPromptTemplate: '{"messages":[{"role":"user","content":"Refine this response to be more concise and helpful: {{response}}"}]}',
       inferenceConfig: {
         temperature: 0.1,
-        topP: 1.0,
+        topP: 0.95,
         topK: 100,
         maximumLength: 1024,
         stopSequences: [],
@@ -166,32 +166,30 @@ new bedrock.Agent(stack, 'AgentWithCustomParser', {
   actionGroups: [customParserActionGroup],
   promptOverrideConfiguration: bedrock.PromptOverrideConfiguration.withCustomParser({
     parser: parserFunction,
-    steps: [
-      {
-        stepType: bedrock.AgentStepType.PRE_PROCESSING,
-        useCustomParser: true,
-        customPromptTemplate: '{"messages":[{"role":"user","content":"Process this user input and prepare it for orchestration: {{user_input}}"}]}',
-        inferenceConfig: {
-          temperature: 0.0,
-          topP: 1.0,
-          topK: 250,
-          maximumLength: 1024,
-          stopSequences: [],
-        },
+    preProcessingStep: {
+      stepType: bedrock.AgentStepType.PRE_PROCESSING,
+      useCustomParser: true,
+      customPromptTemplate: '{"messages":[{"role":"user","content":"Process this user input and prepare it for orchestration: {{user_input}}"}]}',
+      inferenceConfig: {
+        temperature: 0.2,
+        topP: 0.9,
+        topK: 250,
+        maximumLength: 2048,
+        stopSequences: [],
       },
-      {
-        stepType: bedrock.AgentStepType.MEMORY_SUMMARIZATION,
-        useCustomParser: true,
-        customPromptTemplate: '{"messages":[{"role":"user","content":"Summarize this conversation for memory: {{conversation_history}}"}]}',
-        inferenceConfig: {
-          temperature: 0.0,
-          topP: 1.0,
-          topK: 250,
-          maximumLength: 1024,
-          stopSequences: [],
-        },
+    },
+    memorySummarizationStep: {
+      stepType: bedrock.AgentStepType.MEMORY_SUMMARIZATION,
+      useCustomParser: true,
+      customPromptTemplate: '{"messages":[{"role":"user","content":"Summarize this conversation for memory: {{conversation_history}}"}]}',
+      inferenceConfig: {
+        temperature: 0.1,
+        topP: 0.95,
+        topK: 100,
+        maximumLength: 1024,
+        stopSequences: [],
       },
-    ],
+    },
   }),
 });
 

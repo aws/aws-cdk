@@ -1,7 +1,6 @@
 import { ArnFormat, aws_bedrock as bedrock, IResource, Resource, Stack } from 'aws-cdk-lib';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { IAgent } from './agent';
 
@@ -14,12 +13,12 @@ import { IAgent } from './agent';
 export interface IAgentAlias extends IResource {
   /**
    * The unique identifier of the agent alias.
-   * @example `TCLCITFZTN`
+   * @attributes
    */
   readonly aliasId: string;
   /**
    * The ARN of the agent alias.
-   * @example `arn:aws:bedrock:us-east-1:123456789012:agent-alias/DNCJJYQKSU/TCLCITFZTN`
+   * @attributes
    */
   readonly aliasArn: string;
   /**
@@ -68,6 +67,8 @@ export abstract class AgentAliasBase extends Resource implements IAgentAlias {
 
   /**
    * Grant the given principal identity permissions to perform actions on this agent alias.
+   * Note: This grant will only work when the grantee is in the same AWS account
+   * where the agent alias is defined. Cross-account grant is not supported.
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
@@ -80,6 +81,8 @@ export abstract class AgentAliasBase extends Resource implements IAgentAlias {
 
   /**
    * Grant the given identity permissions to invoke the agent alias.
+   * Note: This grant will only work when the grantee is in the same AWS account
+   * where the agent alias is defined. Cross-account invocation is not supported.
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, 'bedrock:InvokeAgent');
@@ -87,6 +90,8 @@ export abstract class AgentAliasBase extends Resource implements IAgentAlias {
 
   /**
    * Grant the given identity permissions to get the agent alias.
+   * Note: This grant will only work when the grantee is in the same AWS account
+   * where the agent alias is defined. Cross-account agent read is not supported.
    */
   public grantGet(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, 'bedrock:GetAgentAlias');
@@ -128,7 +133,7 @@ export interface AgentAliasProps {
    * The name for the agent alias.
    * This will be used as the physical name of the agent alias.
    *
-   * @default - "latest-{hash}"
+   * @default - "latest"
    */
   readonly agentAliasName?: string;
   /**
@@ -225,14 +230,12 @@ export class AgentAlias extends AgentAliasBase {
   constructor(scope: Construct, id: string, props: AgentAliasProps) {
     super(scope, id);
 
-    // Compute hash from agent, to recreate the resource when agent has changed
-    const hash = md5hash(props.agent.agentId + props.agentVersion + props.agent.lastUpdated);
-
     // ------------------------------------------------------
     // Set properties or defaults
     // ------------------------------------------------------
-    // see https://github.com/awslabs/generative-ai-cdk-constructs/issues/947
-    this.aliasName = props.agentAliasName ?? `latest-${hash}`;
+    // see https://github.com/awslabs/generative-ai-cdk-constructs/issues/947 - The default name without any version update may result in this error.
+    // see https://github.com/awslabs/generative-ai-cdk-constructs/pull/1116 - If no agent version is provided then update the agent description for a new version.
+    this.aliasName = props.agentAliasName ?? 'latest';
     this.agent = props.agent;
 
     // ------------------------------------------------------

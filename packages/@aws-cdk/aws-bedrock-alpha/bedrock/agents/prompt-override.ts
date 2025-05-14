@@ -6,9 +6,6 @@ import { IInvokable } from '../models';
 /**
  * The step in the agent sequence that this prompt configuration applies to.
  */
-/**
- * The step in the agent sequence that this prompt configuration applies to.
- */
 export enum AgentStepType {
   /**
    * Pre-processing step that prepares the user input for orchestration.
@@ -103,13 +100,14 @@ export interface InferenceConfiguration {
 }
 
 /**
- * Contains configurations to override a prompt template in one part of an agent sequence.
+ * Base configuration interface for all prompt step types
  */
-export interface PromptStepConfiguration {
+export interface PromptStepConfigBase {
   /**
-   * The step in the agent sequence where to set a specific prompt configuration.
+   * The type of step this configuration applies to.
    */
   readonly stepType: AgentStepType;
+
   /**
    * Whether to enable or skip this step in the agent sequence.
    * @default - The default state for each step type is as follows.
@@ -120,6 +118,7 @@ export interface PromptStepConfiguration {
    *     POST_PROCESSING – DISABLED
    */
   readonly stepEnabled?: boolean;
+
   /**
    * The custom prompt template to be used.
    *
@@ -127,25 +126,13 @@ export interface PromptStepConfiguration {
    * @see https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-placeholders.html
    */
   readonly customPromptTemplate?: string;
+
   /**
    * The inference configuration parameters to use.
    * @default undefined - Default inference configuration will be used
    */
   readonly inferenceConfig?: InferenceConfiguration;
-  /**
-   * The foundation model to use for this specific prompt step.
-   * This allows using different models for different steps in the agent sequence.
-   *
-   * @default - The agent's default foundation model will be used.
-   */
-  readonly foundationModel?: IInvokable;
-}
 
-/**
- * Configuration for a prompt step that can use a custom Lambda parser.
- * Extends the base PromptStepConfiguration with custom parser options.
- */
-export interface PromptStepConfigurationCustomParser extends PromptStepConfiguration {
   /**
    * Whether to use the custom Lambda parser defined for the sequence.
    *
@@ -153,6 +140,42 @@ export interface PromptStepConfigurationCustomParser extends PromptStepConfigura
    */
   readonly useCustomParser?: boolean;
 }
+
+/**
+ * Configuration for the pre-processing step
+ */
+export interface PromptPreProcessingConfigCustomParser extends PromptStepConfigBase {}
+
+/**
+ * Configuration for the orchestration step
+ */
+export interface PromptOrchestrationConfigCustomParser extends PromptStepConfigBase {}
+
+/**
+ * Configuration for the post-processing step
+ */
+export interface PromptPostProcessingConfigCustomParser extends PromptStepConfigBase {}
+
+/**
+ * Configuration for the routing classifier step
+ */
+export interface PromptRoutingClassifierConfigCustomParser extends PromptStepConfigBase {
+  /**
+   * The foundation model to use for the routing classifier step.
+   * This is required for the routing classifier step.
+   */
+  readonly foundationModel: IInvokable;
+}
+
+/**
+ * Configuration for the memory summarization step
+ */
+export interface PromptMemorySummarizationConfigCustomParser extends PromptStepConfigBase {}
+
+/**
+ * Configuration for the knowledge base response generation step
+ */
+export interface PromptKnowledgeBaseResponseGenerationConfigCustomParser extends PromptStepConfigBase {}
 
 /**
  * Properties for configuring a custom Lambda parser for prompt overrides.
@@ -165,10 +188,40 @@ export interface CustomParserProps {
   readonly parser?: IFunction;
 
   /**
-   * Prompt step configurations. At least one of the steps must make use of the custom parser.
-   * @default undefined - No custom prompt step configurations
+   * Configuration for the pre-processing step.
+   * @default undefined - No pre-processing configuration
    */
-  readonly steps?: PromptStepConfigurationCustomParser[];
+  readonly preProcessingStep?: PromptPreProcessingConfigCustomParser;
+
+  /**
+   * Configuration for the orchestration step.
+   * @default undefined - No orchestration configuration
+   */
+  readonly orchestrationStep?: PromptOrchestrationConfigCustomParser;
+
+  /**
+   * Configuration for the post-processing step.
+   * @default undefined - No post-processing configuration
+   */
+  readonly postProcessingStep?: PromptPostProcessingConfigCustomParser;
+
+  /**
+   * Configuration for the routing classifier step.
+   * @default undefined - No routing classifier configuration
+   */
+  readonly routingClassifierStep?: PromptRoutingClassifierConfigCustomParser;
+
+  /**
+   * Configuration for the memory summarization step.
+   * @default undefined - No memory summarization configuration
+   */
+  readonly memorySummarizationStep?: PromptMemorySummarizationConfigCustomParser;
+
+  /**
+   * Configuration for the knowledge base response generation step.
+   * @default undefined - No knowledge base response generation configuration
+   */
+  readonly knowledgeBaseResponseGenerationStep?: PromptKnowledgeBaseResponseGenerationConfigCustomParser;
 }
 
 /**
@@ -178,23 +231,46 @@ export interface CustomParserProps {
  */
 export class PromptOverrideConfiguration {
   /**
-   * Creates a PromptOverrideConfiguration from a list of prompt step configurations.
+   * Creates a PromptOverrideConfiguration from individual step configurations.
    * Use this method when you want to override prompts without using a custom parser.
-   * @param steps The prompt step configurations to use
+   * @param steps The step configurations to use
    * @returns A new PromptOverrideConfiguration instance
    */
-  public static fromSteps(steps?: PromptStepConfiguration[]): PromptOverrideConfiguration {
-    // Create new object
-    return new PromptOverrideConfiguration({ steps });
+  public static fromSteps(steps: PromptStepConfigBase[]): PromptOverrideConfiguration {
+    if (!steps || steps.length === 0) {
+      throw new validation.ValidationError('Steps array cannot be empty');
+    }
+
+    // Convert steps array to props format
+    const stepMap = steps.reduce((acc, step) => {
+      switch (step.stepType) {
+        case AgentStepType.PRE_PROCESSING:
+          return { ...acc, preProcessingStep: step };
+        case AgentStepType.ORCHESTRATION:
+          return { ...acc, orchestrationStep: step };
+        case AgentStepType.POST_PROCESSING:
+          return { ...acc, postProcessingStep: step };
+        case AgentStepType.ROUTING_CLASSIFIER:
+          return { ...acc, routingClassifierStep: step as PromptRoutingClassifierConfigCustomParser };
+        case AgentStepType.MEMORY_SUMMARIZATION:
+          return { ...acc, memorySummarizationStep: step };
+        case AgentStepType.KNOWLEDGE_BASE_RESPONSE_GENERATION:
+          return { ...acc, knowledgeBaseResponseGenerationStep: step };
+        default:
+          return acc;
+      }
+    }, {} as CustomParserProps);
+
+    return new PromptOverrideConfiguration(stepMap);
   }
+
   /**
    * Creates a PromptOverrideConfiguration with a custom Lambda parser function.
    * @param props Configuration including:
    *   - `parser`: Lambda function to use as custom parser
-   *   - `steps`: prompt step configurations. At least one of the steps must make use of the custom parser.
+   *   - Individual step configurations. At least one of the steps must make use of the custom parser.
    */
   public static withCustomParser(props: CustomParserProps): PromptOverrideConfiguration {
-    // Create new object
     return new PromptOverrideConfiguration(props);
   }
 
@@ -214,11 +290,34 @@ export class PromptOverrideConfiguration {
   readonly parser?: IFunction;
 
   /**
-   * The prompt configurations to override the prompt templates in the agent sequence.
-   *
-   * @default - No prompt configuration will be overridden.
+   * Configuration for the pre-processing step.
    */
-  readonly steps?: PromptStepConfigurationCustomParser[];
+  readonly preProcessingStep?: PromptPreProcessingConfigCustomParser;
+
+  /**
+   * Configuration for the orchestration step.
+   */
+  readonly orchestrationStep?: PromptOrchestrationConfigCustomParser;
+
+  /**
+   * Configuration for the post-processing step.
+   */
+  readonly postProcessingStep?: PromptPostProcessingConfigCustomParser;
+
+  /**
+   * Configuration for the routing classifier step.
+   */
+  readonly routingClassifierStep?: PromptRoutingClassifierConfigCustomParser;
+
+  /**
+   * Configuration for the memory summarization step.
+   */
+  readonly memorySummarizationStep?: PromptMemorySummarizationConfigCustomParser;
+
+  /**
+   * Configuration for the knowledge base response generation step.
+   */
+  readonly knowledgeBaseResponseGenerationStep?: PromptKnowledgeBaseResponseGenerationConfigCustomParser;
 
   /**
    * Create a new PromptOverrideConfiguration.
@@ -227,12 +326,17 @@ export class PromptOverrideConfiguration {
    */
   private constructor(props: CustomParserProps) {
     // Validate props
-    validation.throwIfInvalid(this.validateSteps, props.steps);
+    validation.throwIfInvalid(this.validateSteps, props);
     if (props.parser) {
-      validation.throwIfInvalid(this.validateCustomParser, props.steps);
+      validation.throwIfInvalid(this.validateCustomParser, props);
     }
     this.parser = props.parser;
-    this.steps = props.steps;
+    this.preProcessingStep = props.preProcessingStep;
+    this.orchestrationStep = props.orchestrationStep;
+    this.postProcessingStep = props.postProcessingStep;
+    this.routingClassifierStep = props.routingClassifierStep;
+    this.memorySummarizationStep = props.memorySummarizationStep;
+    this.knowledgeBaseResponseGenerationStep = props.knowledgeBaseResponseGenerationStep;
   }
 
   /**
@@ -241,36 +345,42 @@ export class PromptOverrideConfiguration {
    * @internal This is an internal core function and should not be called directly.
    */
   public _render(): CfnAgent.PromptOverrideConfigurationProperty {
-    return {
-      overrideLambda: this.parser?.functionArn,
-      promptConfigurations:
-        this.steps?.map(step => ({
-          // prettier-ignore
-          promptType: step.stepType,
-          /** Maps stepEnabled (true → 'ENABLED', false → 'DISABLED', undefined → undefined (uses CFN DEFAULT)) */
-          promptState: step?.stepEnabled === undefined ? undefined : step.stepEnabled ? 'ENABLED' : 'DISABLED',
-          /** Maps stepEnabled (true → 'OVERRIDDEN', false → 'DEFAULT', undefined → undefined (uses CFN DEFAULT)) */
-          // prettier-ignore
-          parserMode:
-            step?.useCustomParser === undefined
-              ? undefined
-              : step?.useCustomParser ? 'OVERRIDDEN' : 'DEFAULT',
-          // Use custom prompt template if provided, otherwise use default
-          // prettier-ignore
-          promptCreationMode: step?.customPromptTemplate === undefined
-            ? undefined
-            : step?.customPromptTemplate ? 'OVERRIDDEN' : 'DEFAULT',
+    const configurations: CfnAgent.PromptConfigurationProperty[] = [];
+
+    // Helper function to add configuration if step exists
+    const addConfiguration = (step: PromptStepConfigBase | undefined, type: AgentStepType) => {
+      if (step) {
+        configurations.push({
+          promptType: type,
+          promptState: step.stepEnabled === undefined ? undefined : step.stepEnabled ? 'ENABLED' : 'DISABLED',
+          parserMode: step.useCustomParser === undefined ? undefined : step.useCustomParser ? 'OVERRIDDEN' : 'DEFAULT',
+          promptCreationMode: step.customPromptTemplate === undefined ? undefined : step.customPromptTemplate ? 'OVERRIDDEN' : 'DEFAULT',
           basePromptTemplate: step.customPromptTemplate,
           inferenceConfiguration: step.inferenceConfig,
-          // Include foundation model if provided
-          foundationModel: step.foundationModel?.invokableArn,
-        })) || [],
+          // Include foundation model if it's a routing classifier step
+          foundationModel: type === AgentStepType.ROUTING_CLASSIFIER
+            ? (step as PromptRoutingClassifierConfigCustomParser).foundationModel?.invokableArn
+            : undefined,
+        });
+      }
+    };
+
+    // Add configurations for each step type if defined
+    addConfiguration(this.preProcessingStep, AgentStepType.PRE_PROCESSING);
+    addConfiguration(this.orchestrationStep, AgentStepType.ORCHESTRATION);
+    addConfiguration(this.postProcessingStep, AgentStepType.POST_PROCESSING);
+    addConfiguration(this.routingClassifierStep, AgentStepType.ROUTING_CLASSIFIER);
+    addConfiguration(this.memorySummarizationStep, AgentStepType.MEMORY_SUMMARIZATION);
+    addConfiguration(this.knowledgeBaseResponseGenerationStep, AgentStepType.KNOWLEDGE_BASE_RESPONSE_GENERATION);
+
+    return {
+      overrideLambda: this.parser?.functionArn,
+      promptConfigurations: configurations,
     };
   }
 
   private validateInferenceConfig = (config?: InferenceConfiguration): string[] => {
     const errors: string[] = [];
-
     if (config) {
       if (config.temperature < 0 || config.temperature > 1) {
         errors.push('Temperature must be between 0 and 1');
@@ -288,43 +398,72 @@ export class PromptOverrideConfiguration {
         errors.push('MaximumLength must be between 0 and 4096');
       }
     }
-
     return errors;
   };
 
-  private validateSteps = (steps?: PromptStepConfiguration[]): string[] => {
+  private validateSteps = (props: CustomParserProps): string[] => {
     const errors: string[] = [];
 
-    if (!steps || steps.length === 0) {
+    // Check if any steps are defined
+    const hasSteps = [
+      props.preProcessingStep,
+      props.orchestrationStep,
+      props.postProcessingStep,
+      props.routingClassifierStep,
+      props.memorySummarizationStep,
+      props.knowledgeBaseResponseGenerationStep,
+    ].some(step => step !== undefined);
+
+    if (!hasSteps) {
       errors.push('Steps array cannot be empty');
     }
 
-    // Validate each step's inference config
-    steps?.forEach(step => {
-      const inferenceErrors = this.validateInferenceConfig(step.inferenceConfig);
-      if (inferenceErrors.length > 0) {
-        errors.push(`Step  ${inferenceErrors.join(', ')}`);
-      }
+    // Helper function to validate a step's inference config
+    const validateStep = (step: PromptStepConfigBase | undefined, stepName: string) => {
+      if (step) {
+        // Check for foundation model in non-ROUTING_CLASSIFIER steps
+        if ('foundationModel' in step && step.stepType !== AgentStepType.ROUTING_CLASSIFIER) {
+          errors.push('Foundation model can only be specified for ROUTING_CLASSIFIER step type');
+        }
 
-      // Validate foundationModel if provided
-      if (step.foundationModel !== undefined) {
-        if (!step.foundationModel.invokableArn) {
-          errors.push('Step Foundation model must be a valid IInvokable with an invokableArn');
-        }
-        // Only allow foundation model override for ROUTING_CLASSIFIER
-        if (step.stepType !== AgentStepType.ROUTING_CLASSIFIER) {
-          errors.push('Step Foundation model can only be specified for ROUTING_CLASSIFIER step type');
+        const inferenceErrors = this.validateInferenceConfig(step.inferenceConfig);
+        if (inferenceErrors.length > 0) {
+          errors.push(`${stepName} step: ${inferenceErrors.join(', ')}`);
         }
       }
-    });
+    };
+
+    // Validate each step's inference config
+    validateStep(props.preProcessingStep, 'Pre-processing');
+    validateStep(props.orchestrationStep, 'Orchestration');
+    validateStep(props.postProcessingStep, 'Post-processing');
+    validateStep(props.routingClassifierStep, 'Routing classifier');
+    validateStep(props.memorySummarizationStep, 'Memory summarization');
+    validateStep(props.knowledgeBaseResponseGenerationStep, 'Knowledge base response generation');
+
+    // Validate routing classifier's foundation model if provided
+    if (props.routingClassifierStep?.foundationModel) {
+      if (!props.routingClassifierStep.foundationModel.invokableArn) {
+        errors.push('Foundation model must be a valid IInvokable with an invokableArn');
+      }
+    }
 
     return errors;
   };
 
-  private validateCustomParser = (steps?: PromptStepConfigurationCustomParser[]): string[] => {
+  private validateCustomParser = (props: CustomParserProps): string[] => {
     const errors: string[] = [];
 
-    const hasCustomParser = steps?.some(step => step.useCustomParser);
+    // Check if at least one step uses custom parser
+    const hasCustomParser = [
+      props.preProcessingStep?.useCustomParser,
+      props.orchestrationStep?.useCustomParser,
+      props.postProcessingStep?.useCustomParser,
+      props.routingClassifierStep?.useCustomParser,
+      props.memorySummarizationStep?.useCustomParser,
+      props.knowledgeBaseResponseGenerationStep?.useCustomParser,
+    ].some(useCustomParser => useCustomParser === true);
+
     if (!hasCustomParser) {
       errors.push('At least one step must use custom parser');
     }

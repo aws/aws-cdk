@@ -71,6 +71,8 @@ The Bedrock Agent class supports the following properties.
 | userInputEnabled | boolean | No | Select whether the agent can prompt additional information from the user when it lacks enough information. Defaults to false |
 | codeInterpreterEnabled | boolean | No | Select whether the agent can generate, run, and troubleshoot code when trying to complete a task. Defaults to false |
 | forceDelete | boolean | No | Whether to delete the resource even if it's in use. Defaults to true |
+| agentCollaboration | AgentCollaboration | No | Configuration for agent collaboration settings, including type and collaborators. This property allows you to define how the agent collaborates with other agents and what collaborators it can work with. Defaults to no agent collaboration configuration |
+| customOrchestrationExecutor | CustomOrchestrationExecutor | No | The Lambda function to use for custom orchestration. If provided, orchestrationType is set to CUSTOM_ORCHESTRATION. If not provided, orchestrationType defaults to DEFAULT. Defaults to default orchestration |
 
 ### Action Groups
 
@@ -88,7 +90,7 @@ const actionGroupFunction = new lambda.Function(this, 'ActionGroupFunction', {
 const actionGroup = new bedrock.AgentActionGroup({
   name: 'query-library',
   description: 'Use these functions to get information about the books in the library.',
-  executor: bedrock.ActionGroupExecutor.fromlambdaFunction(actionGroupFunction),
+  executor: bedrock.ActionGroupExecutor.fromLambda(actionGroupFunction),
   enabled: true,
   apiSchema: bedrock.ApiSchema.fromLocalAsset(path.join(__dirname, 'action-group.yaml')),
 });
@@ -164,7 +166,7 @@ const actionGroupFunction = new lambda.Function(this, 'ActionGroupFunction', {
 const actionGroup = new bedrock.AgentActionGroup({
   name: 'query-library',
   description: 'Use these functions to get information about the books in the library.',
-  executor: bedrock.ActionGroupExecutor.fromlambdaFunction(actionGroupFunction),
+  executor: bedrock.ActionGroupExecutor.fromLambda(actionGroupFunction),
   enabled: true,
   apiSchema: bedrock.ApiSchema.fromS3File(schemaBucket, 'inputschema/action-group.yaml'),
 });
@@ -184,16 +186,16 @@ Creating an agent alias will not prepare the agent, so if you create an alias us
 
 ### Prompt Override Configuration
 
-Bedrock Agents allows you to customize the prompts and LLM configuration for different steps in the agent sequence. You can disable steps or create a new prompt template. The following steps can be configured:
+Bedrock Agents allows you to customize the prompts and LLM configuration for different steps in the agent sequence. The implementation provides type-safe configurations for each step type, ensuring correct usage at compile time. The following steps can be configured:
 
-- PRE_PROCESSING
-- ORCHESTRATION
-- POST_PROCESSING
-- ROUTING_CLASSIFIER
-- MEMORY_SUMMARIZATION
-- KNOWLEDGE_BASE_RESPONSE_GENERATION
+- PRE_PROCESSING: Prepares the user input for orchestration
+- ORCHESTRATION: Main step that determines the agent's actions
+- POST_PROCESSING: Refines the agent's response
+- ROUTING_CLASSIFIER: Classifies and routes requests to appropriate collaborators
+- MEMORY_SUMMARIZATION: Summarizes conversation history for memory retention
+- KNOWLEDGE_BASE_RESPONSE_GENERATION: Generates responses using knowledge base content
 
-Example:
+Example with pre-processing configuration:
 
 ```ts fixture=default
 const agent = new bedrock.Agent(this, 'Agent', {
@@ -216,7 +218,24 @@ const agent = new bedrock.Agent(this, 'Agent', {
 });
 ```
 
-You can also use a custom Lambda parser to process the model's output:
+Example with routing classifier and foundation model:
+
+```ts fixture=default
+const agent = new bedrock.Agent(this, 'Agent', {
+  foundationModel: bedrock.BedrockFoundationModel.AMAZON_NOVA_LITE_V1,
+  instruction: 'You are a helpful assistant.',
+  promptOverrideConfiguration: bedrock.PromptOverrideConfiguration.fromSteps([
+    {
+      stepType: bedrock.AgentStepType.ROUTING_CLASSIFIER,
+      stepEnabled: true,
+      customPromptTemplate: 'Your routing template here',
+      foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_V2
+    } as bedrock.PromptRoutingClassifierConfigCustomParser
+  ])
+});
+```
+
+Using a custom Lambda parser:
 
 ```ts fixture=default
 const parserFunction = new lambda.Function(this, 'ParserFunction', {
@@ -230,16 +249,15 @@ const agent = new bedrock.Agent(this, 'Agent', {
   instruction: 'You are a helpful assistant.',
   promptOverrideConfiguration: bedrock.PromptOverrideConfiguration.withCustomParser({
     parser: parserFunction,
-    steps: [
-      {
-        stepType: bedrock.AgentStepType.PRE_PROCESSING,
-        useCustomParser: true,
-        customPromptTemplate: 'Your custom prompt template here',
-      }
-    ]
+    preProcessingStep: {
+      stepType: bedrock.AgentStepType.PRE_PROCESSING,
+      useCustomParser: true
+    }
   })
 });
 ```
+
+Foundation models can only be specified for the ROUTING_CLASSIFIER step.
 
 ### Memory Configuration
 
@@ -282,21 +300,25 @@ const customerSupportAlias = new bedrock.AgentAlias(this, 'CustomerSupportAlias'
 const mainAgent = new bedrock.Agent(this, 'MainAgent', {
   instruction: 'You route specialized questions to other agents.',
   foundationModel: bedrock.BedrockFoundationModel.AMAZON_NOVA_LITE_V1,
-  agentCollaboration: bedrock.AgentCollaboratorType.SUPERVISOR,
-  agentCollaborators: [
-    new bedrock.AgentCollaborator(this, 'CustomerSupportCollaborator', {
-      agentAlias: customerSupportAlias,
-      collaborationInstruction: 'Route customer support questions to this agent.',
-      collaboratorName: 'CustomerSupport',
-      relayConversationHistory: true,
-    }),
-  ],
+  agentCollaboration: {
+    type: bedrock.AgentCollaboratorType.SUPERVISOR,
+    collaborators: [
+      new bedrock.AgentCollaborator({
+        agentAlias: customerSupportAlias,
+        collaborationInstruction: 'Route customer support questions to this agent.',
+        collaboratorName: 'CustomerSupport',
+        relayConversationHistory: true
+      }),
+    ],
+  },
 });
 ```
 
 ### Custom Orchestration
 
 Custom Orchestration allows you to override the default agent orchestration flow with your own Lambda function. This enables more control over how the agent processes user inputs and invokes action groups.
+
+When you provide a customOrchestrationExecutor, the agent's orchestrationType is automatically set to CUSTOM_ORCHESTRATION. If no customOrchestrationExecutor is provided, the orchestrationType defaults to DEFAULT, using Amazon Bedrock's built-in orchestration.
 
 Example:
 
@@ -310,10 +332,7 @@ const orchestrationFunction = new lambda.Function(this, 'OrchestrationFunction',
 const agent = new bedrock.Agent(this, 'CustomOrchestrationAgent', {
   instruction: 'You are a helpful assistant with custom orchestration logic.',
   foundationModel: bedrock.BedrockFoundationModel.AMAZON_NOVA_LITE_V1,
-  orchestrationType: bedrock.OrchestrationType.CUSTOM_ORCHESTRATION,
-  customOrchestration: {
-    executor: bedrock.OrchestrationExecutor.fromlambdaFunction(orchestrationFunction),
-  },
+  customOrchestrationExecutor: bedrock.CustomOrchestrationExecutor.fromLambda(orchestrationFunction),
 });
 ```
 
@@ -323,7 +342,9 @@ After you have sufficiently iterated on your working draft and are satisfied wit
 
 To deploy your agent, you need to create an alias. During alias creation, Amazon Bedrock automatically creates a version of your agent. The alias points to this newly created version. You can point the alias to a previously created version if necessary. You then configure your application to make API calls to that alias.
 
-By default, the Agent resource does not create any aliases, and you can use the 'DRAFT' version.
+By default, the Agent resource creates a test alias named 'AgentTestAlias' that points to the 'DRAFT' version. This test alias is accessible via the `testAlias` property of the agent. You can also create additional aliases for different environments using the AgentAlias construct.
+
+When redeploying an agent with changes, you must ensure the agent version is updated to avoid deployment failures with "agent already exists" errors. The recommended way to handle this is to include the `lastUpdated` property in the agent's description, which automatically updates whenever the agent is modified. This ensures a new version is created on each deployment.
 
 Example:
 
@@ -333,10 +354,9 @@ const agent = new bedrock.Agent(this, 'Agent', {
   instruction: 'You are a helpful and friendly agent that answers questions about literature.',
 });
 
-const agentAlias = new bedrock.AgentAlias(this, 'myalias', {
+const agentAlias = new bedrock.AgentAlias(this, 'myAlias', {
   agentAliasName: 'production',
   agent: agent,
-  agentVersion: '1', // optional
-  description: 'Production version of my agent'
+  description: `Production version of my agent. Created at ${agent.lastUpdated}` // ensure the version update
 });
 ```

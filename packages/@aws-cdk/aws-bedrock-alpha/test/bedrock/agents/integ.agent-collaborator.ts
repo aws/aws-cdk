@@ -6,7 +6,7 @@
 
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as bedrock from '../../../lib';
+import * as bedrock from '../../../bedrock';
 
 const app = new cdk.App();
 
@@ -32,17 +32,18 @@ new bedrock.Agent(stack, 'CollaborativeAgent', {
   instruction: 'This is a collaborative agent with at least 40 characters of instruction',
   foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
   forceDelete: true,
-  // Enable collaboration
-  agentCollaboration: bedrock.AgentCollaboratorType.SUPERVISOR,
-  // Add collaborator
-  agentCollaborators: [
-    new bedrock.AgentCollaborator(stack, 'AgentCollaborator', {
-      agentAlias: collaboratorAlias,
-      collaborationInstruction: 'Help the primary agent with complex tasks and provide additional context',
-      collaboratorName: 'HelperAgent',
-      relayConversationHistory: true,
-    }),
-  ],
+  // Configure collaboration
+  agentCollaboration: new bedrock.AgentCollaboration({
+    type: bedrock.AgentCollaboratorType.SUPERVISOR,
+    collaborators: [
+      new bedrock.AgentCollaborator({
+        agentAlias: collaboratorAlias,
+        collaborationInstruction: 'Help the primary agent with complex tasks and provide additional context',
+        collaboratorName: 'HelperAgent',
+        relayConversationHistory: true,
+      }),
+    ],
+  }),
 });
 
 new integ.IntegTest(app, 'BedrockAgentCollaborator', {

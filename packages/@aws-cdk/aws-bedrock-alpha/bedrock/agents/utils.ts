@@ -130,7 +130,7 @@ export function generatePhysicalNameV2(
   } = options ?? {};
   const hash = objectToHash(destroyCreate);
   if (maxLength < (prefix + hash + separator).length) {
-    throw new ValidationError('The prefix is longer than the maximum length', scope);
+    throw new ValidationError(`The prefix length (${prefix.length}) plus hash length (${hash.length}) and separator length (${separator.length}) exceeds the maximum allowed length of ${maxLength}`, scope);
   }
   const uniqueName = cdk.Names.uniqueResourceName(
     scope,
@@ -146,19 +146,19 @@ export function generatePhysicalNameV2(
 export const maximumLambdaMemorySizeContextItem = 'maximumLambdaMemorySize';
 export const recommendedMaximumLambdaMemorySize = 7076;
 export function lambdaMemorySizeLimiter(construct: IConstruct, requestedMemorySizeInMegabytes: number) {
-  const maximumLambaMemorySize = construct.node.tryGetContext(maximumLambdaMemorySizeContextItem) === undefined ?
+  const maximumLambdaMemorySize = construct.node.tryGetContext(maximumLambdaMemorySizeContextItem) === undefined ?
     recommendedMaximumLambdaMemorySize :
     parseInt(construct.node.tryGetContext(maximumLambdaMemorySizeContextItem));
-  if (maximumLambaMemorySize < recommendedMaximumLambdaMemorySize) {
+  if (maximumLambdaMemorySize < recommendedMaximumLambdaMemorySize) {
     cdk.Annotations.of(construct).addWarning(
-      `Maximum Lambda memorySize, ${maximumLambaMemorySize}, is less than the recommended ${recommendedMaximumLambdaMemorySize}.`,
+      `Maximum Lambda memorySize, ${maximumLambdaMemorySize}, is less than the recommended ${recommendedMaximumLambdaMemorySize}.`,
     );
   }
-  if (requestedMemorySizeInMegabytes > maximumLambaMemorySize) {
+  if (requestedMemorySizeInMegabytes > maximumLambdaMemorySize) {
     cdk.Annotations.of(construct).addWarning(
-      `Reducing Lambda memorySize, ${requestedMemorySizeInMegabytes} to ${maximumLambaMemorySize} for ${construct.constructor.name}`,
+      `Reducing Lambda memorySize, ${requestedMemorySizeInMegabytes} to ${maximumLambdaMemorySize} for ${construct.constructor.name}`,
     );
-    return maximumLambaMemorySize;
+    return maximumLambdaMemorySize;
   } else {
     return requestedMemorySizeInMegabytes;
   }

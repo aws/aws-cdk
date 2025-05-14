@@ -1,8 +1,8 @@
 import { Stack } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { OrchestrationExecutor } from '../../../bedrock/agents/orchestration-executor';
+import { CustomOrchestrationExecutor } from '../../../bedrock/agents/orchestration-executor';
 
-describe('OrchestrationExecutor', () => {
+describe('CustomOrchestrationExecutor', () => {
   let stack: Stack;
   let testFunction: lambda.Function;
 
@@ -17,16 +17,16 @@ describe('OrchestrationExecutor', () => {
 
   test('can create from lambda function', () => {
     // WHEN
-    const executor = OrchestrationExecutor.fromlambdaFunction(testFunction);
+    const executor = CustomOrchestrationExecutor.fromLambda(testFunction);
 
     // THEN
-    expect(executor).toBeInstanceOf(OrchestrationExecutor);
+    expect(executor).toBeInstanceOf(CustomOrchestrationExecutor);
     expect(executor.lambdaFunction).toBe(testFunction);
   });
 
   test('renders CFN properties correctly', () => {
     // GIVEN
-    const executor = OrchestrationExecutor.fromlambdaFunction(testFunction);
+    const executor = CustomOrchestrationExecutor.fromLambda(testFunction);
 
     // WHEN
     const rendered = executor._render();
@@ -39,7 +39,7 @@ describe('OrchestrationExecutor', () => {
 
   test('handles undefined lambda function gracefully', () => {
     // GIVEN
-    const executor = OrchestrationExecutor.fromlambdaFunction(undefined as any);
+    const executor = CustomOrchestrationExecutor.fromLambda(undefined as any);
 
     // WHEN
     const rendered = executor._render();
@@ -52,7 +52,7 @@ describe('OrchestrationExecutor', () => {
 
   test('handles null lambda function gracefully', () => {
     // GIVEN
-    const executor = OrchestrationExecutor.fromlambdaFunction(null as any);
+    const executor = CustomOrchestrationExecutor.fromLambda(null as any);
 
     // WHEN
     const rendered = executor._render();
@@ -66,7 +66,7 @@ describe('OrchestrationExecutor', () => {
   test('handles lambda function with undefined functionArn', () => {
     // GIVEN
     const mockFunction = {} as lambda.IFunction;
-    const executor = OrchestrationExecutor.fromlambdaFunction(mockFunction);
+    const executor = CustomOrchestrationExecutor.fromLambda(mockFunction);
 
     // WHEN
     const rendered = executor._render();
@@ -83,7 +83,7 @@ describe('OrchestrationExecutor', () => {
 
     // THEN
     expect(() => {
-      OrchestrationExecutor.fromlambdaFunction(nonFunction as any);
+      CustomOrchestrationExecutor.fromLambda(nonFunction as any);
     }).not.toThrow();
   });
 
@@ -92,7 +92,7 @@ describe('OrchestrationExecutor', () => {
     const mockFunction = {
       functionArn: null,
     } as any as lambda.IFunction;
-    const executor = OrchestrationExecutor.fromlambdaFunction(mockFunction);
+    const executor = CustomOrchestrationExecutor.fromLambda(mockFunction);
 
     // WHEN
     const rendered = executor._render();
@@ -105,8 +105,8 @@ describe('OrchestrationExecutor', () => {
 
   test('preserves lambda function reference', () => {
     // GIVEN
-    const executor = OrchestrationExecutor.fromlambdaFunction(testFunction);
-    const anotherExecutor = OrchestrationExecutor.fromlambdaFunction(testFunction);
+    const executor = CustomOrchestrationExecutor.fromLambda(testFunction);
+    const anotherExecutor = CustomOrchestrationExecutor.fromLambda(testFunction);
 
     // THEN
     expect(executor.lambdaFunction).toBe(anotherExecutor.lambdaFunction);
@@ -117,7 +117,7 @@ describe('OrchestrationExecutor', () => {
     const mockFunction = {
       functionArn: 'arn:aws:lambda:us-west-2:123456789012:function:test',
     } as lambda.IFunction;
-    const executor = OrchestrationExecutor.fromlambdaFunction(mockFunction);
+    const executor = CustomOrchestrationExecutor.fromLambda(mockFunction);
 
     // WHEN
     const rendered = executor._render();

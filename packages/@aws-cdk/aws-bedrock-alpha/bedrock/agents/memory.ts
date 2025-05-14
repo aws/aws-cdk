@@ -1,6 +1,7 @@
 import { Duration } from 'aws-cdk-lib/core';
 import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import * as validation from './validation-helpers';
+
 /**
  * Memory options for agent conversational context retention.
  * Memory enables agents to maintain context across multiple sessions and recall past interactions.
@@ -51,15 +52,22 @@ export class Memory {
    * Returns session summary memory with default configuration.
    * @default memoryDuration=Duration.days(30), maxRecentSessions=20
    */
-  public static readonly SESSION_SUMMARY = Memory.sessionSummary({ memoryDuration: Duration.days(30), maxRecentSessions: 20 });
+  public static readonly SESSION_SUMMARY = new Memory({ memoryDuration: Duration.days(30), maxRecentSessions: 20 });
 
   /**
    * Creates a session summary memory with custom configuration.
    * @param props Optional memory configuration properties
-   * @returns Memory configuration object
+   * @returns Memory instance
    */
-  public static sessionSummary(props: SessionSummaryMemoryProps): CfnAgent.MemoryConfigurationProperty {
-    // Do some checks
+  public static sessionSummary(props: SessionSummaryMemoryProps): Memory {
+    return new Memory(props);
+  }
+
+  private readonly memoryDuration?: Duration;
+  private readonly maxRecentSessions?: number;
+
+  constructor(props: SessionSummaryMemoryProps) {
+    // Validate props
     validation.throwIfInvalid((config: SessionSummaryMemoryProps) => {
       let errors: string[] = [];
 
@@ -79,11 +87,20 @@ export class Memory {
       return errors;
     }, props);
 
+    this.memoryDuration = props.memoryDuration;
+    this.maxRecentSessions = props.maxRecentSessions;
+  }
+
+  /**
+   * Render the memory configuration to a CloudFormation property.
+   * @internal
+   */
+  public _render(): CfnAgent.MemoryConfigurationProperty {
     return {
       enabledMemoryTypes: [MemoryType.SESSION_SUMMARY],
-      storageDays: props?.memoryDuration?.toDays() ?? 30,
+      storageDays: this.memoryDuration?.toDays() ?? 30,
       sessionSummaryConfiguration: {
-        maxRecentSessions: props?.maxRecentSessions ?? 20,
+        maxRecentSessions: this.maxRecentSessions ?? 20,
       },
     };
   }

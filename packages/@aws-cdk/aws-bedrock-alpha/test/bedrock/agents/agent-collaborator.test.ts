@@ -32,7 +32,7 @@ describe('AgentCollaborator', () => {
 
   test('creates with valid properties', () => {
     // WHEN
-    const collaborator = new AgentCollaborator(stack, 'TestCollaborator', {
+    const collaborator = new AgentCollaborator({
       agentAlias: mockAgentAlias,
       collaborationInstruction: 'Test instruction',
       collaboratorName: 'Test collaborator',
@@ -49,7 +49,7 @@ describe('AgentCollaborator', () => {
   test('throws error when agentAlias is missing', () => {
     // THEN
     expect(() => {
-      new AgentCollaborator(stack, 'TestCollaborator1', {
+      new AgentCollaborator({
         agentAlias: undefined as any,
         collaborationInstruction: 'Test instruction',
         collaboratorName: 'Test collaborator',
@@ -66,7 +66,7 @@ describe('AgentCollaborator', () => {
 
     // THEN
     expect(() => {
-      new AgentCollaborator(stack, 'TestCollaborator2', {
+      new AgentCollaborator({
         agentAlias: testAlias,
         collaborationInstruction: 'Test instruction',
         collaboratorName: 'Test collaborator',
@@ -77,7 +77,7 @@ describe('AgentCollaborator', () => {
   test('throws error when collaborationInstruction is empty', () => {
     // THEN
     expect(() => {
-      new AgentCollaborator(stack, 'TestCollaborator3', {
+      new AgentCollaborator({
         agentAlias: mockAgentAlias,
         collaborationInstruction: '',
         collaboratorName: 'Test collaborator',
@@ -88,7 +88,7 @@ describe('AgentCollaborator', () => {
   test('throws error when collaborationInstruction is whitespace', () => {
     // THEN
     expect(() => {
-      new AgentCollaborator(stack, 'TestCollaborator4', {
+      new AgentCollaborator({
         agentAlias: mockAgentAlias,
         collaborationInstruction: '   ',
         collaboratorName: 'Test collaborator',
@@ -99,7 +99,7 @@ describe('AgentCollaborator', () => {
   test('throws error when collaboratorName is empty', () => {
     // THEN
     expect(() => {
-      new AgentCollaborator(stack, 'TestCollaborator5', {
+      new AgentCollaborator({
         agentAlias: mockAgentAlias,
         collaborationInstruction: 'Test instruction',
         collaboratorName: '',
@@ -110,7 +110,7 @@ describe('AgentCollaborator', () => {
   test('throws error when collaboratorName is whitespace', () => {
     // THEN
     expect(() => {
-      new AgentCollaborator(stack, 'TestCollaborator6', {
+      new AgentCollaborator({
         agentAlias: mockAgentAlias,
         collaborationInstruction: 'Test instruction',
         collaboratorName: '   ',
@@ -120,7 +120,7 @@ describe('AgentCollaborator', () => {
 
   test('renders with relayConversationHistory true', () => {
     // GIVEN
-    const collaborator = new AgentCollaborator(stack, 'TestCollaborator7', {
+    const collaborator = new AgentCollaborator({
       agentAlias: mockAgentAlias,
       collaborationInstruction: 'Test instruction',
       collaboratorName: 'Test collaborator',
@@ -143,7 +143,7 @@ describe('AgentCollaborator', () => {
 
   test('renders with relayConversationHistory false', () => {
     // GIVEN
-    const collaborator = new AgentCollaborator(stack, 'TestCollaborator8', {
+    const collaborator = new AgentCollaborator({
       agentAlias: mockAgentAlias,
       collaborationInstruction: 'Test instruction',
       collaboratorName: 'Test collaborator',
@@ -166,7 +166,7 @@ describe('AgentCollaborator', () => {
 
   test('renders with relayConversationHistory undefined', () => {
     // GIVEN
-    const collaborator = new AgentCollaborator(stack, 'TestCollaborator9', {
+    const collaborator = new AgentCollaborator({
       agentAlias: mockAgentAlias,
       collaborationInstruction: 'Test instruction',
       collaboratorName: 'Test collaborator',
@@ -188,7 +188,7 @@ describe('AgentCollaborator', () => {
 
   test('grants permissions to grantee', () => {
     // GIVEN
-    const collaborator = new AgentCollaborator(stack, 'TestCollaborator10', {
+    const collaborator = new AgentCollaborator({
       agentAlias: mockAgentAlias,
       collaborationInstruction: 'Test instruction',
       collaboratorName: 'Test collaborator',

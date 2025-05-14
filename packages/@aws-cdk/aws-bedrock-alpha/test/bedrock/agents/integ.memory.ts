@@ -59,8 +59,8 @@ const customMemoryFunction = new lambda.Function(stack, 'CustomMemoryFunction', 
 });
 
 // Create action group executors
-const defaultMemoryExecutor = bedrock.ActionGroupExecutor.fromlambdaFunction(defaultMemoryFunction);
-const customMemoryExecutor = bedrock.ActionGroupExecutor.fromlambdaFunction(customMemoryFunction);
+const defaultMemoryExecutor = bedrock.ActionGroupExecutor.fromLambda(defaultMemoryFunction);
+const customMemoryExecutor = bedrock.ActionGroupExecutor.fromLambda(customMemoryFunction);
 
 // Create a simple API schema
 const apiSchema = bedrock.ApiSchema.fromInline(`

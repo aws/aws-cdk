@@ -1,21 +1,41 @@
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 
+/**
+ * Enum for orchestration types available for agents.
+ */
+export enum OrchestrationType {
+  /**
+   * Default orchestration by the agent.
+   */
+  DEFAULT = 'DEFAULT',
+
+  /**
+   * Custom orchestration using Lambda.
+   */
+  CUSTOM_ORCHESTRATION = 'CUSTOM_ORCHESTRATION',
+}
+
 /******************************************************************************
- *                           Orchestration Executor
+ *                         Custom Orchestration Executor
  *****************************************************************************/
 /**
  * Contains details about the Lambda function containing the orchestration logic carried
  * out upon invoking the custom orchestration.
  */
-export class OrchestrationExecutor {
+export class CustomOrchestrationExecutor {
   /**
    * Defines an orchestration executor with a Lambda function containing the business logic.
    * @param lambdaFunction - Lambda function to be called by the orchestration.
    */
-  public static fromlambdaFunction(lambdaFunction: IFunction): OrchestrationExecutor {
-    return new OrchestrationExecutor(lambdaFunction);
+  public static fromLambda(lambdaFunction: IFunction): CustomOrchestrationExecutor {
+    return new CustomOrchestrationExecutor(lambdaFunction);
   }
+
+  /**
+   * The type of orchestration this executor performs.
+   */
+  public readonly type: OrchestrationType = OrchestrationType.CUSTOM_ORCHESTRATION;
 
   /**
    * The Lambda function that contains the custom orchestration logic.
