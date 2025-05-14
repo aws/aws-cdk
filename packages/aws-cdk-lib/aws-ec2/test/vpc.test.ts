@@ -2813,7 +2813,7 @@ describe('vpc', () => {
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::EC2::EgressOnlyInternetGateway', 1);
   });
-  test(' (feature flag ENABLE_E2_REMOVE_EGRESSONLYGATEWAY_FROM_PUBLIC_SUBNET_VPC)EgressOnlyInternetGateWay is not created when private subnet configured in dual stack', () => {
+  test(' (feature flag ENABLE_E2_REMOVE_EGRESSONLYGATEWAY_FROM_PUBLIC_SUBNET_VPC)EgressOnlyInternetGateWay is not created when no private subnets are configured in dual stack', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'DualStackStack');
