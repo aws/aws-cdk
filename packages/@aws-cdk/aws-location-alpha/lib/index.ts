@@ -1,3 +1,4 @@
+export * from './api-key';
 export * from './geofence-collection';
 export * from './map';
 export * from './place-index';
