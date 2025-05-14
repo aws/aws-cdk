@@ -5,8 +5,7 @@ import { TableBucketPolicy } from './table-bucket-policy';
 import * as perms from './permissions';
 import { validateTableBucketAttributes } from './util';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import { Resource, IResource, UnscopedValidationError, RemovalPolicy, Token, Stack } from 'aws-cdk-lib/core';
+import { Resource, IResource, UnscopedValidationError, RemovalPolicy, Token } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
@@ -259,13 +258,6 @@ export interface TableBucketProps {
    * @default RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
-
-  /**
-   * The KMS key to use for server-side encryption.
-   *
-   * @default - Server-side encryption with Amazon S3-managed keys (SSE-S3)
-   */
-  readonly kmsKey?: kms.IKey;
 }
 
 /**
@@ -506,33 +498,7 @@ export class TableBucket extends TableBucketBase {
         noncurrentDays: props.unreferencedFileRemoval?.noncurrentDays,
         unreferencedDays: props.unreferencedFileRemoval?.unreferencedDays,
       },
-      encryptionConfiguration: props?.kmsKey
-        ? {
-          sseAlgorithm: 'aws:kms',
-          kmsKeyArn: props.kmsKey.keyArn,
-        }
-        : undefined,
     });
-
-    // add resource policy to the encryption key
-    // see https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-kms-permissions.html#tables-kms-maintenance-permissions
-    props?.kmsKey?.addToResourcePolicy(
-      new iam.PolicyStatement({
-        actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
-        resources: ['*'],
-        effect: iam.Effect.ALLOW,
-        principals: [new iam.ServicePrincipal('maintenance.s3tables.amazonaws.com')],
-        conditions: {
-          StringLike: {
-            'kms:EncryptionContext:aws:s3:arn': `${Stack.of(this).formatArn({
-              service: 's3tables',
-              resource: 'bucket',
-              resourceName: props.tableBucketName,
-            })}/*`,
-          },
-        },
-      }),
-    );
 
     this.tableBucketName = this.getResourceNameAttribute(this._resource.ref);
     this.tableBucketArn = this._resource.attrTableBucketArn;

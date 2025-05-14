@@ -1,6 +1,5 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
 import * as core from 'aws-cdk-lib/core';
 import * as s3tables from '../lib';
 
@@ -142,94 +141,6 @@ describe('TableBucket', () => {
               'Resource': '*',
             },
           ],
-        },
-      });
-    });
-  });
-
-  describe('server-side encryption', () => {
-    test('configure customer managed key', () => {
-      const kmsKey = new kms.Key(stack, 'Key');
-
-      new s3tables.TableBucket(stack, 'ExampleTableBucket', {
-        tableBucketName: 'example-table-bucket',
-        kmsKey,
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
-        KeyPolicy: {
-          Statement: [
-            {
-              Action: 'kms:*',
-              Effect: 'Allow',
-              Principal: {
-                AWS: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        'Ref': 'AWS::Partition',
-                      },
-                      ':iam::',
-                      {
-                        'Ref': 'AWS::AccountId',
-                      },
-                      ':root',
-                    ],
-                  ],
-                },
-              },
-              Resource: '*',
-            },
-            {
-              Action: [
-                'kms:Decrypt',
-                'kms:GenerateDataKey',
-              ],
-              Condition: {
-                StringLike: {
-                  'kms:EncryptionContext:aws:s3:arn': {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:',
-                        {
-                          'Ref': 'AWS::Partition',
-                        },
-                        ':s3tables:',
-                        {
-                          'Ref': 'AWS::Region',
-                        },
-                        ':',
-                        {
-                          'Ref': 'AWS::AccountId',
-                        },
-                        ':bucket/example-table-bucket/*',
-                      ],
-                    ],
-                  },
-                },
-              },
-              Effect: 'Allow',
-              Principal: {
-                Service: 'maintenance.s3tables.amazonaws.com',
-              },
-              Resource: '*',
-            },
-          ],
-        },
-      });
-
-      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
-        'EncryptionConfiguration': {
-          'KMSKeyArn': {
-            'Fn::GetAtt': [
-              'Key961B73FD',
-              'Arn',
-            ],
-          },
-          'SSEAlgorithm': 'aws:kms',
         },
       });
     });
