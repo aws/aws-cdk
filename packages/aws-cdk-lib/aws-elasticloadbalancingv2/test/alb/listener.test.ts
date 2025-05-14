@@ -1,6 +1,6 @@
 import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as constructs from 'constructs';
-import { Match, Template } from '../../../assertions';
+import { Annotations, Match, Template } from '../../../assertions';
 import * as acm from '../../../aws-certificatemanager';
 import { Metric } from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
@@ -263,12 +263,13 @@ describe('tests', () => {
     const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
-    // WHEN
-    expect(() => lb.addListener('Listener', {
+    const listener = lb.addListener('Listener', {
       port: 80,
       certificates: [elbv2.ListenerCertificate.fromArn('cert1')],
       defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
-    })).toThrow(/certificates cannot be specified for HTTP listeners/);
+    });
+
+    Annotations.fromStack(stack).hasWarning('/'+listener.node.path, Match.stringLikeRegexp('Certificates cannot be specified for HTTP listeners. Use HTTPS instead.'));
   });
 
   test('Can configure targetType on TargetGroups', () => {
