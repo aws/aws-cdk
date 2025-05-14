@@ -2,6 +2,7 @@ import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEven
 import * as api from '../../aws-apigateway';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
+import { ValidationError } from '../../core';
 
 /**
  * Customize the API Gateway Event Target
@@ -80,7 +81,7 @@ export class ApiGateway implements events.IRuleTarget {
    */
   public get restApi(): api.RestApi {
     if (!api.RestApi.isRestApi(this._restApi)) {
-      throw new Error('The iRestApi is not a RestApi construct, and cannot be retrieved this way.');
+      throw new ValidationError('The iRestApi is not a RestApi construct, and cannot be retrieved this way.', this._restApi);
     }
     return this._restApi;
   }
@@ -105,7 +106,7 @@ export class ApiGateway implements events.IRuleTarget {
 
     const wildcardCountsInPath = this.props?.path?.match( /\*/g )?.length ?? 0;
     if (wildcardCountsInPath !== (this.props?.pathParameterValues || []).length) {
-      throw new Error('The number of wildcards in the path does not match the number of path pathParameterValues.');
+      throw new ValidationError('The number of wildcards in the path does not match the number of path pathParameterValues.', rule);
     }
 
     const restApiArn = this._restApi.arnForExecuteApi(

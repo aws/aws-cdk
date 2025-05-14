@@ -286,6 +286,15 @@
     }
   },
   "location": {
+    "AllowMapsAction": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/api-key.ts"
+    },
+    "AllowPlacesAction": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/api-key.ts"
+    },
+    "AllowRoutesAction": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/api-key.ts"
+    },
     "CustomLayer": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/map.ts"
     },
@@ -451,7 +460,13 @@
     "AuthorizationType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.ts"
     },
+    "IpAddressType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts"
+    },
     "EndpointType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts"
+    },
+    "RestApiMode": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts"
     },
     "MethodLoggingLevel": {
@@ -888,6 +903,9 @@
     },
     "CodeCommitTrigger": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/codecommit/source-action.ts"
+    },
+    "RevisionType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/codepipeline/invoke-action.ts"
     },
     "RegistryType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ecr/build-and-publish-action.ts"
@@ -1848,6 +1866,20 @@
     },
     "TriggerInvalidation": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/triggers/lib/trigger.ts"
+    }
+  },
+  "applicationsignals": {
+    "JavaInstrumentationVersion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts"
+    },
+    "PythonInstrumentationVersion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts"
+    },
+    "DotnetInstrumentationVersion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts"
+    },
+    "NodeInstrumentationVersion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/instrumentation-versions.ts"
     }
   },
   "neptune": {
