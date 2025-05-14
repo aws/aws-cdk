@@ -8,5 +8,6 @@
       "assertionStack": "LimitlessClusterInteg/DefaultTest/DeployAssert",
       "assertionStackName": "LimitlessClusterIntegDefaultTestDeployAssertAD81C491"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
