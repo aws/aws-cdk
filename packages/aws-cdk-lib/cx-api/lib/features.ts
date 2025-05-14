@@ -1617,17 +1617,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
-
-  //////////////////////////////////////////////////////////////////////
-  [ENABLE_E2_REMOVE_EGRESSONLYGATEWAY_FROM_PUBLIC_SUBNET_VPC]: {
-    type: FlagType.BugFix,
-    summary: 'Remove EgressOnlyGateway resource when a a double stack vpc has only public subnets',
-    detailsMd: `
-      When this feature flag is enabled, EgressOnlyGateway resource will not be created when you create a vpc with only public subnets.
-          `,
-    introducedIn: { v2: 'V2NEXT' },
-    recommendedValue: true,
-  },
 };
 
 const CURRENT_MV = 'v2';
