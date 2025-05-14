@@ -1,0 +1,339 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "OnlyEncryptionKeyTest.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "OnlyEncryptionKeyTest.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "OnlyEncryptionKeyTest": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "OnlyEncryptionKeyTest.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7fcc56d2d76068041a26a7eb195a7123a2080f59e47e3064be079312f36be91d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "OnlyEncryptionKeyTest.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "OnlyEncryptionKeyTest.assets"
+      ],
+      "metadata": {
+        "/OnlyEncryptionKeyTest/Key": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/OnlyEncryptionKeyTest/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD"
+          }
+        ],
+        "/OnlyEncryptionKeyTest/OnlyEncryptionKeyTest": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/OnlyEncryptionKeyTest/OnlyEncryptionKeyTest/OnlyEncryptionKeyTest": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnlyEncryptionKeyTest2F21C8CC"
+          }
+        ],
+        "/OnlyEncryptionKeyTest/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/OnlyEncryptionKeyTest/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "OnlyEncryptionKeyTest"
+    },
+    "OnlyKMSEncryptionTypeTest.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "OnlyKMSEncryptionTypeTest.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "OnlyKMSEncryptionTypeTest": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "OnlyKMSEncryptionTypeTest.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7af1ffdaa9c46e7d8a539a46d562c407a37cf9c82ad9735d9a005cbf62345c08.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "OnlyKMSEncryptionTypeTest.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "OnlyKMSEncryptionTypeTest.assets"
+      ],
+      "metadata": {
+        "/OnlyKMSEncryptionTypeTest/OnlyKMSEncryptionTypeTest": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/OnlyKMSEncryptionTypeTest/OnlyKMSEncryptionTypeTest/Key": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "enableKeyRotation": true
+            }
+          }
+        ],
+        "/OnlyKMSEncryptionTypeTest/OnlyKMSEncryptionTypeTest/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnlyKMSEncryptionTypeTestKey190897FD"
+          }
+        ],
+        "/OnlyKMSEncryptionTypeTest/OnlyKMSEncryptionTypeTest/OnlyKMSEncryptionTypeTest": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnlyKMSEncryptionTypeTestB8E6F4B3"
+          }
+        ],
+        "/OnlyKMSEncryptionTypeTest/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/OnlyKMSEncryptionTypeTest/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "OnlyKMSEncryptionTypeTest"
+    },
+    "KeyWithKMSEncryptionTypeTest.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "KeyWithKMSEncryptionTypeTest.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "KeyWithKMSEncryptionTypeTest": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "KeyWithKMSEncryptionTypeTest.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0754b8b9a278cd7d48040522b6423a2461ae6261c2d9a5f93f5598f74198c824.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "KeyWithKMSEncryptionTypeTest.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "KeyWithKMSEncryptionTypeTest.assets"
+      ],
+      "metadata": {
+        "/KeyWithKMSEncryptionTypeTest/Key": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/KeyWithKMSEncryptionTypeTest/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD"
+          }
+        ],
+        "/KeyWithKMSEncryptionTypeTest/KeyWithKMSEncryptionTypeTest": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/KeyWithKMSEncryptionTypeTest/KeyWithKMSEncryptionTypeTest/KeyWithKMSEncryptionTypeTest": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KeyWithKMSEncryptionTypeTestF4BB0051"
+          }
+        ],
+        "/KeyWithKMSEncryptionTypeTest/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/KeyWithKMSEncryptionTypeTest/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "KeyWithKMSEncryptionTypeTest"
+    },
+    "OnlyS3ManagedEncryptionTest.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "OnlyS3ManagedEncryptionTest.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "OnlyS3ManagedEncryptionTest": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "OnlyS3ManagedEncryptionTest.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6aa33954737a1f4a9379d1492c7444f67eb487ec6f415fc2be992977ed509d9a.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "OnlyS3ManagedEncryptionTest.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "OnlyS3ManagedEncryptionTest.assets"
+      ],
+      "metadata": {
+        "/OnlyS3ManagedEncryptionTest/OnlyS3ManagedEncryptionTest": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/OnlyS3ManagedEncryptionTest/OnlyS3ManagedEncryptionTest/OnlyS3ManagedEncryptionTest": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnlyS3ManagedEncryptionTest146B7FA9"
+          }
+        ],
+        "/OnlyS3ManagedEncryptionTest/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/OnlyS3ManagedEncryptionTest/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "OnlyS3ManagedEncryptionTest"
+    },
+    "TableBucketEncryptionIntegTestDefaultTestDeployAssert2F88D4F9.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "TableBucketEncryptionIntegTestDefaultTestDeployAssert2F88D4F9.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "TableBucketEncryptionIntegTestDefaultTestDeployAssert2F88D4F9": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "TableBucketEncryptionIntegTestDefaultTestDeployAssert2F88D4F9.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "TableBucketEncryptionIntegTestDefaultTestDeployAssert2F88D4F9.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "TableBucketEncryptionIntegTestDefaultTestDeployAssert2F88D4F9.assets"
+      ],
+      "metadata": {
+        "/TableBucketEncryptionIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/TableBucketEncryptionIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "TableBucketEncryptionIntegTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}
