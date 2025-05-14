@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster-hybrid-nodes.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/453c842674b3f5b81a60dc06c69140ee95136ca40299aca9fb2a4255fac2aa32.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/58b138acc54c2b1135148cb05137f6f27437f775e7b22a275ffe6480c896c824.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -40,7 +40,8 @@
             "data": {
               "maxAzs": "*",
               "natGateways": "*",
-              "restrictDefaultSecurityGroup": false
+              "restrictDefaultSecurityGroup": false,
+              "cidr": "*"
             }
           }
         ],
@@ -299,10 +300,7 @@
         "/aws-cdk-eks-cluster-hybrid-nodes/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "KubectlLayer600207B5"
           }
         ],
         "/aws-cdk-eks-cluster-hybrid-nodes/Cluster": [
@@ -322,7 +320,8 @@
                 {
                   "cidrs": "*"
                 }
-              ]
+              ],
+              "authenticationMode": "API"
             }
           }
         ],
@@ -1991,5 +1990,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

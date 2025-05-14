@@ -17,6 +17,7 @@ import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
 
 /**
@@ -281,7 +282,13 @@ export interface DistributionProps {
 /**
  * A CloudFront distribution with associated origin(s) and caching behavior(s).
  */
+@propertyInjectable
 export class Distribution extends Resource implements IDistribution {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.Distribution';
+
   /**
    * Creates a Distribution construct that represents an external (imported) distribution.
    */
@@ -663,6 +670,10 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private validateWebAclId(webAclId: string) {
+    if (Token.isUnresolved(webAclId)) {
+      // Cannot validate unresolved tokens or non-string values at synth-time.
+      return;
+    }
     if (webAclId.startsWith('arn:')) {
       const webAclRegion = Stack.of(this).splitArn(webAclId, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(webAclRegion) && webAclRegion !== 'us-east-1') {
@@ -905,6 +916,7 @@ export enum OriginProtocolPolicy {
 export enum SSLMethod {
   SNI = 'sni-only',
   VIP = 'vip',
+  STATIC_IP = 'static-ip',
 }
 
 /**

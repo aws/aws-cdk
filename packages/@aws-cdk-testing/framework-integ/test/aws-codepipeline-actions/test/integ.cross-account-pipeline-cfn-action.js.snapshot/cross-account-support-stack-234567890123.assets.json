@@ -1,0 +1,21 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "09fd1759e9c27953169a9b6d52f6774e4452e65265d145d7317ec94cb4efdbb2": {
+      "displayName": "CdkPipelineCfnActionStack-support-234567890123 Template",
+      "source": {
+        "path": "cross-account-support-stack-234567890123.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "234567890123-test-region": {
+          "bucketName": "cdk-hnb659fds-assets-234567890123-test-region",
+          "objectKey": "09fd1759e9c27953169a9b6d52f6774e4452e65265d145d7317ec94cb4efdbb2.json",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-test-region"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
