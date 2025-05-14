@@ -2108,6 +2108,7 @@ When this feature flag is enabled, a S3 trust policy will be added to the KMS ke
 | (not in v1) |  |  |
 | 2.195.0 | `false` | `true` |
 
+
 ### @aws-cdk/aws-s3:publicAccessBlockedByDefault
 
 *When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined.*
