@@ -14,7 +14,6 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
  * Each stack creates a VPC with a public subnet.
  */
 
-// Stack with feature flag enabled
 const app = new cdk.App();
 
 class VpcEgressOnlyIGWFeatureFlagEnabledStack extends cdk.Stack {
