@@ -22,6 +22,9 @@ class EksClusterAlbControllerStack extends Stack {
       ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_30),
       albController: {
         version: LATEST_VERSION,
+        additionalHelmChartValues: {
+          enableWafv2: false,
+        },
       },
     });
 

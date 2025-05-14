@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "ecsexternalservicedaemonecsexternalservicedaemontestDefaultTestDeployAssert31EDBC58.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5261a3c9c61dfc402387d52c193ef5c9887500da51f8636dbe88e700ebe7334b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/50a7b3cbd8a1a5d282bfb2bc46644278c634b39d5dbe2a41d46c7123fe10a0b5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,6 +38,14 @@
         "/ecs-external-service-daemon/ecs-external-service-daemon-test/DefaultTest/DeployAssert/AwsApiCallECSdescribeServices47a8fe64f8450c5b4535940f3e3ea206/Default": [
           {
             "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
             "data": "*"
           }
         ],
@@ -103,7 +111,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8d972881839dcf3f352901259a11d4115f30db34f54029bf9ae9ee1a51bb92a3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8994f14bfc932d69e9be464907ec1d9f2b456bba3b2814e8db57f4f03535a7a3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -140,7 +148,7 @@
               "availabilityZone": "*",
               "vpcId": "*",
               "cidrBlock": "*",
-              "mapPublicIpOnLaunch": "*",
+              "mapPublicIpOnLaunch": true,
               "ipv6CidrBlock": "*",
               "assignIpv6AddressOnCreation": "*"
             }
@@ -151,9 +159,21 @@
               "availabilityZone": "*",
               "vpcId": "*",
               "cidrBlock": "*",
-              "mapPublicIpOnLaunch": "*",
+              "mapPublicIpOnLaunch": true,
               "ipv6CidrBlock": "*",
               "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
             }
           }
         ],
@@ -200,7 +220,7 @@
               "availabilityZone": "*",
               "vpcId": "*",
               "cidrBlock": "*",
-              "mapPublicIpOnLaunch": "*",
+              "mapPublicIpOnLaunch": true,
               "ipv6CidrBlock": "*",
               "assignIpv6AddressOnCreation": "*"
             }
@@ -211,9 +231,21 @@
               "availabilityZone": "*",
               "vpcId": "*",
               "cidrBlock": "*",
-              "mapPublicIpOnLaunch": "*",
+              "mapPublicIpOnLaunch": true,
               "ipv6CidrBlock": "*",
               "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
             }
           }
         ],
@@ -260,7 +292,7 @@
               "availabilityZone": "*",
               "vpcId": "*",
               "cidrBlock": "*",
-              "mapPublicIpOnLaunch": "*",
+              "mapPublicIpOnLaunch": false,
               "ipv6CidrBlock": "*",
               "assignIpv6AddressOnCreation": "*"
             }
@@ -271,10 +303,14 @@
               "availabilityZone": "*",
               "vpcId": "*",
               "cidrBlock": "*",
-              "mapPublicIpOnLaunch": "*",
+              "mapPublicIpOnLaunch": false,
               "ipv6CidrBlock": "*",
               "assignIpv6AddressOnCreation": "*"
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/ecs-external-service-daemon/Vpc/PrivateSubnet1/Subnet": [
@@ -308,7 +344,7 @@
               "availabilityZone": "*",
               "vpcId": "*",
               "cidrBlock": "*",
-              "mapPublicIpOnLaunch": "*",
+              "mapPublicIpOnLaunch": false,
               "ipv6CidrBlock": "*",
               "assignIpv6AddressOnCreation": "*"
             }
@@ -319,10 +355,14 @@
               "availabilityZone": "*",
               "vpcId": "*",
               "cidrBlock": "*",
-              "mapPublicIpOnLaunch": "*",
+              "mapPublicIpOnLaunch": false,
               "ipv6CidrBlock": "*",
               "assignIpv6AddressOnCreation": "*"
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/ecs-external-service-daemon/Vpc/PrivateSubnet2/Subnet": [
@@ -419,6 +459,10 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/ecs-external-service-daemon/TaskDef/TaskRole": [
@@ -499,5 +543,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

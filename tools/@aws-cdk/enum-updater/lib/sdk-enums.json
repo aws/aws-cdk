@@ -795,7 +795,8 @@
       "PHP_81",
       "RUBY_31",
       "PYTHON_311",
-      "NODEJS_18"
+      "NODEJS_18",
+      "NODEJS_22"
     ],
     "EgressType": [
       "DEFAULT",
@@ -868,6 +869,14 @@
       "ALL",
       "INFO",
       "DEBUG"
+    ],
+    "HandlerBehavior": [
+      "CODE",
+      "DIRECT"
+    ],
+    "InvokeType": [
+      "REQUEST_RESPONSE",
+      "EVENT"
     ],
     "MetricsConfig": [
       "ENABLED",
@@ -1772,6 +1781,12 @@
       "IN_PROGRESS",
       "FAILED"
     ],
+    "DesiredModality": [
+      "DOCUMENT",
+      "IMAGE",
+      "VIDEO",
+      "AUDIO"
+    ],
     "DocumentExtractionGranularityType": [
       "DOCUMENT",
       "PAGE",
@@ -1895,6 +1910,10 @@
       "TEXT",
       "CHAT"
     ],
+    "ContentFilterAction": [
+      "BLOCK",
+      "NONE"
+    ],
     "ContentFilterType": [
       "SEXUAL",
       "VIOLENCE",
@@ -1902,6 +1921,10 @@
       "INSULTS",
       "MISCONDUCT",
       "PROMPT_ATTACK"
+    ],
+    "ContextualGroundingAction": [
+      "BLOCK",
+      "NONE"
     ],
     "ContextualGroundingFilterType": [
       "GROUNDING",
@@ -1963,10 +1986,26 @@
     ],
     "SensitiveInformationAction": [
       "BLOCK",
-      "ANONYMIZE"
+      "ANONYMIZE",
+      "NONE"
+    ],
+    "TopicAction": [
+      "BLOCK",
+      "NONE"
     ],
     "TopicType": [
       "DENY"
+    ],
+    "WordAction": [
+      "BLOCK",
+      "NONE"
+    ],
+    "PromptRouterStatus": [
+      "AVAILABLE"
+    ],
+    "PromptRouterType": [
+      "custom",
+      "default"
     ],
     "EmbeddingDataType": [
       "FLOAT32",
@@ -2115,6 +2154,7 @@
   },
   "cassandra": {
     "RegionList": [
+      "af-south-1",
       "ap-northeast-1",
       "ap-northeast-2",
       "ap-south-1",
@@ -2177,7 +2217,8 @@
   "certificatemanager": {
     "ValidationMethod": [
       "DNS",
-      "EMAIL"
+      "EMAIL",
+      "HTTP"
     ]
   },
   "chatbot": {
@@ -2429,6 +2470,10 @@
       "https-only",
       "redirect-to-https"
     ],
+    "ConnectionMode": [
+      "direct",
+      "tenant-only"
+    ],
     "Forward": [
       "all",
       "none",
@@ -2474,6 +2519,7 @@
       "http3"
     ],
     "PriceClass": [
+      "None",
       "PriceClass_100",
       "PriceClass_200",
       "PriceClass_All"
@@ -2737,8 +2783,8 @@
     ],
     "RestrictionType": [
       "blacklist",
-      "none",
-      "whitelist"
+      "whitelist",
+      "none"
     ],
     "OriginProtocolPolicy": [
       "http-only",
@@ -2762,6 +2808,22 @@
       "sni-only",
       "static-ip",
       "vip"
+    ],
+    "Status": [
+      "active",
+      "inactive"
+    ],
+    "CertificateTransparencyLoggingPreference": [
+      "enabled",
+      "disabled"
+    ],
+    "ValidationTokenHost": [
+      "cloudfront",
+      "self-hosted"
+    ],
+    "Action": [
+      "override",
+      "disable"
     ],
     "Runtime": [
       "cloudfront-js-1.0",
@@ -2897,7 +2959,8 @@
       "BUILD_LAMBDA_1GB",
       "BUILD_LAMBDA_2GB",
       "BUILD_LAMBDA_4GB",
-      "BUILD_LAMBDA_8GB"
+      "BUILD_LAMBDA_8GB",
+      "CUSTOM_INSTANCE_TYPE"
     ],
     "EnvironmentType": [
       "WINDOWS_SERVER_2019_CONTAINER",
@@ -3154,6 +3217,10 @@
       "ALLOW_USER_SRP_AUTH",
       "CUSTOM_AUTH_FLOW_ONLY",
       "USER_PASSWORD_AUTH"
+    ],
+    "Feature": [
+      "ENABLED",
+      "DISABLED"
     ],
     "DesiredDeliveryMediums": [
       "EMAIL",
@@ -4101,6 +4168,9 @@
     "GroupProfileStatus": [
       "ASSIGNED",
       "NOT_ASSIGNED"
+    ],
+    "EntityType": [
+      "DOMAIN_UNIT"
     ],
     "MemberIdentifierType": [
       "USER_IDENTIFIER",
@@ -5707,6 +5777,14 @@
     "FilterType": [
       "PREFIX_MATCH"
     ],
+    "ScanFrequency": [
+      "SCAN_ON_PUSH",
+      "CONTINUOUS_SCAN"
+    ],
+    "ScanType": [
+      "BASIC",
+      "ENHANCED"
+    ],
     "ImageTagMutability": [
       "MUTABLE",
       "IMMUTABLE"
@@ -5929,6 +6007,7 @@
       "EXTENDED"
     ],
     "AmiType": [
+      "AL2023_ARM_64_NVIDIA",
       "AL2023_ARM_64_STANDARD",
       "AL2023_x86_64_NEURON",
       "AL2023_x86_64_NVIDIA",
@@ -6930,6 +7009,10 @@
     ],
     "Service": [
       "ECR"
+    ],
+    "DataType": [
+      "text",
+      "aws:ec2:image"
     ],
     "OnFailure": [
       "CONTINUE",
@@ -9056,6 +9139,10 @@
     "OriginManifestType": [
       "SINGLE_PERIOD",
       "MULTI_PERIOD"
+    ],
+    "StreamingMediaFileConditioning": [
+      "TRANSCODE",
+      "NONE"
     ],
     "AccessType": [
       "S3_SIGV4",
@@ -11882,6 +11969,10 @@
     ]
   },
   "s3tables": {
+    "SSEAlgorithm": [
+      "AES256",
+      "aws:kms"
+    ],
     "Status": [
       "Enabled",
       "Disabled"
@@ -12789,6 +12880,10 @@
       "OPEN",
       "AUTH"
     ],
+    "IpType": [
+      "IPV4",
+      "DUAL_STACK"
+    ],
     "ActionFailurePolicy": [
       "CONTINUE",
       "DROP"
@@ -12878,6 +12973,9 @@
     ],
     "IngressIpv4Attribute": [
       "SENDER_IP"
+    ],
+    "IngressIpv6Attribute": [
+      "SENDER_IPV6"
     ],
     "IngressStringEmailAttribute": [
       "RECIPIENT"
@@ -13087,6 +13185,7 @@
       "SUN"
     ]
   },
+  "ssmguiconnect": {},
   "ssmincidents": {
     "TargetAccount": [
       "IMPACTED_ACCOUNT",
@@ -13959,7 +14058,9 @@
     ],
     "AIPromptAPIFormat": [
       "ANTHROPIC_CLAUDE_MESSAGES",
-      "ANTHROPIC_CLAUDE_TEXT_COMPLETIONS"
+      "ANTHROPIC_CLAUDE_TEXT_COMPLETIONS",
+      "MESSAGES",
+      "TEXT_COMPLETIONS"
     ],
     "AIPromptTemplateType": [
       "TEXT"
