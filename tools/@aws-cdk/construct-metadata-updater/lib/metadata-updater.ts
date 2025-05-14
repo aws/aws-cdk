@@ -193,6 +193,11 @@ export class ConstructsUpdater extends MetadataUpdater {
       name: 'PROPERTY_INJECTION_ID',
       type: "string",
       initializer: this.filePathToInjectionId(filePath, node.getName()),
+      docs: [
+        {
+          description: 'Uniquely identifies this class.'
+        }
+      ]
     });
     console.log('  Added PROPERTY_INJECTION_ID')
 
@@ -314,7 +319,7 @@ export class ConstructsUpdater extends MetadataUpdater {
 
     // Insert the new import at the correct index
     sourceFile.insertImportDeclaration(insertIndex, {
-      moduleSpecifier: relativePath === "" ? "./" : relativePath,
+      moduleSpecifier: relativePath.length == 0 ? "./" : relativePath,
       namedImports: [{ name: importClassName }],
     });
     console.log(`  Added import for ${importClassName} in file: ${filePath} with relative path: ${relativePath}`);
