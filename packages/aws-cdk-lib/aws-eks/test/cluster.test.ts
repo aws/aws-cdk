@@ -112,30 +112,17 @@ describe('cluster', () => {
     }).toThrow(/Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true/);
   });
 
-  test('cluster name is trimmed when it exceeds 100 characters', () => {
-    // GIVEN
+  test('throws when cluster name exceeds 100 characters', () => {
     const { stack } = testFixture();
+    const longClusterName = 'X'.repeat(200);
 
-    // Create a cluster with a name longer than 100 characters
-    const longClusterName = 'a'.repeat(110);
-
-    // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
-      clusterName: longClusterName,
-      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
-    });
-
-    // THEN
-    // The cluster name should be <= 100 characters
-    expect(cluster.clusterName.length).toBeLessThanOrEqual(100);
-
-    // The original name should be passed to the resource
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
-      Config: {
-        name: longClusterName,
-      },
-    });
+    expect(() => {
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        clusterName: longClusterName,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+    }).toThrow(/Cluster name cannot be more than 100 characters/);
   });
 
   describe('imported Vpc from unparseable list tokens', () => {
