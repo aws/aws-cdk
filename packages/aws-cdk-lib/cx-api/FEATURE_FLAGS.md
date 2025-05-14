@@ -101,6 +101,7 @@ Flags come in three types:
 | [@aws-cdk/core:aspectPrioritiesMutating](#aws-cdkcoreaspectprioritiesmutating) | When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING. | 2.189.1 | new default |
 | [@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions](#aws-cdks3-notificationsadds3trustkeypolicyforsnssubscriptions) | Add an S3 trust policy to a KMS key resource policy for SNS subscriptions. | 2.195.0 | fix |
 | [@aws-cdk/aws-s3:publicAccessBlockedByDefault](#aws-cdkaws-s3publicaccessblockedbydefault) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | V2NEXT | fix |
+| [@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway](#aws-cdkaws-ec2requireprivatesubnetsforegressonlyinternetgateway) | When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC. | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -186,6 +187,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
     "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true
+    "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true
   }
 }
 ```
@@ -2118,12 +2120,13 @@ The previous behavior in cdk before this feature was; if only some of the BlockP
 This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
 The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
 ### @aws-cdk/ec2:removeEgressOnlyGatewayFromPublicSubnetVPC
+### @aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway
 
-*Remove EgressOnlyGateway resource when a a double stack vpc has only public subnets*
+*When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC.*
 
 Flag type: Backwards incompatible bugfix
 
-When this feature flag is enabled, EgressOnlyGateway resource will not be created when you create a vpc with only public subnets. A
+When this feature flag is enabled, EgressOnlyGateway resource will not be created when you create a vpc with only public subnets.
 
 
 | Since | Default | Recommended |
