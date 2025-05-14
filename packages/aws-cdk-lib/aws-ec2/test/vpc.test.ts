@@ -2,6 +2,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import { App, CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '../../core';
 import { EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
+import { EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
 import {
   AclCidr,
   AclTraffic,
@@ -2818,91 +2819,6 @@ describe('vpc', () => {
     const app = new App();
     const stack = new Stack(app, 'DualStackStack');
     stack.node.setContext(EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, true);
-    // WHEN
-    const vpc = new Vpc(stack, 'Vpc', {
-      ipProtocol: IpProtocol.DUAL_STACK,
-      subnetConfiguration: [
-        {
-          subnetType: SubnetType.PUBLIC,
-          name: 'public',
-        },
-      ],
-    });
-    // THEN
-    Template.fromStack(stack).resourceCountIs('AWS::EC2::EgressOnlyInternetGateway', 0);
-  });
-
-  test('EgressOnlyInternetGateWay is not created when no private subnet configured in dual stack', () => {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'DualStackStack');
-
-    // WHEN
-    const vpc = new Vpc(stack, 'Vpc', {
-      ipProtocol: IpProtocol.DUAL_STACK,
-      subnetConfiguration: [
-        {
-          subnetType: SubnetType.PUBLIC,
-          name: 'public',
-        },
-      ],
-    });
-
-    // THEN
-    Template.fromStack(stack).resourceCountIs('AWS::EC2::EgressOnlyInternetGateway', 1);
-  });
-  test('(default)EgressOnlyInternetGateWay is created when private subnet configured in dual stack', () => {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'DualStackStack');
-
-    // WHEN
-    const vpc = new Vpc(stack, 'Vpc', {
-      ipProtocol: IpProtocol.DUAL_STACK,
-      subnetConfiguration: [
-        {
-          subnetType: SubnetType.PUBLIC,
-          name: 'public',
-        },
-        {
-          subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-          name: 'private',
-        },
-      ],
-    });
-
-    // THEN
-    Template.fromStack(stack).resourceCountIs('AWS::EC2::EgressOnlyInternetGateway', 1);
-  });
-
-  test('(feature flag ENABLE_E2_REMOVE_EGRESSONLYGATEWAY_FROM_PUBLIC_SUBNET_VPC)EgressOnlyInternetGateWay is created when private subnet configured in dual stack', () => {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'DualStackStack');
-    // WHEN
-    stack.node.setContext(ENABLE_E2_REMOVE_EGRESSONLYGATEWAY_FROM_PUBLIC_SUBNET_VPC, true);
-    const vpc = new Vpc(stack, 'Vpc', {
-      ipProtocol: IpProtocol.DUAL_STACK,
-      subnetConfiguration: [
-        {
-          subnetType: SubnetType.PUBLIC,
-          name: 'public',
-        },
-        {
-          subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-          name: 'private',
-        },
-      ],
-    });
-
-    // THEN
-    Template.fromStack(stack).resourceCountIs('AWS::EC2::EgressOnlyInternetGateway', 1);
-  });
-  test(' (feature flag ENABLE_E2_REMOVE_EGRESSONLYGATEWAY_FROM_PUBLIC_SUBNET_VPC)EgressOnlyInternetGateWay is not created when no private subnets are configured in dual stack', () => {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'DualStackStack');
-    stack.node.setContext(ENABLE_E2_REMOVE_EGRESSONLYGATEWAY_FROM_PUBLIC_SUBNET_VPC, true);
     // WHEN
     const vpc = new Vpc(stack, 'Vpc', {
       ipProtocol: IpProtocol.DUAL_STACK,
