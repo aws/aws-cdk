@@ -186,8 +186,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-dynamodb:retainTableReplica": true,
     "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
     "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
-    "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
-    "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true
+    "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true
   }
 }
 ```
@@ -2120,20 +2119,6 @@ The previous behavior in cdk before this feature was; if only some of the BlockP
 This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
 The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
 ### @aws-cdk/ec2:removeEgressOnlyGatewayFromPublicSubnetVPC
-
-*Remove EgressOnlyGateway resource when a a double stack vpc has only public subnets*
-
-Flag type: Backwards incompatible bugfix
-
-When this feature flag is enabled, EgressOnlyGateway resource will not be created when you create a vpc with only public subnets. A
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
-
 ### @aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway
 
 *When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC.*
