@@ -9,6 +9,7 @@ on:
 permissions:
   contents: write
   id-token: write
+  actions: read
 
 jobs:
   upload:
@@ -24,6 +25,7 @@ jobs:
         with:
           name: coverage-artifacts
           path: ./coverage
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           run-id: ${{ github.event.workflow_run.id }}
 
