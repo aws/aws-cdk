@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "KmsKey46693ADD": {
+  "Key961B73FD": {
    "Type": "AWS::KMS::Key",
    "Properties": {
     "KeyPolicy": {
@@ -27,62 +27,27 @@
         }
        },
        "Resource": "*"
-      },
-      {
-       "Action": [
-        "kms:Decrypt",
-        "kms:GenerateDataKey"
-       ],
-       "Condition": {
-        "StringLike": {
-         "kms:EncryptionContext:aws:s3:arn": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":s3tables:",
-            {
-             "Ref": "AWS::Region"
-            },
-            ":",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":bucket/kms-key-s3tables-bucket/*"
-           ]
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "maintenance.s3tables.amazonaws.com"
-       },
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
     }
    },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
-  "TableBucket0BF18B0D": {
+  "OnlyEncryptionKeyTest2F21C8CC": {
    "Type": "AWS::S3Tables::TableBucket",
    "Properties": {
     "EncryptionConfiguration": {
      "KMSKeyArn": {
       "Fn::GetAtt": [
-       "KmsKey46693ADD",
+       "Key961B73FD",
        "Arn"
       ]
      },
      "SSEAlgorithm": "aws:kms"
     },
-    "TableBucketName": "kms-key-s3tables-bucket",
+    "TableBucketName": "integ-tb-key-only",
     "UnreferencedFileRemoval": {}
    },
    "UpdateReplacePolicy": "Delete",
