@@ -190,7 +190,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
+     "S3Key": "12157b27d30ab71eb24ae65825f672ba5cc2c09dbb1703cd7adfcff3aeaca136.zip"
     },
     "Description": "/opt/awscli/aws"
    },
@@ -361,7 +361,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4fe0aba5e672b596d0f72505a9eec502f98d46906bb30fae2511fbdc1df4956f.zip"
+     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
     },
     "Environment": {
      "Variables": {
@@ -395,6 +395,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {
@@ -503,6 +506,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {

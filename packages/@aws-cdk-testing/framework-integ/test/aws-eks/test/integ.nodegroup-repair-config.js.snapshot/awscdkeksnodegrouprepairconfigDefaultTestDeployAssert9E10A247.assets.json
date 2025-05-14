@@ -1,0 +1,33 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42": {
+      "source": {
+        "path": "asset.530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "f22f1d7c009d230aedeb00cca99258027a39028b91e911b80ef51946bd3bab41": {
+      "displayName": "awscdkeksnodegrouprepairconfigDefaultTestDeployAssert9E10A247 Template",
+      "source": {
+        "path": "awscdkeksnodegrouprepairconfigDefaultTestDeployAssert9E10A247.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f22f1d7c009d230aedeb00cca99258027a39028b91e911b80ef51946bd3bab41.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

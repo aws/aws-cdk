@@ -18,8 +18,10 @@ import {
   ResourceProps,
   Stack,
   Token,
+  ValidationError,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -163,7 +165,7 @@ abstract class KeyBase extends Resource implements IKey {
 
     if (!this.policy) {
       if (allowNoOp) { return { statementAdded: false }; }
-      throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`);
+      throw new ValidationError(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`, this);
     }
 
     this.policy.addStatements(statement);
@@ -595,7 +597,13 @@ export interface KeyProps {
  *
  * @resource AWS::KMS::Key
  */
+@propertyInjectable
 export class Key extends KeyBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kms.Key';
+
   /**
    * The default key id of the dummy key.
    *
@@ -630,7 +638,7 @@ export class Key extends KeyBase {
 
     const keyResourceName = Stack.of(scope).splitArn(keyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!keyResourceName) {
-      throw new Error(`KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`);
+      throw new ValidationError(`KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`, scope);
     }
 
     return new Import(keyResourceName, {
@@ -671,9 +679,9 @@ export class Key extends KeyBase {
       // throw an exception suggesting to use the other importing methods instead.
       // We might make this parsing logic smarter later,
       // but let's start by erroring out.
-      throw new Error('Could not parse the PolicyDocument of the passed AWS::KMS::Key resource because it contains CloudFormation functions. ' +
+      throw new ValidationError('Could not parse the PolicyDocument of the passed AWS::KMS::Key resource because it contains CloudFormation functions. ' +
         'This makes it impossible to create a mutable IKey from that Policy. ' +
-        'You have to use fromKeyArn instead, passing it the ARN attribute property of the low-level CfnKey');
+        'You have to use fromKeyArn instead, passing it the ARN attribute property of the low-level CfnKey', cfnKey);
     }
 
     // change the key policy of the L1, so that all changes done in the L2 are reflected in the resulting template
@@ -730,7 +738,7 @@ export class Key extends KeyBase {
       }
     }
     if (Token.isUnresolved(options.aliasName)) {
-      throw new Error('All arguments to Key.fromLookup() must be concrete (no Tokens)');
+      throw new ValidationError('All arguments to Key.fromLookup() must be concrete (no Tokens)', scope);
     }
 
     const attributes: cxapi.KeyContextResponse = ContextProvider.getValue(scope, {
@@ -741,7 +749,7 @@ export class Key extends KeyBase {
       dummyValue: {
         keyId: Key.DEFAULT_DUMMY_KEY_ID,
       },
-      ignoreErrorOnMissingContext: options.returnDummyKeyOnMissing,
+      mustExist: !options.returnDummyKeyOnMissing,
     }).value;
 
     return new Import(attributes.keyId,
@@ -814,25 +822,25 @@ export class Key extends KeyBase {
     const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;
     const keyUsage = props.keyUsage ?? KeyUsage.ENCRYPT_DECRYPT;
     if (denyLists[keyUsage].includes(keySpec)) {
-      throw new Error(`key spec '${keySpec}' is not valid with usage '${keyUsage}'`);
+      throw new ValidationError(`key spec '${keySpec}' is not valid with usage '${keyUsage}'`, this);
     }
 
     if (keySpec.startsWith('HMAC') && props.enableKeyRotation) {
-      throw new Error('key rotation cannot be enabled on HMAC keys');
+      throw new ValidationError('key rotation cannot be enabled on HMAC keys', this);
     }
 
     if (keySpec !== KeySpec.SYMMETRIC_DEFAULT && props.enableKeyRotation) {
-      throw new Error('key rotation cannot be enabled on asymmetric keys');
+      throw new ValidationError('key rotation cannot be enabled on asymmetric keys', this);
     }
 
     this.enableKeyRotation = props.enableKeyRotation;
 
     if (props.rotationPeriod) {
       if (props.enableKeyRotation === false) {
-        throw new Error('\'rotationPeriod\' cannot be specified when \'enableKeyRotation\' is disabled');
+        throw new ValidationError('\'rotationPeriod\' cannot be specified when \'enableKeyRotation\' is disabled', this);
       }
       if (props.rotationPeriod.toDays() < 90 || props.rotationPeriod.toDays() > 2560) {
-        throw new Error(`'rotationPeriod' value must between 90 and 2650 days. Received: ${props.rotationPeriod.toDays()}`);
+        throw new ValidationError(`'rotationPeriod' value must between 90 and 2650 days. Received: ${props.rotationPeriod.toDays()}`, this);
       }
       // If rotationPeriod is specified, enableKeyRotation is set to true by default
       if (props.enableKeyRotation === undefined) {
@@ -845,7 +853,7 @@ export class Key extends KeyBase {
     this.policy = props.policy ?? new iam.PolicyDocument();
     if (defaultKeyPoliciesFeatureEnabled) {
       if (props.trustAccountIdentities === false) {
-        throw new Error('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set');
+        throw new ValidationError('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set', this);
       }
 
       this.trustAccountIdentities = true;
@@ -866,7 +874,7 @@ export class Key extends KeyBase {
     if (props.pendingWindow) {
       pendingWindowInDays = props.pendingWindow.toDays();
       if (pendingWindowInDays < 7 || pendingWindowInDays > 30) {
-        throw new Error(`'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`);
+        throw new ValidationError(`'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`, this);
       }
     }
 

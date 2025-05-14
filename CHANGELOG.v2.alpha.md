@@ -2,6 +2,117 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.195.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.194.0-alpha.0...v2.195.0-alpha.0) (2025-05-07)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **iot:** By default, `deviceDertificateAgeCheck` is automatically enabled.
+
+### Features
+
+* **iot:** device certificate age check audit configuration ([#33816](https://github.com/aws/aws-cdk/issues/33816)) ([9ad383d](https://github.com/aws/aws-cdk/commit/9ad383d5300c5d5f5a9d2552fbd541436570a404))
+* **location:** support L2 API Key Construct ([#32733](https://github.com/aws/aws-cdk/issues/32733)) ([d867878](https://github.com/aws/aws-cdk/commit/d86787889dd49dce220324d141bf48e1bfa8fc3b)), closes [#30684](https://github.com/aws/aws-cdk/issues/30684)
+
+
+### Bug Fixes
+
+* **amplify-alpha:** example code for adding a custom rule is wrong  ([#34353](https://github.com/aws/aws-cdk/issues/34353)) ([8ab2606](https://github.com/aws/aws-cdk/commit/8ab2606b7b8de068a70dfaf02c5d96651ef5d286)), closes [#34351](https://github.com/aws/aws-cdk/issues/34351)
+
+## [2.194.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.193.0-alpha.0...v2.194.0-alpha.0) (2025-05-01)
+
+## [2.193.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.192.0-alpha.0...v2.193.0-alpha.0) (2025-04-30)
+
+
+### Features
+
+* **pipes-targets-alpha:** support Amazon Data Firehose target ([#33860](https://github.com/aws/aws-cdk/issues/33860)) ([ebf1ea2](https://github.com/aws/aws-cdk/commit/ebf1ea2a57ec7876fffbe16eddac6b409ae79074))
+
+## [2.192.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.191.0-alpha.0...v2.192.0-alpha.0) (2025-04-24)
+
+
+### Features
+
+* **applicationsignals-alpha:** introduce Application Signals L2 constructs ([#32931](https://github.com/aws/aws-cdk/issues/32931)) ([e7a6e14](https://github.com/aws/aws-cdk/commit/e7a6e14d7c3ddfbff8b1fd3f583abeefeed1258a))
+
+## [2.191.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.190.0-alpha.0...v2.191.0-alpha.0) (2025-04-22)
+
+
+### Features
+
+* **location:** throw ValidationError instead of untyped errors ([#34174](https://github.com/aws/aws-cdk/issues/34174)) ([2ecf14a](https://github.com/aws/aws-cdk/commit/2ecf14a0c3e5a988532975536980d81589ea448e))
+* **msk:** throw ValidationError instead of untyped errors ([#34214](https://github.com/aws/aws-cdk/issues/34214)) ([02cb5a4](https://github.com/aws/aws-cdk/commit/02cb5a4284e9aad2f8cc4fc8fcb2c1aebe8f92be))
+
+## [2.190.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.189.1-alpha.0...v2.190.0-alpha.0) (2025-04-16)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **ec2-alpha:** The logical ID for the NAT Gateway, defined using the `addNatGateways` method, will be changed, resulting in the NAT Gateway being recreated. Additionally, the domain for the Elastic IP (EIP) will be set to `vpc`, which will also trigger its recreation in the account.
+
+### Features
+
+* **ec2:** enabling features for ipv6 and dualstack support with corresponding unit tests ([#33898](https://github.com/aws/aws-cdk/issues/33898)) ([47a65db](https://github.com/aws/aws-cdk/commit/47a65dbf00ce2a866be2546dcca5be818db70824)), closes [#3873](https://github.com/aws/aws-cdk/issues/3873) [#33493](https://github.com/aws/aws-cdk/issues/33493) [#33493](https://github.com/aws/aws-cdk/issues/33493)
+* **ec2:** throw ValidationErrors instead of untyped Errors ([#34127](https://github.com/aws/aws-cdk/issues/34127)) ([93313dd](https://github.com/aws/aws-cdk/commit/93313dded1d719691689c6fb59d7a7a77bb7dade))
+* **neptune-alpha:** add engine versions up to v1.4.5.0  ([#33989](https://github.com/aws/aws-cdk/issues/33989)) ([07f1d0a](https://github.com/aws/aws-cdk/commit/07f1d0a9d381fb9bceab0f836a2f1eb7977610c7)), closes [#33807](https://github.com/aws/aws-cdk/issues/33807)
+
+
+### Bug Fixes
+
+* **ec2-alpha:** add multiple NATGW to the VPC using addNatGateway method ([#34094](https://github.com/aws/aws-cdk/issues/34094)) ([ccd8de7](https://github.com/aws/aws-cdk/commit/ccd8de71c02068e43d36e2445dbb5e51f4aa695b))
+* **ec2-alpha:** update default config for Subnet's `assignIpv6AddressOnCreation` ([#34116](https://github.com/aws/aws-cdk/issues/34116)) ([dff2798](https://github.com/aws/aws-cdk/commit/dff279800edd9688fa5de04766ae2667472fe861))
+
+## [2.189.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.189.0-alpha.0...v2.189.1-alpha.0) (2025-04-14)
+
+## [2.189.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.188.0-alpha.0...v2.189.0-alpha.0) (2025-04-09)
+
+
+### Features
+
+* **ec2-alpha:** implement mapPublicIpOnLaunch prop in SubnetV2 ([#34057](https://github.com/aws/aws-cdk/issues/34057)) ([836c5cf](https://github.com/aws/aws-cdk/commit/836c5cf3e4c627f817e4dc8ed2af28a5bba54792)), closes [#32159](https://github.com/aws/aws-cdk/issues/32159)
+
+
+### Bug Fixes
+
+* **amplify:** unable to re-run integ test due to missing `status` field in `customRule` ([#33973](https://github.com/aws/aws-cdk/issues/33973)) ([6638c08](https://github.com/aws/aws-cdk/commit/6638c08d56afe7ecc4f23cff4cf334b887001e5e)), closes [#33962](https://github.com/aws/aws-cdk/issues/33962)
+
+## [2.188.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.187.0-alpha.0...v2.188.0-alpha.0) (2025-04-03)
+
+
+### Features
+
+* **ec2:** add mailmanager vpc endpoints ([#33996](https://github.com/aws/aws-cdk/issues/33996)) ([7ee77d7](https://github.com/aws/aws-cdk/commit/7ee77d71df569d21c280866976109333e3266132))
+* **eks-v2-alpha:** add new nodegroup ami type ([#34025](https://github.com/aws/aws-cdk/issues/34025)) ([864a7c6](https://github.com/aws/aws-cdk/commit/864a7c6f6811777971d1349e7552567604167f02))
+
+
+### Bug Fixes
+
+* **ec2-alpha:** addInternetGW handles shared route table for subnets ([#33824](https://github.com/aws/aws-cdk/issues/33824)) ([3154d01](https://github.com/aws/aws-cdk/commit/3154d016ba31455f2d57ff5d90ee7b394c25e88f)), closes [#33672](https://github.com/aws/aws-cdk/issues/33672)
+
+## [2.187.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.186.0-alpha.0...v2.187.0-alpha.0) (2025-03-31)
+
+
+### Features
+
+* **apprunner:** throw ValidationError instead of untyped errors ([#33914](https://github.com/aws/aws-cdk/issues/33914)) ([38f89af](https://github.com/aws/aws-cdk/commit/38f89afe2ffdf67b0918e38f861166bdb0f8738f))
+* **ec2:** adding `placementGroup` to `LaunchTemplateProps` and `LaunchTemplate` ([#33726](https://github.com/aws/aws-cdk/issues/33726)) ([e5f71db](https://github.com/aws/aws-cdk/commit/e5f71db53ce985172e565eb9da5692d77ab7b268)), closes [#33721](https://github.com/aws/aws-cdk/issues/33721)
+* **ec2:** support the new `SupportedRegions` property for `AWS::EC2::VPCEndpointService` ([#33959](https://github.com/aws/aws-cdk/issues/33959)) ([0c77cb6](https://github.com/aws/aws-cdk/commit/0c77cb627e1e7e729205624a9603331f5442af8e))
+* **iot:** backfill enum values in iot module ([#33969](https://github.com/aws/aws-cdk/issues/33969)) ([2a8a8a3](https://github.com/aws/aws-cdk/commit/2a8a8a36ed872f7f3de4b24fd7d9c874a3da9dbf))
+
+## [2.186.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.185.0-alpha.0...v2.186.0-alpha.0) (2025-03-26)
+
+
+### Features
+
+* **ec2:** backfill missing enums for ec2 ([#33821](https://github.com/aws/aws-cdk/issues/33821)) ([ae3fd67](https://github.com/aws/aws-cdk/commit/ae3fd67d3e153187d2e6fa53df9ec78080fe71d0)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html/issues/cfn-ec2) [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcendpoint.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcendpoint.html/issues/cfn-ec2)
+* **ec2:** support `PrefixList.fromLookup()` ([#33619](https://github.com/aws/aws-cdk/issues/33619)) ([b6a15f3](https://github.com/aws/aws-cdk/commit/b6a15f384e79eb0020f46ffeea20507f07380a97)), closes [aws/aws-cdk#33606](https://github.com/aws/aws-cdk/issues/33606) [aws/aws-cdk#15115](https://github.com/aws/aws-cdk/issues/15115)
+* **ec2:** support AWS::EC2::VPCEndpointService SupportedIpAddressTypes property ([#33877](https://github.com/aws/aws-cdk/issues/33877)) ([ed5df9c](https://github.com/aws/aws-cdk/commit/ed5df9cac46dd862ec67751f5d0e6a53f81e8d0a))
+
+
+### Bug Fixes
+
+* **eks-v2-alpha:** prevent IAM role creation when node pools are empty ([#33894](https://github.com/aws/aws-cdk/issues/33894)) ([55bf451](https://github.com/aws/aws-cdk/commit/55bf451c48da33ce2ecda1c17cccdedea4e3527f)), closes [#33771](https://github.com/aws/aws-cdk/issues/33771)
+
 ## [2.185.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.184.1-alpha.0...v2.185.0-alpha.0) (2025-03-19)
 
 

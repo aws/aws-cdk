@@ -127,6 +127,29 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'SPOT_CAPACITY_OPTIMIZED',
     'SPOT_PRICE_CAPACITY_OPTIMIZED'
   ],
+  'AllowMapsAction': [
+    'geo-maps:GetStaticMap',
+    'geo-maps:GetTile',
+    'geo-maps:*'
+  ],
+  'AllowPlacesAction': [
+    'geo-places:Autocomplete',
+    'geo-places:Geocode',
+    'geo-places:GetPlace',
+    'geo-places:ReverseGeocode',
+    'geo-places:SearchNearby',
+    'geo-places:SearchText',
+    'geo-places:Suggest',
+    'geo-places:*'
+  ],
+  'AllowRoutesAction': [
+    'geo-routes:CalculateIsolines',
+    'geo-routes:CalculateRoutes',
+    'geo-routes:CalculateRouteMatrix',
+    'geo-routes:OptimizeWaypoints',
+    'geo-routes:SnapToRoads',
+    'geo-routes:*'
+  ],
   'AlpnPolicy': [
     'HTTP1Only',
     'HTTP2Only',
@@ -177,6 +200,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'AMAZON_COGNITO_USER_POOLS',
     'OPENID_CONNECT',
     'AWS_LAMBDA'
+  ],
+  'AppSyncDataSourceType': [
+    'AWS_LAMBDA',
+    'AMAZON_DYNAMODB',
+    'AMAZON_EVENTBRIDGE',
+    'AMAZON_OPENSEARCH_SERVICE',
+    'HTTP',
+    'RELATIONAL_DATABASE',
+    'AMAZON_BEDROCK_RUNTIME'
   ],
   'AppSyncFieldLogLevel': [
     'NONE',
@@ -867,7 +899,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'WED',
     'THU',
     'FRI',
-    'SAT'
+    'SAT',
+    'UNSET_VALUE'
   ],
   'DeduplicationScope': [
     'messageGroup',
@@ -879,7 +912,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   'DefaultInstanceTenancy': [
     'default',
-    'dedicated'
+    'dedicated',
+    'host'
   ],
   'DefaultResult': [
     'CONTINUE',
@@ -931,16 +965,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'read',
     'write',
     'mknod'
-  ],
-  'DiagnosticReason': [
-    'NO_SNAPSHOT',
-    'TEST_FAILED',
-    'TEST_ERROR',
-    'SNAPSHOT_FAILED',
-    'SNAPSHOT_ERROR',
-    'SNAPSHOT_SUCCESS',
-    'TEST_SUCCESS',
-    'ASSERTION_FAILED'
   ],
   'DiscoveryType': [
     'API',
@@ -1077,6 +1101,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'EndpointType': [
     'EDGE',
     'REGIONAL'
+  ],
+  'EngineLifecycleSupport': [
+    'open-source-rds-extended-support',
+    'open-source-rds-extended-support-disabled'
   ],
   'EnvironmentFileType': [
     's3'
@@ -1316,6 +1344,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'resource-exhausted',
     'unavailable'
   ],
+  'HandlerBehavior': [
+    'CODE',
+    'DIRECT'
+  ],
   'HandlerName': [
     'user',
     'table',
@@ -1348,11 +1380,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'HTTP',
     'HTTPS',
     'TCP'
-  ],
-  'HotswapMode': [
-    'fall-back',
-    'hotswap-only',
-    'full-deployment'
   ],
   'HttpAuthorizerType': [
     'AWS_IAM',
@@ -1610,6 +1637,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'r7a',
     'memory8-graviton',
     'r8g',
+    'memory8-graviton4-nvme-drive',
+    'r8gd',
     'compute3',
     'c3',
     'compute4',
@@ -1642,6 +1671,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'c6gd',
     'compute7-graviton3-nvme-drive',
     'c7gd',
+    'compute8-graviton4-nvme-drive',
+    'c8gd',
     'compute6-graviton2-high-network-bandwidth',
     'c6gn',
     'compute7-graviton3-high-network-bandwidth',
@@ -1768,6 +1799,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'm8g',
     'standard7-graviton3-nvme-drive',
     'm7gd',
+    'standard8-graviton4-nvme-drive',
+    'm8gd',
     'standard7-intel',
     'm7i',
     'standard7-intel-flex',
@@ -2045,9 +2078,14 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Event',
     'DryRun'
   ],
+  'LambdaInvokeType': [
+    'EVENT',
+    'REQUEST_RESPONSE'
+  ],
   'LambdaVersion': [
     'V1_0',
-    'V2_0'
+    'V2_0',
+    'V3_0'
   ],
   'LatencyMode': [
     'LOW',
@@ -2330,6 +2368,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'BOTTLEROCKET_x86_64',
     'BOTTLEROCKET_ARM_64_NVIDIA',
     'BOTTLEROCKET_x86_64_NVIDIA',
+    'BOTTLEROCKET_ARM_64_FIPS',
+    'BOTTLEROCKET_x86_64_FIPS',
     'WINDOWS_CORE_2019_x86_64',
     'WINDOWS_CORE_2022_x86_64',
     'WINDOWS_FULL_2019_x86_64',
@@ -2442,6 +2482,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'OutputFormat': [
     'cjs',
     'esm'
+  ],
+  'OutputType': [
+    'JSON',
+    'JSONL'
   ],
   'ParameterDataType': [
     'text',
@@ -2762,6 +2806,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
+  'RegistryType': [
+    'private',
+    'public'
+  ],
   'RemovalPolicy': [
     'destroy',
     'retain',
@@ -2804,11 +2852,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
-  'RequireApproval': [
-    'never',
-    'any-change',
-    'broadening'
-  ],
   'Resolution': [
     'FULL_HD',
     'HD',
@@ -2824,6 +2867,16 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'pause-cluster',
     'resume-cluster',
     'failover-primary-compute'
+  ],
+  'RestApiMode': [
+    'overwrite',
+    'merge'
+  ],
+  'Result': [
+    'ROLLBACK',
+    'FAIL',
+    'RETRY',
+    'SKIP'
   ],
   'RetentionDays': [
     1,
@@ -2849,6 +2902,16 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     3288,
     3653,
     9999
+  ],
+  'RetryMode': [
+    'ALL_ACTIONS',
+    'FAILED_ACTIONS'
+  ],
+  'RevisionType': [
+    'COMMIT_ID',
+    'IMAGE_DIGEST',
+    'S3_OBJECT_VERSION_ID',
+    'S3_OBJECT_KEY'
   ],
   'RevocationType': [
     'CRL'
@@ -2911,7 +2974,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   'SSLMethod': [
     'sni-only',
-    'vip'
+    'vip',
+    'static-ip'
   ],
   'ScalingEvent': [
     'autoscaling:EC2_INSTANCE_LAUNCH',
@@ -3077,10 +3141,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'ELBSecurityPolicy-TLS-1-2-Ext-2018-06',
     'ELBSecurityPolicy-TLS-1-1-2017-01',
     'ELBSecurityPolicy-TLS-1-0-2015-04'
-  ],
-  'StackActivityProgress': [
-    'bar',
-    'events'
   ],
   'StackSetOrganizationsAutoDeployment': [
     'Enabled',
@@ -3440,6 +3500,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
+  'Transformation': [
+    'NONE',
+    'COMPACT',
+    'FLATTEN'
+  ],
   'TransitGatewayFeatureStatus': [
     'enable',
     'disable'
@@ -3520,6 +3585,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Count/Second',
     'None'
   ],
+  'UnreferencedFileRemovalStatus': [
+    'Enabled',
+    'Disabled'
+  ],
   'UntrustedArtifactOnDeployment': [
     'Enforce',
     'Warn'
@@ -3579,9 +3648,27 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'GLOBAL',
     'PRIVATE'
   ],
+  'VpcEndpointDnsRecordIpType': [
+    'ipv4',
+    'ipv6',
+    'dualstack',
+    'service-defined'
+  ],
+  'VpcEndpointIpAddressType': [
+    'ipv4',
+    'ipv6',
+    'dualstack'
+  ],
+  'VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint': [
+    'AllResolvers',
+    'OnlyInboundResolver'
+  ],
   'VpcEndpointType': [
     'Interface',
-    'Gateway'
+    'Gateway',
+    'GatewayLoadBalancer',
+    'ServiceNetwork',
+    'Resource'
   ],
   'VpcSubnetGroupType': [
     'Public',

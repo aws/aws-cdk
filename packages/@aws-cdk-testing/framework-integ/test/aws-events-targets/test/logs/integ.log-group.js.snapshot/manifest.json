@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "log-group-events.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/96c8b89f96091beabfd95c9461e5aece6677d31b9392142b7b83a30129b94d42.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a98fff270b6ab610940449ec2d86b1ec49ad22ef37530e6180befbc98cb19b17.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,26 @@
         "log-group-events.assets"
       ],
       "metadata": {
+        "/log-group-events/log-group": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/log-group-events/log-group/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "loggroupB02AAEB1"
+          }
+        ],
+        "/log-group-events/log-group2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
           }
         ],
         "/log-group-events/log-group2/Resource": [
@@ -46,10 +62,43 @@
             "data": "loggroup2F19C5C9B"
           }
         ],
+        "/log-group-events/log-group-imported": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*",
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/log-group-events/log-group-imported/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "loggroupimportedD91682B5"
+          }
+        ],
+        "/log-group-events/Timer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "schedule": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addTarget": [
+                {}
+              ]
+            }
           }
         ],
         "/log-group-events/Timer/Resource": [
@@ -58,16 +107,93 @@
             "data": "TimerBF6F831F"
           }
         ],
-        "/log-group-events/EventsLogGroupPolicyloggroupeventsTimerC63340B0": [
+        "/log-group-events/EventsLogGroupPolicyloggroupeventsTimerC63340B0/Provider": [
           {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/log-group-events/EventsLogGroupPolicyloggroupeventsTimerC63340B0/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/log-group-events/EventsLogGroupPolicyloggroupeventsTimerC63340B0/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EventsLogGroupPolicyloggroupeventsTimerC63340B0C92153CD"
+          }
+        ],
+        "/log-group-events/EventsLogGroupPolicyloggroupeventsTimerC63340B0/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
         "/log-group-events/EventsLogGroupPolicyloggroupeventsTimerC63340B0/CustomResourcePolicy/Resource": [
@@ -84,6 +210,21 @@
         ],
         "/log-group-events/AWS679f53fac002430cb0da5b7982bd2287": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
           },
@@ -106,6 +247,52 @@
           {
             "type": "aws:cdk:is-custom-resource-handler-runtime-family",
             "data": 0
+          }
+        ],
+        "/log-group-events/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/log-group-events/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/log-group-events/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -120,16 +307,83 @@
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
+        "/log-group-events/CustomRule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "eventPattern": {
+                "source": "*",
+                "detailType": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "source": "*",
+                  "detailType": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addTarget": [
+                {}
+              ]
+            }
+          }
+        ],
         "/log-group-events/CustomRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomRuleB1CBBADE"
           }
         ],
-        "/log-group-events/EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6": [
+        "/log-group-events/EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6/Provider": [
           {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/log-group-events/EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/log-group-events/EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6/Resource/Default": [
@@ -138,10 +392,56 @@
             "data": "EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6C647CDBC"
           }
         ],
+        "/log-group-events/EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/log-group-events/EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6CustomResourcePolicy361E9A96"
+          }
+        ],
+        "/log-group-events/dlq": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/log-group-events/dlq/Resource": [
@@ -150,22 +450,123 @@
             "data": "dlq09C78ACC"
           }
         ],
+        "/log-group-events/Timer3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "schedule": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addTarget": [
+                {}
+              ]
+            }
+          }
+        ],
         "/log-group-events/Timer3/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Timer30894E3BB"
           }
         ],
-        "/log-group-events/EventsLogGroupPolicyloggroupeventsTimer37DF74C17": [
+        "/log-group-events/EventsLogGroupPolicyloggroupeventsTimer37DF74C17/Provider": [
           {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/log-group-events/EventsLogGroupPolicyloggroupeventsTimer37DF74C17/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/log-group-events/EventsLogGroupPolicyloggroupeventsTimer37DF74C17/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EventsLogGroupPolicyloggroupeventsTimer37DF74C174B3D705D"
+          }
+        ],
+        "/log-group-events/EventsLogGroupPolicyloggroupeventsTimer37DF74C17/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
         "/log-group-events/EventsLogGroupPolicyloggroupeventsTimer37DF74C17/CustomResourcePolicy/Resource": [
@@ -212,7 +613,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dc31082d9bbea7e2a02c874799c27fcc09d8337e8784ba92420570aee42d833b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ecbc13ed2c531673debbd0f4176e029db09f27e42f2ac837ca1c90201c7884f0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -229,10 +630,16 @@
         "LogGroupDefaultTestDeployAssert353EE07A.assets"
       ],
       "metadata": {
-        "/LogGroup/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents553bf9107bb038682ce514ab06253825/Default/Default": [
+        "/LogGroup/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents065c4a4dcc847bb830cd1b7586d0b8d3/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/LogGroup/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents065c4a4dcc847bb830cd1b7586d0b8d3/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallEventBridgeputEvents553bf9107bb038682ce514ab06253825"
+            "data": "AwsApiCallEventBridgeputEvents065c4a4dcc847bb830cd1b7586d0b8d3"
           }
         ],
         "/LogGroup/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -253,16 +660,30 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsa43bd05484106e401947a763ca61a98f/Default/Default": [
+        "/LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents056e331c4e44093b02d742d8bb266d56/Default": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallCloudWatchLogsfilterLogEventsa43bd05484106e401947a763ca61a98f"
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
-        "/LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsa43bd05484106e401947a763ca61a98f/AssertionResults": [
+        "/LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents056e331c4e44093b02d742d8bb266d56/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEventsa43bd05484106e401947a763ca61a98f"
+            "data": "AwsApiCallCloudWatchLogsfilterLogEvents056e331c4e44093b02d742d8bb266d56"
+          }
+        ],
+        "/LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents056e331c4e44093b02d742d8bb266d56/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEvents056e331c4e44093b02d742d8bb266d56"
           }
         ],
         "/LogGroup/DefaultTest/DeployAssert/BootstrapVersion": [
@@ -286,5 +707,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

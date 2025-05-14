@@ -322,7 +322,7 @@
     "VPCintegtest1InternetGatewayIGWAA29FB02"
    ]
   },
-  "VPCintegtest1NATGateway31DAF7F4": {
+  "VPCintegtest1NATGatewaytestsbubnetNATGateway3A015DE6": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
     "ConnectivityType": "private",
@@ -346,9 +346,14 @@
   "testsbubnetSubnet77337845": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.1.0.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",
@@ -406,9 +411,14 @@
   "testsubnetSubnetDD417829": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2b",
     "CidrBlock": "10.2.0.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",
@@ -466,9 +476,14 @@
   "validateIpv6Subnet07BD40AE": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2b",
     "CidrBlock": "10.3.0.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",
