@@ -339,10 +339,10 @@ export interface UserPoolClientOptions {
   readonly accessTokenValidity?: Duration;
 
   /**
-  * Configuration for refresh token rotation
-  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-refresh-token.html#using-the-refresh-token-rotation
-  * @default - undefined (refresh token rotation is disabled)
-  */
+   * Configuration for refresh token rotation
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-refresh-token.html#using-the-refresh-token-rotation
+   * @default - undefined (refresh token rotation is disabled)
+   */
   readonly refreshTokenRotation?: RefreshTokenRotation;
 
   /**
@@ -550,6 +550,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       readAttributes: props.readAttributes?.attributes(),
       writeAttributes: props.writeAttributes?.attributes(),
       enableTokenRevocation: props.enableTokenRevocation,
+      refreshTokenRotation: props.refreshTokenRotation,
       enablePropagateAdditionalUserContextData: props.enablePropagateAdditionalUserContextData,
       analyticsConfiguration: props.analytics ? this.configureAnalytics(props.analytics) : undefined,
     });

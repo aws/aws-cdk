@@ -1301,7 +1301,6 @@ describe('User Pool Client', () => {
     });
   });
 
-
   describe('refresh token rotation', () => {
     test('undefined by default', () => {
       const stack = new Stack();
