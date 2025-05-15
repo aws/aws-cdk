@@ -77,6 +77,27 @@ describe('IPAM Test', () => {
     ); // End Template
   });
 
+  test('Creates nested IP Pools', () => {
+    const pool = ipam.privateScope.addPool('Private', {
+      addressFamily: vpc.AddressFamily.IP_V4,
+      ipv4ProvisionedCidrs: ['10.2.0.0/14'],
+      locale: 'us-west-2',
+    });
+    ipam.privateScope.addPool('PrivateChild', {
+      addressFamily: vpc.AddressFamily.IP_V4,
+      ipv4ProvisionedCidrs: ['10.2.0.0/16'],
+      sourceIpamPoolId: pool.ipamPoolId,
+    });
+
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::EC2::IPAMPool',
+      {
+        AddressFamily: 'ipv4',
+        SourceIpamPoolId: { 'Fn::GetAtt': ['IpamPrivate4E8D7A02', 'IpamPoolId'] },
+      },
+    );
+  });
+
   test('Creates IPAM CIDR pool under public scope for IPv6', () => {
     // Create IPAM resources
     const ipamIpv6 = new Ipam(stack, 'TestIpam', {
