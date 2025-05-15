@@ -61,6 +61,9 @@
 "@aws-cdk/aws-bedrock-alpha@file:packages/@aws-cdk/aws-bedrock-alpha":
   version "0.0.0"
 
+"@aws-cdk/aws-lambda-python-alpha@file:packages/@aws-cdk/aws-lambda-python-alpha":
+  version "0.0.0"
+
 "@aws-cdk/aws-service-spec@0.1.72", "@aws-cdk/aws-service-spec@^0.1.72":
   version "0.1.72"
   resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.72.tgz#e8bc6612656bac42ed3c891cca7c356afaefb778"
@@ -77,7 +80,7 @@
     jsonschema "~1.4.1"
     semver "^7.7.1"
 
-"@aws-cdk/integ-runner@^2.186.7":
+"@aws-cdk/integ-runner@^2.186.0", "@aws-cdk/integ-runner@^2.186.7":
   version "2.186.7"
   resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.186.7.tgz#b70f64a56dd2dcca00df8124d036ed2c86c06aa9"
   integrity sha512-13wOsBnTTzx+0MV5tjCiztRfWpAqkl23hMq5r1Dq+Zuu8bx0nuSDgXJ1aQIrV0vXYMeaRzxWPWALuZtNu4tI5g==
@@ -4472,7 +4475,7 @@
   dependencies:
     tslib "^2.4.0"
 
-"@types/aws-lambda@^8.10.149":
+"@types/aws-lambda@^8.10.136", "@types/aws-lambda@^8.10.149":
   version "8.10.149"
   resolved "https://registry.npmjs.org/@types/aws-lambda/-/aws-lambda-8.10.149.tgz#77c7bde809425546d03626e51bab8181bc5d24c9"
   integrity sha512-NXSZIhfJjnXqJgtS7IwutqIF/SOy1Wz5Px4gUY1RWITp3AYTyuJS4xaXr/bIJY1v15XMzrJ5soGnPM+7uigZjA==
@@ -4666,6 +4669,13 @@
   version "18.11.19"
   resolved "https://registry.npmjs.org/@types/node/-/node-18.11.19.tgz#35e26df9ec441ab99d73e99e9aca82935eea216d"
   integrity sha512-YUgMWAQBWLObABqrvx8qKO1enAvBUdjZOAWQ5grBAkp5LQv45jBvYKZ3oFS9iKRCQyFjqw6iuEa1vmFqtxYLZw==
+
+"@types/node@22.7.9":
+  version "22.7.9"
+  resolved "https://registry.npmjs.org/@types/node/-/node-22.7.9.tgz#2bf2797b5e84702d8262ea2cf843c3c3c880d0e9"
+  integrity sha512-jrTfRC7FM6nChvU7X2KqcrgquofrWLFDeYC1hKfwNWomVvrn7JIksqf344WN2X/y8xrgqBd2dJATZV4GbatBfg==
+  dependencies:
+    undici-types "~6.19.2"
 
 "@types/node@^16":
   version "16.18.126"
@@ -5315,6 +5325,13 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
+aws-cdk@2.1007.0:
+  version "2.1007.0"
+  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1007.0.tgz#cdeca2bd3a4a628c73c9dab3ac37f29d3f63b223"
+  integrity sha512-/UOYOTGWUm+pP9qxg03tID5tL6euC+pb+xo0RBue+xhnUWwj/Bbsw6DbqbpOPMrNzTUxmM723/uMEQmM6S26dw==
+  optionalDependencies:
+    fsevents "2.3.2"
+
 aws-cdk@2.1015.0:
   version "2.1015.0"
   resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1015.0.tgz#fda8c4c7fca90ae42aa23a44b28cf1c4c963dd85"
@@ -5797,6 +5814,11 @@ cdk-generate-synthetic-examples@^0.2.26:
     "@jsii/spec" "^1.112.0"
     jsii-reflect "^1.112.0"
     yargs "^17.7.2"
+
+cdk-nag@2.28.13:
+  version "2.28.13"
+  resolved "https://registry.npmjs.org/cdk-nag/-/cdk-nag-2.28.13.tgz#bef1b6c65496d99ef2e110f1a28f5260f9efef80"
+  integrity sha512-f+fteEq09+N7H2heqls0NcTC+MFcXl6fztEjjpKK0qTo5eFAKmDekEHLRGY5LX8v/JlueoVyhttsjaULNwnoSg==
 
 cdk8s-plus-27@2.9.5:
   version "2.9.5"
@@ -13701,7 +13723,7 @@ ts-api-utils@^2.1.0:
   resolved "https://registry.npmjs.org/ts-api-utils/-/ts-api-utils-2.1.0.tgz#595f7094e46eed364c13fd23e75f9513d29baf91"
   integrity sha512-CUgTZL1irw8u29bzrOD/nH85jqyc74D6SshFgujOIA7osm2Rz7dYH77agkx7H4FBNxDq7Cjf+IjaX/8zwFW+ZQ==
 
-ts-jest@^29, ts-jest@^29.3.3:
+ts-jest@^29, ts-jest@^29.2.5, ts-jest@^29.3.3:
   version "29.3.3"
   resolved "https://registry.npmjs.org/ts-jest/-/ts-jest-29.3.3.tgz#c24c31a9d12268f88899e3eeb05912cab42c574c"
   integrity sha512-y6jLm19SL4GroiBmHwFK4dSHUfDNmOrJbRfp6QmDIlI9p5tT5Q8ItccB4pTIslCIqOZuQnBwpTR0bQ5eUMYwkw==
@@ -13966,6 +13988,11 @@ typescript@~5.5.0, typescript@~5.5.4:
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.5.4.tgz#d9852d6c82bad2d2eda4fd74a5762a8f5909e9ba"
   integrity sha512-Mtq29sKDAEYP7aljRgtPOpTvOfbwRWlS6dPRzwjdE+C0R4brX/GUyhHSecbHMFLNBLcJIPt9nl9yG5TZ1weH+Q==
 
+typescript@~5.6.3:
+  version "5.6.3"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-5.6.3.tgz#5f3449e31c9d94febb17de03cc081dd56d81db5b"
+  integrity sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==
+
 typescript@~5.7:
   version "5.7.3"
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.7.3.tgz#919b44a7dbb8583a9b856d162be24a54bf80073e"
@@ -13995,6 +14022,11 @@ undici-types@~5.26.4:
   version "5.26.5"
   resolved "https://registry.npmjs.org/undici-types/-/undici-types-5.26.5.tgz#bcd539893d00b56e964fd2657a4866b221a65617"
   integrity sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==
+
+undici-types@~6.19.2:
+  version "6.19.8"
+  resolved "https://registry.npmjs.org/undici-types/-/undici-types-6.19.8.tgz#35111c9d1437ab83a7cdc0abae2f26d88eda0a02"
+  integrity sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==
 
 undici-types@~6.21.0:
   version "6.21.0"
