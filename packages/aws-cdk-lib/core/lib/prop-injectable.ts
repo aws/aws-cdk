@@ -1,7 +1,7 @@
 import { Construct, IConstruct } from 'constructs';
 import { applyInjectors } from './prop-injectors-helpers';
 
-export interface PropertyInjectableConstructConstructor {
+interface PropertyInjectableConstructConstructor {
   readonly PROPERTY_INJECTION_ID: string;
 
   new (scope: Construct, id: string, props: any, ...args: any[]): IConstruct;
