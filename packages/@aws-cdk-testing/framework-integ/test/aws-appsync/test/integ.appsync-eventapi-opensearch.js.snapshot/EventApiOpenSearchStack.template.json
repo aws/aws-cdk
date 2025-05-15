@@ -206,6 +206,16 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "createIndexFunction1E9F2BC6",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -260,32 +270,6 @@
     "providerframeworkonEventServiceRoleDefaultPolicyE786389D",
     "providerframeworkonEventServiceRole72DDF894"
    ]
-  },
-  "providerframeworkonEventinlinePolicyAddedToExecutionRole03EFE4C1C": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "createIndexFunction1E9F2BC6",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "providerframeworkonEventinlinePolicyAddedToExecutionRole03EFE4C1C",
-    "Roles": [
-     {
-      "Ref": "providerframeworkonEventServiceRole72DDF894"
-     }
-    ]
-   }
   },
   "OpenSearchIndexResource": {
    "Type": "AWS::CloudFormation::CustomResource",

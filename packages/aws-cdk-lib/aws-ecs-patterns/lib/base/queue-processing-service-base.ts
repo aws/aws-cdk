@@ -6,7 +6,7 @@ import {
   ICluster, LogDriver, PropagatedTagSource, Secret,
 } from '../../../aws-ecs';
 import { IQueue, Queue } from '../../../aws-sqs';
-import { CfnOutput, Duration, FeatureFlags, Stack } from '../../../core';
+import { CfnOutput, Duration, FeatureFlags, Stack, ValidationError } from '../../../core';
 import * as cxapi from '../../../cx-api';
 
 /**
@@ -335,13 +335,13 @@ export abstract class QueueProcessingServiceBase extends Construct {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
-      throw new Error('You can only specify either vpc or cluster. Alternatively, you can leave both blank');
+      throw new ValidationError('You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
     if (props.queue && (props.retentionPeriod || props.visibilityTimeout || props.maxReceiveCount)) {
       const errorProps = ['retentionPeriod', 'visibilityTimeout', 'maxReceiveCount'].filter(prop => props.hasOwnProperty(prop));
-      throw new Error(`${errorProps.join(', ')} can be set only when queue is not set. Specify them in the QueueProps of the queue`);
+      throw new ValidationError(`${errorProps.join(', ')} can be set only when queue is not set. Specify them in the QueueProps of the queue`, this);
     }
     // Create the SQS queue and it's corresponding DLQ if one is not provided
     if (props.queue) {
@@ -367,7 +367,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     this.scalingSteps = props.scalingSteps ?? defaultScalingSteps;
 
     if (props.cooldown && props.cooldown.toSeconds() > 999999999) {
-      throw new Error(`cooldown cannot be more than 999999999, found: ${props.cooldown.toSeconds()}`);
+      throw new ValidationError(`cooldown cannot be more than 999999999, found: ${props.cooldown.toSeconds()}`, this);
     }
     this.cooldown = props.cooldown;
 
@@ -398,7 +398,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     }
 
     if (!this.desiredCount && !this.maxCapacity) {
-      throw new Error('maxScalingCapacity must be set and greater than 0 if desiredCount is 0');
+      throw new ValidationError('maxScalingCapacity must be set and greater than 0 if desiredCount is 0', this);
     }
 
     new CfnOutput(this, 'SQSQueue', { value: this.sqsQueue.queueName });
