@@ -249,7 +249,7 @@ export interface RefreshTokenRotation {
    * @default - undefined (CloudFormation defaults value)
    */
   readonly retryGracePeriodSeconds?: number;
-}  
+}
 
 /**
  * Options to create a UserPoolClient
@@ -344,7 +344,6 @@ export interface UserPoolClientOptions {
   * @default - undefined (refresh token rotation is disabled)
   */
   refreshTokenRotation?: RefreshTokenRotation;
-
 
   /**
    * The set of attributes this client will be able to read.
