@@ -276,9 +276,14 @@ export class ConstructsUpdater extends MetadataUpdater {
     const absoluteFilePath = path.resolve(filePath);
     const absoluteTargetPath = path.resolve(__dirname, `../../../../packages/aws-cdk-lib/core/lib/${importFile}.ts`);
     let dirname = path.dirname(absoluteFilePath);
+    let targetDirname = path.dirname(absoluteTargetPath);
     let relativePath = path.relative(dirname, absoluteTargetPath).replace(/\\/g, "/").replace(/.ts/, "");
     if (absoluteFilePath.includes('@aws-cdk')) {
       relativePath = `aws-cdk-lib/core/lib/${importFile}`
+    }
+    // if the file updated, and the import file in the same directory, so we should add './' as prefix
+    if(dirname === targetDirname){
+      return `./${relativePath}`;
     }
     return relativePath;
   }
@@ -310,19 +315,26 @@ export class ConstructsUpdater extends MetadataUpdater {
       const existingImport = importDeclarations[i].getModuleSpecifier().getLiteralText();
 
       // Insert the new import before the first one that is lexicographically greater
-      if (existingImport.localeCompare(relativePath) > 0) {
-        insertIndex = i;
-      } else {
+      if (existingImport.localeCompare(relativePath) <= 0) {
+        console.log(`  ${filePath} -- ${existingImport} < ${relativePath} ${i+1}`);
+        insertIndex = i+1;
         break;
       }
     }
 
     // Insert the new import at the correct index
-    sourceFile.insertImportDeclaration(insertIndex, {
-      moduleSpecifier: relativePath.length == 0 ? "./" : relativePath,
-      namedImports: [{ name: importClassName }],
-    });
-    console.log(`  Added import for ${importClassName} in file: ${filePath} with relative path: ${relativePath}`);
+    if (insertIndex >= importDeclarations.length) {
+      sourceFile.addImportDeclaration({
+        moduleSpecifier: relativePath,
+        namedImports: [{ name: importClassName }],
+      });
+    } else {
+      sourceFile.insertImportDeclaration(insertIndex, {
+        moduleSpecifier: relativePath,
+        namedImports: [{ name: importClassName }],
+      });
+    }
+    console.log(`  Added import for ${importClassName} in file: ${filePath} with relative path: ${relativePath} in index ${insertIndex}`);
   }
 
   /**

@@ -442,7 +442,7 @@ describe('ResourceMetadataUpdater', () => {
       // THEN
       expect(mockClassDeclaration.insertProperty).toHaveBeenCalled();
       expect(mockClassDeclaration.addDecorator).toHaveBeenCalled();
-      expect(mockSourceFile.insertImportDeclaration).toHaveBeenCalled();
+      expect(mockSourceFile.addImportDeclaration).toHaveBeenCalled();
     });
   });
 
