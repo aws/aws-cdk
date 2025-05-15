@@ -310,8 +310,22 @@ export class ConstructsUpdater extends MetadataUpdater {
     // Find the correct insertion point (after the last import before the new one)
     const importDeclarations = sourceFile.getImportDeclarations();
     let insertIndex = importDeclarations.length; // Default to appending
+    let startIndex = importDeclarations.length -1;
 
-    for (let i = importDeclarations.length - 1; i >= 0; i--) {
+    if ( !relativePath.startsWith('../') && !relativePath.startsWith('./')) {
+      // Third party import, so we should skip all local imports till we reach the 3rd parties
+      for (let i = importDeclarations.length - 1; i >= 0; i--) {
+        const existingImport = importDeclarations[i].getModuleSpecifier().getLiteralText();
+        if (!existingImport.startsWith('../') && !existingImport.startsWith('./')) {
+          // this is 3rd party import, stop here.
+          startIndex = i;
+          break;
+        }
+      }
+    }
+
+
+    for (let i = startIndex; i >= 0; i--) {
       const existingImport = importDeclarations[i].getModuleSpecifier().getLiteralText();
 
       // Insert the new import before the first one that is lexicographically greater
