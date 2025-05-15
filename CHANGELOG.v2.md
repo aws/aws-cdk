@@ -2,13 +2,6 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [2.196.1](https://github.com/aws/aws-cdk/compare/v2.196.0...v2.196.1) (2025-05-19)
-
-
-### Bug Fixes
-
-* **lambda-nodejs:** instantiating `NodejsFunction` without the `entry` property fails ([#34498](https://github.com/aws/aws-cdk/issues/34498)) ([27e0f3a](https://github.com/aws/aws-cdk/commit/27e0f3a1d525512db53fc99432597d8e091ab9d0))
-
 ## [2.196.0](https://github.com/aws/aws-cdk/compare/v2.195.0...v2.196.0) (2025-05-15)
 
 
@@ -51,6 +44,10 @@ All notable changes to this project will be documented in this file. See [standa
 * **eks:** eks cluster name exceeding the limit of 100 characters ([#34449](https://github.com/aws/aws-cdk/issues/34449)) ([5197882](https://github.com/aws/aws-cdk/commit/51978822a7a0e1fcff3461de0eb62533575dfafd))
 * **s3:** updating blockPublicAccess to enable default true settings (under feature flag) ([#33702](https://github.com/aws/aws-cdk/issues/33702)) ([904e3a3](https://github.com/aws/aws-cdk/commit/904e3a39f10c9e993701c79999bdd0ff90c1ce5f)), closes [#32811](https://github.com/aws/aws-cdk/issues/32811) [40aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-block-access.ts#L1-L42](https://github.com/40aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-block-access.ts/issues/L1-L42)
 
+
+### Reverts
+
+* "feat(s3tables): server-side encryption by customer managed KMS key" ([#34460](https://github.com/aws/aws-cdk/issues/34460)) ([145796c](https://github.com/aws/aws-cdk/commit/145796c65c669e572e41b0876f541fc6789a8354)), closes [aws/aws-cdk#34229](https://github.com/aws/aws-cdk/issues/34229)
 
 ## [2.195.0](https://github.com/aws/aws-cdk/compare/v2.194.0...v2.195.0) (2025-05-07)
 
