@@ -3,7 +3,7 @@ import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
 import { CfnPrivateDnsNamespace } from './servicediscovery.generated';
 import * as ec2 from '../../aws-ec2';
-import { Resource } from '../../core';
+import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
@@ -76,7 +76,7 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
     if (props.vpc === undefined) {
-      throw new Error('VPC must be specified for PrivateDNSNamespaces');
+      throw new ValidationError('VPC must be specified for PrivateDNSNamespaces', this);
     }
 
     const ns = new CfnPrivateDnsNamespace(this, 'Resource', {
