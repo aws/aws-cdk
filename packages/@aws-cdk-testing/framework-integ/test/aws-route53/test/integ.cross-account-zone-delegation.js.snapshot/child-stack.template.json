@@ -14,7 +14,7 @@
       {
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
-       "Resource": "arn:aws:iam::903367905701:role/MyUniqueDelegationRole"
+       "Resource": "arn:aws:iam::12345678:role/MyUniqueDelegationRole"
       }
      ],
      "Version": "2012-10-17"
@@ -59,7 +59,7 @@
       "Arn"
      ]
     },
-    "AssumeRoleArn": "arn:aws:iam::903367905701:role/MyUniqueDelegationRole",
+    "AssumeRoleArn": "arn:aws:iam::12345678:role/MyUniqueDelegationRole",
     "ParentZoneName": "uniqueexample.com",
     "DelegatedZoneName": "sub.uniqueexample.com",
     "DelegatedZoneNameServers": {
