@@ -1,17 +1,18 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "files": {
-    "ae5a97c3fd75f1ee45fe9ea3e90f0e08ec8d391d23a96cbe44f9c347fd8bce1b": {
+    "5b340ae6a4a5271883e84d7c460edf05931c0602047defc73f32003da791904c": {
+      "displayName": "CrossAccountStack Template",
       "source": {
         "path": "CrossAccountStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "157488465701-us-east-1": {
-          "bucketName": "cdk-hnb659fds-assets-157488465701-us-east-1",
-          "objectKey": "ae5a97c3fd75f1ee45fe9ea3e90f0e08ec8d391d23a96cbe44f9c347fd8bce1b.json",
-          "region": "us-east-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::157488465701:role/cdk-hnb659fds-file-publishing-role-157488465701-us-east-1"
+        "540871810575-test-region": {
+          "bucketName": "cdk-hnb659fds-assets-540871810575-test-region",
+          "objectKey": "5b340ae6a4a5271883e84d7c460edf05931c0602047defc73f32003da791904c.json",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::540871810575:role/cdk-hnb659fds-file-publishing-role-540871810575-test-region"
         }
       }
     }

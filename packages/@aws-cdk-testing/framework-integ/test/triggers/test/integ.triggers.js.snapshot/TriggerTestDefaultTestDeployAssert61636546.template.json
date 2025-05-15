@@ -35,7 +35,7 @@
     "outputPaths": [
      "Messages.0.Body"
     ],
-    "salt": "1746827879997"
+    "salt": "1747352539700"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -371,6 +371,9 @@
     "value": "nodejs22.x"
    },
    "ap-east-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-east-2": {
     "value": "nodejs22.x"
    },
    "ap-northeast-1": {

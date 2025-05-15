@@ -436,7 +436,7 @@
             {
              "Ref": "AWS::Partition"
             },
-            ":iam::234567890123:role/cdkpipelinecfnactionstackdeployactionrole57e12a8ea0f3e8176666"
+            ":iam::540871810575:role/cdkpipelinecfnactionstackdeployactionrole1898fcc4c12ca90b5679"
            ]
           ]
          },
@@ -448,7 +448,7 @@
             {
              "Ref": "AWS::Partition"
             },
-            ":iam::234567890123:role/cdkpipelinecfnactionstackoydeploymentrole5e69c3b8bfbbc622ec4e"
+            ":iam::540871810575:role/cdkpipelinecfnactionstackoydeploymentrolef13da1ddd24ea7815b21"
            ]
           ]
          }
@@ -556,7 +556,7 @@
             {
              "Ref": "AWS::Partition"
             },
-            ":iam::234567890123:role/cdkpipelinecfnactionstackdeployactionrole57e12a8ea0f3e8176666"
+            ":iam::540871810575:role/cdkpipelinecfnactionstackdeployactionrole1898fcc4c12ca90b5679"
            ]
           ]
          },
@@ -568,7 +568,7 @@
             {
              "Ref": "AWS::Partition"
             },
-            ":iam::234567890123:role/cdkpipelinecfnactionstackoydeploymentrole5e69c3b8bfbbc622ec4e"
+            ":iam::540871810575:role/cdkpipelinecfnactionstackoydeploymentrolef13da1ddd24ea7815b21"
            ]
           ]
          }
@@ -721,7 +721,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":iam::234567890123:role/cdkpipelinecfnactionstackdeployactionrole57e12a8ea0f3e8176666"
+           ":iam::540871810575:role/cdkpipelinecfnactionstackdeployactionrole1898fcc4c12ca90b5679"
           ]
          ]
         }
@@ -862,7 +862,7 @@
             {
              "Ref": "AWS::Partition"
             },
-            ":iam::234567890123:role/cdkpipelinecfnactionstackoydeploymentrole5e69c3b8bfbbc622ec4e"
+            ":iam::540871810575:role/cdkpipelinecfnactionstackoydeploymentrolef13da1ddd24ea7815b21"
            ]
           ]
          },
@@ -883,7 +883,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":iam::234567890123:role/cdkpipelinecfnactionstackdeployactionrole57e12a8ea0f3e8176666"
+           ":iam::540871810575:role/cdkpipelinecfnactionstackdeployactionrole1898fcc4c12ca90b5679"
           ]
          ]
         },

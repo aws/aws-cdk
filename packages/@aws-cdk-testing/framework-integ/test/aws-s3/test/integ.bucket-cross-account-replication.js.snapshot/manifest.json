@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "43.0.0",
   "artifacts": {
     "parent-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "parent-stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-1/421efad290f0f1401d05215f996d1580a66bd7ba360710590f2173a9ab96c19b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-1/d7978c832d1003524269c2bcc3a8f85821acfe526e4e453d17ec1b9ec001d47e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -35,22 +34,34 @@
         "parent-stack.assets"
       ],
       "metadata": {
+        "/parent-stack/DestinationBucketnew": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "versioned": true,
+              "removalPolicy": "destroy",
+              "bucketName": "*"
+            }
+          }
+        ],
         "/parent-stack/DestinationBucketnew/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DestinationBucketnew4DB863C3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "DestinationBucketnew4DB863C3"
+          }
+        ],
+        "/parent-stack/DestinationBucketnew/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
           }
         ],
         "/parent-stack/DestinationBucketnew/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DestinationBucketnewPolicy8D43FB0B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "DestinationBucketnewPolicy8D43FB0B"
           }
         ],
         "/parent-stack/BootstrapVersion": [
@@ -78,22 +89,21 @@
     },
     "child-stack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://234567890123/us-east-1",
+      "environment": "aws://540871810575/us-east-1",
       "properties": {
         "templateFile": "child-stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-us-east-1/d52e1c3d375f46df22b906b239166a2ef777ed4e2082697d16c42c76587dc36f.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::540871810575:role/cdk-hnb659fds-deploy-role-540871810575-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::540871810575:role/cdk-hnb659fds-cfn-exec-role-540871810575-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-540871810575-us-east-1/2bc52df0033c68a48e57e91b1c67440b4763c341d5c3a4a9d7fd41daa92ebd33.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "child-stack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-lookup-role-234567890123-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::540871810575:role/cdk-hnb659fds-lookup-role-540871810575-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -105,14 +115,138 @@
       "metadata": {
         "/child-stack/SourceBucket": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "versioned": true,
+              "removalPolicy": "destroy",
+              "bucketName": "*",
+              "encryption": "S3_MANAGED",
+              "replicationRules": [
+                {
+                  "destination": "*",
+                  "priority": "*",
+                  "replicationTimeControl": "*",
+                  "storageClass": "*",
+                  "replicaModifications": true,
+                  "deleteMarkerReplication": true,
+                  "id": "*"
+                }
+              ]
+            }
+          },
+          {
             "type": "aws:cdk:info",
-            "data": "For Cross-account S3 replication, ensure to set up permissions on source bucket using method addReplicationPolicy() "
+            "data": "For Cross-account S3 replication, ensure to set up permissions on destination bucket using method addReplicationPolicy() "
+          }
+        ],
+        "/child-stack/SourceBucket/ReplicationRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "roleName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/child-stack/SourceBucket/ReplicationRole/ImportReplicationRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/child-stack/SourceBucket/ReplicationRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SourceBucketReplicationRole9043C65F"
+          }
+        ],
+        "/child-stack/SourceBucket/ReplicationRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/child-stack/SourceBucket/ReplicationRole/DefaultPolicy/Resource": [
@@ -160,10 +294,9 @@
         "templateFile": "ReplicationIntegDefaultTestDeployAssert2C07A074.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9c083d4ed53db4b9339cb62237b62731746c9fdf9453f8aa82ad714f6faea8f6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21412f168e5aa4b38d34233dae39faacdb5fbab511ff5915f11686b175482186.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -179,34 +312,40 @@
         "ReplicationIntegDefaultTestDeployAssert2C07A074.assets"
       ],
       "metadata": {
-        "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14d/Default/Default": [
+        "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04/Default": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14d"
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
-        "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14d/WaitFor/IsCompleteProvider/Invoke": [
+        "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14dWaitForIsCompleteProviderInvoke6FBA213B"
+            "data": "AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04"
           }
         ],
-        "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14d/WaitFor/TimeoutProvider/Invoke": [
+        "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04/WaitFor/IsCompleteProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14dWaitForTimeoutProviderInvoke1F2D77D3"
+            "data": "AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04WaitForIsCompleteProviderInvokeCE5EB032"
           }
         ],
-        "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14d/WaitFor/Role": [
+        "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04/WaitFor/TimeoutProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14dWaitForRoleED5560C7"
+            "data": "AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04WaitForTimeoutProviderInvoke3E1F7CF5"
           }
         ],
-        "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14d/WaitFor/Resource": [
+        "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04/WaitFor/Role": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14dWaitFor7FD72988"
+            "data": "AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04WaitForRole222A7D16"
+          }
+        ],
+        "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04WaitFor3C5DBEC4"
           }
         ],
         "/ReplicationInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -272,5 +411,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

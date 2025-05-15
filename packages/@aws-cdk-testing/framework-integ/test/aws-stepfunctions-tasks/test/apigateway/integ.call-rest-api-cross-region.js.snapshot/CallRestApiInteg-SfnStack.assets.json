@@ -1,7 +1,8 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "files": {
     "d6fa38886a871b64de769ec5016af90a071e6429aa8e7de84f595e4e2462e17d": {
+      "displayName": "CallRestApiInteg-SfnStack/Custom::CrossRegionExportReaderCustomResourceProvider Code",
       "source": {
         "path": "asset.d6fa38886a871b64de769ec5016af90a071e6429aa8e7de84f595e4e2462e17d",
         "packaging": "zip"
@@ -15,7 +16,8 @@
         }
       }
     },
-    "4b53f3b1f75f7c2c40971f3e37d5448f36e7b39949926864276994f8ec2e0d6d": {
+    "8b87b434760de3547652bab404d692dcdeb7e5137214d07f16360cd5edfe297b": {
+      "displayName": "CallRestApiInteg-SfnStack Template",
       "source": {
         "path": "CallRestApiInteg-SfnStack.template.json",
         "packaging": "file"
@@ -23,7 +25,7 @@
       "destinations": {
         "current_account-us-east-1": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
-          "objectKey": "4b53f3b1f75f7c2c40971f3e37d5448f36e7b39949926864276994f8ec2e0d6d.json",
+          "objectKey": "8b87b434760de3547652bab404d692dcdeb7e5137214d07f16360cd5edfe297b.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
         }

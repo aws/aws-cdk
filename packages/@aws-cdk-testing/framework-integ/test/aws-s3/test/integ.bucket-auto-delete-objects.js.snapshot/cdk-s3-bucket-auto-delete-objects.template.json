@@ -348,11 +348,11 @@
        {
         "Ref": "RemovedBucket4FCCEBAD"
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "DeleteBucketCustomResourcePolicy99AB6B27"
@@ -455,6 +455,9 @@
     "value": "nodejs22.x"
    },
    "ap-east-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-east-2": {
     "value": "nodejs22.x"
    },
    "ap-northeast-1": {

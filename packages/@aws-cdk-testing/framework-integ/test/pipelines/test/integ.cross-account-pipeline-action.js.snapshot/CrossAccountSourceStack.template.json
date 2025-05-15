@@ -118,7 +118,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-234567890123-test-region",
+     "S3Bucket": "cdk-hnb659fds-assets-540871810575-test-region",
      "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
     },
     "Timeout": 900,
@@ -152,7 +152,7 @@
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
-     "S3Bucket": "cdk-hnb659fds-assets-234567890123-test-region",
+     "S3Bucket": "cdk-hnb659fds-assets-540871810575-test-region",
      "S3Key": "8a84a8f465fbe0c48af2c256847ec9abfe095d23781b749728b998315f3ad732.zip"
     },
     "Description": "/opt/awscli/aws"
@@ -168,7 +168,7 @@
      ]
     },
     "SourceBucketNames": [
-     "cdk-hnb659fds-assets-234567890123-test-region"
+     "cdk-hnb659fds-assets-540871810575-test-region"
     ],
     "SourceObjectKeys": [
      "fbee18a86723a24ee3c75971c14b5bbff255873d741f6bbdde2218433a37a74d.zip"
@@ -237,7 +237,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":s3:::cdk-hnb659fds-assets-234567890123-test-region"
+           ":s3:::cdk-hnb659fds-assets-540871810575-test-region"
           ]
          ]
         },
@@ -249,7 +249,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":s3:::cdk-hnb659fds-assets-234567890123-test-region/*"
+           ":s3:::cdk-hnb659fds-assets-540871810575-test-region/*"
           ]
          ]
         }
@@ -307,7 +307,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-234567890123-test-region",
+     "S3Bucket": "cdk-hnb659fds-assets-540871810575-test-region",
      "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
     },
     "Environment": {
@@ -377,7 +377,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "RoleName": "crossaccountsourcestacksourceactionrole897ff83e126e129e1ac8"
+    "RoleName": "crossaccountsourcestacksourceactionrole897ff83e87c629ebe610"
    }
   },
   "CdkPipelineInvestigationStackPipeline029CB441SourceS3SourceActionRoleDefaultPolicy9F106E57": {

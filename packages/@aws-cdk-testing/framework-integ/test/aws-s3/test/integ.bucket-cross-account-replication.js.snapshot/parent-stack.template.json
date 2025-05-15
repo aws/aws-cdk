@@ -26,7 +26,7 @@
        ],
        "Effect": "Allow",
        "Principal": {
-        "AWS": "arn:aws:iam::234567890123:role/CDKReplicationRole"
+        "AWS": "arn:aws:iam::540871810575:role/CDKReplicationRole"
        },
        "Resource": {
         "Fn::GetAtt": [
@@ -42,7 +42,7 @@
        ],
        "Effect": "Allow",
        "Principal": {
-        "AWS": "arn:aws:iam::234567890123:role/CDKReplicationRole"
+        "AWS": "arn:aws:iam::540871810575:role/CDKReplicationRole"
        },
        "Resource": {
         "Fn::Join": [
