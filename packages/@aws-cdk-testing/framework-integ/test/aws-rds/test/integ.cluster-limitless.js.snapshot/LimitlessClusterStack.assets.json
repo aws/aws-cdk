@@ -15,7 +15,7 @@
         }
       }
     },
-    "6bcdc6d0d99ae6bce8a439e28c6daf7985e269f394b41f2ea9352bdaa86f8b61": {
+    "cb98419744438acde03f348b6a61ad56499ee5d468f32334ead1b83df01450cf": {
       "displayName": "LimitlessClusterStack Template",
       "source": {
         "path": "LimitlessClusterStack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6bcdc6d0d99ae6bce8a439e28c6daf7985e269f394b41f2ea9352bdaa86f8b61.json",
+          "objectKey": "cb98419744438acde03f348b6a61ad56499ee5d468f32334ead1b83df01450cf.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

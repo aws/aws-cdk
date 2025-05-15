@@ -20,6 +20,8 @@ import * as iam from '../../aws-iam';
 import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy, Size, Lazy } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { applyInjectors } from '../../core/lib/prop-injectors-helpers';
 import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
@@ -712,7 +714,14 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
       throw new ValidationError('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed', this);
     }
     if (props.endpointConfiguration) {
+      const endpointConfiguration = props.endpointConfiguration;
+      const isPrivateApi = endpointConfiguration.types.includes(EndpointType.PRIVATE);
+      const isIpv4Only = endpointConfiguration.ipAddressType === IpAddressType.IPV4;
+      if (isPrivateApi && isIpv4Only) {
+        throw new ValidationError('Private APIs can only have a dualstack IP address type.', this);
+      }
       return {
+        ipAddressType: props.endpointConfiguration.ipAddressType,
         types: props.endpointConfiguration.types,
         vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(vpcEndpoint => vpcEndpoint.vpcEndpointId),
       };
@@ -744,7 +753,13 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
  *
  * @resource AWS::ApiGateway::RestApi
  */
+@propertyInjectable
 export class SpecRestApi extends RestApiBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.SpecRestApi';
+
   /**
    * The ID of this API Gateway RestApi.
    */
@@ -840,7 +855,13 @@ export interface RestApiAttributes {
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
  */
+@propertyInjectable
 export class RestApi extends RestApiBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.RestApi';
+
   /**
    * Return whether the given object is a `RestApi`
    */
@@ -1049,6 +1070,30 @@ export interface EndpointConfiguration {
    * @default - no ALIASes are created for the endpoint.
    */
   readonly vpcEndpoints?: ec2.IVpcEndpoint[];
+
+  /**
+   * The IP address types that can invoke the API.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-ip-address-type.html
+   *
+   * @default undefined - AWS default is DUAL_STACK for private API, IPV4 for all other APIs.
+   */
+  readonly ipAddressType?: IpAddressType;
+}
+
+/**
+ * Supported IP Address Types
+ */
+export enum IpAddressType {
+  /**
+   * IPv4 address type
+   */
+  IPV4 = 'ipv4',
+
+  /**
+   * IPv4 and IPv6 address type
+   */
+  DUAL_STACK = 'dualstack',
 }
 
 export enum ApiKeySourceType {
@@ -1096,6 +1141,7 @@ export enum RestApiMode {
 }
 
 class RootResource extends ResourceBase {
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.RootResource';
   public readonly parentResource?: IResource;
   public readonly api: RestApiBase;
   public readonly resourceId: string;
@@ -1108,6 +1154,10 @@ class RootResource extends ResourceBase {
 
   constructor(api: RestApiBase, props: ResourceOptions, resourceId: string) {
     super(api, 'Default');
+    props = applyInjectors(RootResource.PROPERTY_INJECTION_ID, props, {
+      scope: api,
+      id: resourceId,
+    });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, resourceId);
 

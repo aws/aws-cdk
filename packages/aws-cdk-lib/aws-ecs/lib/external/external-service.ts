@@ -3,7 +3,7 @@ import * as appscaling from '../../../aws-applicationautoscaling';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as cloudmap from '../../../aws-servicediscovery';
-import { ArnFormat, Resource, Stack, Annotations } from '../../../core';
+import { ArnFormat, Resource, Stack, Annotations, ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { AssociateCloudMapServiceOptions, BaseService, BaseServiceOptions, CloudMapOptions, DeploymentControllerType, EcsTarget, IBaseService, IEcsLoadBalancerTarget, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { fromServiceAttributes } from '../base/from-service-attributes';
@@ -104,34 +104,34 @@ export class ExternalService extends BaseService implements IExternalService {
     if (props.daemon) {
       if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
         props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {
-        throw new Error('CODE_DEPLOY or EXTERNAL deployment controller types don\'t support the DAEMON scheduling strategy.');
+        throw new ValidationError('CODE_DEPLOY or EXTERNAL deployment controller types don\'t support the DAEMON scheduling strategy.', scope);
       }
       if (props.desiredCount !== undefined) {
-        throw new Error('Daemon mode launches one task on every instance. Cannot specify desiredCount when daemon mode is enabled.');
+        throw new ValidationError('Daemon mode launches one task on every instance. Cannot specify desiredCount when daemon mode is enabled.', scope);
       }
       if (props.maxHealthyPercent !== undefined && props.maxHealthyPercent !== 100) {
-        throw new Error('Maximum percent must be 100 when daemon mode is enabled.');
+        throw new ValidationError('Maximum percent must be 100 when daemon mode is enabled.', scope);
       }
     }
 
     if (props.minHealthyPercent !== undefined && props.maxHealthyPercent !== undefined && props.minHealthyPercent >= props.maxHealthyPercent) {
-      throw new Error('Minimum healthy percent must be less than maximum healthy percent.');
+      throw new ValidationError('Minimum healthy percent must be less than maximum healthy percent.', scope);
     }
 
     if (props.taskDefinition.compatibility !== Compatibility.EXTERNAL) {
-      throw new Error('Supplied TaskDefinition is not configured for compatibility with ECS Anywhere cluster');
+      throw new ValidationError('Supplied TaskDefinition is not configured for compatibility with ECS Anywhere cluster', scope);
     }
 
     if (props.cluster.defaultCloudMapNamespace !== undefined) {
-      throw new Error(`Cloud map integration is not supported for External service ${props.cluster.defaultCloudMapNamespace}`);
+      throw new ValidationError(`Cloud map integration is not supported for External service ${props.cluster.defaultCloudMapNamespace}`, scope);
     }
 
     if (props.cloudMapOptions !== undefined) {
-      throw new Error('Cloud map options are not supported for External service');
+      throw new ValidationError('Cloud map options are not supported for External service', scope);
     }
 
     if (props.capacityProviderStrategies !== undefined) {
-      throw new Error('Capacity Providers are not supported for External service');
+      throw new ValidationError('Capacity Providers are not supported for External service', scope);
     }
 
     const propagateTagsFromSource = props.propagateTags ?? PropagatedTagSource.NONE;
@@ -171,7 +171,7 @@ export class ExternalService extends BaseService implements IExternalService {
    */
   @MethodMetadata()
   public attachToApplicationTargetGroup(_targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-    throw new Error('Application load balancer cannot be attached to an external service');
+    throw new ValidationError('Application load balancer cannot be attached to an external service', this);
   }
 
   /**
@@ -179,7 +179,7 @@ export class ExternalService extends BaseService implements IExternalService {
    */
   @MethodMetadata()
   public loadBalancerTarget(_options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
-    throw new Error('External service cannot be attached as load balancer targets');
+    throw new ValidationError('External service cannot be attached as load balancer targets', this);
   }
 
   /**
@@ -187,7 +187,7 @@ export class ExternalService extends BaseService implements IExternalService {
    */
   @MethodMetadata()
   public registerLoadBalancerTargets(..._targets: EcsTarget[]) {
-    throw new Error('External service cannot be registered as load balancer targets');
+    throw new ValidationError('External service cannot be registered as load balancer targets', this);
   }
 
   /**
@@ -195,7 +195,7 @@ export class ExternalService extends BaseService implements IExternalService {
    */
   // eslint-disable-next-line max-len, no-unused-vars
   protected configureAwsVpcNetworkingWithSecurityGroups(_vpc: ec2.IVpc, _assignPublicIp?: boolean, _vpcSubnets?: ec2.SubnetSelection, _securityGroups?: ec2.ISecurityGroup[]) {
-    throw new Error('Only Bridge network mode is supported for external service');
+    throw new ValidationError('Only Bridge network mode is supported for external service', this);
   }
 
   /**
@@ -203,7 +203,7 @@ export class ExternalService extends BaseService implements IExternalService {
    */
   @MethodMetadata()
   public autoScaleTaskCount(_props: appscaling.EnableScalingProps): ScalableTaskCount {
-    throw new Error('Autoscaling not supported for external service');
+    throw new ValidationError('Autoscaling not supported for external service', this);
   }
 
   /**
@@ -211,7 +211,7 @@ export class ExternalService extends BaseService implements IExternalService {
    */
   @MethodMetadata()
   public enableCloudMap(_options: CloudMapOptions): cloudmap.Service {
-    throw new Error('Cloud map integration not supported for an external service');
+    throw new ValidationError('Cloud map integration not supported for an external service', this);
   }
 
   /**
@@ -219,6 +219,6 @@ export class ExternalService extends BaseService implements IExternalService {
    */
   @MethodMetadata()
   public associateCloudMapService(_options: AssociateCloudMapServiceOptions): void {
-    throw new Error('Cloud map service association is not supported for an external service');
+    throw new ValidationError('Cloud map service association is not supported for an external service', this);
   }
 }
