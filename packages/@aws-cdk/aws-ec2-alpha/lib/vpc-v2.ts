@@ -6,6 +6,7 @@ import { IVpcV2, VpcV2Base } from './vpc-v2-base';
 import { ISubnetV2, SubnetV2, SubnetV2Attributes } from './subnet-v2';
 import { cx_api, region_info } from 'aws-cdk-lib';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Additional props needed for secondary Address
@@ -305,7 +306,11 @@ export interface VpcV2Attributes {
  *
  * @resource AWS::EC2::VPC
  */
+@propertyInjectable
 export class VpcV2 extends VpcV2Base {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.VpcV2';
+
   /**
    * Create a VPC from existing attributes
    */
@@ -818,7 +823,11 @@ interface VPCCidrBlockProps extends VPCCidrBlockattributes {
  * Internal L2 to define a new VPC CIDR Block
  * @internal
  */
+@propertyInjectable
 class VPCCidrBlock extends Resource implements IVPCCidrBlock {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.VPCCidrBlock';
+
   /**
    * Import an existing VPC CIDR Block
    */

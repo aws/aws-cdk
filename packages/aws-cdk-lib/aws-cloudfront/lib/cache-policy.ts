@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnCachePolicy } from './cloudfront.generated';
 import { Duration, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError, withResolved } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a Cache Policy
@@ -91,7 +92,10 @@ export interface CachePolicyProps {
  * @resource AWS::CloudFront::CachePolicy
  * @link https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html
  */
+@propertyInjectable
 export class CachePolicy extends Resource implements ICachePolicy {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.CachePolicy';
   /**
    * This policy is designed for use with an origin that is an AWS Amplify web app.
    */
