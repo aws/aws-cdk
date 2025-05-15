@@ -4,6 +4,7 @@ import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import * as s3 from '../lib';
 import { ReplicationTimeValue } from '../lib/bucket';
 
@@ -900,28 +901,62 @@ describe('bucket', () => {
     })).toThrow('Object Lock retention duration must be less than 100 years');
   });
 
-  test('bucket with block public access set to BlockAll', () => {
-    const stack = new cdk.Stack();
-    new s3.Bucket(stack, 'MyBucket', {
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+  describe('bucket with custom block public access setting', () => {
+    test('S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT Disabled', () => {
+      const app = new cdk.App({
+        context: {
+          [cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: false,
+        },
+      });
+      const stack = new cdk.Stack(app);
+      new s3.Bucket(stack, 'MyBucket', {
+        blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: true }),
+      });
+
+      Template.fromStack(stack).templateMatches({
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'Properties': {
+              'PublicAccessBlockConfiguration': {
+                'RestrictPublicBuckets': true,
+              },
+            },
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
+          },
+        },
+      });
     });
 
-    Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'PublicAccessBlockConfiguration': {
-              'BlockPublicAcls': true,
-              'BlockPublicPolicy': true,
-              'IgnorePublicAcls': true,
-              'RestrictPublicBuckets': true,
-            },
-          },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+    test('S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT Enabled', () => {
+      const app = new cdk.App({
+        context: {
+          [cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: true,
         },
-      },
+      });
+      const stack = new cdk.Stack(app);
+      new s3.Bucket(stack, 'MyBucket', {
+        blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: false }),
+      });
+
+      Template.fromStack(stack).templateMatches({
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'Properties': {
+              'PublicAccessBlockConfiguration': {
+                'BlockPublicAcls': true,
+                'BlockPublicPolicy': true,
+                'IgnorePublicAcls': true,
+                'RestrictPublicBuckets': false,
+              },
+            },
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
+          },
+        },
+      });
     });
   });
 
@@ -948,10 +983,10 @@ describe('bucket', () => {
     });
   });
 
-  test('bucket with custom block public access setting', () => {
+  test('bucket with block public access set to BLOCK_ACLS_ONLY', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: true }),
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS_ONLY,
     });
 
     Template.fromStack(stack).templateMatches({
@@ -960,13 +995,75 @@ describe('bucket', () => {
           'Type': 'AWS::S3::Bucket',
           'Properties': {
             'PublicAccessBlockConfiguration': {
-              'RestrictPublicBuckets': true,
+              'BlockPublicAcls': true,
+              'BlockPublicPolicy': false,
+              'IgnorePublicAcls': true,
+              'RestrictPublicBuckets': false,
             },
           },
           'DeletionPolicy': 'Retain',
           'UpdateReplacePolicy': 'Retain',
         },
       },
+    });
+  });
+
+  describe('bucket with custom block public access setting', () => {
+    test('S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT Disabled', () => {
+      const app = new cdk.App({
+        context: {
+          [cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: false,
+        },
+      });
+      const stack = new cdk.Stack(app);
+      new s3.Bucket(stack, 'MyBucket', {
+        blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: true }),
+      });
+
+      Template.fromStack(stack).templateMatches({
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'Properties': {
+              'PublicAccessBlockConfiguration': {
+                'RestrictPublicBuckets': true,
+              },
+            },
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
+          },
+        },
+      });
+    });
+
+    test('S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT Enabled', () => {
+      const app = new cdk.App({
+        context: {
+          [cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: true,
+        },
+      });
+      const stack = new cdk.Stack(app);
+      new s3.Bucket(stack, 'MyBucket', {
+        blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: false }),
+      });
+
+      Template.fromStack(stack).templateMatches({
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'Properties': {
+              'PublicAccessBlockConfiguration': {
+                'BlockPublicAcls': true,
+                'BlockPublicPolicy': true,
+                'IgnorePublicAcls': true,
+                'RestrictPublicBuckets': false,
+              },
+            },
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
+          },
+        },
+      });
     });
   });
 

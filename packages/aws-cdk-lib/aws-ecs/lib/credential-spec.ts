@@ -1,5 +1,6 @@
 import { IBucket } from '../../aws-s3';
 import { IParameter } from '../../aws-ssm';
+import { ValidationError } from '../../core';
 
 /**
  * Base construct for a credential specification (CredSpec).
@@ -10,7 +11,7 @@ export class CredentialSpec {
    */
   protected static arnForS3Object(bucket: IBucket, key: string) {
     if (!key) {
-      throw new Error('key is undefined');
+      throw new ValidationError('key is undefined', bucket);
     }
 
     return bucket.arnForObjects(key);

@@ -21,6 +21,7 @@ import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Toke
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { applyInjectors } from '../../core/lib/prop-injectors-helpers';
 import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
@@ -1140,6 +1141,7 @@ export enum RestApiMode {
 }
 
 class RootResource extends ResourceBase {
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.RootResource';
   public readonly parentResource?: IResource;
   public readonly api: RestApiBase;
   public readonly resourceId: string;
@@ -1152,6 +1154,10 @@ class RootResource extends ResourceBase {
 
   constructor(api: RestApiBase, props: ResourceOptions, resourceId: string) {
     super(api, 'Default');
+    props = applyInjectors(RootResource.PROPERTY_INJECTION_ID, props, {
+      scope: api,
+      id: resourceId,
+    });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, resourceId);
 
