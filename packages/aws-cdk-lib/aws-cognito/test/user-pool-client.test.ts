@@ -1649,4 +1649,3 @@ describe('User Pool Client', () => {
       ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `application` must be specified.');
     });
   });
-});
