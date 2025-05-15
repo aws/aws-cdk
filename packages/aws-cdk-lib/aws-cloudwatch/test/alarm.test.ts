@@ -477,6 +477,44 @@ describe('Alarm', () => {
         });
       }).toThrow(/Anomaly detection operator LessThanLowerOrGreaterThanUpperThreshold requires an/);
     });
+
+    test('can create anomaly detection alarm just using the Alarm construct', () => {
+      // GIVEN
+      const stack = new Stack();
+      const metric = new Metric({
+        namespace: 'AWS/EC2',
+        metricName: 'CPUUtilization',
+      });
+
+      // WHEN
+      const anomalyDetectionMetric = Metric.anomalyDetectionFor({
+        metric,
+      });
+      new Alarm(stack, 'Alarm', {
+        metric: anomalyDetectionMetric,
+        comparisonOperator: ComparisonOperator.LESS_THAN_LOWER_THRESHOLD,
+        threshold: Alarm.ANOMALY_DETECTION_NO_THRESHOLD,
+        evaluationPeriods: 3,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+        ComparisonOperator: 'LessThanLowerThreshold',
+        EvaluationPeriods: 3,
+        ThresholdMetricId: 'expr_1',
+        Metrics: Match.arrayWith([
+          Match.objectLike({
+            Expression: 'ANOMALY_DETECTION_BAND(m0, 2)',
+            Id: 'expr_1',
+            ReturnData: true,
+          }),
+          Match.objectLike({
+            Id: 'm0',
+            ReturnData: true,
+          }),
+        ]),
+      });
+    });
   });
 });
 
