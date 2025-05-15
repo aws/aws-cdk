@@ -23,6 +23,7 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import { Annotations, ArnFormat, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -1212,7 +1213,10 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 /**
  * Represents an imported database cluster.
  */
+@propertyInjectable
 class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ImportedDatabaseCluster';
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
   public readonly engine?: IClusterEngine;
@@ -1313,7 +1317,13 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
  *
  * @resource AWS::RDS::DBCluster
  */
+@propertyInjectable
 export class DatabaseCluster extends DatabaseClusterNew {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseCluster';
+
   /**
    * Import an existing DatabaseCluster from properties
    */
@@ -1507,7 +1517,13 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
  *
  * @resource AWS::RDS::DBCluster
  */
+@propertyInjectable
 export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseClusterFromSnapshot';
+
   public readonly clusterIdentifier: string;
   public readonly clusterResourceIdentifier: string;
   public readonly clusterEndpoint: Endpoint;

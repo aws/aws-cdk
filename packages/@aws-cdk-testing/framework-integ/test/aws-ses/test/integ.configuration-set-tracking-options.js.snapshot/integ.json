@@ -1,0 +1,14 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "ConfigurationSetInteg/DefaultTest": {
+      "stacks": [
+        "ses-configuration-set-tracking-options-integ"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "ConfigurationSetInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ConfigurationSetIntegDefaultTestDeployAssert9B6AD46A"
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}
