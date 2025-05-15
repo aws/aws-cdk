@@ -557,7 +557,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateRemoteNetworkConfig can be allowed');
         });
 
         test('both version and authModeUpdate defined and modify both of them', async () => {
@@ -574,7 +574,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateRemoteNetworkConfig can be allowed');
         });
 
         test('update both version and logging with logging undefined', async () => {
@@ -598,7 +598,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateRemoteNetworkConfig can be allowed');
         });
 
         test('both version and logging defined and modify both of them', async () => {
@@ -629,7 +629,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateRemoteNetworkConfig can be allowed');
         });
       });
       describe('assessConfig change', () => {
@@ -761,7 +761,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateRemoteNetworkConfig can be allowed');
         });
         test('from undefined to both access and authenticationMode enabled', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -781,7 +781,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateRemoteNetworkConfig can be allowed');
         });
         test('update both EndpointAccessUpdate and AuthModeUpdate with accessConfig undefined', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -805,7 +805,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateRemoteNetworkConfig can be allowed');
         });
         test('update both EndpointAccessUpdate and AuthModeUpdate with accessConfig defined', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -829,7 +829,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateRemoteNetworkConfig can be allowed');
         });
       });
 
@@ -913,7 +913,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateRemoteNetworkConfig can be allowed');
         });
         test('both logging and access defined and modify both of them', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -951,7 +951,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateRemoteNetworkConfig can be allowed');
         });
         test('Given logging enabled and unchanged, updating the only publicAccessCidrs is allowed ', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -1114,6 +1114,508 @@ describe('cluster resource provider', () => {
             },
           });
           expect(mocks.actualRequest.untagResourceRequest).toEqual(undefined);
+        });
+      });
+      describe('remote network config updates', () => {
+        test('updating remote network config along with version should fail', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            // this is the new props
+            ...mocks.MOCK_PROPS,
+            version: 'v1.2.3',
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }, {
+            // this is the old props
+            ...mocks.MOCK_PROPS,
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateRemoteNetworkConfig can be allowed');
+        });
+        test('updating remote network config along with logging config should fail', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            // this is the new props
+            ...mocks.MOCK_PROPS,
+            logging: {
+              clusterLogging: [
+                {
+                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+                  enabled: true,
+                },
+              ],
+            },
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }, {
+            // this is the old props
+            ...mocks.MOCK_PROPS,
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateRemoteNetworkConfig can be allowed');
+        });
+        test('updating remote network config along with VPC config should fail', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            // this is the new props
+            ...mocks.MOCK_PROPS,
+            resourcesVpcConfig: {
+              endpointPrivateAccess: true,
+              endpointPublicAccess: true,
+              publicAccessCidrs: ['0.0.0.0/0'],
+            },
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }, {
+            // this is the old props
+            ...mocks.MOCK_PROPS,
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateRemoteNetworkConfig can be allowed');
+        });
+        test('updating remote network config along with access config should fail', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            // this is the new props
+            ...mocks.MOCK_PROPS,
+            accessConfig: { authenticationMode: 'API' },
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }, {
+            // this is the old props
+            ...mocks.MOCK_PROPS,
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateRemoteNetworkConfig can be allowed');
+        });
+        test('adding remote network config field', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            // this is the new props
+            ...mocks.MOCK_PROPS,
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }, {
+            // this is the old props
+            ...mocks.MOCK_PROPS,
+          }));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+        });
+        test('removing remote network config field', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            // this is the old props
+            ...mocks.MOCK_PROPS,
+          }, {
+            // this is the new props
+            ...mocks.MOCK_PROPS,
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          expect(mocks.actualRequest.updateClusterConfigRequest!).toEqual({
+            name: 'physical-resource-id',
+            remoteNetworkConfig: {
+              remoteNodeNetworks: undefined,
+              remotePodNetworks: undefined,
+            },
+          });
+        });
+        test('updating only remote node networks', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            // this is the new props
+            ...mocks.MOCK_PROPS,
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }, {
+            // this is the old props
+            ...mocks.MOCK_PROPS,
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          expect(mocks.actualRequest.updateClusterConfigRequest!).toEqual({
+            name: 'physical-resource-id',
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+            },
+          });
+        });
+        test('updating only remote pod networks', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            // this is the new props
+            ...mocks.MOCK_PROPS,
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }, {
+            // this is the old props
+            ...mocks.MOCK_PROPS,
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          expect(mocks.actualRequest.updateClusterConfigRequest!).toEqual({
+            name: 'physical-resource-id',
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+            },
+          });
+        });
+        test('updating both remote node and pod networks', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            // this is the new props
+            ...mocks.MOCK_PROPS,
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }, {
+            // this is the old props
+            ...mocks.MOCK_PROPS,
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          expect(mocks.actualRequest.updateClusterConfigRequest!).toEqual({
+            name: 'physical-resource-id',
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16',
+                  ],
+                },
+              ],
+            },
+          });
+        });
+        test('changing order of CIDRs should be not trigger an update', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            // this is the new props
+            ...mocks.MOCK_PROPS,
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16', '10.0.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.1.0.0/16', '10.0.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }, {
+            // this is the old props
+            ...mocks.MOCK_PROPS,
+            remoteNetworkConfig: {
+              remoteNodeNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16', '10.1.0.0/16',
+                  ],
+                },
+              ],
+              remotePodNetworks: [
+                {
+                  cidrs: [
+                    '10.0.0.0/16', '10.1.0.0/16',
+                  ],
+                },
+              ],
+            },
+          }));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual(undefined);
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+          expect(mocks.actualRequest.updateClusterConfigRequest).toEqual(undefined);
+          expect(mocks.actualRequest.updateClusterVersionRequest).toEqual(undefined);
         });
       });
     });

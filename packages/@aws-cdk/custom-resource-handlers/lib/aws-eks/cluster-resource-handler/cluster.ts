@@ -195,7 +195,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       return this.updateClusterVersion(this.newProps.version);
     }
 
-    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode) {
+    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode || updates.updateRemoteNetworkConfig) {
       const config: EKS.UpdateClusterConfigCommandInput = {
         name: this.clusterName,
       };
@@ -259,6 +259,13 @@ export class ClusterResourceHandler extends ResourceHandler {
         config.resourcesVpcConfig = {
           subnetIds: this.newProps.resourcesVpcConfig?.subnetIds,
           securityGroupIds: this.newProps.resourcesVpcConfig?.securityGroupIds,
+        };
+      }
+
+      if (updates.updateRemoteNetworkConfig) {
+        config.remoteNetworkConfig = {
+          remoteNodeNetworks: this.newProps.remoteNetworkConfig?.remoteNodeNetworks,
+          remotePodNetworks: this.newProps.remoteNetworkConfig?.remotePodNetworks,
         };
       }
 
@@ -415,6 +422,7 @@ interface UpdateMap {
   updateBootstrapClusterCreatorAdminPermissions: boolean; // accessConfig.bootstrapClusterCreatorAdminPermissions
   updateVpc: boolean; // resourcesVpcConfig.subnetIds and securityGroupIds
   updateTags: boolean; // tags
+  updateRemoteNetworkConfig: boolean; // remoteNetworkConfig
 }
 
 function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProps: EKS.CreateClusterCommandInput): UpdateMap {
@@ -430,6 +438,9 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
   const oldEnc = oldProps.encryptionConfig || {};
   const newAccessConfig = newProps.accessConfig || {};
   const oldAccessConfig = oldProps.accessConfig || {};
+
+  const oldRemoteNetworkConfig = oldProps.remoteNetworkConfig || {};
+  const newRemoteNetworkConfig = newProps.remoteNetworkConfig || {};
 
   return {
     replaceName: newProps.name !== oldProps.name,
@@ -448,6 +459,7 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
     updateBootstrapClusterCreatorAdminPermissions: JSON.stringify(newAccessConfig.bootstrapClusterCreatorAdminPermissions) !==
       JSON.stringify(oldAccessConfig.bootstrapClusterCreatorAdminPermissions),
     updateTags: JSON.stringify(newProps.tags) !== JSON.stringify(oldProps.tags),
+    updateRemoteNetworkConfig: !compareRemoteNetworkConfigs(oldRemoteNetworkConfig, newRemoteNetworkConfig),
   };
 }
 
@@ -481,4 +493,55 @@ function getTagsToRemove<T extends Record<string, string>>(oldTags: T, newTags: 
   }
 
   return missingKeys;
+}
+
+function compareRemoteNetworkConfigs(
+  oldConfig?: EKS.RemoteNetworkConfigRequest | undefined,
+  newConfig?: EKS.RemoteNetworkConfigRequest | undefined,
+): boolean {
+  if (!oldConfig && !newConfig) {
+    return true;
+  }
+
+  if (!oldConfig || !newConfig) {
+    return false;
+  }
+
+  const nodeNetworksEqual = compareNetworkArrays(
+    oldConfig.remoteNodeNetworks,
+    newConfig.remoteNodeNetworks,
+  );
+
+  const podNetworksEqual = compareNetworkArrays(
+    oldConfig.remotePodNetworks,
+    newConfig.remotePodNetworks,
+  );
+
+  return nodeNetworksEqual && podNetworksEqual;
+}
+
+function compareNetworkArrays(
+  oldNetworks?: (EKS.RemoteNodeNetwork | EKS.RemotePodNetwork)[] | undefined,
+  newNetworks?: (EKS.RemoteNodeNetwork | EKS.RemotePodNetwork)[] | undefined,
+): boolean {
+  if (!oldNetworks && !newNetworks) {
+    return true;
+  }
+
+  if (!oldNetworks || !newNetworks) {
+    return false;
+  }
+
+  if (oldNetworks.length !== newNetworks.length) {
+    return false;
+  }
+
+  const oldCidrs = oldNetworks.flatMap(network => network.cidrs || []).sort();
+  const newCidrs = newNetworks.flatMap(network => network.cidrs || []).sort();
+
+  if (oldCidrs.length !== newCidrs.length) {
+    return false;
+  }
+
+  return oldCidrs.every((cidr, index) => cidr === newCidrs[index]);
 }

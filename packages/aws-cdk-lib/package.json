@@ -149,7 +149,7 @@
     "@aws-sdk/client-dynamodb": "3.632.0",
     "@aws-sdk/client-ec2": "3.632.0",
     "@aws-sdk/client-ecr": "3.632.0",
-    "@aws-sdk/client-eks": "3.632.0",
+    "@aws-sdk/client-eks": "^3.779.0",
     "@aws-sdk/client-iam": "3.632.0",
     "@aws-sdk/client-lambda": "3.632.0",
     "@aws-sdk/client-route-53": "3.632.0",
