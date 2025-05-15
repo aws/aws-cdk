@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import { Annotations, Resource, Stack, Stage } from '../lib';
 import { App } from '../lib/app';
-import { applyInjectors, findInjectorFromConstruct } from '../lib/private/prop-injectors-helpers';
 import { propertyInjectable } from '../lib/prop-injectable';
 import { InjectionContext, IPropertyInjector, PropertyInjectors } from '../lib/prop-injectors';
+import { applyInjectors, findInjectorFromConstruct } from '../lib/prop-injectors-helpers';
 
 // Define Injectors for our testing
 class DoNothingInjector implements IPropertyInjector {

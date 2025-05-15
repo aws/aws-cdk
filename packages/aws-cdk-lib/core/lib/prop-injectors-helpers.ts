@@ -1,5 +1,5 @@
 import { Construct, IConstruct, Node } from 'constructs';
-import { InjectionContext, IPropertyInjector, PropertyInjectors } from '../prop-injectors';
+import { InjectionContext, IPropertyInjector, PropertyInjectors } from './prop-injectors';
 
 /**
  * This symbol is needed to identify PropertyInjectors.
