@@ -13,6 +13,7 @@ import { AgentAlias, IAgentAlias } from './agent-alias';
 import { AgentCollaborator } from './agent-collaborator';
 import { AgentCollaboration } from './agent-collaboration';
 import { PromptOverrideConfiguration } from './prompt-override';
+import { AssetApiSchema, S3ApiSchema } from './api-schema';
 import * as validation from './validation-helpers';
 import { IInvokable } from '.././models';
 import { Memory } from './memory';
@@ -573,9 +574,7 @@ export class Agent extends AgentBase implements IAgent {
    * - S3 GetObject permissions if apiSchema.s3File is present
    */
   public addActionGroup(actionGroup: AgentActionGroup) {
-    // Do some checks
     validation.throwIfInvalid(this.validateActionGroup, actionGroup);
-    // Add it to the array
     this.actionGroups.push(actionGroup);
     // Handle permissions to invoke the lambda function
     actionGroup.executor?.lambdaFunction?.grantInvoke(this.role);
@@ -585,9 +584,25 @@ export class Agent extends AgentBase implements IAgent {
       sourceAccount: { Ref: 'AWS::AccountId' } as any,
     });
     // Handle permissions to access the schema file from S3
-    if (actionGroup.apiSchema?.s3File) {
-      const bucket = s3.Bucket.fromBucketName(this, `${actionGroup.name}SchemaBucket`, actionGroup.apiSchema.s3File.bucketName);
-      bucket.grantRead(this.role, actionGroup.apiSchema.s3File.objectKey);
+    if (actionGroup.apiSchema instanceof AssetApiSchema) {
+      const rendered = actionGroup.apiSchema._render();
+      if ('s3' in rendered && rendered.s3) {
+        const s3Config = rendered.s3;
+        if ('s3BucketName' in s3Config && 's3ObjectKey' in s3Config) {
+          const bucketName = s3Config.s3BucketName;
+          const objectKey = s3Config.s3ObjectKey;
+          if (bucketName && objectKey) {
+            const bucket = s3.Bucket.fromBucketName(this, `${actionGroup.name}SchemaBucket`, bucketName);
+            bucket.grantRead(this.role, objectKey);
+          }
+        }
+      }
+    } else if (actionGroup.apiSchema instanceof S3ApiSchema) {
+      const s3File = actionGroup.apiSchema.s3File;
+      if (s3File && s3File.bucketName && s3File.objectKey) {
+        const bucket = s3.Bucket.fromBucketName(this, `${actionGroup.name}SchemaBucket`, s3File.bucketName);
+        bucket.grantRead(this.role, s3File.objectKey);
+      }
     }
   }
 
@@ -754,7 +769,7 @@ export class Agent extends AgentBase implements IAgent {
    */
   protected generatePhysicalName(): string {
     const maxLength = this.MAXLENGTH_FOR_ROLE_NAME - this.ROLE_NAME_SUFFIX.length;
-    return this.generatePhysicalNameHash(this, 'agent-', {
+    return this.generatePhysicalNameHash(this, 'agent', {
       maxLength,
       lower: true,
       separator: '-',

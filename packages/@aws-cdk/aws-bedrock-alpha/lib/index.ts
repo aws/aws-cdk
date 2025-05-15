@@ -4,4 +4,3 @@
 // while all files including only utility functions will be omitted from here.
 
 export * from '../bedrock';
-

@@ -78,9 +78,58 @@ The Bedrock Agent class supports the following properties.
 
 An action group defines functions your agent can call. The functions are Lambda functions. The action group uses an OpenAPI schema to tell the agent what your functions do and how to call them.
 
-Example:
+There are three ways to provide an API schema for your action group:
+
+From a local asset file (requires binding to scope):
 
 ```ts fixture=default
+const actionGroupFunction = new lambda.Function(this, 'ActionGroupFunction', {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, '../lambda/action-group')),
+});
+
+// When using ApiSchema.fromLocalAsset, you must bind the schema to a scope
+const schema = bedrock.ApiSchema.fromLocalAsset(path.join(__dirname, 'action-group.yaml'));
+schema.bind(this);
+
+const actionGroup = new bedrock.AgentActionGroup({
+  name: 'query-library',
+  description: 'Use these functions to get information about the books in the library.',
+  executor: bedrock.ActionGroupExecutor.fromLambda(actionGroupFunction),
+  enabled: true,
+  apiSchema: schema,
+});
+
+const agent = new bedrock.Agent(this, 'Agent', {
+  foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_HAIKU_V1_0,
+  instruction: 'You are a helpful and friendly agent that answers questions about literature.',
+});
+
+agent.addActionGroup(actionGroup);
+```
+
+From an inline OpenAPI schema:
+
+```ts fixture=default
+const inlineSchema = bedrock.ApiSchema.fromInline(`
+openapi: 3.0.3
+info:
+  title: Library API
+  version: 1.0.0
+paths:
+  /search:
+    get:
+      summary: Search for books
+      operationId: searchBooks
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+`);
+
 const actionGroupFunction = new lambda.Function(this, 'ActionGroupFunction', {
   runtime: lambda.Runtime.PYTHON_3_12,
   handler: 'index.handler',
@@ -92,15 +141,29 @@ const actionGroup = new bedrock.AgentActionGroup({
   description: 'Use these functions to get information about the books in the library.',
   executor: bedrock.ActionGroupExecutor.fromLambda(actionGroupFunction),
   enabled: true,
-  apiSchema: bedrock.ApiSchema.fromLocalAsset(path.join(__dirname, 'action-group.yaml')),
+  apiSchema: inlineSchema,
+});
+```
+
+From an existing S3 file:
+
+```ts fixture=default
+const bucket = s3.Bucket.fromBucketName(this, 'ExistingBucket', 'my-schema-bucket');
+const s3Schema = bedrock.ApiSchema.fromS3File(bucket, 'schemas/action-group.yaml');
+
+const actionGroupFunction = new lambda.Function(this, 'ActionGroupFunction', {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, '../lambda/action-group')),
 });
 
-const agent = new bedrock.Agent(this, 'Agent', {
-  foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_HAIKU_V1_0,
-  instruction: 'You are a helpful and friendly agent that answers questions about literature.',
+const actionGroup = new bedrock.AgentActionGroup({
+  name: 'query-library',
+  description: 'Use these functions to get information about the books in the library.',
+  executor: bedrock.ActionGroupExecutor.fromLambda(actionGroupFunction),
+  enabled: true,
+  apiSchema: s3Schema,
 });
-
-agent.addActionGroup(actionGroup);
 ```
 
 If you chose to load your schema file from S3, the construct will provide the necessary permissions to your agent's execution role to access the schema file from the specific bucket. Similar to performing the operation through the console, the agent execution role will get a permission like:

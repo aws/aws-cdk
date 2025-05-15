@@ -100,6 +100,7 @@ export class AssetApiSchema extends ApiSchema {
         path: this.path,
         ...this.options,
       });
+      // Note: Permissions will be granted by the Agent construct when adding the action group
     }
   }
 

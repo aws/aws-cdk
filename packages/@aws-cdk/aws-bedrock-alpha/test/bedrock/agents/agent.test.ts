@@ -32,7 +32,7 @@ describe('Agent', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
-      AgentName: Match.stringLikeRegexp('agent--teststack-testagent-8d92f3fe-bedrockagent'),
+      AgentName: Match.stringLikeRegexp('agent-teststack-testagent-8d92f3fe-bedrockagent'),
     });
   });
 
