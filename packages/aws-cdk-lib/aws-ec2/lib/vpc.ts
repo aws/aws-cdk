@@ -1656,7 +1656,13 @@ export class Vpc extends VpcBase {
     }
 
     // Create an Egress Only Internet Gateway and attach it if necessary
-    if (this.useIpv6 && this.privateSubnets) {
+
+    const isRequirePrivateSubnetsForEgressOnlyIgw =
+      FeatureFlags.of(this).isEnabled(cxapi.EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY);
+
+    if ((this.useIpv6 && !isRequirePrivateSubnetsForEgressOnlyIgw && this.privateSubnets) ||
+      (this.useIpv6 && isRequirePrivateSubnetsForEgressOnlyIgw && this.privateSubnets.length > 0)
+    ) {
       const eigw = new CfnEgressOnlyInternetGateway(this, 'EIGW6', {
         vpcId: this.vpcId,
       });
