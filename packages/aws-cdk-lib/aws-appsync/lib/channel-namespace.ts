@@ -12,6 +12,7 @@ import { IEventApi } from './eventapi';
 import { IGrantable } from '../../aws-iam';
 import { IResource, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * An AppSync channel namespace
@@ -175,7 +176,11 @@ export interface ChannelNamespaceOptions {
 /**
  * A Channel Namespace
  */
+@propertyInjectable
 export class ChannelNamespace extends Resource implements IChannelNamespace {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appsync.ChannelNamespace';
+
   /**
    * Use an existing channel namespace by ARN
    */

@@ -5,6 +5,7 @@ import { Grant, IGrantable } from '../../../aws-iam';
 import { ArnFormat, Stack, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IApi, IpAddressType } from '../common/api';
 import { ApiBase } from '../common/base';
 
@@ -115,7 +116,11 @@ export interface WebSocketApiAttributes {
  * Create a new API Gateway WebSocket API endpoint.
  * @resource AWS::ApiGatewayV2::Api
  */
+@propertyInjectable
 export class WebSocketApi extends ApiBase implements IWebSocketApi {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.WebSocketApi';
+
   /**
    * Import an existing WebSocket API into this CDK app.
    */

@@ -8,6 +8,7 @@ import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { Duration, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The default set of characters we exclude from generated passwords for database users.
@@ -87,7 +88,11 @@ export interface RotationScheduleProps extends RotationScheduleOptions {
 /**
  * A rotation schedule.
  */
+@propertyInjectable
 export class RotationSchedule extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-secretsmanager.RotationSchedule';
+
   constructor(scope: Construct, id: string, props: RotationScheduleProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry

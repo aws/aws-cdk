@@ -469,7 +469,10 @@ export class EventBus extends EventBusBase {
   }
 }
 
+@propertyInjectable
 class ImportedEventBus extends EventBusBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.ImportedEventBus';
   public readonly eventBusArn: string;
   public readonly eventBusName: string;
   public readonly eventBusPolicy: string;
@@ -536,7 +539,11 @@ export interface EventBusPolicyProps {
  *
  * Prefer to use `addToResourcePolicy()` instead.
  */
+@propertyInjectable
 export class EventBusPolicy extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.EventBusPolicy';
+
   constructor(scope: Construct, id: string, props: EventBusPolicyProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry

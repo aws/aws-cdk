@@ -3,6 +3,7 @@ import { CfnPrefixList } from './ec2.generated';
 import * as cxschema from '../../cloud-assembly-schema';
 import { IResource, Lazy, Resource, Names, ContextProvider, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A prefix list
@@ -113,7 +114,11 @@ interface PrefixListContextResponse {
  * A managed prefix list.
  * @resource AWS::EC2::PrefixList
  */
+@propertyInjectable
 export class PrefixList extends PrefixListBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.PrefixList';
+
   /**
    * Look up prefix list by id.
    */

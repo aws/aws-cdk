@@ -839,7 +839,11 @@ export interface ISecretTargetAttachment extends ISecret {
 /**
  * An attached secret.
  */
+@propertyInjectable
 export class SecretTargetAttachment extends SecretBase implements ISecretTargetAttachment {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-secretsmanager.SecretTargetAttachment';
+
   public static fromSecretTargetAttachmentSecretArn(scope: Construct, id: string, secretTargetAttachmentSecretArn: string): ISecretTargetAttachment {
     class Import extends SecretBase implements ISecretTargetAttachment {
       public encryptionKey?: kms.IKey | undefined;
