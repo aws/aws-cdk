@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "assembly-CdkPipelineInvestigationStack-Prod": {
       "type": "cdk:cloud-assembly",
@@ -25,7 +25,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-test-region/9dd384b985662e65a9e941e70bf3a34b94c5406d3ccfe65013d86152f11a538f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-test-region/29202ab9815c78b2fd05dd85303cade099016268f5138e589aa7dd457540341c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -55,10 +55,7 @@
         "/CrossAccountSourceStack/SourceBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SourceBucketDDD2130A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "SourceBucketDDD2130A"
           }
         ],
         "/CrossAccountSourceStack/SourceBucket/Policy": [
@@ -72,10 +69,7 @@
         "/CrossAccountSourceStack/SourceBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SourceBucketPolicy703DFBF9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "SourceBucketPolicy703DFBF9"
           }
         ],
         "/CrossAccountSourceStack/SourceBucket/AutoDeleteObjectsCustomResource": [
@@ -412,10 +406,7 @@
         "/CrossAccountSourceStack/CdkPipelineInvestigationStackPipeline029CB441-Source-S3Source-ActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CdkPipelineInvestigationStackPipeline029CB441SourceS3SourceActionRole7C8DE2D3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "CdkPipelineInvestigationStackPipeline029CB441SourceS3SourceActionRole7C8DE2D3"
           }
         ],
         "/CrossAccountSourceStack/CdkPipelineInvestigationStackPipeline029CB441-Source-S3Source-ActionRole/DefaultPolicy": [
@@ -519,26 +510,67 @@
         "CdkPipelineInvestigationStack.assets"
       ],
       "metadata": {
+        "/CdkPipelineInvestigationStack/Pipeline": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`. [ack: @aws-cdk/aws-codepipeline:unspecifiedPipelineType]"
+          }
+        ],
         "/CdkPipelineInvestigationStack/Pipeline/Pipeline": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "pipelineName": "*",
+              "pipelineType": "V1",
+              "crossAccountKeys": true,
+              "crossRegionReplicationBuckets": "*",
+              "reuseCrossRegionSupportStacks": "*",
+              "restartExecutionOnUpdate": true,
+              "role": "*",
+              "enableKeyRotation": "*",
+              "artifactBucket": "*",
+              "usePipelineRoleForActions": false
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStage": [
+                {
+                  "stageName": "*"
+                }
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStage": [
+                {
+                  "stageName": "*"
+                }
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStage": [
+                {
+                  "stageName": "*"
+                }
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStage": [
+                {
+                  "stageName": "*"
+                }
+              ]
+            }
           }
         ],
         "/CdkPipelineInvestigationStack/Pipeline/Pipeline/ArtifactsBucketEncryptionKey": [
@@ -588,10 +620,7 @@
         "/CdkPipelineInvestigationStack/Pipeline/Pipeline/ArtifactsBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineArtifactsBucketAEA9A052",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "PipelineArtifactsBucketAEA9A052"
           }
         ],
         "/CdkPipelineInvestigationStack/Pipeline/Pipeline/ArtifactsBucket/Policy": [
@@ -605,10 +634,7 @@
         "/CdkPipelineInvestigationStack/Pipeline/Pipeline/ArtifactsBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineArtifactsBucketPolicyF53CCC52",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "PipelineArtifactsBucketPolicyF53CCC52"
           }
         ],
         "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Role": [
@@ -704,10 +730,7 @@
         "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineRoleB27FAA37",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "PipelineRoleB27FAA37"
           }
         ],
         "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Role/DefaultPolicy": [
@@ -1500,5 +1523,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1014.0"
 }

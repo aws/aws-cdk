@@ -198,7 +198,7 @@
    "Properties": {
     "Content": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "12157b27d30ab71eb24ae65825f672ba5cc2c09dbb1703cd7adfcff3aeaca136.zip"
+     "S3Key": "8a84a8f465fbe0c48af2c256847ec9abfe095d23781b749728b998315f3ad732.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -367,7 +367,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "4fe0aba5e672b596d0f72505a9eec502f98d46906bb30fae2511fbdc1df4956f.zip"
+     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
     },
     "Environment": {
      "Variables": {
@@ -481,7 +481,7 @@
       }
      ]
     },
-    "BucketName": "integ-cross-account-pipeline-artifact-bucket",
+    "BucketName": "cdkpipelinecfnactionstackckartifactbucket2747bf37684bec42004a",
     "Tags": [
      {
       "Key": "aws-cdk:auto-delete-objects",

@@ -4,8 +4,9 @@ import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token, ValidationError } from '../../core';
+import { ArnFormat, FeatureFlags, Lazy, Names, RemovalPolicy, Resource, Size, Stack, Tags, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -691,7 +692,13 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
  *
  * @resource AWS::EFS::FileSystem
  */
+@propertyInjectable
 export class FileSystem extends FileSystemBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-efs.FileSystem';
+
   /**
    * The default port File System listens on.
    */
@@ -863,8 +870,10 @@ export class FileSystem extends FileSystemBase {
     this.mountTargetsAvailable = [];
     if (useMountTargetOrderInsensitiveLogicalID) {
       subnets.subnets.forEach((subnet) => {
+        const subnetUniqueId = Token.isUnresolved(subnet.node.id) ? Names.uniqueResourceName(subnet, { maxLength: 16 }) : subnet.node.id;
+
         const mountTarget = new CfnMountTarget(this,
-          `EfsMountTarget-${subnet.node.id}`,
+          `EfsMountTarget-${subnetUniqueId}`,
           {
             fileSystemId: this.fileSystemId,
             securityGroups: Array.of(securityGroup.securityGroupId),

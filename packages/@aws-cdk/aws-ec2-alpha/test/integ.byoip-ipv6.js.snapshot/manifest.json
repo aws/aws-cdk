@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "vpc-byoip-ipv6.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2ac973cd3fa2ed1a3934fbe78ee77203b26df0366d34997e96d1570af96f2614.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3e6958007748812ef0693b0754013a63157594ddd42b85dba796df31c4ff286b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,22 @@
         "vpc-byoip-ipv6.assets"
       ],
       "metadata": {
+        "/vpc-byoip-ipv6/VPC-integ-test-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/vpc-byoip-ipv6/VPC-integ-test-1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCintegtest1EBA1CB75"
+          }
+        ],
+        "/vpc-byoip-ipv6/VPC-integ-test-1/MyByoipIpv6Block": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/vpc-byoip-ipv6/VPC-integ-test-1/MyByoipIpv6Block/MyByoipIpv6Block": [
@@ -46,10 +58,22 @@
             "data": "VPCintegtest1MyByoipIpv6BlockC474849A"
           }
         ],
+        "/vpc-byoip-ipv6/Subnet-integ-test-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/vpc-byoip-ipv6/Subnet-integ-test-1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Subnetintegtest1Subnet33DEE36B"
+          }
+        ],
+        "/vpc-byoip-ipv6/Subnet-integ-test-1/RouteTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/vpc-byoip-ipv6/Subnet-integ-test-1/RouteTable/RouteTable": [
@@ -64,10 +88,22 @@
             "data": "Subnetintegtest1RouteTableAssociation25E3C72D"
           }
         ],
+        "/vpc-byoip-ipv6/Subnet-integ-test-2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/vpc-byoip-ipv6/Subnet-integ-test-2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Subnetintegtest2Subnet5A56D422"
+          }
+        ],
+        "/vpc-byoip-ipv6/Subnet-integ-test-2/RouteTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/vpc-byoip-ipv6/Subnet-integ-test-2/RouteTable/RouteTable": [
@@ -151,5 +187,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

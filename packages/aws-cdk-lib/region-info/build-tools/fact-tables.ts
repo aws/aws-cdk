@@ -39,6 +39,7 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'us-gov-west-1': 'Z31GFT0UA1I2HV',
   'us-west-1': 'Z2F56UZL2M1ACD',
   'us-west-2': 'Z3BJ6K6RIION7M',
+  'ap-east-2': 'Z064739330DAH7WJVOO93',
 };
 
 /**
@@ -184,6 +185,7 @@ export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
   'us-east-2': '763104351884',
   'us-west-1': '763104351884',
   'us-west-2': '763104351884',
+  'ap-east-2': '975050140332',
 };
 
 // https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
@@ -214,6 +216,7 @@ export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
   'us-east-2': '840364872350',
   'us-west-1': '840364872350',
   'us-west-2': '840364872350',
+  'ap-east-2': '058264503299',
 };
 
 // https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-integration-lambda-extensions-versions.html

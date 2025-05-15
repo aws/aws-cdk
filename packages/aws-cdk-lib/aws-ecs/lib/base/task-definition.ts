@@ -2,8 +2,9 @@ import { Construct } from 'constructs';
 import { ImportedTaskDefinition } from './_imported-task-definition';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
-import { IResource, Lazy, Names, PhysicalName, Resource, Token } from '../../../core';
+import { IResource, Lazy, Names, PhysicalName, Resource, UnscopedValidationError, ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
@@ -320,7 +321,13 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
 /**
  * The base class for all task definitions.
  */
+@propertyInjectable
 export class TaskDefinition extends TaskDefinitionBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.TaskDefinition';
+
   /**
    * Imports a task definition from the specified task definition ARN.
    *
@@ -443,44 +450,35 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     this.networkMode = props.networkMode ?? (this.isFargateCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE);
+    if (this.isFargateCompatible && this.networkMode !== NetworkMode.AWS_VPC) {
+      throw new ValidationError(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`, this);
+    }
     if (props.proxyConfiguration && this.networkMode !== NetworkMode.AWS_VPC) {
-      throw new Error(`ProxyConfiguration can only be used with AwsVpc network mode, got: ${this.networkMode}`);
+      throw new ValidationError(`ProxyConfiguration can only be used with AwsVpc network mode, got: ${this.networkMode}`, this);
+    }
+    if (props.placementConstraints && props.placementConstraints.length > 0 && this.isFargateCompatible) {
+      throw new ValidationError('Cannot set placement constraints on tasks that run on Fargate', this);
+    }
+
+    if (this.isFargateCompatible && (!props.cpu || !props.memoryMiB)) {
+      throw new ValidationError(`Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`, this);
+    }
+
+    if (props.inferenceAccelerators && props.inferenceAccelerators.length > 0 && this.isFargateCompatible) {
+      throw new ValidationError('Cannot use inference accelerators on tasks that run on Fargate', this);
     }
 
     if (this.isExternalCompatible && ![NetworkMode.BRIDGE, NetworkMode.HOST, NetworkMode.NONE].includes(this.networkMode)) {
-      throw new Error(`External tasks can only have Bridge, Host or None network mode, got: ${this.networkMode}`);
+      throw new ValidationError(`External tasks can only have Bridge, Host or None network mode, got: ${this.networkMode}`, this);
     }
 
     if (!this.isFargateCompatible && props.runtimePlatform) {
-      throw new Error('Cannot specify runtimePlatform in non-Fargate compatible tasks');
-    }
-
-    if (this.isFargateCompatible) {
-      if (this.networkMode !== NetworkMode.AWS_VPC) {
-        throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
-      }
-
-      if (props.placementConstraints && props.placementConstraints.length > 0) {
-        throw new Error('Cannot set placement constraints on tasks that run on Fargate');
-      }
-
-      if (!props.cpu || !props.memoryMiB) {
-        throw new Error(`Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`);
-      }
-
-      if (props.inferenceAccelerators && props.inferenceAccelerators.length > 0) {
-        throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
-      }
-
-      // Check the combination as per doc https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html
-      this.node.addValidation({
-        validate: () => this.validateFargateTaskDefinitionMemoryCpu(props.cpu!, props.memoryMiB!),
-      });
+      throw new ValidationError('Cannot specify runtimePlatform in non-Fargate compatible tasks', this);
     }
 
     // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fault-injection.html
     if (props.enableFaultInjection && ![NetworkMode.AWS_VPC, NetworkMode.HOST].includes(this.networkMode)) {
-      throw new Error(`Only AWS_VPC and HOST Network Modes are supported for enabling Fault Injection, got ${this.networkMode} mode.`);
+      throw new ValidationError(`Only AWS_VPC and HOST Network Modes are supported for enabling Fault Injection, got ${this.networkMode} mode.`, this);
     }
 
     this._executionRole = props.executionRole;
@@ -607,14 +605,14 @@ export class TaskDefinition extends TaskDefinitionBase {
   public _validateTarget(options: LoadBalancerTargetOptions): LoadBalancerTarget {
     const targetContainer = this.findContainer(options.containerName);
     if (targetContainer === undefined) {
-      throw new Error(`No container named '${options.containerName}'. Did you call "addContainer()"?`);
+      throw new ValidationError(`No container named '${options.containerName}'. Did you call "addContainer()"?`, this);
     }
     const targetProtocol = options.protocol || Protocol.TCP;
     const targetContainerPort = options.containerPort || targetContainer.containerPort;
     const portMapping = targetContainer.findPortMapping(targetContainerPort, targetProtocol);
     if (portMapping === undefined) {
       // eslint-disable-next-line max-len
-      throw new Error(`Container '${targetContainer}' has no mapping for port ${options.containerPort} and protocol ${targetProtocol}. Did you call "container.addPortMappings()"?`);
+      throw new ValidationError(`Container '${targetContainer}' has no mapping for port ${options.containerPort} and protocol ${targetProtocol}. Did you call "container.addPortMappings()"?`, this);
     }
     return {
       containerName: options.containerName,
@@ -672,7 +670,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   public addFirelensLogRouter(id: string, props: FirelensLogRouterDefinitionOptions) {
     // only one firelens log router is allowed in each task.
     if (this.containers.find(x => x instanceof FirelensLogRouter)) {
-      throw new Error('Firelens log router is already added in this task.');
+      throw new ValidationError('Firelens log router is already added in this task.', this);
     }
 
     return new FirelensLogRouter(this, id, { taskDefinition: this, ...props });
@@ -687,7 +685,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       const taskCpu = Number(this._cpu);
       const sumOfContainerCpu = [...this.containers, container].map(c => c.cpu).filter((cpu): cpu is number => typeof cpu === 'number').reduce((a, c) => a + c, 0);
       if (taskCpu < sumOfContainerCpu) {
-        throw new Error('The sum of all container cpu values cannot be greater than the value of the task cpu');
+        throw new ValidationError('The sum of all container cpu values cannot be greater than the value of the task cpu', this);
       }
     }
 
@@ -713,7 +711,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     // Other volume configurations must not be specified.
     if (volume.host || volume.dockerVolumeConfiguration || volume.efsVolumeConfiguration) {
-      throw new Error(`Volume Configurations must not be specified for '${volume.name}' when 'configuredAtLaunch' is set to true`);
+      throw new ValidationError(`Volume Configurations must not be specified for '${volume.name}' when 'configuredAtLaunch' is set to true`, this);
     }
   }
 
@@ -723,7 +721,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   @MethodMetadata()
   public addPlacementConstraint(constraint: PlacementConstraint) {
     if (isFargateCompatible(this.compatibility)) {
-      throw new Error('Cannot set placement constraints on tasks that run on Fargate');
+      throw new ValidationError('Cannot set placement constraints on tasks that run on Fargate', this);
     }
     this.placementConstraints.push(...constraint.toJson());
   }
@@ -746,7 +744,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   @MethodMetadata()
   public addInferenceAccelerator(inferenceAccelerator: InferenceAccelerator) {
     if (isFargateCompatible(this.compatibility)) {
-      throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
+      throw new ValidationError('Cannot use inference accelerators on tasks that run on Fargate', this);
     }
     this._inferenceAccelerators.push(inferenceAccelerator);
   }
@@ -922,58 +920,21 @@ export class TaskDefinition extends TaskDefinitionBase {
   }
 
   private checkFargateWindowsBasedTasksSize(cpu: string, memory: string, runtimePlatform: RuntimePlatform) {
-    if (!Token.isUnresolved(cpu) && !Token.isUnresolved(memory)) {
-      if (Number(cpu) === 1024) {
-        if (Number(memory) < 1024 || Number(memory) > 8192 || (Number(memory) % 1024 !== 0)) {
-          throw new Error(`If provided cpu is ${cpu}, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was ${Number(memory)}.`);
-        }
-      } else if (Number(cpu) === 2048) {
-        if (Number(memory) < 4096 || Number(memory) > 16384 || (Number(memory) % 1024 !== 0)) {
-          throw new Error(`If provided cpu is ${cpu}, then memoryMiB must have a min of 4096 and max of 16384, in 1024 increments. Provided memoryMiB ${Number(memory)}.`);
-        }
-      } else if (Number(cpu) === 4096) {
-        if (Number(memory) < 8192 || Number(memory) > 30720 || (Number(memory) % 1024 !== 0)) {
-          throw new Error(`If provided cpu is ${cpu}, then memoryMiB must have a min of 8192 and a max of 30720, in 1024 increments.Provided memoryMiB was ${Number(memory)}.`);
-        }
-      } else {
-        throw new Error(`If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`);
+    if (Number(cpu) === 1024) {
+      if (Number(memory) < 1024 || Number(memory) > 8192 || (Number(memory) % 1024 !== 0)) {
+        throw new ValidationError(`If provided cpu is ${cpu}, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was ${Number(memory)}.`, this);
       }
+    } else if (Number(cpu) === 2048) {
+      if (Number(memory) < 4096 || Number(memory) > 16384 || (Number(memory) % 1024 !== 0)) {
+        throw new ValidationError(`If provided cpu is ${cpu}, then memoryMiB must have a min of 4096 and max of 16384, in 1024 increments. Provided memoryMiB ${Number(memory)}.`, this);
+      }
+    } else if (Number(cpu) === 4096) {
+      if (Number(memory) < 8192 || Number(memory) > 30720 || (Number(memory) % 1024 !== 0)) {
+        throw new ValidationError(`If provided cpu is ${cpu}, then memoryMiB must have a min of 8192 and a max of 30720, in 1024 increments.Provided memoryMiB was ${Number(memory)}.`, this);
+      }
+    } else {
+      throw new ValidationError(`If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`, this);
     }
-  }
-  private validateFargateTaskDefinitionMemoryCpu(cpu: string, memory: string): string[] {
-    const ret = new Array<string>();
-    if (Token.isUnresolved(cpu) || Token.isUnresolved(memory)) {
-      return ret;
-    }
-    const resolvedCpu = this.stack.resolve(cpu) as string;
-    const resolvedMemoryMiB = this.stack.resolve(memory) as string;
-    const validCpuMemoryCombinations = [
-      { cpu: '256', memory: ['512', '1024', '2048'] },
-      { cpu: '512', memory: this.range(1024, 4096, 1024) },
-      { cpu: '1024', memory: this.range(2048, 8192, 1024) },
-      { cpu: '2048', memory: this.range(4096, 16384, 1024) },
-      { cpu: '4096', memory: this.range(8192, 30720, 1024) },
-      { cpu: '8192', memory: this.range(16384, 61440, 4096) },
-      { cpu: '16384', memory: this.range(32768, 122880, 8192) },
-    ];
-
-    const isValidCombination = validCpuMemoryCombinations.some((combo) => {
-      return combo.cpu === resolvedCpu && combo.memory.includes(resolvedMemoryMiB);
-    });
-
-    if (!isValidCombination) {
-      ret.push(`Invalid CPU and memory combinations [${resolvedCpu} and ${resolvedMemoryMiB}] for FARGATE compatible task definition - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html`);
-    }
-
-    return ret;
-  }
-
-  private range(start: number, end: number, step: number): string[] {
-    const result = [];
-    for (let i = start; i <= end; i += step) {
-      result.push(String(i));
-    }
-    return result;
   }
 }
 
@@ -1381,7 +1342,7 @@ export class TaskDefinitionRevision {
    */
   public static of(revision: number) {
     if (revision < 1) {
-      throw new Error(`A task definition revision must be 'latest' or a positive number, got ${revision}`);
+      throw new UnscopedValidationError(`A task definition revision must be 'latest' or a positive number, got ${revision}`);
     }
     return new TaskDefinitionRevision(revision.toString());
   }
