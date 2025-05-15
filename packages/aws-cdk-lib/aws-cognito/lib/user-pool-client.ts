@@ -235,6 +235,23 @@ export class UserPoolClientIdentityProvider {
 }
 
 /**
+ * The configuration of your app client for refresh token rotation.
+ */
+export interface RefreshTokenRotation {
+  /**
+   * The state of refresh token rotation for the current app client.
+   * @default - undefined (CloudFormation defaults to DISABLED)
+   */
+  readonly feature?: 'ENABLED' | 'DISABLED';
+
+  /**
+   * Grace period for the original refresh token (0-60 seconds).
+   * @default - undefined (CloudFormation defaults value)
+   */
+  readonly retryGracePeriodSeconds?: number;
+}  
+
+/**
  * Options to create a UserPoolClient
  */
 export interface UserPoolClientOptions {
