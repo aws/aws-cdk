@@ -89,7 +89,7 @@ const inlineActionGroupExecutor = bedrock.ActionGroupExecutor.fromLambda(inlineA
 const s3ActionGroupExecutor = bedrock.ActionGroupExecutor.fromLambda(s3ActionGroupFunction);
 
 // Create an API schema from a local asset file
-const assetApiSchema = bedrock.ApiSchema.fromLocalAsset('test/bedrock/agents/test-schema.yaml');
+const assetApiSchema = bedrock.ApiSchema.fromLocalAsset('test-schema.yaml');
 
 // Create a simple inline API schema
 const inlineApiSchema = bedrock.ApiSchema.fromInline(`
@@ -161,6 +161,9 @@ const schemaDeployment = new s3deploy.BucketDeployment(stack, 'DeploySchema', {
 
 // Create an API schema from the S3 file
 const s3ApiSchema = bedrock.ApiSchema.fromS3File(schemaBucket, 'schema/s3-api-schema.json');
+
+// Bind the asset schema before using it in action groups
+assetApiSchema.bind(stack);
 
 // Create a Bedrock Agent with action groups using all three API schema types
 const agent = new bedrock.Agent(stack, 'ApiSchemaAgent', {
