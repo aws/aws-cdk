@@ -343,7 +343,7 @@ export interface UserPoolClientOptions {
   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-refresh-token.html#using-the-refresh-token-rotation
   * @default - undefined (refresh token rotation is disabled)
   */
-  refreshTokenRotation?: RefreshTokenRotation;
+  readonly refreshTokenRotation?: RefreshTokenRotation;
 
   /**
    * The set of attributes this client will be able to read.
