@@ -16,7 +16,6 @@
   },
   "devDependencies": {
     "@nx/workspace": "^20",
-    "@types/jest": "^29.5.14",
     "@types/node": "18.11.19",
     "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
@@ -25,7 +24,6 @@
     "conventional-changelog-cli": "^2.2.2",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.11",
-    "jest": "^29.7.0",
     "jest-junit": "^13.2.0",
     "jsii-diff": "1.110.0",
     "jsii-pacmak": "1.110.0",
@@ -34,7 +32,7 @@
     "nx": "^20",
     "semver": "^7.7.1",
     "standard-version": "^9.5.0",
-    "ts-jest": "^29.3.3",
+    "ts-jest": "^29.3.0",
     "ts-node": "^10.9.2",
     "typescript": "~5.5.4"
   },
