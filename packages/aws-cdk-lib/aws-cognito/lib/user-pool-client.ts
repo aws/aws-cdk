@@ -8,6 +8,7 @@ import { CfnApp } from '../../aws-pinpoint';
 import { IResource, Resource, Duration, Stack, SecretValue, Token, FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, Logging, PhysicalResourceId } from '../../custom-resources';
 import * as cxapi from '../../cx-api';
 
@@ -435,7 +436,13 @@ export interface IUserPoolClient extends IResource {
 /**
  * Define a UserPool App Client
  */
+@propertyInjectable
 export class UserPoolClient extends Resource implements IUserPoolClient {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito.UserPoolClient';
+
   /**
    * Import a user pool client given its id.
    */
