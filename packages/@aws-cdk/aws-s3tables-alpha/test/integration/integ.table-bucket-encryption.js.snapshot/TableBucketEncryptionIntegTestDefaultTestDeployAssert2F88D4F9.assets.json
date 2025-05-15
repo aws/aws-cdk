@@ -2,9 +2,9 @@
   "version": "41.0.0",
   "files": {
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
-      "displayName": "kmskeys3tablesintegDefaultTestDeployAssertC8AB8C4E Template",
+      "displayName": "TableBucketEncryptionIntegTestDefaultTestDeployAssert2F88D4F9 Template",
       "source": {
-        "path": "kmskeys3tablesintegDefaultTestDeployAssertC8AB8C4E.template.json",
+        "path": "TableBucketEncryptionIntegTestDefaultTestDeployAssert2F88D4F9.template.json",
         "packaging": "file"
       },
       "destinations": {

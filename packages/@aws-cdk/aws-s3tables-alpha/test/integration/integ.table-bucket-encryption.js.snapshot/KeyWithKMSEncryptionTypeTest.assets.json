@@ -1,16 +1,16 @@
 {
   "version": "41.0.0",
   "files": {
-    "2360a1155ce69e5f176f7112ea62157b87c2bfed7510a6a90fc723a91e57d088": {
-      "displayName": "KafkaVersionTestStack Template",
+    "0754b8b9a278cd7d48040522b6423a2461ae6261c2d9a5f93f5598f74198c824": {
+      "displayName": "KeyWithKMSEncryptionTypeTest Template",
       "source": {
-        "path": "KafkaVersionTestStack.template.json",
+        "path": "KeyWithKMSEncryptionTypeTest.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2360a1155ce69e5f176f7112ea62157b87c2bfed7510a6a90fc723a91e57d088.json",
+          "objectKey": "0754b8b9a278cd7d48040522b6423a2461ae6261c2d9a5f93f5598f74198c824.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
