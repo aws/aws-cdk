@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "35a7a60080f6b049183fb91eb6885b7c36daec82adbe16993fe0b53cd1dbf531": {
+      "displayName": "lambda-alarm-multiple-stepscalingpolicy Template",
+      "source": {
+        "path": "lambda-alarm-multiple-stepscalingpolicy.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "35a7a60080f6b049183fb91eb6885b7c36daec82adbe16993fe0b53cd1dbf531.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

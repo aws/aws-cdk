@@ -37,6 +37,7 @@ import { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
 import { Lazy, Names, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Authorization configuration for the Event API
@@ -532,7 +533,13 @@ export interface EventApiAttributes {
  *
  * @resource AWS::AppSync::Api
  */
+@propertyInjectable
 export class EventApi extends EventApiBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appsync.EventApi';
+
   /**
    * Import a Event API through this function
    *

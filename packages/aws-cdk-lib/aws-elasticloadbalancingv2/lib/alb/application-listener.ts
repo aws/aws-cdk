@@ -11,6 +11,7 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, FeatureFlags, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
@@ -200,7 +201,13 @@ export interface ApplicationListenerLookupOptions extends BaseListenerLookupOpti
  *
  * @resource AWS::ElasticLoadBalancingV2::Listener
  */
+@propertyInjectable
 export class ApplicationListener extends BaseListener implements IApplicationListener {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.ApplicationListener';
+
   /**
    * Look up an ApplicationListener.
    */
@@ -793,7 +800,10 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
 /**
  * An imported application listener.
  */
+@propertyInjectable
 class ImportedApplicationListener extends ExternalApplicationListener {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.ImportedApplicationListener';
   public readonly listenerArn: string;
   public readonly connections: ec2.Connections;
 
@@ -812,7 +822,10 @@ class ImportedApplicationListener extends ExternalApplicationListener {
   }
 }
 
+@propertyInjectable
 class LookedUpApplicationListener extends ExternalApplicationListener {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.LookedUpApplicationListener';
   public readonly listenerArn: string;
   public readonly connections: ec2.Connections;
 

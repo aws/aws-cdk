@@ -6,6 +6,7 @@ import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
 import { Annotations, ArnFormat, FeatureFlags, IResource, Lazy, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -228,7 +229,13 @@ abstract class EventBusBase extends Resource implements IEventBus, iam.IResource
  *
  * @resource AWS::Events::EventBus
  */
+@propertyInjectable
 export class EventBus extends EventBusBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.EventBus';
+
   /**
    * Import an existing event bus resource
    * @param scope Parent construct
@@ -462,7 +469,10 @@ export class EventBus extends EventBusBase {
   }
 }
 
+@propertyInjectable
 class ImportedEventBus extends EventBusBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.ImportedEventBus';
   public readonly eventBusArn: string;
   public readonly eventBusName: string;
   public readonly eventBusPolicy: string;
@@ -529,7 +539,11 @@ export interface EventBusPolicyProps {
  *
  * Prefer to use `addToResourcePolicy()` instead.
  */
+@propertyInjectable
 export class EventBusPolicy extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.EventBusPolicy';
+
   constructor(scope: Construct, id: string, props: EventBusPolicyProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry

@@ -11,5 +11,6 @@
       "assertionStack": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkredshiftreboottestDefaultTestDeployAssert1AE11B34"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

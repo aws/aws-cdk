@@ -21,6 +21,7 @@ import {
   UnscopedValidationError,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { RestrictDefaultSgProvider } from '../../custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated';
 import * as cxapi from '../../cx-api';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
@@ -1252,7 +1253,13 @@ export interface SubnetConfiguration {
  *
  * @resource AWS::EC2::VPC
  */
+@propertyInjectable
 export class Vpc extends VpcBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.Vpc';
+
   /**
    * The default CIDR range used when creating VPCs.
    * This can be overridden using VpcProps when creating a VPCNetwork resource.
@@ -1649,7 +1656,13 @@ export class Vpc extends VpcBase {
     }
 
     // Create an Egress Only Internet Gateway and attach it if necessary
-    if (this.useIpv6 && this.privateSubnets) {
+
+    const isRequirePrivateSubnetsForEgressOnlyIgw =
+      FeatureFlags.of(this).isEnabled(cxapi.EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY);
+
+    if ((this.useIpv6 && !isRequirePrivateSubnetsForEgressOnlyIgw && this.privateSubnets) ||
+      (this.useIpv6 && isRequirePrivateSubnetsForEgressOnlyIgw && this.privateSubnets.length > 0)
+    ) {
       const eigw = new CfnEgressOnlyInternetGateway(this, 'EIGW6', {
         vpcId: this.vpcId,
       });
@@ -2012,7 +2025,13 @@ export interface SubnetProps {
  *
  * @resource AWS::EC2::Subnet
  */
+@propertyInjectable
 export class Subnet extends Resource implements ISubnet {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.Subnet';
+
   public static isVpcSubnet(x: any): x is Subnet {
     return VPC_SUBNET_SYMBOL in x;
   }
@@ -2381,7 +2400,13 @@ export interface PublicSubnetAttributes extends SubnetAttributes { }
 /**
  * Represents a public VPC subnet resource
  */
+@propertyInjectable
 export class PublicSubnet extends Subnet implements IPublicSubnet {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.PublicSubnet';
+
   public static fromPublicSubnetAttributes(scope: Construct, id: string, attrs: PublicSubnetAttributes): IPublicSubnet {
     return new ImportedSubnet(scope, id, attrs);
   }
@@ -2422,7 +2447,13 @@ export interface PrivateSubnetAttributes extends SubnetAttributes { }
 /**
  * Represents a private VPC subnet resource
  */
+@propertyInjectable
 export class PrivateSubnet extends Subnet implements IPrivateSubnet {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.PrivateSubnet';
+
   public static fromPrivateSubnetAttributes(scope: Construct, id: string, attrs: PrivateSubnetAttributes): IPrivateSubnet {
     return new ImportedSubnet(scope, id, attrs);
   }
@@ -2438,7 +2469,10 @@ function ifUndefined<T>(value: T | undefined, defaultValue: T): T {
   return value ?? defaultValue;
 }
 
+@propertyInjectable
 class ImportedVpc extends VpcBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.ImportedVpc';
   public readonly vpcId: string;
   public readonly vpcArn: string;
   public readonly publicSubnets: ISubnet[];
@@ -2492,7 +2526,10 @@ class ImportedVpc extends VpcBase {
   }
 }
 
+@propertyInjectable
 class LookedUpVpc extends VpcBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.LookedUpVpc';
   public readonly vpcId: string;
   public readonly vpcArn: string;
   public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
@@ -2603,7 +2640,10 @@ function tap<T>(x: T, fn: (x: T) => void): T {
   return x;
 }
 
+@propertyInjectable
 class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivateSubnet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.ImportedSubnet';
   public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
   public readonly subnetId: string;
   public readonly routeTable: IRouteTable;

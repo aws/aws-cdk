@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnOriginRequestPolicy } from './cloudfront.generated';
 import { Names, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a Origin Request Policy
@@ -55,7 +56,10 @@ export interface OriginRequestPolicyProps {
  *
  * @resource AWS::CloudFront::OriginRequestPolicy
  */
+@propertyInjectable
 export class OriginRequestPolicy extends Resource implements IOriginRequestPolicy {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.OriginRequestPolicy';
   /** This policy includes only the User-Agent and Referer headers. It doesn’t include any query strings or cookies. */
   public static readonly USER_AGENT_REFERER_HEADERS = OriginRequestPolicy.fromManagedOriginRequestPolicy('acba4595-bd28-49b8-b9fe-13317c0390fa');
   /** This policy includes the header that enables cross-origin resource sharing (CORS) requests when the origin is a custom origin. */

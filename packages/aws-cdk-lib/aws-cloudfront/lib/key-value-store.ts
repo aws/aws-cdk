@@ -7,6 +7,7 @@ import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import { Resource, IResource, Lazy, Names, Stack, Arn, ArnFormat, FileSystem, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The data to be imported to the key value store.
@@ -218,7 +219,11 @@ export interface IKeyValueStore extends IResource {
  *
  * @resource AWS::CloudFront::KeyValueStore
  */
+@propertyInjectable
 export class KeyValueStore extends Resource implements IKeyValueStore {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.KeyValueStore';
+
   /**
    * Import a Key Value Store using its ARN.
    */

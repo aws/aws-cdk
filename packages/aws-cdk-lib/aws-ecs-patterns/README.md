@@ -1143,6 +1143,19 @@ const networkLoadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFar
 });
 ```
 
+### Set healthCheckGracePeriod for QueueProcessingFargateService
+
+```ts
+declare const vpc: ec2.Vpc;
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+  vpc,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  minHealthyPercent: 100,
+  healthCheckGracePeriod: Duration.seconds(120),
+});
+```
+
 ### Set securityGroups for NetworkLoadBalancedFargateService
 
 ```ts

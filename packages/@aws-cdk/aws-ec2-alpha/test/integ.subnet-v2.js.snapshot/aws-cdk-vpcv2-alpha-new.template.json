@@ -32,6 +32,12 @@
    "Properties": {
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.1.0.0/20",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "SubnetTest3296A161",
@@ -232,6 +238,12 @@
    "Properties": {
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.1.128.0/20",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "SubnetTest3296A161",

@@ -8,6 +8,7 @@ import { Branch, BranchOptions } from './branch';
 import { Domain, DomainOptions } from './domain';
 import { renderEnvironmentVariables } from './utils';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * An Amplify Console application
@@ -180,7 +181,11 @@ export interface AppProps {
 /**
  * An Amplify Console application
  */
+@propertyInjectable
 export class App extends Resource implements IApp, iam.IGrantable {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-amplify-alpha.App';
+
   /**
    * Import an existing application
    */

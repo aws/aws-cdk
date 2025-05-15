@@ -9,5 +9,6 @@
       "assertionStack": "aws-cdk-eks-nodegroup-repair-config/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksnodegrouprepairconfigDefaultTestDeployAssert9E10A247"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

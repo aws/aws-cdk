@@ -1,7 +1,7 @@
 import { getResourceArn } from './resource-arn-suffix';
 import * as iam from '../../aws-iam';
 import * as sfn from '../../aws-stepfunctions';
-import { ArnFormat, Stack } from '../../core';
+import { ArnFormat, Stack, ValidationError } from '../../core';
 
 /**
  * Properties for StartExecution
@@ -57,12 +57,12 @@ export class StartExecution implements sfn.IStepFunctionsTask {
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Step Functions.`);
+      throw new ValidationError(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Step Functions.`, stateMachine);
     }
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
       && !sfn.FieldUtils.containsTaskToken(props.input)) {
-      throw new Error('Task Token is missing in input (pass JsonPath.taskToken somewhere in input)');
+      throw new ValidationError('Task Token is missing in input (pass JsonPath.taskToken somewhere in input)', stateMachine);
     }
   }
 

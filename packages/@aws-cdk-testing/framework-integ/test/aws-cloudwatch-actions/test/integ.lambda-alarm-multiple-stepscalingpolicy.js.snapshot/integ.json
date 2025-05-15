@@ -1,0 +1,13 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "lambda-alarm-multiple-stepscalingpolicy-test/DefaultTest": {
+      "stacks": [
+        "lambda-alarm-multiple-stepscalingpolicy"
+      ],
+      "assertionStack": "lambda-alarm-multiple-stepscalingpolicy-test/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdaalarmmultiplestepscalingpolicytestDefaultTestDeployAssertD4E8CDE5"
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}

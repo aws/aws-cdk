@@ -5,6 +5,8 @@ import * as ecs from '../../../aws-ecs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import { ValidationError } from '../../../core';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY } from '../../../cx-api';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -188,9 +190,9 @@ export class EcsFargateLaunchTarget implements IEcsLaunchTarget {
   /**
    * Called when the Fargate launch type configured on RunTask
    */
-  public bind(_task: EcsRunTask, launchTargetOptions: LaunchTargetBindOptions): EcsLaunchTargetConfig {
+  public bind(task: EcsRunTask, launchTargetOptions: LaunchTargetBindOptions): EcsLaunchTargetConfig {
     if (!launchTargetOptions.taskDefinition.isFargateCompatible) {
-      throw new Error('Supplied TaskDefinition is not compatible with Fargate');
+      throw new ValidationError('Supplied TaskDefinition is not compatible with Fargate', task);
     }
 
     return {
@@ -212,13 +214,13 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
   /**
    * Called when the EC2 launch type is configured on RunTask
    */
-  public bind(_task: EcsRunTask, launchTargetOptions: LaunchTargetBindOptions): EcsLaunchTargetConfig {
+  public bind(task: EcsRunTask, launchTargetOptions: LaunchTargetBindOptions): EcsLaunchTargetConfig {
     if (!launchTargetOptions.taskDefinition.isEc2Compatible) {
-      throw new Error('Supplied TaskDefinition is not compatible with EC2');
+      throw new ValidationError('Supplied TaskDefinition is not compatible with EC2', task);
     }
 
     if (!launchTargetOptions.cluster?.hasEc2Capacity) {
-      throw new Error('Cluster for this service needs Ec2 capacity. Call addCapacity() on the cluster.');
+      throw new ValidationError('Cluster for this service needs Ec2 capacity. Call addCapacity() on the cluster.', task);
     }
 
     return {
@@ -272,7 +274,13 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps, EcsRunTaskOptio
 /**
  * Run a Task on ECS or Fargate
  */
+@propertyInjectable
 export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-stepfunctions-tasks.EcsRunTask';
+
   /**
    * Run a Task that using JSONPath on ECS or Fargate
    */
@@ -316,11 +324,11 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN
       && !sfn.FieldUtils.containsTaskToken(props.containerOverrides?.map(override => override.environment))) {
-      throw new Error('Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.');
+      throw new ValidationError('Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.', this);
     }
 
     if (!this.props.taskDefinition.defaultContainer) {
-      throw new Error('A TaskDefinition must have at least one essential container');
+      throw new ValidationError('A TaskDefinition must have at least one essential container', this);
     }
 
     if (this.props.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC) {
@@ -336,7 +344,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       if (!cdk.Token.isUnresolved(name)) {
         const cont = this.props.taskDefinition.findContainer(name);
         if (!cont) {
-          throw new Error(`Overrides mention container with name '${name}', but no such container in task definition`);
+          throw new ValidationError(`Overrides mention container with name '${name}', but no such container in task definition`, this);
         }
       }
     }
@@ -387,8 +395,8 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
 
   private validateNoNetworkingProps() {
     if (this.props.subnets !== undefined || this.props.securityGroups !== undefined) {
-      throw new Error(
-        `Supplied TaskDefinition must have 'networkMode' of 'AWS_VPC' to use 'vpcSubnets' and 'securityGroup'. Received: ${this.props.taskDefinition.networkMode}`,
+      throw new ValidationError(
+        `Supplied TaskDefinition must have 'networkMode' of 'AWS_VPC' to use 'vpcSubnets' and 'securityGroup'. Received: ${this.props.taskDefinition.networkMode}`, this,
       );
     }
   }

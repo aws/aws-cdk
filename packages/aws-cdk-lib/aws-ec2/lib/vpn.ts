@@ -10,6 +10,7 @@ import { IVpc, SubnetSelection } from './vpc';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { IResource, Resource, SecretValue, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IVpnConnection extends IResource {
   /**
@@ -162,7 +163,10 @@ export enum VpnConnectionType {
  *
  * @resource AWS::EC2::VPNGateway
  */
+@propertyInjectable
 export class VpnGateway extends Resource implements IVpnGateway {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.VpnGateway';
   /**
    * The virtual private gateway Id
    */
@@ -223,7 +227,11 @@ export abstract class VpnConnectionBase extends Resource implements IVpnConnecti
  *
  * @resource AWS::EC2::VPNConnection
  */
+@propertyInjectable
 export class VpnConnection extends VpnConnectionBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.VpnConnection';
+
   /**
    * Import a VPN connection by supplying all attributes directly
    */

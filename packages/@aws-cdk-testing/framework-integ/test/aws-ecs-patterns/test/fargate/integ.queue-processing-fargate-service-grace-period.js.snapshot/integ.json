@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "queueProcessingFargateServiceGracePeriodTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-patterns-queue-grace-period"
+      ],
+      "assertionStack": "queueProcessingFargateServiceGracePeriodTest/DefaultTest/DeployAssert",
+      "assertionStackName": "queueProcessingFargateServiceGracePeriodTestDefaultTestDeployAssert2CA06C1B"
+    }
+  }
+}

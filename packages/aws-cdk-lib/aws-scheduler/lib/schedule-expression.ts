@@ -1,5 +1,5 @@
 import * as events from '../../aws-events';
-import { Duration, TimeZone } from '../../core';
+import { Duration, TimeZone, UnscopedValidationError } from '../../core';
 
 /**
  * ScheduleExpression for EventBridge Schedule
@@ -22,7 +22,7 @@ export abstract class ScheduleExpression {
       return new LiteralScheduleExpression(`at(${literal})`, timeZone ?? TimeZone.ETC_UTC);
     } catch (e) {
       if (e instanceof RangeError) {
-        throw new Error('Invalid date');
+        throw new UnscopedValidationError('Invalid date');
       }
       throw e;
     }

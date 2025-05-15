@@ -3,13 +3,23 @@ on:
   pull_request: {}
 
 jobs:
-  run-security-guardian:
+  log-skip:
+    if: |
+      startsWith(github.event.pull_request.title, 'chore(release):') ||
+      startsWith(github.event.pull_request.title, 'chore(merge-back):')
     runs-on: ubuntu-latest
     steps:
+      - run: echo "Skipping Security Guardian for release/merge-back PR"
+  run-security-guardian:
+    if: |
+      !startsWith(github.event.pull_request.title, 'chore(release):') &&
+      !startsWith(github.event.pull_request.title, 'chore(merge-back):')
+    runs-on: ubuntu-latest
+    steps:      
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Required to enable full git diff
+          fetch-depth: 0  
 
       - name: Install cfn-guard
         run: |

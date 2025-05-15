@@ -3,6 +3,7 @@ import { CfnQueryDefinition } from '.';
 import { ILogGroup } from './log-group';
 import { Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for a QueryString
@@ -191,7 +192,10 @@ export interface QueryDefinitionProps {
 /**
  * Define a query definition for CloudWatch Logs Insights
  */
+@propertyInjectable
 export class QueryDefinition extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-logs.QueryDefinition';
   /**
    * The ID of the query definition.
    *

@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnGameSessionQueue } from 'aws-cdk-lib/aws-gamelift';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents a game session queue destination
@@ -300,7 +301,11 @@ export abstract class GameSessionQueueBase extends cdk.Resource implements IGame
  *
  * @resource AWS::GameLift::GameSessionQueue
  */
+@propertyInjectable
 export class GameSessionQueue extends GameSessionQueueBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-gamelift-alpha.GameSessionQueue';
+
   /**
    * Import an existing gameSessionQueue from its name.
    */

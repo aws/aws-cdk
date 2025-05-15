@@ -6,6 +6,7 @@ import { Lazy, RemovalPolicy, Resource, CfnResource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface DeploymentProps {
   /**
@@ -69,7 +70,13 @@ export interface DeploymentProps {
  * model. Use the `node.addDependency(dep)` method to circumvent that. This is done
  * automatically for the `restApi.latestDeployment` deployment.
  */
+@propertyInjectable
 export class Deployment extends Resource {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.Deployment';
+
   /** @attribute */
   public readonly deploymentId: string;
   public readonly api: IRestApi;

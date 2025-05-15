@@ -4,6 +4,7 @@ import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import * as s3 from '../lib';
 import { ReplicationTimeValue } from '../lib/bucket';
 
@@ -900,28 +901,62 @@ describe('bucket', () => {
     })).toThrow('Object Lock retention duration must be less than 100 years');
   });
 
-  test('bucket with block public access set to BlockAll', () => {
-    const stack = new cdk.Stack();
-    new s3.Bucket(stack, 'MyBucket', {
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+  describe('bucket with custom block public access setting', () => {
+    test('S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT Disabled', () => {
+      const app = new cdk.App({
+        context: {
+          [cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: false,
+        },
+      });
+      const stack = new cdk.Stack(app);
+      new s3.Bucket(stack, 'MyBucket', {
+        blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: true }),
+      });
+
+      Template.fromStack(stack).templateMatches({
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'Properties': {
+              'PublicAccessBlockConfiguration': {
+                'RestrictPublicBuckets': true,
+              },
+            },
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
+          },
+        },
+      });
     });
 
-    Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'PublicAccessBlockConfiguration': {
-              'BlockPublicAcls': true,
-              'BlockPublicPolicy': true,
-              'IgnorePublicAcls': true,
-              'RestrictPublicBuckets': true,
-            },
-          },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+    test('S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT Enabled', () => {
+      const app = new cdk.App({
+        context: {
+          [cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: true,
         },
-      },
+      });
+      const stack = new cdk.Stack(app);
+      new s3.Bucket(stack, 'MyBucket', {
+        blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: false }),
+      });
+
+      Template.fromStack(stack).templateMatches({
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'Properties': {
+              'PublicAccessBlockConfiguration': {
+                'BlockPublicAcls': true,
+                'BlockPublicPolicy': true,
+                'IgnorePublicAcls': true,
+                'RestrictPublicBuckets': false,
+              },
+            },
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
+          },
+        },
+      });
     });
   });
 
@@ -948,10 +983,10 @@ describe('bucket', () => {
     });
   });
 
-  test('bucket with custom block public access setting', () => {
+  test('bucket with block public access set to BLOCK_ACLS_ONLY', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: true }),
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS_ONLY,
     });
 
     Template.fromStack(stack).templateMatches({
@@ -960,13 +995,75 @@ describe('bucket', () => {
           'Type': 'AWS::S3::Bucket',
           'Properties': {
             'PublicAccessBlockConfiguration': {
-              'RestrictPublicBuckets': true,
+              'BlockPublicAcls': true,
+              'BlockPublicPolicy': false,
+              'IgnorePublicAcls': true,
+              'RestrictPublicBuckets': false,
             },
           },
           'DeletionPolicy': 'Retain',
           'UpdateReplacePolicy': 'Retain',
         },
       },
+    });
+  });
+
+  describe('bucket with custom block public access setting', () => {
+    test('S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT Disabled', () => {
+      const app = new cdk.App({
+        context: {
+          [cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: false,
+        },
+      });
+      const stack = new cdk.Stack(app);
+      new s3.Bucket(stack, 'MyBucket', {
+        blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: true }),
+      });
+
+      Template.fromStack(stack).templateMatches({
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'Properties': {
+              'PublicAccessBlockConfiguration': {
+                'RestrictPublicBuckets': true,
+              },
+            },
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
+          },
+        },
+      });
+    });
+
+    test('S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT Enabled', () => {
+      const app = new cdk.App({
+        context: {
+          [cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: true,
+        },
+      });
+      const stack = new cdk.Stack(app);
+      new s3.Bucket(stack, 'MyBucket', {
+        blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: false }),
+      });
+
+      Template.fromStack(stack).templateMatches({
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'Properties': {
+              'PublicAccessBlockConfiguration': {
+                'BlockPublicAcls': true,
+                'BlockPublicPolicy': true,
+                'IgnorePublicAcls': true,
+                'RestrictPublicBuckets': false,
+              },
+            },
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
+          },
+        },
+      });
     });
   });
 
@@ -4869,4 +4966,139 @@ describe('bucket', () => {
       },
     });
   });
+
+  describe('property injection', () => {
+    test('Compare AccessLog Bucket Injector Templates', () => {
+      // This case is complex because we are creating a bucket within Bucket constructor.
+      // GIVEN - with Injector
+      const app = new cdk.App({
+        propertyInjectors: [
+          accessLogBucketInjector,
+        ],
+      });
+      const stack = new cdk.Stack(app, 'MyStack', {});
+      const b1 = new s3.Bucket(stack, 'my-bucket-1', {});
+      const template = Template.fromStack(stack).toJSON();
+
+      // WHEN - no Injector, but props
+      const app2 = new cdk.App({});
+      const stack2 = new cdk.Stack(app2, 'MyStack', {});
+      const accessLog = new s3.Bucket(stack2, 'access-logging-12345', {
+        accessControl: undefined,
+        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        encryption: s3.BucketEncryption.KMS,
+        enforceSSL: true,
+        publicReadAccess: false,
+        lifecycleRules: [],
+        removalPolicy: cdk.RemovalPolicy.RETAIN,
+      });
+      const b2 = new s3.Bucket(stack2, 'my-bucket-1', {
+        accessControl: undefined,
+        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        encryption: s3.BucketEncryption.KMS,
+        enforceSSL: true,
+        publicReadAccess: false,
+        lifecycleRules: [],
+        serverAccessLogsBucket: accessLog,
+      });
+
+      // THEN
+      Template.fromStack(stack2).templateMatches(
+        Match.exact(template),
+      );
+    });
+
+    test('Compare Bucket Injector Templates', () => {
+      // GIVEN - with Injector
+      const app = new cdk.App({
+        propertyInjectors: [
+          bucketInjector,
+        ],
+      });
+      const stack = new cdk.Stack(app, 'MyStack', {});
+      const b1 = new s3.Bucket(stack, 'my-bucket-1', {});
+      const template = Template.fromStack(stack).toJSON();
+
+      // WHEN - no Injector, but props
+      const app2 = new cdk.App({});
+      const stack2 = new cdk.Stack(app2, 'MyStack', {});
+      const b2 = new s3.Bucket(stack2, 'my-bucket-1', {
+        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        enforceSSL: true,
+      });
+
+      // THEN
+      Template.fromStack(stack2).templateMatches(
+        Match.exact(template),
+      );
+    });
+  });
 });
+
+class AccessBucketInjector implements cdk.IPropertyInjector {
+  public readonly constructUniqueId: string;
+
+  // Skip property injection if this class attribute is set to true
+  private _skip: boolean;
+
+  constructor() {
+    this._skip = false;
+    this.constructUniqueId = s3.Bucket.PROPERTY_INJECTION_ID;
+  }
+
+  inject(originalProps: s3.BucketProps, context: cdk.InjectionContext): s3.BucketProps {
+    const commonInjectionValues = {
+      accessControl: undefined,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      encryption: s3.BucketEncryption.KMS,
+      enforceSSL: true,
+      publicReadAccess: false,
+      lifecycleRules: [],
+    };
+
+    // Don't set up access logging bucket if this._skip=true
+    if (this._skip) {
+      return commonInjectionValues;
+    }
+
+    let accessLoggingBucket = originalProps.serverAccessLogsBucket;
+    if (!accessLoggingBucket) {
+      // Set the _skip flag to disable indefinite access log bucket creation loop
+      this._skip = true;
+
+      accessLoggingBucket = new s3.Bucket(context.scope, 'access-logging-12345', {
+        ...commonInjectionValues,
+        removalPolicy: originalProps.removalPolicy ?? cdk.RemovalPolicy.RETAIN,
+      });
+
+      // reset the _skip flag
+      this._skip = false;
+    }
+    return {
+      ...commonInjectionValues,
+      serverAccessLogsBucket: accessLoggingBucket,
+      ...originalProps,
+    };
+  }
+}
+
+const accessLogBucketInjector = new AccessBucketInjector();
+
+class MyBucketPropsInjector implements cdk.IPropertyInjector {
+  public readonly constructUniqueId: string;
+
+  constructor() {
+    this.constructUniqueId = s3.Bucket.PROPERTY_INJECTION_ID;
+  }
+
+  inject(originalProps: any, _context: cdk.InjectionContext): any {
+    const newProps = {
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      enforceSSL: true,
+      ...originalProps,
+    };
+    return newProps;
+  }
+}
+
+const bucketInjector = new MyBucketPropsInjector();

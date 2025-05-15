@@ -5,6 +5,7 @@ import { renderMeshOwner } from './private/utils';
 import { IVirtualGateway, VirtualGateway } from './virtual-gateway';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface for which all GatewayRoute based classes MUST implement
@@ -62,7 +63,11 @@ export interface GatewayRouteProps extends GatewayRouteBaseProps {
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/gateway-routes.html
  */
+@propertyInjectable
 export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appmesh.GatewayRoute';
+
   /**
    * Import an existing GatewayRoute given an ARN
    */

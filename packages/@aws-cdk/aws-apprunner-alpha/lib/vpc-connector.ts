@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnVpcConnector } from 'aws-cdk-lib/aws-apprunner';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties of the AppRunner VPC Connector
@@ -89,7 +90,11 @@ export interface IVpcConnector extends cdk.IResource, ec2.IConnectable {
  *
  * @resource AWS::AppRunner::VpcConnector
  */
+@propertyInjectable
 export class VpcConnector extends cdk.Resource implements IVpcConnector {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-apprunner-alpha.VpcConnector';
+
   /**
    * Import from VPC connector attributes.
    */

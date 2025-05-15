@@ -5,8 +5,10 @@ import { TableBucketPolicy } from './table-bucket-policy';
 import * as perms from './permissions';
 import { validateTableBucketAttributes } from './util';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import { Resource, IResource, UnscopedValidationError, RemovalPolicy, Token } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Interface definition for S3 Table Buckets
@@ -37,10 +39,14 @@ export interface ITableBucket extends IResource {
   readonly region?: string;
 
   /**
+   * Optional KMS encryption key associated with this table bucket.
+   */
+  readonly encryptionKey?: kms.IKey;
+
+  /**
    * Adds a statement to the resource policy for a principal (i.e.
    * account/role/service) to perform actions on this table bucket and/or its
-   * contents. Use `tableBucketArn` and `arnForObjects(keys)` to obtain ARNs for
-   * this bucket or objects.
+   * tables.
    *
    * Note that the policy statement may or may not be added to the policy.
    * For example, when an `ITableBucket` is created from an existing table bucket,
@@ -62,6 +68,9 @@ export interface ITableBucket extends IResource {
    * Grant read permissions for this table bucket and its tables
    * to an IAM principal (Role/Group/User).
    *
+   * If encryption is used, permission to use the key to decrypt the contents
+   * of the bucket will also be granted to the same principal.
+   *
    * @param identity The principal to allow read permissions to
    * @param tableId Allow the permissions to all tables using '*' or to single table by its unique ID.
    */
@@ -71,6 +80,9 @@ export interface ITableBucket extends IResource {
    * Grant write permissions for this table bucket and its tables
    * to an IAM principal (Role/Group/User).
    *
+   * If encryption is used, permission to use the key to encrypt the contents
+   * of the bucket will also be granted to the same principal.
+   *
    * @param identity The principal to allow write permissions to
    * @param tableId Allow the permissions to all tables using '*' or to single table by its unique ID.
    */
@@ -79,6 +91,9 @@ export interface ITableBucket extends IResource {
   /**
    * Grant read and write permissions for this table bucket and its tables
    * to an IAM principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to encrypt/decrypt the contents
+   * of the bucket will also be granted to the same principal.
    *
    * @param identity The principal to allow read and write permissions to
    * @param tableId Allow the permissions to all tables using '*' or to single table by its unique ID.
@@ -130,6 +145,22 @@ export enum UnreferencedFileRemovalStatus {
   DISABLED = 'Disabled',
 }
 
+/**
+ * Controls Server Side Encryption (SSE) for this TableBucket.
+ */
+export enum TableBucketEncryption {
+  /**
+   * Use a customer defined KMS key for encryption
+   * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
+   */
+  KMS = 'aws:kms',
+
+  /**
+   * Use S3 managed encryption keys with AES256 encryption
+   */
+  S3_MANAGED = 'AES256',
+}
+
 abstract class TableBucketBase extends Resource implements ITableBucket {
   public abstract readonly tableBucketArn: string;
   public abstract readonly tableBucketName: string;
@@ -147,6 +178,8 @@ abstract class TableBucketBase extends Resource implements ITableBucket {
    * the first call to `addToResourcePolicy`.
    */
   protected abstract autoCreatePolicy: boolean;
+
+  public abstract encryptionKey?: kms.IKey | undefined;
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
@@ -186,15 +219,33 @@ abstract class TableBucketBase extends Resource implements ITableBucket {
   }
 
   public grantRead(identity: iam.IGrantable, tableId: string) {
-    return this.grant(identity, perms.TABLE_BUCKET_READ_ACCESS, this.tableBucketArn, this.getTableArn(tableId));
+    return this.grant(
+      identity,
+      perms.TABLE_BUCKET_READ_ACCESS,
+      perms.KEY_READ_ACCESS,
+      this.tableBucketArn,
+      this.getTableArn(tableId),
+    );
   }
 
   public grantWrite(identity: iam.IGrantable, tableId: string) {
-    return this.grant(identity, perms.TABLE_BUCKET_WRITE_ACCESS, this.tableBucketArn, this.getTableArn(tableId));
+    return this.grant(
+      identity,
+      perms.TABLE_BUCKET_WRITE_ACCESS,
+      perms.KEY_READ_WRITE_ACCESS,
+      this.tableBucketArn,
+      this.getTableArn(tableId),
+    );
   }
 
   public grantReadWrite(identity: iam.IGrantable, tableId: string) {
-    return this.grant(identity, perms.TABLE_BUCKET_READ_WRITE_ACCESS, this.tableBucketArn, this.getTableArn(tableId));
+    return this.grant(
+      identity,
+      perms.TABLE_BUCKET_READ_WRITE_ACCESS,
+      perms.KEY_WRITE_ACCESS,
+      this.tableBucketArn,
+      this.getTableArn(tableId),
+    );
   }
 
   /**
@@ -204,15 +255,23 @@ abstract class TableBucketBase extends Resource implements ITableBucket {
   private grant(
     grantee: iam.IGrantable,
     tableBucketActions: string[],
+    keyActions: string[],
     resourceArn: string,
     ...otherResourceArns: (string | undefined)[]) {
     const resources = [resourceArn, ...otherResourceArns].filter(arn => arn != undefined);
-    return iam.Grant.addToPrincipalOrResource({
+
+    const grant = iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: tableBucketActions,
       resourceArns: resources,
       resource: this,
     });
+
+    if (this.encryptionKey && keyActions && keyActions.length !== 0) {
+      this.encryptionKey.grant(grantee, ...keyActions);
+    }
+
+    return grant;
   }
 
   private getTableArn(tableId: string | undefined) {
@@ -253,6 +312,27 @@ export interface TableBucketProps {
   readonly account?: string;
 
   /**
+   * The kind of server-side encryption to apply to this bucket.
+   *
+   * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
+   * encryption key is not specified, a key will automatically be created.
+   *
+   * @default - `KMS` if `encryptionKey` is specified, or `S3_MANAGED` otherwise.
+   */
+  readonly encryption?: TableBucketEncryption;
+
+  /**
+   * External KMS key to use for bucket encryption.
+   *
+   * The `encryption` property must be either not specified or set to `KMS`.
+   * An error will be emitted if `encryption` is set to `S3_MANAGED`.
+   *
+   * @default - If `encryption` is set to `KMS` and this property is undefined,
+   * a new KMS key will be created and associated with this bucket.
+   */
+  readonly encryptionKey?: kms.IKey;
+
+  /**
    * Controls what happens to this table bucket it it stoped being managed by cloudformation.
    *
    * @default RETAIN
@@ -261,7 +341,8 @@ export interface TableBucketProps {
 }
 
 /**
- * Everything needed to reference a specific table bucket.
+ * A reference to a table bucket outside this stack
+ *
  * The tableBucketName, region, and account can be provided explicitly
  * or will be inferred from the tableBucketArn
  */
@@ -271,21 +352,30 @@ export interface TableBucketAttributes {
    * @default region inferred from scope
    */
   readonly region?: string;
+
   /**
    * The accountId containing this table bucket
    * @default account inferred from scope
    */
   readonly account?: string;
+
   /**
    * The table bucket name, unique per region
    * @default tableBucketName inferred from arn
    */
   readonly tableBucketName?: string;
+
   /**
    * The table bucket's ARN.
    * @default tableBucketArn constructed from region, account and tableBucketName are provided
    */
   readonly tableBucketArn?: string;
+
+  /**
+   * Optional KMS encryption key associated with this bucket.
+   * @default - undefined
+   */
+  readonly encryptionKey?: kms.IKey;
 }
 
 /**
@@ -305,7 +395,11 @@ export interface TableBucketAttributes {
  *   },
  * });
  */
+@propertyInjectable
 export class TableBucket extends TableBucketBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-s3tables-alpha.TableBucket';
+
   /**
    * Defines a TableBucket construct from an external table bucket ARN.
    *
@@ -337,6 +431,7 @@ export class TableBucket extends TableBucketBase {
       public readonly tableBucketPolicy?: TableBucketPolicy;
       public readonly region = region;
       public readonly account = account;
+      public readonly encryptionKey?: kms.IKey = attrs.encryptionKey;
       protected autoCreatePolicy: boolean = false;
 
       /**
@@ -478,6 +573,8 @@ export class TableBucket extends TableBucketBase {
    */
   public readonly tableBucketName: string;
 
+  public readonly encryptionKey?: kms.IKey | undefined;
+
   protected autoCreatePolicy: boolean = true;
 
   constructor(scope: Construct, id: string, props: TableBucketProps) {
@@ -490,6 +587,8 @@ export class TableBucket extends TableBucketBase {
 
     TableBucket.validateTableBucketName(props.tableBucketName);
     TableBucket.validateUnreferencedFileRemoval(props.unreferencedFileRemoval);
+    const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
+    this.encryptionKey = encryptionKey;
 
     this._resource = new s3tables.CfnTableBucket(this, id, {
       tableBucketName: props.tableBucketName,
@@ -498,11 +597,107 @@ export class TableBucket extends TableBucketBase {
         noncurrentDays: props.unreferencedFileRemoval?.noncurrentDays,
         unreferencedDays: props.unreferencedFileRemoval?.unreferencedDays,
       },
+      encryptionConfiguration: bucketEncryption,
     });
 
     this.tableBucketName = this.getResourceNameAttribute(this._resource.ref);
     this.tableBucketArn = this._resource.attrTableBucketArn;
     this._resource.applyRemovalPolicy(props.removalPolicy);
+  }
+
+  /**
+   * Set up key properties and return the Bucket encryption property from the
+   * user's configuration, according to the following table:
+   *
+   * | props.encryption | props.encryptionKey | bucketEncryption (return value) | encryptionKey (return value)  |
+   * |------------------|---------------------|---------------------------------|-------------------------------|
+   * | undefined        | undefined           | undefined                       | undefined                     |
+   * | undefined        | k                   | aws:kms                         | k                             |
+   * | KMS              | undefined           | aws:kms                         | new key (allow maintenance SP)|
+   * | KMS              | k                   | aws:kms                         | k                             |
+   * | S3_MANAGED       | undefined           | AES256                          | undefined                     |
+   * | S3_MANAGED       | k                   | ERROR!                          | ERROR!                        |
+   */
+  private parseEncryption(props: TableBucketProps): {
+    bucketEncryption?: s3tables.CfnTableBucket.EncryptionConfigurationProperty;
+    encryptionKey?: kms.IKey;
+  } {
+    const encryptionType = props.encryption;
+    let key = props.encryptionKey;
+
+    if (encryptionType === undefined) {
+      if ( key === undefined ) {
+        return { bucketEncryption: undefined, encryptionKey: undefined };
+      } else {
+        return {
+          bucketEncryption: {
+            kmsKeyArn: key.keyArn,
+            sseAlgorithm: TableBucketEncryption.KMS,
+          },
+          encryptionKey: key,
+        };
+      }
+    }
+
+    if (encryptionType === TableBucketEncryption.KMS) {
+      if ( key === undefined ) {
+        key = new kms.Key(this, 'Key', {
+          description: `Created by ${this.node.path}`,
+          enableKeyRotation: true,
+        });
+        this.allowTablesMaintenanceAccessToKey(key, props.tableBucketName);
+      }
+      return {
+        bucketEncryption: {
+          kmsKeyArn: key.keyArn,
+          sseAlgorithm: TableBucketEncryption.KMS,
+        },
+        encryptionKey: key,
+      };
+    }
+
+    if (encryptionType === TableBucketEncryption.S3_MANAGED) {
+      if ( key === undefined ) {
+        return {
+          bucketEncryption: {
+            sseAlgorithm: TableBucketEncryption.S3_MANAGED,
+          },
+        };
+      } else {
+        throw new UnscopedValidationError('Expected encryption = `KMS` with user provided encryption key');
+      }
+    }
+    throw new UnscopedValidationError(`Unknown encryption configuration detected: ${props.encryption} with key ${props.encryptionKey}`);
+  }
+
+  /**
+   * Allowlist S3 Tables Maintenance to access this table bucket's encryption key
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-kms-permissions.html
+   * @param encryptionKey The key to provide access to
+   */
+  private allowTablesMaintenanceAccessToKey(encryptionKey: kms.IKey, tableBucketName: string) {
+    const region = this.stack.region;
+    const account = this.stack.account;
+    const partition = this.stack.partition;
+
+    encryptionKey.addToResourcePolicy(new iam.PolicyStatement({
+      sid: 'AllowS3TablesMaintenanceAccess',
+      effect: iam.Effect.ALLOW,
+      principals: [
+        new iam.ServicePrincipal('maintenance.s3tables.amazonaws.com'),
+      ],
+      actions: [
+        'kms:GenerateDataKey',
+        'kms:Decrypt',
+      ],
+      resources: ['*'],
+      conditions: {
+        StringLike: {
+          'kms:EncryptionContext:aws:s3:arn': `arn:${partition}:s3tables:${region}:${account}:bucket/${tableBucketName}/*`,
+        },
+      },
+    }));
   }
 }
 

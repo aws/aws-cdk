@@ -4,6 +4,8 @@ import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import { ValidationError } from '../../../core';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
 interface SageMakerCreateEndpointConfigOptions {
@@ -60,7 +62,13 @@ export interface SageMakerCreateEndpointConfigProps extends sfn.TaskStateBasePro
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
  */
+@propertyInjectable
 export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-stepfunctions-tasks.SageMakerCreateEndpointConfig';
+
   /**
    * A Step Functions Task using JSONPath to create a SageMaker endpoint configuration
    *
@@ -153,12 +161,12 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
 
   private validateProductionVariants() {
     if (this.props.productionVariants.length < 1 || this.props.productionVariants.length > 10) {
-      throw new Error('Must specify from 1 to 10 production variants per endpoint configuration');
+      throw new ValidationError('Must specify from 1 to 10 production variants per endpoint configuration', this);
     }
     this.props.productionVariants.forEach((variant) => {
-      if (variant.initialInstanceCount && variant.initialInstanceCount < 1) throw new Error('Must define at least one instance');
+      if (variant.initialInstanceCount && variant.initialInstanceCount < 1) throw new ValidationError('Must define at least one instance', this);
       if ( variant.initialVariantWeight && variant.initialVariantWeight <= 0) {
-        throw new Error('InitialVariantWeight has minimum value of 0');
+        throw new ValidationError('InitialVariantWeight has minimum value of 0', this);
       }
     });
   }

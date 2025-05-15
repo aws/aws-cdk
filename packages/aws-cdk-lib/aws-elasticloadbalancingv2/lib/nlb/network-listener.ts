@@ -7,6 +7,7 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, Resource, Lazy, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
@@ -123,7 +124,13 @@ export interface NetworkListenerLookupOptions extends BaseListenerLookupOptions 
  *
  * @resource AWS::ElasticLoadBalancingV2::Listener
  */
+@propertyInjectable
 export class NetworkListener extends BaseListener implements INetworkListener {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.NetworkListener';
+
   /**
    * Looks up a network listener
    */

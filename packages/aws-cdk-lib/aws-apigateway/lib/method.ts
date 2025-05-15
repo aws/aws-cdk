@@ -16,6 +16,7 @@ import * as iam from '../../aws-iam';
 import { Annotations, ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID } from '../../cx-api';
 export interface MethodOptions {
   /**
@@ -163,7 +164,13 @@ export interface MethodProps {
   readonly options?: MethodOptions;
 }
 
+@propertyInjectable
 export class Method extends Resource {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.Method';
+
   /** @attribute */
   public readonly methodId: string;
 

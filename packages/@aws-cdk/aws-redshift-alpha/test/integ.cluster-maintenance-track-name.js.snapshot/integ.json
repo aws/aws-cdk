@@ -8,5 +8,6 @@
       "assertionStack": "RedshiftMaintenanceTrackNameInteg/DefaultTest/DeployAssert",
       "assertionStackName": "RedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert73097553"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

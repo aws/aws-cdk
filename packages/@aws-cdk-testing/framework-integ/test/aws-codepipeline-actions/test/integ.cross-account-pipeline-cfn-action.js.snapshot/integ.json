@@ -9,5 +9,6 @@
       "assertionStack": "integ-pipeline-cfn-cross-account/DefaultTest/DeployAssert",
       "assertionStackName": "integpipelinecfncrossaccountDefaultTestDeployAssertC7E37541"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
