@@ -321,6 +321,14 @@ export interface UserPoolClientOptions {
   readonly accessTokenValidity?: Duration;
 
   /**
+  * Configuration for refresh token rotation
+  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-refresh-token.html#using-the-refresh-token-rotation
+  * @default - undefined (refresh token rotation is disabled)
+  */
+  refreshTokenRotation?: RefreshTokenRotation;
+
+
+  /**
    * The set of attributes this client will be able to read.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes
    * @default - all standard and custom attributes
