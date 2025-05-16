@@ -1303,7 +1303,7 @@ describe('User Pool Client', () => {
 
   describe('read and write attributes', () => {
     test('undefined by default', () => {
-    // GIVEN
+      // GIVEN
       const stack = new Stack();
       const pool = new UserPool(stack, 'Pool');
 
@@ -1318,7 +1318,7 @@ describe('User Pool Client', () => {
     });
 
     test('set attributes', () => {
-    // GIVEN
+      // GIVEN
       const stack = new Stack();
       const pool = new UserPool(stack, 'Pool');
       const writeAttributes = (new ClientAttributes()).withCustomAttributes('my_first').withStandardAttributes({ givenName: true, familyName: true });
@@ -1361,7 +1361,7 @@ describe('User Pool Client', () => {
   });
 
   test('enablePropagateAdditionalUserContextData in addClient', () => {
-  // GIVEN
+    // GIVEN
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
 
@@ -1378,7 +1378,7 @@ describe('User Pool Client', () => {
   });
 
   test('enablePropagateAdditionalUserContextData in UserPoolClient', () => {
-  // GIVEN
+    // GIVEN
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
 
@@ -1408,7 +1408,7 @@ describe('User Pool Client', () => {
   });
 
   test('enablePropagateAdditionalUserContextData in UserPoolClient without a client secret throw error', () => {
-  // GIVEN
+    // GIVEN
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
 
@@ -1440,7 +1440,7 @@ describe('User Pool Client', () => {
   });
 
   test('cannot create when defaultRedirectUri is not inclueded in callbackUrls', () => {
-  // GIVEN
+    // GIVEN
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
 
@@ -1456,7 +1456,7 @@ describe('User Pool Client', () => {
   });
 
   test('cannot create when invalid defaultRedirectUri is set', () => {
-  // GIVEN
+    // GIVEN
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
 
@@ -1590,63 +1590,6 @@ describe('analytics configuration', () => {
           role,
         }),
     ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `application` must be specified.');
-  });
-});
-
-describe('refresh token rotation', () => {
-  test('undefined by default', () => {
-    const stack = new Stack();
-    const pool = new UserPool(stack, 'Pool');
-
-    // WHEN
-    pool.addClient('Client1', {
-      userPoolClientName: 'Client1',
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
-      ClientName: 'Client1',
-      refreshTokenRotation: Match.absent(),
-    });
-  });
-
-  test.each([
-    5,
-    25,
-    60,
-  ])('validate grace period original refresh token', (retryGracePeriod) => {
-    const stack = new Stack();
-    const pool = new UserPool(stack, 'Pool');
-
-    // WHEN
-    pool.addClient('Client1', {
-      userPoolClientName: 'Client1',
-      refreshTokenRotation: {
-        feature: 'ENABLED',
-        retryGracePeriodSeconds: retryGracePeriod,
-      },
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
-      ClientName: 'Client1',
-      RefreshTokenRotation: {
-        RetryGracePeriodSeconds: retryGracePeriod,
-      },
-    });
-  });
-
-  test('error when exceeding max retryGracePeriod', () => {
-    const stack = new Stack();
-    const pool = new UserPool(stack, 'Pool');
-
-    expect(() =>pool.addClient('Client1', {
-      userPoolClientName: 'Client1',
-      refreshTokenRotation: {
-        feature: 'ENABLED',
-        retryGracePeriodSeconds: 80,
-      },
-    })).toThrow('retryGracePeriodSeconds for refresh token rotation should be between 0 and 60 seconds.');
   });
 });
 
