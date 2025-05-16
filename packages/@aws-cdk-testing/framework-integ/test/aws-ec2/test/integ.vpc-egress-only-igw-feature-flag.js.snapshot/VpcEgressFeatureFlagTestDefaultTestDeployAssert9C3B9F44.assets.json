@@ -1,16 +1,16 @@
 {
   "version": "41.0.0",
   "files": {
-    "717ffb16444dfd15e598a19f6b059a129150f5cabced3e65e54ce881ab1c10bf": {
-      "displayName": "aws-cdk-cloudwatch Template",
+    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+      "displayName": "VpcEgressFeatureFlagTestDefaultTestDeployAssert9C3B9F44 Template",
       "source": {
-        "path": "aws-cdk-cloudwatch.template.json",
+        "path": "VpcEgressFeatureFlagTestDefaultTestDeployAssert9C3B9F44.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "717ffb16444dfd15e598a19f6b059a129150f5cabced3e65e54ce881ab1c10bf.json",
+          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

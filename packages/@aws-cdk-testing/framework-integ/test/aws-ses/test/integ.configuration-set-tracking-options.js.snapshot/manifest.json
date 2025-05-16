@@ -1,28 +1,28 @@
 {
   "version": "43.0.0",
   "artifacts": {
-    "alarm-metrics.assets": {
+    "ses-configuration-set-tracking-options-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "alarm-metrics.assets.json",
+        "file": "ses-configuration-set-tracking-options-integ.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "alarm-metrics": {
+    "ses-configuration-set-tracking-options-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "alarm-metrics.template.json",
+        "templateFile": "ses-configuration-set-tracking-options-integ.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f91cf70f3c2a0a9d6a9741ae3fc43a9fbc26224fdbb39bb8c6b4a8b7681b44ef.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/86057bab9ee2a7522fb13da9bb9e4b35e39ee1e7f76d1abaf54dedaf1bffa4e8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "alarm-metrics.assets"
+          "ses-configuration-set-tracking-options-integ.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,92 +31,49 @@
         }
       },
       "dependencies": [
-        "alarm-metrics.assets"
+        "ses-configuration-set-tracking-options-integ.assets"
       ],
       "metadata": {
-        "/alarm-metrics/Table": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "partitionKey": {
-                "name": "*",
-                "type": "S"
-              }
-            }
-          }
-        ],
-        "/alarm-metrics/Table/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TableCD117FA1"
-          }
-        ],
-        "/alarm-metrics/Table/ScalingRole": [
+        "/ses-configuration-set-tracking-options-integ/ConfigurationSet": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/alarm-metrics/TableThrottleAlarm": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "metric": {},
-              "evaluationPeriods": "*",
-              "threshold": "*"
-            }
-          }
-        ],
-        "/alarm-metrics/TableThrottleAlarm/Resource": [
+        "/ses-configuration-set-tracking-options-integ/ConfigurationSet/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TableThrottleAlarm606592BC"
+            "data": "ConfigurationSet3DD38186"
           }
         ],
-        "/alarm-metrics/TableErrorAlarm": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "metric": {},
-              "evaluationPeriods": "*",
-              "threshold": "*"
-            }
-          }
-        ],
-        "/alarm-metrics/TableErrorAlarm/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TableErrorAlarm12A4E2F3"
-          }
-        ],
-        "/alarm-metrics/BootstrapVersion": [
+        "/ses-configuration-set-tracking-options-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/alarm-metrics/CheckBootstrapVersion": [
+        "/ses-configuration-set-tracking-options-integ/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "alarm-metrics"
+      "displayName": "ses-configuration-set-tracking-options-integ"
     },
-    "alarmmetricsintegDefaultTestDeployAssert8721BBC0.assets": {
+    "ConfigurationSetIntegDefaultTestDeployAssert9B6AD46A.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "alarmmetricsintegDefaultTestDeployAssert8721BBC0.assets.json",
+        "file": "ConfigurationSetIntegDefaultTestDeployAssert9B6AD46A.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "alarmmetricsintegDefaultTestDeployAssert8721BBC0": {
+    "ConfigurationSetIntegDefaultTestDeployAssert9B6AD46A": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "alarmmetricsintegDefaultTestDeployAssert8721BBC0.template.json",
+        "templateFile": "ConfigurationSetIntegDefaultTestDeployAssert9B6AD46A.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -125,7 +82,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "alarmmetricsintegDefaultTestDeployAssert8721BBC0.assets"
+          "ConfigurationSetIntegDefaultTestDeployAssert9B6AD46A.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -134,23 +91,23 @@
         }
       },
       "dependencies": [
-        "alarmmetricsintegDefaultTestDeployAssert8721BBC0.assets"
+        "ConfigurationSetIntegDefaultTestDeployAssert9B6AD46A.assets"
       ],
       "metadata": {
-        "/alarm-metrics-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/ConfigurationSetInteg/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/alarm-metrics-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/ConfigurationSetInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "alarm-metrics-integ/DefaultTest/DeployAssert"
+      "displayName": "ConfigurationSetInteg/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
