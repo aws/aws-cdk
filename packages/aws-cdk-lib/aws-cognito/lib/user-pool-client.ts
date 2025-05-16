@@ -235,6 +235,23 @@ export class UserPoolClientIdentityProvider {
 }
 
 /**
+ * The configuration of your app client for refresh token rotation.
+ */
+export interface RefreshTokenRotation {
+  /**
+   * The state of refresh token rotation for the current app client.
+   * @default - undefined (CloudFormation defaults to DISABLED)
+   */
+  readonly feature?: 'ENABLED' | 'DISABLED';
+
+  /**
+   * Grace period for the original refresh token (0-60 seconds).
+   * @default - undefined (CloudFormation defaults value)
+   */
+  readonly retryGracePeriodSeconds?: number;
+}
+
+/**
  * Options to create a UserPoolClient
  */
 export interface UserPoolClientOptions {
@@ -320,6 +337,13 @@ export interface UserPoolClientOptions {
    * @default Duration.minutes(60)
    */
   readonly accessTokenValidity?: Duration;
+
+  /**
+   * Configuration for refresh token rotation
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-refresh-token.html#using-the-refresh-token-rotation
+   * @default - undefined (refresh token rotation is disabled)
+   */
+  readonly refreshTokenRotation?: RefreshTokenRotation;
 
   /**
    * The set of attributes this client will be able to read.
@@ -507,6 +531,12 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       throw new ValidationError('Cannot activate enablePropagateAdditionalUserContextData in an app client without a client secret.', this);
     }
 
+    if (props.refreshTokenRotation && props.refreshTokenRotation.retryGracePeriodSeconds) {
+      if (props.refreshTokenRotation.retryGracePeriodSeconds < 0 || props.refreshTokenRotation.retryGracePeriodSeconds > 60) {
+        throw new ValidationError('retryGracePeriodSeconds for refresh token rotation should be between 0 and 60 seconds.', this);
+      }
+    }
+
     this._generateSecret = props.generateSecret;
     this.userPool = props.userPool;
 
@@ -526,6 +556,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       readAttributes: props.readAttributes?.attributes(),
       writeAttributes: props.writeAttributes?.attributes(),
       enableTokenRevocation: props.enableTokenRevocation,
+      refreshTokenRotation: props.refreshTokenRotation,
       enablePropagateAdditionalUserContextData: props.enablePropagateAdditionalUserContextData,
       analyticsConfiguration: props.analytics ? this.configureAnalytics(props.analytics) : undefined,
     });
@@ -595,8 +626,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     if (props.authFlows.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
     if (props.authFlows.user) { authFlows.push('ALLOW_USER_AUTH'); }
 
-    // refreshToken should always be allowed if authFlows are present
-    authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
+    // refreshToken should only be allowed if authFlows are present and refreshTokenRotation is disabled
+    if (!props.refreshTokenRotation || props.refreshTokenRotation.feature === 'DISABLED') {
+      authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
+    }
 
     return authFlows;
   }
