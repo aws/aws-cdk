@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "aws-cdk-config-custompolicy.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-config-custompolicy.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6fac1231cc81482dcd84016b9db21eeaf4c1427d982265df3c319a9a9d7954b5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9c5f21a7870d6714ecc444b936b4f52e0ab542d5dce0bb4c3693cb2d0af5337a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,48 @@
         "aws-cdk-config-custompolicy.assets"
       ],
       "metadata": {
+        "/aws-cdk-config-custompolicy/CustomFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/aws-cdk-config-custompolicy/CustomFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-config-custompolicy/CustomFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-config-custompolicy/CustomFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -51,10 +94,32 @@
             "data": "CustomFunctionCustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5QED54A3F8"
           }
         ],
+        "/aws-cdk-config-custompolicy/Custom": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "configurationChanges": true,
+              "lambdaFunction": "*",
+              "ruleScope": "*"
+            }
+          }
+        ],
         "/aws-cdk-config-custompolicy/Custom/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Custom8166710A"
+          }
+        ],
+        "/aws-cdk-config-custompolicy/Drift": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "inputParameters": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-config-custompolicy/Drift/Resource": [
@@ -63,10 +128,75 @@
             "data": "Drift34D3210F"
           }
         ],
+        "/aws-cdk-config-custompolicy/Drift/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-config-custompolicy/Drift/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-config-custompolicy/Drift/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DriftRole8A5FB833"
+          }
+        ],
+        "/aws-cdk-config-custompolicy/Drift/ComplianceChange": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "source": "*",
+                  "detail": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addTarget": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "detailType": "*"
+                }
+              ]
+            }
           }
         ],
         "/aws-cdk-config-custompolicy/Drift/ComplianceChange/Resource": [
@@ -75,10 +205,110 @@
             "data": "DriftComplianceChange4C0F2B82"
           }
         ],
+        "/aws-cdk-config-custompolicy/Drift/ComplianceChange/EventsRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-config-custompolicy/Drift/ComplianceChange/EventsRole/ImportEventsRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-config-custompolicy/Drift/ComplianceChange/EventsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DriftComplianceChangeEventsRoleDDEF5A99"
+          }
+        ],
+        "/aws-cdk-config-custompolicy/Drift/ComplianceChange/EventsRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-config-custompolicy/Drift/ComplianceChange/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DriftComplianceChangeEventsRoleDefaultPolicyE74CB01C"
+          }
+        ],
+        "/aws-cdk-config-custompolicy/ComplianceTopic": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-config-custompolicy/ComplianceTopic/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ComplianceTopic0229448B"
+          }
+        ],
+        "/aws-cdk-config-custompolicy/ComplianceTopic/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "topics": [
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-config-custompolicy/ComplianceTopic/Policy/Resource": [
@@ -115,6 +345,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "awscdkconfigruleintegDefaultTestDeployAssert37C5819B.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -155,5 +386,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

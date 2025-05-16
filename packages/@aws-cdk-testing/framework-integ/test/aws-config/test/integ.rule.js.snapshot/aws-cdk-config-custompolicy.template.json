@@ -189,7 +189,53 @@
       "Arn": {
        "Ref": "ComplianceTopic0229448B"
       },
-      "Id": "Target0"
+      "Id": "Target0",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "DriftComplianceChangeEventsRoleDDEF5A99",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "DriftComplianceChangeEventsRoleDDEF5A99": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "DriftComplianceChangeEventsRoleDefaultPolicyE74CB01C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "ComplianceTopic0229448B"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DriftComplianceChangeEventsRoleDefaultPolicyE74CB01C",
+    "Roles": [
+     {
+      "Ref": "DriftComplianceChangeEventsRoleDDEF5A99"
      }
     ]
    }

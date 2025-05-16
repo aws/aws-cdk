@@ -2,9 +2,9 @@
   "version": "41.0.0",
   "files": {
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
-      "displayName": "awscdkconfigruleintegDefaultTestDeployAssert37C5819B Template",
+      "displayName": "snseventruletargetcustomroleDefaultTestDeployAssert83424588 Template",
       "source": {
-        "path": "awscdkconfigruleintegDefaultTestDeployAssert37C5819B.template.json",
+        "path": "snseventruletargetcustomroleDefaultTestDeployAssert83424588.template.json",
         "packaging": "file"
       },
       "destinations": {
