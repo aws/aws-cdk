@@ -19,6 +19,7 @@ import { IResolvable } from '../resolvable';
 import { Stack } from '../stack';
 import { Token, Tokenization } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
+import { iterateDfsPreorder } from './construct-iteration';
 
 export const STRING_LIST_REFERENCE_DELIMITER = '||';
 
@@ -152,7 +153,7 @@ function renderReference(ref: CfnReference) {
  */
 function findAllReferences(root: IConstruct) {
   const result = new Array<{ source: CfnElement; value: CfnReference }>();
-  for (const consumer of root.node.findAll()) {
+  for (const consumer of iterateDfsPreorder(root)) {
     // include only CfnElements (i.e. resources)
     if (!CfnElement.isCfnElement(consumer)) {
       continue;

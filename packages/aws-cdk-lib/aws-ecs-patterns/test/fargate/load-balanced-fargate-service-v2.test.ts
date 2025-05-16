@@ -465,7 +465,7 @@ describe('Application Load Balancer', () => {
           enableExecuteCommand: true,
           loadBalancers: [
             {
-              name: 'lb',
+              name: 'lb_xyz',
               idleTimeout: Duration.seconds(400),
               domainName: 'api.example.com',
               domainZone: new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' }),
