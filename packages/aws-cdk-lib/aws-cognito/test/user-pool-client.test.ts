@@ -1705,4 +1705,69 @@ describe('refresh token rotation', () => {
       },
     })).toThrow('retryGracePeriodSeconds for refresh token rotation should be between 0 and 60 seconds.');
   });
+
+  test('explicitAuthFlows refresh token false if refresh token rotation is enabled', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client', {
+      authFlows: {
+        adminUserPassword: true,
+        custom: true,
+        userPassword: true,
+        userSrp: true,
+        user: true,
+      },
+      refreshTokenRotation: {
+        feature: 'ENABLED',
+        retryGracePeriodSeconds: 40,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      ExplicitAuthFlows: [
+        'ALLOW_USER_PASSWORD_AUTH',
+        'ALLOW_ADMIN_USER_PASSWORD_AUTH',
+        'ALLOW_CUSTOM_AUTH',
+        'ALLOW_USER_SRP_AUTH',
+        'ALLOW_USER_AUTH',
+      ],
+    });
+  });
+
+  test('explicitAuthFlows refresh token true if refresh token rotation is disabled', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client', {
+      authFlows: {
+        adminUserPassword: true,
+        custom: true,
+        userPassword: true,
+        userSrp: true,
+        user: true,
+      },
+      refreshTokenRotation: {
+        feature: 'DISABLED',
+        retryGracePeriodSeconds: 50,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      ExplicitAuthFlows: [
+        'ALLOW_USER_PASSWORD_AUTH',
+        'ALLOW_ADMIN_USER_PASSWORD_AUTH',
+        'ALLOW_CUSTOM_AUTH',
+        'ALLOW_USER_SRP_AUTH',
+        'ALLOW_USER_AUTH',
+        'ALLOW_REFRESH_TOKEN_AUTH'
+      ],
+    });
+  });
 });
