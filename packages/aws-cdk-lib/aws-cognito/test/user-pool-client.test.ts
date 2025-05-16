@@ -1650,3 +1650,59 @@ describe('refresh token rotation', () => {
   });
 });
 
+describe('refresh token rotation', () => {
+  test('undefined by default', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client1', {
+      userPoolClientName: 'Client1',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      ClientName: 'Client1',
+      refreshTokenRotation: Match.absent(),
+    });
+  });
+
+  test.each([
+    5,
+    25,
+    60,
+  ])('validate grace period original refresh token', (retryGracePeriod) => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client1', {
+      userPoolClientName: 'Client1',
+      refreshTokenRotation: {
+        feature: 'ENABLED',
+        retryGracePeriodSeconds: retryGracePeriod,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      ClientName: 'Client1',
+      RefreshTokenRotation: {
+        RetryGracePeriodSeconds: retryGracePeriod,
+      },
+    });
+  });
+
+  test('error when exceeding max retryGracePeriod', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    expect(() =>pool.addClient('Client1', {
+      userPoolClientName: 'Client1',
+      refreshTokenRotation: {
+        feature: 'ENABLED',
+        retryGracePeriodSeconds: 80,
+      },
+    })).toThrow('retryGracePeriodSeconds for refresh token rotation should be between 0 and 60 seconds.');
+  });
+});
