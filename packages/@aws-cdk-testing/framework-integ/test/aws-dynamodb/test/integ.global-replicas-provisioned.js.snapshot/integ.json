@@ -9,5 +9,6 @@
       "assertionStack": "aws-cdk-dynamodb-global-replicas-provisioned-test/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkdynamodbglobalreplicasprovisionedtestDefaultTestDeployAssertE7F91F54"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

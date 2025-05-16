@@ -10,5 +10,6 @@
       "assertionStack": "cdk-integ-synthetics-canary-auto-delete/DefaultTest/DeployAssert",
       "assertionStackName": "cdkintegsyntheticscanaryautodeleteDefaultTestDeployAssert94B79CED"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
