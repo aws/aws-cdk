@@ -1038,7 +1038,10 @@ export interface ClusterAttributes {
 /**
  * An Cluster that has been imported
  */
+@propertyInjectable
 class ImportedCluster extends Resource implements ICluster {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.ImportedCluster';
   /**
    * Name of the cluster
    */

@@ -2,6 +2,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Construction properties for a DatabaseSecret.
@@ -32,7 +33,11 @@ export interface DatabaseSecretProps {
  *
  * @resource AWS::SecretsManager::Secret
  */
+@propertyInjectable
 export class DatabaseSecret extends secretsmanager.Secret {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-redshift-alpha.DatabaseSecret';
+
   constructor(scope: Construct, id: string, props: DatabaseSecretProps) {
     super(scope, id, {
       encryptionKey: props.encryptionKey,
