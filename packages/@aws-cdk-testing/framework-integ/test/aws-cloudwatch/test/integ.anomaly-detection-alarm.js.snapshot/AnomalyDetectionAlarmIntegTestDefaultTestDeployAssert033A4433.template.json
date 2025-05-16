@@ -1,0 +1,371 @@
+{
+ "Resources": {
+  "AwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe": {
+   "Type": "Custom::DeployAssert@SdkCallCloudWatchdescribeAlarms",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudWatch",
+    "api": "describeAlarms",
+    "expected": "{\"$ObjectLike\":{\"MetricAlarms\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"ComparisonOperator\":\"LessThanLowerOrGreaterThanUpperThreshold\",\"EvaluationPeriods\":3,\"DatapointsToAlarm\":2,\"ThresholdMetricId\":\"expr_1\",\"Metrics\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Id\":\"expr_1\",\"Expression\":\"ANOMALY_DETECTION_BAND(m0, 2)\",\"ReturnData\":true}},{\"$ObjectLike\":{\"Id\":\"m0\",\"MetricStat\":{\"$ObjectLike\":{\"Metric\":{\"$ObjectLike\":{\"Namespace\":\"AWS/EC2\",\"MetricName\":\"CPUUtilization\"}},\"Period\":300,\"Stat\":\"Average\"}},\"ReturnData\":true}}]}}}]}}}",
+    "parameters": {
+     "AlarmNames": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "AnomalyDetectionAlarmTestStack:ExportsOutputRefDefaultOperatorAnomalyAlarm13E81AA2E47BFAEC"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1747107285739"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "cloudwatch:DescribeAlarms"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudwatch:DescribeAlarms"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudwatch:DescribeAlarms"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb": {
+   "Type": "Custom::DeployAssert@SdkCallCloudWatchdescribeAlarms",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudWatch",
+    "api": "describeAlarms",
+    "expected": "{\"$ObjectLike\":{\"MetricAlarms\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"ComparisonOperator\":\"GreaterThanUpperThreshold\",\"EvaluationPeriods\":2,\"ThresholdMetricId\":\"expr_1\",\"Metrics\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Expression\":\"ANOMALY_DETECTION_BAND(m0, 3)\",\"ReturnData\":true}}]}}}]}}}",
+    "parameters": {
+     "AlarmNames": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "AnomalyDetectionAlarmTestStack:ExportsOutputRefExplicitOperatorAnomalyAlarm061F9C2BB2D8039E"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1747107285742"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985": {
+   "Type": "Custom::DeployAssert@SdkCallCloudWatchdescribeAlarms",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudWatch",
+    "api": "describeAlarms",
+    "expected": "{\"$ObjectLike\":{\"MetricAlarms\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"AlarmDescription\":\"Alarm when CPU utilization is outside the expected band\",\"ComparisonOperator\":\"GreaterThanUpperThreshold\",\"EvaluationPeriods\":3,\"ThresholdMetricId\":\"expr_1\",\"Metrics\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Expression\":\"ANOMALY_DETECTION_BAND(m0, 2.5)\",\"ReturnData\":true}}]}}}]}}}",
+    "parameters": {
+     "AlarmNames": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "AnomalyDetectionAlarmTestStack:ExportsOutputRefDescriptiveAnomalyAlarm8B14203E100E41DF"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1747107285742"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
