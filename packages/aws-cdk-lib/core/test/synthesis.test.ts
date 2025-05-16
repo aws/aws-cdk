@@ -381,46 +381,6 @@ describe('synthesis', () => {
       Template.fromStack(stack);
     }).toThrow('Synthesis has been called multiple times and the construct tree was modified after the first synthesis');
   });
-
-  test('performance', () => {
-    const MAX_NODES = 1_000;
-    const app = new cdk.App({
-      context: {
-        '@aws-cdk/core.TreeMetadata:maxNodes': MAX_NODES,
-      },
-    });
-
-    // GIVEN
-    const buildStart = Date.now();
-    recurseBuild(app, 4, 4);
-    // eslint-disable-next-line no-console
-    console.log('Built tree in', Date.now() - buildStart, 'ms');
-
-    // WHEN
-    const synthStart = Date.now();
-    const assembly = app.synth();
-    // eslint-disable-next-line no-console
-    console.log('Synthed tree in', Date.now() - synthStart, 'ms');
-    try {
-    } finally {
-      fs.rmSync(assembly.directory, { force: true, recursive: true });
-    }
-
-    function recurseBuild(scope: Construct, n: number, depth: number) {
-      if (depth === 0) {
-        const stack = new cdk.Stack(scope, 'SomeStack');
-        for (let i = 0; i < 450; i++) {
-          new cdk.CfnResource(stack, `Resource${i}`, { type: 'Aws::Some::Resource' });
-        }
-        return;
-      }
-
-      for (let i = 0; i < n; i++) {
-        const parent = new Construct(scope, `Construct${i}`);
-        recurseBuild(parent, n, depth - 1);
-      }
-    }
-  });
 });
 
 function list(outdir: string) {

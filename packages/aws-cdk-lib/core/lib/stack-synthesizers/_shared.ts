@@ -1,6 +1,4 @@
 import * as crypto from 'crypto';
-import * as fs from 'fs';
-import * as path from 'path';
 import { Node, IConstruct } from 'constructs';
 import { ISynthesisSession } from './types';
 import * as cxschema from '../../../cloud-assembly-schema';
@@ -72,20 +70,13 @@ export function addStackArtifactToAssembly(
     ...stackNameProperty,
   };
 
-  const metaFile = path.join(session.assembly.outdir, `${stack.artifactId}.metadata.json`);
-  const hasMeta = Object.keys(meta).length > 0;
-
-  if (hasMeta) {
-    fs.writeFileSync(metaFile, JSON.stringify(meta, undefined, 2), 'utf-8');
-  }
-
   // add an artifact that represents this stack
   session.assembly.addArtifact(stack.artifactId, {
     type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: stack.environment,
     properties,
     dependencies: deps.length > 0 ? deps : undefined,
-    metadataFile: hasMeta ? metaFile : undefined,
+    metadata: Object.keys(meta).length > 0 ? meta : undefined,
     displayName: stack.node.path,
   });
 }
@@ -96,24 +87,17 @@ export function addStackArtifactToAssembly(
 function collectStackMetadata(stack: Stack) {
   const output: { [id: string]: cxschema.MetadataEntry[] } = { };
 
-  const queue: IConstruct[] = [stack];
-
-  let next = queue.shift();
-  while (next) {
-    // break off if we reached a Stack construct that is not a NestedStack
-    if (Stack.isStack(next) && next !== stack && next.nestedStackParent === undefined) {
-      continue;
-    }
-
-    handleNode(next);
-
-    queue.push(...next.node.children);
-    next = queue.shift();
-  }
+  visit(stack);
 
   return output;
 
-  function handleNode(node: IConstruct) {
+  function visit(node: IConstruct) {
+    // break off if we reached a node that is not a child of this stack
+    const parent = findParentStack(node);
+    if (parent !== stack) {
+      return;
+    }
+
     if (node.node.metadata.length > 0) {
       // Make the path absolute
       output[Node.PATH_SEP + node.node.path] = node.node.metadata.map(md => {
@@ -134,6 +118,22 @@ function collectStackMetadata(stack: Stack) {
         return resolved as cxschema.MetadataEntry;
       });
     }
+
+    for (const child of node.node.children) {
+      visit(child);
+    }
+  }
+
+  function findParentStack(node: IConstruct): Stack | undefined {
+    if (Stack.isStack(node) && node.nestedStackParent === undefined) {
+      return node;
+    }
+
+    if (!node.node.scope) {
+      return undefined;
+    }
+
+    return findParentStack(node.node.scope);
   }
 }
 

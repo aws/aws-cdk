@@ -1,10 +1,7 @@
-import * as fs from 'fs';
-import { join } from 'path';
 import type { CloudAssembly } from './cloud-assembly';
 import { MetadataEntryResult, SynthesisMessage, SynthesisMessageLevel } from './metadata';
 import * as cxschema from '../../cloud-assembly-schema';
 import { CloudAssemblyError } from './private/error';
-import { UnscopedValidationError } from '../../core';
 
 /**
  * Artifact properties for CloudFormation stacks.
@@ -73,8 +70,6 @@ export class CloudArtifact {
    */
   private _deps?: CloudArtifact[];
 
-  private _metaCache?: Metadata;
-
   protected constructor(public readonly assembly: CloudAssembly, public readonly id: string, manifest: cxschema.ArtifactManifest) {
     this.manifest = manifest;
     this.messages = this.renderMessages();
@@ -102,33 +97,15 @@ export class CloudArtifact {
    * @returns all the metadata entries of a specific type in this artifact.
    */
   public findMetadataByType(type: string): MetadataEntryResult[] {
-    let metadata: Metadata;
-    if (this.manifest.metadataFile) {
-      metadata = this.loadMetadataFromFile();
-    } else {
-      metadata = this.manifest.metadata ?? {};
-    }
-
     const result = new Array<MetadataEntryResult>();
-    for (const [path, entries] of Object.entries(this.manifest.metadata ?? {})) {
-      result.push(...entries
-        .filter(e => e.type === type)
-        .map(e => ({ path, ...e })));
+    for (const path of Object.keys(this.manifest.metadata || {})) {
+      for (const entry of (this.manifest.metadata || {})[path]) {
+        if (entry.type === type) {
+          result.push({ path, ...entry });
+        }
+      }
     }
     return result;
-  }
-
-  private loadMetadataFromFile(): Metadata {
-    if (!this.manifest.metadataFile) {
-      throw new UnscopedValidationError('Should have had a file');
-    }
-
-    if (!this._metaCache) {
-      const meta = JSON.parse(fs.readFileSync(join(this.assembly.directory, this.manifest.metadataFile), 'utf-8'));
-      this._metaCache = meta as NonNullable<typeof this._metaCache>;
-    }
-
-    return this._metaCache;
   }
 
   private renderMessages() {
@@ -167,5 +144,3 @@ export class CloudArtifact {
     return this.manifest.displayName ?? this.id;
   }
 }
-
-type Metadata = Record<string, cxschema.MetadataEntry[]>;
