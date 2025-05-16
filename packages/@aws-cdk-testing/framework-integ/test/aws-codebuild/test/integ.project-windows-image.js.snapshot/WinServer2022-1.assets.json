@@ -1,16 +1,16 @@
 {
   "version": "41.0.0",
   "files": {
-    "dec1d132f4e572dd7762d43b8dac666629a2f9d085a892097f7f7ad7d40faf01": {
-      "displayName": "WinCore2019-1 Template",
+    "30068986393e7d9c7c1b79c3ecf036e784720a868d606f5c8a89e0a06cfc7ed8": {
+      "displayName": "WinServer2022-1 Template",
       "source": {
-        "path": "WinCore2019-1.template.json",
+        "path": "WinServer2022-1.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "dec1d132f4e572dd7762d43b8dac666629a2f9d085a892097f7f7ad7d40faf01.json",
+          "objectKey": "30068986393e7d9c7c1b79c3ecf036e784720a868d606f5c8a89e0a06cfc7ed8.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
