@@ -1285,7 +1285,7 @@ Set this flag to false for existing mount targets.
 Flag type: New default behavior
 
 If this is set, and a `runtime` prop is not passed to, Lambda NodeJs
-functions will us the latest version of the runtime provided by the Lambda
+functions will us the v18 version of the runtime provided by the Lambda
 service. Do not use this if you your lambda function is reliant on dependencies
 shipped as part of the runtime environment.
 
