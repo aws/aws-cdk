@@ -531,6 +531,12 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       throw new ValidationError('Cannot activate enablePropagateAdditionalUserContextData in an app client without a client secret.', this);
     }
 
+    if (props.refreshTokenRotation && props.refreshTokenRotation.retryGracePeriodSeconds) {
+      if (props.refreshTokenRotation.retryGracePeriodSeconds < 0 || props.refreshTokenRotation.retryGracePeriodSeconds > 60) {
+        throw new ValidationError('retryGracePeriodSeconds for refresh token rotation should be between 0 and 60 seconds.', this);
+      }
+    }
+
     this._generateSecret = props.generateSecret;
     this.userPool = props.userPool;
 
@@ -620,8 +626,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     if (props.authFlows.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
     if (props.authFlows.user) { authFlows.push('ALLOW_USER_AUTH'); }
 
-    // refreshToken should always be allowed if authFlows are present
-    authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
+    // refreshToken should only be allowed if authFlows are present and refreshTokenRotation is disabled
+    if (!props.refreshTokenRotation || props.refreshTokenRotation.feature === 'DISABLED') {
+      authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
+    }
 
     return authFlows;
   }
