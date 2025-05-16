@@ -19,7 +19,7 @@ describe(synthetics.Code.fromInline, () => {
       };`);
 
     // THEN
-    expect(inline.bind(stack, 'index.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1.name).inlineCode).toEqual(`
+    expect(inline.bind(stack, 'index.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0.name).inlineCode).toEqual(`
       exports.handler = async () => {
         console.log(\'hello world\');
       };`);
@@ -35,7 +35,7 @@ describe(synthetics.Code.fromInline, () => {
     const stack = new Stack(new App(), 'canaries');
 
     // THEN
-    expect(() => synthetics.Code.fromInline('code').bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1.name))
+    expect(() => synthetics.Code.fromInline('code').bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0.name))
       .toThrow('The handler for inline code must be "index.handler" (got "canary.handler")');
   });
 });
@@ -52,15 +52,15 @@ describe(synthetics.Code.fromAsset, () => {
         handler: 'canary.handler',
         code: directoryAsset,
       }),
-      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
       Code: {
         Handler: 'canary.handler',
-        S3Bucket: stack.resolve(directoryAsset.bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1.name).s3Location?.bucketName),
-        S3Key: stack.resolve(directoryAsset.bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1.name).s3Location?.objectKey),
+        S3Bucket: stack.resolve(directoryAsset.bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0.name).s3Location?.bucketName),
+        S3Key: stack.resolve(directoryAsset.bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0.name).s3Location?.objectKey),
       },
     });
   });
@@ -135,7 +135,7 @@ describe(synthetics.Code.fromAsset, () => {
         handler: 'canary.handler',
         code: directoryAsset,
       }),
-      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
     });
 
     new synthetics.Canary(stack, 'Canary2', {
@@ -143,7 +143,7 @@ describe(synthetics.Code.fromAsset, () => {
         handler: 'canary.handler',
         code: directoryAsset,
       }),
-      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
     });
 
     // THEN
@@ -167,7 +167,7 @@ describe(synthetics.Code.fromAsset, () => {
         handler: 'canary.handler',
         code: directoryAsset,
       }),
-      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
     });
   });
 
@@ -183,7 +183,7 @@ describe(synthetics.Code.fromAsset, () => {
 
     // THEN
     const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules', 'canary.js');
-    expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1.name))
+    expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0.name))
       .toThrow(`Asset must be a .zip file or a directory (${assetPath})`);
   });
 
@@ -193,7 +193,7 @@ describe(synthetics.Code.fromAsset, () => {
 
     // THEN
     const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules');
-    expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1.name))
+    expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0.name))
       .toThrow(`The canary resource requires that the handler is present at "nodejs/node_modules/canary.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
   });
 
@@ -223,7 +223,7 @@ describe(synthetics.Code.fromAsset, () => {
 
     // THEN
     const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules');
-    expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'incorrect.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1.name))
+    expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'incorrect.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0.name))
       .toThrow(`The canary resource requires that the handler is present at "nodejs/node_modules/incorrect.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
   });
 
@@ -249,7 +249,7 @@ describe(synthetics.Code.fromAsset, () => {
     });
 
     // THEN
-    expect(() => code.bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1.name))
+    expect(() => code.bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0.name))
       .not.toThrow();
   });
 
@@ -272,7 +272,7 @@ describe(synthetics.Code.fromAsset, () => {
     });
 
     // THEN
-    expect(() => code.bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1.name))
+    expect(() => code.bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0.name))
       .toThrow(`The canary resource requires that the handler is present at "nodejs/node_modules/canary.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
   });
 });
@@ -285,7 +285,7 @@ describe(synthetics.Code.fromBucket, () => {
 
     // WHEN
     const code = synthetics.Code.fromBucket(bucket, 'code.js');
-    const codeConfig = code.bind(stack, 'code.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1.name);
+    const codeConfig = code.bind(stack, 'code.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0.name);
 
     // THEN
     expect(codeConfig.s3Location?.bucketName).toEqual(bucket.bucketName);
