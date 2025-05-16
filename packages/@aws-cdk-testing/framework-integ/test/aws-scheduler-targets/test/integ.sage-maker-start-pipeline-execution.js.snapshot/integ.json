@@ -9,5 +9,6 @@
       "assertionStack": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert",
       "assertionStackName": "integrationtestsagemakerstartpipelineexecutionDefaultTestDeployAssert19EB5121"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -9,5 +9,6 @@
       "assertionStack": "TriggerTest/DefaultTest/DeployAssert",
       "assertionStackName": "TriggerTestDefaultTestDeployAssert61636546"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

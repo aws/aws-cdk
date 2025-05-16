@@ -1,21 +1,23 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "files": {
-    "db6125c17ee6883a5c42f4340b9dd79a7a8b098470e62fb5ae2048149a34e3cf": {
+    "d6fa38886a871b64de769ec5016af90a071e6429aa8e7de84f595e4e2462e17d": {
+      "displayName": "cross-region-consumer2/Custom::CrossRegionExportReaderCustomResourceProvider Code",
       "source": {
-        "path": "asset.db6125c17ee6883a5c42f4340b9dd79a7a8b098470e62fb5ae2048149a34e3cf",
+        "path": "asset.d6fa38886a871b64de769ec5016af90a071e6429aa8e7de84f595e4e2462e17d",
         "packaging": "zip"
       },
       "destinations": {
         "current_account-us-west-2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "db6125c17ee6883a5c42f4340b9dd79a7a8b098470e62fb5ae2048149a34e3cf.zip",
+          "objectKey": "d6fa38886a871b64de769ec5016af90a071e6429aa8e7de84f595e4e2462e17d.zip",
           "region": "us-west-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
         }
       }
     },
     "2c1f8e61703c6fcccffbef6d962d3cb70ce0075288e0156b118011c987d870e0": {
+      "displayName": "IntegNested Nested Stack Template",
       "source": {
         "path": "crossregionconsumer2IntegNested80DBA5D8.nested.template.json",
         "packaging": "file"
@@ -29,7 +31,8 @@
         }
       }
     },
-    "affe08dfd6e38fd8704ae4d07b3f5382f3f868d245fa0176ba46fafd4da252dc": {
+    "d81531c503262185b2ab7a01f50dc7692c259f50c0301b0d08f60687b49bbfc3": {
+      "displayName": "cross-region-consumer2 Template",
       "source": {
         "path": "cross-region-consumer2.template.json",
         "packaging": "file"
@@ -37,7 +40,7 @@
       "destinations": {
         "current_account-us-west-2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "affe08dfd6e38fd8704ae4d07b3f5382f3f868d245fa0176ba46fafd4da252dc.json",
+          "objectKey": "d81531c503262185b2ab7a01f50dc7692c259f50c0301b0d08f60687b49bbfc3.json",
           "region": "us-west-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
         }

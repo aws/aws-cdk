@@ -8,5 +8,6 @@
       "assertionStack": "ExcludeCharactersInteg/DefaultTest/DeployAssert",
       "assertionStackName": "ExcludeCharactersIntegDefaultTestDeployAssertF357433F"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

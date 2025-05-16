@@ -108,12 +108,13 @@ export const PARTITION_SAML_SIGN_ON_URL: Partial<Record<Partition, string>> = {
 enum Runtime {
   NODE_18 = 'nodejs18.x',
   NODE_20 = 'nodejs20.x',
+  NODE_22 = 'nodejs22.x',
 }
 
 export const LATEST_NODE_RUNTIME_MAP: Record<Partition, string> = {
-  [Partition.Default]: Runtime.NODE_20,
-  [Partition.Cn]: Runtime.NODE_20,
-  [Partition.UsGov]: Runtime.NODE_20,
+  [Partition.Default]: Runtime.NODE_22,
+  [Partition.Cn]: Runtime.NODE_22,
+  [Partition.UsGov]: Runtime.NODE_22,
   [Partition.UsIso]: Runtime.NODE_18,
   [Partition.UsIsoB]: Runtime.NODE_18,
   [Partition.UsIsoF]: Runtime.NODE_18,

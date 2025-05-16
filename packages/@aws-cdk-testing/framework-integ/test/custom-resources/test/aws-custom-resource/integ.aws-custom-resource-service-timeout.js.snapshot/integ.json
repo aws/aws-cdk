@@ -10,5 +10,6 @@
       "assertionStack": "aws-cdk-customresources-service-timeout-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkcustomresourcesservicetimeoutintegtestDefaultTestDeployAssert593A6038"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -8,5 +8,6 @@
       "assertionStack": "integ-test-bucket-deployment-data/DefaultTest/DeployAssert",
       "assertionStackName": "integtestbucketdeploymentdataDefaultTestDeployAssert6FF3075D"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

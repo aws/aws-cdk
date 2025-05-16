@@ -9,5 +9,6 @@
       "assertionStack": "ElasticSearchUnsignedBasicAuthInteg/DefaultTest/DeployAssert",
       "assertionStackName": "ElasticSearchUnsignedBasicAuthIntegDefaultTestDeployAssertB125FC47"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

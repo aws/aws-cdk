@@ -9,5 +9,6 @@
       "assertionStack": "eks-fargate-cluster/DefaultTest/DeployAssert",
       "assertionStackName": "eksfargateclusterDefaultTestDeployAssertAA8FD90E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

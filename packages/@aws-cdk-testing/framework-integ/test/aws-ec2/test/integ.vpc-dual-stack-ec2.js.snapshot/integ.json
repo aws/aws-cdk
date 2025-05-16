@@ -8,5 +8,6 @@
       "assertionStack": "vpc-dual-stack-ec2-test/DefaultTest/DeployAssert",
       "assertionStackName": "vpcdualstackec2testDefaultTestDeployAssertB4C8CEE8"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "testCases": {
     "cdk-integ-alb-log/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "cdk-integ-alb-log/DefaultTest/DeployAssert",
       "assertionStackName": "cdkintegalblogDefaultTestDeployAssert0863986A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

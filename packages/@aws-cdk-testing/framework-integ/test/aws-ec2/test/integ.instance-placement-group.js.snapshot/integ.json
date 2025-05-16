@@ -8,5 +8,6 @@
       "assertionStack": "Ec2InstancePlacementGroup/DefaultTest/DeployAssert",
       "assertionStackName": "Ec2InstancePlacementGroupDefaultTestDeployAssertCBC801E8"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

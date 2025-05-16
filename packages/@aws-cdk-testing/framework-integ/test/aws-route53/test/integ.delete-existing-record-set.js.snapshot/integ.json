@@ -9,5 +9,6 @@
       "assertionStack": "Rooute53DeleteExistingRecordSetInteg/DefaultTest/DeployAssert",
       "assertionStackName": "Rooute53DeleteExistingRecordSetIntegDefaultTestDeployAssert62638412"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

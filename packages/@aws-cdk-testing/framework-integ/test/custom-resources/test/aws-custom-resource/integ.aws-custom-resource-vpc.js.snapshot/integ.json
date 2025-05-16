@@ -9,5 +9,6 @@
       "assertionStack": "CustomResourceVpc/DefaultTest/DeployAssert",
       "assertionStackName": "CustomResourceVpcDefaultTestDeployAssert5F9D2F88"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -8,5 +8,6 @@
       "assertionStack": "efsReplicationIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "efsReplicationIntegTestDefaultTestDeployAssert2C078280"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

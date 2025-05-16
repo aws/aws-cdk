@@ -8,5 +8,6 @@
       "assertionStack": "integtest-pipe-target-firehose/DefaultTest/DeployAssert",
       "assertionStackName": "integtestpipetargetfirehoseDefaultTestDeployAssert84E7EC09"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -16,5 +16,6 @@
       "assertionStack": "lambda-layer-kubectl-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "lambdalayerkubectlintegtestDefaultTestDeployAssertB3B33DD7"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

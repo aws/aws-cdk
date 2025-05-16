@@ -8,5 +8,6 @@
       "assertionStack": "DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert",
       "assertionStackName": "DistributedMapResultWriterwithWriterConfigDefaultTestDeployAssert6B4CFE00"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
