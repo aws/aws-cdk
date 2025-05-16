@@ -1,0 +1,13 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "integ-tests-lambda-loggroup-tag-inherit/DefaultTest": {
+      "stacks": [
+        "loggroup-tag-inherit"
+      ],
+      "assertionStack": "integ-tests-lambda-loggroup-tag-inherit/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestslambdaloggrouptaginheritDefaultTestDeployAssertE0ADECB2"
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}
