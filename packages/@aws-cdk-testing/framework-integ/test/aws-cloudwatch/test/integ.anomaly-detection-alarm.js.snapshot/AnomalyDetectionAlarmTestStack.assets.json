@@ -1,16 +1,16 @@
 {
   "version": "41.0.0",
   "files": {
-    "717ffb16444dfd15e598a19f6b059a129150f5cabced3e65e54ce881ab1c10bf": {
-      "displayName": "aws-cdk-cloudwatch Template",
+    "89e20064faee3c465524258c6d4241fb1ff706f0ce522ac300e5588dc40dd64b": {
+      "displayName": "AnomalyDetectionAlarmTestStack Template",
       "source": {
-        "path": "aws-cdk-cloudwatch.template.json",
+        "path": "AnomalyDetectionAlarmTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "717ffb16444dfd15e598a19f6b059a129150f5cabced3e65e54ce881ab1c10bf.json",
+          "objectKey": "89e20064faee3c465524258c6d4241fb1ff706f0ce522ac300e5588dc40dd64b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
