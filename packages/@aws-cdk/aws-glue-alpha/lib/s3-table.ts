@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import { Column } from './schema';
 import { PartitionIndex, TableBase, TableBaseProps } from './table-base';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Encryption options for a Table.
@@ -81,7 +82,10 @@ export interface S3TableProps extends TableBaseProps {
  * A Glue table that targets a S3 dataset.
  * @resource AWS::Glue::Table
  */
+@propertyInjectable
 export class S3Table extends TableBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.S3Table';
   /**
    * Name of this table.
    */

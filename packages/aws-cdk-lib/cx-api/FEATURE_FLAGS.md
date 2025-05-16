@@ -101,8 +101,8 @@ Flags come in three types:
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | 2.189.0 | new default |
 | [@aws-cdk/core:aspectPrioritiesMutating](#aws-cdkcoreaspectprioritiesmutating) | When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING. | 2.189.1 | new default |
 | [@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions](#aws-cdks3-notificationsadds3trustkeypolicyforsnssubscriptions) | Add an S3 trust policy to a KMS key resource policy for SNS subscriptions. | 2.195.0 | fix |
-| [@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway](#aws-cdkaws-ec2requireprivatesubnetsforegressonlyinternetgateway) | When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC. | V2NEXT | fix |
-| [@aws-cdk/aws-s3:publicAccessBlockedByDefault](#aws-cdkaws-s3publicaccessblockedbydefault) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | V2NEXT | fix |
+| [@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway](#aws-cdkaws-ec2requireprivatesubnetsforegressonlyinternetgateway) | When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC. | 2.196.0 | fix |
+| [@aws-cdk/aws-s3:publicAccessBlockedByDefault](#aws-cdkaws-s3publicaccessblockedbydefault) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | 2.196.0 | fix |
 
 <!-- END table -->
 
@@ -2154,7 +2154,7 @@ When this feature flag is enabled, EgressOnlyGateway resource will not be create
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.196.0 | `false` | `true` |
 
 
 ### @aws-cdk/aws-s3:publicAccessBlockedByDefault
@@ -2172,7 +2172,7 @@ The new behavior from this feature will allow a user, for example, to set 1 of t
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.196.0 | `false` | `true` |
 
 
 <!-- END details -->

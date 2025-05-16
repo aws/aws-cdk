@@ -8,6 +8,7 @@ import { isAccountUnresolved } from './private/utils';
 import { InputValidator } from './private/validation';
 import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } from 'aws-cdk-lib/aws-servicecatalogappregistry';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 const APPLICATION_READ_ONLY_RAM_PERMISSION_ARN = `arn:${cdk.Aws.PARTITION}:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly`;
 const APPLICATION_ALLOW_ACCESS_RAM_PERMISSION_ARN = `arn:${cdk.Aws.PARTITION}:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation`;
@@ -271,7 +272,11 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
 /**
  * A Service Catalog AppRegistry Application.
  */
+@propertyInjectable
 export class Application extends ApplicationBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-servicecatalogappregistry-alpha.Application';
+
   /**
    * Imports an Application construct that represents an external application.
    *

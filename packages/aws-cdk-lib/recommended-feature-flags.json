@@ -76,3 +76,4 @@
   "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
   "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true
 }
+

@@ -8,6 +8,7 @@ import {
   Token,
 } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { OidcProvider } from '../../custom-resource-handlers/dist/aws-iam/oidc-provider.generated';
 import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from '../../cx-api';
 
@@ -102,7 +103,11 @@ export interface OpenIdConnectProviderProps {
  *
  * @resource AWS::CloudFormation::CustomResource
  */
+@propertyInjectable
 export class OpenIdConnectProvider extends Resource implements IOpenIdConnectProvider {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.OpenIdConnectProvider';
+
   /**
    * Imports an Open ID connect provider from an ARN.
    * @param scope The definition scope

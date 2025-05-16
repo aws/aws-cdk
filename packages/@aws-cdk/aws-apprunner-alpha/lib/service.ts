@@ -12,6 +12,7 @@ import { IVpcConnector } from './vpc-connector';
 import { IAutoScalingConfiguration } from './auto-scaling-configuration';
 import { IObservabilityConfiguration } from './observability-configuration';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * The image repository types
@@ -1179,7 +1180,11 @@ export abstract class Secret {
 /**
  * The App Runner Service.
  */
+@propertyInjectable
 export class Service extends cdk.Resource implements IService, iam.IGrantable {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-apprunner-alpha.Service';
+
   /**
    * Import from service name.
    */

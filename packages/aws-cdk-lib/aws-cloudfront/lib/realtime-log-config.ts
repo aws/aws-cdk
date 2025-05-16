@@ -3,6 +3,7 @@ import { CfnRealtimeLogConfig } from './cloudfront.generated';
 import { Endpoint } from '../';
 import { IResource, Lazy, Names, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents Realtime Log Configuration
@@ -51,7 +52,10 @@ export interface RealtimeLogConfigProps {
  *
  * @resource AWS::CloudFront::RealtimeLogConfig
  */
+@propertyInjectable
 export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.RealtimeLogConfig';
   public readonly realtimeLogConfigName: string;
   public readonly realtimeLogConfigArn: string;
 

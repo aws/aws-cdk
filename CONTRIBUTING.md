@@ -217,7 +217,7 @@ See [Gitpod section](#gitpod) on how to set up the CDK repo on Gitpod.
 
 The following tools need to be installed on your system prior to installing the CDK:
 
-- [Node.js >= 14.15.0](https://nodejs.org/download/release/latest-v14.x/)
+- [Node.js >= 20.x](https://nodejs.org/en/download)
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
 - [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
 - [.NET SDK >= 6.0.x](https://www.microsoft.com/net/download)

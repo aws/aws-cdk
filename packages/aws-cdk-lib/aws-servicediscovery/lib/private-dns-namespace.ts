@@ -5,6 +5,7 @@ import { CfnPrivateDnsNamespace } from './servicediscovery.generated';
 import * as ec2 from '../../aws-ec2';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   /**
@@ -35,7 +36,11 @@ export interface PrivateDnsNamespaceAttributes {
 /**
  * Define a Service Discovery HTTP Namespace
  */
+@propertyInjectable
 export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespace {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicediscovery.PrivateDnsNamespace';
+
   public static fromPrivateDnsNamespaceAttributes(scope: Construct, id: string, attrs: PrivateDnsNamespaceAttributes): IPrivateDnsNamespace {
     class Import extends Resource implements IPrivateDnsNamespace {
       public namespaceName = attrs.namespaceName;

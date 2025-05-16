@@ -3,6 +3,7 @@ import { ICluster } from './cluster';
 import { CfnAddon } from 'aws-cdk-lib/aws-eks';
 import { ArnFormat, IResource, Resource, Stack, Fn } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents an Amazon EKS Add-On.
@@ -69,7 +70,11 @@ export interface AddonAttributes {
  * Represents an Amazon EKS Add-On.
  * @resource AWS::EKS::Addon
  */
+@propertyInjectable
 export class Addon extends Resource implements IAddon {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.Addon';
+
   /**
    * Creates an `IAddon` instance from the given addon attributes.
    *

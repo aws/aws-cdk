@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { MAX_POLICY_NAME_LEN } from './util';
 import { FeatureFlags, Names, Resource, Token, TokenComparison, Annotations } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../../cx-api';
 import { Grant } from '../grant';
 import { IManagedPolicy, ManagedPolicy } from '../managed-policy';
@@ -17,7 +18,10 @@ export interface ImportedRoleProps extends FromRoleArnOptions {
   readonly account?: string;
 }
 
+@propertyInjectable
 export class ImportedRole extends Resource implements IRole, IComparablePrincipal {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.ImportedRole';
   public readonly grantPrincipal: IPrincipal = this;
   public readonly principalAccount?: string;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';

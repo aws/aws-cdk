@@ -3,6 +3,7 @@ import { DropSpamReceiptRule, ReceiptRule, ReceiptRuleOptions } from './receipt-
 import { CfnReceiptRuleSet } from './ses.generated';
 import { IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A receipt rule set.
@@ -85,7 +86,11 @@ abstract class ReceiptRuleSetBase extends Resource implements IReceiptRuleSet {
 /**
  * A new receipt rule set.
  */
+@propertyInjectable
 export class ReceiptRuleSet extends ReceiptRuleSetBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ses.ReceiptRuleSet';
+
   /**
    * Import an exported receipt rule set.
    */

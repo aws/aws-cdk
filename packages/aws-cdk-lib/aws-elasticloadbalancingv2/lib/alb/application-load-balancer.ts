@@ -1205,7 +1205,10 @@ export interface ApplicationLoadBalancerAttributes {
 /**
  * An ApplicationLoadBalancer that has been defined elsewhere
  */
+@propertyInjectable
 class ImportedApplicationLoadBalancer extends Resource implements IApplicationLoadBalancer {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.ImportedApplicationLoadBalancer';
   /**
    * Manage connections for this load balancer
    */
@@ -1266,7 +1269,10 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
   }
 }
 
+@propertyInjectable
 class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLoadBalancer {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.LookedUpApplicationLoadBalancer';
   public readonly loadBalancerArn: string;
   public readonly loadBalancerCanonicalHostedZoneId: string;
   public readonly loadBalancerDnsName: string;

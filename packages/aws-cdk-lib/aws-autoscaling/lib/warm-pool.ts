@@ -3,6 +3,7 @@ import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnWarmPool } from './autoscaling.generated';
 import { Lazy, Names, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Options for a warm pool
@@ -55,7 +56,11 @@ export interface WarmPoolProps extends WarmPoolOptions {
 /**
  * Define a warm pool
  */
+@propertyInjectable
 export class WarmPool extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-autoscaling.WarmPool';
+
   constructor(scope: Construct, id: string, props: WarmPoolProps) {
     super(scope, id, {
       physicalName: Lazy.string({ produce: () => Names.uniqueId(this) }),

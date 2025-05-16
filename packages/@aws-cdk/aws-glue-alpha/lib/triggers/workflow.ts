@@ -16,6 +16,7 @@ import {
   ConditionalTriggerOptions,
 } from './trigger-options';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * The base interface for Glue Workflow
@@ -369,7 +370,11 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
  * });
  * ```
  */
+@propertyInjectable
 export class Workflow extends WorkflowBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.Workflow';
+
   /**
    * Import a workflow from its name
    */

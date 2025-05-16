@@ -5,9 +5,10 @@ import { SubscriptionFilter } from './subscription-filter';
 import { ITopic } from './topic-base';
 import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
 import { IQueue } from '../../aws-sqs';
-import { propertyInjectable, Resource } from '../../core';
+import { Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Options for creating a new subscription

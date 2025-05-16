@@ -4,6 +4,7 @@ import { CertificateBase } from './certificate-base';
 import { CfnCertificate } from './certificatemanager.generated';
 import * as acmpca from '../../aws-acmpca';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for your private certificate
@@ -48,7 +49,11 @@ export interface PrivateCertificateProps {
  *
  * @resource AWS::CertificateManager::Certificate
  */
+@propertyInjectable
 export class PrivateCertificate extends CertificateBase implements ICertificate {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-certificatemanager.PrivateCertificate';
+
   /**
    * Import a certificate
    */

@@ -9,6 +9,7 @@ import { Architecture } from '../../aws-lambda';
 import * as lambda from '../../aws-lambda';
 import { Annotations, FeatureFlags } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
 
 /**
@@ -110,7 +111,11 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
 /**
  * A Node.js Lambda function bundled using esbuild
  */
+@propertyInjectable
 export class NodejsFunction extends lambda.Function {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda-nodejs.NodejsFunction';
+
   constructor(scope: Construct, id: string, props: NodejsFunctionProps = {}) {
     if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.NODEJS) {
       throw new Error('Only `NODEJS` runtimes are supported.');

@@ -4,6 +4,7 @@ import { DnsRecordType, IService } from './service';
 import { CfnInstance } from './servicediscovery.generated';
 import { ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /*
  * Properties for a IpInstance used for service#registerIpInstance
@@ -50,7 +51,10 @@ export interface IpInstanceProps extends IpInstanceBaseProps {
  *
  * @resource AWS::ServiceDiscovery::Instance
  */
+@propertyInjectable
 export class IpInstance extends InstanceBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicediscovery.IpInstance';
   /**
    * The Id of the instance
    */

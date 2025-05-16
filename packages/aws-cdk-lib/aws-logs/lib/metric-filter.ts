@@ -4,6 +4,7 @@ import { CfnMetricFilter } from './logs.generated';
 import { Metric, MetricOptions } from '../../aws-cloudwatch';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for a MetricFilter
@@ -18,7 +19,10 @@ export interface MetricFilterProps extends MetricFilterOptions {
 /**
  * A filter that extracts information from CloudWatch Logs and emits to CloudWatch Metrics
  */
+@propertyInjectable
 export class MetricFilter extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-logs.MetricFilter';
   private readonly metricName: string;
   private readonly metricNamespace: string;
 

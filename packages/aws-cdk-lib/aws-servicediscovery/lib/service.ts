@@ -10,6 +10,7 @@ import { CfnService } from './servicediscovery.generated';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { Duration, IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IService extends IResource {
   /**
@@ -166,7 +167,11 @@ export interface ServiceAttributes {
 /**
  * Define a CloudMap Service
  */
+@propertyInjectable
 export class Service extends ServiceBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicediscovery.Service';
+
   public static fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IService {
     class Import extends ServiceBase {
       public namespace: INamespace = attrs.namespace;

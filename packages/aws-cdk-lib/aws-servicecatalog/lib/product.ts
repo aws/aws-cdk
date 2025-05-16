@@ -8,6 +8,7 @@ import { TagOptions } from './tag-options';
 import { IBucket } from '../../aws-s3';
 import { ArnFormat, IResource, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A Service Catalog product, currently only supports type CloudFormationProduct
@@ -178,7 +179,10 @@ export abstract class Product extends ProductBase {
 /**
  * A Service Catalog Cloudformation Product.
  */
+@propertyInjectable
 export class CloudFormationProduct extends Product {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicecatalog.CloudFormationProduct';
   public readonly productArn: string;
   public readonly productId: string;
   /**

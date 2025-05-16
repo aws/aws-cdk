@@ -2469,7 +2469,10 @@ function ifUndefined<T>(value: T | undefined, defaultValue: T): T {
   return value ?? defaultValue;
 }
 
+@propertyInjectable
 class ImportedVpc extends VpcBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.ImportedVpc';
   public readonly vpcId: string;
   public readonly vpcArn: string;
   public readonly publicSubnets: ISubnet[];
@@ -2523,7 +2526,10 @@ class ImportedVpc extends VpcBase {
   }
 }
 
+@propertyInjectable
 class LookedUpVpc extends VpcBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.LookedUpVpc';
   public readonly vpcId: string;
   public readonly vpcArn: string;
   public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
@@ -2634,7 +2640,10 @@ function tap<T>(x: T, fn: (x: T) => void): T {
   return x;
 }
 
+@propertyInjectable
 class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivateSubnet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.ImportedSubnet';
   public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
   public readonly subnetId: string;
   public readonly routeTable: IRouteTable;
