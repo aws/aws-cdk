@@ -103,6 +103,12 @@ new ses.AllowListReceiptFilter(this, 'AllowList', {
 
 This will first create a block all filter and then create allow filters for the listed ip addresses.
 
+### AWS Service Principal permissions
+
+When adding an s3 action to a receipt rule, the CDK will automatically create a policy statement that allows the ses service principal to get write access to the bucket. This is done with the `SourceAccount` condition key, which is automatically added to the policy statement.
+Previously, the policy used the `Referer` condition key, which caused confused deputy problems when the bucket policy allowed access to the bucket for all principals.
+See more information in [this github issue](https://github.com/aws/aws-cdk/issues/29811)
+
 ## Email sending
 
 ### Dedicated IP pools
