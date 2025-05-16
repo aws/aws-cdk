@@ -3,6 +3,7 @@ import { ILogGroup } from './log-group';
 import { CfnLogStream } from './logs.generated';
 import { IResource, RemovalPolicy, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface ILogStream extends IResource {
   /**
@@ -48,7 +49,11 @@ export interface LogStreamProps {
 /**
  * Define a Log Stream in a Log Group
  */
+@propertyInjectable
 export class LogStream extends Resource implements ILogStream {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-logs.LogStream';
+
   /**
    * Import an existing LogGroup
    */

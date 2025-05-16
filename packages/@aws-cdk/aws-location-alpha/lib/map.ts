@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { CfnMap } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents the Amazon Location Service Map
@@ -220,7 +221,11 @@ export enum PoliticalView {
  *
  * @see https://docs.aws.amazon.com/location/latest/developerguide/map-concepts.html
  */
+@propertyInjectable
 export class Map extends Resource implements IMap {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-location-alpha.Map';
+
   /**
    * Use an existing map by name
    */

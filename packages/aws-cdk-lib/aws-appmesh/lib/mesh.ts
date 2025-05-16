@@ -6,6 +6,7 @@ import { VirtualNode, VirtualNodeBaseProps } from './virtual-node';
 import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A utility enum defined for the egressFilter type property, the default of DROP_ALL,
@@ -140,7 +141,11 @@ export interface MeshProps {
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/meshes.html
  */
+@propertyInjectable
 export class Mesh extends MeshBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appmesh.Mesh';
+
   /**
    * Import an existing mesh by arn
    */

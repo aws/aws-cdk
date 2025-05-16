@@ -3,6 +3,7 @@ import { Annotations } from './annotations';
 import { CfnResource } from './cfn-resource';
 import { Duration } from './duration';
 import { addConstructMetadata, MethodMetadata } from './metadata-resource';
+import { propertyInjectable } from './prop-injectable';
 import { RemovalPolicy } from './removal-policy';
 import { Resource } from './resource';
 import { Token } from './token';
@@ -155,7 +156,10 @@ export interface CustomResourceProps {
  *
  * @resource AWS::CloudFormation::CustomResource
  */
+@propertyInjectable
 export class CustomResource extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.core.CustomResource';
   private readonly resource: CfnResource;
 
   constructor(scope: Construct, id: string, props: CustomResourceProps) {

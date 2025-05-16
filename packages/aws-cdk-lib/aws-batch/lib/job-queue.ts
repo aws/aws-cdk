@@ -4,6 +4,7 @@ import { IComputeEnvironment } from './compute-environment-base';
 import { ISchedulingPolicy } from './scheduling-policy';
 import { ArnFormat, Duration, IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a JobQueue
@@ -228,7 +229,11 @@ export enum JobStateTimeLimitActionsState {
  * sent to the linked ComputeEnvironment(s) to be executed.
  * Jobs exit the queue in FIFO order unless a `SchedulingPolicy` is linked.
  */
+@propertyInjectable
 export class JobQueue extends Resource implements IJobQueue {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.JobQueue';
+
   /**
    * refer to an existing JobQueue by its arn
    */

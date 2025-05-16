@@ -5,6 +5,7 @@ import { DnsRecordType, IService, RoutingPolicy } from './service';
 import { CfnInstance } from './servicediscovery.generated';
 import { Names, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /*
  * Properties for an AliasTargetInstance
@@ -27,7 +28,10 @@ export interface AliasTargetInstanceProps extends BaseInstanceProps {
  *
  * @resource AWS::ServiceDiscovery::Instance
  */
+@propertyInjectable
 export class AliasTargetInstance extends InstanceBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicediscovery.AliasTargetInstance';
   /**
    * The Id of the instance
    */

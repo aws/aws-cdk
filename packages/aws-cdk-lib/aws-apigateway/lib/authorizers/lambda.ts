@@ -5,6 +5,7 @@ import * as lambda from '../../../aws-lambda';
 import { Arn, ArnFormat, Duration, FeatureFlags, Lazy, Names, Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID } from '../../../cx-api';
 import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
@@ -199,7 +200,10 @@ export interface TokenAuthorizerProps extends LambdaAuthorizerProps {
  *
  * @resource AWS::ApiGateway::Authorizer
  */
+@propertyInjectable
 export class TokenAuthorizer extends LambdaAuthorizer {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.TokenAuthorizer';
   public readonly authorizerId: string;
 
   public readonly authorizerArn: string;
@@ -265,7 +269,10 @@ export interface RequestAuthorizerProps extends LambdaAuthorizerProps {
  *
  * @resource AWS::ApiGateway::Authorizer
  */
+@propertyInjectable
 export class RequestAuthorizer extends LambdaAuthorizer {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.RequestAuthorizer';
   public readonly authorizerId: string;
 
   public readonly authorizerArn: string;

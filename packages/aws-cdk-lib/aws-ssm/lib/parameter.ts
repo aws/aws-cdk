@@ -12,6 +12,7 @@ import {
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * An SSM Parameter reference.
@@ -467,7 +468,11 @@ export interface SecureStringParameterAttributes extends CommonStringParameterAt
  *    stringValue: 'mySsmParameterValue',
  * });
  */
+@propertyInjectable
 export class StringParameter extends ParameterBase implements IStringParameter {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ssm.StringParameter';
+
   /**
    * Imports an external string parameter by name.
    */
@@ -707,7 +712,11 @@ export class StringParameter extends ParameterBase implements IStringParameter {
  * Creates a new StringList SSM Parameter.
  * @resource AWS::SSM::Parameter
  */
+@propertyInjectable
 export class StringListParameter extends ParameterBase implements IStringListParameter {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ssm.StringListParameter';
+
   /**
    * Imports an external parameter of type string list.
    * Returns a token and should not be parsed.

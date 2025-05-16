@@ -2,8 +2,9 @@ import { Construct } from 'constructs';
 import { CfnTopicPolicy } from './sns.generated';
 import { ITopic } from './topic-base';
 import { Effect, PolicyDocument, PolicyStatement, StarPrincipal } from '../../aws-iam';
-import { propertyInjectable, Resource } from '../../core';
+import { Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties to associate SNS topics with a policy

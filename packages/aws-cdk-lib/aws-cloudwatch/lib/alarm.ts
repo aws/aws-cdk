@@ -13,6 +13,7 @@ import { MetricSet } from './private/rendering';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
 import { ArnFormat, Lazy, Stack, Token, Annotations, ValidationError, AssumptionError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for Alarms
@@ -139,7 +140,11 @@ export enum TreatMissingData {
 /**
  * An alarm on a CloudWatch metric
  */
+@propertyInjectable
 export class Alarm extends AlarmBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudwatch.Alarm';
+
   /**
    * Conventional value for the threshold property when creating anomaly detection alarms.
    *

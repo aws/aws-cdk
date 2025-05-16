@@ -4,6 +4,7 @@ import { Job, JobProps } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, WorkerType, Runtime } from '../constants';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties for creating a Ray Glue job
@@ -37,7 +38,10 @@ export interface RayJobProps extends JobProps {
  * Glue Ray jobs currently support. The runtime defaults to Ray2.4 and min
  * workers defaults to 3.
  */
+@propertyInjectable
 export class RayJob extends Job {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.RayJob';
   public readonly jobArn: string;
   public readonly jobName: string;
   public readonly role: iam.IRole;

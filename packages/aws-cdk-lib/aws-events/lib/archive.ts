@@ -5,6 +5,7 @@ import { CfnArchive } from './events.generated';
 import { renderEventPattern } from './util';
 import { Duration, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The event archive base properties
@@ -48,7 +49,10 @@ export interface ArchiveProps extends BaseArchiveProps {
  *
  * @resource AWS::Events::Archive
  */
+@propertyInjectable
 export class Archive extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.Archive';
   /**
    * The archive name.
    * @attribute
