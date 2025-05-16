@@ -406,7 +406,10 @@
         "/CrossAccountSourceStack/CdkPipelineInvestigationStackPipeline029CB441-Source-S3Source-ActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CdkPipelineInvestigationStackPipeline029CB441SourceS3SourceActionRole7C8DE2D3"
+            "data": "CdkPipelineInvestigationStackPipeline029CB441SourceS3SourceActionRole7C8DE2D3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/CrossAccountSourceStack/CdkPipelineInvestigationStackPipeline029CB441-Source-S3Source-ActionRole/DefaultPolicy": [
@@ -1523,5 +1526,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1014.0"
+  "minimumCliVersion": "2.1015.0"
 }

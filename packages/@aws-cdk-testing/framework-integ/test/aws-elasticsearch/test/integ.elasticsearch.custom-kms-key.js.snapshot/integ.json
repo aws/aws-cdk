@@ -9,5 +9,6 @@
       "assertionStack": "ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert",
       "assertionStackName": "ElasticsearchCustomKmsIntegDefaultTestDeployAssertFEEBA45B"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

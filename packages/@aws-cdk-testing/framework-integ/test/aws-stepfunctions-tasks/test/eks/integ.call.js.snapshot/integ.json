@@ -16,5 +16,6 @@
       "assertionStack": "aws-stepfunctions-tasks-eks-call-integ/DefaultTest/DeployAssert",
       "assertionStackName": "awsstepfunctionstasksekscallintegDefaultTestDeployAssert2DF4AD1E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
