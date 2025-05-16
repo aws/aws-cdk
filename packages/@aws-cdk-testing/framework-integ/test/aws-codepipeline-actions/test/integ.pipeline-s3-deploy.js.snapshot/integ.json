@@ -9,5 +9,6 @@
       "assertionStack": "s3-deploy-test/DefaultTest/DeployAssert",
       "assertionStackName": "s3deploytestDefaultTestDeployAssert6BC61647"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

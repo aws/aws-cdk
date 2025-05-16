@@ -145,7 +145,6 @@ import { Duration } from 'aws-cdk-lib';
 declare const myPool: ses.IDedicatedIpPool;
 
 new ses.ConfigurationSet(this, 'ConfigurationSet', {
-  customTrackingRedirectDomain: 'track.cdk.dev',
   tlsPolicy: ses.ConfigurationSetTlsPolicy.REQUIRE,
   dedicatedIpPool: myPool,
   // Specify maximum delivery time
@@ -205,6 +204,20 @@ myConfigurationSet.addEventDestination('ToFirehose', {
   }),
 })
 ```
+
+#### Tracking options
+
+You can specify to use a custom redirect domain to handle open and click tracking for email sent with this configuration set by using `customTrackingRedirectDomain` and `customTrackingHttpsPolicy`.
+Detail can be found in [Custom tracking domain](https://docs.aws.amazon.com/ses/latest/dg/configure-custom-open-click-domains.html).
+
+```ts
+new ses.ConfigurationSet(this, 'ConfigurationSet', {
+  customTrackingRedirectDomain: 'track.cdk.dev',
+  customTrackingHttpsPolicy: ses.HttpsPolicy.REQUIRE,
+});
+```
+
+**Note**: The custom tracking redirect domain must be verified in Amazon SES. To create verified identities, you can use the [`EmailIdentity` construct](#email-identity).
 
 ### Override account-level suppression list settings
 
