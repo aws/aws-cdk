@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/1da1c30885895a71fe33a1723f05820621c881d4a82df31863a3118900bd9ba0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/c8e9620b503fe370ef7baaebbac905c39410049d99352765af8b467e441718a9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -196,21 +196,21 @@
     },
     "crossAccountStack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://234567890123/test-region",
+      "environment": "aws://345678901234/test-region",
       "properties": {
         "templateFile": "crossAccountStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-test-region",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-test-region/f5c06f895e2f85a296d671e7c1e875a7e524cf7b7ccd778437dff6d452e781a3.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::345678901234:role/cdk-hnb659fds-deploy-role-345678901234-test-region",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::345678901234:role/cdk-hnb659fds-cfn-exec-role-345678901234-test-region",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-345678901234-test-region/f5c06f895e2f85a296d671e7c1e875a7e524cf7b7ccd778437dff6d452e781a3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "crossAccountStack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-lookup-role-234567890123-test-region",
+          "arn": "arn:${AWS::Partition}:iam::345678901234:role/cdk-hnb659fds-lookup-role-345678901234-test-region",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -287,7 +287,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a4d2ce3432b0062e19c28ccf1b6fb5962ed0310f904663788ce14297713cb105.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ad2541d531051ff63aceb2fccb20c0e17b4f730cfc23da7665f778bbeff3759c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
