@@ -37,7 +37,7 @@
     "@aws-sdk/client-ec2": "3.632.0",
     "@aws-sdk/client-ecr": "3.632.0",
     "@aws-sdk/client-ecs": "3.632.0",
-    "@aws-sdk/client-eks": "3.632.0",
+    "@aws-sdk/client-eks": "^3.779.0",
     "@aws-sdk/client-kinesis": "3.632.0",
     "@aws-sdk/client-kms": "3.632.0",
     "@aws-sdk/client-lambda": "3.632.0",
