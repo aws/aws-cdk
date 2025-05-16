@@ -331,6 +331,74 @@
     "Type": "A",
     "Weight": 0
    }
+  },
+  "Cluster": {
+   "Type": "AWS::Route53RecoveryControl::Cluster",
+   "Properties": {
+    "Name": "cluster"
+   }
+  },
+  "RoutingControl": {
+   "Type": "AWS::Route53RecoveryControl::RoutingControl",
+   "Properties": {
+    "ClusterArn": {
+     "Fn::GetAtt": [
+      "Cluster",
+      "ClusterArn"
+     ]
+    },
+    "Name": "routing-control-name"
+   }
+  },
+  "HealthCheckRecoveryControl984D4A84": {
+   "Type": "AWS::Route53::HealthCheck",
+   "Properties": {
+    "HealthCheckConfig": {
+     "Inverted": false,
+     "RoutingControlArn": {
+      "Fn::GetAtt": [
+       "RoutingControl",
+       "RoutingControlArn"
+      ]
+     },
+     "Type": "RECOVERY_CONTROL"
+    }
+   }
+  },
+  "ARecordRecoveryControl04C35A7A": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HealthCheckId": {
+     "Ref": "HealthCheckRecoveryControl984D4A84"
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "_recoverycontrol.cdk.test.",
+    "ResourceRecords": [
+     "1.2.3.4"
+    ],
+    "SetIdentifier": "WEIGHT_100_ID_awscdkroute53healthchRecordRecoveryControl33B4E614",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 100
+   }
+  },
+  "ARecordRecoveryControl24A358DFD": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "_recoverycontrol.cdk.test.",
+    "ResourceRecords": [
+     "5.6.7.8"
+    ],
+    "SetIdentifier": "WEIGHT_0_ID_awscdkroute53healthcheRecordRecoveryControl260B8110C",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 0
+   }
   }
  },
  "Outputs": {
@@ -388,6 +456,25 @@
    },
    "Export": {
     "Name": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckCloudWatch996681BBF4DB146D"
+   }
+  },
+  "ExportsOutputFnGetAttRoutingControlRoutingControlArnDB738AE3": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RoutingControl",
+     "RoutingControlArn"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-route53-health-check:ExportsOutputFnGetAttRoutingControlRoutingControlArnDB738AE3"
+   }
+  },
+  "ExportsOutputRefHealthCheckRecoveryControl984D4A84E3A8C585": {
+   "Value": {
+    "Ref": "HealthCheckRecoveryControl984D4A84"
+   },
+   "Export": {
+    "Name": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckRecoveryControl984D4A84E3A8C585"
    }
   }
  },
