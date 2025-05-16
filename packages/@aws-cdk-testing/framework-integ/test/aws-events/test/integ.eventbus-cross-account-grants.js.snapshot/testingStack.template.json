@@ -47,7 +47,7 @@
           {
            "Ref": "AWS::Partition"
           },
-          ":events:test-region:540871810575:event-bus/testingBus"
+          ":events:test-region:234567890123:event-bus/testingBus"
          ]
         ]
        }
@@ -72,7 +72,7 @@
     "Environment": {
      "Variables": {
       "EVENT_BUS_NAME": "testingBus",
-      "EVENT_BUS_ACCOUNT": "540871810575"
+      "EVENT_BUS_ACCOUNT": "234567890123"
      }
     },
     "FunctionName": "testingstackgstackmyfunctione83a75ce9ffe929fc705",

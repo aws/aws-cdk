@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04": {
+  "AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14d": {
    "Type": "Custom::DeployAssert@SdkCallS3putObject",
    "Properties": {
     "ServiceToken": {
@@ -12,21 +12,21 @@
     "service": "S3",
     "api": "putObject",
     "stateMachineArn": {
-     "Ref": "AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04WaitFor3C5DBEC4"
+     "Ref": "AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14dWaitFor7FD72988"
     },
     "parameters": {
-     "Bucket": "\"child-stacktacksourcebucket73af284d4976017ababe\"",
+     "Bucket": "\"child-stacktacksourcebucket73af284d4a1fc81dcf6f\"",
      "Key": "\"test-object\"",
      "Body": "\"test-object-body\"",
      "ContentType": "\"text/plain\""
     },
     "flattenResponse": "false",
-    "salt": "1747352562718"
+    "salt": "1747420572643"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04WaitForIsCompleteProviderInvokeCE5EB032": {
+  "AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14dWaitForIsCompleteProviderInvoke6FBA213B": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -38,13 +38,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04WaitForRole222A7D16",
+      "AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14dWaitForRoleED5560C7",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04WaitForTimeoutProviderInvoke3E1F7CF5": {
+  "AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14dWaitForTimeoutProviderInvoke1F2D77D3": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -56,13 +56,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04WaitForRole222A7D16",
+      "AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14dWaitForRoleED5560C7",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04WaitForRole222A7D16": {
+  "AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14dWaitForRoleED5560C7": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -107,7 +107,7 @@
     ]
    }
   },
-  "AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04WaitFor3C5DBEC4": {
+  "AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14dWaitFor7FD72988": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
     "DefinitionString": {
@@ -134,13 +134,13 @@
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04WaitForRole222A7D16",
+      "AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14dWaitForRoleED5560C7",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AwsApiCallS3putObject72c563c29073becb1d7592e14ee7fe04WaitForRole222A7D16"
+    "AwsApiCallS3putObjecta6e8279b7eddaacd6f4263f64667e14dWaitForRoleED5560C7"
    ]
   },
   "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {

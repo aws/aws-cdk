@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/a41e05467d805605004c64bd607589b3231c592dc8ae7eff079bde6c09901bd4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/dfd44ef37fd05fc0979a82dc9b7262bb27488bdfcaab69d334c9ae79f91a1978.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -238,21 +238,21 @@
     },
     "CrossAccountStack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://540871810575/test-region",
+      "environment": "aws://234567890123/test-region",
       "properties": {
         "templateFile": "CrossAccountStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::540871810575:role/cdk-hnb659fds-deploy-role-540871810575-test-region",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::540871810575:role/cdk-hnb659fds-cfn-exec-role-540871810575-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-540871810575-test-region/5b340ae6a4a5271883e84d7c460edf05931c0602047defc73f32003da791904c.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-test-region",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-test-region",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-test-region/11c82d801b6d95ba24f152a783ae660c61ca0f2c6e8ef14f8e28c46d4739ea64.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "CrossAccountStack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::540871810575:role/cdk-hnb659fds-lookup-role-540871810575-test-region",
+          "arn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-lookup-role-234567890123-test-region",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }

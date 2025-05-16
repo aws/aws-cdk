@@ -1,18 +1,18 @@
 {
   "version": "41.0.0",
   "files": {
-    "5b340ae6a4a5271883e84d7c460edf05931c0602047defc73f32003da791904c": {
+    "11c82d801b6d95ba24f152a783ae660c61ca0f2c6e8ef14f8e28c46d4739ea64": {
       "displayName": "CrossAccountStack Template",
       "source": {
         "path": "CrossAccountStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "540871810575-test-region": {
-          "bucketName": "cdk-hnb659fds-assets-540871810575-test-region",
-          "objectKey": "5b340ae6a4a5271883e84d7c460edf05931c0602047defc73f32003da791904c.json",
+        "234567890123-test-region": {
+          "bucketName": "cdk-hnb659fds-assets-234567890123-test-region",
+          "objectKey": "11c82d801b6d95ba24f152a783ae660c61ca0f2c6e8ef14f8e28c46d4739ea64.json",
           "region": "test-region",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::540871810575:role/cdk-hnb659fds-file-publishing-role-540871810575-test-region"
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-test-region"
         }
       }
     }

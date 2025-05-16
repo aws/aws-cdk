@@ -42,7 +42,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "RoleName": "cdkpipelinecfnactionstackdeployactionrole1898fcc4c12ca90b5679"
+    "RoleName": "cdkpipelinecfnactionstackdeployactionrole57e12a8ea0f3e8176666"
    }
   },
   "CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958CFNCFNDeployActionRoleDefaultPolicyE8D1F190": {
@@ -121,7 +121,7 @@
           {
            "Ref": "AWS::Partition"
           },
-          ":cloudformation:test-region:540871810575:stack/aws-cdk-codepipeline-cross-account-deploy-stack/*"
+          ":cloudformation:test-region:234567890123:stack/aws-cdk-codepipeline-cross-account-deploy-stack/*"
          ]
         ]
        }
@@ -152,7 +152,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "RoleName": "cdkpipelinecfnactionstackoydeploymentrolef13da1ddd24ea7815b21"
+    "RoleName": "cdkpipelinecfnactionstackoydeploymentrole5e69c3b8bfbbc622ec4e"
    }
   },
   "CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958CFNCFNDeployDeploymentRoleDefaultPolicy8A68EFF8": {

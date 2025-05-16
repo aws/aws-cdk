@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/daf0a92818f48c0b634bef6bb37691cee25b45d27fb547c16de0355059947550.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/babf736b3bc353b5d65ceddbed81e5a1ee814dda0309a2cace36c04705a3cb59.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -31,7 +31,7 @@
         }
       },
       "dependencies": [
-        "cross-account-support-stack-540871810575",
+        "cross-account-support-stack-234567890123",
         "CdkPipelineCfnActionStack.assets"
       ],
       "metadata": {
@@ -1042,41 +1042,41 @@
       },
       "displayName": "CdkPipelineCfnActionStack"
     },
-    "cross-account-support-stack-540871810575.assets": {
+    "cross-account-support-stack-234567890123.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cross-account-support-stack-540871810575.assets.json",
+        "file": "cross-account-support-stack-234567890123.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cross-account-support-stack-540871810575": {
+    "cross-account-support-stack-234567890123": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://540871810575/test-region",
+      "environment": "aws://234567890123/test-region",
       "properties": {
-        "templateFile": "cross-account-support-stack-540871810575.template.json",
+        "templateFile": "cross-account-support-stack-234567890123.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::540871810575:role/cdk-hnb659fds-deploy-role-540871810575-test-region",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::540871810575:role/cdk-hnb659fds-cfn-exec-role-540871810575-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-540871810575-test-region/4937dbea22fc734903c85d99a8e355b97f506c170e9bc825c67cf2570fce5276.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-test-region",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-test-region",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-test-region/09fd1759e9c27953169a9b6d52f6774e4452e65265d145d7317ec94cb4efdbb2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cross-account-support-stack-540871810575.assets"
+          "cross-account-support-stack-234567890123.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::540871810575:role/cdk-hnb659fds-lookup-role-540871810575-test-region",
+          "arn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-lookup-role-234567890123-test-region",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         },
-        "stackName": "CdkPipelineCfnActionStack-support-540871810575"
+        "stackName": "CdkPipelineCfnActionStack-support-234567890123"
       },
       "dependencies": [
-        "cross-account-support-stack-540871810575.assets"
+        "cross-account-support-stack-234567890123.assets"
       ],
       "metadata": {
-        "/cross-account-support-stack-540871810575/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-ActionRole": [
+        "/cross-account-support-stack-234567890123/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-ActionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1169,19 +1169,19 @@
             }
           }
         ],
-        "/cross-account-support-stack-540871810575/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-ActionRole/ImportCdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-ActionRole": [
+        "/cross-account-support-stack-234567890123/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-ActionRole/ImportCdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-ActionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/cross-account-support-stack-540871810575/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-ActionRole/Resource": [
+        "/cross-account-support-stack-234567890123/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-ActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958CFNCFNDeployActionRole2BC88E61"
           }
         ],
-        "/cross-account-support-stack-540871810575/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-ActionRole/DefaultPolicy": [
+        "/cross-account-support-stack-234567890123/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-ActionRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1235,13 +1235,13 @@
             }
           }
         ],
-        "/cross-account-support-stack-540871810575/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-ActionRole/DefaultPolicy/Resource": [
+        "/cross-account-support-stack-234567890123/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-ActionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958CFNCFNDeployActionRoleDefaultPolicyE8D1F190"
           }
         ],
-        "/cross-account-support-stack-540871810575/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-DeploymentRole": [
+        "/cross-account-support-stack-234567890123/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-DeploymentRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1285,19 +1285,19 @@
             }
           }
         ],
-        "/cross-account-support-stack-540871810575/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-DeploymentRole/ImportCdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-DeploymentRole": [
+        "/cross-account-support-stack-234567890123/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-DeploymentRole/ImportCdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-DeploymentRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/cross-account-support-stack-540871810575/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-DeploymentRole/Resource": [
+        "/cross-account-support-stack-234567890123/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-DeploymentRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958CFNCFNDeployDeploymentRole2FC05B02"
           }
         ],
-        "/cross-account-support-stack-540871810575/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-DeploymentRole/DefaultPolicy": [
+        "/cross-account-support-stack-234567890123/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-DeploymentRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1335,26 +1335,26 @@
             }
           }
         ],
-        "/cross-account-support-stack-540871810575/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-DeploymentRole/DefaultPolicy/Resource": [
+        "/cross-account-support-stack-234567890123/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-DeploymentRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958CFNCFNDeployDeploymentRoleDefaultPolicy8A68EFF8"
           }
         ],
-        "/cross-account-support-stack-540871810575/BootstrapVersion": [
+        "/cross-account-support-stack-234567890123/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cross-account-support-stack-540871810575/CheckBootstrapVersion": [
+        "/cross-account-support-stack-234567890123/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cross-account-support-stack-540871810575"
+      "displayName": "cross-account-support-stack-234567890123"
     },
     "integpipelinecfncrossaccountDefaultTestDeployAssertC7E37541.assets": {
       "type": "cdk:asset-manifest",

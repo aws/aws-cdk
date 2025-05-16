@@ -131,7 +131,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":iam::540871810575:role/stream-cross-account-consumer-role"
+           ":iam::234567890123:role/stream-cross-account-consumer-role"
           ]
          ]
         }
@@ -186,7 +186,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":iam::540871810575:role/stream-cross-account-consumer-role"
+           ":iam::234567890123:role/stream-cross-account-consumer-role"
           ]
          ]
         }

@@ -74,7 +74,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-540871810575-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-234567890123-us-east-1",
      "S3Key": "695130a6c8132c255e833e84e8482a4a144a4a1261c979bd7e3cb7b8258e8876.zip"
     },
     "Handler": "index.handler",

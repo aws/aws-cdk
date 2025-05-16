@@ -1,7 +1,7 @@
 {
   "version": "41.0.0",
   "files": {
-    "dd746c9f29747c0b0b0a957e96dd27e0de0ac427be120d1578a5aa224e93ad74": {
+    "3eb6fd0ca4c47b396b9bfa11712c9ac73ac1e8e8638224ea3d97612f839ac65e": {
       "displayName": "role-stack Template",
       "source": {
         "path": "role-stack.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "12345678-us-east-1": {
           "bucketName": "cdk-hnb659fds-assets-12345678-us-east-1",
-          "objectKey": "dd746c9f29747c0b0b0a957e96dd27e0de0ac427be120d1578a5aa224e93ad74.json",
+          "objectKey": "3eb6fd0ca4c47b396b9bfa11712c9ac73ac1e8e8638224ea3d97612f839ac65e.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-east-1"
         }

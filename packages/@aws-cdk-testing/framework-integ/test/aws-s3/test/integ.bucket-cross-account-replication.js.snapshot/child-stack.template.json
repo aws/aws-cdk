@@ -91,7 +91,7 @@
       }
      ]
     },
-    "BucketName": "child-stacktacksourcebucket73af284d4976017ababe",
+    "BucketName": "child-stacktacksourcebucket73af284d4a1fc81dcf6f",
     "ReplicationConfiguration": {
      "Role": {
       "Fn::GetAtt": [

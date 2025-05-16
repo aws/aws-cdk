@@ -627,7 +627,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":iam::540871810575:role/crossaccountstepfunctionsachineactionrole6deedc8a186a5d6bda74"
+           ":iam::234567890123:role/crossaccountstepfunctionsachineactionrole6deedc8a0d27532099c6"
           ]
          ]
         }
@@ -767,7 +767,7 @@
             {
              "Ref": "AWS::Partition"
             },
-            ":states:test-region:540871810575:stateMachine:CrossAccountStateMachine"
+            ":states:test-region:234567890123:stateMachine:CrossAccountStateMachine"
            ]
           ]
          },
@@ -783,7 +783,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":iam::540871810575:role/crossaccountstepfunctionsachineactionrole6deedc8a186a5d6bda74"
+           ":iam::234567890123:role/crossaccountstepfunctionsachineactionrole6deedc8a0d27532099c6"
           ]
          ]
         },

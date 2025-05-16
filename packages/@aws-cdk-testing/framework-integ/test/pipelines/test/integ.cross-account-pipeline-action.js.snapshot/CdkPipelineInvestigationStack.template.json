@@ -41,7 +41,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":iam::540871810575:role/crossaccountsourcestacksourceactionrole897ff83e87c629ebe610"
+           ":iam::234567890123:role/crossaccountsourcestacksourceactionrole897ff83e126e129e1ac8"
           ]
          ]
         }
@@ -193,7 +193,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":iam::540871810575:role/crossaccountsourcestacksourceactionrole897ff83e87c629ebe610"
+           ":iam::234567890123:role/crossaccountsourcestacksourceactionrole897ff83e126e129e1ac8"
           ]
          ]
         }
@@ -404,7 +404,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":iam::540871810575:role/crossaccountsourcestacksourceactionrole897ff83e87c629ebe610"
+           ":iam::234567890123:role/crossaccountsourcestacksourceactionrole897ff83e126e129e1ac8"
           ]
          ]
         }
@@ -476,7 +476,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":iam::540871810575:role/crossaccountsourcestacksourceactionrole897ff83e87c629ebe610"
+           ":iam::234567890123:role/crossaccountsourcestacksourceactionrole897ff83e126e129e1ac8"
           ]
          ]
         },

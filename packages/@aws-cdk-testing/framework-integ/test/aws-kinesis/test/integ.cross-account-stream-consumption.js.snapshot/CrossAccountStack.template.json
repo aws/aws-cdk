@@ -17,7 +17,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":iam::540871810575:root"
+           ":iam::234567890123:root"
           ]
          ]
         }

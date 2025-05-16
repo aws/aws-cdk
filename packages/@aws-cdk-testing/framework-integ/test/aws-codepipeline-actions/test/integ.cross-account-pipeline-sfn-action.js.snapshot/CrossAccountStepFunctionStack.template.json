@@ -128,7 +128,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "RoleName": "crossaccountstepfunctionsachineactionrole6deedc8a186a5d6bda74"
+    "RoleName": "crossaccountstepfunctionsachineactionrole6deedc8a0d27532099c6"
    }
   },
   "CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5InvokeStepFunctionInvokeStateMachineActionRoleDefaultPolicy71BB5A06": {
