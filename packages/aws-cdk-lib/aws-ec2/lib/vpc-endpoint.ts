@@ -476,6 +476,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly DIRECTORY_SERVICE_DATA = new InterfaceVpcEndpointAwsService('ds-data');
   public static readonly DYNAMODB = new InterfaceVpcEndpointAwsService('dynamodb');
   public static readonly DYNAMODB_FIPS = new InterfaceVpcEndpointAwsService('dynamodb-fips');
+  public static readonly DYNAMODB_STREAMS = new InterfaceVpcEndpointAwsService('dynamodb-streams');
   public static readonly EBS_DIRECT = new InterfaceVpcEndpointAwsService('ebs');
   public static readonly EC2 = new InterfaceVpcEndpointAwsService('ec2');
   public static readonly EC2_MESSAGES = new InterfaceVpcEndpointAwsService('ec2messages');
