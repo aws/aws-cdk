@@ -3086,6 +3086,26 @@ describe('InstanceMaintenancePolicy', () => {
   });
 });
 
+test('throws if updatePolicy is not set when migrateToLaunchTemplate is true', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
+  const vpc = mockVpc(stack);
+  const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+    launchTemplateId: 'test-lt-id',
+    versionNumber: '0',
+  });
+
+  // THEN
+  expect(() => {
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      vpc,
+      launchTemplate: lt,
+      migrateToLaunchTemplate: true,
+    });
+  }).toThrow(/When migrateToLaunchTemplate is true, you must also provide an updatePolicy to ensure instances are properly replaced during migration. This prevents instances from referencing a deleted IAM instance profile. Use UpdatePolicy.rollingUpdate\(\) to define your rolling update settings./);
+});
+
 function mockSecurityGroup(stack: cdk.Stack) {
   return ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure');
 }
