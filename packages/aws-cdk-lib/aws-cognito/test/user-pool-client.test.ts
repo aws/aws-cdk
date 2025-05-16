@@ -1705,7 +1705,7 @@ describe('User Pool Client', () => {
           'ALLOW_CUSTOM_AUTH',
           'ALLOW_USER_SRP_AUTH',
           'ALLOW_USER_AUTH',
-          'ALLOW_REFRESH_TOKEN_AUTH'
+          'ALLOW_REFRESH_TOKEN_AUTH',
         ],
       });
     });
