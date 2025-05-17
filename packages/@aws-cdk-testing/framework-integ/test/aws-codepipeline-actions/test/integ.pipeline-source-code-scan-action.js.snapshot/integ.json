@@ -9,5 +9,6 @@
       "assertionStack": "codepipeline-source-code-scan-action-test/DefaultTest/DeployAssert",
       "assertionStackName": "codepipelinesourcecodescanactiontestDefaultTestDeployAssert2A960817"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

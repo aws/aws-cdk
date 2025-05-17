@@ -15,7 +15,7 @@
         }
       }
     },
-    "01992ca82dc0ace3e31a0583044d30857eed6bf2451e5eda03960f7de399d3e9": {
+    "a9296894a86ecdf638fb5f4c7ef4a36c24c07db5b6684d418fb1744e913f1dea": {
       "displayName": "MinimumCapacityUnitAlbStack Template",
       "source": {
         "path": "MinimumCapacityUnitAlbStack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "01992ca82dc0ace3e31a0583044d30857eed6bf2451e5eda03960f7de399d3e9.json",
+          "objectKey": "a9296894a86ecdf638fb5f4c7ef4a36c24c07db5b6684d418fb1744e913f1dea.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

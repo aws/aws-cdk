@@ -8,5 +8,6 @@
       "assertionStack": "GraphQLFieldLevelLog/DefaultTest/DeployAssert",
       "assertionStackName": "GraphQLFieldLevelLogDefaultTestDeployAssert06C4E034"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
