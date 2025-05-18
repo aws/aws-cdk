@@ -478,6 +478,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly DEVOPS_GURU = new InterfaceVpcEndpointAwsService('devops-guru');
   public static readonly DIRECTORY_SERVICE = new InterfaceVpcEndpointAwsService('ds');
   public static readonly DIRECTORY_SERVICE_DATA = new InterfaceVpcEndpointAwsService('ds-data');
+  public static readonly DSQL = new InterfaceVpcEndpointAwsService('dsql');
+  public static readonly DSQL_FNH4 = new InterfaceVpcEndpointAwsService('dsql-fnh4');
   public static readonly DYNAMODB = new InterfaceVpcEndpointAwsService('dynamodb');
   public static readonly DYNAMODB_FIPS = new InterfaceVpcEndpointAwsService('dynamodb-fips');
   public static readonly EBS_DIRECT = new InterfaceVpcEndpointAwsService('ebs');
