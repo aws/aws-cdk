@@ -114,6 +114,14 @@ export interface MetricEntry<A> {
    * ID for this metric object
    */
   id?: string;
+
+  /**
+   * The level we discovered this metric at.
+   *
+   * Top-level has 1, metrics used by a math expression at level N will have
+   * N+1.
+   */
+  level: number;
 }
 
 /**
@@ -131,7 +139,7 @@ export class MetricSet<A> {
    */
   public addTopLevel(tag: A, ...metrics: IMetric[]) {
     for (const metric of metrics) {
-      this.addOne(metric, tag);
+      this.addOne(metric, 1, tag);
     }
   }
 
@@ -151,7 +159,7 @@ export class MetricSet<A> {
    * one (and the new ones "renderingPropertieS" will be honored instead of the old
    * one's).
    */
-  private addOne(metric: IMetric, tag?: A, id?: string) {
+  private addOne(metric: IMetric, level: number, tag?: A, id?: string) {
     const key = metricKey(metric);
 
     let existingEntry: MetricEntry<A> | undefined;
@@ -179,7 +187,7 @@ export class MetricSet<A> {
     if (existingEntry) {
       entry = existingEntry;
     } else {
-      entry = { metric };
+      entry = { metric, level };
       this.metrics.push(entry);
       this.metricByKey.set(key, entry);
     }
@@ -199,7 +207,7 @@ export class MetricSet<A> {
     const conf = metric.toMetricConfig();
     if (conf.mathExpression) {
       for (const [subId, subMetric] of Object.entries(conf.mathExpression.usingMetrics)) {
-        this.addOne(subMetric, undefined, subId);
+        this.addOne(subMetric, level + 1, undefined, subId);
       }
     }
   }

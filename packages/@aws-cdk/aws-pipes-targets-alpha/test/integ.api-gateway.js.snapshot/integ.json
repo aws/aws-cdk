@@ -8,5 +8,6 @@
       "assertionStack": "integtest-pipe-target-api-gw/DefaultTest/DeployAssert",
       "assertionStackName": "integtestpipetargetapigwDefaultTestDeployAssertCBE10CAE"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
