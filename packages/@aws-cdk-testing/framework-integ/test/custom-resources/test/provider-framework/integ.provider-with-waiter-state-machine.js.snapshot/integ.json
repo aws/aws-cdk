@@ -9,5 +9,6 @@
       "assertionStack": "IntegProviderWithWaiterStateMachine/DefaultTest/DeployAssert",
       "assertionStackName": "IntegProviderWithWaiterStateMachineDefaultTestDeployAssert2D0F0427"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

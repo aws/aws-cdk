@@ -1008,32 +1008,6 @@ describe('triggers', () => {
     }).toThrow(/length of GitPullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction' must be less than or equal to 3, got 4/);
   });
 
-  test('throw if both GitPushFilter and GitPullRequestFilter are specified', () => {
-    expect(() => {
-      new codepipeline.Pipeline(stack, 'Pipeline', {
-        pipelineType: codepipeline.PipelineType.V2,
-        triggers: [{
-          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-          gitConfiguration: {
-            sourceAction,
-            pushFilter: [
-              {
-                tagsExcludes: ['exclude1'],
-                tagsIncludes: ['include1'],
-              },
-            ],
-            pullRequestFilter: [
-              {
-                branchesExcludes: ['exclude1'],
-                branchesIncludes: ['include1'],
-              },
-            ],
-          },
-        }],
-      });
-    }).toThrow(/cannot specify both GitPushFilter and GitPullRequestFilter for the trigger with sourceAction with name 'CodeStarConnectionsSourceAction'/);
-  });
-
   test('throw if neither GitPushFilter nor GitPullRequestFilter are specified', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {

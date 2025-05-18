@@ -8,5 +8,6 @@
       "assertionStack": "rds-integ-instance-create-grant/DefaultTest/DeployAssert",
       "assertionStackName": "rdsinteginstancecreategrantDefaultTestDeployAssertFEE03C52"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

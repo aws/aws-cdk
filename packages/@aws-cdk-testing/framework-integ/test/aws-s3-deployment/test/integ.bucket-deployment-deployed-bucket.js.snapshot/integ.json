@@ -9,5 +9,6 @@
       "assertionStack": "integ-test-bucket-deployments/DefaultTest/DeployAssert",
       "assertionStackName": "integtestbucketdeploymentsDefaultTestDeployAssertCF25A2DF"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

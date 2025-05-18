@@ -6,5 +6,6 @@ export * from './firehose';
 export * from './kinesis';
 export * from './lambda';
 export * from './sagemaker';
+export * from './sns';
 export * from './sqs';
 export * from './stepfunctions';

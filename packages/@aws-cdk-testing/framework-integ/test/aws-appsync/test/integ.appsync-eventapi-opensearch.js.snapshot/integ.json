@@ -8,5 +8,6 @@
       "assertionStack": "appsync-eventapi-opensearch-test/DefaultTest/DeployAssert",
       "assertionStackName": "appsynceventapiopensearchtestDefaultTestDeployAssert2641AA09"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
