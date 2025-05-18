@@ -5,7 +5,7 @@ import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
-import { Stack, Token, ValidationError } from '../../../core';
+import { Annotations, Stack, Token, ValidationError } from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -40,7 +40,7 @@ export enum CustomizationType {
 /**
  * The key/value pair for a tag.
  */
-export interface ITag {
+export interface CustomModelTag {
   /**
    * Key for the tag.
    */
@@ -156,7 +156,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    *
    * @default - no tags
    */
-  readonly customModelTags?: ITag[];
+  readonly customModelTags?: CustomModelTag[];
 
   /**
    * Parameters related to tuning the model.
@@ -180,7 +180,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    *
    * @default - no tags
    */
-  readonly jobTags?: ITag[];
+  readonly jobTags?: CustomModelTag[];
 
   /**
    * The S3 bucket configuration where the output data is stored.
@@ -268,7 +268,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
     this.taskPolicies = this.renderPolicyStatements();
 
     if (this.props.customModelKmsKey) {
-      this.props.customModelKmsKey.addToResourcePolicy(new iam.PolicyStatement({
+      const poliyStatement = new iam.PolicyStatement({
         actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey', 'kms:CreateGrant'],
         resources: ['*'],
         principals: [new iam.ArnPrincipal(this._role.roleArn)],
@@ -279,7 +279,14 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
             ],
           },
         },
-      }));
+      });
+      const result = this.props.customModelKmsKey.addToResourcePolicy(poliyStatement, true);
+
+      // For the imported key, user must add the policy statement to the key policy
+      if (result.statementAdded === false) {
+        Annotations.of(this).addWarning(`You must update 'customModelKmsKey' resource policy to add the following statement:
+        ${poliyStatement.toString()}`);
+      }
     }
   }
 
