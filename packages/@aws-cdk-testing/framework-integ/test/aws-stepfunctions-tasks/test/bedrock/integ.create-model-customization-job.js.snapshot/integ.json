@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "testCases": {
     "CreateModelCustomizationJob/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "CreateModelCustomizationJob/DefaultTest/DeployAssert",
       "assertionStackName": "CreateModelCustomizationJobDefaultTestDeployAssertEC679DFE"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

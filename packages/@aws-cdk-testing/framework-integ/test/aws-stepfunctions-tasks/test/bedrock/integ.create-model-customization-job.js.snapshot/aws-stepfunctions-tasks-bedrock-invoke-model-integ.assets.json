@@ -1,7 +1,8 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
+      "displayName": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
       "source": {
         "path": "asset.a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c",
         "packaging": "zip"
@@ -15,6 +16,7 @@
       }
     },
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+      "displayName": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
         "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
         "packaging": "zip"
@@ -27,7 +29,8 @@
         }
       }
     },
-    "51a6b6a798684e50f274e2a42356e3a6b38ffb039663977941a61f31346c8069": {
+    "212eedd5a8b6ed256640af6805938825d563f8fae8f082710804aefdd3146c34": {
+      "displayName": "aws-stepfunctions-tasks-bedrock-invoke-model-integ Template",
       "source": {
         "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ.template.json",
         "packaging": "file"
@@ -35,7 +38,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "51a6b6a798684e50f274e2a42356e3a6b38ffb039663977941a61f31346c8069.json",
+          "objectKey": "212eedd5a8b6ed256640af6805938825d563f8fae8f082710804aefdd3146c34.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
