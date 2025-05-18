@@ -10,6 +10,7 @@ import * as iam from '../../aws-iam';
 import { CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
 import { DeleteExistingRecordSetProvider } from '../../custom-resource-handlers/dist/aws-route53/delete-existing-record-set-provider.generated';
 
@@ -342,7 +343,10 @@ export interface RecordSetProps extends RecordSetOptions {
 /**
  * A record set.
  */
+@propertyInjectable
 export class RecordSet extends Resource implements IRecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.RecordSet';
   public readonly domainName: string;
   private readonly geoLocation?: GeoLocation;
   private readonly weight?: number;
@@ -530,7 +534,11 @@ export interface ARecordAttrs extends RecordSetOptions{
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class ARecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.ARecord';
+
   /**
    * Creates new A record of type alias with target set to an existing A Record DNS.
    * Use when the target A record is created outside of CDK
@@ -592,7 +600,11 @@ export interface AaaaRecordProps extends RecordSetOptions {
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class AaaaRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.AaaaRecord';
+
   constructor(scope: Construct, id: string, props: AaaaRecordProps) {
     super(scope, id, {
       ...props,
@@ -619,7 +631,11 @@ export interface CnameRecordProps extends RecordSetOptions {
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class CnameRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.CnameRecord';
+
   constructor(scope: Construct, id: string, props: CnameRecordProps) {
     super(scope, id, {
       ...props,
@@ -646,7 +662,11 @@ export interface TxtRecordProps extends RecordSetOptions {
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class TxtRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.TxtRecord';
+
   constructor(scope: Construct, id: string, props: TxtRecordProps) {
     super(scope, id, {
       ...props,
@@ -717,7 +737,11 @@ export interface SrvRecordProps extends RecordSetOptions {
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class SrvRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.SrvRecord';
+
   constructor(scope: Construct, id: string, props: SrvRecordProps) {
     super(scope, id, {
       ...props,
@@ -787,7 +811,11 @@ export interface CaaRecordProps extends RecordSetOptions {
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class CaaRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.CaaRecord';
+
   constructor(scope: Construct, id: string, props: CaaRecordProps) {
     super(scope, id, {
       ...props,
@@ -812,7 +840,11 @@ export interface CaaAmazonRecordProps extends RecordSetOptions {}
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class CaaAmazonRecord extends CaaRecord {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.CaaAmazonRecord';
+
   constructor(scope: Construct, id: string, props: CaaAmazonRecordProps) {
     super(scope, id, {
       ...props,
@@ -859,7 +891,11 @@ export interface MxRecordProps extends RecordSetOptions {
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class MxRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.MxRecord';
+
   constructor(scope: Construct, id: string, props: MxRecordProps) {
     super(scope, id, {
       ...props,
@@ -886,7 +922,11 @@ export interface NsRecordProps extends RecordSetOptions {
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class NsRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.NsRecord';
+
   constructor(scope: Construct, id: string, props: NsRecordProps) {
     super(scope, id, {
       ...props,
@@ -913,7 +953,11 @@ export interface DsRecordProps extends RecordSetOptions {
  *
  * @resource AWS::Route53::RecordSet
  */
+@propertyInjectable
 export class DsRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.DsRecord';
+
   constructor(scope: Construct, id: string, props: DsRecordProps) {
     super(scope, id, {
       ...props,
@@ -938,7 +982,11 @@ export interface ZoneDelegationRecordProps extends RecordSetOptions {
 /**
  * A record to delegate further lookups to a different set of name servers.
  */
+@propertyInjectable
 export class ZoneDelegationRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.ZoneDelegationRecord';
+
   constructor(scope: Construct, id: string, props: ZoneDelegationRecordProps) {
     super(scope, id, {
       ...props,

@@ -9,5 +9,6 @@
       "assertionStack": "aws-cdk-eks-handlers-in-vpc/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkekshandlersinvpcDefaultTestDeployAssert40766711"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

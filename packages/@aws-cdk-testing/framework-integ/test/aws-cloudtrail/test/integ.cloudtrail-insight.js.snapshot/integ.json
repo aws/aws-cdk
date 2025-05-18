@@ -8,5 +8,6 @@
       "assertionStack": "aws-cdk-cloudtrail-inshights/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkcloudtrailinshightsDefaultTestDeployAssertF7B86FF0"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
