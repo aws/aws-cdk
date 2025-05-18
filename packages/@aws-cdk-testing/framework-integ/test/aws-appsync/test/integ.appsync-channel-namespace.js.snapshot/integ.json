@@ -8,5 +8,6 @@
       "assertionStack": "appsync-event-api-channel-namespace/DefaultTest/DeployAssert",
       "assertionStackName": "appsynceventapichannelnamespaceDefaultTestDeployAssert6BCB222F"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

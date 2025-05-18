@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { BaseDeploymentConfig, BaseDeploymentConfigOptions, IBaseDeploymentConfig, ZonalConfig } from '../base-deployment-config';
 import { MinimumHealthyHosts } from '../host-health-config';
 import { deploymentConfig } from '../private/utils';
@@ -36,7 +37,10 @@ export interface ServerDeploymentConfigProps extends BaseDeploymentConfigOptions
  *
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
+@propertyInjectable
 export class ServerDeploymentConfig extends BaseDeploymentConfig implements IServerDeploymentConfig {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.ServerDeploymentConfig';
   /**
    * The CodeDeployDefault.OneAtATime predefined deployment configuration for EC2/on-premises compute platform
    *

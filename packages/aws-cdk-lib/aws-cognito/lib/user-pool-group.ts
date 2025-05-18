@@ -5,6 +5,7 @@ import { IRole } from '../../aws-iam';
 import { IResource, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a user pool group.
@@ -73,7 +74,11 @@ export interface UserPoolGroupProps extends UserPoolGroupOptions {
 /**
  * Define a user pool group
  */
+@propertyInjectable
 export class UserPoolGroup extends Resource implements IUserPoolGroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito.UserPoolGroup';
+
   /**
    * Import a UserPoolGroup given its group name
    */

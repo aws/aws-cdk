@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "StreamResourcesStack.assets": {
       "type": "cdk:asset-manifest",
@@ -11,21 +11,21 @@
     },
     "StreamResourcesStack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://114897356451/us-east-1",
+      "environment": "aws://12345678/test-region",
       "properties": {
         "templateFile": "StreamResourcesStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::114897356451:role/cdk-hnb659fds-deploy-role-114897356451-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::114897356451:role/cdk-hnb659fds-cfn-exec-role-114897356451-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-114897356451-us-east-1/78e19b75b7baeac75ddcdc03d7c0be1672ec32745ce426fb9d81ade0f43e2ca9.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/dfd44ef37fd05fc0979a82dc9b7262bb27488bdfcaab69d334c9ae79f91a1978.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "StreamResourcesStack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::114897356451:role/cdk-hnb659fds-lookup-role-114897356451-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -38,27 +38,52 @@
         "/StreamResourcesStack/Role": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
         "/StreamResourcesStack/Role/ImportRole": [
@@ -80,23 +105,43 @@
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/StreamResourcesStack/Role/DefaultPolicy/Resource": [
@@ -108,7 +153,9 @@
         "/StreamResourcesStack/Stream": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "streamName": "*"
+            }
           }
         ],
         "/StreamResourcesStack/Stream/Resource": [
@@ -120,7 +167,9 @@
         "/StreamResourcesStack/Stream/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "stream": "*"
+            }
           }
         ],
         "/StreamResourcesStack/Stream/Policy/Resource": [
@@ -135,6 +184,15 @@
             "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
           }
         ],
+        "/StreamResourcesStack/StreamConsumer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "streamConsumerName": "*",
+              "stream": "*"
+            }
+          }
+        ],
         "/StreamResourcesStack/StreamConsumer/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -144,7 +202,9 @@
         "/StreamResourcesStack/StreamConsumer/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "streamConsumer": "*"
+            }
           }
         ],
         "/StreamResourcesStack/StreamConsumer/Policy/Resource": [
@@ -178,21 +238,21 @@
     },
     "CrossAccountStack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://157488465701/us-east-1",
+      "environment": "aws://234567890123/test-region",
       "properties": {
         "templateFile": "CrossAccountStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::157488465701:role/cdk-hnb659fds-deploy-role-157488465701-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::157488465701:role/cdk-hnb659fds-cfn-exec-role-157488465701-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-157488465701-us-east-1/ae5a97c3fd75f1ee45fe9ea3e90f0e08ec8d391d23a96cbe44f9c347fd8bce1b.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-test-region",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-test-region",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-test-region/11c82d801b6d95ba24f152a783ae660c61ca0f2c6e8ef14f8e28c46d4739ea64.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "CrossAccountStack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::157488465701:role/cdk-hnb659fds-lookup-role-157488465701-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-lookup-role-234567890123-test-region",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -204,27 +264,53 @@
         "/CrossAccountStack/CrossAccountRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
         "/CrossAccountStack/CrossAccountRole/ImportCrossAccountRole": [
@@ -246,23 +332,43 @@
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/CrossAccountStack/CrossAccountRole/DefaultPolicy/Resource": [
@@ -340,5 +446,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }
