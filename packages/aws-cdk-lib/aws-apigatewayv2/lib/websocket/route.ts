@@ -6,6 +6,7 @@ import { CfnRoute, CfnRouteResponse } from '.././index';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IRoute } from '../common';
 
 /**
@@ -73,7 +74,13 @@ export interface WebSocketRouteProps extends WebSocketRouteOptions {
  * Route class that creates the Route for API Gateway WebSocket API
  * @resource AWS::ApiGatewayV2::Route
  */
+@propertyInjectable
 export class WebSocketRoute extends Resource implements IWebSocketRoute {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.WebSocketRoute';
+
   public readonly routeId: string;
   public readonly webSocketApi: IWebSocketApi;
   public readonly routeKey: string;

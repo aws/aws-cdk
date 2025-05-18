@@ -15,7 +15,7 @@
         }
       }
     },
-    "b7308c6b6d681b0cec2e9d3dfa003aebffc275375566bf140bbb18d7921c588f": {
+    "a8c46594de36fe97fb1fb7f8736e55c96180dc2340f50df35ad87f79c39abce5": {
       "displayName": "NlbTargetGroupIpAddressTypeTestStack Template",
       "source": {
         "path": "NlbTargetGroupIpAddressTypeTestStack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b7308c6b6d681b0cec2e9d3dfa003aebffc275375566bf140bbb18d7921c588f.json",
+          "objectKey": "a8c46594de36fe97fb1fb7f8736e55c96180dc2340f50df35ad87f79c39abce5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -8,5 +8,6 @@
       "assertionStack": "aws-cdk-ecs-integration-test-stack/TaskDefinitionPlacementConstraints/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkecsintegrationteststackTaskDefinitionPlacementConstraintsDefaultTestDeployAssert906A0CF3"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

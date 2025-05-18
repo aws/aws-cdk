@@ -530,6 +530,31 @@
       ""
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/api-key.ts": {
+    "AllowMapsAction": [
+      "geo-maps:GetStaticMap",
+      "geo-maps:GetTile",
+      "geo-maps:*"
+    ],
+    "AllowPlacesAction": [
+      "geo-places:Autocomplete",
+      "geo-places:Geocode",
+      "geo-places:GetPlace",
+      "geo-places:ReverseGeocode",
+      "geo-places:SearchNearby",
+      "geo-places:SearchText",
+      "geo-places:Suggest",
+      "geo-places:*"
+    ],
+    "AllowRoutesAction": [
+      "geo-routes:CalculateIsolines",
+      "geo-routes:CalculateRoutes",
+      "geo-routes:CalculateRouteMatrix",
+      "geo-routes:OptimizeWaypoints",
+      "geo-routes:SnapToRoads",
+      "geo-routes:*"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/map.ts": {
     "CustomLayer": [
       "POI"
@@ -743,6 +768,10 @@
     "UnreferencedFileRemovalStatus": [
       "Enabled",
       "Disabled"
+    ],
+    "TableBucketEncryption": [
+      "aws:kms",
+      "AES256"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts": {
@@ -859,6 +888,10 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts": {
+    "IpAddressType": [
+      "ipv4",
+      "dualstack"
+    ],
     "ApiKeySourceType": [
       "HEADER",
       "AUTHORIZER"
@@ -1220,7 +1253,8 @@
       "AMAZON_OPENSEARCH_SERVICE",
       "HTTP",
       "RELATIONAL_DATABASE",
-      "AMAZON_BEDROCK_RUNTIME"
+      "AMAZON_BEDROCK_RUNTIME",
+      "AMAZON_ELASTICSEARCH"
     ],
     "LambdaInvokeType": [
       "EVENT",
@@ -2419,6 +2453,8 @@
       "r7a",
       "memory8-graviton",
       "r8g",
+      "memory8-graviton4-nvme-drive",
+      "r8gd",
       "compute3",
       "c3",
       "compute4",
@@ -2451,6 +2487,8 @@
       "c6gd",
       "compute7-graviton3-nvme-drive",
       "c7gd",
+      "compute8-graviton4-nvme-drive",
+      "c8gd",
       "compute6-graviton2-high-network-bandwidth",
       "c6gn",
       "compute7-graviton3-high-network-bandwidth",
@@ -2577,6 +2615,8 @@
       "m8g",
       "standard7-graviton3-nvme-drive",
       "m7gd",
+      "standard8-graviton4-nvme-drive",
+      "m8gd",
       "standard7-intel",
       "m7i",
       "standard7-intel-flex",
@@ -4728,6 +4768,11 @@
   "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set.ts": {
     "ConfigurationSetTlsPolicy": [
       "REQUIRE",
+      "OPTIONAL"
+    ],
+    "HttpsPolicy": [
+      "REQUIRE",
+      "REQUIRE_OPEN_ONLY",
       "OPTIONAL"
     ],
     "SuppressionReasons": [

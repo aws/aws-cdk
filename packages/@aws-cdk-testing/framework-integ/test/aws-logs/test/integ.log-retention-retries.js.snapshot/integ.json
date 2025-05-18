@@ -17,5 +17,6 @@
       "assertionStack": "LogRetentionIntegRetries/DefaultTest/DeployAssert",
       "assertionStackName": "LogRetentionIntegRetriesDefaultTestDeployAssert6D1A1A1C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
