@@ -2,9 +2,8 @@ import { Match, Template } from '../../../assertions';
 import { Certificate } from '../../../aws-certificatemanager';
 import { IpProtocol, Vpc } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
-import * as elb from '../../../aws-elasticloadbalancingv2';
 import { ContainerDefinition, ContainerImage } from '../../../aws-ecs';
-import { ApplicationProtocol, IpAddressType, SslPolicy } from '../../../aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationProtocol, IpAddressType, SslPolicy } from '../../../aws-elasticloadbalancingv2';
 import { CompositePrincipal, Role, ServicePrincipal } from '../../../aws-iam';
 import { PublicHostedZone } from '../../../aws-route53';
 import { Duration, Stack } from '../../../core';
@@ -148,9 +147,9 @@ describe('Application Load Balancer', () => {
         ipProtocol: IpProtocol.DUAL_STACK,
       });
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      const lb = new elb.ApplicationLoadBalancer(stack, 'LoadBalancer', { vpc });
+      const lb = new ApplicationLoadBalancer(stack, 'LoadBalancer', { vpc });
       const listener = lb.addListener('MainListener', {
-        protocol: elb.ApplicationProtocol.HTTP,
+        protocol: ApplicationProtocol.HTTP,
         port: 5828,
         open: true,
       });
