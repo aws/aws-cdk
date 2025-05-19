@@ -118,7 +118,7 @@ export class KinesisFirehoseStreamV2 implements events.IRuleTarget {
  * Customize the Amazon Data Firehose Stream Event Target.
  */
 export class FirehoseDeliveryStream implements events.IRuleTarget {
-  constructor(private readonly stream: firehose.IDeliveryStream, private readonly props: FirehoseDeliveryStreamProps = {}) {
+  constructor(private readonly deliveryStream: firehose.IDeliveryStream, private readonly props: FirehoseDeliveryStreamProps = {}) {
   }
 
   /**
@@ -126,14 +126,14 @@ export class FirehoseDeliveryStream implements events.IRuleTarget {
    * result from a Event Bridge event.
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
-    const role = singletonEventRole(this.stream);
-    this.stream.grantPutRecords(role);
+    const role = singletonEventRole(this.deliveryStream);
+    this.deliveryStream.grantPutRecords(role);
 
     return {
-      arn: this.stream.deliveryStreamArn,
+      arn: this.deliveryStream.deliveryStreamArn,
       role,
       input: this.props.message,
-      targetResource: this.stream,
+      targetResource: this.deliveryStream,
     };
   }
 }

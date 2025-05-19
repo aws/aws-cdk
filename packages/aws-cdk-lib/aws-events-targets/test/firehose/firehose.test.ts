@@ -80,17 +80,17 @@ describe('KinesisFirehoseStream event target', () => {
   });
 });
 
-describe('FirehoseStream event target', () => {
+describe('FirehoseDeliveryStream event target', () => {
   let stack: Stack;
-  let stream: firehose.DeliveryStream;
-  let streamArn: any;
+  let deliveryStream: firehose.DeliveryStream;
+  let deliveryStreamArn: any;
 
   beforeEach(() => {
     stack = new Stack();
-    stream = new firehose.DeliveryStream(stack, 'MyStream', {
+    deliveryStream = new firehose.DeliveryStream(stack, 'MyDeliveryStream', {
       destination: new firehose.S3Bucket(new s3.Bucket(stack, 'MyBucket')),
     });
-    streamArn = { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] };
+    deliveryStreamArn = { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] };
   });
 
   describe('when added to an event rule as a target', () => {
@@ -104,14 +104,14 @@ describe('FirehoseStream event target', () => {
 
     describe('with default settings', () => {
       beforeEach(() => {
-        rule.addTarget(new targets.FirehoseDeliveryStream(stream));
+        rule.addTarget(new targets.FirehoseDeliveryStream(deliveryStream));
       });
 
-      test("adds the stream's ARN and role to the targets of the rule", () => {
+      test("adds the delivery stream's ARN and role to the targets of the rule", () => {
         Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
           Targets: [
             {
-              Arn: streamArn,
+              Arn: deliveryStreamArn,
               Id: 'Target0',
               RoleArn: { 'Fn::GetAtt': ['MyStreamEventsRole5B6CC6AF', 'Arn'] },
             },
@@ -119,14 +119,14 @@ describe('FirehoseStream event target', () => {
         });
       });
 
-      test("creates a policy that has PutRecord and PutRecords permissions on the stream's ARN", () => {
+      test("creates a policy that has PutRecord and PutRecords permissions on the delivery stream's ARN", () => {
         Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
             Statement: [
               {
                 Action: ['firehose:PutRecord', 'firehose:PutRecordBatch'],
                 Effect: 'Allow',
-                Resource: streamArn,
+                Resource: deliveryStreamArn,
               },
             ],
             Version: '2012-10-17',
@@ -137,7 +137,7 @@ describe('FirehoseStream event target', () => {
 
     describe('with an explicit message', () => {
       beforeEach(() => {
-        rule.addTarget(new targets.FirehoseDeliveryStream(stream, {
+        rule.addTarget(new targets.FirehoseDeliveryStream(deliveryStream, {
           message: events.RuleTargetInput.fromText('fooBar'),
         }));
       });
@@ -146,7 +146,7 @@ describe('FirehoseStream event target', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
           Targets: [
             {
-              Arn: streamArn,
+              Arn: deliveryStreamArn,
               Id: 'Target0',
               Input: '"fooBar"',
             },

@@ -11,7 +11,7 @@ export * from './event-bus';
 export * from './state-machine';
 export * from './kinesis-stream';
 export * from './log-group';
-export * from './firehose-delivery-stream';
+export * from './firehose';
 export * from './api-gateway';
 export * from './api-gatewayv2';
 export * from './api-destination';
