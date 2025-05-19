@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Resource, IResource, Lazy, Names } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for constructing a Key Signing Key.
@@ -102,7 +103,11 @@ export interface KeySigningKeyAttributes {
  *
  * @resource AWS::Route53::KeySigningKey
  */
+@propertyInjectable
 export class KeySigningKey extends Resource implements IKeySigningKey {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.KeySigningKey';
+
   /**
    * Imports a key signing key from its attributes.
    */

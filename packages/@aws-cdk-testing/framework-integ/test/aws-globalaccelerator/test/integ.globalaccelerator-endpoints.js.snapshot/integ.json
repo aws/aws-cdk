@@ -8,5 +8,6 @@
       "assertionStack": "GlobalAcceleratorEndpoints/DefaultTest/DeployAssert",
       "assertionStackName": "GlobalAcceleratorEndpointsDefaultTestDeployAssert3F2DB71B"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
