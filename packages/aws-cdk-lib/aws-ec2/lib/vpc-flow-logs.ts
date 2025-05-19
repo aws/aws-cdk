@@ -470,10 +470,10 @@ class FirehoseDestination extends FlowLogDestination {
 
   public bind(scope: Construct, flowLog: FlowLog): FlowLogDestinationConfig {
     if (this.props.deliveryStreamArn && this.props.deliveryStream) {
-      throw new ValidationError('Neither deliveryStream nor deliveryStreamArn is specified.', scope);
+      throw new ValidationError('Specify either deliveryStream or deliveryStreamArn, but not both.', scope);
     }
     if (!this.props.deliveryStreamArn && !this.props.deliveryStream) {
-      throw new ValidationError('Specify eather deliveryStream or deliveryStreamArn, but not both.', scope);
+      throw new ValidationError('Neither deliveryStream nor deliveryStreamArn is specified.', scope);
     }
     if (this.props.deliveryStream) {
       const compareAccount = Token.compareStrings(this.props.deliveryStream.env.account, flowLog.env.account);
