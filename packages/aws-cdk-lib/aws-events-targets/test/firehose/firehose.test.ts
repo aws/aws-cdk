@@ -90,7 +90,7 @@ describe('FirehoseDeliveryStream event target', () => {
     deliveryStream = new firehose.DeliveryStream(stack, 'MyDeliveryStream', {
       destination: new firehose.S3Bucket(new s3.Bucket(stack, 'MyBucket')),
     });
-    deliveryStreamArn = { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] };
+    deliveryStreamArn = { 'Fn::GetAtt': ['MyDeliveryStream79822137', 'Arn'] };
   });
 
   describe('when added to an event rule as a target', () => {
@@ -113,7 +113,7 @@ describe('FirehoseDeliveryStream event target', () => {
             {
               Arn: deliveryStreamArn,
               Id: 'Target0',
-              RoleArn: { 'Fn::GetAtt': ['MyStreamEventsRole5B6CC6AF', 'Arn'] },
+              RoleArn: { 'Fn::GetAtt': ['MyDeliveryStreamEventsRole6811FC4E', 'Arn'] },
             },
           ],
         });
