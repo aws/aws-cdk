@@ -181,6 +181,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly loadBalancer?: IApplicationLoadBalancer;
 
   /**
+   * The application load balancer's listener that traffic should be served over.
+   * Only has an effect when specifying `loadBalancer`.
+   *
+   * @default - a new listener will be created.
+   */
+  readonly listener?: ApplicationListener;
+
+  /**
    * Listener port of the application load balancer that will serve traffic to the service.
    *
    * @default - The default listener port is determined from the protocol (port 80 for HTTP,
@@ -505,7 +513,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       protocolVersion: props.protocolVersion,
     };
 
-    this.listener = loadBalancer.addListener('PublicListener', {
+    this.listener = props.listener ?? loadBalancer.addListener('PublicListener', {
       protocol,
       port: props.listenerPort,
       open: props.openListener ?? true,
