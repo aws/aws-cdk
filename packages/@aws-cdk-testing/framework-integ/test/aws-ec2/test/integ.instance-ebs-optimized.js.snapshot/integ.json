@@ -8,5 +8,6 @@
       "assertionStack": "instance-ebs-optimized-test/DefaultTest/DeployAssert",
       "assertionStackName": "instanceebsoptimizedtestDefaultTestDeployAssert9D93190D"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

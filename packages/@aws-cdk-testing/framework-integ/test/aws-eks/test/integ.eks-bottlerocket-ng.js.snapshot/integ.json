@@ -9,5 +9,6 @@
       "assertionStack": "aws-cdk-eks-cluster-bottlerocket-ng/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksclusterbottlerocketngDefaultTestDeployAssert6C42FFE7"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
