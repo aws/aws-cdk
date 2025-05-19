@@ -8,5 +8,6 @@
       "assertionStack": "StorageTypeClusterTest/DefaultTest/DeployAssert",
       "assertionStackName": "StorageTypeClusterTestDefaultTestDeployAssert1804B4F9"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
