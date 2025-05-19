@@ -305,11 +305,7 @@ describe('EC2 Routing', () => {
       },
     });
     // EIP should be created when not provided
-    template.hasResource('AWS::EC2::EIP', {
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
-    });
+    template.hasResource('AWS::EC2::EIP', {});
   });
 
   test('Route to public NAT Gateway with provided EIP', () => {
@@ -398,11 +394,7 @@ describe('EC2 Routing', () => {
       },
     });
     // EIP should be created when not provided
-    template.hasResource('AWS::EC2::EIP', {
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
-    });
+    template.hasResource('AWS::EC2::EIP', {});
   });
 
   test('NatGW throws error if both VPC and allocationID is not provided', () => {

@@ -6,6 +6,7 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2, SubnetMapping } from '../shared/base-load-balancer';
@@ -206,7 +207,13 @@ class NetworkLoadBalancerMetrics implements INetworkLoadBalancerMetrics {
  *
  * @resource AWS::ElasticLoadBalancingV2::LoadBalancer
  */
+@propertyInjectable
 export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoadBalancer {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.NetworkLoadBalancer';
+
   /**
    * Looks up the network load balancer.
    */
@@ -598,7 +605,10 @@ export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointS
   addListener(id: string, props: BaseNetworkListenerProps): NetworkListener;
 }
 
+@propertyInjectable
 class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalancer {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.LookedUpNetworkLoadBalancer';
   public readonly loadBalancerCanonicalHostedZoneId: string;
   public readonly loadBalancerDnsName: string;
   public readonly loadBalancerArn: string;

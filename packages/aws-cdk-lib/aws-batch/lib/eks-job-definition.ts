@@ -4,6 +4,7 @@ import { EksContainerDefinition, EmptyDirVolume, HostPathVolume, SecretPathVolum
 import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 import { ArnFormat, Lazy, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A JobDefinition that uses Eks orchestration
@@ -123,7 +124,11 @@ export enum DnsPolicy {
  *
  * @resource AWS::Batch::JobDefinition
  */
+@propertyInjectable
 export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefinition {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.EksJobDefinition';
+
   /**
    * Import an EksJobDefinition by its arn
    */

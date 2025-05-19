@@ -2,6 +2,8 @@ import { ArnFormat, Aws, IResource, Lazy, Resource, Stack, Token, UnscopedValida
 import { Construct } from 'constructs';
 import { CfnAPIKey } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * An API Key
@@ -224,7 +226,11 @@ export enum AllowRoutesAction {
  *
  * @see https://docs.aws.amazon.com/location/latest/developerguide/using-apikeys.html
  */
+@propertyInjectable
 export class ApiKey extends Resource implements IApiKey {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-location-alpha.ApiKey';
+
   /**
    * Use an existing api key by name
    */
@@ -281,6 +287,8 @@ export class ApiKey extends Resource implements IApiKey {
     super(scope, id, {
       physicalName: props.apiKeyName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
       throw new ValidationError(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);

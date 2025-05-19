@@ -8,5 +8,6 @@
       "assertionStack": "integ-test-bucket-deployment-large-file/DefaultTest/DeployAssert",
       "assertionStackName": "integtestbucketdeploymentlargefileDefaultTestDeployAssert903EA848"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
