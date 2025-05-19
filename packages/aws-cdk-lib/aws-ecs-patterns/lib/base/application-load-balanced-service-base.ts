@@ -10,6 +10,7 @@ import {
   IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy,
   IpAddressType,
   ApplicationLoadBalancerProps,
+  IApplicationListener,
 } from '../../../aws-elasticloadbalancingv2';
 import { IRole } from '../../../aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '../../../aws-route53';
@@ -186,7 +187,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    *
    * @default - a new listener will be created.
    */
-  readonly listener?: ApplicationListener;
+  readonly listener?: IApplicationListener;
 
   /**
    * Listener port of the application load balancer that will serve traffic to the service.
