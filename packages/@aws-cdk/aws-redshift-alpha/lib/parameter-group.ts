@@ -2,6 +2,7 @@ import { IResource, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnClusterParameterGroup } from 'aws-cdk-lib/aws-redshift';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * A parameter group
@@ -47,7 +48,11 @@ export interface ClusterParameterGroupProps {
  *
  * @resource AWS::Redshift::ClusterParameterGroup
  */
+@propertyInjectable
 export class ClusterParameterGroup extends ClusterParameterGroupBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-redshift-alpha.ClusterParameterGroup';
+
   /**
    * Imports a parameter group
    */

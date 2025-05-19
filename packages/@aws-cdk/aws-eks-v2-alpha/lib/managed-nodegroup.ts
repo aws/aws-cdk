@@ -7,6 +7,7 @@ import { IResource, Resource, Annotations, withResolved, FeatureFlags } from 'aw
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import { isGpuInstanceType } from './private/nodegroup';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * NodeGroup interface
@@ -57,6 +58,14 @@ export enum NodegroupAmiType {
    * Bottlerocket with Nvidia-GPU support (x86-64)
    */
   BOTTLEROCKET_X86_64_NVIDIA = 'BOTTLEROCKET_x86_64_NVIDIA',
+  /**
+   * Bottlerocket Linux (ARM-64) with FIPS enabled
+   */
+  BOTTLEROCKET_ARM_64_FIPS = 'BOTTLEROCKET_ARM_64_FIPS',
+  /**
+   * Bottlerocket (x86-64) with FIPS enabled
+   */
+  BOTTLEROCKET_X86_64_FIPS = 'BOTTLEROCKET_x86_64_FIPS',
   /**
    * Windows Core 2019 (x86-64)
    */
@@ -363,7 +372,11 @@ export interface NodegroupProps extends NodegroupOptions {
  * The Nodegroup resource class
  * @resource AWS::EKS::Nodegroup
  */
+@propertyInjectable
 export class Nodegroup extends Resource implements INodegroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.Nodegroup';
+
   /**
    * Import the Nodegroup from attributes
    */

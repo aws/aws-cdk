@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "aws-cdk-customresources-athena.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e7d4358e1692123b808a44c59b7ba50935d43d3486fddee1650afe5112c665ac.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f2f7254a02a42c822520f1d320617374de3b6cef478b01a3127593f3f21a46f4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,38 @@
         "aws-cdk-customresources-athena.assets"
       ],
       "metadata": {
+        "/aws-cdk-customresources-athena/AthenaResultBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-customresources-athena/AthenaResultBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AthenaResultBucketDF85B968"
+          }
+        ],
+        "/aws-cdk-customresources-athena/AthenaExecRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-customresources-athena/AthenaExecRole/ImportAthenaExecRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-customresources-athena/AthenaExecRole/Resource": [
@@ -46,10 +74,76 @@
             "data": "AthenaExecRole1895AF29"
           }
         ],
+        "/aws-cdk-customresources-athena/CustomResourceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ],
+              "inlinePolicies": "*"
+            }
+          }
+        ],
+        "/aws-cdk-customresources-athena/CustomResourceRole/ImportCustomResourceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-customresources-athena/CustomResourceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomResourceRoleAB1EF463"
+          }
+        ],
+        "/aws-cdk-customresources-athena/AthenaWorkGroup/Provider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-customresources-athena/AthenaWorkGroup/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-customresources-athena/AthenaWorkGroup/Resource/Default": [
@@ -65,6 +159,21 @@
           }
         ],
         "/aws-cdk-customresources-athena/AWS679f53fac002430cb0da5b7982bd2287": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
           {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
@@ -86,6 +195,49 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
+          }
+        ],
+        "/aws-cdk-customresources-athena/AthenaNotebook/Provider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-customresources-athena/AthenaNotebook/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-customresources-athena/AthenaNotebook/Resource/Default": [
@@ -126,7 +278,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0cc64e33d02e682aab1ed2066562cd70254fb7e864e2b9420e6b13d77892a733.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b1779e2a20be0c21d2e57169b6ce8b2e8e349d7c52b7e85dac15cbe9b415792b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -142,6 +294,20 @@
         "CustomResourceAthenaDefaultTestDeployAssert7AE6A475.assets"
       ],
       "metadata": {
+        "/CustomResourceAthena/DefaultTest/DeployAssert/AwsApiCallAthenalistWorkGroups/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/CustomResourceAthena/DefaultTest/DeployAssert/AwsApiCallAthenalistWorkGroups/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -170,6 +336,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/CustomResourceAthena/DefaultTest/DeployAssert/AwsApiCallAthenalistNotebookMetadata94a6d026c2bb58dcf8ba13c27770a453/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/CustomResourceAthena/DefaultTest/DeployAssert/AwsApiCallAthenalistNotebookMetadata94a6d026c2bb58dcf8ba13c27770a453/Default/Default": [
@@ -205,5 +385,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

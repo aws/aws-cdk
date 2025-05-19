@@ -2,6 +2,7 @@ import { IResource, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from 'aws-cdk-lib/aws-neptune';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * The DB parameter group family that a DB parameter group is compatible with
@@ -19,6 +20,10 @@ export class ParameterGroupFamily {
    * Family used by Neptune engine versions 1.3.0.0 and later
    */
   public static readonly NEPTUNE_1_3 = new ParameterGroupFamily('neptune1.3');
+  /**
+   * Family used by Neptune engine versions 1.4.0.0 and later
+   */
+  public static readonly NEPTUNE_1_4 = new ParameterGroupFamily('neptune1.4');
 
   /**
    * Constructor for specifying a custom parameter group family
@@ -90,7 +95,11 @@ export interface IClusterParameterGroup extends IResource {
  *
  * @resource AWS::Neptune::DBClusterParameterGroup
  */
+@propertyInjectable
 export class ClusterParameterGroup extends Resource implements IClusterParameterGroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-neptune-alpha.ClusterParameterGroup';
+
   /**
    * Imports a parameter group
    */
@@ -137,7 +146,11 @@ export interface IParameterGroup extends IResource {
  *
  * @resource AWS::Neptune::DBParameterGroup
  */
+@propertyInjectable
 export class ParameterGroup extends Resource implements IParameterGroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-neptune-alpha.ParameterGroup';
+
   /**
    * Imports a parameter group
    */

@@ -1,7 +1,8 @@
 {
-  "version": "38.0.1",
+  "version": "41.0.0",
   "files": {
-    "fa1a6f841b5d913578de68cbdfd563353b01bbf81616c75c1ef6cdf32f23a38d": {
+    "f345028fbcbe0e516bb52afacf14f9a626f12a9ca9d4a467cb7419e16b5d59e5": {
+      "displayName": "DefaultVpcDeploy Template",
       "source": {
         "path": "aws-cdk-routev2-alpha.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "fa1a6f841b5d913578de68cbdfd563353b01bbf81616c75c1ef6cdf32f23a38d.json",
+          "objectKey": "f345028fbcbe0e516bb52afacf14f9a626f12a9ca9d4a467cb7419e16b5d59e5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

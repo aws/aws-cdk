@@ -223,7 +223,7 @@ describe('function', () => {
       fn.addPermission('S1', { principal: new iam.ServicePrincipal('my-service') });
       fn.addPermission('S2', { principal: new iam.AccountPrincipal('account') });
       fn.addPermission('S3', { principal: new iam.ArnPrincipal('my:arn') });
-      fn.addPermission('S4', { principal: new iam.OrganizationPrincipal('my:org') });
+      fn.addPermission('S4', { principal: new iam.OrganizationPrincipal('o-12345abcde') });
     });
 
     test('does not show warning if skipPermissions is set', () => {
@@ -1730,7 +1730,7 @@ describe('function', () => {
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_LATEST,
       });
-      const org = new iam.OrganizationPrincipal('my-org-id');
+      const org = new iam.OrganizationPrincipal('o-12345abcde');
 
       // WHEN
       fn.grantInvoke(org);
@@ -1745,7 +1745,7 @@ describe('function', () => {
           ],
         },
         Principal: '*',
-        PrincipalOrgID: 'my-org-id',
+        PrincipalOrgID: 'o-12345abcde',
       });
     });
 
@@ -1959,7 +1959,7 @@ describe('function', () => {
         new iam.AccountPrincipal('1234'),
         new iam.ServicePrincipal('apigateway.amazonaws.com'),
         new iam.ArnPrincipal('arn:aws:iam::123456789012:role/someRole'),
-        new iam.OrganizationPrincipal('my-org-id'),
+        new iam.OrganizationPrincipal('o-12345abcde'),
       );
 
       const fn = new lambda.Function(stack, 'Function', {
@@ -2011,7 +2011,7 @@ describe('function', () => {
           ],
         },
         Principal: '*',
-        PrincipalOrgID: 'my-org-id',
+        PrincipalOrgID: 'o-12345abcde',
       });
     });
   });
@@ -4566,94 +4566,94 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasMapping('LatestNodeRuntimeMap', {
       'af-south-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-east-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-northeast-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-northeast-2': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-northeast-3': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-south-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-south-2': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-southeast-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-southeast-2': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-southeast-3': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-southeast-4': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ca-central-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'cn-north-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'cn-northwest-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'eu-central-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'eu-central-2': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'eu-north-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'eu-south-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'eu-south-2': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'eu-west-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'eu-west-2': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'eu-west-3': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'il-central-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'me-central-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'me-south-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'sa-east-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'us-east-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'us-east-2': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'us-gov-east-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'us-gov-west-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'us-iso-east-1': {
         value: 'nodejs18.x',
@@ -4665,10 +4665,10 @@ describe('latest Lambda node runtime', () => {
         value: 'nodejs18.x',
       },
       'us-west-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'us-west-2': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
     });
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
@@ -4700,7 +4700,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs20.x',
+        Runtime: 'nodejs22.x',
       },
     });
   });
@@ -4719,7 +4719,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs20.x',
+        Runtime: 'nodejs22.x',
       },
     });
   });
@@ -4757,7 +4757,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs20.x',
+        Runtime: 'nodejs22.x',
       },
     });
   });
