@@ -111,7 +111,6 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
 /**
  * A Node.js Lambda function bundled using esbuild
  */
-@propertyInjectable
 export class NodejsFunction extends lambda.Function {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda-nodejs.NodejsFunction';

@@ -24,6 +24,10 @@ const NOT_INJECTABLE_CLASSES = [
     "filePath": "packages/aws-cdk-lib/aws-lambda/lib/function-base.ts",
     "className": "LatestVersion"
   },
+  {
+    "filePath": "packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.ts",
+    "className": "NodejsFunction"
+  },
 ]
 
 interface ResourceClass {
@@ -232,8 +236,8 @@ export class ConstructsUpdater extends MetadataUpdater {
     const className = classDeclaration.getName();
     const filePath = classDeclaration.getSourceFile().getFilePath();
 
-    for(const notInjectableClasses of NOT_INJECTABLE_CLASSES){
-      if (className === notInjectableClasses.className && filePath.endsWith(notInjectableClasses.filePath)){
+    for (const notInjectableClasses of NOT_INJECTABLE_CLASSES) {
+      if (className === notInjectableClasses.className && filePath.endsWith(notInjectableClasses.filePath)) {
         return true;
       }
     }
@@ -282,7 +286,7 @@ export class ConstructsUpdater extends MetadataUpdater {
       relativePath = `aws-cdk-lib/core/lib/${importFile}`
     }
     // if the file updated, and the import file in the same directory, so we should add './' as prefix
-    if(dirname === targetDirname){
+    if (dirname === targetDirname) {
       return `./${relativePath}`;
     }
     return relativePath;
@@ -310,9 +314,9 @@ export class ConstructsUpdater extends MetadataUpdater {
     // Find the correct insertion point (after the last import before the new one)
     const importDeclarations = sourceFile.getImportDeclarations();
     let insertIndex = importDeclarations.length; // Default to appending
-    let startIndex = importDeclarations.length -1;
+    let startIndex = importDeclarations.length - 1;
 
-    if ( !relativePath.startsWith('../') && !relativePath.startsWith('./')) {
+    if (!relativePath.startsWith('../') && !relativePath.startsWith('./')) {
       // Third party import, so we should skip all local imports till we reach the 3rd parties
       for (let i = importDeclarations.length - 1; i >= 0; i--) {
         const existingImport = importDeclarations[i].getModuleSpecifier().getLiteralText();
@@ -330,8 +334,8 @@ export class ConstructsUpdater extends MetadataUpdater {
 
       // Insert the new import before the first one that is lexicographically greater
       if (existingImport.localeCompare(relativePath) <= 0) {
-        console.log(`  ${filePath} -- ${existingImport} < ${relativePath} ${i+1}`);
-        insertIndex = i+1;
+        console.log(`  ${filePath} -- ${existingImport} < ${relativePath} ${i + 1}`);
+        insertIndex = i + 1;
         break;
       }
     }
@@ -509,7 +513,7 @@ export class PropertyUpdater extends MetadataUpdater {
 export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = $PROPS;
 `;
 
-      // Convert the enums object to a JSON string
+    // Convert the enums object to a JSON string
     const jsonContent = JSON.stringify(this.classProps, null, 2).replace(/"/g, "'");
 
     // Replace the placeholder with the JSON object
@@ -857,9 +861,9 @@ export class EnumLikeUpdater extends MetadataUpdater {
     super(dir);
   }
 
-   /**
-   * Parse the repository for any enum-like classes and generate a JSON blueprint.
-   */
+  /**
+  * Parse the repository for any enum-like classes and generate a JSON blueprint.
+  */
   public execute(): void {
     const enumlikeBlueprint: Record<string, Record<string, string[]>> = {};
 
