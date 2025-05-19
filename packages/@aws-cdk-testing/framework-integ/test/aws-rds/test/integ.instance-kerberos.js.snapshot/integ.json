@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "testCases": {
     "integ-instance-kerberos/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "integ-instance-kerberos/DefaultTest/DeployAssert",
       "assertionStackName": "integinstancekerberosDefaultTestDeployAssert4433E747"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

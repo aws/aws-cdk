@@ -1,0 +1,13 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "integtest-pipe-target-firehose/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-targets-firehose"
+      ],
+      "assertionStack": "integtest-pipe-target-firehose/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipetargetfirehoseDefaultTestDeployAssert84E7EC09"
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}

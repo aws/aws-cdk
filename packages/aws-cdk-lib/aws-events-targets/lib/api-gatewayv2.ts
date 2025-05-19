@@ -3,6 +3,7 @@ import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEven
 import * as apigwv2 from '../../aws-apigatewayv2';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
+import { ValidationError } from '../../core';
 
 /**
  * Use an API Gateway V2 HTTP APIs as a target for Amazon EventBridge rules.
@@ -38,7 +39,7 @@ export class ApiGatewayV2 implements events.IRuleTarget {
 
     const wildcardCountsInPath = this.props?.path?.match( /\*/g )?.length ?? 0;
     if (wildcardCountsInPath !== (this.props?.pathParameterValues || []).length) {
-      throw new Error('The number of wildcards in the path does not match the number of path pathParameterValues.');
+      throw new ValidationError('The number of wildcards in the path does not match the number of path pathParameterValues.', rule);
     }
 
     const httpApiArn = this._httpApi.arnForExecuteApi(

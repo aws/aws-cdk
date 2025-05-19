@@ -154,6 +154,24 @@
       "sdk_enum_name": "VpcEndpointType",
       "match_percentage": 1
     },
+    "VpcEndpointIpAddressType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.ts",
+      "sdk_service": "ec2",
+      "sdk_enum_name": "IpAddressType",
+      "match_percentage": 1
+    },
+    "VpcEndpointDnsRecordIpType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.ts",
+      "sdk_service": "ec2",
+      "sdk_enum_name": "DnsRecordIpType",
+      "match_percentage": 1
+    },
+    "VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.ts",
+      "sdk_service": "ec2",
+      "sdk_enum_name": "PrivateDnsOnlyForInboundResolverEndpoint",
+      "match_percentage": 1
+    },
     "FlowLogTrafficType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.ts",
       "sdk_service": "ec2",
@@ -488,6 +506,24 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/auth-config.ts",
       "sdk_service": "appsync",
       "sdk_enum_name": "AuthenticationType",
+      "match_percentage": 1
+    },
+    "HandlerBehavior": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/channel-namespace.ts",
+      "sdk_service": "appsync",
+      "sdk_enum_name": "HandlerBehavior",
+      "match_percentage": 1
+    },
+    "AppSyncDataSourceType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.ts",
+      "sdk_service": "appsync",
+      "sdk_enum_name": "Type",
+      "match_percentage": 1
+    },
+    "LambdaInvokeType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.ts",
+      "sdk_service": "appsync",
+      "sdk_enum_name": "InvokeType",
       "match_percentage": 1
     },
     "Visibility": {

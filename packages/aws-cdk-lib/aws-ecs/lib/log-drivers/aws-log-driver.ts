@@ -3,7 +3,7 @@ import { LogDriver, LogDriverConfig } from './log-driver';
 import { removeEmpty } from './utils';
 import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
-import { Size, SizeRoundingBehavior } from '../../../core';
+import { Size, SizeRoundingBehavior, UnscopedValidationError } from '../../../core';
 import { ContainerDefinition } from '../container-definition';
 
 /**
@@ -116,11 +116,11 @@ export class AwsLogDriver extends LogDriver {
     super();
 
     if (props.logGroup && props.logRetention) {
-      throw new Error('Cannot specify both `logGroup` and `logRetentionDays`.');
+      throw new UnscopedValidationError('Cannot specify both `logGroup` and `logRetentionDays`.');
     }
 
     if (props.maxBufferSize && props.mode !== AwsLogDriverMode.NON_BLOCKING) {
-      throw new Error('Cannot specify `maxBufferSize` when the driver mode is blocking');
+      throw new UnscopedValidationError('Cannot specify `maxBufferSize` when the driver mode is blocking');
     }
   }
 
