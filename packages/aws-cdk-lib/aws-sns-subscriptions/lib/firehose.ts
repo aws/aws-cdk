@@ -32,7 +32,7 @@ export interface FirehoseSubscriptionProps extends SubscriptionProps {
  * @see https://docs.aws.amazon.com/sns/latest/dg/sns-firehose-as-subscriber.html
  */
 export class FirehoseSubscription implements sns.ITopicSubscription {
-  constructor(private readonly stream: firehose.IDeliveryStream, private readonly props: FirehoseSubscriptionProps = {}) {
+  constructor(private readonly deliveryStream: firehose.IDeliveryStream, private readonly props: FirehoseSubscriptionProps = {}) {
   }
 
   /**
@@ -41,15 +41,15 @@ export class FirehoseSubscription implements sns.ITopicSubscription {
   public bind(topic: sns.ITopic): sns.TopicSubscriptionConfig {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
-    if (!Construct.isConstruct(this.stream)) {
+    if (!Construct.isConstruct(this.deliveryStream)) {
       throw new ValidationError('The supplied delivery stream object must be an instance of Construct', topic);
     }
 
     // Permissions based on SNS documentation:
     // https://docs.aws.amazon.com/sns/latest/dg/prereqs-kinesis-data-firehose.html
     const role = this.props.role
-      ?? (this.stream.node.tryFindChild('TopicSubscriptionRole') as iam.IRole)
-      ?? new iam.Role(this.stream, 'TopicSubscriptionRole', { assumedBy: new iam.ServicePrincipal('sns.amazonaws.com') });
+      ?? (this.deliveryStream.node.tryFindChild('TopicSubscriptionRole') as iam.IRole)
+      ?? new iam.Role(this.deliveryStream, 'TopicSubscriptionRole', { assumedBy: new iam.ServicePrincipal('sns.amazonaws.com') });
     role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: [
         'firehose:DescribeDeliveryStream',
@@ -58,24 +58,24 @@ export class FirehoseSubscription implements sns.ITopicSubscription {
         'firehose:PutRecord',
         'firehose:PutRecordBatch',
       ],
-      resources: [this.stream.deliveryStreamArn],
+      resources: [this.deliveryStream.deliveryStreamArn],
     }));
 
     // if the topic and delivery stream are created in different stacks
     // then we need to make sure the topic is created first
-    if (topic instanceof sns.Topic && topic.stack !== this.stream.stack) {
-      this.stream.stack.addDependency(topic.stack);
+    if (topic instanceof sns.Topic && topic.stack !== this.deliveryStream.stack) {
+      this.deliveryStream.stack.addDependency(topic.stack);
     }
 
     return {
-      subscriberScope: this.stream,
+      subscriberScope: this.deliveryStream,
       subscriberId: Names.nodeUniqueId(topic.node),
-      endpoint: this.stream.deliveryStreamArn,
+      endpoint: this.deliveryStream.deliveryStreamArn,
       protocol: sns.SubscriptionProtocol.FIREHOSE,
       filterPolicy: this.props.filterPolicy,
       filterPolicyWithMessageBody: this.props.filterPolicyWithMessageBody,
       rawMessageDelivery: this.props.rawMessageDelivery,
-      region: regionFromArn(topic, this.stream),
+      region: regionFromArn(topic, this.deliveryStream),
       deadLetterQueue: this.props.deadLetterQueue,
       subscriptionRoleArn: role.roleArn,
     };

@@ -17,14 +17,14 @@ const bucket = new s3.Bucket(stack, 'Bucket', {
   autoDeleteObjects: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
-const stream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
+const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
   destination: new firehose.S3Bucket(bucket, {
     bufferingInterval: cdk.Duration.seconds(30),
     loggingConfig: { logging: false },
   }),
 });
 
-topic.addSubscription(new subs.FirehoseSubscription(stream, {
+topic.addSubscription(new subs.FirehoseSubscription(deliveryStream, {
   deadLetterQueue,
 }));
 

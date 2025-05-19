@@ -4,10 +4,10 @@ import * as firehose from '../../aws-kinesisfirehose';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
-import { App, CfnParameter, Duration, RemovalPolicy, Stack, Token } from '../../core';
+import { App, Stack } from '../../core';
 import * as subs from '../lib';
 
-describe('firehose subscription', () => {
+describe('Amazon Data Firehose delivery stream subscription', () => {
   let stack: Stack;
   let topic: sns.Topic;
 
@@ -19,12 +19,12 @@ describe('firehose subscription', () => {
   test('creates configurations and role', () => {
     // GIVEN
     const bucket = new s3.Bucket(stack, 'Bucket');
-    const stream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
+    const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
       destination: new firehose.S3Bucket(bucket),
     });
 
     // WHEN
-    topic.addSubscription(new subs.FirehoseSubscription(stream));
+    topic.addSubscription(new subs.FirehoseSubscription(deliveryStream));
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
@@ -63,12 +63,12 @@ describe('firehose subscription', () => {
   test('creates configurations with raw message delivery', () => {
     // GIVEN
     const bucket = new s3.Bucket(stack, 'Bucket');
-    const stream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
+    const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
       destination: new firehose.S3Bucket(bucket),
     });
 
     // WHEN
-    topic.addSubscription(new subs.FirehoseSubscription(stream, {
+    topic.addSubscription(new subs.FirehoseSubscription(deliveryStream, {
       rawMessageDelivery: true,
     }));
 
@@ -85,12 +85,12 @@ describe('firehose subscription', () => {
   test('creates configurations with filter policy', () => {
     // GIVEN
     const bucket = new s3.Bucket(stack, 'Bucket');
-    const stream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
+    const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
       destination: new firehose.S3Bucket(bucket),
     });
 
     // WHEN
-    topic.addSubscription(new subs.FirehoseSubscription(stream, {
+    topic.addSubscription(new subs.FirehoseSubscription(deliveryStream, {
       filterPolicy: {
         color: sns.SubscriptionFilter.stringFilter({ allowlist: ['red', 'blue'] }),
       },
@@ -109,12 +109,12 @@ describe('firehose subscription', () => {
   test('creates configurations with message body filter policy', () => {
     // GIVEN
     const bucket = new s3.Bucket(stack, 'Bucket');
-    const stream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
+    const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
       destination: new firehose.S3Bucket(bucket),
     });
 
     // WHEN
-    topic.addSubscription(new subs.FirehoseSubscription(stream, {
+    topic.addSubscription(new subs.FirehoseSubscription(deliveryStream, {
       filterPolicyWithMessageBody: {
         color: sns.FilterOrPolicy.filter(sns.SubscriptionFilter.stringFilter({ allowlist: ['red', 'blue'] })),
       },
@@ -134,7 +134,7 @@ describe('firehose subscription', () => {
   test('creates configurations with user provided role', () => {
     // GIVEN
     const bucket = new s3.Bucket(stack, 'Bucket');
-    const stream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
+    const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
       destination: new firehose.S3Bucket(bucket),
     });
 
@@ -142,7 +142,7 @@ describe('firehose subscription', () => {
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.ServicePrincipal('sns.amazonaws.com'),
     });
-    topic.addSubscription(new subs.FirehoseSubscription(stream, { role }));
+    topic.addSubscription(new subs.FirehoseSubscription(deliveryStream, { role }));
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
@@ -156,7 +156,7 @@ describe('firehose subscription', () => {
   test('creates configurations with user provided role', () => {
     // GIVEN
     const bucket = new s3.Bucket(stack, 'Bucket');
-    const stream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
+    const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
       destination: new firehose.S3Bucket(bucket),
     });
 
@@ -164,7 +164,7 @@ describe('firehose subscription', () => {
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.ServicePrincipal('sns.amazonaws.com'),
     });
-    topic.addSubscription(new subs.FirehoseSubscription(stream, { role }));
+    topic.addSubscription(new subs.FirehoseSubscription(deliveryStream, { role }));
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
@@ -178,13 +178,13 @@ describe('firehose subscription', () => {
   test('creates configurations with user provided dlq', () => {
     // GIVEN
     const bucket = new s3.Bucket(stack, 'Bucket');
-    const stream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
+    const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
       destination: new firehose.S3Bucket(bucket),
     });
 
     // WHEN
     const deadLetterQueue = new sqs.Queue(stack, 'DeadLetterQueue');
-    topic.addSubscription(new subs.FirehoseSubscription(stream, { deadLetterQueue }));
+    topic.addSubscription(new subs.FirehoseSubscription(deliveryStream, { deadLetterQueue }));
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
@@ -217,7 +217,7 @@ describe('firehose subscription', () => {
   });
 });
 
-describe('firehose subscription cross-stack', () => {
+describe('Amazon Data Firehose delivery stream subscription cross-stack', () => {
   test('creates cross-region configuration', () => {
     // GIVEN
     const app = new App();
@@ -230,12 +230,12 @@ describe('firehose subscription cross-stack', () => {
     });
 
     const bucket = new s3.Bucket(firehoseStack, 'Bucket');
-    const stream = new firehose.DeliveryStream(firehoseStack, 'DeliveryStream', {
+    const deliveryStream = new firehose.DeliveryStream(firehoseStack, 'DeliveryStream', {
       destination: new firehose.S3Bucket(bucket),
     });
 
     // WHEN
-    topic.addSubscription(new subs.FirehoseSubscription(stream));
+    topic.addSubscription(new subs.FirehoseSubscription(deliveryStream));
 
     // THEN
     Template.fromStack(topicStack).hasResourceProperties('AWS::SNS::Topic', {
@@ -287,12 +287,12 @@ describe('firehose subscription cross-stack', () => {
     });
 
     const bucket = new s3.Bucket(firehoseStack, 'Bucket');
-    const stream = new firehose.DeliveryStream(firehoseStack, 'DeliveryStream', {
+    const deliveryStream = new firehose.DeliveryStream(firehoseStack, 'DeliveryStream', {
       destination: new firehose.S3Bucket(bucket),
     });
 
     // WHEN
-    topic.addSubscription(new subs.FirehoseSubscription(stream));
+    topic.addSubscription(new subs.FirehoseSubscription(deliveryStream));
 
     // THEN
     Template.fromStack(topicStack).hasResourceProperties('AWS::SNS::Topic', {
