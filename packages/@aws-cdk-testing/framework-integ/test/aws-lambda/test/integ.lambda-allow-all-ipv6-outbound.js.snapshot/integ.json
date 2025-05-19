@@ -8,5 +8,6 @@
       "assertionStack": "lambda-allow-all-ipv6-outbound/DefaultTest/DeployAssert",
       "assertionStackName": "lambdaallowallipv6outboundDefaultTestDeployAssert52B7EB97"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -112,6 +112,19 @@ describe('cluster', () => {
     }).toThrow(/Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true/);
   });
 
+  test('throws when cluster name exceeds 100 characters', () => {
+    const { stack } = testFixture();
+    const longClusterName = 'X'.repeat(200);
+
+    expect(() => {
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        clusterName: longClusterName,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+    }).toThrow(/Cluster name cannot be more than 100 characters/);
+  });
+
   describe('imported Vpc from unparseable list tokens', () => {
     let stack: cdk.Stack;
     let vpc: ec2.IVpc;
