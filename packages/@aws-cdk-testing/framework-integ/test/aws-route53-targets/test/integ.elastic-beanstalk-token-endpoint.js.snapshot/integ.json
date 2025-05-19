@@ -8,5 +8,6 @@
       "assertionStack": "cdk-route53-ebs-token-endpoint-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "cdkroute53ebstokenendpointintegtestDefaultTestDeployAssertEE10A2D8"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -10,5 +10,6 @@
       "assertionStack": "alb-mtls-integ/DefaultTest/DeployAssert",
       "assertionStackName": "albmtlsintegDefaultTestDeployAssert30225695"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

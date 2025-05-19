@@ -8,5 +8,6 @@
       "assertionStack": "s3-encrypted-bucket-origin-oac/DefaultTest/DeployAssert",
       "assertionStackName": "s3encryptedbucketoriginoacDefaultTestDeployAssertFD658B04"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

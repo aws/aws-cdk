@@ -71,6 +71,7 @@ export class AssetBundlingBindMount extends AssetBundlingBase {
         ...(this.options.volumes ?? []),
       ],
       network: this.options.network,
+      platform: this.options.platform,
     });
   }
 }
@@ -189,6 +190,7 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
         this.copyContainerName,
         ...(this.options.volumesFrom ?? []),
       ],
+      platform: this.options.platform,
     });
 
     this.copyOutputTo(this.options.bundleDir);

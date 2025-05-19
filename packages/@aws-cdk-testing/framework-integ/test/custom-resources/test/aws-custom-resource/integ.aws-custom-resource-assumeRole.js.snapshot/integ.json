@@ -8,5 +8,6 @@
       "assertionStack": "AwsCustomResourceAssumeRoleTest/DefaultTest/DeployAssert",
       "assertionStackName": "AwsCustomResourceAssumeRoleTestDefaultTestDeployAssert9FD5C886"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

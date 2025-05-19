@@ -8,5 +8,6 @@
       "assertionStack": "integ-cluster-data-api-to-imported-cluster/DefaultTest/DeployAssert",
       "assertionStackName": "integclusterdataapitoimportedclusterDefaultTestDeployAssert641C7C79"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

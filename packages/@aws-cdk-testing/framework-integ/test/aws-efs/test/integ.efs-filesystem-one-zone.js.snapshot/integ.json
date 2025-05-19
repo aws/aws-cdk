@@ -8,5 +8,6 @@
       "assertionStack": "test-efs-one-zone-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "testefsonezoneintegtestDefaultTestDeployAssert9CBE8B7F"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

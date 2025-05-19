@@ -8,5 +8,6 @@
       "assertionStack": "AppRunnerVpcIngressConnection/DefaultTest/DeployAssert",
       "assertionStackName": "AppRunnerVpcIngressConnectionDefaultTestDeployAssertC725050C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

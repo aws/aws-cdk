@@ -15,7 +15,7 @@
         }
       }
     },
-    "9c5ff07cbd14963bec556fd4164bb60e90297b73c53f4fa88ddff028c65b9a78": {
+    "6007ffa520d260c3267e7cafd52031af53253a58b6c3b5787dac1fe55eead972": {
       "displayName": "cluster-kerberos Template",
       "source": {
         "path": "cluster-kerberos.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9c5ff07cbd14963bec556fd4164bb60e90297b73c53f4fa88ddff028c65b9a78.json",
+          "objectKey": "6007ffa520d260c3267e7cafd52031af53253a58b6c3b5787dac1fe55eead972.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

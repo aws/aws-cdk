@@ -15,7 +15,7 @@
         }
       }
     },
-    "37d0520fd567a6ccea56247bf5c7f9d7d1c4aab10335f3b9a9fecd7ff3c00797": {
+    "a19f7b10b4ba38768e3906836f9885d16e3a6efdb4894a641d040a1485cb309f": {
       "displayName": "aws-cdk-ivs-recording-configuration-test Template",
       "source": {
         "path": "aws-cdk-ivs-recording-configuration-test.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "37d0520fd567a6ccea56247bf5c7f9d7d1c4aab10335f3b9a9fecd7ff3c00797.json",
+          "objectKey": "a19f7b10b4ba38768e3906836f9885d16e3a6efdb4894a641d040a1485cb309f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

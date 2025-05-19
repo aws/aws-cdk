@@ -8,5 +8,6 @@
       "assertionStack": "VpcEndpointservice/DefaultTest/DeployAssert",
       "assertionStackName": "VpcEndpointserviceDefaultTestDeployAssert1FF764BE"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

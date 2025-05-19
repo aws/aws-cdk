@@ -108,7 +108,7 @@
      ]
     },
     "Create": "{\"service\":\"ElasticBeanstalk\",\"action\":\"describeEnvironments\",\"parameters\":{\"EnvironmentNames\":[]},\"physicalResourceId\":{\"id\":\"EnvironmentUrl\"},\"logApiResponseData\":false}",
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "Environment",
@@ -188,7 +188,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x",
+    "Runtime": "nodejs22.x",
     "Timeout": 120
    },
    "DependsOn": [

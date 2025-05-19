@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "89e20064faee3c465524258c6d4241fb1ff706f0ce522ac300e5588dc40dd64b": {
+      "displayName": "AnomalyDetectionAlarmTestStack Template",
+      "source": {
+        "path": "AnomalyDetectionAlarmTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "89e20064faee3c465524258c6d4241fb1ff706f0ce522ac300e5588dc40dd64b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

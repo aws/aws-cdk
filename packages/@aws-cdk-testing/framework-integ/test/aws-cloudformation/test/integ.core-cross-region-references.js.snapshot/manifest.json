@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "cross-region-producer.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/25f35afea7410357d49e9d434c175c3be5087a721ec7b9a57d1e3a911196af44.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/087876bf9acb90741f2e9aa277d47208699a592ca1987e9d19ed355a1a46890a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,12 @@
         "cross-region-producer.assets"
       ],
       "metadata": {
+        "/cross-region-producer/IntegNested/NestedIntegQueue": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cross-region-producer/IntegNested/NestedIntegQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -52,16 +58,34 @@
             "data": "IntegNestedNestedStackIntegNestedNestedStackResource168C5881"
           }
         ],
+        "/cross-region-producer/IntegQueue": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cross-region-producer/IntegQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegQueue3A18718A"
           }
         ],
+        "/cross-region-producer/ExportsWriteruseast2828FA26B/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cross-region-producer/ExportsWriteruseast2828FA26B/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsWriteruseast2828FA26B86FBEFA7"
+          }
+        ],
+        "/cross-region-producer/Custom::CrossRegionExportWriterCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/cross-region-producer/Custom::CrossRegionExportWriterCustomResourceProvider/Role": [
@@ -74,6 +98,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A"
+          }
+        ],
+        "/cross-region-producer/ExportsWriteruswest209BD44F0/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cross-region-producer/ExportsWriteruswest209BD44F0/Resource/Default": [
@@ -114,7 +144,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/ae85f2d7935c1f39393d998cb83c2c5c5c9bf09e977c93d80fb04fd39ea7a347.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/4d982f262998d974bacfb6a3c9ff40c7f8c8117f98f9880d722d0c17d65acc44.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -131,10 +161,28 @@
         "cross-region-consumer.assets"
       ],
       "metadata": {
+        "/cross-region-consumer/IntegNested/IntegNestedParameter0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parameterName": "*",
+              "stringValue": "*"
+            }
+          }
+        ],
         "/cross-region-consumer/IntegNested/IntegNestedParameter0/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegNestedParameter04B9B8A01"
+          }
+        ],
+        "/cross-region-consumer/IntegNested/IntegNestedParameter1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parameterName": "*",
+              "stringValue": "*"
+            }
           }
         ],
         "/cross-region-consumer/IntegNested/IntegNestedParameter1/Resource": [
@@ -161,10 +209,28 @@
             "data": "IntegNestedNestedStackIntegNestedNestedStackResource168C5881"
           }
         ],
+        "/cross-region-consumer/IntegParameter0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parameterName": "*",
+              "stringValue": "*"
+            }
+          }
+        ],
         "/cross-region-consumer/IntegParameter0/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegParameter02A1817A4"
+          }
+        ],
+        "/cross-region-consumer/IntegParameter1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parameterName": "*",
+              "stringValue": "*"
+            }
           }
         ],
         "/cross-region-consumer/IntegParameter1/Resource": [
@@ -173,10 +239,38 @@
             "data": "IntegParameter1EDBEF1C6"
           }
         ],
+        "/cross-region-consumer/ExportsReader/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/cross-region-consumer/ExportsReader/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsReader8B249524"
+          }
+        ],
+        "/cross-region-consumer/Custom::CrossRegionExportReaderCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/cross-region-consumer/Custom::CrossRegionExportReaderCustomResourceProvider/Role": [
@@ -223,7 +317,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/affe08dfd6e38fd8704ae4d07b3f5382f3f868d245fa0176ba46fafd4da252dc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/d81531c503262185b2ab7a01f50dc7692c259f50c0301b0d08f60687b49bbfc3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -240,10 +334,28 @@
         "cross-region-consumer2.assets"
       ],
       "metadata": {
+        "/cross-region-consumer2/IntegNested/IntegNestedParameter0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parameterName": "*",
+              "stringValue": "*"
+            }
+          }
+        ],
         "/cross-region-consumer2/IntegNested/IntegNestedParameter0/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegNestedParameter04B9B8A01"
+          }
+        ],
+        "/cross-region-consumer2/IntegNested/IntegNestedParameter1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parameterName": "*",
+              "stringValue": "*"
+            }
           }
         ],
         "/cross-region-consumer2/IntegNested/IntegNestedParameter1/Resource": [
@@ -270,10 +382,28 @@
             "data": "IntegNestedNestedStackIntegNestedNestedStackResource168C5881"
           }
         ],
+        "/cross-region-consumer2/IntegParameter0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parameterName": "*",
+              "stringValue": "*"
+            }
+          }
+        ],
         "/cross-region-consumer2/IntegParameter0/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegParameter02A1817A4"
+          }
+        ],
+        "/cross-region-consumer2/IntegParameter1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parameterName": "*",
+              "stringValue": "*"
+            }
           }
         ],
         "/cross-region-consumer2/IntegParameter1/Resource": [
@@ -282,10 +412,38 @@
             "data": "IntegParameter1EDBEF1C6"
           }
         ],
+        "/cross-region-consumer2/ExportsReader/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/cross-region-consumer2/ExportsReader/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsReader8B249524"
+          }
+        ],
+        "/cross-region-consumer2/Custom::CrossRegionExportReaderCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/cross-region-consumer2/Custom::CrossRegionExportReaderCustomResourceProvider/Role": [
@@ -332,7 +490,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dc7b7338e7d7138674efd8748cc04ccbee4e5ef1573a4786ab84b963594ca847.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7cb29650581ade1c69d7e0e93d79243ce9026660376c9af505945c60196a2927.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -348,6 +506,12 @@
         "crossregionreferencesDefaultTestDeployAssertAB7415FD.assets"
       ],
       "metadata": {
+        "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdeleteStacke9f2151ae7c85063016d04dca4a05a09/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdeleteStacke9f2151ae7c85063016d04dca4a05a09/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -370,6 +534,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09/Default/Default": [
@@ -447,5 +625,6 @@
       },
       "displayName": "cross-region-references/DefaultTest/DeployAssert"
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

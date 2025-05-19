@@ -8,5 +8,6 @@
       "assertionStack": "alb-target-group-cross-zone-test-stack/DefaultTest/DeployAssert",
       "assertionStackName": "albtargetgroupcrosszoneteststackDefaultTestDeployAssertBFB9F5EA"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

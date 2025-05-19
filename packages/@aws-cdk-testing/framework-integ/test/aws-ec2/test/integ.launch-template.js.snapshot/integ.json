@@ -9,5 +9,6 @@
       "assertionStack": "LambdaTest/DefaultTest/DeployAssert",
       "assertionStackName": "LambdaTestDefaultTestDeployAssert1AF2B360"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

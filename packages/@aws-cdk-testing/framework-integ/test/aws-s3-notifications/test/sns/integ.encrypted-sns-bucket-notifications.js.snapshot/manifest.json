@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "SnsBucketNotificationsStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2bcc55ac0d5b1fd6ddd3cc55ed7d9f3e8d5b876a4b7b9bd47b2a376e24deef78.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/95fae35c517a0e45cfd02c8310d2caacf1bfc1660f377748c27da8c94a222679.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,7 +37,9 @@
         "/SnsBucketNotificationsStack/Key": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "removalPolicy": "destroy"
+            }
           }
         ],
         "/SnsBucketNotificationsStack/Key/Resource": [
@@ -49,7 +51,9 @@
         "/SnsBucketNotificationsStack/Topic": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "masterKey": "*"
+            }
           }
         ],
         "/SnsBucketNotificationsStack/Topic/Resource": [
@@ -61,7 +65,11 @@
         "/SnsBucketNotificationsStack/Topic/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "topics": [
+                "*"
+              ]
+            }
           }
         ],
         "/SnsBucketNotificationsStack/Topic/Policy/Resource": [
@@ -85,7 +93,11 @@
         "/SnsBucketNotificationsStack/Queue/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "queues": [
+                "*"
+              ]
+            }
           }
         ],
         "/SnsBucketNotificationsStack/Queue/Policy/Resource": [
@@ -97,7 +109,16 @@
         "/SnsBucketNotificationsStack/Queue/SnsBucketNotificationsStackTopic94A66F53": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "topic": "*",
+              "endpoint": "*",
+              "protocol": "sqs",
+              "rawMessageDelivery": "*",
+              "filterPolicy": "*",
+              "filterPolicyWithMessageBody": "*",
+              "region": "*",
+              "deadLetterQueue": "*"
+            }
           }
         ],
         "/SnsBucketNotificationsStack/Queue/SnsBucketNotificationsStackTopic94A66F53/Resource": [
@@ -109,7 +130,10 @@
         "/SnsBucketNotificationsStack/MyBucket": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
           }
         ],
         "/SnsBucketNotificationsStack/MyBucket/Resource": [
@@ -121,7 +145,9 @@
         "/SnsBucketNotificationsStack/MyBucket/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "bucket": "*"
+            }
           }
         ],
         "/SnsBucketNotificationsStack/MyBucket/Policy/Resource": [
@@ -175,23 +201,46 @@
         "/SnsBucketNotificationsStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
           }
         ],
         "/SnsBucketNotificationsStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/ImportRole": [
@@ -213,15 +262,27 @@
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/SnsBucketNotificationsStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource": [
@@ -280,7 +341,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fa866d20d70919f99c592dac375a7f3d466c2aec2d91e6e1b8fa3c325a70c044.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5afd156ccdd253711edada30594fdd4f7cce696ea0064aa4cfa42b8237a70c0a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -423,5 +484,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1015.0"
 }

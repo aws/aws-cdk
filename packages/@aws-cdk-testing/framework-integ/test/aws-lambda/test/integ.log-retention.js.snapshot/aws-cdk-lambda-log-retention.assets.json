@@ -15,7 +15,7 @@
         }
       }
     },
-    "2c241b2514535cc6b97907010deefb0d23242578d299ec7904e62d61a86b9718": {
+    "1900087e8943cb56dee3ba9960694a4a841e70756f48410677ffea976cf2a326": {
       "displayName": "aws-cdk-lambda-log-retention Template",
       "source": {
         "path": "aws-cdk-lambda-log-retention.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2c241b2514535cc6b97907010deefb0d23242578d299ec7904e62d61a86b9718.json",
+          "objectKey": "1900087e8943cb56dee3ba9960694a4a841e70756f48410677ffea976cf2a326.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

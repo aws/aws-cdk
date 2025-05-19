@@ -8,5 +8,6 @@
       "assertionStack": "KeyPairTest/DefaultTest/DeployAssert",
       "assertionStackName": "KeyPairTestDefaultTestDeployAssertF103D058"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

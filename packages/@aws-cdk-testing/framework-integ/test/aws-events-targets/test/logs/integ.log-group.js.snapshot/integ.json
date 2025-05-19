@@ -9,5 +9,6 @@
       "assertionStack": "LogGroup/DefaultTest/DeployAssert",
       "assertionStackName": "LogGroupDefaultTestDeployAssert353EE07A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

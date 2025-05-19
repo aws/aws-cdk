@@ -15,5 +15,6 @@
       "assertionStack": "rds-instance-with-metric-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "rdsinstancewithmetricintegtestDefaultTestDeployAssert50AA4D51"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
