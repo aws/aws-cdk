@@ -439,7 +439,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
   /**
    * The listener for the service.
    */
-  public readonly listener: ApplicationListener;
+  public readonly listener: IApplicationListener;
 
   /**
    * The redirect listener for the service if redirectHTTP is enabled.
