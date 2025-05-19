@@ -2,6 +2,7 @@ import { Match, Template } from '../../../assertions';
 import { Certificate } from '../../../aws-certificatemanager';
 import { IpProtocol, Vpc } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
+import * as elb from '../../../aws-elasticloadbalancingv2';
 import { ContainerDefinition, ContainerImage } from '../../../aws-ecs';
 import { ApplicationProtocol, IpAddressType, SslPolicy } from '../../../aws-elasticloadbalancingv2';
 import { CompositePrincipal, Role, ServicePrincipal } from '../../../aws-iam';
@@ -138,6 +139,35 @@ describe('Application Load Balancer', () => {
         Type: 'application',
         IpAddressType: 'dualstack',
       });
+    });
+
+    test('custom lb listener is passed through successfully', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC', {
+        ipProtocol: IpProtocol.DUAL_STACK,
+      });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      const lb = new elb.ApplicationLoadBalancer(stack, 'LoadBalancer', { vpc });
+      const listener = lb.addListener('MainListener', {
+        protocol: elb.ApplicationProtocol.HTTP,
+        port: 5828,
+        open: true,
+      });
+
+      // WHEN
+      new ApplicationLoadBalancedFargateService(stack, 'Service', {
+        cluster,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
+        ipAddressType: IpAddressType.DUAL_STACK,
+        listener,
+      });
+
+      // THEN - stack contains a load balancer and ONE listener
+      Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 1);
     });
   });
 
