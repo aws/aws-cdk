@@ -804,7 +804,10 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
 /**
  * An imported application listener.
  */
+@propertyInjectable
 class ImportedApplicationListener extends ExternalApplicationListener {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.ImportedApplicationListener';
   public readonly listenerArn: string;
   public readonly connections: ec2.Connections;
 
@@ -823,7 +826,10 @@ class ImportedApplicationListener extends ExternalApplicationListener {
   }
 }
 
+@propertyInjectable
 class LookedUpApplicationListener extends ExternalApplicationListener {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.LookedUpApplicationListener';
   public readonly listenerArn: string;
   public readonly connections: ec2.Connections;
 

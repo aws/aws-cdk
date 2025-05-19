@@ -3,16 +3,16 @@
   "TableCD117FA1": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
-    "KeySchema": [
-     {
-      "AttributeName": "metric",
-      "KeyType": "HASH"
-     }
-    ],
     "AttributeDefinitions": [
      {
       "AttributeName": "metric",
       "AttributeType": "S"
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "metric",
+      "KeyType": "HASH"
      }
     ],
     "ProvisionedThroughput": {
@@ -32,7 +32,8 @@
      {
       "Expression": "putitem + scan",
       "Id": "expr_1",
-      "Label": "Sum of throttled requests across all operations"
+      "Label": "Sum of throttled requests across all operations",
+      "ReturnData": true
      },
      {
       "Id": "putitem",
@@ -95,7 +96,8 @@
      {
       "Expression": "putitem + scan",
       "Id": "expr_1",
-      "Label": "Sum of errors across all operations"
+      "Label": "Sum of errors across all operations",
+      "ReturnData": true
      },
      {
       "Id": "putitem",

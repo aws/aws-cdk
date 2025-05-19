@@ -89,7 +89,11 @@ export interface ZoneSigningOptions {
  * Container for records, and records contain information about how to route traffic for a
  * specific domain, such as example.com and its subdomains (acme.example.com, zenith.example.com)
  */
+@propertyInjectable
 export class HostedZone extends Resource implements IHostedZone {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.HostedZone';
+
   public get hostedZoneArn(): string {
     return makeHostedZoneArn(this, this.hostedZoneId);
   }
@@ -487,7 +491,11 @@ export interface IPrivateHostedZone extends IHostedZone {}
  *
  * @resource AWS::Route53::HostedZone
  */
+@propertyInjectable
 export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.PrivateHostedZone';
+
   /**
    * Import a Route 53 private hosted zone defined either outside the CDK, or in a different CDK stack
    *
