@@ -8,5 +8,6 @@
       "assertionStack": "FsxLustreFileSystemTypeVersionTest/DefaultTest/DeployAssert",
       "assertionStackName": "FsxLustreFileSystemTypeVersionTestDefaultTestDeployAssert045329BD"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

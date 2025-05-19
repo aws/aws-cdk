@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "assembly-CdkPipelineInvestigationStack-Prod": {
       "type": "cdk:cloud-assembly",
@@ -25,7 +25,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-test-region/17430e61b8209e7965c1a364ccc1212507c4f8c27289c2e5d00ce3623a2f2ea3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-test-region/29202ab9815c78b2fd05dd85303cade099016268f5138e589aa7dd457540341c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -111,7 +111,10 @@
         "/CrossAccountSourceStack/DeploySource/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeploySourceAwsCliLayer55AA2312"
+            "data": "DeploySourceAwsCliLayer55AA2312",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/CrossAccountSourceStack/DeploySource/CustomResourceHandler": [
@@ -403,7 +406,10 @@
         "/CrossAccountSourceStack/CdkPipelineInvestigationStackPipeline029CB441-Source-S3Source-ActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CdkPipelineInvestigationStackPipeline029CB441SourceS3SourceActionRole7C8DE2D3"
+            "data": "CdkPipelineInvestigationStackPipeline029CB441SourceS3SourceActionRole7C8DE2D3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/CrossAccountSourceStack/CdkPipelineInvestigationStackPipeline029CB441-Source-S3Source-ActionRole/DefaultPolicy": [
@@ -1520,5 +1526,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1015.0"
 }

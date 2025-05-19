@@ -33,7 +33,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "CDKIntegTestTagIGW"
+      "Value": "CDKintegTestVPC"
      }
     ]
    }
@@ -162,10 +162,7 @@
       "Value": "CDKintegTestVPC"
      }
     ]
-   },
-   "DependsOn": [
-    "testsubnet3RouteTableAssociation97F126C9"
-   ]
+   }
   },
   "VPCintegtestgatewayNATGatewaytestsubnet3NATGateway4198D6F2": {
    "Type": "AWS::EC2::NatGateway",
@@ -201,10 +198,7 @@
       "Value": "CDKintegTestVPC"
      }
     ]
-   },
-   "DependsOn": [
-    "testsubnet2RouteTableAssociation2ABEB97D"
-   ]
+   }
   },
   "VPCintegtestgatewayNATGatewaytestsubnet2NATGateway27C66096": {
    "Type": "AWS::EC2::NatGateway",
@@ -254,12 +248,12 @@
     "CidrBlock": "10.1.1.0/28",
     "Tags": [
      {
-      "Key": "Name",
+      "Key": "aws-cdk:subnet-name",
       "Value": "CDKIntegTestSubnet"
      },
      {
-      "Key": "VpcName",
-      "Value": "CDKintegTestVPC"
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
      }
     ],
     "VpcId": {
@@ -314,12 +308,12 @@
     "CidrBlock": "10.1.2.0/28",
     "Tags": [
      {
-      "Key": "Name",
+      "Key": "aws-cdk:subnet-name",
       "Value": "CDKIntegTestSubnet2"
      },
      {
-      "Key": "VpcName",
-      "Value": "CDKintegTestVPC"
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
      }
     ],
     "VpcId": {
@@ -357,12 +351,12 @@
     "CidrBlock": "10.1.3.0/28",
     "Tags": [
      {
-      "Key": "Name",
+      "Key": "aws-cdk:subnet-name",
       "Value": "CDKIntegTestSubnet3"
      },
      {
-      "Key": "VpcName",
-      "Value": "CDKintegTestVPC"
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
      }
     ],
     "VpcId": {
