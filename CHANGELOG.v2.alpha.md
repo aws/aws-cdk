@@ -2,6 +2,95 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.196.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.195.0-alpha.0...v2.196.0-alpha.0) (2025-05-15)
+
+
+### Features
+
+* **msk:** support Kafka versions 3.9.x and 3.9.x Kraft ([#34213](https://github.com/aws/aws-cdk/issues/34213)) ([a1226db](https://github.com/aws/aws-cdk/commit/a1226db3164f885ab1bbf13a18697831cfde74d0))
+* **pipes-targets:** add SNS ([#34159](https://github.com/aws/aws-cdk/issues/34159)) ([2f846b3](https://github.com/aws/aws-cdk/commit/2f846b395cc5061363bd6def946a04740ac0139b))
+* **s3tables:** server-side encryption by customer managed KMS key ([#34229](https://github.com/aws/aws-cdk/issues/34229)) ([488f0db](https://github.com/aws/aws-cdk/commit/488f0db714c20fcaf5dbdf682277a70c6a938d3f))
+
+
+### Bug Fixes
+
+* **ec2:**  dual-stack vpc without private subnets creates EgressOnlyInternetGateway (under feature flag) ([#34437](https://github.com/aws/aws-cdk/issues/34437)) ([35e818b](https://github.com/aws/aws-cdk/commit/35e818b4f86638b5fe6074705511d1eee16266d2)), closes [#30981](https://github.com/aws/aws-cdk/issues/30981)
+* **ec2-alpha:** fix resource id references and tags for migration behind feature flag ([#34377](https://github.com/aws/aws-cdk/issues/34377)) ([aa73534](https://github.com/aws/aws-cdk/commit/aa735341a8e95224a14241b5e1c5c5ba71de5022))
+
+## [2.195.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.194.0-alpha.0...v2.195.0-alpha.0) (2025-05-07)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **iot:** By default, `deviceDertificateAgeCheck` is automatically enabled.
+
+### Features
+
+* **iot:** device certificate age check audit configuration ([#33816](https://github.com/aws/aws-cdk/issues/33816)) ([9ad383d](https://github.com/aws/aws-cdk/commit/9ad383d5300c5d5f5a9d2552fbd541436570a404))
+* **location:** support L2 API Key Construct ([#32733](https://github.com/aws/aws-cdk/issues/32733)) ([d867878](https://github.com/aws/aws-cdk/commit/d86787889dd49dce220324d141bf48e1bfa8fc3b)), closes [#30684](https://github.com/aws/aws-cdk/issues/30684)
+
+
+### Bug Fixes
+
+* **amplify-alpha:** example code for adding a custom rule is wrong  ([#34353](https://github.com/aws/aws-cdk/issues/34353)) ([8ab2606](https://github.com/aws/aws-cdk/commit/8ab2606b7b8de068a70dfaf02c5d96651ef5d286)), closes [#34351](https://github.com/aws/aws-cdk/issues/34351)
+
+## [2.194.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.193.0-alpha.0...v2.194.0-alpha.0) (2025-05-01)
+
+## [2.193.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.192.0-alpha.0...v2.193.0-alpha.0) (2025-04-30)
+
+
+### Features
+
+* **pipes-targets-alpha:** support Amazon Data Firehose target ([#33860](https://github.com/aws/aws-cdk/issues/33860)) ([ebf1ea2](https://github.com/aws/aws-cdk/commit/ebf1ea2a57ec7876fffbe16eddac6b409ae79074))
+
+## [2.192.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.191.0-alpha.0...v2.192.0-alpha.0) (2025-04-24)
+
+
+### Features
+
+* **applicationsignals-alpha:** introduce Application Signals L2 constructs ([#32931](https://github.com/aws/aws-cdk/issues/32931)) ([e7a6e14](https://github.com/aws/aws-cdk/commit/e7a6e14d7c3ddfbff8b1fd3f583abeefeed1258a))
+
+## [2.191.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.190.0-alpha.0...v2.191.0-alpha.0) (2025-04-22)
+
+
+### Features
+
+* **location:** throw ValidationError instead of untyped errors ([#34174](https://github.com/aws/aws-cdk/issues/34174)) ([2ecf14a](https://github.com/aws/aws-cdk/commit/2ecf14a0c3e5a988532975536980d81589ea448e))
+* **msk:** throw ValidationError instead of untyped errors ([#34214](https://github.com/aws/aws-cdk/issues/34214)) ([02cb5a4](https://github.com/aws/aws-cdk/commit/02cb5a4284e9aad2f8cc4fc8fcb2c1aebe8f92be))
+
+## [2.190.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.189.1-alpha.0...v2.190.0-alpha.0) (2025-04-16)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **ec2-alpha:** The logical ID for the NAT Gateway, defined using the `addNatGateways` method, will be changed, resulting in the NAT Gateway being recreated. Additionally, the domain for the Elastic IP (EIP) will be set to `vpc`, which will also trigger its recreation in the account.
+
+### Features
+
+* **ec2:** enabling features for ipv6 and dualstack support with corresponding unit tests ([#33898](https://github.com/aws/aws-cdk/issues/33898)) ([47a65db](https://github.com/aws/aws-cdk/commit/47a65dbf00ce2a866be2546dcca5be818db70824)), closes [#3873](https://github.com/aws/aws-cdk/issues/3873) [#33493](https://github.com/aws/aws-cdk/issues/33493) [#33493](https://github.com/aws/aws-cdk/issues/33493)
+* **ec2:** throw ValidationErrors instead of untyped Errors ([#34127](https://github.com/aws/aws-cdk/issues/34127)) ([93313dd](https://github.com/aws/aws-cdk/commit/93313dded1d719691689c6fb59d7a7a77bb7dade))
+* **neptune-alpha:** add engine versions up to v1.4.5.0  ([#33989](https://github.com/aws/aws-cdk/issues/33989)) ([07f1d0a](https://github.com/aws/aws-cdk/commit/07f1d0a9d381fb9bceab0f836a2f1eb7977610c7)), closes [#33807](https://github.com/aws/aws-cdk/issues/33807)
+
+
+### Bug Fixes
+
+* **ec2-alpha:** add multiple NATGW to the VPC using addNatGateway method ([#34094](https://github.com/aws/aws-cdk/issues/34094)) ([ccd8de7](https://github.com/aws/aws-cdk/commit/ccd8de71c02068e43d36e2445dbb5e51f4aa695b))
+* **ec2-alpha:** update default config for Subnet's `assignIpv6AddressOnCreation` ([#34116](https://github.com/aws/aws-cdk/issues/34116)) ([dff2798](https://github.com/aws/aws-cdk/commit/dff279800edd9688fa5de04766ae2667472fe861))
+
+## [2.189.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.189.0-alpha.0...v2.189.1-alpha.0) (2025-04-14)
+
+## [2.189.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.188.0-alpha.0...v2.189.0-alpha.0) (2025-04-09)
+
+
+### Features
+
+* **ec2-alpha:** implement mapPublicIpOnLaunch prop in SubnetV2 ([#34057](https://github.com/aws/aws-cdk/issues/34057)) ([836c5cf](https://github.com/aws/aws-cdk/commit/836c5cf3e4c627f817e4dc8ed2af28a5bba54792)), closes [#32159](https://github.com/aws/aws-cdk/issues/32159)
+
+
+### Bug Fixes
+
+* **amplify:** unable to re-run integ test due to missing `status` field in `customRule` ([#33973](https://github.com/aws/aws-cdk/issues/33973)) ([6638c08](https://github.com/aws/aws-cdk/commit/6638c08d56afe7ecc4f23cff4cf334b887001e5e)), closes [#33962](https://github.com/aws/aws-cdk/issues/33962)
+
 ## [2.188.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.187.0-alpha.0...v2.188.0-alpha.0) (2025-04-03)
 
 

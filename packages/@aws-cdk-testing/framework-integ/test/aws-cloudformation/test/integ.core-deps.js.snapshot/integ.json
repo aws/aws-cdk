@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "testCases": {
     "DependsOnTest/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "DependsOnTest/DefaultTest/DeployAssert",
       "assertionStackName": "DependsOnTestDefaultTestDeployAssert3B3B50E2"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

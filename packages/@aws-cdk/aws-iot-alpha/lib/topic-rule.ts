@@ -4,6 +4,7 @@ import { IAction } from './action';
 import { IotSql } from './iot-sql';
 import { CfnTopicRule } from 'aws-cdk-lib/aws-iot';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents an AWS IoT Rule
@@ -74,7 +75,11 @@ export interface TopicRuleProps {
 /**
  * Defines an AWS IoT Rule in this stack.
  */
+@propertyInjectable
 export class TopicRule extends Resource implements ITopicRule {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-iot-alpha.TopicRule';
+
   /**
    * Import an existing AWS IoT Rule provided an ARN
    *

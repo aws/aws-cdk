@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "StorageTypeClusterTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/95d36b17b5377ababffae88d3c640054b34f2dae733e70a7e5429b56da48421c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b01a9e842dbd84f87ed5c47225dce4272d48743af26f29874804306a6ff85c1e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,47 @@
         "StorageTypeClusterTestStack.assets"
       ],
       "metadata": {
+        "/StorageTypeClusterTestStack/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*",
+              "natGateways": "*"
+            }
+          }
+        ],
         "/StorageTypeClusterTestStack/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
+          }
+        ],
+        "/StorageTypeClusterTestStack/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/StorageTypeClusterTestStack/Vpc/PublicSubnet1/Subnet": [
@@ -64,6 +101,34 @@
             "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
+        "/StorageTypeClusterTestStack/Vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/StorageTypeClusterTestStack/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -88,6 +153,30 @@
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
+        "/StorageTypeClusterTestStack/Vpc/IsolatedSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          }
+        ],
         "/StorageTypeClusterTestStack/Vpc/IsolatedSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -104,6 +193,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB"
+          }
+        ],
+        "/StorageTypeClusterTestStack/Vpc/IsolatedSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           }
         ],
         "/StorageTypeClusterTestStack/Vpc/IsolatedSubnet2/Subnet": [
@@ -136,6 +249,12 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
+        "/StorageTypeClusterTestStack/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/StorageTypeClusterTestStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -146,6 +265,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/StorageTypeClusterTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/StorageTypeClusterTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
@@ -160,10 +285,35 @@
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
+        "/StorageTypeClusterTestStack/DatabaseCluster": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "masterUser": {
+                "username": "*",
+                "password": "*"
+              },
+              "instanceType": "*",
+              "vpc": "*",
+              "removalPolicy": "destroy",
+              "engineVersion": "*",
+              "storageType": "*"
+            }
+          }
+        ],
         "/StorageTypeClusterTestStack/DatabaseCluster/Subnets": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseClusterSubnets7FAE1846"
+          }
+        ],
+        "/StorageTypeClusterTestStack/DatabaseCluster/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
           }
         ],
         "/StorageTypeClusterTestStack/DatabaseCluster/SecurityGroup/Resource": [
@@ -253,5 +403,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

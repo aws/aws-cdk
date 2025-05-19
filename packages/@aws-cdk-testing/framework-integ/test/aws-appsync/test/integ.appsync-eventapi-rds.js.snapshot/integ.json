@@ -1,0 +1,13 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "appsync-eventapi-rds-test/DefaultTest": {
+      "stacks": [
+        "EventApiRdsStack"
+      ],
+      "assertionStack": "appsync-eventapi-rds-test/DefaultTest/DeployAssert",
+      "assertionStackName": "appsynceventapirdstestDefaultTestDeployAssert2036D8B2"
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}

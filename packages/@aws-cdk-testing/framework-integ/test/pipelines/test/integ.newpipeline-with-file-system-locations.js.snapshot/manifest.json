@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "assembly-PipelinesFileSystemLocations-Beta": {
       "type": "cdk:cloud-assembly",
@@ -25,7 +25,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fd9ef36ef61823f1d19866dc6cdf055aec4a5ff60ae4af26bdf96348f6da428d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a46bc4dc697082130c50aedb2d1c910c0ec2e6945c3fc1741c968f2bbfffdebc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -380,6 +380,12 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
+        "/PipelinesFileSystemLocations/Pipeline": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`. [ack: @aws-cdk/aws-codepipeline:unspecifiedPipelineType]"
+          }
+        ],
         "/PipelinesFileSystemLocations/Pipeline/Pipeline": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -392,7 +398,8 @@
               "restartExecutionOnUpdate": true,
               "role": "*",
               "enableKeyRotation": "*",
-              "artifactBucket": "*"
+              "artifactBucket": "*",
+              "usePipelineRoleForActions": false
             }
           },
           {
@@ -476,7 +483,8 @@
               "assumedBy": {
                 "principalAccount": "*",
                 "assumeRoleAction": "*"
-              }
+              },
+              "roleName": "*"
             }
           },
           {
@@ -1596,5 +1604,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1015.0"
 }

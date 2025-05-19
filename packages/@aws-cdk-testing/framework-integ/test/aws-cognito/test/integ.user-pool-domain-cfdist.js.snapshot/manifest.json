@@ -1,5 +1,5 @@
 {
-  "version": "36.0.24",
+  "version": "43.0.0",
   "artifacts": {
     "integ-user-pool-domain-cfdist.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8a8810725314595ecb35add986e2bb95495143f2d8c8ba8beec3a17c9789bc4d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b911ffd5717455a23ce359e783d74362797c0196b46879c93b6039b49c6efb73.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,29 @@
         "integ-user-pool-domain-cfdist.assets"
       ],
       "metadata": {
+        "/integ-user-pool-domain-cfdist/UserPool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/integ-user-pool-domain-cfdist/UserPool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "UserPool6BA7E5F2"
+          }
+        ],
+        "/integ-user-pool-domain-cfdist/UserPool/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "cognitoDomain": {
+                "domainPrefix": "*"
+              }
+            }
           }
         ],
         "/integ-user-pool-domain-cfdist/UserPool/Domain/Resource": [
@@ -46,10 +65,101 @@
             "data": "UserPoolDomainD0EA232A"
           }
         ],
+        "/integ-user-pool-domain-cfdist/UserPool/Domain/CloudFrontDomainName/Provider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool-domain-cfdist/UserPool/Domain/CloudFrontDomainName/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-user-pool-domain-cfdist/UserPool/Domain/CloudFrontDomainName/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "UserPoolDomainCloudFrontDomainNameE213E594"
+          }
+        ],
+        "/integ-user-pool-domain-cfdist/UserPool/Domain/CloudFrontDomainName/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
         "/integ-user-pool-domain-cfdist/UserPool/Domain/CloudFrontDomainName/CustomResourcePolicy/Resource": [
@@ -72,12 +182,57 @@
         ],
         "/integ-user-pool-domain-cfdist/AWS679f53fac002430cb0da5b7982bd2287": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
           },
           {
             "type": "aws:cdk:is-custom-resource-handler-runtime-family",
             "data": 0
+          }
+        ],
+        "/integ-user-pool-domain-cfdist/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool-domain-cfdist/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-user-pool-domain-cfdist/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -125,5 +280,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

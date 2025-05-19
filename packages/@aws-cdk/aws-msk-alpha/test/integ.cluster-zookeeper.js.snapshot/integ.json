@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "testCases": {
     "KafkaZookeeperIntegTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "KafkaZookeeperIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "KafkaZookeeperIntegTestDefaultTestDeployAssert731E1402"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

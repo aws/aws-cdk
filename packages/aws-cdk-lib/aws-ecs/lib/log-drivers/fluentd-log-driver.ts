@@ -25,8 +25,17 @@ export interface FluentdLogDriverProps extends BaseLogDriverProps {
    * the connection is established.
    *
    * @default - false
+   * @deprecated use `async` instead
    */
   readonly asyncConnect?: boolean;
+
+  /**
+   * Docker connects to Fluentd in the background. Messages are buffered until
+   * the connection is established.
+   *
+   * @default - false
+   */
+  readonly async?: boolean;
 
   /**
    * The amount of data to buffer before flushing to disk.
@@ -79,6 +88,7 @@ export class FluentdLogDriver extends LogDriver {
       options: stringifyOptions({
         'fluentd-address': this.props.address,
         'fluentd-async-connect': this.props.asyncConnect,
+        'fluentd-async': this.props.async,
         'fluentd-buffer-limit': this.props.bufferLimit,
         'fluentd-retry-wait': this.props.retryWait && this.props.retryWait.toSeconds(),
         'fluentd-max-retries': this.props.maxRetries,

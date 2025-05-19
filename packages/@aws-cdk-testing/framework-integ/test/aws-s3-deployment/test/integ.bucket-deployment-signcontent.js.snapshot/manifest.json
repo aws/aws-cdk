@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "test-bucket-deployment-signobject.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/408dec6683d715d15dbd5418d1e69de6f22da8a080f187bafb4aa44b863cbda4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/87a81e4f1b2824e55e832ff0df333b805cda1b76129a104af99aea043a03d171.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -392,5 +392,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1015.0"
 }

@@ -1,8 +1,9 @@
 import { Construct } from 'constructs';
 import { IClientVpnEndpoint } from './client-vpn-endpoint-types';
 import { CfnClientVpnAuthorizationRule } from './ec2.generated';
-import { Resource } from '../../core';
+import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Options for a ClientVpnAuthorizationRule
@@ -51,17 +52,23 @@ export interface ClientVpnAuthorizationRuleProps extends ClientVpnAuthorizationR
 /**
  * A client VPN authorization rule
  */
+@propertyInjectable
 export class ClientVpnAuthorizationRule extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.ClientVpnAuthorizationRule';
+
   constructor(scope: Construct, id: string, props: ClientVpnAuthorizationRuleProps) {
     if (!props.clientVpnEndoint && !props.clientVpnEndpoint) {
-      throw new Error(
+      throw new ValidationError(
         'ClientVpnAuthorizationRule: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified',
+        scope,
       );
     }
     if (props.clientVpnEndoint && props.clientVpnEndpoint) {
-      throw new Error(
+      throw new ValidationError(
         'ClientVpnAuthorizationRule: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified' +
           ', but not both',
+        scope,
       );
     }
     const clientVpnEndpoint = props.clientVpnEndoint || props.clientVpnEndpoint;
