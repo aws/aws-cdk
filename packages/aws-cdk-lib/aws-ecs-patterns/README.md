@@ -918,6 +918,35 @@ const applicationLoadBalancedFargateService = new ecsPatterns.ApplicationLoadBal
 });
 ```
 
+### Set listener for ApplicationLoadBalancedFargateService
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const loadBalancer: elb.LoadBalancer;
+
+const listener = loadBalancer.addListener('PublicListener', {
+  protocol: elb.ApplicationProtocol.HTTP,
+  port: 8080,
+  open: true,
+});
+
+const applicationLoadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
+  minHealthyPercent: 100,
+  runtimePlatform: {
+    cpuArchitecture: ecs.CpuArchitecture.ARM64,
+    operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+  },
+
+  loadBalancer,
+  listener,
+});
+```
+
 ### Customize Container Name for ScheduledFargateTask
 
 ```ts
