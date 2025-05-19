@@ -16,5 +16,6 @@
       "assertionStack": "lambda-layer-awscli-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "lambdalayerawscliintegtestDefaultTestDeployAssert8E1153D3"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

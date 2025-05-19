@@ -932,7 +932,10 @@ export class FileSystem extends FileSystemBase {
   }
 }
 
+@propertyInjectable
 class ImportedFileSystem extends FileSystemBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-efs.ImportedFileSystem';
   /**
    * The security groups/rules used to allow network connections to the file system.
    */

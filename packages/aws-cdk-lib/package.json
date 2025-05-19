@@ -119,7 +119,7 @@
     "mime-types"
   ],
   "dependencies": {
-    "@aws-cdk/asset-awscli-v1": "2.2.229",
+    "@aws-cdk/asset-awscli-v1": "2.2.236",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.0",
     "@aws-cdk/cloud-assembly-schema": "^41.2.0",
     "@balena/dockerignore": "^1.0.2",
@@ -129,7 +129,7 @@
     "jsonschema": "^1.5.0",
     "minimatch": "^3.1.2",
     "punycode": "^2.3.1",
-    "semver": "^7.7.1",
+    "semver": "^7.7.2",
     "table": "^6.9.0",
     "yaml": "1.10.2",
     "mime-types": "^2.1.35"
@@ -169,7 +169,7 @@
     "@aws-cdk/lazify": "0.0.0",
     "aws-sdk-client-mock": "4.1.0",
     "aws-sdk-client-mock-jest": "4.1.0",
-    "cdk8s": "2.69.67",
+    "cdk8s": "2.69.68",
     "constructs": "^10.0.0",
     "delay": "5.0.0",
     "esbuild": "^0.25.4",
@@ -181,7 +181,7 @@
     "lodash": "^4.17.21",
     "nock": "^13.5.6",
     "sinon": "^9.2.4",
-    "ts-mock-imports": "^1.3.16",
+    "ts-mock-imports": "^1.3.17",
     "ts-node": "^10.9.2",
     "typescript": "~5.5.4",
     "typescript-json-schema": "^0.65.1"
@@ -505,6 +505,7 @@
     "./core": "./core/index.js",
     "./core/lib/helpers-internal": "./core/lib/helpers-internal/index.js",
     "./core/lib/metadata-resource": "./core/lib/metadata-resource.js",
+    "./core/lib/prop-injectable": "./core/lib/prop-injectable.js",
     "./custom-resources": "./custom-resources/index.js",
     "./custom-resources/lib/helpers-internal": "./custom-resources/lib/helpers-internal/index.js",
     "./cx-api": "./cx-api/index.js",

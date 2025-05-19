@@ -16,6 +16,7 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Elasticsearch version
@@ -1352,7 +1353,11 @@ export interface DomainAttributes {
  *
  * @deprecated use opensearchservice module instead
  */
+@propertyInjectable
 export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticsearch.Domain';
+
   /**
    * Creates a Domain construct that represents an external domain via domain endpoint.
    *

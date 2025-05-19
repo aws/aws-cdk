@@ -3,6 +3,7 @@ import { IClientVpnEndpoint } from './client-vpn-endpoint-types';
 import { CfnClientVpnAuthorizationRule } from './ec2.generated';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Options for a ClientVpnAuthorizationRule
@@ -51,7 +52,11 @@ export interface ClientVpnAuthorizationRuleProps extends ClientVpnAuthorizationR
 /**
  * A client VPN authorization rule
  */
+@propertyInjectable
 export class ClientVpnAuthorizationRule extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.ClientVpnAuthorizationRule';
+
   constructor(scope: Construct, id: string, props: ClientVpnAuthorizationRuleProps) {
     if (!props.clientVpnEndoint && !props.clientVpnEndpoint) {
       throw new ValidationError(
