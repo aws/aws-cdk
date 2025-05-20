@@ -8,5 +8,6 @@
       "assertionStack": "codebuild-s3-cache-integ/DefaultTest/DeployAssert",
       "assertionStackName": "codebuilds3cacheintegDefaultTestDeployAssert27F68086"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
