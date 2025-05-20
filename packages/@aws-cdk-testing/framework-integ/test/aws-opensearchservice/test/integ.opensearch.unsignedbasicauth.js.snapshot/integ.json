@@ -9,5 +9,6 @@
       "assertionStack": "OpenSearchUnsignedBasicAuthInteg/DefaultTest/DeployAssert",
       "assertionStackName": "OpenSearchUnsignedBasicAuthIntegDefaultTestDeployAssert833213F2"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

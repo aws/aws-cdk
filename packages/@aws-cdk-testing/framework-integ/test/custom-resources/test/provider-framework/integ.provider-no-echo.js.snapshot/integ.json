@@ -8,5 +8,6 @@
       "assertionStack": "IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert",
       "assertionStackName": "IntegProviderFrameworkNoEchoTestDefaultTestDeployAssert1DF2B4A0"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
