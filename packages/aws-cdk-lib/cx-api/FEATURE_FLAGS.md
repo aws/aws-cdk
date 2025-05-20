@@ -100,6 +100,7 @@ Flags come in three types:
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | 2.189.0 | new default |
 | [@aws-cdk/core:aspectPrioritiesMutating](#aws-cdkcoreaspectprioritiesmutating) | When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING. | 2.189.1 | new default |
 | [@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions](#aws-cdks3-notificationsadds3trustkeypolicyforsnssubscriptions) | Add an S3 trust policy to a KMS key resource policy for SNS subscriptions. | 2.195.0 | fix |
+| [@aws-cdk/aws-stepfunctions-tasks:lambdaInvokeGrantAllVersions](#aws-cdkaws-stepfunctions-taskslambdainvokegrantallversions) | When enabled, LambdaInvoke grants permissions to all versions of a Lambda function by default | V2NEXT | fix |
 | [@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway](#aws-cdkaws-ec2requireprivatesubnetsforegressonlyinternetgateway) | When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC. | 2.196.0 | fix |
 | [@aws-cdk/aws-s3:publicAccessBlockedByDefault](#aws-cdkaws-s3publicaccessblockedbydefault) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | 2.196.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:lambdaInvokeGrantAllVersions](#aws-cdkaws-stepfunctions-taskslambdainvokegrantallversions) | When enabled, LambdaInvoke grants permissions to all versions of a Lambda function by default | V2NEXT | fix |
@@ -189,6 +190,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-dynamodb:retainTableReplica": true,
     "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
     "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
+    "@aws-cdk/aws-stepfunctions-tasks:lambdaInvokeGrantAllVersions": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
     "@aws-cdk/aws-stepfunctions-tasks:lambdaInvokeGrantAllVersions": true,
@@ -2113,6 +2115,32 @@ When this feature flag is enabled, a S3 trust policy will be added to the KMS ke
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.195.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-stepfunctions-tasks:lambdaInvokeGrantAllVersions
+
+*When enabled, LambdaInvoke grants permissions to all versions of a Lambda function by default*
+
+Flag type: Backwards incompatible bugfix
+
+When a Step Function invokes a Lambda function version, it requires IAM permissions specifically for that version. 
+Currently, the AWS CDK's `LambdaInvoke` construct automatically creates IAM permissions for the specific Lambda 
+version referenced, but these permissions are updated during redeployment to only include the new version, removing
+access to previous versions.
+
+This can cause in-flight Step Function executions to fail when new Lambda versions are deployed.
+
+When this feature flag is enabled, the `LambdaInvoke` construct will automatically grant permissions to both:
+- The specific Lambda version referenced
+- All versions of the Lambda function (using a wildcard)
+
+This ensures that in-flight executions continue to work even after deploying updates to Lambda functions.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 ### @aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway

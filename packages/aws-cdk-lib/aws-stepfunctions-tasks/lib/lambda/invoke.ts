@@ -3,6 +3,7 @@ import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import * as cxapi from '../../../cx-api';
 import { ValidationError } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { ValidationError } from '../../../core';
