@@ -3,6 +3,7 @@ import * as crypto from 'crypto';
 import { ActionGroupExecutor } from './api-executor';
 import { ApiSchema } from './api-schema';
 import { ValidationError } from './validation-helpers';
+import { FunctionSchema } from './function-schema';
 
 /******************************************************************************
  *                           Signatures
@@ -89,7 +90,7 @@ export interface AgentActionGroupProps {
    *
    * @default undefined - No function schema is provided
    */
-  readonly functionSchema?: CfnAgent.FunctionSchemaProperty;
+  readonly functionSchema?: FunctionSchema;
 
   /**
    * The AWS Defined signature for enabling certain capabilities in your agent.
@@ -165,7 +166,7 @@ export class AgentActionGroup {
   /**
    * The function schema for this action group (if defined).
    */
-  public readonly functionSchema?: CfnAgent.FunctionSchemaProperty;
+  public readonly functionSchema?: FunctionSchema;
   /**
    * The AWS Defined signature (if defined).
    */
@@ -209,7 +210,7 @@ export class AgentActionGroup {
       actionGroupState: this.enabled ? 'ENABLED' : 'DISABLED',
       apiSchema: this.apiSchema?._render(),
       description: this.description,
-      functionSchema: this.functionSchema,
+      functionSchema: this.functionSchema?._render(),
       parentActionGroupSignature: this.parentActionGroupSignature?.toString(),
       skipResourceInUseCheckOnDelete: this.forceDelete,
     };

@@ -1,136 +1,103 @@
-import { App } from 'aws-cdk-lib/core';
-import * as core from 'aws-cdk-lib/core';
+import { Stack } from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { Template, Match } from 'aws-cdk-lib/assertions';
-import * as bedrock from '../../../lib';
+import { ApiSchema, AssetApiSchema, InlineApiSchema, S3ApiSchema } from '../../../bedrock/agents/api-schema';
 
 describe('ApiSchema', () => {
-  let stack: core.Stack;
-
-  beforeEach(() => {
-    const app = new App();
-    stack = new core.Stack(app, 'test-stack');
+  test('fromLocalAsset creates AssetApiSchema', () => {
+    const schema = ApiSchema.fromLocalAsset('path/to/schema.yaml');
+    expect(schema).toBeInstanceOf(AssetApiSchema);
   });
 
-  test('creates schema from inline content', () => {
-    const schema = bedrock.ApiSchema.fromInline(JSON.stringify({
-      openapi: '3.0.0',
-      info: { title: 'Test API', version: '1.0.0' },
-      paths: {
-        '/test': {
-          get: {
-            responses: {
-              200: {
-                description: 'OK',
-              },
-            },
-          },
-        },
-      },
-    }));
-
-    expect(schema._render()).toEqual({
-      payload: JSON.stringify({
-        openapi: '3.0.0',
-        info: { title: 'Test API', version: '1.0.0' },
-        paths: {
-          '/test': {
-            get: {
-              responses: {
-                200: {
-                  description: 'OK',
-                },
-              },
-            },
-          },
-        },
-      }),
-    });
+  test('fromInline creates InlineApiSchema', () => {
+    const schema = ApiSchema.fromInline('{"openapi": "3.0.0"}');
+    expect(schema).toBeInstanceOf(InlineApiSchema);
   });
 
-  test('creates schema from S3 location', () => {
-    const bucket = new s3.Bucket(stack, 'TestBucket');
-    const schema = bedrock.ApiSchema.fromS3File(bucket, 'schema.json');
+  test('fromS3File creates S3ApiSchema', () => {
+    const bucket = s3.Bucket.fromBucketName(new Stack(), 'TestBucket', 'test-bucket');
+    const schema = ApiSchema.fromS3File(bucket, 'path/to/schema.yaml');
+    expect(schema).toBeInstanceOf(S3ApiSchema);
+  });
+});
 
-    const agent = new bedrock.Agent(stack, 'TestAgent', {
-      instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
-      foundationModel: {
-        invokableArn: 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-v2',
-        grantInvoke: (grantee) => {
-          return iam.Grant.addToPrincipal({
-            grantee,
-            actions: ['bedrock:InvokeModel*', 'bedrock:GetFoundationModel'],
-            resourceArns: ['arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-v2'],
-          });
-        },
-      },
-    });
-
-    const actionGroup = new bedrock.AgentActionGroup({
-      name: 'CustomAction',
-      enabled: true,
-      apiSchema: schema,
-    });
-
-    agent.addActionGroup(actionGroup);
-
-    expect(schema._render()).toEqual({
-      s3: {
-        s3BucketName: bucket.bucketName,
-        s3ObjectKey: 'schema.json',
-      },
-    });
+describe('AssetApiSchema', () => {
+  test('bind initializes asset', () => {
+    const stack = new Stack();
+    const schema = new AssetApiSchema('test/bedrock/agents/test-schema.yaml');
+    // Before binding, asset should be undefined
+    expect((schema as any).asset).toBeUndefined();
+    schema.bind(stack);
+    // After binding, asset should be defined
+    expect((schema as any).asset).toBeDefined();
   });
 
-  test('creates schema from inline content with minimal OpenAPI schema', () => {
-    const minimalSchema = {
-      openapi: '3.0.0',
-      info: { title: 'Minimal API', version: '1.0.0' },
-      paths: {},
+  test('bind only initializes asset once', () => {
+    const stack = new Stack();
+    const schema = new AssetApiSchema('test/bedrock/agents/test-schema.yaml');
+    schema.bind(stack);
+    const firstAsset = (schema as any).asset;
+    schema.bind(stack);
+    const secondAsset = (schema as any).asset;
+    // The asset should be the same instance
+    expect(firstAsset).toBe(secondAsset);
+  });
+
+  test('_render throws error if not bound', () => {
+    const schema = new AssetApiSchema('test/bedrock/agents/test-schema.yaml');
+    expect(() => {
+      schema._render();
+    }).toThrow('ApiSchema must be bound to a scope before rendering');
+  });
+
+  test('_render returns correct structure after binding', () => {
+    const stack = new Stack();
+    const schema = new AssetApiSchema('test/bedrock/agents/test-schema.yaml');
+    schema.bind(stack);
+    const rendered = schema._render();
+    expect(rendered).toHaveProperty('s3');
+    expect(rendered.s3).toHaveProperty('s3BucketName');
+    expect(rendered.s3).toHaveProperty('s3ObjectKey');
+  });
+});
+
+describe('InlineApiSchema', () => {
+  test('constructor sets inlineSchema', () => {
+    const schemaContent = '{"openapi": "3.0.0"}';
+    const schema = new InlineApiSchema(schemaContent);
+    expect(schema.inlineSchema).toBe(schemaContent);
+  });
+
+  test('_render returns payload property', () => {
+    const schemaContent = '{"openapi": "3.0.0"}';
+    const schema = new InlineApiSchema(schemaContent);
+    const rendered = schema._render();
+    expect(rendered).toEqual({
+      payload: schemaContent,
+    });
+  });
+});
+
+describe('S3ApiSchema', () => {
+  test('constructor sets s3File', () => {
+    const location = {
+      bucketName: 'test-bucket',
+      objectKey: 'path/to/schema.yaml',
     };
-
-    const schema = bedrock.ApiSchema.fromInline(JSON.stringify(minimalSchema));
-    expect(schema._render()).toEqual({
-      payload: JSON.stringify(minimalSchema),
-    });
+    const schema = new S3ApiSchema(location);
+    expect(schema.s3File).toBe(location);
   });
 
-  test('grants read permissions to agent role', () => {
-    const bucket = new s3.Bucket(stack, 'TestBucket');
-    const schema = bedrock.ApiSchema.fromS3File(bucket, 'schema.json');
-
-    const agent = new bedrock.Agent(stack, 'TestAgent', {
-      instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
-      foundationModel: {
-        invokableArn: 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-v2',
-        grantInvoke: (grantee) => {
-          return iam.Grant.addToPrincipal({
-            grantee,
-            actions: ['bedrock:InvokeModel*', 'bedrock:GetFoundationModel'],
-            resourceArns: ['arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-v2'],
-          });
-        },
-      },
-    });
-
-    const actionGroup = new bedrock.AgentActionGroup({
-      name: 'CustomAction',
-      enabled: true,
-      apiSchema: schema,
-    });
-
-    agent.addActionGroup(actionGroup);
-
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: Match.arrayWith([
-          Match.objectLike({
-            Action: ['bedrock:InvokeModel*', 'bedrock:GetFoundationModel'],
-            Effect: 'Allow',
-            Resource: 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-v2',
-          }),
-        ]),
+  test('_render returns s3 property', () => {
+    const location = {
+      bucketName: 'test-bucket',
+      objectKey: 'path/to/schema.yaml',
+    };
+    const schema = new S3ApiSchema(location);
+    const rendered = schema._render();
+    expect(rendered).toEqual({
+      s3: {
+        s3BucketName: 'test-bucket',
+        s3ObjectKey: 'path/to/schema.yaml',
       },
     });
   });

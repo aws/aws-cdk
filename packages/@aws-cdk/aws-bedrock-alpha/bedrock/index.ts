@@ -12,3 +12,4 @@ export * from './agents/agent-collaborator';
 export * from './agents/agent-collaboration';
 export * from './agents/orchestration-executor';
 export * from './models';
+export * from './agents/function-schema';

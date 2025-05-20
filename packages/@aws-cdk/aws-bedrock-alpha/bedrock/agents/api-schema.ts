@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import { IBucket, Location } from 'aws-cdk-lib/aws-s3';
+import { ActionGroupSchema } from './schema-base';
 
 /**
  * Error thrown when an ApiSchema is not properly initialized.
@@ -19,7 +20,7 @@ class ApiSchemaError extends Error {
 /**
  * Represents the concept of an API Schema for a Bedrock Agent Action Group.
  */
-export abstract class ApiSchema {
+export abstract class ApiSchema extends ActionGroupSchema {
   /**
    * Creates an API Schema from a local file.
    * @param path - the path to the local file containing the OpenAPI schema for the action group
@@ -61,6 +62,7 @@ export abstract class ApiSchema {
   public readonly inlineSchema?: string;
 
   protected constructor(s3File?: Location, inlineSchema?: string) {
+    super();
     this.s3File = s3File;
     this.inlineSchema = inlineSchema;
   }

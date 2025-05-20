@@ -78,6 +78,21 @@ The Bedrock Agent class supports the following properties.
 
 An action group defines functions your agent can call. The functions are Lambda functions. The action group uses an OpenAPI schema to tell the agent what your functions do and how to call them.
 
+#### Action Group Properties
+
+The AgentActionGroup class supports the following properties.
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| name | string | No | The name of the action group. Defaults to a name generated in the format 'action_group_quick_start_UUID' |
+| description | string | No | A description of the action group |
+| apiSchema | ApiSchema | No | The OpenAPI schema that defines the functions in the action group |
+| executor | ActionGroupExecutor | No | The Lambda function that executes the actions in the group |
+| enabled | boolean | No | Whether the action group is enabled. Defaults to true |
+| forceDelete | boolean | No | Whether to delete the resource even if it's in use. Defaults to false |
+| functionSchema | FunctionSchema | No | Defines functions that each define parameters that the agent needs to invoke from the user |
+| parentActionGroupSignature | ParentActionGroupSignature | No | The AWS Defined signature for enabling certain capabilities in your agent |
+
 There are three ways to provide an API schema for your action group:
 
 From a local asset file (requires binding to scope):
@@ -166,6 +181,81 @@ const actionGroup = new bedrock.AgentActionGroup({
 });
 ```
 
+### Using FunctionSchema with Action Groups
+
+As an alternative to using OpenAPI schemas, you can define functions directly using the `FunctionSchema` class. This approach provides a more structured way to define the functions that your agent can call.
+
+```ts fixture=default
+const actionGroupFunction = new lambda.Function(this, 'ActionGroupFunction', {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, '../lambda/action-group')),
+});
+
+// Define a function schema with parameters
+const functionSchema = new bedrock.FunctionSchema({
+  functions: [
+    {
+      name: 'searchBooks',
+      description: 'Search for books in the library catalog',
+      parameters: {
+        'query': {
+          type: bedrock.ParameterType.STRING,
+          required: true,
+          description: 'The search query string',
+        },
+        'maxResults': {
+          type: bedrock.ParameterType.INTEGER,
+          required: false,
+          description: 'Maximum number of results to return',
+        },
+        'includeOutOfPrint': {
+          type: bedrock.ParameterType.BOOLEAN,
+          required: false,
+          description: 'Whether to include out-of-print books',
+        }
+      },
+      requireConfirmation: bedrock.RequireConfirmation.DISABLED,
+    },
+    {
+      name: 'getBookDetails',
+      description: 'Get detailed information about a specific book',
+      parameters: {
+        'bookId': {
+          type: bedrock.ParameterType.STRING,
+          required: true,
+          description: 'The unique identifier of the book',
+        }
+      },
+      requireConfirmation: bedrock.RequireConfirmation.ENABLED,
+    }
+  ]
+});
+
+// Create an action group using the function schema
+const actionGroup = new bedrock.AgentActionGroup({
+  name: 'library-functions',
+  description: 'Functions for interacting with the library catalog',
+  executor: bedrock.ActionGroupExecutor.fromLambda(actionGroupFunction),
+  functionSchema: functionSchema,
+  enabled: true,
+});
+
+const agent = new bedrock.Agent(this, 'Agent', {
+  foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_HAIKU_V1_0,
+  instruction: 'You are a helpful and friendly agent that answers questions about literature.',
+  actionGroups: [actionGroup],
+});
+```
+
+The `FunctionSchema` approach offers several advantages:
+
+- Type-safe definition of functions and parameters
+- Built-in validation of parameter names, descriptions, and other properties
+- Clear structure that maps directly to the AWS Bedrock API
+- Support for parameter types including string, number, integer, boolean, array, and object
+- Option to require user confirmation before executing specific functions
+
 If you chose to load your schema file from S3, the construct will provide the necessary permissions to your agent's execution role to access the schema file from the specific bucket. Similar to performing the operation through the console, the agent execution role will get a permission like:
 
 ```json
@@ -245,11 +335,26 @@ agent.node.addDependency(deployement);
 
 The `Agent` constructs take an optional parameter `shouldPrepareAgent` to indicate that the Agent should be prepared after any updates to an agent or action group. This may increase the time to create and update those resources. By default, this value is false.
 
+#### Prepare Agent Properties
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| shouldPrepareAgent | boolean | No | Whether to automatically update the DRAFT version of the agent after making changes. Defaults to false |
+
 Creating an agent alias will not prepare the agent, so if you create an alias using the `AgentAlias` resource then you should set `shouldPrepareAgent` to **_true_**.
 
 ### Prompt Override Configuration
 
-Bedrock Agents allows you to customize the prompts and LLM configuration for different steps in the agent sequence. The implementation provides type-safe configurations for each step type, ensuring correct usage at compile time. The following steps can be configured:
+Bedrock Agents allows you to customize the prompts and LLM configuration for different steps in the agent sequence. The implementation provides type-safe configurations for each step type, ensuring correct usage at compile time.
+
+#### Prompt Override Configuration Properties
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| steps | PromptStepConfiguration[] | Yes | Array of step configurations for different parts of the agent sequence |
+| parser | lambda.IFunction | No | Lambda function for custom parsing of agent responses |
+
+The following steps can be configured:
 
 - PRE_PROCESSING: Prepares the user input for orchestration
 - ORCHESTRATION: Main step that determines the agent's actions
@@ -326,6 +431,13 @@ Foundation models can only be specified for the ROUTING_CLASSIFIER step.
 
 Agents can maintain context across multiple sessions and recall past interactions using memory. This feature is useful for creating a more coherent conversational experience.
 
+#### Memory Configuration Properties
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| maxRecentSessions | number | No | Maximum number of recent session summaries to retain |
+| memoryDuration | Duration | No | How long to retain session summaries |
+
 Example:
 
 ```ts fixture=default
@@ -343,6 +455,22 @@ const agent = new bedrock.Agent(this, 'MyAgent', {
 ### Agent Collaboration
 
 Agent Collaboration enables multiple Bedrock Agents to work together on complex tasks. This feature allows agents to specialize in different areas and collaborate to provide more comprehensive responses to user queries.
+
+#### Agent Collaboration Properties
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| type | AgentCollaboratorType | Yes | Type of collaboration (SUPERVISOR or PEER) |
+| collaborators | AgentCollaborator[] | Yes | List of agent collaborators |
+
+#### Agent Collaborator Properties
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| agentAlias | AgentAlias | Yes | The agent alias to collaborate with |
+| collaborationInstruction | string | Yes | Instructions for how to collaborate with this agent |
+| collaboratorName | string | Yes | Name of the collaborator |
+| relayConversationHistory | boolean | No | Whether to relay conversation history to the collaborator. Defaults to false |
 
 Example:
 
@@ -383,6 +511,12 @@ Custom Orchestration allows you to override the default agent orchestration flow
 
 When you provide a customOrchestrationExecutor, the agent's orchestrationType is automatically set to CUSTOM_ORCHESTRATION. If no customOrchestrationExecutor is provided, the orchestrationType defaults to DEFAULT, using Amazon Bedrock's built-in orchestration.
 
+#### Custom Orchestration Properties
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| function | lambda.IFunction | Yes | The Lambda function that implements the custom orchestration logic |
+
 Example:
 
 ```ts fixture=default
@@ -406,6 +540,16 @@ After you have sufficiently iterated on your working draft and are satisfied wit
 To deploy your agent, you need to create an alias. During alias creation, Amazon Bedrock automatically creates a version of your agent. The alias points to this newly created version. You can point the alias to a previously created version if necessary. You then configure your application to make API calls to that alias.
 
 By default, the Agent resource creates a test alias named 'AgentTestAlias' that points to the 'DRAFT' version. This test alias is accessible via the `testAlias` property of the agent. You can also create additional aliases for different environments using the AgentAlias construct.
+
+#### Agent Alias Properties
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| agent | Agent | Yes | The agent to create an alias for |
+| agentAliasName | string | No | The name of the agent alias. Defaults to a name generated by CDK |
+| description | string | No | A description of the agent alias. Defaults to no description |
+| routingConfiguration | AgentAliasRoutingConfiguration | No | Configuration for routing traffic between agent versions |
+| agentVersion | string | No | The version of the agent to use. If not specified, a new version is created |
 
 When redeploying an agent with changes, you must ensure the agent version is updated to avoid deployment failures with "agent already exists" errors. The recommended way to handle this is to include the `lastUpdated` property in the agent's description, which automatically updates whenever the agent is modified. This ensures a new version is created on each deployment.
 
