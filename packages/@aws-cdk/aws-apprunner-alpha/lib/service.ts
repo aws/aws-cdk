@@ -227,8 +227,9 @@ export class Runtime {
    * Ruby 3.1
    */
   public static readonly RUBY_31 = Runtime.of('RUBY_31');
+
   /**
-   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   * PNodeJS 22
    */
   public static readonly NODEJS_22 = Runtime.of('NODEJS_22');
 
