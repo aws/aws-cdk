@@ -5,6 +5,7 @@ import { Token, Stack, ArnFormat, Arn, Fn, Aws, IResource, ValidationError } fro
 import { IBaseDeploymentConfig } from '../base-deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
+import { TriggerConfiguration } from '../trigger-configuration';
 
 export function arnForApplication(stack: Stack, applicationName: string): string {
   return stack.formatArn({
@@ -151,4 +152,19 @@ export function validateName(type: 'Application' | 'Deployment group' | 'Deploym
   }
 
   return ret;
+}
+
+export function renderTriggerConfiguration(config: TriggerConfiguration[] | undefined): CfnDeploymentGroup.TriggerConfigProperty[] | undefined {
+  if (config === undefined || config.length === 0) {
+    return undefined;
+  }
+  const triggers = new Array<CfnDeploymentGroup.TriggerConfigProperty>();
+  config.forEach(triggerConfig => {
+    triggers.push({
+      triggerEvents: triggerConfig.events,
+      triggerName: triggerConfig.name,
+      triggerTargetArn: triggerConfig.targetArn,
+    });
+  });
+  return triggers;
 }
