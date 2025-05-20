@@ -9,5 +9,6 @@
       "assertionStack": "aws-cdk-redshift-distkey-test/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkredshiftdistkeytestDefaultTestDeployAssert61A36BE8"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

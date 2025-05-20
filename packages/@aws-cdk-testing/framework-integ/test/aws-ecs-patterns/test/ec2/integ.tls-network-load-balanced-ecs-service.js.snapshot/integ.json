@@ -8,5 +8,6 @@
       "assertionStack": "networkLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert",
       "assertionStackName": "networkLoadBalancedEc2ServiceTestDefaultTestDeployAssert34DAD7DE"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

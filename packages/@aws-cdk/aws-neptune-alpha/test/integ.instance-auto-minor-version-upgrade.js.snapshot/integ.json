@@ -8,5 +8,6 @@
       "assertionStack": "AutoMinorVersionUpgradeInstanceInteg/DefaultTest/DeployAssert",
       "assertionStackName": "AutoMinorVersionUpgradeInstanceIntegDefaultTestDeployAssert5F020D27"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

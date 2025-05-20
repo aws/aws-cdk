@@ -9,5 +9,6 @@
       "assertionStack": "StackSetPipelineStackInteg/DefaultTest/DeployAssert",
       "assertionStackName": "StackSetPipelineStackIntegDefaultTestDeployAssertFF0B72DB"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

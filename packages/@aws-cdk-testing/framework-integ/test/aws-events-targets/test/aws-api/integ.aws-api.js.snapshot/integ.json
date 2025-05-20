@@ -8,5 +8,6 @@
       "assertionStack": "aws-api-integ/DefaultTest/DeployAssert",
       "assertionStackName": "awsapiintegDefaultTestDeployAssertBB35B14E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -16,5 +16,6 @@
       "assertionStack": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/DefaultTest/DeployAssert",
       "assertionStackName": "awsstepfunctionstasksemrcontainersstartjobrunintegDefaultTestDeployAssertD11471F0"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

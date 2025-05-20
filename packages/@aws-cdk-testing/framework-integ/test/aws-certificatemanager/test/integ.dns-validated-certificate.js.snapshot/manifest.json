@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/219423fd82ead746f91c64941ef982d9d736ab06077c8410dd6ca279e97cb970.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6521ca10c57a0630d515e14f72a74691eec5746f03ffb8de2a50c5c9cda3466a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -233,33 +233,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole02D5DA9E2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole02D5DA9E2",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole18173669F": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole18173669F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole20FBD3CBF": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole20FBD3CBF",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "integ-dns-validated-certificate"
@@ -319,5 +292,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1013.0"
+  "minimumCliVersion": "2.1014.0"
 }

@@ -9,5 +9,6 @@
       "assertionStack": "aws-efs-lambda-test/DefaultTest/DeployAssert",
       "assertionStackName": "awsefslambdatestDefaultTestDeployAssert5DC2C506"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

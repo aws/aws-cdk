@@ -8,5 +8,6 @@
       "assertionStack": "aws-cdk-eks-oidc-provider/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksoidcproviderDefaultTestDeployAssert0BFFC9B9"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

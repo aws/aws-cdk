@@ -15,7 +15,7 @@
         }
       }
     },
-    "01b8e00f003ec66fba00f99d093c5d6d970bf6375902c9e487aa307f441b339f": {
+    "3067a866afe6369a4ff9ca249275742bd096c25b91c75e18405bd86f3da70ddf": {
       "displayName": "InstanceIpv6AddressCountTestStack Template",
       "source": {
         "path": "InstanceIpv6AddressCountTestStack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "01b8e00f003ec66fba00f99d093c5d6d970bf6375902c9e487aa307f441b339f.json",
+          "objectKey": "3067a866afe6369a4ff9ca249275742bd096c25b91c75e18405bd86f3da70ddf.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

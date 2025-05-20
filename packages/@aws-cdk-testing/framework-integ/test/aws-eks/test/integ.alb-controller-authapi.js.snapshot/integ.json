@@ -8,5 +8,6 @@
       "assertionStack": "integtest/DefaultTest/DeployAssert",
       "assertionStackName": "integtestDefaultTestDeployAssertF2657CF4"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

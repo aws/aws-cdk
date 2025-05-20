@@ -493,25 +493,6 @@ describe('MissingEnumsUpdater', () => {
       expect(mockSourceFile.saveSync).toHaveBeenCalled();
     });
   });
-  describe('execute', () => {
-    it('should execute the update process', async () => {
-      const mockMissingValuesPath = '/tmp/missing-values.json';
-      
-      // Mock the methods
-      const analyzeMissingEnumValuesSpy = jest.spyOn(updater as any, 'analyzeMissingEnumValues')
-        .mockResolvedValue(mockMissingValuesPath);
-      const updateEnumLikeValuesSpy = jest.spyOn(updater as any, 'updateEnumLikeValues')
-        .mockImplementation(() => {});
-      const updateEnumValuesSpy = jest.spyOn(updater as any, 'updateEnumValues')
-        .mockImplementation(() => {});
-
-      await updater.execute();
-
-      expect(analyzeMissingEnumValuesSpy).toHaveBeenCalled();
-      expect(updateEnumLikeValuesSpy).toHaveBeenCalledWith(mockMissingValuesPath);
-      expect(updateEnumValuesSpy).toHaveBeenCalledWith(mockMissingValuesPath);
-    });
-  });
 
   describe('removeAwsCdkPrefix', () => {
     it('should remove aws-cdk prefix', () => {

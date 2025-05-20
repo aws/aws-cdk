@@ -8,5 +8,6 @@
       "assertionStack": "EksClusterwithAddon/DefaultTest/DeployAssert",
       "assertionStackName": "EksClusterwithAddonDefaultTestDeployAssert82CE7357"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

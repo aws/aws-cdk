@@ -9,5 +9,6 @@
       "assertionStack": "PnpmTest/DefaultTest/DeployAssert",
       "assertionStackName": "PnpmTestDefaultTestDeployAssert397EDF83"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

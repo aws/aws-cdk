@@ -9,5 +9,6 @@
       "assertionStack": "EvaluateExpressionInteg/DefaultTest/DeployAssert",
       "assertionStackName": "EvaluateExpressionIntegDefaultTestDeployAssert03097648"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

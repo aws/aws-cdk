@@ -8,5 +8,6 @@
       "assertionStack": "IntegTest-EcsImportedTaskDefinition/DefaultTest/DeployAssert",
       "assertionStackName": "IntegTestEcsImportedTaskDefinitionDefaultTestDeployAssert69FA1335"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

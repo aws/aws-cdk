@@ -1,7 +1,8 @@
 {
-  "version": "35.0.0",
+  "version": "41.0.0",
   "files": {
     "3e6d70d727e44d2bb1b20be7a2b63f22fb5227e41d64b54a1b02ed62d00e7926": {
+      "displayName": "InvokeFunctionAssertions Template",
       "source": {
         "path": "InvokeFunctionAssertions.template.json",
         "packaging": "file"

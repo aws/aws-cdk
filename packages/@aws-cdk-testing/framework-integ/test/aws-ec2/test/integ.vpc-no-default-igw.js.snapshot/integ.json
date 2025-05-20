@@ -8,5 +8,6 @@
       "assertionStack": "VpcNoDefaultIgw/DefaultTest/DeployAssert",
       "assertionStackName": "VpcNoDefaultIgwDefaultTestDeployAssertDB3FDBEB"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

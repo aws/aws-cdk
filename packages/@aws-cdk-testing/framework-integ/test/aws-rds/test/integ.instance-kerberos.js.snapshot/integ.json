@@ -8,5 +8,6 @@
       "assertionStack": "integ-instance-kerberos/DefaultTest/DeployAssert",
       "assertionStackName": "integinstancekerberosDefaultTestDeployAssert4433E747"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

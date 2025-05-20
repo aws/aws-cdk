@@ -8,5 +8,6 @@
       "assertionStack": "SnsBucketNotificationsSseInteg/DefaultTest/DeployAssert",
       "assertionStackName": "SnsBucketNotificationsSseIntegDefaultTestDeployAssertDBC1BF57"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

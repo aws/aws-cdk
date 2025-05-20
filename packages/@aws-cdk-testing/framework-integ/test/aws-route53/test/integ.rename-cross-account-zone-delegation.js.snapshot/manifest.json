@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "43.0.0",
   "artifacts": {
     "parent-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -16,7 +16,6 @@
         "templateFile": "parent-stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-us-east-1",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-1/56fdc835ae6a670f2f958a73f56b508710e57cbe667bc0c562ed7a04dadd5cc4.json",
@@ -35,16 +34,122 @@
         "parent-stack.assets"
       ],
       "metadata": {
+        "/parent-stack/HostedZone": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/parent-stack/HostedZone/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HostedZoneDB99F866"
           }
         ],
+        "/parent-stack/CrossAccountRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/parent-stack/CrossAccountRole/ImportCrossAccountRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/parent-stack/CrossAccountRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CrossAccountRoleFACE29D1"
+          }
+        ],
+        "/parent-stack/CrossAccountRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/parent-stack/CrossAccountRole/DefaultPolicy/Resource": [
@@ -83,10 +188,9 @@
         "templateFile": "child-stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-us-east-1/14763f10eef23c9ace78f576c5362ece91d0288e344ba912a19a9d557a2711ee.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-us-east-1/3aefa93a6d7fbd2dec23a1563d58ebf354971453921c26ca1f04be742c0323c1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -103,16 +207,98 @@
         "child-stack.assets"
       ],
       "metadata": {
+        "/child-stack/MutableRoleDelegationRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/child-stack/DelegationRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/child-stack/NewSubZone": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          }
+        ],
         "/child-stack/NewSubZone/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "NewSubZone1DFF192F"
           }
         ],
+        "/child-stack/delegate/cross-account-zone-delegation-handler-role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/child-stack/delegate/cross-account-zone-delegation-handler-role/PolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "policyName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
         "/child-stack/delegate/cross-account-zone-delegation-handler-role/PolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "delegatecrossaccountzonedelegationhandlerrolePolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E86169197"
+          }
+        ],
+        "/child-stack/delegate/CrossAccountZoneDelegationCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/child-stack/delegate/CrossAccountZoneDelegationCustomResource/Default": [
@@ -160,5 +346,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

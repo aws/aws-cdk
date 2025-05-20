@@ -9,5 +9,6 @@
       "assertionStack": "IntegProviderFrameworkTest/DefaultTest/DeployAssert",
       "assertionStackName": "IntegProviderFrameworkTestDefaultTestDeployAssertAEF9AF2E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

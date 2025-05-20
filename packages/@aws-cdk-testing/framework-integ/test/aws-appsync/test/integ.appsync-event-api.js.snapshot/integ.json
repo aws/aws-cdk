@@ -10,5 +10,6 @@
       "assertionStack": "appsync-event-api-test/DefaultTest/DeployAssert",
       "assertionStackName": "appsynceventapitestDefaultTestDeployAssertBF937085"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -8,5 +8,6 @@
       "assertionStack": "JsResolverIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "JsResolverIntegTestDefaultTestDeployAssert57AD8D20"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

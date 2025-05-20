@@ -9,5 +9,6 @@
       "assertionStack": "IntegTestAlbOidc/DefaultTest/DeployAssert",
       "assertionStackName": "IntegTestAlbOidcDefaultTestDeployAssert2476ECB6"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

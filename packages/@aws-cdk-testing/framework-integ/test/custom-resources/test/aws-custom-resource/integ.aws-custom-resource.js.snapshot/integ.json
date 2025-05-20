@@ -9,5 +9,6 @@
       "assertionStack": "AwsCustomResourceTest/DefaultTest/DeployAssert",
       "assertionStackName": "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

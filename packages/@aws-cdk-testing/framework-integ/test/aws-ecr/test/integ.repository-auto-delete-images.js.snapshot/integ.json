@@ -9,5 +9,6 @@
       "assertionStack": "cdk-integ-auto-delete-images/DefaultTest/DeployAssert",
       "assertionStackName": "cdkintegautodeleteimagesDefaultTestDeployAssert6B08011C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

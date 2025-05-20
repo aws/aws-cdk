@@ -9,5 +9,6 @@
       "assertionStack": "iodc-provider-test/DefaultTest/DeployAssert",
       "assertionStackName": "iodcprovidertestDefaultTestDeployAssert2D70E37E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
