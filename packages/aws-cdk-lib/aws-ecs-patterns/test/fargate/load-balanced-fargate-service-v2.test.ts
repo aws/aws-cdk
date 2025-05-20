@@ -161,6 +161,7 @@ describe('Application Load Balancer', () => {
           image: ecs.ContainerImage.fromRegistry('test'),
         },
         ipAddressType: IpAddressType.DUAL_STACK,
+        loadBalancer: lb,
         listener,
       });
 
