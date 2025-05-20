@@ -33,6 +33,11 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       application,
       alias,
       deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
+      triggerConfigurations: [{
+        events: [codedeploy.TriggerEvent.DEPLOYMENT_SUCCESS],
+        name: 'testName',
+        targetArn: 'testArn',
+      }],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
@@ -60,6 +65,11 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
         DeploymentOption: 'WITH_TRAFFIC_CONTROL',
         DeploymentType: 'BLUE_GREEN',
       },
+      TriggerConfigurations: [{
+        TriggerEvents: ['DeploymentSuccess'],
+        TriggerName: 'testName',
+        TriggerTargetArn: 'testArn',
+      }],
     });
 
     Template.fromStack(stack).hasResource('AWS::Lambda::Alias', {
