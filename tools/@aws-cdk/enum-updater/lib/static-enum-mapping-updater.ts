@@ -4,8 +4,8 @@ import axios from 'axios';
 import * as tmp from 'tmp';
 import * as extract from 'extract-zip';
 
-const ENUMS_URL = "https://raw.githubusercontent.com/aws/aws-cdk/main/packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enums.json";
-const ENUM_LIKE_CLASSES_URL = "https://raw.githubusercontent.com/aws/aws-cdk/main/packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enumlikes.json";
+export const ENUMS_URL = "https://raw.githubusercontent.com/aws/aws-cdk/main/packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enums.json";
+export const ENUM_LIKE_CLASSES_URL = "https://raw.githubusercontent.com/aws/aws-cdk/main/packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enumlikes.json";
 const CFN_LINT_URL = "https://github.com/aws-cloudformation/cfn-lint/archive/refs/heads/main.zip"
 export const STATIC_MAPPING_FILE_NAME = "static-enum-mapping.json";
 const PARSED_CDK_ENUMS_FILE_NAME = "cdk-enums.json";
@@ -304,7 +304,7 @@ export function extractModuleName(path: string): string | null {
  * @param {string} enumsLikeFilePath - The file path for "enum-like" values.
  * @returns {Promise<void>}
  */
-async function processCdkEnums(enumsFilePath: string, enumsLikeFilePath: string): Promise<void> {
+export async function processCdkEnums(enumsFilePath: string, enumsLikeFilePath: string): Promise<void> {
   const processedData: CdkEnums = {};
   let totalEnums = 0;
 
