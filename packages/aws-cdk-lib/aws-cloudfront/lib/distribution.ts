@@ -871,10 +871,6 @@ export enum PriceClass {
   PRICE_CLASS_200 = 'PriceClass_200',
   /** All locations */
   PRICE_CLASS_ALL = 'PriceClass_All',
-  /**
-   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
-   */
-  NONE = 'None',
 }
 
 /**
