@@ -5,6 +5,7 @@
       "stacks": [
         "client-vpn-endpoint-stack"
       ],
+      "stackUpdateWorkflow": false,
       "assertionStack": "client-vpn-endpoint-integ/DefaultTest/DeployAssert",
       "assertionStackName": "clientvpnendpointintegDefaultTestDeployAssert7B9D072C"
     }

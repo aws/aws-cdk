@@ -14,13 +14,10 @@ const hostedZoneId = process.env.CDK_INTEG_HOSTED_ZONE_ID ?? process.env.HOSTED_
 if (!hostedZoneId) throw new Error('For this test you must provide your own HostedZoneId as an env var "HOSTED_ZONE_ID". See framework-integ/README.md for details.');
 const hostedZoneName = process.env.CDK_INTEG_HOSTED_ZONE_NAME ?? process.env.HOSTED_ZONE_NAME;
 if (!hostedZoneName) throw new Error('For this test you must provide your own HostedZoneName as an env var "HOSTED_ZONE_NAME". See framework-integ/README.md for details.');
-const domainName = process.env.CDK_INTEG_HOSTED_ZONE_NAME ?? process.env.DOMAIN_NAME;
-if (!domainName) throw new Error('For this test you must provide your own DomainName as an env var "DOMAIN_NAME". See framework-integ/README.md for details.');
 
 interface TestStackProps extends StackProps {
   hostedZoneId: string;
   hostedZoneName: string;
-  domainName: string;
 }
 
 class TestStack extends Stack {
@@ -33,11 +30,11 @@ class TestStack extends Stack {
     });
 
     const serverCertificate = new acm.Certificate(this, 'Certificate', {
-      domainName: `server.${props.domainName}`,
+      domainName: `server.${props.hostedZoneName}`,
       validation: acm.CertificateValidation.fromDns(hostedZone),
     });
     const clientCertificate = new acm.Certificate(this, 'ClientCertificate', {
-      domainName: `client.${props.domainName}`,
+      domainName: `client.${props.hostedZoneName}`,
       validation: acm.CertificateValidation.fromDns(hostedZone),
     });
 
@@ -63,9 +60,7 @@ new IntegTest(app, 'client-vpn-endpoint-integ', {
     new TestStack(app, 'client-vpn-endpoint-stack', {
       hostedZoneId,
       hostedZoneName,
-      domainName,
     }),
   ],
-  enableLookups: true,
   stackUpdateWorkflow: false,
 });

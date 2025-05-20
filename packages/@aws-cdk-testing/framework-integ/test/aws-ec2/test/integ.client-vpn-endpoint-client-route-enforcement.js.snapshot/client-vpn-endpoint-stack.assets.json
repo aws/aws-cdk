@@ -15,7 +15,7 @@
         }
       }
     },
-    "a709e6f27c86b904ec83775eca1bcbc2aefe3f4e836a1a75c7f9f75617a48b9a": {
+    "f18c1da5a428e21a49373e9128df00577dd4a42020ac8690d02b3bb89ae15375": {
       "displayName": "client-vpn-endpoint-stack Template",
       "source": {
         "path": "client-vpn-endpoint-stack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a709e6f27c86b904ec83775eca1bcbc2aefe3f4e836a1a75c7f9f75617a48b9a.json",
+          "objectKey": "f18c1da5a428e21a49373e9128df00577dd4a42020ac8690d02b3bb89ae15375.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
