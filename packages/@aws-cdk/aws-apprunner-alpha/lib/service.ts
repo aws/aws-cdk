@@ -229,7 +229,7 @@ export class Runtime {
   public static readonly RUBY_31 = Runtime.of('RUBY_31');
 
   /**
-   * PNodeJS 22
+   * NodeJS 22
    */
   public static readonly NODEJS_22 = Runtime.of('NODEJS_22');
 
