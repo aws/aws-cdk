@@ -1,7 +1,8 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "files": {
-    "2ac973cd3fa2ed1a3934fbe78ee77203b26df0366d34997e96d1570af96f2614": {
+    "3e6958007748812ef0693b0754013a63157594ddd42b85dba796df31c4ff286b": {
+      "displayName": "vpc-byoip-ipv6 Template",
       "source": {
         "path": "vpc-byoip-ipv6.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2ac973cd3fa2ed1a3934fbe78ee77203b26df0366d34997e96d1570af96f2614.json",
+          "objectKey": "3e6958007748812ef0693b0754013a63157594ddd42b85dba796df31c4ff286b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

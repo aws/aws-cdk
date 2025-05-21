@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "testCases": {
     "LambdaInteg/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "LambdaInteg/DefaultTest/DeployAssert",
       "assertionStackName": "LambdaIntegDefaultTestDeployAssert7BC530B7"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

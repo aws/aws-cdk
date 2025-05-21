@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "aws-cdk-s3-access-logs-target.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9b4b4f2be768490523cfc27f12238c1b436625f228b1553592aea908e28bfdd9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4e8f9b4eae3f2ff083eef68dc1c6b9592e3fcc3d83b101dd74b8b10d34b794f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,44 @@
         "aws-cdk-s3-access-logs-target.assets"
       ],
       "metadata": {
+        "/aws-cdk-s3-access-logs-target/TargetBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "autoDeleteObjects": true,
+              "removalPolicy": "destroy",
+              "blockPublicAccess": "*",
+              "enforceSSL": true,
+              "objectOwnership": "BucketOwnerEnforced",
+              "encryption": "S3_MANAGED",
+              "accessControl": "BucketOwnerFullControl"
+            }
+          }
+        ],
         "/aws-cdk-s3-access-logs-target/TargetBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TargetBucket6BBF3429"
           }
         ],
+        "/aws-cdk-s3-access-logs-target/TargetBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/aws-cdk-s3-access-logs-target/TargetBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TargetBucketPolicyDDA8DC0A"
+          }
+        ],
+        "/aws-cdk-s3-access-logs-target/TargetBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-s3-access-logs-target/TargetBucket/AutoDeleteObjectsCustomResource/Default": [
@@ -56,6 +84,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-cdk-s3-access-logs-target/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/aws-cdk-s3-access-logs-target/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
@@ -108,7 +142,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2cf6c21c06b18a2e66d5e13bbcc13f67dea0b00bfe69077bd559c7dc03d76fb8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b9df179c02648676a0e8fe29e3eae845ff61e9cf50c9fa08f3a8ead55fd38ec3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -125,16 +159,46 @@
         "aws-cdk-s3-access-logs-delivery.assets"
       ],
       "metadata": {
+        "/aws-cdk-s3-access-logs-delivery/SourceBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "autoDeleteObjects": true,
+              "removalPolicy": "destroy",
+              "blockPublicAccess": "*",
+              "enforceSSL": true,
+              "objectOwnership": "BucketOwnerEnforced",
+              "encryption": "S3_MANAGED",
+              "accessControl": "BucketOwnerFullControl",
+              "serverAccessLogsBucket": "*",
+              "serverAccessLogsPrefix": "*"
+            }
+          }
+        ],
         "/aws-cdk-s3-access-logs-delivery/SourceBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SourceBucketDDD2130A"
           }
         ],
+        "/aws-cdk-s3-access-logs-delivery/SourceBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/aws-cdk-s3-access-logs-delivery/SourceBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SourceBucketPolicy703DFBF9"
+          }
+        ],
+        "/aws-cdk-s3-access-logs-delivery/SourceBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-s3-access-logs-delivery/SourceBucket/AutoDeleteObjectsCustomResource/Default": [
@@ -147,6 +211,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-cdk-s3-access-logs-delivery/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/aws-cdk-s3-access-logs-delivery/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
@@ -230,5 +300,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "testCases": {
     "aws-cdk-redshift-distkey-test/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "aws-cdk-redshift-distkey-test/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkredshiftdistkeytestDefaultTestDeployAssert61A36BE8"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

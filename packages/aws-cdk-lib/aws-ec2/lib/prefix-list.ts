@@ -5,6 +5,7 @@ import { IPeer } from './peer';
 import * as cxschema from '../../cloud-assembly-schema';
 import { IResource, Lazy, Resource, Names, ContextProvider, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A prefix list
@@ -130,7 +131,11 @@ interface PrefixListContextResponse {
  * A managed prefix list.
  * @resource AWS::EC2::PrefixList
  */
+@propertyInjectable
 export class PrefixList extends PrefixListBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.PrefixList';
+
   /**
    * Look up prefix list by id.
    */
@@ -225,10 +230,10 @@ export class PrefixList extends PrefixListBase {
 
     if (props?.prefixListName) {
       if ( props.prefixListName.startsWith('com.amazonaws')) {
-        throw new Error('The name cannot start with \'com.amazonaws.\'');
+        throw new ValidationError('The name cannot start with \'com.amazonaws.\'', this);
       }
       if (props.prefixListName.length > 255 ) {
-        throw new Error('Lengths exceeding 255 characters cannot be set.');
+        throw new ValidationError('Lengths exceeding 255 characters cannot be set.', this);
       }
     }
 
@@ -242,7 +247,7 @@ export class PrefixList extends PrefixListBase {
         const ipv6Regex = /^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?$/i;
         for (const entry of entries) {
           if (!ipv6Regex.test(entry.cidr)) {
-            throw new Error(`Invalid IPv6 address range: ${entry.cidr}`);
+            throw new ValidationError(`Invalid IPv6 address range: ${entry.cidr}`, this);
           }
         }
       // Regular expressions for validating IPv4 addresses
@@ -250,7 +255,7 @@ export class PrefixList extends PrefixListBase {
         const ipv4Regex = /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/i;
         for (const entry of entries) {
           if (!ipv4Regex.test(entry.cidr)) {
-            throw new Error(`Invalid IPv4 address range: ${entry.cidr}`);
+            throw new ValidationError(`Invalid IPv4 address range: ${entry.cidr}`, this);
           }
         }
       }

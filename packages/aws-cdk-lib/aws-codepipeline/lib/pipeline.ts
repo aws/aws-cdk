@@ -39,6 +39,7 @@ import {
   ValidationError,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -375,6 +376,13 @@ export interface PipelineProps {
    * @default - ExecutionMode.SUPERSEDED
    */
   readonly executionMode?: ExecutionMode;
+
+  /**
+   * Use pipeline service role for actions if no action role configured
+   *
+   * @default - false
+   */
+  readonly usePipelineRoleForActions?: boolean;
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
@@ -520,7 +528,11 @@ abstract class PipelineBase extends Resource implements IPipeline {
  *
  * // ... add more stages
  */
+@propertyInjectable
 export class Pipeline extends PipelineBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codepipeline.Pipeline';
+
   /**
    * Import a pipeline into this app.
    *
@@ -576,6 +588,7 @@ export class Pipeline extends PipelineBase {
   private readonly reuseCrossRegionSupportStacks: boolean;
   private readonly codePipeline: CfnPipeline;
   private readonly pipelineType: PipelineType;
+  private readonly usePipelineRoleForActions: boolean;
   private readonly variables = new Array<Variable>();
   private readonly triggers = new Array<Trigger>();
 
@@ -604,6 +617,7 @@ export class Pipeline extends PipelineBase {
     }
 
     this.reuseCrossRegionSupportStacks = props.reuseCrossRegionSupportStacks ?? true;
+    this.usePipelineRoleForActions = props.usePipelineRoleForActions ?? false;
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = this.getArtifactBucketFromProps(props);
@@ -638,8 +652,11 @@ export class Pipeline extends PipelineBase {
     this.artifactBucket = propsBucket;
 
     // If a role has been provided, use it - otherwise, create a role.
+    const isRemoveRootPrincipal = FeatureFlags.of(this).isEnabled(cxapi.PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE);
+
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
+      roleName: isRemoveRootPrincipal ? PhysicalName.GENERATE_IF_NEEDED : undefined,
     });
 
     const isDefaultV2 = FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2);
@@ -1010,9 +1027,12 @@ export class Pipeline extends PipelineBase {
     let actionRole = this.getRoleFromActionPropsOrGenerateIfCrossAccount(stage, action);
 
     if (!actionRole && this.isAwsOwned(action)) {
+      if (this.usePipelineRoleForActions) {
+        return undefined;
+      }
       // generate a Role for this specific Action
       const isRemoveRootPrincipal = FeatureFlags.of(this).isEnabled(cxapi.PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE);
-      const roleProps = isRemoveRootPrincipal? {
+      const roleProps = isRemoveRootPrincipal ? {
         assumedBy: new iam.ArnPrincipal(this.role.roleArn), // Allow only the pipeline execution role
       } : {
         assumedBy: new iam.AccountPrincipal(pipelineStack.account),
@@ -1078,12 +1098,25 @@ export class Pipeline extends PipelineBase {
       return undefined;
     }
 
+    const isRemoveRootPrincipal = FeatureFlags.of(this).isEnabled(cxapi.PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE);
+    const basePrincipal = new iam.AccountPrincipal(pipelineStack.account);
+
+    const roleProps = {
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
+      assumedBy: isRemoveRootPrincipal
+        ? basePrincipal.withConditions(
+          {
+            ArnEquals: {
+              'aws:PrincipalArn': this.role.roleArn,
+            },
+          },
+        )
+        : basePrincipal,
+    };
+
     // generate a role in the other stack, that the Pipeline will assume for executing this action
     const ret = new iam.Role(otherAccountStack,
-      `${Names.uniqueId(this)}-${stage.stageName}-${action.actionProperties.actionName}-ActionRole`, {
-        assumedBy: new iam.AccountPrincipal(pipelineStack.account),
-        roleName: PhysicalName.GENERATE_IF_NEEDED,
-      });
+      `${Names.uniqueId(this)}-${stage.stageName}-${action.actionProperties.actionName}-ActionRole`, roleProps);
     // the other stack with the role has to be deployed before the pipeline stack
     // (CodePipeline verifies you can assume the action Role on creation)
     pipelineStack.addDependency(otherAccountStack);

@@ -62,7 +62,6 @@
   "natgwprivSubnetE547C5A0": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-east-1a",
     "CidrBlock": "10.0.0.0/24",
     "Ipv6CidrBlock": {
@@ -76,6 +75,12 @@
       }
      ]
     },
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "natgwpriv081A7D93",
@@ -116,7 +121,13 @@
     ],
     "SubnetId": {
      "Ref": "natgwprivSubnetE547C5A0"
-    }
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-routev2-privatenatgw-alpha/natgw_privSubnet"
+     }
+    ]
    },
    "DependsOn": [
     "natgwprivSubnetRouteTableAssociation9E115869"

@@ -10,6 +10,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { RegionInfo } from '../../region-info';
 
 const PUT_RECORD_ACTIONS = [
@@ -257,7 +258,11 @@ export interface DeliveryStreamAttributes {
  *
  * @resource AWS::KinesisFirehose::DeliveryStream
  */
+@propertyInjectable
 export class DeliveryStream extends DeliveryStreamBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kinesisfirehose.DeliveryStream';
+
   /**
    * Import an existing delivery stream from its name.
    */
@@ -277,13 +282,13 @@ export class DeliveryStream extends DeliveryStreamBase {
    */
   static fromDeliveryStreamAttributes(scope: Construct, id: string, attrs: DeliveryStreamAttributes): IDeliveryStream {
     if (!attrs.deliveryStreamName && !attrs.deliveryStreamArn) {
-      throw new Error('Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes');
+      throw new cdk.ValidationError('Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes', scope);
     }
     const deliveryStreamName = attrs.deliveryStreamName ??
       cdk.Stack.of(scope).splitArn(attrs.deliveryStreamArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!deliveryStreamName) {
-      throw new Error(`No delivery stream name found in ARN: '${attrs.deliveryStreamArn}'`);
+      throw new cdk.ValidationError(`No delivery stream name found in ARN: '${attrs.deliveryStreamArn}'`, scope);
     }
     const deliveryStreamArn = attrs.deliveryStreamArn ?? cdk.Stack.of(scope).formatArn({
       service: 'firehose',
@@ -334,7 +339,7 @@ export class DeliveryStream extends DeliveryStreamBase {
       props.source &&
         (props.encryption?.type === StreamEncryptionType.AWS_OWNED || props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED)
     ) {
-      throw new Error('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
+      throw new cdk.ValidationError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.', this);
     }
     const encryptionKey = props.encryption?.encryptionKey ?? (props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED ? new kms.Key(this, 'Key') : undefined);
     const encryptionConfig = (encryptionKey || (props.encryption?.type === StreamEncryptionType.AWS_OWNED)) ? {

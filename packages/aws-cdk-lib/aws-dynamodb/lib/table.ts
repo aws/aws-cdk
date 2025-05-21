@@ -20,9 +20,13 @@ import {
   ArnFormat, Resource,
   Aws, CfnCondition, CfnCustomResource, CfnResource, Duration,
   Fn, Lazy, Names, RemovalPolicy, Stack, Token, CustomResource,
+  CfnDeletionPolicy,
+  FeatureFlags,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { DYNAMODB_TABLE_RETAIN_TABLE_REPLICA } from '../../cx-api';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -367,6 +371,13 @@ export interface TableOptions extends SchemaOptions {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * The removal policy to apply to the DynamoDB replica tables.
+   *
+   * @default undefined - use DynamoDB Table's removal policy
+   */
+  readonly replicaRemovalPolicy?: RemovalPolicy;
 
   /**
    * Regions where replica tables will be created
@@ -1050,7 +1061,13 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
 /**
  * Provides a DynamoDB table.
  */
+@propertyInjectable
 export class Table extends TableBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-dynamodb.Table';
+
   /**
    * Permits an IAM Principal to list all DynamoDB Streams.
    * @deprecated Use `#grantTableListStreams` for more granular permission
@@ -1278,7 +1295,7 @@ export class Table extends TableBase {
     }
 
     if (props.replicationRegions && props.replicationRegions.length > 0) {
-      this.createReplicaTables(props.replicationRegions, props.replicationTimeout, props.waitForReplicationToFinish);
+      this.createReplicaTables(props.replicationRegions, props.replicationTimeout, props.waitForReplicationToFinish, props.replicaRemovalPolicy);
     }
 
     this.node.addValidation({ validate: () => this.validateTable() });
@@ -1659,7 +1676,7 @@ export class Table extends TableBase {
    *
    * @param regions regions where to create tables
    */
-  private createReplicaTables(regions: string[], timeout?: Duration, waitForReplicationToFinish?: boolean) {
+  private createReplicaTables(regions: string[], timeout?: Duration, waitForReplicationToFinish?: boolean, replicaRemovalPolicy?: RemovalPolicy) {
     const stack = Stack.of(this);
 
     if (!Token.isUnresolved(stack.region) && regions.includes(stack.region)) {
@@ -1680,6 +1697,23 @@ export class Table extends TableBase {
 
     let previousRegion: CustomResource | undefined;
     let previousRegionCondition: CfnCondition | undefined;
+
+    // Replica table's removal policy will default to DynamoDB Table's removal policy
+    // unless replica removal policy is specified.
+    const retainReplica = FeatureFlags.of(this).isEnabled(DYNAMODB_TABLE_RETAIN_TABLE_REPLICA);
+
+    // If feature flag is disabled, never retain replica to maintain backward compatibility
+    const skipReplicaDeletion = retainReplica ? Lazy.any({
+      produce: () => {
+        // If feature flag is enabled, prioritize replica removal policy
+        if (replicaRemovalPolicy) {
+          return replicaRemovalPolicy == RemovalPolicy.RETAIN;
+        }
+        // Otherwise fall back to source table's removal policy
+        return (this.node.defaultChild as CfnResource).cfnOptions.deletionPolicy === CfnDeletionPolicy.RETAIN;
+      },
+    }) : false;
+
     for (const region of new Set(regions)) { // Remove duplicates
       // Use multiple custom resources because multiple create/delete
       // updates cannot be combined in a single API call.
@@ -1689,6 +1723,7 @@ export class Table extends TableBase {
         properties: {
           TableName: this.tableName,
           Region: region,
+          ...skipReplicaDeletion && { SkipReplicaDeletion: skipReplicaDeletion },
           SkipReplicationCompletedWait: waitForReplicationToFinish == null
             ? undefined
             // CFN changes Custom Resource properties to strings anyways,

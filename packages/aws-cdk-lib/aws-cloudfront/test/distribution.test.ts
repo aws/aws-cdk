@@ -6,7 +6,7 @@ import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { App, Aws, Duration, Stack } from '../../core';
+import { App, Aws, Duration, Stack, Token } from '../../core';
 import {
   AllowedMethods,
   CfnDistribution,
@@ -1431,6 +1431,18 @@ describe('attachWebAclId', () => {
           webAclId: 'arn:aws:wafv2:ap-northeast-1:123456789012:global/web-acl/MyWebAcl/473e64fd-f30b-4765-81a0-62ad96dd167a',
         });
       }).toThrow(/WebACL for CloudFront distributions must be created in the us-east-1 region; received ap-northeast-1/);
+    });
+
+    test('does not validate unresolved token webAclId', () => {
+      const origin = defaultOrigin();
+
+      const distribution = new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin },
+        webAclId: Token.asString({ Ref: 'SomeWebAcl' }), // unresolved token
+      });
+
+      // Should synthesize without error
+      Template.fromStack(stack);
     });
   });
 });

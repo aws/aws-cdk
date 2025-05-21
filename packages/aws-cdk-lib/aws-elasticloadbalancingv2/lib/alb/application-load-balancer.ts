@@ -10,6 +10,7 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { CfnResource, Duration, Lazy, Names, Resource, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
@@ -153,7 +154,13 @@ export interface ApplicationLoadBalancerLookupOptions extends BaseLoadBalancerLo
  *
  * @resource AWS::ElasticLoadBalancingV2::LoadBalancer
  */
+@propertyInjectable
 export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplicationLoadBalancer {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.ApplicationLoadBalancer';
+
   /**
    * Look up an application load balancer.
    */
@@ -1198,7 +1205,10 @@ export interface ApplicationLoadBalancerAttributes {
 /**
  * An ApplicationLoadBalancer that has been defined elsewhere
  */
+@propertyInjectable
 class ImportedApplicationLoadBalancer extends Resource implements IApplicationLoadBalancer {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.ImportedApplicationLoadBalancer';
   /**
    * Manage connections for this load balancer
    */
@@ -1259,7 +1269,10 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
   }
 }
 
+@propertyInjectable
 class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLoadBalancer {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.LookedUpApplicationLoadBalancer';
   public readonly loadBalancerArn: string;
   public readonly loadBalancerCanonicalHostedZoneId: string;
   public readonly loadBalancerDnsName: string;

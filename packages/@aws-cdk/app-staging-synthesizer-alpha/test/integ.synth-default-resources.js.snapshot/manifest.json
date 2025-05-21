@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "synthesize-default-resources.assets": {
       "type": "cdk:asset-manifest",
@@ -32,6 +32,38 @@
         "synthesize-default-resources.assets"
       ],
       "metadata": {
+        "/synthesize-default-resources/lambda-s3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/synthesize-default-resources/lambda-s3/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/synthesize-default-resources/lambda-s3/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/synthesize-default-resources/lambda-s3/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -44,6 +76,38 @@
             "data": "lambdas342CE2BBD"
           }
         ],
+        "/synthesize-default-resources/lambda-ecr-1-copy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/synthesize-default-resources/lambda-ecr-1-copy/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/synthesize-default-resources/lambda-ecr-1-copy/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/synthesize-default-resources/lambda-ecr-1-copy/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -54,6 +118,38 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "lambdaecr1copyD39CDE9B"
+          }
+        ],
+        "/synthesize-default-resources/lambda-ecr-two": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/synthesize-default-resources/lambda-ecr-two/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/synthesize-default-resources/lambda-ecr-two/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/synthesize-default-resources/lambda-ecr-two/ServiceRole/Resource": [
@@ -83,10 +179,98 @@
         "stackName": "StagingStack-default-resourcesmax"
       },
       "metadata": {
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole/ImportCdkFileRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkFileRoleE26CEABA"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole/DefaultPolicy/Resource": [
@@ -95,10 +279,46 @@
             "data": "CdkFileRoleDefaultPolicy621C7E5B"
           }
         ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "alias": "*",
+              "admins": [
+                {
+                  "principalAccount": "*",
+                  "assumeRoleAction": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grantAdmin": [
+                {
+                  "grantPrincipal": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  }
+                }
+              ]
+            }
+          }
+        ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketKey7092080A"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Alias": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "aliasName": "*",
+              "targetKey": "*"
+            }
           }
         ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Alias/Resource": [
@@ -107,16 +327,62 @@
             "data": "BucketKeyAlias69A0886F"
           }
         ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucketName": "*",
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true,
+              "encryption": "KMS",
+              "encryptionKey": "*",
+              "versioned": true,
+              "enforceSSL": true
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLifecycleRule": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLifecycleRule": [
+                {
+                  "prefix": "*"
+                }
+              ]
+            }
+          }
+        ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkStagingBucket1636058C"
           }
         ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkStagingBucketPolicy42BD1F92"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/AutoDeleteObjectsCustomResource/Default": [
@@ -131,6 +397,12 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -143,10 +415,162 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkImageRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkImageRole/ImportCdkImageRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkImageRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkImageRoleF1394AC3"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkImageRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkImageRole/DefaultPolicy/Resource": [
@@ -155,10 +579,70 @@
             "data": "CdkImageRoleDefaultPolicy4A1572DE"
           }
         ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset--1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "repositoryName": "*",
+              "imageTagMutability": "IMMUTABLE",
+              "lifecycleRules": [
+                {
+                  "description": "*",
+                  "maxImageCount": "*"
+                }
+              ],
+              "removalPolicy": "destroy",
+              "emptyOnDelete": true
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLifecycleRule": [
+                {
+                  "description": "*",
+                  "maxImageCount": "*"
+                },
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset--1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "defaultresourcesmaxecrasset13112F7F9"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset-2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "repositoryName": "*",
+              "imageTagMutability": "IMMUTABLE",
+              "lifecycleRules": [
+                {
+                  "description": "*",
+                  "maxImageCount": "*"
+                }
+              ],
+              "removalPolicy": "destroy",
+              "emptyOnDelete": true
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLifecycleRule": [
+                {
+                  "description": "*",
+                  "maxImageCount": "*"
+                },
+                "*",
+                "*"
+              ]
+            }
           }
         ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset-2/Resource": [
@@ -224,5 +708,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

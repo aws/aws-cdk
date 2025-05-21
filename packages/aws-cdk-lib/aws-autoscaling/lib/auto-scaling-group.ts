@@ -17,7 +17,6 @@ import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import {
   Annotations,
-  AspectPriority,
   Aspects,
   Aws,
   CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy,
@@ -26,6 +25,8 @@ import {
   Tokenization, UnscopedValidationError, ValidationError, withResolved,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 
 /**
@@ -1276,11 +1277,17 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
  * The ASG spans the availability zones specified by vpcSubnets, falling back to
  * the Vpc default strategy if not specified.
  */
+@propertyInjectable
 export class AutoScalingGroup extends AutoScalingGroupBase implements
   elb.ILoadBalancerTarget,
   ec2.IConnectable,
   elbv2.IApplicationLoadBalancerTarget,
   elbv2.INetworkLoadBalancerTarget {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-autoscaling.AutoScalingGroup';
+
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
       public autoScalingGroupName = autoScalingGroupName;
@@ -1608,7 +1615,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.spotPrice = props.spotPrice;
 
     if (props.requireImdsv2) {
-      Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect(), { priority: AspectPriority.MUTATING });
+      Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect(), {
+        priority: mutatingAspectPrio32333(this),
+      });
     }
 
     this.node.addValidation({ validate: () => this.validateTargetGroup() });

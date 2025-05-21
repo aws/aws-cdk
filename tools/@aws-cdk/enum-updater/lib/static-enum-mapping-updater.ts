@@ -4,16 +4,20 @@ import axios from 'axios';
 import * as tmp from 'tmp';
 import * as extract from 'extract-zip';
 
-const ENUMS_URL = "https://raw.githubusercontent.com/aws/aws-cdk/main/packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enums.json";
-const ENUM_LIKE_CLASSES_URL = "https://raw.githubusercontent.com/aws/aws-cdk/main/packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enumlikes.json";
+export const ENUMS_URL = "https://raw.githubusercontent.com/aws/aws-cdk/main/packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enums.json";
+export const ENUM_LIKE_CLASSES_URL = "https://raw.githubusercontent.com/aws/aws-cdk/main/packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enumlikes.json";
 const CFN_LINT_URL = "https://github.com/aws-cloudformation/cfn-lint/archive/refs/heads/main.zip"
-const MODULE_MAPPING = path.join(__dirname, "module-mapping.json");
-const STATIC_MAPPING_FILE_NAME = "static-enum-mapping.json";
+export const STATIC_MAPPING_FILE_NAME = "static-enum-mapping.json";
 const PARSED_CDK_ENUMS_FILE_NAME = "cdk-enums.json";
-export const PARSED_SDK_ENUMS_FILE_NAME = "sdk-enums.json";
+const EXCLUDE_FILE = "exclude-values.json";
+const MODULE_MAPPING = path.join(__dirname, "module-mapping.json");
+const PARSED_SDK_ENUMS_FILE_NAME = "sdk-enums.json";
+export const MANUAL_MAPPING_FILE_NAME = "manual-enum-mapping.json";
+export const MANUAL_MAPPING = path.join(__dirname, MANUAL_MAPPING_FILE_NAME);
 export const STATIC_MAPPING = path.join(__dirname, STATIC_MAPPING_FILE_NAME);
 export const CDK_ENUMS = path.join(__dirname, PARSED_CDK_ENUMS_FILE_NAME);
 export const SDK_ENUMS = path.join(__dirname, PARSED_SDK_ENUMS_FILE_NAME);
+export const EXCLUDE_ENUMS = path.join(__dirname, EXCLUDE_FILE);
 
 // Set up cleanup handlers for process termination
 tmp.setGracefulCleanup();
@@ -29,14 +33,13 @@ export interface SdkEnums {
   };
 }
 
-
 function extractEnums(schema: Record<string, any>, enums: { [enumName: string]: (string | number)[] }) {
   // Helper function to process a property and its potential enum values
   function processProperty(propertyName: string, property: any) {
       if (property.enum) {
-          enums[propertyName] = property.enum;
+        enums[propertyName] = property.enum;
       } else if (property.items?.enum) {
-          enums[propertyName] = property.items.enum;
+        enums[propertyName] = property.items.enum;
       }
 
       // Process nested properties
@@ -83,6 +86,7 @@ export interface StaticMappingEntry {
   sdk_service: string;
   sdk_enum_name: string;
   match_percentage: number;
+  manual?: boolean;
 }
 
 export interface StaticMapping {
@@ -201,6 +205,10 @@ async function cleanupTempFiles(zipFile: tmp.FileResult, tmpDir: tmp.DirResult, 
   }
 }
 
+export function extractServiceName(fileName: string) {
+  return fileName.split('-')[1];
+}
+
 /**
  * Parses AWS SDK model JSON files to extract and store enum definitions.
  *
@@ -212,7 +220,7 @@ export async function parseAwsSdkEnums(sdkModelsPath: string): Promise<void> {
 
   try {
     const jsonFiles = getJsonFiles(sdkModelsPath);
-
+    
     for (const file of jsonFiles) {
       try {
         if (file == 'module.json') {
@@ -220,7 +228,7 @@ export async function parseAwsSdkEnums(sdkModelsPath: string): Promise<void> {
         }
         const jsonData = readJsonFile(path.join(sdkModelsPath, file));
 
-        const service = file.split('-')[1];
+        const service = extractServiceName(file);
 
         const enumMap = sdkEnums[service] ?? {};
 
@@ -296,7 +304,7 @@ export function extractModuleName(path: string): string | null {
  * @param {string} enumsLikeFilePath - The file path for "enum-like" values.
  * @returns {Promise<void>}
  */
-async function processCdkEnums(enumsFilePath: string, enumsLikeFilePath: string): Promise<void> {
+export async function processCdkEnums(enumsFilePath: string, enumsLikeFilePath: string): Promise<void> {
   const processedData: CdkEnums = {};
   let totalEnums = 0;
 
@@ -447,19 +455,22 @@ function isValidMatch(cdkValues: Set<string>, sdkValues: Set<string>): boolean {
  *
  * @param {CdkEnums} cdkEnums - The extracted CDK enums.
  * @param {SdkEnums} sdkEnums - The extracted AWS SDK enums.
- * @param {Record<string, string[]>} manualMappings - The manually defined service mappings.
+ * @param {Record<string, string[]>} moduleMappings - The manually defined service mappings.
+ * @param {StaticMapping} manualEnumMappings - Manually defined overrides for the static enum mappings.
  * @returns {Promise<void>}
  */
 export async function generateAndSaveStaticMapping(
   cdkEnums: CdkEnums,
   sdkEnums: SdkEnums,
-  manualMappings: Record<string, string[]>
+  moduleMappings: Record<string, string[]>,
+  manualEnumMappings: StaticMapping
 ): Promise<void> {
   const staticMapping: StaticMapping = {};
   const unmatchedEnums: UnmatchedEnums = {};
 
+  // Process CDK enums as before
   for (const [module, enums] of Object.entries(cdkEnums)) {
-    if (!manualMappings[module]) {
+    if (!moduleMappings[module]) {
       // Add to unmatched if no SDK mapping exists
       unmatchedEnums[module] = Object.fromEntries(
         Object.entries(enums).map(([enumName, enumData]) => [
@@ -470,9 +481,21 @@ export async function generateAndSaveStaticMapping(
       continue;
     }
 
-    const sdkServices = manualMappings[module];
+    const sdkServices = moduleMappings[module];
 
     for (const [enumName, enumData] of Object.entries(enums)) {
+      // Check if we have a manual mapping for this enum
+      if (manualEnumMappings && manualEnumMappings[module]?.[enumName]) {
+        // Use the manual mapping
+        if (!staticMapping[module]) {
+          staticMapping[module] = {};
+        }
+        staticMapping[module][enumName] = manualEnumMappings[module][enumName];
+        staticMapping[module][enumName]["manual"] = true;
+        continue;
+      }
+
+      // Otherwise, proceed with automatic mapping
       const match = findMatchingEnum(
         enumName,
         enumData.values,
@@ -513,7 +536,7 @@ export async function generateAndSaveStaticMapping(
   fs.writeFileSync(`lib/${STATIC_MAPPING_FILE_NAME}`, JSON.stringify(staticMapping, null, 2));
   fs.writeFileSync('lib/unmatched-enums.json', JSON.stringify(unmatchedEnums, null, 2));
 
-  console.log(`Total matched enums: ${Object.values(staticMapping).reduce((sum, moduleEnums) => 
+  console.log(`Total matched enums: ${Object.values(staticMapping).reduce((sum, moduleEnums) =>
     sum + Object.keys(moduleEnums).length, 0)}`);
 }
 
@@ -541,9 +564,10 @@ export async function entryMethod(): Promise<void> {
     const cdkEnums: CdkEnums = JSON.parse(fs.readFileSync(CDK_ENUMS, 'utf8'));
     const sdkEnums: SdkEnums = JSON.parse(fs.readFileSync(SDK_ENUMS, 'utf8'));
     const manualMappings: Record<string, string[]> = JSON.parse(fs.readFileSync(MODULE_MAPPING, 'utf8'));
+    const manualEnumMappings = JSON.parse(fs.readFileSync(MANUAL_MAPPING, 'utf8'));
 
     // Generate and save static mapping
-    await generateAndSaveStaticMapping(cdkEnums, sdkEnums, manualMappings);
+    await generateAndSaveStaticMapping(cdkEnums, sdkEnums, manualMappings, manualEnumMappings);
 
     console.log("Static mapping and missing values analysis completed.");
 
