@@ -588,6 +588,18 @@ new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
 });
 ```
 
+Or you can [restore a DB instance from a Multi-AZ DB cluster snapshot](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromMultiAZDBClusterSnapshot.html)
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new rds.DatabaseInstanceFromSnapshot(this, 'Instance', {
+  clusterSnapshotIdentifier: 'my-cluster-snapshot',
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+  vpc,
+});
+```
+
 Automatic backups of read replica instances are only supported for MySQL and MariaDB. By default,
 automatic backups are disabled for read replicas and can only be enabled (using `backupRetention`)
 if also enabled on the source instance.
