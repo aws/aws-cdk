@@ -14,7 +14,7 @@ import {
 import { IRole } from '../../../aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
-import { CfnOutput, Duration, Stack, Token, ValidationError } from '../../../core';
+import { Annotations, CfnOutput, Duration, Stack, Token, ValidationError } from '../../../core';
 
 /**
  * Describes the type of DNS record the service should create
@@ -530,17 +530,48 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     if (this.certificate !== undefined) {
       this.listener.addCertificates('Arns', [ListenerCertificate.fromCertificateManager(this.certificate)]);
     }
+
     if (props.redirectHTTP) {
-      this.redirectListener = loadBalancer.addListener('PublicRedirectListener', {
-        protocol: ApplicationProtocol.HTTP,
-        port: 80,
-        open: props.openListener ?? true,
-        defaultAction: ListenerAction.redirect({
-          port: props.listenerPort?.toString() || '443',
-          protocol: ApplicationProtocol.HTTPS,
-          permanent: true,
-        }),
-      });
+      // Check if the load balancer was created by this construct
+      if (loadBalancer instanceof ApplicationLoadBalancer) {
+        // Create a new HTTP listener on port 80 that redirects to HTTPS
+        this.redirectListener = loadBalancer.addListener('PublicRedirectListener', {
+          protocol: ApplicationProtocol.HTTP,
+          port: 80,
+          open: props.openListener ?? true,
+          defaultAction: ListenerAction.redirect({
+            protocol: ApplicationProtocol.HTTPS,
+            port: props.listenerPort?.toString() || '443',
+            permanent: true,
+          }),
+        });
+
+        // Ensure the redirect listener is created after the main listener
+        this.redirectListener.node.addDependency(this.listener);
+
+        // Validate that there are no conflicting port 80 listeners during synth
+        loadBalancer.node.addValidation({
+          validate: () => {
+            const port80Listeners = loadBalancer.listeners.filter(listener =>
+              listener.port === 80,
+            );
+
+            if (port80Listeners.some(port80Listener => port80Listener !== this.redirectListener)) {
+              return [
+                'Cannot automatically configure redirectHTTP: A listener already exists on port 80.',
+              ];
+            }
+            return [];
+          },
+        });
+      } else {
+        // If the ALB was imported then we cannot reliably add the redirect action as we can't find the port 80 listener.
+        Annotations.of(this).addWarning(
+          'Cannot automatically configure port 80 HTTP redirect with redirectHTTP: ' +
+          'The construct cannot reliably determine if a port 80 listener already exists. ' +
+          'Please configure the redirect manually on the port 80 listener.',
+        );
+      }
     }
 
     let domainName = loadBalancer.loadBalancerDnsName;
