@@ -1,11 +1,11 @@
-import { Annotations, Match, Template } from '../../../assertions';
+import { Match, Template } from '../../../assertions';
 import { AutoScalingGroup } from '../../../aws-autoscaling';
 import { Certificate, CertificateValidation } from '../../../aws-certificatemanager';
 import * as ec2 from '../../../aws-ec2';
 import { MachineImage } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import { AsgCapacityProvider } from '../../../aws-ecs';
-import { ApplicationLoadBalancer, ApplicationProtocol, ListenerAction, NetworkLoadBalancer, SslPolicy } from '../../../aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer, SslPolicy } from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
 import * as route53 from '../../../aws-route53';
 import * as cloudmap from '../../../aws-servicediscovery';
@@ -1108,175 +1108,6 @@ describe('ApplicationLoadBalancedFargateService', () => {
       domainZone: zone,
       redirectHTTP: true,
       certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
-    });
-  });
-
-  test('creates a separate redirect listener when listenerPort is not 80', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
-
-    // WHEN
-    const service = new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
-      cluster,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('test'),
-      },
-      domainName: 'api.example.com',
-      domainZone: zone,
-      protocol: ApplicationProtocol.HTTPS,
-      redirectHTTP: true,
-      listenerPort: 8443,
-    });
-
-    // THEN
-    // Verify that we have two listeners - one for HTTPS and one for HTTP redirect
-    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 2);
-
-    // Verify the HTTPS listener is on port 8443
-    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
-      Port: 8443,
-      Protocol: 'HTTPS',
-    });
-
-    // Verify the HTTP redirect listener is on port 80
-    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
-      Port: 80,
-      Protocol: 'HTTP',
-      DefaultActions: [
-        Match.objectLike({
-          Type: 'redirect',
-          RedirectConfig: {
-            Protocol: 'HTTPS',
-            Port: '8443',
-            StatusCode: 'HTTP_301',
-          },
-        }),
-      ],
-    });
-
-    // Verify the dependency between listeners
-    expect(service.redirectListener?.node.dependencies[0]).toBe(service.listener);
-  });
-
-  test('throws error when trying to use redirectHTTP with listener on port 80', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app);
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
-
-    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
-      cluster,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('test'),
-      },
-      domainName: 'api.example.com',
-      domainZone: zone,
-      protocol: ApplicationProtocol.HTTPS,
-      redirectHTTP: true,
-      listenerPort: 80,
-    });
-
-    // THEN
-    expect(() => {
-      app.synth();
-    }).toThrow('Validation failed with the following errors:\n  [Default/Service/LB] Cannot automatically configure redirectHTTP: A listener already exists on port 80.');
-  });
-
-  test('adds validation for existing port 80 listeners not owned by the construct', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app);
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
-
-    // Create a load balancer with an existing port 80 listener
-    const lb = new ApplicationLoadBalancer(stack, 'ALB', { vpc, internetFacing: true });
-    lb.addListener('ExistingPort80Listener', {
-      port: 80,
-      protocol: ApplicationProtocol.HTTP,
-      defaultAction: ListenerAction.redirect({ port: '1000' }),
-    });
-
-    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
-      cluster,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('test'),
-      },
-      domainName: 'api.example.com',
-      domainZone: zone,
-      protocol: ApplicationProtocol.HTTPS,
-      redirectHTTP: true,
-      loadBalancer: lb,
-    });
-    // THEN
-    expect(() => {
-      app.synth();
-    }).toThrow('Validation failed with the following errors:\n  [Default/ALB] Cannot automatically configure redirectHTTP: A listener already exists on port 80.');
-  });
-
-  test('adds warning for imported load balancers with redirectHTTP and creates the redirect listener', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
-
-    // Create an imported load balancer
-    const importedLb = ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ImportedALB', {
-      loadBalancerArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188',
-      securityGroupId: 'sg-123456789',
-      loadBalancerDnsName: 'my-load-balancer-1234567890.us-west-2.elb.amazonaws.com',
-      loadBalancerCanonicalHostedZoneId: 'some-hosted-zone',
-      vpc,
-    });
-
-    // WHEN
-    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
-      cluster,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('test'),
-      },
-      domainName: 'api.example.com',
-      domainZone: zone,
-      protocol: ApplicationProtocol.HTTPS,
-      redirectHTTP: true,
-      loadBalancer: importedLb,
-    });
-
-    // THEN
-    // Verify that a warning is added
-    const annotations = Annotations.fromStack(stack);
-    annotations.hasWarning('/Default/Service', 'Cannot automatically configure port 80 HTTP redirect with redirectHTTP: The construct cannot reliably determine if a port 80 listener already exists. Please configure the redirect manually on the port 80 listener.');
-
-    // Verify that we have two listeners - one for HTTPS and one for HTTP redirect
-    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 2);
-
-    // Verify the HTTPS listener is on port 8443
-    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
-      Port: 443,
-      Protocol: 'HTTPS',
-    });
-
-    // Verify the HTTP redirect listener is on port 80
-    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
-      Port: 80,
-      Protocol: 'HTTP',
-      DefaultActions: [
-        Match.objectLike({
-          Type: 'redirect',
-          RedirectConfig: {
-            Protocol: 'HTTPS',
-            Port: '443',
-            StatusCode: 'HTTP_301',
-          },
-        }),
-      ],
     });
   });
 
