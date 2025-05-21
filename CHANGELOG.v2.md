@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.197.0](https://github.com/aws/aws-cdk/compare/v2.196.1...v2.197.0) (2025-05-20)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#34497](https://github.com/aws/aws-cdk/issues/34497)) ([6b7cdcf](https://github.com/aws/aws-cdk/commit/6b7cdcfc683b81523863d6610c1d5828fb75715e))
+* **cloudwatch:** anomaly detection alarms ([#31232](https://github.com/aws/aws-cdk/issues/31232)) ([e2aa338](https://github.com/aws/aws-cdk/commit/e2aa338a744ee367c23f5579dee974fac3210d19)), closes [#10540](https://github.com/aws/aws-cdk/issues/10540) [#10540](https://github.com/aws/aws-cdk/issues/10540)
+* **custom-resource:** update default node runtime to node22 in custom resources for commercial, china and gov regions ([#34319](https://github.com/aws/aws-cdk/issues/34319)) ([eb5e688](https://github.com/aws/aws-cdk/commit/eb5e688ebb6a72c2f106da73ecedb86749f159fa))
+
+
+### Bug Fixes
+
+* **core:** `platform` is ignored during asset bundling ([#33865](https://github.com/aws/aws-cdk/issues/33865)) ([91bec88](https://github.com/aws/aws-cdk/commit/91bec884da06d44b000e839121d5e2d8c5171daf)), closes [#30239](https://github.com/aws/aws-cdk/issues/30239)
+* **lambda-nodejs:** instantiating `NodejsFunction` without the `entry` property fails ([#34498](https://github.com/aws/aws-cdk/issues/34498)) ([36ce84d](https://github.com/aws/aws-cdk/commit/36ce84de93acdcdacf68f42720c5f12a5b8b2e9f))
+
+## [2.196.1](https://github.com/aws/aws-cdk/compare/v2.196.0...v2.196.1) (2025-05-19)
+
+
+### Bug Fixes
+
+* **lambda-nodejs:** instantiating `NodejsFunction` without the `entry` property fails ([#34498](https://github.com/aws/aws-cdk/issues/34498)) ([27e0f3a](https://github.com/aws/aws-cdk/commit/27e0f3a1d525512db53fc99432597d8e091ab9d0))
+
 ## [2.196.0](https://github.com/aws/aws-cdk/compare/v2.195.0...v2.196.0) (2025-05-15)
 
 
