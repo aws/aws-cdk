@@ -623,7 +623,11 @@ function isAnomalyDetectionMetric(metric: IMetric): boolean {
  * This alarm type is specifically designed for use with anomaly detection operators
  * like LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD.
  */
+@propertyInjectable
 export class AnomalyDetectionAlarm extends Alarm {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudwatch.AnomalyDetectionAlarm';
+
   constructor(scope: Construct, id: string, props: AnomalyDetectionAlarmProps) {
     super(scope, id, {
       ...props,
@@ -631,6 +635,8 @@ export class AnomalyDetectionAlarm extends Alarm {
       metric: Metric.anomalyDetectionFor(props),
       threshold: Alarm.ANOMALY_DETECTION_NO_THRESHOLD,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.comparisonOperator && !isAnomalyDetectionOperator(props.comparisonOperator)) {
       throw new ValidationError(`Must use one of the anomaly detection operators, got ${props.comparisonOperator}`, this);
