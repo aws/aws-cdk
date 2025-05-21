@@ -371,7 +371,10 @@ export class MariaDbEngineVersion {
    */
   public static readonly VER_10_3_39 = MariaDbEngineVersion.of('10.3.39', '10.3');
 
-  /** Version "10.4" (only a major version, without a specific minor version). */
+  /**
+   * Version "10.4" (only a major version, without a specific minor version)
+   * @deprecated MariaDB 10.4 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4 = MariaDbEngineVersion.of('10.4', '10.4');
   /**
    * Version "10.4.8"
@@ -423,17 +426,35 @@ export class MariaDbEngineVersion {
    * @deprecated MariaDB 10.4.28 is no longer supported by Amazon RDS.
    */
   public static readonly VER_10_4_28 = MariaDbEngineVersion.of('10.4.28', '10.4');
-  /** Version "10.4.29". */
+  /**
+   * Version "10.4.29"
+   * @deprecated MariaDB 10.4.29 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_29 = MariaDbEngineVersion.of('10.4.29', '10.4');
-  /** Version "10.4.30". */
+  /**
+   * Version "10.4.30"
+   * @deprecated MariaDB 10.4.30 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_30 = MariaDbEngineVersion.of('10.4.30', '10.4');
-  /** Version "10.4.31". */
+  /**
+   * Version "10.4.31"
+   * @deprecated MariaDB 10.4.31 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_31 = MariaDbEngineVersion.of('10.4.31', '10.4');
-  /** Version "10.4.32". */
+  /**
+   * Version "10.4.32"
+   * @deprecated MariaDB 10.4.32 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_32 = MariaDbEngineVersion.of('10.4.32', '10.4');
-  /** Version "10.4.33". */
+  /**
+   * Version "10.4.33"
+   * @deprecated MariaDB 10.4.33 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_33 = MariaDbEngineVersion.of('10.4.33', '10.4');
-  /** Version "10.4.34". */
+  /**
+   * Version "10.4.34"
+   * @deprecated MariaDB 10.4.34 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_34 = MariaDbEngineVersion.of('10.4.34', '10.4');
 
   /** Version "10.5" (only a major version, without a specific minor version). */
