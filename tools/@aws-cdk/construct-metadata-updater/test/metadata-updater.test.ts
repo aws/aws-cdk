@@ -409,7 +409,7 @@ describe('ResourceMetadataUpdater', () => {
       mockClassDeclaration = {
         getName: jest.fn().mockReturnValue('TestClass'),
         getProperties: jest.fn().mockReturnValue([mockProperty1]),
-        addProperty: jest.fn(),
+        insertProperty: jest.fn(),
         addDecorator: jest.fn(),
       } as any;
 
@@ -433,20 +433,97 @@ describe('ResourceMetadataUpdater', () => {
       const updaterSpy = jest.spyOn(updater as any, 'getRelativePathForPropInjectionImport');
       updaterSpy.mockReturnValueOnce(relativePath);
 
+      const shouldBeSkippedSpy = jest.spyOn(updater as any, 'shouldBeSkippedToBeInjectable');
+      shouldBeSkippedSpy.mockReturnValueOnce(false);
+
       // WHEN
       (updater as any).makeConstructsPropInjectable(mockSourceFile, filePath, mockClassDeclaration);
 
       // THEN
-      expect(mockClassDeclaration.addProperty).toHaveBeenCalled();
+      expect(mockClassDeclaration.insertProperty).toHaveBeenCalled();
       expect(mockClassDeclaration.addDecorator).toHaveBeenCalled();
-      expect(mockSourceFile.insertImportDeclaration).toHaveBeenCalled();
+      expect(mockSourceFile.addImportDeclaration).toHaveBeenCalled();
+    });
+  });
+
+  describe('shouldBeSkippedToBeInjectable', () => {
+    it('should return true for classes in NOT_INJECTABLE_CLASSES list', () => {
+      // GIVEN
+      const mockSourceFile = {
+        getFilePath: jest.fn().mockReturnValue('/some/path/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts')
+      } as any;
+
+      mockClassDeclaration = {
+        getName: jest.fn().mockReturnValue('RootResource'),
+        getSourceFile: jest.fn().mockReturnValue(mockSourceFile)
+      } as any;
+
+      // WHEN
+      const result = (updater as any).shouldBeSkippedToBeInjectable(mockClassDeclaration);
+
+      // THEN
+      expect(result).toBe(true);
+    });
+
+    it('should return true for LatestVersion class in function-base.ts', () => {
+      // GIVEN
+      const mockSourceFile = {
+        getFilePath: jest.fn().mockReturnValue('/some/path/packages/aws-cdk-lib/aws-lambda/lib/function-base.ts')
+      } as any;
+
+      mockClassDeclaration = {
+        getName: jest.fn().mockReturnValue('LatestVersion'),
+        getSourceFile: jest.fn().mockReturnValue(mockSourceFile)
+      } as any;
+
+      // WHEN
+      const result = (updater as any).shouldBeSkippedToBeInjectable(mockClassDeclaration);
+
+      // THEN
+      expect(result).toBe(true);
+    });
+
+    it('should return false for classes not in NOT_INJECTABLE_CLASSES list', () => {
+      // GIVEN
+      const mockSourceFile = {
+        getFilePath: jest.fn().mockReturnValue('/some/path/packages/aws-cdk-lib/aws-lambda/lib/function.ts')
+      } as any;
+
+      mockClassDeclaration = {
+        getName: jest.fn().mockReturnValue('Function'),
+        getSourceFile: jest.fn().mockReturnValue(mockSourceFile)
+      } as any;
+
+      // WHEN
+      const result = (updater as any).shouldBeSkippedToBeInjectable(mockClassDeclaration);
+
+      // THEN
+      expect(result).toBe(false);
+    });
+
+    it('should return false for classes with matching name but different path', () => {
+      // GIVEN
+      const mockSourceFile = {
+        getFilePath: jest.fn().mockReturnValue('/some/path/packages/aws-cdk-lib/aws-s3/lib/bucket.ts')
+      } as any;
+
+      mockClassDeclaration = {
+        getName: jest.fn().mockReturnValue('RootResource'),
+        getSourceFile: jest.fn().mockReturnValue(mockSourceFile)
+      } as any;
+
+      // WHEN
+      const result = (updater as any).shouldBeSkippedToBeInjectable(mockClassDeclaration);
+
+      // THEN
+      expect(result).toBe(false);
     });
   });
 });
 
 describe('PropertyUpdater', () => {
   let propertyUpdater: PropertyUpdater;
-  
+
   beforeEach(() => {
     // Clear all mocks before each test
     jest.clearAllMocks();
@@ -457,7 +534,7 @@ describe('PropertyUpdater', () => {
     it('should process source files and generate content', () => {
       // Mock the source files
       const mockSourceFiles = [
-        { 
+        {
           getFilePath: () => '/packages/aws-cdk-lib/aws-lambda/Function.ts'
         }
       ] as any;
@@ -540,7 +617,7 @@ describe('PropertyUpdater', () => {
       // Verify content format
       const writeCall = (fs.writeFileSync as jest.Mock).mock.calls[0];
       const content = writeCall[1];
-      
+
       expect(content).toContain('eslint-disable');
       expect(content).toContain('AWS_CDK_CONSTRUCTOR_PROPS');
       expect(content).toContain("'aws-cdk-lib.aws-lambda'");
@@ -691,7 +768,7 @@ describe('PropertyUpdater', () => {
 
 describe('EnumLikeUpdater', () => {
   let enumLikeUpdater: EnumLikeUpdater;
-  
+
   beforeEach(() => {
     // Clear all mocks before each test
     jest.clearAllMocks();
@@ -702,7 +779,7 @@ describe('EnumLikeUpdater', () => {
     it('should process source files and generate content', () => {
       // Mock the source files
       const mockSourceFiles = [
-        { 
+        {
           getFilePath: () => '/aws-cdk/packages/aws-cdk-lib/aws-lambda/Function.ts',
           forEachChild: jest.fn(() => {})
         }
@@ -738,7 +815,7 @@ describe('EnumLikeUpdater', () => {
 
       // Execute the method
       enumLikeUpdater['writeFileContent']('/mock/output/path', enumlikes);
-      
+
       // Verify file write
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         '/mock/output/path',
@@ -748,7 +825,7 @@ describe('EnumLikeUpdater', () => {
       // Verify content format
       const writeCall = (fs.writeFileSync as jest.Mock).mock.calls[0];
       const content = writeCall[1];
-      
+
       expect(content).toContain('"aws-cdk/some-module/enum"');
       expect(content).toContain('"Enum"');
       expect(content).toContain('"value"');

@@ -79,7 +79,7 @@
     "organization": true
   },
   "dependencies": {
-    "semver": "^7.7.1"
+    "semver": "^7.7.2"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": ">=43.6.0"
