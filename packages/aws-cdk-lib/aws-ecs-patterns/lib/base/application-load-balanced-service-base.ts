@@ -7,7 +7,7 @@ import {
 } from '../../../aws-ecs';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy,
+  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, SslPolicy,
   IpAddressType,
   ApplicationLoadBalancerProps,
 } from '../../../aws-elasticloadbalancingv2';
@@ -500,19 +500,6 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       throw new ValidationError('The HTTPS protocol must be used when redirecting HTTP traffic', this);
     }
 
-    const targetProps: AddApplicationTargetsProps = {
-      protocol: props.targetProtocol ?? ApplicationProtocol.HTTP,
-      protocolVersion: props.protocolVersion,
-    };
-
-    this.listener = loadBalancer.addListener('PublicListener', {
-      protocol,
-      port: props.listenerPort,
-      open: props.openListener ?? true,
-      sslPolicy: props.sslPolicy,
-    });
-    this.targetGroup = this.listener.addTargets('ECS', targetProps);
-
     if (protocol === ApplicationProtocol.HTTPS) {
       if (props.certificate !== undefined) {
         this.certificate = props.certificate;
@@ -526,22 +513,42 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
           validation: CertificateValidation.fromDns(props.domainZone),
         });
       }
-    }
-    if (this.certificate !== undefined) {
-      this.listener.addCertificates('Arns', [ListenerCertificate.fromCertificateManager(this.certificate)]);
-    }
-    if (props.redirectHTTP) {
-      this.redirectListener = loadBalancer.addListener('PublicRedirectListener', {
-        protocol: ApplicationProtocol.HTTP,
-        port: 80,
+
+      this.listener = loadBalancer.addListener('PublicListener', {
+        protocol,
+        port: props.listenerPort,
         open: props.openListener ?? true,
-        defaultAction: ListenerAction.redirect({
-          port: props.listenerPort?.toString() || '443',
-          protocol: ApplicationProtocol.HTTPS,
-          permanent: true,
-        }),
+        sslPolicy: props.sslPolicy,
+      });
+
+      this.listener.addCertificates('Arns', [ListenerCertificate.fromCertificateManager(this.certificate)]);
+
+      if (props.redirectHTTP) {
+        this.redirectListener = loadBalancer.addListener('PublicRedirectListener', {
+          protocol: ApplicationProtocol.HTTP,
+          port: 80,
+          open: props.openListener ?? true,
+          defaultAction: ListenerAction.redirect({
+            port: props.listenerPort?.toString() || '443',
+            protocol: ApplicationProtocol.HTTPS,
+            permanent: true,
+          }),
+        });
+        this.redirectListener.node.addDependency(this.listener);
+      }
+    } else {
+      this.listener = loadBalancer.addListener('PublicListener', {
+        protocol,
+        port: props.listenerPort,
+        open: props.openListener ?? true,
+        sslPolicy: props.sslPolicy,
       });
     }
+
+    this.targetGroup = this.listener.addTargets('ECS', {
+      protocol: props.targetProtocol ?? ApplicationProtocol.HTTP,
+      protocolVersion: props.protocolVersion,
+    });
 
     let domainName = loadBalancer.loadBalancerDnsName;
     if (typeof props.domainName !== 'undefined') {
