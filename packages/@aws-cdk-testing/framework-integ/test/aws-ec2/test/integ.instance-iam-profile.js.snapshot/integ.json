@@ -8,5 +8,6 @@
       "assertionStack": "instance-iam-profile-test/DefaultTest/DeployAssert",
       "assertionStackName": "instanceiamprofiletestDefaultTestDeployAssert8BAB0841"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
