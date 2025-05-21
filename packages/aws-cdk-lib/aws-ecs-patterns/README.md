@@ -216,6 +216,8 @@ const loadBalancedEc2Service = new ecsPatterns.NetworkMultipleTargetGroupsEc2Ser
       listener: 'listener2',
     },
   ],
+  minHealthyPercent: 100,
+  maxHealthyPercent: 200,
 });
 ```
 
@@ -258,6 +260,8 @@ const loadBalancedFargateService = new ecsPatterns.NetworkMultipleTargetGroupsFa
       listener: 'listener2',
     },
   ],
+  minHealthyPercent: 100,
+  maxHealthyPercent: 200,
 });
 ```
 
