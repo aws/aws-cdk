@@ -219,8 +219,8 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly cloudMapOptions?: CloudMapOptions;
 
   /**
-   * Specifies whether the load balancer should redirect traffic on port 80 to port 443 to support HTTP->HTTPS redirects
-   * This is only valid if the protocol of the ALB is HTTPS
+   * Specifies whether the load balancer should redirect traffic on port 80 to the {@link listenerPort} to support HTTP->HTTPS redirects.
+   * This is only valid if the protocol of the ALB is HTTPS.
    *
    * @default false
    */
