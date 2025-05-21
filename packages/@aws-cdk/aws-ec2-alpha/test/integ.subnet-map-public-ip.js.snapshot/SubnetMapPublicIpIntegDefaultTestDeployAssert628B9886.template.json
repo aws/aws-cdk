@@ -16,7 +16,7 @@
      "Filters": "[{\"Name\":\"tag:Name\",\"Values\":[\"PublicSubnetWithIp\"]}]"
     },
     "flattenResponse": "false",
-    "salt": "1744737672424"
+    "salt": "1746718724180"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -96,7 +96,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -124,7 +124,7 @@
      "Filters": "[{\"Name\":\"tag:Name\",\"Values\":[\"PublicSubnetWithoutIp\"]}]"
     },
     "flattenResponse": "false",
-    "salt": "1744737672426"
+    "salt": "1746718724182"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -145,7 +145,7 @@
      "Filters": "[{\"Name\":\"tag:Name\",\"Values\":[\"PrivateSubnetDefault\"]}]"
     },
     "flattenResponse": "false",
-    "salt": "1744737672426"
+    "salt": "1746718724182"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -183,6 +183,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {
@@ -291,6 +294,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {

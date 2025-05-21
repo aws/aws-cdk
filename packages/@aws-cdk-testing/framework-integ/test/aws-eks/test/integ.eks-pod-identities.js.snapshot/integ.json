@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "testCases": {
     "integ-eks-pod-identities/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "integ-eks-pod-identities/DefaultTest/DeployAssert",
       "assertionStackName": "integekspodidentitiesDefaultTestDeployAssert5B79679A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

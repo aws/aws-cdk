@@ -4,6 +4,7 @@ import { CfnIdentityPool, CfnIdentityPoolRoleAttachment, IUserPool, IUserPoolCli
 import { IOpenIdConnectProvider, ISamlProvider, Role, FederatedPrincipal, IRole } from '../../aws-iam';
 import { Resource, IResource, Stack, ArnFormat, Lazy, Token, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a Cognito Identity Pool
@@ -361,7 +362,11 @@ export interface RoleMappingRule {
  *
  * @resource AWS::Cognito::IdentityPool
  */
+@propertyInjectable
 export class IdentityPool extends Resource implements IIdentityPool {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito-identitypool.IdentityPool';
+
   /**
    * Import an existing Identity Pool from its ID
    */
@@ -440,7 +445,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Role Provider for the default Role for authenticated users
    */
-  private readonly roleAttachment: IdentityPoolRoleAttachment;
+  public readonly roleAttachment: CfnIdentityPoolRoleAttachment;
 
   /**
    * List of Identity Providers added in constructor for use with property overrides
@@ -500,7 +505,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
       authenticatedRole: this.authenticatedRole,
       unauthenticatedRole: this.unauthenticatedRole,
       roleMappings: props.roleMappings,
-    });
+    }).resource;
 
     Array.isArray(this.roleAttachment);
   }
@@ -583,11 +588,19 @@ interface IdentityPoolRoleAttachmentProps {
  *
  * @resource AWS::Cognito::IdentityPoolRoleAttachment
  */
+@propertyInjectable
 class IdentityPoolRoleAttachment extends Resource implements IIdentityPoolRoleAttachment {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito-identitypool.IdentityPoolRoleAttachment';
   /**
    * ID of the underlying Identity Pool
    */
   public readonly identityPoolId: string;
+
+  /**
+   * The Identity Pool Role Attachment CFN resource.
+   */
+  public readonly resource: CfnIdentityPoolRoleAttachment;
 
   constructor(scope: Construct, id: string, props: IdentityPoolRoleAttachmentProps) {
     super(scope, id);
@@ -604,7 +617,7 @@ class IdentityPoolRoleAttachment extends Resource implements IIdentityPoolRoleAt
     if (mappings) {
       roleMappings = this.configureRoleMappings(...mappings);
     }
-    new CfnIdentityPoolRoleAttachment(this, 'Resource', {
+    this.resource = new CfnIdentityPoolRoleAttachment(this, 'Resource', {
       identityPoolId: this.identityPoolId,
       roles,
       roleMappings,
