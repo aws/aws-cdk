@@ -15,7 +15,7 @@
         }
       }
     },
-    "c2190ed0c557f744afdbb98e5128afb2fa9b56ecab4d4e87e05a6e74d96acdef": {
+    "01bdb5765bb8139da643949679771352d0fcbc3854ed3f9877b449940a05526c": {
       "displayName": "NeptuneClusterPortTestStack Template",
       "source": {
         "path": "NeptuneClusterPortTestStack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c2190ed0c557f744afdbb98e5128afb2fa9b56ecab4d4e87e05a6e74d96acdef.json",
+          "objectKey": "01bdb5765bb8139da643949679771352d0fcbc3854ed3f9877b449940a05526c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

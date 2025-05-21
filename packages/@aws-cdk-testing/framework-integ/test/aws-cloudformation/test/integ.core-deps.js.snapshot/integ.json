@@ -9,5 +9,6 @@
       "assertionStack": "DependsOnTest/DefaultTest/DeployAssert",
       "assertionStackName": "DependsOnTestDefaultTestDeployAssert3B3B50E2"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

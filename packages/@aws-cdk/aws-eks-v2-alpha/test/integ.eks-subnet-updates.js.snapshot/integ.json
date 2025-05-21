@@ -9,5 +9,6 @@
       "assertionStack": "aws-cdk-eks-cluster/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksclusterDefaultTestDeployAssertFBF4B356"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
