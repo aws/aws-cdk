@@ -1220,7 +1220,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
     }).toThrow('Validation failed with the following errors:\n  [Default/ALB] Cannot automatically configure redirectHTTP: A listener already exists on port 80.');
   });
 
-  test('adds warning for imported load balancers', () => {
+  test('adds warning for imported load balancers with redirectHTTP and creates the redirect listener', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1253,6 +1253,31 @@ describe('ApplicationLoadBalancedFargateService', () => {
     // Verify that a warning is added
     const annotations = Annotations.fromStack(stack);
     annotations.hasWarning('/Default/Service', 'Cannot automatically configure port 80 HTTP redirect with redirectHTTP: The construct cannot reliably determine if a port 80 listener already exists. Please configure the redirect manually on the port 80 listener.');
+
+    // Verify that we have two listeners - one for HTTPS and one for HTTP redirect
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 2);
+
+    // Verify the HTTPS listener is on port 8443
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Port: 443,
+      Protocol: 'HTTPS',
+    });
+
+    // Verify the HTTP redirect listener is on port 80
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Port: 80,
+      Protocol: 'HTTP',
+      DefaultActions: [
+        Match.objectLike({
+          Type: 'redirect',
+          RedirectConfig: {
+            Protocol: 'HTTPS',
+            Port: '443',
+            StatusCode: 'HTTP_301',
+          },
+        }),
+      ],
+    });
   });
 
   test('errors when setting HTTPS protocol but not domain name', () => {
