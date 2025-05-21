@@ -321,6 +321,7 @@ function getDefaultMeasureLatencyForType(type: HealthCheckType): boolean | undef
   switch (type) {
     case HealthCheckType.CALCULATED:
     case HealthCheckType.CLOUDWATCH_METRIC:
+    case HealthCheckType.RECOVERY_CONTROL:
       return undefined;
     default:
       return false;
@@ -339,6 +340,7 @@ function getDefaultFailureThresholdForType(type: HealthCheckType): number | unde
   switch (type) {
     case HealthCheckType.CALCULATED:
     case HealthCheckType.CLOUDWATCH_METRIC:
+    case HealthCheckType.RECOVERY_CONTROL:
       return undefined;
     default:
       return 3;
@@ -349,6 +351,7 @@ function getDefaultRequestIntervalForType(type: HealthCheckType): Duration | und
   switch (type) {
     case HealthCheckType.CALCULATED:
     case HealthCheckType.CLOUDWATCH_METRIC:
+    case HealthCheckType.RECOVERY_CONTROL:
       return undefined;
     default:
       return Duration.seconds(30);
