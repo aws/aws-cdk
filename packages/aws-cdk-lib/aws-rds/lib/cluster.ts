@@ -1213,7 +1213,10 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 /**
  * Represents an imported database cluster.
  */
+@propertyInjectable
 class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ImportedDatabaseCluster';
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
   public readonly engine?: IClusterEngine;

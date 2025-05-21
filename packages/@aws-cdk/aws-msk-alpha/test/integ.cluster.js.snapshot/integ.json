@@ -8,5 +8,6 @@
       "assertionStack": "MskLogging/DefaultTest/DeployAssert",
       "assertionStackName": "MskLoggingDefaultTestDeployAssertC2F074AF"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

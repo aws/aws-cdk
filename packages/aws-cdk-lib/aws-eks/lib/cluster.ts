@@ -1697,6 +1697,11 @@ export class Cluster extends ClusterBase {
       throw new ValidationError('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6', this);
     }
 
+    // Check if the cluster name exceeds 100 characters
+    if (!Token.isUnresolved(this.physicalName) && this.physicalName.length > 100) {
+      throw new ValidationError('Cluster name cannot be more than 100 characters', this);
+    }
+
     this.validateRemoteNetworkConfig(props);
 
     this.authenticationMode = props.authenticationMode;
@@ -2513,7 +2518,10 @@ export interface RemotePodNetwork {
 /**
  * Import a cluster to use in another stack
  */
+@propertyInjectable
 class ImportedCluster extends ClusterBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.ImportedCluster';
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();

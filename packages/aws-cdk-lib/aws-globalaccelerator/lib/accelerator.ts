@@ -3,6 +3,7 @@ import * as ga from './globalaccelerator.generated';
 import { Listener, ListenerOptions } from './listener';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The interface of the Accelerator
@@ -146,7 +147,11 @@ export enum IpAddressType {
 /**
  * The Accelerator construct
  */
+@propertyInjectable
 export class Accelerator extends cdk.Resource implements IAccelerator {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-globalaccelerator.Accelerator';
+
   /**
    * import from attributes
    */

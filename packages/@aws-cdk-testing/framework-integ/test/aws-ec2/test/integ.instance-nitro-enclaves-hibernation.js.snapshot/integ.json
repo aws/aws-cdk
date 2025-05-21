@@ -8,5 +8,6 @@
       "assertionStack": "instance-nitro-enclaves-hibernation/DefaultTest/DeployAssert",
       "assertionStackName": "instancenitroenclaveshibernationDefaultTestDeployAssertDE7E123E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
