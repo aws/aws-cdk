@@ -870,7 +870,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'nodejs14.x',
     'nodejs16.x',
     'nodejs18.x',
-    'nodejs20.x'
+    'nodejs20.x',
+    'nodejs22.x'
   ],
   'CustomThreatProtectionMode': [
     'ENFORCED',
