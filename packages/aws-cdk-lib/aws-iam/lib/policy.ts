@@ -3,11 +3,12 @@ import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { IGrantable, IPrincipal } from './principals';
+import { PolicyGrantPrincipal } from './private/policy-grant-principal';
 import { generatePolicyName, undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
-import { IResource, Lazy, Resource, Stack } from '../../core';
+import { IResource, Lazy, Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -105,7 +106,7 @@ export interface PolicyProps {
  * in the IAM User Guide guide.
  */
 @propertyInjectable
-export class Policy extends Resource implements IPolicy, IPrincipal {
+export class Policy extends Resource implements IPolicy, IGrantable {
   /**
    * Uniquely identifies this class.
    */
@@ -127,14 +128,7 @@ export class Policy extends Resource implements IPolicy, IPrincipal {
    */
   public readonly document = new PolicyDocument();
 
-  public readonly grantPrincipal: IPrincipal = this;
-  public readonly principalAccount: string | undefined = this.env.account;
-  public readonly assumeRoleAction: string = 'sts:AssumeRole';
-
-  public get policyFragment(): PrincipalPolicyFragment {
-    const dummyArn = Stack.of(this).formatArn({ service: 'iam', resource: 'dummy-policy', resourceName: this.node.path });
-    return new ArnPrincipal(dummyArn).policyFragment;
-  }
+  public readonly grantPrincipal: IPrincipal;
 
   private readonly _policyName: string;
   private readonly roles = new Array<IRole>();
@@ -198,6 +192,8 @@ export class Policy extends Resource implements IPolicy, IPrincipal {
       props.statements.forEach(p => this.addStatements(p));
     }
 
+    this.grantPrincipal = new PolicyGrantPrincipal(this);
+
     this.node.addValidation({ validate: () => this.validatePolicy() });
   }
 
@@ -247,18 +243,6 @@ export class Policy extends Resource implements IPolicy, IPrincipal {
   public get policyName(): string {
     this.referenceTaken = true;
     return this._policyName;
-  }
-
-  /**
-   * Adds an IAM statement to the policy document.
-   */
-  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
-    this.addStatements(statement);
-    return { statementAdded: true, policyDependable: this };
-  }
-
-  public addToPolicy(statement: PolicyStatement): boolean {
-    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 
   private validatePolicy(): string[] {

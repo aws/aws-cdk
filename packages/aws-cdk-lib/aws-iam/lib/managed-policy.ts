@@ -3,7 +3,8 @@ import { IGroup } from './group';
 import { CfnManagedPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { IGrantable, IPrincipal } from './principals';
+import { ManagedPolicyGrantPrincipal } from './private/policy-grant-principal';
 import { undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
@@ -104,7 +105,7 @@ export interface ManagedPolicyProps {
  *
  */
 @propertyInjectable
-export class ManagedPolicy extends Resource implements IManagedPolicy, IPrincipal {
+export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantable {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.ManagedPolicy';
 
@@ -209,13 +210,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IPrincipa
    */
   public readonly path: string;
 
-  public readonly grantPrincipal: IPrincipal = this;
-  public readonly principalAccount: string | undefined = this.env.account;
-  public readonly assumeRoleAction: string = 'sts:AssumeRole';
-
-  public get policyFragment(): PrincipalPolicyFragment {
-    return new ArnPrincipal(this.managedPolicyArn).policyFragment;
-  }
+  public readonly grantPrincipal: IPrincipal;
 
   private readonly roles = new Array<IRole>();
   private readonly users = new Array<IUser>();
@@ -280,6 +275,8 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IPrincipa
       props.statements.forEach(p => this.addStatements(p));
     }
 
+    this.grantPrincipal = new ManagedPolicyGrantPrincipal(this);
+
     this.node.addValidation({ validate: () => this.validateManagedPolicy() });
   }
 
@@ -316,18 +313,6 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IPrincipa
   public attachToGroup(group: IGroup) {
     if (this.groups.find(g => g.groupArn === group.groupArn)) { return; }
     this.groups.push(group);
-  }
-
-  /**
-   * Adds an IAM statement to the policy document.
-   */
-  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
-    this.addStatements(statement);
-    return { statementAdded: true, policyDependable: this };
-  }
-
-  public addToPolicy(statement: PolicyStatement): boolean {
-    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 
   private validateManagedPolicy(): string[] {

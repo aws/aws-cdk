@@ -1,7 +1,5 @@
 import { IConstruct } from 'constructs';
 import { Group } from './group';
-import { ManagedPolicy } from './managed-policy';
-import { Policy } from './policy';
 import {
   AccountPrincipal, AccountRootPrincipal, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal,
   FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts, validateConditionObject,
@@ -9,6 +7,7 @@ import {
 import { normalizeStatement } from './private/postprocess-policy-document';
 import { LITERAL_STRING_KEY, mergePrincipal, sum } from './private/util';
 import * as cdk from '../../core';
+import { ManagedPolicyGrantPrincipal, PolicyGrantPrincipal } from './private/policy-grant-principal';
 
 const ensureArrayOrUndefined = (field: any) => {
   if (field === undefined) {
@@ -247,11 +246,11 @@ export class PolicyStatement {
     if (principal instanceof Group) {
       throw new Error(`Cannot use an IAM Group '${principal.node.path}' as the \'Principal\' or \'NotPrincipal\' in an IAM Policy`);
     }
-    if (principal instanceof Policy) {
-      throw new Error(`Cannot use a Policy '${principal.node.path}' as the \'Principal\' or \'NotPrincipal\' in an IAM Policy`);
+    if (principal instanceof PolicyGrantPrincipal) {
+      throw new Error(`Cannot use a Policy '${principal._policy.node.path}' as the \'Principal\' or \'NotPrincipal\' in an IAM Policy`);
     }
-    if (principal instanceof ManagedPolicy) {
-      throw new Error(`Cannot use a ManagedPolicy '${principal.node.path}' as the \'Principal\' or \'NotPrincipal\' in an IAM Policy`);
+    if (principal instanceof ManagedPolicyGrantPrincipal) {
+      throw new Error(`Cannot use a ManagedPolicy '${principal._managedPolicy.node.path}' as the \'Principal\' or \'NotPrincipal\' in an IAM Policy`);
     }
   }
 

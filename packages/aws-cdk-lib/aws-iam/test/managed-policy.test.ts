@@ -768,7 +768,7 @@ describe('managed policy', () => {
 
     expect(() => {
       bucket.addToResourcePolicy(new PolicyStatement({
-        principals: [mp],
+        principals: [mp.grantPrincipal],
         actions: ['s3:GetObject'],
         resources: ['*'],
       }));
