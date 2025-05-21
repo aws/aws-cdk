@@ -214,9 +214,9 @@ describe('IAM policy statement', () => {
     const policy = new Policy(stack, 'policy');
     const policyStatement = new PolicyStatement();
 
-    expect(() => policyStatement.addPrincipals(policy))
+    expect(() => policyStatement.addPrincipals(policy.grantPrincipal))
       .toThrow("Cannot use a Policy 'Default/policy' as the 'Principal' or 'NotPrincipal' in an IAM Policy");
-    expect(() => policyStatement.addNotPrincipals(policy))
+    expect(() => policyStatement.addNotPrincipals(policy.grantPrincipal))
       .toThrow("Cannot use a Policy 'Default/policy' as the 'Principal' or 'NotPrincipal' in an IAM Policy");
   });
 
@@ -225,9 +225,9 @@ describe('IAM policy statement', () => {
     const managedPolicy = new ManagedPolicy(stack, 'managedPolicy');
     const policyStatement = new PolicyStatement();
 
-    expect(() => policyStatement.addPrincipals(managedPolicy))
+    expect(() => policyStatement.addPrincipals(managedPolicy.grantPrincipal))
       .toThrow("Cannot use a ManagedPolicy 'Default/managedPolicy' as the 'Principal' or 'NotPrincipal' in an IAM Policy");
-    expect(() => policyStatement.addNotPrincipals(managedPolicy))
+    expect(() => policyStatement.addNotPrincipals(managedPolicy.grantPrincipal))
       .toThrow("Cannot use a ManagedPolicy 'Default/managedPolicy' as the 'Principal' or 'NotPrincipal' in an IAM Policy");
   });
 
