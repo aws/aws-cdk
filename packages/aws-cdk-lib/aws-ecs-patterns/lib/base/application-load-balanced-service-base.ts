@@ -532,24 +532,22 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     }
 
     if (props.redirectHTTP) {
-      // Check if the load balancer was created by this construct
+      this.redirectListener = loadBalancer.addListener('PublicRedirectListener', {
+        protocol: ApplicationProtocol.HTTP,
+        port: 80,
+        open: props.openListener ?? true,
+        defaultAction: ListenerAction.redirect({
+          protocol: ApplicationProtocol.HTTPS,
+          port: props.listenerPort?.toString() || '443',
+          permanent: true,
+        }),
+      });
+
+      // Ensure the redirect listener is created after the main listener
+      this.redirectListener.node.addDependency(this.listener);
+
+      // Validate that there are no conflicting port 80 listeners during synth for owned load balancers.
       if (loadBalancer instanceof ApplicationLoadBalancer) {
-        // Create a new HTTP listener on port 80 that redirects to HTTPS
-        this.redirectListener = loadBalancer.addListener('PublicRedirectListener', {
-          protocol: ApplicationProtocol.HTTP,
-          port: 80,
-          open: props.openListener ?? true,
-          defaultAction: ListenerAction.redirect({
-            protocol: ApplicationProtocol.HTTPS,
-            port: props.listenerPort?.toString() || '443',
-            permanent: true,
-          }),
-        });
-
-        // Ensure the redirect listener is created after the main listener
-        this.redirectListener.node.addDependency(this.listener);
-
-        // Validate that there are no conflicting port 80 listeners during synth
         loadBalancer.node.addValidation({
           validate: () => {
             const port80Listeners = loadBalancer.listeners.filter(listener =>
@@ -565,7 +563,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
           },
         });
       } else {
-        // If the ALB was imported then we cannot reliably add the redirect action as we can't find the port 80 listener.
+        // If the ALB was imported then we cannot reliably add or validate the redirect action as we can't access the existing listeners.
         Annotations.of(this).addWarning(
           'Cannot automatically configure port 80 HTTP redirect with redirectHTTP: ' +
           'The construct cannot reliably determine if a port 80 listener already exists. ' +
