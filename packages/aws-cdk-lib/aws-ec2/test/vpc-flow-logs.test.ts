@@ -154,10 +154,10 @@ describe('vpc flow logs', () => {
     const stack = getTestStack();
     const bucket = new s3.Bucket(stack, 'Bucket');
 
-    const corssAccountStack = new Stack(undefined, 'CrossAccountStack', {
+    const crossAccountStack = new Stack(undefined, 'CrossAccountStack', {
       env: { account: '234567890123', region: 'us-east-1' },
     });
-    const deliveryStream = new firehose.DeliveryStream(corssAccountStack, 'DeliveryStream', {
+    const deliveryStream = new firehose.DeliveryStream(crossAccountStack, 'DeliveryStream', {
       destination: new firehose.S3Bucket(bucket, {
         loggingConfig: new firehose.DisableLogging(),
       }),
