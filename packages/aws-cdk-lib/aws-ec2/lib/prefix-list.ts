@@ -82,14 +82,23 @@ abstract class PrefixListBase extends Resource implements IPrefixList {
   public readonly canInlineRule = false;
   public readonly connections: Connections = new Connections({ peer: this });
 
+  /**
+   * A unique identifier for this connection peer
+   */
   get uniqueId() {
     return this.prefixListId;
   }
 
+  /**
+   * Produce the ingress rule JSON for the given connection
+   */
   public toIngressRuleConfig(): any {
     return { sourcePrefixListId: this.prefixListId };
   }
 
+  /**
+   * Produce the egress rule JSON for the given connection
+   */
   public toEgressRuleConfig(): any {
     return { destinationPrefixListId: this.prefixListId };
   }
