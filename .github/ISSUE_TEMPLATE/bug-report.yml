@@ -12,7 +12,7 @@ body:
 
         **⚠️ Please read this before filling out the form below:**  
         If the bug you are reporting is a security-related issue or a security vulnerability,
-        please report it via [Report a security vulnerability](https://github.com/aws/aws-cdk/security/advisories/new) instead of this template.
+        please report it via [Report a security vulnerability](https://github.com/aws/aws-cdk/security/policy) instead of this template.
   - type: textarea
     id: description
     attributes:
@@ -31,8 +31,8 @@ body:
   - type: input
     id: working-version
     attributes:
-      label: Last Known Working CDK Version
-      description: Specify the last known CDK version where this code was functioning as expected (if applicable).
+      label: Last Known Working CDK Library Version
+      description: Specify the last known CDK Library version where this code was functioning as expected (if applicable).
     validations:
       required: false
   - type: textarea
@@ -84,19 +84,20 @@ body:
       required: false
 
   - type: input
-    id: cdk-version
+    id: cdk-lib-version
     attributes:
-      label: CDK CLI Version
-      description: Output of `cdk version`
+      label: AWS CDK Library version (aws-cdk-lib)
+      description: Run `npm ls aws-cdk-lib` at the root of your CDK project
     validations:
       required: true
 
   - type: input
-    id: framework-version
+    id: cdk-cli-version
     attributes:
-      label: Framework Version
+      label: AWS CDK CLI version
+      description: Run `cdk --version` for global installation or `npx cdk --version` at the root of your CDK project
     validations:
-      required: false
+      required: true
 
   - type: input
     id: node-version

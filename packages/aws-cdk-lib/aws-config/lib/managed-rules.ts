@@ -2,8 +2,9 @@ import { Construct } from 'constructs';
 import { ManagedRule, ManagedRuleIdentifiers, ResourceType, RuleProps, RuleScope } from './rule';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
-import { Duration, Lazy, Stack } from '../../core';
+import { Duration, Lazy, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Construction properties for a AccessKeysRotated
@@ -25,7 +26,11 @@ export interface AccessKeysRotatedProps extends RuleProps {
  *
  * @resource AWS::Config::ConfigRule
  */
+@propertyInjectable
 export class AccessKeysRotated extends ManagedRule {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-config.AccessKeysRotated';
+
   constructor(scope: Construct, id: string, props: AccessKeysRotatedProps = {}) {
     super(scope, id, {
       ...props,
@@ -73,7 +78,10 @@ export interface CloudFormationStackDriftDetectionCheckProps extends RuleProps {
  *
  * @resource AWS::Config::ConfigRule
  */
+@propertyInjectable
 export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-config.CloudFormationStackDriftDetectionCheck';
   private readonly role: iam.IRole;
 
   constructor(scope: Construct, id: string, props: CloudFormationStackDriftDetectionCheckProps = {}) {
@@ -118,10 +126,14 @@ export interface CloudFormationStackNotificationCheckProps extends RuleProps {
  *
  * @resource AWS::Config::ConfigRule
  */
+@propertyInjectable
 export class CloudFormationStackNotificationCheck extends ManagedRule {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-config.CloudFormationStackNotificationCheck';
+
   constructor(scope: Construct, id: string, props: CloudFormationStackNotificationCheckProps = {}) {
     if (props.topics && props.topics.length > 5) {
-      throw new Error('At most 5 topics can be specified.');
+      throw new ValidationError('At most 5 topics can be specified.', scope);
     }
 
     super(scope, id, {

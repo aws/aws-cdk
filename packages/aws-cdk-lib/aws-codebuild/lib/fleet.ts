@@ -2,8 +2,9 @@ import { Construct } from 'constructs';
 import { CfnFleet } from './codebuild.generated';
 import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
-import { Arn, ArnFormat, IResource, Resource, Size, Token } from '../../core';
+import { Arn, ArnFormat, IResource, Resource, Size, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Construction properties of a CodeBuild {@link Fleet}.
@@ -141,7 +142,11 @@ export interface IFleet extends IResource {
  *
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
  */
+@propertyInjectable
 export class Fleet extends Resource implements IFleet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codebuild.Fleet';
+
   /**
    * Creates a Fleet construct that represents an external fleet.
    *
@@ -155,13 +160,13 @@ export class Fleet extends Resource implements IFleet {
       public readonly fleetArn = fleetArn;
 
       public get computeType(): FleetComputeType {
-        throw new Error('Cannot retrieve computeType property from an imported Fleet');
+        throw new UnscopedValidationError('Cannot retrieve computeType property from an imported Fleet');
       }
       public get environmentType(): EnvironmentType {
-        throw new Error('Cannot retrieve environmentType property from an imported Fleet');
+        throw new UnscopedValidationError('Cannot retrieve environmentType property from an imported Fleet');
       }
       public get computeConfiguration(): ComputeConfiguration | undefined {
-        throw new Error('Cannot retrieve computeConfiguration property from an imported Fleet');
+        throw new UnscopedValidationError('Cannot retrieve computeConfiguration property from an imported Fleet');
       }
     }
 
@@ -198,25 +203,25 @@ export class Fleet extends Resource implements IFleet {
 
     if (props.fleetName && !Token.isUnresolved(props.fleetName)) {
       if (props.fleetName.length < 2) {
-        throw new Error(`Fleet name can not be shorter than 2 characters but has ${props.fleetName.length} characters.`);
+        throw new ValidationError(`Fleet name can not be shorter than 2 characters but has ${props.fleetName.length} characters.`, this);
       }
       if (props.fleetName.length > 128) {
-        throw new Error(`Fleet name can not be longer than 128 characters but has ${props.fleetName.length} characters.`);
+        throw new ValidationError(`Fleet name can not be longer than 128 characters but has ${props.fleetName.length} characters.`, this);
       }
     }
 
     if ((props.baseCapacity ?? 1) < 1) {
-      throw new Error('baseCapacity must be greater than or equal to 1');
+      throw new ValidationError('baseCapacity must be greater than or equal to 1', this);
     }
 
     if (
       props.computeType === FleetComputeType.ATTRIBUTE_BASED &&
       (!props.computeConfiguration || Object.keys(props.computeConfiguration).length === 0)
     ) {
-      throw new Error('At least one compute configuration criteria must be specified if computeType is "ATTRIBUTE_BASED"');
+      throw new ValidationError('At least one compute configuration criteria must be specified if computeType is "ATTRIBUTE_BASED"', this);
     }
     if (props.computeConfiguration && props.computeType !== FleetComputeType.ATTRIBUTE_BASED) {
-      throw new Error(`'computeConfiguration' can only be specified if 'computeType' is 'ATTRIBUTE_BASED', got: ${props.computeType}`);
+      throw new ValidationError(`'computeConfiguration' can only be specified if 'computeType' is 'ATTRIBUTE_BASED', got: ${props.computeType}`, this);
     }
 
     // Despite what the CloudFormation schema says, the numeric properties are not optional.
@@ -257,7 +262,7 @@ export class Fleet extends Resource implements IFleet {
 
   private validatePositiveInteger(value: number, fieldName: string) {
     if (!Token.isUnresolved(value) && (value < 0 || !Number.isInteger(value))) {
-      throw new Error(`${fieldName} must be a positive integer, got: ${value}`);
+      throw new ValidationError(`${fieldName} must be a positive integer, got: ${value}`, this);
     }
   }
 }

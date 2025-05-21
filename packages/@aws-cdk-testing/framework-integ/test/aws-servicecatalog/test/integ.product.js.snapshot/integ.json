@@ -1,6 +1,6 @@
 {
   "enableLookups": true,
-  "version": "39.0.0",
+  "version": "41.0.0",
   "testCases": {
     "integ-product/DefaultTest": {
       "stacks": [
@@ -11,5 +11,6 @@
       "assertionStack": "integ-product/DefaultTest/DeployAssert",
       "assertionStackName": "integproductDefaultTestDeployAssertEB23E2A9"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

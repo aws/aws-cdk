@@ -154,7 +154,7 @@ jobs:
           # Pull Request details
           title: "feat: update L1 CloudFormation resource definitions"
           body-path: ${{ runner.temp }}/PR.md
-          labels: contribution/core,dependencies,auto-approve,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test
+          labels: contribution/core,dependencies,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test
           team-reviewers: aws-cdk-team
           # Github prevents further Github actions to be run if the default Github token is used.
           # Instead use a privileged token here, so further GH actions can be triggered on this PR.

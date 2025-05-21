@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "testCases": {
     "IntegProviderWithWaiterStateMachine/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "IntegProviderWithWaiterStateMachine/DefaultTest/DeployAssert",
       "assertionStackName": "IntegProviderWithWaiterStateMachineDefaultTestDeployAssert2D0F0427"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

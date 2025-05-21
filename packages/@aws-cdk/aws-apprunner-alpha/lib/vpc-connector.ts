@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnVpcConnector } from 'aws-cdk-lib/aws-apprunner';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties of the AppRunner VPC Connector
@@ -89,7 +90,11 @@ export interface IVpcConnector extends cdk.IResource, ec2.IConnectable {
  *
  * @resource AWS::AppRunner::VpcConnector
  */
+@propertyInjectable
 export class VpcConnector extends cdk.Resource implements IVpcConnector {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-apprunner-alpha.VpcConnector';
+
   /**
    * Import from VPC connector attributes.
    */
@@ -141,14 +146,14 @@ export class VpcConnector extends cdk.Resource implements IVpcConnector {
 
     if (props.vpcConnectorName !== undefined && !cdk.Token.isUnresolved(props.vpcConnectorName)) {
       if (props.vpcConnectorName.length < 4 || props.vpcConnectorName.length > 40) {
-        throw new Error(
-          `\`vpcConnectorName\` must be between 4 and 40 characters, got: ${props.vpcConnectorName.length} characters.`,
+        throw new cdk.ValidationError(
+          `\`vpcConnectorName\` must be between 4 and 40 characters, got: ${props.vpcConnectorName.length} characters.`, this,
         );
       }
 
       if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.vpcConnectorName)) {
-        throw new Error(
-          `\`vpcConnectorName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.vpcConnectorName}.`,
+        throw new cdk.ValidationError(
+          `\`vpcConnectorName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.vpcConnectorName}.`, this,
         );
       }
     }

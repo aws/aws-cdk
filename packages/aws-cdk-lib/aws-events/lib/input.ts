@@ -2,6 +2,7 @@ import { IRule } from './rule-ref';
 import {
   captureStackTrace, DefaultTokenResolver, IResolvable,
   IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization,
+  UnscopedValidationError,
 } from '../../core';
 
 /**
@@ -40,6 +41,8 @@ export abstract class RuleTargetInput {
    *
    * May contain strings returned by `EventField.from()` to substitute in parts of the
    * matched event.
+   *
+   * @returns RuleTargetInput
    */
   public static fromObject(obj: any): RuleTargetInput {
     return new FieldAwareEventInput(obj, InputType.Object);
@@ -134,8 +137,10 @@ class LiteralEventInput extends RuleTargetInput {
  *
  * To achieve the latter, we postprocess the JSON string to remove the surrounding
  * quotes by using a string replace.
+ *
+ * @internal
  */
-class FieldAwareEventInput extends RuleTargetInput {
+export class FieldAwareEventInput extends RuleTargetInput {
   constructor(private readonly input: any, private readonly inputType: InputType) {
     super();
   }
@@ -165,7 +170,7 @@ class FieldAwareEventInput extends RuleTargetInput {
 
         const key = keyForField(t);
         if (inputPathsMap[key] && inputPathsMap[key] !== t.path) {
-          throw new Error(`Single key '${key}' is used for two different JSON paths: '${t.path}' and '${inputPathsMap[key]}'`);
+          throw new UnscopedValidationError(`Single key '${key}' is used for two different JSON paths: '${t.path}' and '${inputPathsMap[key]}'`);
         }
         inputPathsMap[key] = t.path;
 
@@ -321,7 +326,10 @@ export class EventField implements IResolvable {
   }
 }
 
-enum InputType {
+/**
+ * @internal
+ */
+export enum InputType {
   Object,
   Text,
   Multiline,

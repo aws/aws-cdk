@@ -35,8 +35,8 @@ class EventApiApiGrantStack extends cdk.Stack {
     const lambdaConfig: nodejs.NodejsFunctionProps = {
       runtime: lambda.Runtime.NODEJS_22_X,
       environment: {
-        EVENT_API_REALTIME_URL: this.eventApi.realtimeDns,
-        EVENT_API_HTTP_URL: this.eventApi.httpDns,
+        EVENT_API_REALTIME_URL: `wss://${this.eventApi.realtimeDns}/event/realtime`,
+        EVENT_API_HTTP_URL: `https://${this.eventApi.httpDns}/event`,
       },
       bundling: {
         bundleAwsSDK: true,
@@ -76,6 +76,7 @@ integ.assertions.invokeFunction({
   payload: JSON.stringify({
     action: 'subscribe',
     channel: 'default',
+    authMode: 'IAM',
   }),
 }).expect(ExpectedResult.objectLike({
   Payload: JSON.stringify({
@@ -90,6 +91,7 @@ integ.assertions.invokeFunction({
   payload: JSON.stringify({
     action: 'publish',
     channel: 'default',
+    authMode: 'IAM',
   }),
 }).expect(ExpectedResult.objectLike({
   Payload: JSON.stringify({
@@ -104,13 +106,16 @@ integ.assertions.invokeFunction({
   payload: JSON.stringify({
     action: 'pubSub',
     channel: 'pubsub',
+    authMode: 'IAM',
   }),
 }).expect(ExpectedResult.objectLike({
   Payload: JSON.stringify({
     statusCode: 200,
     msg: 'subscribe_success',
     pubStatusCode: 200,
-    pubMsg: 'Hello World!',
+    pubMsg: [{
+      message: 'Hello World!',
+    }],
   }),
 }));
 
@@ -120,6 +125,7 @@ integ.assertions.invokeFunction({
   payload: JSON.stringify({
     action: 'publish',
     channel: 'test1',
+    authMode: 'IAM',
   }),
 }).expect(ExpectedResult.objectLike({
   Payload: JSON.stringify({
@@ -134,6 +140,7 @@ integ.assertions.invokeFunction({
   payload: JSON.stringify({
     action: 'subscribe',
     channel: 'test1',
+    authMode: 'IAM',
   }),
 }).expect(ExpectedResult.objectLike({
   Payload: JSON.stringify({
@@ -148,13 +155,16 @@ integ.assertions.invokeFunction({
   payload: JSON.stringify({
     action: 'pubSub',
     channel: 'test1/subtest',
+    authMode: 'IAM',
   }),
 }).expect(ExpectedResult.objectLike({
   Payload: JSON.stringify({
     statusCode: 200,
     msg: 'subscribe_success',
     pubStatusCode: 200,
-    pubMsg: 'Hello World!',
+    pubMsg: [{
+      message: 'Hello World!',
+    }],
   }),
 }));
 

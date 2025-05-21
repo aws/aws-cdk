@@ -6,6 +6,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as route53 from '../../aws-route53';
 import { IResource, Token, Tags, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Name tag constant
@@ -137,6 +138,26 @@ export class KeyAlgorithm {
    */
   public static readonly EC_SECP384R1 = new KeyAlgorithm('EC_secp384r1');
 
+  /**
+   * EC_secp521r1 algorithm
+   */
+  public static readonly EC_SECP521R1 = new KeyAlgorithm('EC_secp521r1');
+
+  /**
+   * RSA_4096 algorithm
+   */
+  public static readonly RSA_4096 = new KeyAlgorithm('RSA_4096');
+
+  /**
+   * RSA_3072 algorithm
+   */
+  public static readonly RSA_3072 = new KeyAlgorithm('RSA_3072');
+
+  /**
+   * RSA_1024 algorithm
+   */
+  public static readonly RSA_1024 = new KeyAlgorithm('RSA_1024');
+
   constructor(
     /**
      * The name of the algorithm
@@ -252,7 +273,13 @@ export class CertificateValidation {
 /**
  * A certificate managed by AWS Certificate Manager
  */
+@propertyInjectable
 export class Certificate extends CertificateBase implements ICertificate {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-certificatemanager.Certificate';
+
   /**
    * Import a certificate
    */

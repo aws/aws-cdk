@@ -1,0 +1,257 @@
+{
+ "Resources": {
+  "TestEventBus12626D66": {
+   "Type": "AWS::Events::EventBus",
+   "Properties": {
+    "Name": "EventBusGrantsTestStackWithFlagTestEventBus09AD4D52"
+   }
+  },
+  "TestParameterWithFlag030979F6": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Name": "EventBusGrantsTestWithFlag",
+    "Type": "String",
+    "Value": "initial"
+   }
+  },
+  "PublisherWithFlagServiceRole5A520D99": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "PublisherWithFlagServiceRoleDefaultPolicy1FEBC9A2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "events:PutEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "TestEventBus12626D66",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PublisherWithFlagServiceRoleDefaultPolicy1FEBC9A2",
+    "Roles": [
+     {
+      "Ref": "PublisherWithFlagServiceRole5A520D99"
+     }
+    ]
+   }
+  },
+  "PublisherWithFlagD8B4AB49": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n      // Simple function that just returns success\n      // We're only testing if the permissions are granted correctly\n      // The actual event publishing isn't critical for this test\n      exports.handler = async () => {\n        return { statusCode: 200, body: 'Success' };\n      };\n    "
+    },
+    "Environment": {
+     "Variables": {
+      "EVENT_BUS_NAME": {
+       "Ref": "TestEventBus12626D66"
+      }
+     }
+    },
+    "FunctionName": "eventbus-grants-withflag-publisher",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "PublisherWithFlagServiceRole5A520D99",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 10
+   },
+   "DependsOn": [
+    "PublisherWithFlagServiceRoleDefaultPolicy1FEBC9A2",
+    "PublisherWithFlagServiceRole5A520D99"
+   ]
+  },
+  "TestStateMachineWithFlagRole78ED4BBC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TestStateMachineWithFlagRoleDefaultPolicy17C6B7FC": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "events:PutEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "TestEventBus12626D66",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "ssm:putParameter",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TestStateMachineWithFlagRoleDefaultPolicy17C6B7FC",
+    "Roles": [
+     {
+      "Ref": "TestStateMachineWithFlagRole78ED4BBC"
+     }
+    ]
+   }
+  },
+  "TestStateMachineWithFlag61D312F9": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"PutEventsWithFlag\",\"States\":{\"PutEventsWithFlag\":{\"Next\":\"UpdateParameterWithFlag\",\"Type\":\"Task\",\"ResultPath\":\"$.eventResult\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::events:putEvents\",\"Parameters\":{\"Entries\":[{\"Detail\":{\"test\":\"event\"},\"DetailType\":\"Test Event\",\"EventBusName\":\"",
+       {
+        "Fn::GetAtt": [
+         "TestEventBus12626D66",
+         "Arn"
+        ]
+       },
+       "\",\"Source\":\"test.source\"}]}},\"UpdateParameterWithFlag\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::aws-sdk:ssm:putParameter\",\"Parameters\":{\"Name\":\"",
+       {
+        "Ref": "TestParameterWithFlag030979F6"
+       },
+       "\",\"Value\":\"success\",\"Type\":\"String\",\"Overwrite\":true}}},\"TimeoutSeconds\":30}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "TestStateMachineWithFlagRole78ED4BBC",
+      "Arn"
+     ]
+    },
+    "StateMachineName": "eventbus-grants-withflag-statemachine"
+   },
+   "DependsOn": [
+    "TestStateMachineWithFlagRoleDefaultPolicy17C6B7FC",
+    "TestStateMachineWithFlagRole78ED4BBC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "PublisherFunctionName": {
+   "Value": {
+    "Ref": "PublisherWithFlagD8B4AB49"
+   },
+   "Export": {
+    "Name": "WithFlagPublisherFunctionName"
+   }
+  },
+  "StateMachineArn": {
+   "Value": {
+    "Ref": "TestStateMachineWithFlag61D312F9"
+   },
+   "Export": {
+    "Name": "WithFlagStateMachineArn"
+   }
+  },
+  "ParameterName": {
+   "Value": {
+    "Ref": "TestParameterWithFlag030979F6"
+   },
+   "Export": {
+    "Name": "WithFlagParameterName"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

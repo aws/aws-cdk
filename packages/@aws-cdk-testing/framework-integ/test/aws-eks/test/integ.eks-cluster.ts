@@ -43,7 +43,7 @@ class EksClusterStack extends Stack {
       vpcSubnets,
       mastersRole,
       defaultCapacity: 2,
-      ...getClusterVersionConfig(this),
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_32),
       secretsEncryptionKey,
       tags: {
         foo: 'bar',
@@ -347,6 +347,7 @@ const supportedRegions = [
 const app = new App({
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 

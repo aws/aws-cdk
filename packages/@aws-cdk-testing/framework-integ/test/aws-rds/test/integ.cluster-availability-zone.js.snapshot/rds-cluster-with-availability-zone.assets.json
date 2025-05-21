@@ -1,0 +1,19 @@
+{
+  "version": "40.0.0",
+  "files": {
+    "544030152fe9812d830e523843489b2578eb51d52412918dfb62bba8cc2864d6": {
+      "source": {
+        "path": "rds-cluster-with-availability-zone.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "544030152fe9812d830e523843489b2578eb51d52412918dfb62bba8cc2864d6.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

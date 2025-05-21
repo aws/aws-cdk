@@ -1,8 +1,9 @@
 import { Construct } from 'constructs';
 import { IFileSystem } from './efs-file-system';
 import { CfnAccessPoint } from './efs.generated';
-import { ArnFormat, IResource, Resource, Stack, Tags, Token } from '../../core';
+import { ArnFormat, IResource, Resource, Stack, Tags, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an EFS AccessPoint
@@ -174,7 +175,11 @@ abstract class AccessPointBase extends Resource implements IAccessPoint {
 /**
  * Represents the AccessPoint
  */
+@propertyInjectable
 export class AccessPoint extends AccessPointBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-efs.AccessPoint';
+
   /**
    * Import an existing Access Point by attributes
    */
@@ -215,7 +220,7 @@ export class AccessPoint extends AccessPointBase {
 
     const clientToken = props.clientToken;
     if ((clientToken?.length === 0 || (clientToken && clientToken.length > 64)) && !Token.isUnresolved(clientToken)) {
-      throw new Error(`The length of \'clientToken\' must range from 1 to 64 characters, got: ${clientToken.length} characters`);
+      throw new ValidationError(`The length of \'clientToken\' must range from 1 to 64 characters, got: ${clientToken.length} characters`, this);
     }
 
     const resource = new CfnAccessPoint(this, 'Resource', {
@@ -248,7 +253,10 @@ export class AccessPoint extends AccessPointBase {
   }
 }
 
+@propertyInjectable
 class ImportedAccessPoint extends AccessPointBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-efs.ImportedAccessPoint';
   public readonly accessPointId: string;
   public readonly accessPointArn: string;
   private readonly _fileSystem?: IFileSystem;
@@ -260,20 +268,20 @@ class ImportedAccessPoint extends AccessPointBase {
 
     if (!attrs.accessPointId) {
       if (!attrs.accessPointArn) {
-        throw new Error('One of accessPointId or AccessPointArn is required!');
+        throw new ValidationError('One of accessPointId or AccessPointArn is required!', this);
       }
 
       this.accessPointArn = attrs.accessPointArn;
       let maybeApId = Stack.of(scope).splitArn(attrs.accessPointArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
       if (!maybeApId) {
-        throw new Error('ARN for AccessPoint must provide the resource name.');
+        throw new ValidationError('ARN for AccessPoint must provide the resource name.', this);
       }
 
       this.accessPointId = maybeApId;
     } else {
       if (attrs.accessPointArn) {
-        throw new Error('Only one of accessPointId or AccessPointArn can be provided!');
+        throw new ValidationError('Only one of accessPointId or AccessPointArn can be provided!', this);
       }
 
       this.accessPointId = attrs.accessPointId;
@@ -289,7 +297,7 @@ class ImportedAccessPoint extends AccessPointBase {
 
   public get fileSystem() {
     if (!this._fileSystem) {
-      throw new Error("fileSystem is only available if 'fromAccessPointAttributes()' is used and a fileSystem is passed in as an attribute.");
+      throw new ValidationError("fileSystem is only available if 'fromAccessPointAttributes()' is used and a fileSystem is passed in as an attribute.", this);
     }
 
     return this._fileSystem;

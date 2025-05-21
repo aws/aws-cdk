@@ -1,0 +1,426 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Producer": {
+        "id": "Producer",
+        "path": "Producer",
+        "children": {
+          "Nested": {
+            "id": "Nested",
+            "path": "Producer/Nested",
+            "children": {
+              "RequiredResource": {
+                "id": "RequiredResource",
+                "path": "Producer/Nested/RequiredResource",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "Producer/Nested/RequiredResource/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
+                  "version": "0.0.0"
+                }
+              },
+              "NestedString": {
+                "id": "NestedString",
+                "path": "Producer/Nested/NestedString",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnParameter",
+                  "version": "0.0.0"
+                }
+              },
+              "NestedNumber": {
+                "id": "NestedNumber",
+                "path": "Producer/Nested/NestedNumber",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnParameter",
+                  "version": "0.0.0"
+                }
+              },
+              "NestedList": {
+                "id": "NestedList",
+                "path": "Producer/Nested/NestedList",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnParameter",
+                  "version": "0.0.0"
+                }
+              },
+              "ProducerNestedNestedString6B1C0634Ref": {
+                "id": "ProducerNestedNestedString6B1C0634Ref",
+                "path": "Producer/Nested/ProducerNestedNestedString6B1C0634Ref",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "ProducerNestedNestedNumberEF88914ERef": {
+                "id": "ProducerNestedNestedNumberEF88914ERef",
+                "path": "Producer/Nested/ProducerNestedNestedNumberEF88914ERef",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "ProducerNestedNestedListCF0BC56DRef": {
+                "id": "ProducerNestedNestedListCF0BC56DRef",
+                "path": "Producer/Nested/ProducerNestedNestedListCF0BC56DRef",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.NestedStack",
+              "version": "0.0.0"
+            }
+          },
+          "Nested.NestedStack": {
+            "id": "Nested.NestedStack",
+            "path": "Producer/Nested.NestedStack",
+            "children": {
+              "Nested.NestedStackResource": {
+                "id": "Nested.NestedStackResource",
+                "path": "Producer/Nested.NestedStack/Nested.NestedStackResource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
+                  "aws:cdk:cloudformation:props": {
+                    "templateUrl": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "https://s3.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".",
+                          {
+                            "Ref": "AWS::URLSuffix"
+                          },
+                          "/",
+                          {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                          },
+                          "/e601f91672bcb8c62b6dff5f5cd74e1367b379d813ece378f8bd0d566077b9d2.json"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnStack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "Producer/Exports",
+            "children": {
+              "Output{\"Fn::GetAtt\":[\"NestedNestedStackNestedNestedStackResourceDEFDAA4D\",\"Outputs.ProducerNestedNestedString6B1C0634Ref\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"NestedNestedStackNestedNestedStackResourceDEFDAA4D\",\"Outputs.ProducerNestedNestedString6B1C0634Ref\"]}",
+                "path": "Producer/Exports/Output{\"Fn::GetAtt\":[\"NestedNestedStackNestedNestedStackResourceDEFDAA4D\",\"Outputs.ProducerNestedNestedString6B1C0634Ref\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"NestedNestedStackNestedNestedStackResourceDEFDAA4D\",\"Outputs.ProducerNestedNestedNumberEF88914ERef\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"NestedNestedStackNestedNestedStackResourceDEFDAA4D\",\"Outputs.ProducerNestedNestedNumberEF88914ERef\"]}",
+                "path": "Producer/Exports/Output{\"Fn::GetAtt\":[\"NestedNestedStackNestedNestedStackResourceDEFDAA4D\",\"Outputs.ProducerNestedNestedNumberEF88914ERef\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"NestedNestedStackNestedNestedStackResourceDEFDAA4D\",\"Outputs.ProducerNestedNestedListCF0BC56DRef\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"NestedNestedStackNestedNestedStackResourceDEFDAA4D\",\"Outputs.ProducerNestedNestedListCF0BC56DRef\"]}",
+                "path": "Producer/Exports/Output{\"Fn::GetAtt\":[\"NestedNestedStackNestedNestedStackResourceDEFDAA4D\",\"Outputs.ProducerNestedNestedListCF0BC56DRef\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "Producer/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "Producer/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Consumer": {
+        "id": "Consumer",
+        "path": "Consumer",
+        "children": {
+          "RequiredResource": {
+            "id": "RequiredResource",
+            "path": "Consumer/RequiredResource",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "Consumer/RequiredResource/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "StringReference": {
+            "id": "StringReference",
+            "path": "Consumer/StringReference",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "NumberReference": {
+            "id": "NumberReference",
+            "path": "Consumer/NumberReference",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ListReference": {
+            "id": "ListReference",
+            "path": "Consumer/ListReference",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "Consumer/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "Consumer/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "NestedStackReferences": {
+        "id": "NestedStackReferences",
+        "path": "NestedStackReferences",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "NestedStackReferences/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "NestedStackReferences/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "NestedStackReferences/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallCloudFormationdescribeStacks96cda770eac95cd44ab6638288cd8c01": {
+                    "id": "AwsApiCallCloudFormationdescribeStacks96cda770eac95cd44ab6638288cd8c01",
+                    "path": "NestedStackReferences/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks96cda770eac95cd44ab6638288cd8c01",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "NestedStackReferences/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks96cda770eac95cd44ab6638288cd8c01/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "NestedStackReferences/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks96cda770eac95cd44ab6638288cd8c01/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "NestedStackReferences/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks96cda770eac95cd44ab6638288cd8c01/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "NestedStackReferences/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks96cda770eac95cd44ab6638288cd8c01/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "NestedStackReferences/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks96cda770eac95cd44ab6638288cd8c01/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "NestedStackReferences/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "NestedStackReferences/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "NestedStackReferences/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "NestedStackReferences/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "NestedStackReferences/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "NestedStackReferences/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "NestedStackReferences/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

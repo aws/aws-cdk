@@ -22,6 +22,9 @@ class EksClusterAlbControllerStack extends Stack {
       ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_30),
       albController: {
         version: LATEST_VERSION,
+        additionalHelmChartValues: {
+          enableWafv2: false,
+        },
       },
     });
 
@@ -71,6 +74,7 @@ class EksClusterAlbControllerStack extends Stack {
 const app = new App({
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 const stack = new EksClusterAlbControllerStack(app, 'aws-cdk-eks-cluster-alb-controller');

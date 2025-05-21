@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "PipesKmsKeyTest/DefaultTest": {
+      "stacks": [
+        "PipesKmsKeyTestStack"
+      ],
+      "assertionStack": "PipesKmsKeyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PipesKmsKeyTestDefaultTestDeployAssert1065A2A1"
+    }
+  }
+}

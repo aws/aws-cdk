@@ -373,19 +373,19 @@ const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
 });
 ```
 
-Block and ignore public ACLs:
+Block and ignore public ACLs (other options remain unblocked):
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
-  blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
+  blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS_ONLY,
 });
 ```
 
-Alternatively, specify the settings manually:
+Alternatively, specify the settings manually (unspecified options will remain blocked):
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
-  blockPublicAccess: new s3.BlockPublicAccess({ blockPublicPolicy: true }),
+  blockPublicAccess: new s3.BlockPublicAccess({ blockPublicPolicy: false }),
 });
 ```
 
@@ -852,9 +852,9 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
         {
           storageClass: s3.StorageClass.GLACIER,
 
-          // the properties below are optional
+          // exactly one of transitionAfter or transitionDate must be specified
           transitionAfter: Duration.days(30),
-          transitionDate: new Date(),
+          // transitionDate: new Date(), // cannot specify both
         },
       ],
     },
@@ -940,11 +940,14 @@ To replicate objects to a destination bucket, you can specify the `replicationRu
 ```ts
 declare const destinationBucket1: s3.IBucket;
 declare const destinationBucket2: s3.IBucket;
+declare const replicationRole: iam.IRole;
 declare const kmsKey: kms.IKey;
 
 const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
   // Versioning must be enabled on both the source and destination bucket
   versioned: true,
+  // Optional. If not specified, a new role will be created.
+  replicationRole,
   replicationRules: [
     {
       // The destination bucket for the replication rule.
@@ -1015,9 +1018,11 @@ so you will need to [configure the necessary bucket policy](https://docs.aws.ama
 ```ts
 // The destination bucket in a different account.
 declare const destinationBucket: s3.IBucket;
-
+declare const replicationRole: iam.IRole;
 const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
   versioned: true,
+  // Optional. If not specified, a new role will be created.
+  replicationRole,
   replicationRules: [
     {
       destination: destinationBucket,

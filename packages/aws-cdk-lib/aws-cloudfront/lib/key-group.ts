@@ -3,6 +3,7 @@ import { CfnKeyGroup } from './cloudfront.generated';
 import { IPublicKey } from './public-key';
 import { IResource, Names, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a Key Group
@@ -42,7 +43,11 @@ export interface KeyGroupProps {
  *
  * @resource AWS::CloudFront::KeyGroup
  */
+@propertyInjectable
 export class KeyGroup extends Resource implements IKeyGroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.KeyGroup';
+
   /** Imports a Key Group from its id. */
   public static fromKeyGroupId(scope: Construct, id: string, keyGroupId: string): IKeyGroup {
     return new class extends Resource implements IKeyGroup {

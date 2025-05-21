@@ -20,7 +20,7 @@ infrastructure definition and share it without worrying about boilerplate logic.
 
 The CDK is available in the following languages:
 
-* JavaScript, TypeScript ([Node.js ≥ 14.15.0](https://nodejs.org/download/release/latest-v14.x/))
+* JavaScript, TypeScript ([Node.js >= 20.x](https://nodejs.org/en/download))
   * We recommend using a version in [Active LTS](https://nodejs.org/en/about/previous-releases)
 * Python ([Python ≥ 3.8](https://www.python.org/downloads/))
 * Java ([Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
@@ -155,7 +155,7 @@ this capability, please see the [developer guide](https://docs.aws.amazon.com/cd
 
 ## More Resources
 
-* [CDK Workshop](https://cdkworkshop.com/)
+* [AWS CDK Immersion Day Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/10141411-0192-4021-afa8-2436f3c66bd8/en-US)
 * [Construct Hub](https://constructs.dev) - Find and use open-source Cloud Development Kit (CDK) libraries
 * Best Practices
   * [Best practices for developing cloud applications with AWS CDK](https://aws.amazon.com/blogs/devops/best-practices-for-developing-cloud-applications-with-aws-cdk/)

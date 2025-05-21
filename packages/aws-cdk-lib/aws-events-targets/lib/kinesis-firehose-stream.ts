@@ -5,7 +5,7 @@ import * as firehose from '../../aws-kinesisfirehose';
 import { IResource } from '../../core';
 
 /**
- * Customize the Firehose Stream Event Target
+ * Customize the Amazon Data Firehose Stream Event Target
  */
 export interface KinesisFirehoseStreamProps {
   /**
@@ -19,7 +19,7 @@ export interface KinesisFirehoseStreamProps {
 }
 
 /**
- * Customize the Firehose Stream Event Target
+ * Customize the Amazon Data Firehose Stream Event Target
  *
  * @deprecated Use KinesisFirehoseStreamV2
  */
@@ -48,7 +48,7 @@ export class KinesisFirehoseStream implements events.IRuleTarget {
 }
 
 /**
- * Represents a Kinesis Data Firehose delivery stream.
+ * Represents an Amazon Data Firehose delivery stream.
  */
 export interface IDeliveryStream extends IResource {
   /**
@@ -67,8 +67,8 @@ export interface IDeliveryStream extends IResource {
 }
 
 /**
- * Customize the Firehose Stream Event Target V2 to support L2 Kinesis Delivery Stream
- * instead of L1 Cfn Kinesis Delivery Stream.
+ * Customize the Amazon Data Firehose Stream Event Target V2 to support L2 Amazon Data Firehose Delivery Stream
+ * instead of L1 Cfn Firehose Delivery Stream.
  */
 export class KinesisFirehoseStreamV2 implements events.IRuleTarget {
   constructor(private readonly stream: IDeliveryStream, private readonly props: KinesisFirehoseStreamProps = {}) {

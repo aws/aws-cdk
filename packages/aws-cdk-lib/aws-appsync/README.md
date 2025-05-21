@@ -936,8 +936,7 @@ const api = new appsync.GraphqlApi(this, 'OwnerContact', {
 ## Events
 
 ### Example
-AWS AppSync Events lets you create secure and performant serverless WebSocket APIs that can broadcast real-time event data to millions of subscribers,
-without you having to manage connections or resource scaling.
+AWS AppSync Events lets you create secure and performant serverless WebSocket APIs that can broadcast real-time event data to millions of subscribers, without you having to manage connections or resource scaling.
 
 ```ts
 const apiKeyProvider: appsync.AppSyncAuthProvider = {
@@ -962,6 +961,8 @@ const api = new appsync.EventApi(this, 'api', {
     ],
   },
 });
+
+api.addChannelNamespace('default');
 ```
 
 ### Authorization
@@ -1023,6 +1024,8 @@ const api = new appsync.EventApi(this, 'api', {
     ],
   }
 });
+
+api.addChannelNamespace('default');
 ```
 
 If you don't specify any overrides for the `connectionAuthModeTypes`, `defaultPublishAuthModeTypes`, and `defaultSubscribeAuthModeTypes` parameters then all `authProviders` defined are included as default authorization mode types for connection, publish, and subscribe.
@@ -1053,6 +1056,141 @@ const api = new appsync.EventApi(this, 'api', {
     ],
   }
 });
+
+api.addChannelNamespace('default');
+```
+
+### Data Sources
+
+With AWS AppSync Events, you can configure data source integrations with Amazon DynamoDB, Amazon Aurora Serverless, Amazon EventBridge, Amazon Bedrock Runtime, AWS Lambda, Amazon OpenSearch Service, and HTTP endpoints. The Event API can be associated with the data source and you can use the data source as an integration in your channel namespace event handlers for `onPublish` and `onSubscribe` operations.
+
+Below are examples for how you add the various data sources to you Event API.
+
+#### Amazon DynamoDB
+
+```ts
+const api = new appsync.EventApi(this, 'EventApiDynamoDB', {
+  apiName: 'DynamoDBEventApi',
+});
+
+const table = new dynamodb.Table(this, 'table', {
+  tableName: 'event-messages',
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+});
+
+const dataSource = api.addDynamoDbDataSource('ddbsource', table);
+```
+
+#### Amazon Aurora Serverless
+
+```ts
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+
+declare const vpc: ec2.Vpc;
+const databaseName = 'mydb';
+const cluster = new rds.DatabaseCluster(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_6 }),
+  writer: rds.ClusterInstance.serverlessV2('writer'),
+  vpc: vpc,
+  credentials: { username: 'clusteradmin' },
+  defaultDatabaseName: databaseName,
+  enableDataApi: true,
+});
+
+const secret = secretsmanager.Secret.fromSecretNameV2(this, 'Secret', 'db-secretName');
+
+const api = new appsync.EventApi(this, 'EventApiRds', {
+  apiName: 'RdsEventApi',
+});
+
+const dataSource = api.addRdsDataSource('rdsds', cluster, secret, databaseName);
+```
+
+#### Amazon EventBridge
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+
+const api = new appsync.EventApi(this, 'EventApiEventBridge', {
+  apiName: 'EventBridgeEventApi',
+});
+
+const eventBus = new events.EventBus(this, 'test-bus');
+
+const dataSource = api.addEventBridgeDataSource('eventbridgeds', eventBus);
+```
+
+#### AWS Lambda
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const lambdaDs: lambda.Function;
+
+const api = new appsync.EventApi(this, 'EventApiLambda', {
+  apiName: 'LambdaEventApi',
+});
+
+const dataSource = api.addLambdaDataSource('lambdads', lambdaDs);
+```
+
+#### Amazon OpenSearch Service
+
+```ts
+import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
+
+const domain = new opensearch.Domain(this, 'Domain', {
+  version: opensearch.EngineVersion.OPENSEARCH_2_17,
+  encryptionAtRest: {
+    enabled: true,
+  },
+  nodeToNodeEncryption: true,
+  enforceHttps: true,
+  capacity: {
+    multiAzWithStandbyEnabled: false,
+  },
+  ebs: {
+    enabled: true,
+    volumeSize: 10,
+  },
+});
+const api = new appsync.EventApi(this, 'EventApiOpenSearch', {
+  apiName: 'OpenSearchEventApi',
+});
+
+const dataSource = api.addOpenSearchDataSource('opensearchds', domain);
+```
+
+#### HTTP Endpoints
+
+```ts
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
+
+const api = new appsync.EventApi(this, 'EventApiHttp', {
+  apiName: 'HttpEventApi',
+});
+
+const randomApi = new apigw.RestApi(this, 'RandomApi');
+const randomRoute = randomApi.root.addResource('random');
+randomRoute.addMethod('GET', new apigw.MockIntegration({
+  integrationResponses: [{
+    statusCode: '200',
+    responseTemplates: {
+      'application/json': 'my-random-value',
+    },
+  }],
+  passthroughBehavior: apigw.PassthroughBehavior.NEVER,
+  requestTemplates: {
+    'application/json': '{ "statusCode": 200 }',
+  },
+}), {
+  methodResponses: [{ statusCode: '200' }],
+});
+
+const dataSource = api.addHttpDataSource('httpsource', `https://${randomApi.restApiId}.execute-api.${this.region}.amazonaws.com`);
 ```
 
 ### Custom Domain Names
@@ -1097,6 +1235,8 @@ const api = new appsync.EventApi(this, 'api', {
     domainName: myDomainName,
   },
 });
+
+api.addChannelNamespace('default');
 
 // You can get custom HTTP/Realtime endpoint
 new CfnOutput(this, 'AWS AppSync Events HTTP endpoint', { value: api.customHttpEndpoint });
@@ -1144,6 +1284,8 @@ const api = new appsync.EventApi(this, 'api', {
     retention: logs.RetentionDays.ONE_WEEK,
   },
 });
+
+api.addChannelNamespace('default');
 ```
 
 ### WAF Protection
@@ -1170,6 +1312,8 @@ Channel namespaces provide a scalable approach to managing large numbers of chan
 
 Instead of configuring each channel individually, developers can apply settings across an entire namespace.
 
+Channel namespace can optionally interact with data sources configured on the Event API by defining optional event handler code or using direct integrations with the data source where applicable.
+
 For more information, see [Understanding channel namespaces](https://docs.aws.amazon.com/appsync/latest/eventapi/channel-namespaces.html).
 
 ```ts
@@ -1185,8 +1329,7 @@ api.addChannelNamespace('AnotherNameSpace', {});
 ```
 
 The API's publishing and subscribing authorization configuration is automatically applied to all namespaces.
-You can override this configuration at the namespace level. **Note**: the authorization type you select as 
-overviews, must be defined as an authorization provider at the API level.
+You can override this configuration at the namespace level. **Note**: the authorization type you select for a namespace must be defined as an authorization provider at the API level.
 
 ```ts
 declare const api: appsync.EventApi;
@@ -1220,5 +1363,61 @@ new appsync.ChannelNamespace(this, 'Namespace', {
   api,
   // set a handler from an asset
   code: appsync.Code.fromAsset('directory/function_code.js'),
+});
+```
+
+You can define an integration in your event handler for `onPublish` and/or `onSubscribe` operations. When defining integrations on your channel namespace, you write code in the event handler to submit requests to and process responses from your data source. For example, if you configure an integration with Amazon DynamoDB for `onPublish` operations, you can persist those events to DynamoDB using a `batchPut` operation in the `request` method, and then return the events as normal in the `response` method. For an integration with Amazon OpenSearch Service, you may use this for `onPublish` operations to enrich the events.
+
+When using the AWS Lambda data source integration, you can either invoke the Lambda function using the event handler code or you can directly invoke the Lambda function, bypassing the event handler code all together. When using direct invoke, you can choose to invoke the Lambda function synchronously or asynchronously by specifying the `invokeType` as `REQUEST_RESPONSE` or `EVENT` respectively.
+
+Below are examples using Amazon DynamoDB, Amazon EventBridge, and AWS Lambda. You can leverage any supported data source in the same way.
+
+#### Amazon DynamoDB & Amazon EventBridge
+
+```ts
+declare const api: appsync.EventApi;
+declare const ddbDataSource: appsync.AppSyncDynamoDbDataSource;
+declare const ebDataSource: appsync.AppSyncEventBridgeDataSource;
+
+// DynamoDB data source for publish handler
+api.addChannelNamespace('ddb-eb-ns', {
+  code: appsync.Code.fromInline('/* event handler code here.*/'),
+  publishHandlerConfig: {
+    dataSource: ddbDataSource,
+  },
+  subscribeHandlerConfig: {
+    dataSource: ebDataSource,
+  },
+});
+```
+
+#### AWS Lambda
+
+```ts
+declare const api: appsync.EventApi;
+declare const lambdaDataSource: appsync.AppSyncLambdaDataSource;
+
+// Lambda data source for publish handler
+api.addChannelNamespace('lambda-ns', {
+  code: appsync.Code.fromInline('/* event handler code here.*/'),
+  publishHandlerConfig: {
+    dataSource: lambdaDataSource,
+  },
+});
+
+// Direct Lambda data source for publish handler
+api.addChannelNamespace('lambda-direct-ns', {
+  publishHandlerConfig: {
+    dataSource: lambdaDataSource,
+    direct: true,
+  },
+});
+
+api.addChannelNamespace('lambda-direct-async-ns', {
+  publishHandlerConfig: {
+    dataSource: lambdaDataSource,
+    direct: true,
+    lambdaInvokeType: appsync.LambdaInvokeType.EVENT,
+  },
 });
 ```

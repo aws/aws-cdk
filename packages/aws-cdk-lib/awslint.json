@@ -259,6 +259,8 @@
     "docs-public-apis:aws-cdk-lib.aws_autoscaling.AutoScalingGroup.fromAutoScalingGroupName",
     "docs-public-apis:aws-cdk-lib.aws_autoscaling.HealthCheck.type",
     "docs-public-apis:aws-cdk-lib.aws_autoscaling.HealthCheck.gracePeriod",
+    "docs-public-apis:aws-cdk-lib.aws_autoscaling.HealthChecks.types",
+    "docs-public-apis:aws-cdk-lib.aws_autoscaling.HealthChecks.gracePeriod",
     "docs-public-apis:aws-cdk-lib.aws_autoscaling.StepScalingPolicy.*",
     "docs-public-apis:aws-cdk-lib.aws_autoscaling.TargetTrackingScalingPolicy",
     "docs-public-apis:aws-cdk-lib.aws_cloudfront.ViewerCertificate.aliases",
@@ -969,7 +971,6 @@
     "docs-public-apis:aws-cdk-lib.aws_appconfig.IDeploymentStrategy",
     "docs-public-apis:aws-cdk-lib.aws_appconfig.IConfiguration",
     "docs-public-apis:aws-cdk-lib.aws_appconfig.IApplication",
-
     "from-signature:aws-cdk-lib.aws_appconfig.DeploymentStrategy.fromDeploymentStrategyId.params[2]",
     "events-method-signature:aws-cdk-lib.aws_appconfig.Application.on",
     "events-method-signature:aws-cdk-lib.aws_appconfig.Application.onDeploymentBaking*",
@@ -998,6 +999,10 @@
     "events-generic:aws-cdk-lib.aws_appconfig.Application",
     "events-generic:aws-cdk-lib.aws_appconfig.Environment",
     "events-generic:aws-cdk-lib.aws_appconfig.HostedConfiguration",
-    "events-generic:aws-cdk-lib.aws_appconfig.SourcedConfiguration"
+    "events-generic:aws-cdk-lib.aws_appconfig.SourcedConfiguration",
+    "construct-ctor-props-type:aws-cdk-lib.aws_inspector.AssessmentTemplate",
+    "props-physical-name:aws-cdk-lib.aws_inspector.AssessmentTemplateProps",
+    "attribute-tag:aws-cdk-lib.aws_scheduler.Schedule.scheduleGroup",
+    "docs-public-apis:aws-cdk-lib.aws_scheduler.ContextAttribute.name"
   ]
 }

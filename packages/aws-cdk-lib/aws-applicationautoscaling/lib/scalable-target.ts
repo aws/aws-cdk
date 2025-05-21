@@ -7,6 +7,7 @@ import * as iam from '../../aws-iam';
 import { IResource, Lazy, Resource, TimeZone, withResolved } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IScalableTarget extends IResource {
   /**
@@ -73,7 +74,11 @@ export interface ScalableTargetProps {
 /**
  * Define a scalable target
  */
+@propertyInjectable
 export class ScalableTarget extends Resource implements IScalableTarget {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-applicationautoscaling.ScalableTarget';
+
   public static fromScalableTargetId(scope: Construct, id: string, scalableTargetId: string): IScalableTarget {
     class Import extends Resource implements IScalableTarget {
       public readonly scalableTargetId = scalableTargetId;
@@ -311,4 +316,14 @@ export enum ServiceNamespace {
    * Neptune
    */
   NEPTUNE = 'neptune',
+
+  /**
+   * Cassandra
+   */
+  CASSANDRA = 'cassandra',
+
+  /**
+   * Workspaces
+   */
+  WORKSPACES = 'workspaces',
 }

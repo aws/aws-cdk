@@ -15,6 +15,8 @@ import { IBucket } from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Options for portfolio share.
@@ -305,7 +307,11 @@ export interface PortfolioProps {
 /**
  * A Service Catalog portfolio.
  */
+@propertyInjectable
 export class Portfolio extends PortfolioBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicecatalog.Portfolio';
+
   /**
    * Creates a Portfolio construct that represents an external portfolio.
    *
@@ -369,7 +375,9 @@ export class Portfolio extends PortfolioBase {
           (c as Portfolio).addBucketPermissionsToSharedAccounts();
         }
       },
-    }, { priority: cdk.AspectPriority.MUTATING });
+    }, {
+      priority: mutatingAspectPrio32333(this),
+    });
   }
 
   protected generateUniqueHash(value: string): string {
