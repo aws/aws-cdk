@@ -28,6 +28,7 @@ import * as lambda from '../../aws-lambda';
 import * as ssm from '../../aws-ssm';
 import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -1332,7 +1333,13 @@ export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAd
  * This is a fully managed cluster of API Servers (control-plane)
  * The user is still required to create the worker nodes.
  */
+@propertyInjectable
 export class Cluster extends ClusterBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.Cluster';
+
   /**
    * Import an existing cluster
    *
@@ -1688,6 +1695,11 @@ export class Cluster extends ClusterBase {
 
     if (props.serviceIpv4Cidr && props.ipFamily == IpFamily.IP_V6) {
       throw new ValidationError('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6', this);
+    }
+
+    // Check if the cluster name exceeds 100 characters
+    if (!Token.isUnresolved(this.physicalName) && this.physicalName.length > 100) {
+      throw new ValidationError('Cluster name cannot be more than 100 characters', this);
     }
 
     this.validateRemoteNetworkConfig(props);
@@ -2506,7 +2518,10 @@ export interface RemotePodNetwork {
 /**
  * Import a cluster to use in another stack
  */
+@propertyInjectable
 class ImportedCluster extends ClusterBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.ImportedCluster';
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();

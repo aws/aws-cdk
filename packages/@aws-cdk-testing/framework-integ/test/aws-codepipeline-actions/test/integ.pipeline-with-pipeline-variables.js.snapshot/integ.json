@@ -9,5 +9,6 @@
       "assertionStack": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert",
       "assertionStackName": "codepipelinewithpipelinevariablestestDefaultTestDeployAssert9ACAEAAB"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

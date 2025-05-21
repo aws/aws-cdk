@@ -1,10 +1,12 @@
 import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnVPCPeeringConnection, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, IRouteTable, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, IDependable } from 'constructs';
-import { Annotations, Duration, IResource, Resource, Tags, ValidationError } from 'aws-cdk-lib/core';
+import { Annotations, Duration, FeatureFlags, IResource, Resource, Tags, ValidationError } from 'aws-cdk-lib/core';
 import { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
 import { NetworkUtils, allRouteTableIds, CidrBlock } from './util';
 import { ISubnetV2 } from './subnet-v2';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { cx_api } from 'aws-cdk-lib';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Indicates whether the NAT gateway supports public or private connectivity.
@@ -219,7 +221,10 @@ const NAME_TAG: string = 'Name';
  * Creates an egress-only internet gateway
  * @resource AWS::EC2::EgressOnlyInternetGateway
  */
+@propertyInjectable
 export class EgressOnlyInternetGateway extends Resource implements IRouteTarget {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.EgressOnlyInternetGateway';
   /**
    * The type of router used in the route.
    */
@@ -258,7 +263,10 @@ export class EgressOnlyInternetGateway extends Resource implements IRouteTarget 
  * Creates an internet gateway
  * @resource AWS::EC2::InternetGateway
  */
+@propertyInjectable
 export class InternetGateway extends Resource implements IRouteTarget {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.InternetGateway';
   /**
    * The type of router used in the route.
    */
@@ -289,11 +297,16 @@ export class InternetGateway extends Resource implements IRouteTarget {
     this.resource = new CfnInternetGateway(this, 'IGW', {});
     this.node.defaultChild = this.resource;
 
-    this.routerTargetId = this.resource.attrInternetGatewayId;
+    this.routerTargetId = FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
+      this.resource.ref : this.resource.attrInternetGatewayId;
     this.vpcId = props.vpc.vpcId;
 
     if (props.internetGatewayName) {
       Tags.of(this).add(NAME_TAG, props.internetGatewayName);
+    }
+
+    if (props.vpc.vpcName) {
+      Tags.of(this).add('Name', props.vpc.vpcName);
     }
 
     new CfnVPCGatewayAttachment(this, 'GWAttachment', {
@@ -307,7 +320,10 @@ export class InternetGateway extends Resource implements IRouteTarget {
  * Creates a virtual private gateway
  * @resource AWS::EC2::VPNGateway
  */
+@propertyInjectable
 export class VPNGatewayV2 extends Resource implements IRouteTarget {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.VPNGatewayV2';
   /**
    * The type of router used in the route.
    */
@@ -389,7 +405,10 @@ export class VPNGatewayV2 extends Resource implements IRouteTarget {
  * Creates a network address translation (NAT) gateway
  * @resource AWS::EC2::NatGateway
  */
+@propertyInjectable
 export class NatGateway extends Resource implements IRouteTarget {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.NatGateway';
   /**
    * Id of the NatGateway
    * @attribute
@@ -426,6 +445,11 @@ export class NatGateway extends Resource implements IRouteTarget {
    */
   public readonly resource: CfnNatGateway;
 
+  /**
+   * Elastic IP created for allocation
+   */
+  public readonly eip?: CfnEIP;
+
   constructor(scope: Construct, id: string, props: NatGatewayProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
@@ -450,10 +474,10 @@ export class NatGateway extends Resource implements IRouteTarget {
     var aId: string | undefined;
     if (this.connectivityType === NatConnectivityType.PUBLIC) {
       if (!props.allocationId) {
-        let eip = new CfnEIP(this, 'EIP', {
+        this.eip = new CfnEIP(this, 'EIP', {
           domain: 'vpc',
         });
-        aId = eip.attrAllocationId;
+        aId = this.eip.attrAllocationId;
       } else {
         aId = props.allocationId;
       }
@@ -466,11 +490,14 @@ export class NatGateway extends Resource implements IRouteTarget {
       secondaryAllocationIds: props.secondaryAllocationIds,
       ...props,
     });
-    this.natGatewayId = this.resource.attrNatGatewayId;
+    this.natGatewayId = FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
+      this.resource.ref : this.resource.attrNatGatewayId;
 
-    this.routerTargetId = this.resource.attrNatGatewayId;
+    this.routerTargetId = FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
+      this.resource.ref : this.resource.attrNatGatewayId;
+
     this.node.defaultChild = this.resource;
-    this.node.addDependency(props.subnet.internetConnectivityEstablished);
+    this.resource.node.addDependency(props.subnet.internetConnectivityEstablished);
   }
 }
 
@@ -478,7 +505,10 @@ export class NatGateway extends Resource implements IRouteTarget {
  * Creates a peering connection between two VPCs
  * @resource AWS::EC2::VPCPeeringConnection
  */
+@propertyInjectable
 export class VPCPeeringConnection extends Resource implements IRouteTarget {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.VPCPeeringConnection';
   /**
    * The type of router used in the route.
    */
@@ -679,7 +709,10 @@ export interface RouteProps {
  * Creates a new route with added functionality.
  * @resource AWS::EC2::Route
  */
+@propertyInjectable
 export class Route extends Resource implements IRouteV2 {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.Route';
   /**
    * The IPv4 or IPv6 CIDR block used for the destination match.
    *
@@ -785,7 +818,10 @@ export interface RouteTableProps {
  * Creates a route table for the specified VPC
  * @resource AWS::EC2::RouteTable
  */
+@propertyInjectable
 export class RouteTable extends Resource implements IRouteTable {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.RouteTable';
   /**
    * The ID of the route table.
    */
@@ -809,7 +845,8 @@ export class RouteTable extends Resource implements IRouteTable {
     }
     this.node.defaultChild = this.resource;
 
-    this.routeTableId = this.resource.attrRouteTableId;
+    this.routeTableId = FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
+      this.resource.ref : this.resource.attrRouteTableId;
   }
 
   /**

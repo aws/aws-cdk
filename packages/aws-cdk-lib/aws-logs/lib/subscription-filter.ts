@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import { KinesisDestination } from '../../aws-logs-destinations';
 import { Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface for classes that can be the destination of a log Subscription
@@ -53,7 +54,11 @@ export interface SubscriptionFilterProps extends SubscriptionFilterOptions {
 /**
  * A new Subscription on a CloudWatch log group.
  */
+@propertyInjectable
 export class SubscriptionFilter extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-logs.SubscriptionFilter';
+
   constructor(scope: Construct, id: string, props: SubscriptionFilterProps) {
     super(scope, id, {
       physicalName: props.filterName,

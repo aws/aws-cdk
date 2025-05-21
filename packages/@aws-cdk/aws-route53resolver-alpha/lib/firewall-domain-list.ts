@@ -5,6 +5,7 @@ import { IResource, Resource, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnFirewallDomainList } from 'aws-cdk-lib/aws-route53resolver';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * A Firewall Domain List
@@ -144,7 +145,11 @@ export interface DomainsConfig {
 /**
  * A Firewall Domain List
  */
+@propertyInjectable
 export class FirewallDomainList extends Resource implements IFirewallDomainList {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-route53resolver-alpha.FirewallDomainList';
+
   /**
    * Import an existing Firewall Rule Group
    */
