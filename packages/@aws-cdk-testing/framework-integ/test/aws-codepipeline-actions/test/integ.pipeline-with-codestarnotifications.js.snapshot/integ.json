@@ -9,5 +9,6 @@
       "assertionStack": "pipeline-with-codestarnotifications-test/DefaultTest/DeployAssert",
       "assertionStackName": "pipelinewithcodestarnotificationstestDefaultTestDeployAssertDA0A4181"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

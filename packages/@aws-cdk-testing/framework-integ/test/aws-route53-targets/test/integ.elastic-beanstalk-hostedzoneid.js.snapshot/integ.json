@@ -8,5 +8,6 @@
       "assertionStack": "cdk-route53-ebs-hostedzoneid-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "cdkroute53ebshostedzoneidintegtestDefaultTestDeployAssert57827FC3"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

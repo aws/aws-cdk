@@ -8,5 +8,6 @@
       "assertionStack": "test-efs-protection-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "testefsprotectionintegtestDefaultTestDeployAssertC510DC4F"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

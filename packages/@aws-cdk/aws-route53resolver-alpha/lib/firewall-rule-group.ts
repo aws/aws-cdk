@@ -4,6 +4,7 @@ import { IFirewallDomainList } from './firewall-domain-list';
 import { FirewallRuleGroupAssociation, FirewallRuleGroupAssociationOptions } from './firewall-rule-group-association';
 import { CfnFirewallRuleGroup } from 'aws-cdk-lib/aws-route53resolver';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * A Firewall Rule Group
@@ -154,7 +155,11 @@ export abstract class DnsBlockResponse {
 /**
  * A Firewall Rule Group
  */
+@propertyInjectable
 export class FirewallRuleGroup extends Resource implements IFirewallRuleGroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-route53resolver-alpha.FirewallRuleGroup';
+
   /**
    * Import an existing Firewall Rule Group
    */
