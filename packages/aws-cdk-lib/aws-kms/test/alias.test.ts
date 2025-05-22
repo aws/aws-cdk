@@ -3,7 +3,7 @@ import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { ArnPrincipal, PolicyStatement } from '../../aws-iam';
 import { App, Arn, Aws, CfnOutput, Stack } from '../../core';
-import { KMS_ALIAS_NAME_REF } from '../../cx-api';
+import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL } from '../../cx-api';
 import { Alias } from '../lib/alias';
 import { IKey, Key } from '../lib/key';
 
@@ -215,6 +215,7 @@ test('imported alias by name - will throw an error when accessing the key', () =
 
 test('imported alias by name - grantDecrypt applies kms:ResourceAliases condition', () => {
   const stack = new Stack();
+  stack.node.setContext(KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, true);
   const aliasName = 'alias/myAlias';
   const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
   const user = new iam.User(stack, 'User');
@@ -252,6 +253,7 @@ test('imported alias by name - grantDecrypt applies kms:ResourceAliases conditio
 
 test('imported alias by name - grantEncrypt applies kms:ResourceAliases condition', () => {
   const stack = new Stack();
+  stack.node.setContext(KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, true);
   const aliasName = 'alias/myAlias';
   const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
   const user = new iam.User(stack, 'User');
@@ -289,6 +291,7 @@ test('imported alias by name - grantEncrypt applies kms:ResourceAliases conditio
 
 test('imported alias by name - grantEncryptDecrypt applies kms:ResourceAliases condition', () => {
   const stack = new Stack();
+  stack.node.setContext(KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, true);
   const aliasName = 'alias/myAlias';
   const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
   const user = new iam.User(stack, 'User');
@@ -326,6 +329,7 @@ test('imported alias by name - grantEncryptDecrypt applies kms:ResourceAliases c
 
 test('imported alias by name - grantSign applies kms:ResourceAliases condition', () => {
   const stack = new Stack();
+  stack.node.setContext(KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, true);
   const aliasName = 'alias/myAlias';
   const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
   const user = new iam.User(stack, 'User');
@@ -363,6 +367,7 @@ test('imported alias by name - grantSign applies kms:ResourceAliases condition',
 
 test('imported alias by name - grantVerify applies kms:ResourceAliases condition', () => {
   const stack = new Stack();
+  stack.node.setContext(KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, true);
   const aliasName = 'alias/myAlias';
   const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
   const user = new iam.User(stack, 'User');
@@ -400,6 +405,7 @@ test('imported alias by name - grantVerify applies kms:ResourceAliases condition
 
 test('imported alias by name - grantSignVerify applies kms:ResourceAliases condition', () => {
   const stack = new Stack();
+  stack.node.setContext(KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, true);
   const aliasName = 'alias/myAlias';
   const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
   const user = new iam.User(stack, 'User');
@@ -437,6 +443,7 @@ test('imported alias by name - grantSignVerify applies kms:ResourceAliases condi
 
 test('imported alias by name - grantGenerateMac applies kms:ResourceAliases condition', () => {
   const stack = new Stack();
+  stack.node.setContext(KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, true);
   const aliasName = 'alias/myAlias';
   const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
   const user = new iam.User(stack, 'User');
@@ -474,6 +481,7 @@ test('imported alias by name - grantGenerateMac applies kms:ResourceAliases cond
 
 test('imported alias by name - grantVerifyMac applies kms:ResourceAliases condition', () => {
   const stack = new Stack();
+  stack.node.setContext(KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, true);
   const aliasName = 'alias/myAlias';
   const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
   const user = new iam.User(stack, 'User');
@@ -511,6 +519,7 @@ test('imported alias by name - grantVerifyMac applies kms:ResourceAliases condit
 
 test('imported alias by name - grant method applies kms:ResourceAliases condition', () => {
   const stack = new Stack();
+  stack.node.setContext(KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, true);
   const aliasName = 'alias/myAlias';
   const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
   const user = new iam.User(stack, 'User');
@@ -544,6 +553,22 @@ test('imported alias by name - grant method applies kms:ResourceAliases conditio
       Version: '2012-10-17',
     },
   });
+});
+
+test('imported alias by name - grant methods are no-op when feature flag disabled', () => {
+  const stack = new Stack();
+  stack.node.setContext(KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, false);
+  const aliasName = 'alias/myAlias';
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', aliasName);
+  const user = new iam.User(stack, 'User');
+
+  myAlias.grantDecrypt(user);
+  myAlias.grantEncrypt(user);
+  myAlias.grantSign(user);
+  myAlias.grant(user, 'kms:CreateGrant');
+
+  // should not create any IAM policy statements
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
 });
 
 test('fails if alias policy is invalid', () => {
