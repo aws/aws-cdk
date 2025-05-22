@@ -119,7 +119,7 @@
     "mime-types"
   ],
   "dependencies": {
-    "@aws-cdk/asset-awscli-v1": "2.2.236",
+    "@aws-cdk/asset-awscli-v1": "2.2.237",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.0",
     "@aws-cdk/cloud-assembly-schema": "^41.2.0",
     "@balena/dockerignore": "^1.0.2",
@@ -135,8 +135,8 @@
     "mime-types": "^2.1.35"
   },
   "devDependencies": {
-    "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
-    "@aws-cdk/aws-service-spec": "^0.1.73",
+    "@aws-cdk/lambda-layer-kubectl-v31": "^2.0.3",
+    "@aws-cdk/aws-service-spec": "^0.1.75",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
