@@ -9,5 +9,6 @@
       "assertionStack": "codepipeline-type-v2-test/DefaultTest/DeployAssert",
       "assertionStackName": "codepipelinetypev2testDefaultTestDeployAssertD8DB1C31"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

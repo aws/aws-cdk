@@ -3,6 +3,7 @@ import { Compatibility, NetworkMode, isEc2Compatible, isFargateCompatible, isExt
 import { IRole } from '../../../aws-iam';
 import { Resource, ValidationError } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IEc2TaskDefinition } from '../ec2/ec2-task-definition';
 import { IFargateTaskDefinition } from '../fargate/fargate-task-definition';
 
@@ -49,7 +50,10 @@ export interface ImportedTaskDefinitionProps {
 /**
  * Task definition reference of an imported task
  */
+@propertyInjectable
 export class ImportedTaskDefinition extends Resource implements IEc2TaskDefinition, IFargateTaskDefinition {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.ImportedTaskDefinition';
   /**
    * What launch types this task definition should be compatible with.
    */

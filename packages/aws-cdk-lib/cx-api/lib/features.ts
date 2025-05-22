@@ -1585,7 +1585,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       When this feature flag is enabled, EgressOnlyGateway resource will not be created when you create a vpc with only public subnets.
           `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.196.0' },
     recommendedValue: true,
   },
 
@@ -1614,7 +1614,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
       The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.196.0' },
     recommendedValue: true,
   },
 };
