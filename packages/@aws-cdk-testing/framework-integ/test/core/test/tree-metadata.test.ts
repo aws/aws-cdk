@@ -6,6 +6,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import { App, CfnParameter, CfnResource, Lazy, Stack, TreeInspector } from 'aws-cdk-lib';
+import { TreeFile } from 'aws-cdk-lib/core/lib/private/tree-metadata';
 
 abstract class AbstractCfnResource extends CfnResource {
   constructor(scope: Construct, id: string) {
@@ -162,7 +163,9 @@ describe('tree metadata', () => {
     const treeArtifact = assembly.tree();
     expect(treeArtifact).toBeDefined();
 
-    expect(readJson(assembly.directory, treeArtifact!.file)).toEqual({
+    const treeJson = readJson(assembly.directory, treeArtifact!.file);
+
+    expect(treeJson).toEqual({
       version: 'tree-0.1',
       tree: expect.objectContaining({
         children: expect.objectContaining({
@@ -183,6 +186,91 @@ describe('tree metadata', () => {
         }),
       }),
     });
+  });
+
+  /**
+   * Check that we can limit ourselves to a given tree file size
+   *
+   * We can't try the full 512MB because the test process will run out of memory
+   * before synthing such a large tree.
+   */
+  test('tree.json can be split over multiple files', () => {
+    const MAX_NODES = 1_000;
+    const app = new App({
+      context: {
+        '@aws-cdk/core.TreeMetadata:maxNodes': MAX_NODES,
+      },
+      analyticsReporting: false,
+    });
+
+    // GIVEN
+    const buildStart = Date.now();
+    const addedNodes = recurseBuild(app, 4, 4);
+    // eslint-disable-next-line no-console
+    console.log('Built tree in', Date.now() - buildStart, 'ms');
+
+    // WHEN
+    const synthStart = Date.now();
+    const assembly = app.synth();
+    // eslint-disable-next-line no-console
+    console.log('Synthed tree in', Date.now() - synthStart, 'ms');
+    try {
+      const treeArtifact = assembly.tree();
+      expect(treeArtifact).toBeDefined();
+
+      // THEN - does not explode, and file sizes are correctly limited
+      const sizes: Record<string, number> = {};
+      recurseVisit(assembly.directory, treeArtifact!.file, sizes);
+
+      for (const size of Object.values(sizes)) {
+        expect(size).toBeLessThanOrEqual(MAX_NODES);
+      }
+
+      expect(Object.keys(sizes).length).toBeGreaterThan(1);
+
+      const foundNodes = sum(Object.values(sizes));
+      expect(foundNodes).toEqual(addedNodes + 2); // App, Tree
+    } finally {
+      fs.rmSync(assembly.directory, { force: true, recursive: true });
+    }
+
+    function recurseBuild(scope: Construct, n: number, depth: number) {
+      if (depth === 0) {
+        const resourceCount = 450;
+        const stack = new Stack(scope, 'SomeStack');
+        for (let i = 0; i < resourceCount; i++) {
+          new CfnResource(stack, `Resource${i}`, { type: 'Aws::Some::Resource' });
+        }
+        return resourceCount + 3; // Also count Stack, BootstrapVersion, CheckBootstrapVersion
+      }
+
+      let ret = 0;
+      for (let i = 0; i < n; i++) {
+        const parent = new Construct(scope, `Construct${i}`);
+        ret += 1;
+        ret += recurseBuild(parent, n, depth - 1);
+      }
+      return ret;
+    }
+
+    function recurseVisit(directory: string, fileName: string, files: Record<string, number>) {
+      let nodes = 0;
+      const treeJson: TreeFile = readJson(directory, fileName);
+      rec(treeJson.tree);
+      files[fileName] = nodes;
+
+      function rec(x: TreeFile['tree']) {
+        if (isSubtreeReference(x)) {
+          // We'll count this node as part of our visit to the "real" node
+          recurseVisit(directory, x.fileName, files);
+        } else {
+          nodes += 1;
+          for (const child of Object.values(x.children ?? {})) {
+            rec(child);
+          }
+        }
+      }
+    }
   });
 
   test('token resolution & cfn parameter', () => {
@@ -395,4 +483,16 @@ describe('tree metadata', () => {
 
 function readJson(outdir: string, file: string) {
   return JSON.parse(fs.readFileSync(path.join(outdir, file), 'utf-8'));
+}
+
+function isSubtreeReference(x: TreeFile['tree']): x is Extract<TreeFile['tree'], { fileName: string }> {
+  return !!(x as any).fileName;
+}
+
+function sum(xs: number[]) {
+  let ret = 0;
+  for (const x of xs) {
+    ret += x;
+  }
+  return ret;
 }

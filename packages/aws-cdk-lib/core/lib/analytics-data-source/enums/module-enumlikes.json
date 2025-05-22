@@ -58,7 +58,8 @@
       "PHP_81",
       "PYTHON_3",
       "PYTHON_311",
-      "RUBY_31"
+      "RUBY_31",
+      "NODEJS_22"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/access-entry.ts": {
@@ -1559,6 +1560,7 @@
       "DIRECTORY_SERVICE_DATA",
       "DYNAMODB",
       "DYNAMODB_FIPS",
+      "DYNAMODB_STREAMS",
       "EBS_DIRECT",
       "EC2",
       "EC2_MESSAGES",

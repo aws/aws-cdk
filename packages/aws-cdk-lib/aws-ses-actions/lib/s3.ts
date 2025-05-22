@@ -55,7 +55,7 @@ export class S3 implements ses.IReceiptRuleAction {
       resources: [this.props.bucket.arnForObjects(`${keyPattern}*`)],
       conditions: {
         StringEquals: {
-          'aws:Referer': cdk.Aws.ACCOUNT_ID,
+          'aws:SourceAccount': cdk.Aws.ACCOUNT_ID,
         },
       },
     });

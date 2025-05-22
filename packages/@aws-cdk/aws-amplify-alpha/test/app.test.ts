@@ -1,6 +1,7 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { SecretValue, Stack } from 'aws-cdk-lib';
 import * as amplify from '../lib';
 
@@ -477,4 +478,53 @@ test.each([amplify.CacheConfigType.AMPLIFY_MANAGED, amplify.CacheConfigType.AMPL
       Type: cacheConfigType,
     },
   });
+});
+
+test('create a SSR app with auto-generate compute role', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    platform: amplify.Platform.WEB_COMPUTE,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    Platform: amplify.Platform.WEB_COMPUTE,
+    ComputeRoleArn: {
+      'Fn::GetAtt': ['AppComputeRole426920E4', 'Arn'],
+    },
+  });
+
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 2);
+});
+
+test('create a SSR app with compute role', () => {
+  // WHEN
+  const computeRole = new iam.Role(stack, 'ComputeRole', {
+    assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
+  });
+
+  new amplify.App(stack, 'App', {
+    platform: amplify.Platform.WEB_COMPUTE,
+    computeRole,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    Platform: amplify.Platform.WEB_COMPUTE,
+    ComputeRoleArn: stack.resolve(computeRole.roleArn),
+  });
+});
+
+test('throws when compute role is set with a non SSR app', () => {
+  // WHEN
+  const computeRole = new iam.Role(stack, 'ComputeRole', {
+    assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
+  });
+
+  expect(() => {
+    new amplify.App(stack, 'App', {
+      platform: amplify.Platform.WEB,
+      computeRole,
+    });
+  }).toThrow('`computeRole` can only be specified for `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.');
 });
