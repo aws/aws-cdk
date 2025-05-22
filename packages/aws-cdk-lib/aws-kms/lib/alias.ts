@@ -6,7 +6,7 @@ import * as perms from './private/perms';
 import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { KMS_ALIAS_NAME_REF } from '../../cx-api';
+import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL } from '../../cx-api';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'aws/';
@@ -206,6 +206,9 @@ export class Alias extends AliasBase {
       }
 
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+        if (!FeatureFlags.of(this).isEnabled(KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL)) {
+          return iam.Grant.drop(grantee, '');
+        }
         return iam.Grant.addToPrincipal({
           grantee,
           actions,
