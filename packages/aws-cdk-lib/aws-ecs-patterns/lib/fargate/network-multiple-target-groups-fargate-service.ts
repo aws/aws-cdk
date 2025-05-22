@@ -138,6 +138,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
       cloudMapOptions: props.cloudMapOptions,
       platformVersion: props.platformVersion,
       enableExecuteCommand: props.enableExecuteCommand,
+      availabilityZoneRebalancing: props.availabilityZoneRebalancing,
     });
   }
 }
