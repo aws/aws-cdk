@@ -11045,12 +11045,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'warnings': '*',
         'warningsV2': '*'
       },
+      'comparisonOperator': 'ComparisonOperator',
+      'threshold': '*',
       'period': '*',
       'statistic': '*',
       'alarmName': '*',
       'alarmDescription': '*',
-      'comparisonOperator': 'ComparisonOperator',
-      'threshold': '*',
       'evaluationPeriods': '*',
       'evaluateLowSampleCountPercentile': '*',
       'treatMissingData': 'TreatMissingData',
@@ -11060,6 +11060,23 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'addAlarmAction': [
         '*'
       ]
+    },
+    'AnomalyDetectionAlarm': {
+      'metric': {
+        'warnings': '*',
+        'warningsV2': '*'
+      },
+      'stdDevs': '*',
+      'comparisonOperator': 'ComparisonOperator',
+      'period': '*',
+      'statistic': '*',
+      'alarmName': '*',
+      'alarmDescription': '*',
+      'evaluationPeriods': '*',
+      'evaluateLowSampleCountPercentile': '*',
+      'treatMissingData': 'TreatMissingData',
+      'actionsEnabled': 'boolean',
+      'datapointsToAlarm': '*'
     },
     'CompositeAlarm': {
       'actionsEnabled': 'boolean',
