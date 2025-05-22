@@ -1,6 +1,6 @@
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { IResource, Lazy, Resource, SecretValue } from 'aws-cdk-lib/core';
+import { IResource, Lazy, Resource, SecretValue, ValidationError } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnApp } from 'aws-cdk-lib/aws-amplify';
 import { BasicAuth } from './basic-auth';
@@ -176,6 +176,14 @@ export interface AppProps {
    * @default CacheConfigType.AMPLIFY_MANAGED
    */
   readonly cacheConfigType?: CacheConfigType;
+
+  /**
+   * The IAM role for an SSR app.
+   * The Compute role allows the Amplify Hosting compute service to securely access specific AWS resources based on the role's permissions.
+   *
+   * @default undefined - a new role is created when `platform` is `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`, otherwise no compute role
+   */
+  readonly computeRole?: iam.IRole;
 }
 
 /**
@@ -224,6 +232,11 @@ export class App extends Resource implements IApp, iam.IGrantable {
    */
   public readonly grantPrincipal: iam.IPrincipal;
 
+  /**
+   * The IAM role for an SSR app.
+   */
+  public readonly computeRole?: iam.IRole;
+
   private readonly customRules: CustomRule[];
   private readonly environmentVariables: { [name: string]: string };
   private readonly autoBranchEnvironmentVariables: { [name: string]: string };
@@ -241,6 +254,21 @@ export class App extends Resource implements IApp, iam.IGrantable {
       assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
     });
     this.grantPrincipal = role;
+
+    let computedRole: iam.IRole | undefined;
+    const isSSR = props.platform === Platform.WEB_COMPUTE || props.platform === Platform.WEB_DYNAMIC;
+
+    if (props.computeRole) {
+      if (!isSSR) {
+        throw new ValidationError('`computeRole` can only be specified for `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.', this);
+      }
+      computedRole = props.computeRole;
+    } else if (isSSR) {
+      computedRole = new iam.Role(this, 'ComputeRole', {
+        assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
+      });
+    }
+    this.computeRole = computedRole;
 
     const sourceCodeProviderOptions = props.sourceCodeProvider?.bind(this);
 
@@ -265,6 +293,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
         : { enableBasicAuth: false },
       buildSpec: props.buildSpec && props.buildSpec.toBuildSpec(),
       cacheConfig: props.cacheConfigType ? { type: props.cacheConfigType } : undefined,
+      computeRoleArn: this.computeRole?.roleArn,
       customRules: Lazy.any({ produce: () => this.customRules }, { omitEmptyArray: true }),
       description: props.description,
       environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.environmentVariables) }, { omitEmptyArray: true }),
