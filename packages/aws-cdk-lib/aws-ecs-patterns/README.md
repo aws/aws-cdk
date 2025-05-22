@@ -1061,6 +1061,75 @@ Please note, ECS Exec leverages AWS Systems Manager (SSM). So as a prerequisite 
 to work, you need to have the SSM plugin for the AWS CLI installed locally. For more information, see
 [Install Session Manager plugin for AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
 
+### Availability Zone rebalancing
+
+ECS services running in AWS can be launched in multiple VPC subnets that are
+each in different Availability Zones (AZs) to achieve high availability. Fargate
+services launched this way will automatically try to achieve an even spread of
+service tasks across AZs, and EC2 services can be instructed to do the same with
+placement strategies. This ensures that the service has equal availability in
+each AZ.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const cluster: ecs.Cluster;
+
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  // Fargate will try to ensure an even spread of newly launched tasks across
+  // all AZs corresponding to the public subnets of the VPC.
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+});
+```
+
+However, those approaches only affect how newly launched tasks are placed.
+Service tasks can still become unevenly spread across AZs if there is an
+infrastructure event, like an AZ outage or a lack of available compute capacity
+in an AZ. During such events, newly launched tasks may be placed in AZs in such
+a way that tasks are not evenly spread across all AZs. After the infrastructure
+event is over, the service will remain imbalanced until new tasks are launched
+for some other reason, such as a service deployment.
+
+Availability Zone rebalancing is a feature whereby ECS actively tries to correct
+service AZ imbalances whenever they exist, by moving service tasks from
+overbalanced AZs to underbalanced AZs. When an imbalance is detected, ECS will
+launch new tasks in underbalanced AZs, then stop existing tasks in overbalanced
+AZs, to ensure an even spread.
+
+You can enabled Availability Zone rebalancing when creating your service:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const cluster: ecs.Cluster;
+
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  // Fargate will try to ensure an even spread of newly launched tasks across
+  // all AZs corresponding to the public subnets of the VPC.
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+  availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+});
+```
+
+Availability Zone rebalancing works in the following configurations:
+- Services that use the Replica strategy.
+- Services that specify Availability Zone spread as the first task placement
+  strategy, or do not specify a placement strategy.
+
+You can't use Availability Zone rebalancing with services that meet any of the
+following criteria:
+- Uses the Daemon strategy.
+- Uses the EXTERNAL launch type (ECSAnywhere).
+- Uses 100% for the maximumPercent value.
+- Uses a Classic Load Balancer.
+- Uses the `attribute:ecs.availability-zone` as a task placement constraint.
+
 ### Propagate Tags from task definition for ScheduledFargateTask
 
 For tasks that are defined by a Task Definition, tags applied to the definition will not be applied
