@@ -282,10 +282,8 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
       });
       const result = this.props.customModelKmsKey.addToResourcePolicy(poliyStatement, true);
 
-      // For the imported key, user must add the policy statement to the key policy
       if (result.statementAdded === false) {
-        Annotations.of(this).addWarning(`You must update 'customModelKmsKey' resource policy to add the following statement:
-        ${poliyStatement.toString()}`);
+        throw new ValidationError('Imported KMS key is not used as the `customModelKmsKey`.', this);
       }
     }
   }

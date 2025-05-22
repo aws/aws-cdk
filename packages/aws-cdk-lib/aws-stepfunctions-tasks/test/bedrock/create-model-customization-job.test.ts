@@ -1079,4 +1079,38 @@ describe('create model customization job', () => {
       },
     })).toThrow('subnets must be between 1 and 16 items long, got: 17');
   });
+
+  test('throw error for using imported key as custom model KMS key', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
+
+    // THEN
+    expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
+      baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
+      customModelKmsKey: kms.Key.fromKeyArn(stack, 'Key', 'arn:aws:kms:us-east-1:123456789012:key/1234abcd-12ab-34cd-56ef-1234567890ab'),
+      customModelName: 'custom-model',
+      jobName: 'job-name',
+      outputData: {
+        bucket: outputDataBucket,
+        path: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        path: 'training-data',
+      },
+      validationData: [
+        {
+          bucket: validationDataBucket,
+          path: 'validation-data1',
+        },
+        {
+          bucket: validationDataBucket,
+          path: 'validation-data2',
+        },
+      ],
+    })).toThrow('Imported KMS key is not used as the `customModelKmsKey`.');
+  });
 });
