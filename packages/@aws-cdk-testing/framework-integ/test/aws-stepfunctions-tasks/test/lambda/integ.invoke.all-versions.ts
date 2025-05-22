@@ -71,5 +71,3 @@ const templateJson = JSON.stringify(template.toJSON());
 if (!templateJson.includes('":*"')) {
   throw new Error('Expected IAM policy to include ":*" permission for all Lambda versions');
 }
-
-app.synth();

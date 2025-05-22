@@ -10,6 +10,11 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 interface LambdaInvokeBaseProps {
   /**
    * Lambda function to invoke
+   *
+   * When the feature flag STEPFUNCTIONS_TASKS_LAMBDA_INVOKE_GRANT_ALL_VERSIONS is enabled,
+   * this will grant permissions to all versions of the Lambda function even if a specific
+   * Lambda version is set to be invoked. This prevents permission failures in in-flight
+   * Step Function executions.
    */
   readonly lambdaFunction: lambda.IFunction;
 
