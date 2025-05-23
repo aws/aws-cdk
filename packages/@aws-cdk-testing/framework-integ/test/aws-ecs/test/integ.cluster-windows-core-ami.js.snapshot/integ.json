@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "ClusterWindowsCoreAmi/DefaultTest": {
+      "stacks": [
+        "integ-ecs-windows-core-ami"
+      ],
+      "assertionStack": "ClusterWindowsCoreAmi/DefaultTest/DeployAssert",
+      "assertionStackName": "ClusterWindowsCoreAmiDefaultTestDeployAssertCCAFA703"
+    }
+  }
+}
