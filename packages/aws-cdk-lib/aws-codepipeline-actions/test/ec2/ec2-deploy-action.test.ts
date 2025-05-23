@@ -22,7 +22,7 @@ describe('EC2 deploy action', () => {
   test.each([
     [cpactions.Ec2InstanceType.EC2, 'EC2'],
     [cpactions.Ec2InstanceType.SSM_MANAGED_NODE, 'SSM_MANAGED_NODE'],
-  ])('can be created with instanceType %s without load balancers', (instanceType, templateValue) => {
+  ])('can be created with instanceType %s with action deploy specifications, without load balancers', (instanceType, templateValue) => {
     // WHEN
     const action = new cpactions.Ec2DeployAction({
       actionName: 'EC2',
@@ -30,9 +30,11 @@ describe('EC2 deploy action', () => {
       instanceType,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
-      targetDirectory: '/home/ec2-user/deploy',
-      preScript: 'scripts/pre-deploy.sh',
-      postScript: 'scripts/post-deploy.sh',
+      deploySpecifications: cpactions.Ec2DeploySpecifications.inline({
+        targetDirectory: '/home/ec2-user/deploy',
+        preScript: 'scripts/pre-deploy.sh',
+        postScript: 'scripts/post-deploy.sh',
+      }),
     });
     new codepipeline.Pipeline(stack, 'Pipeline', {
       stages: [
@@ -115,7 +117,7 @@ describe('EC2 deploy action', () => {
   test.each([
     [cpactions.Ec2InstanceType.EC2, 'EC2'],
     [cpactions.Ec2InstanceType.SSM_MANAGED_NODE, 'SSM_MANAGED_NODE'],
-  ])('can be created with instanceType %s with load balancers', (instanceType, templateValue) => {
+  ])('can be created with instanceType %s with action deploy specifications, with load balancers', (instanceType, templateValue) => {
     // GIVEN
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const albTg = new elbv2.ApplicationTargetGroup(stack, 'ALB-TG', { vpc });
@@ -129,8 +131,10 @@ describe('EC2 deploy action', () => {
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
       targetGroups: [albTg, nlbTg],
-      targetDirectory: '/home/ec2-user/deploy',
-      postScript: 'scripts/post-deploy.sh',
+      deploySpecifications: cpactions.Ec2DeploySpecifications.inline({
+        targetDirectory: '/home/ec2-user/deploy',
+        postScript: 'scripts/post-deploy.sh',
+      }),
     });
     new codepipeline.Pipeline(stack, 'Pipeline', {
       stages: [
@@ -182,6 +186,50 @@ describe('EC2 deploy action', () => {
     });
   });
 
+  test('can be created with DeploySpec', () => {
+    // WHEN
+    const action = new cpactions.Ec2DeployAction({
+      actionName: 'EC2',
+      input: artifact,
+      instanceType: cpactions.Ec2InstanceType.EC2,
+      instanceTagKey: 'Target',
+      instanceTagValue: 'MyDeployTarget',
+      deploySpecifications: cpactions.Ec2DeploySpecifications.deploySpec({
+        deploySpec: 'deployspec.yml',
+      }),
+    });
+    new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        { stageName: 'Source', actions: [source] },
+        { stageName: 'Deploy', actions: [action] },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        {},
+        {
+          Actions: [
+            {
+              Name: 'EC2',
+              ActionTypeId: {
+                Category: 'Deploy',
+                Provider: 'EC2',
+              },
+              Configuration: {
+                InstanceTagKey: 'Target',
+                InstanceTagValue: 'MyDeployTarget',
+                InstanceType: 'EC2',
+                DeploySpec: 'deployspec.yml',
+              },
+            },
+          ],
+        },
+      ],
+    });
+  });
+
   test('can be created without instanceTagValue', () => {
     // WHEN
     const action = new cpactions.Ec2DeployAction({
@@ -189,8 +237,10 @@ describe('EC2 deploy action', () => {
       input: artifact,
       instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
-      targetDirectory: '/home/ec2-user/deploy',
-      postScript: 'scripts/post-deploy.sh',
+      deploySpecifications: cpactions.Ec2DeploySpecifications.inline({
+        targetDirectory: '/home/ec2-user/deploy',
+        postScript: 'scripts/post-deploy.sh',
+      }),
     });
     new codepipeline.Pipeline(stack, 'Pipeline', {
       stages: [
@@ -246,8 +296,10 @@ describe('EC2 deploy action', () => {
       instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
-      targetDirectory: '/home/ec2-user/deploy',
-      postScript: 'scripts/post-deploy.sh',
+      deploySpecifications: cpactions.Ec2DeploySpecifications.inline({
+        targetDirectory: '/home/ec2-user/deploy',
+        postScript: 'scripts/post-deploy.sh',
+      }),
       maxBatch: cpactions.Ec2MaxInstances.targets(2),
       maxError: cpactions.Ec2MaxInstances.targets(1),
     });
@@ -288,8 +340,10 @@ describe('EC2 deploy action', () => {
       instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
-      targetDirectory: '/home/ec2-user/deploy',
-      postScript: 'scripts/post-deploy.sh',
+      deploySpecifications: cpactions.Ec2DeploySpecifications.inline({
+        targetDirectory: '/home/ec2-user/deploy',
+        postScript: 'scripts/post-deploy.sh',
+      }),
       maxBatch: cpactions.Ec2MaxInstances.targets(maxBatchParam.valueAsNumber),
       maxError: cpactions.Ec2MaxInstances.targets(maxErrorParam.valueAsNumber),
     });
@@ -326,8 +380,10 @@ describe('EC2 deploy action', () => {
       instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
-      targetDirectory: '/home/ec2-user/deploy',
-      postScript: 'scripts/post-deploy.sh',
+      deploySpecifications: cpactions.Ec2DeploySpecifications.inline({
+        targetDirectory: '/home/ec2-user/deploy',
+        postScript: 'scripts/post-deploy.sh',
+      }),
       maxBatch: cpactions.Ec2MaxInstances.percentage(50),
       maxError: cpactions.Ec2MaxInstances.percentage(20),
     });
@@ -368,8 +424,10 @@ describe('EC2 deploy action', () => {
       instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
-      targetDirectory: '/home/ec2-user/deploy',
-      postScript: 'scripts/post-deploy.sh',
+      deploySpecifications: cpactions.Ec2DeploySpecifications.inline({
+        targetDirectory: '/home/ec2-user/deploy',
+        postScript: 'scripts/post-deploy.sh',
+      }),
       maxBatch: cpactions.Ec2MaxInstances.percentage(maxBatchParam.valueAsNumber),
       maxError: cpactions.Ec2MaxInstances.percentage(maxErrorParam.valueAsNumber),
     });
@@ -401,28 +459,47 @@ describe('EC2 deploy action', () => {
   test('throws when tag key is a token', () => {
     // GIVEN
     const tagKey = new cdk.CfnParameter(stack, 'TagKey');
-
-    // THEN
-    expect(() => new cpactions.Ec2DeployAction({
+    const action = new cpactions.Ec2DeployAction({
       actionName: 'EC2',
       input: artifact,
       instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: tagKey.valueAsString,
       instanceTagValue: 'MyDeployTarget',
-      targetDirectory: '/home/ec2-user/deploy',
-      postScript: 'scripts/post-deploy.sh',
+      deploySpecifications: cpactions.Ec2DeploySpecifications.inline({
+        targetDirectory: '/home/ec2-user/deploy',
+        postScript: 'scripts/post-deploy.sh',
+      }),
+    });
+
+    // THEN
+    expect(() => new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        { stageName: 'Source', actions: [source] },
+        { stageName: 'Deploy', actions: [action] },
+      ],
     })).toThrow('The instanceTagKey must be a non-empty concrete value.');
   });
 
   test('throws when targetDirectory is not an absolute path', () => {
-    expect(() => new cpactions.Ec2DeployAction({
+    // GIVEN
+    const action = new cpactions.Ec2DeployAction({
       actionName: 'EC2',
       input: artifact,
       instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
-      targetDirectory: 'deploy',
-      postScript: 'scripts/post-deploy.sh',
+      deploySpecifications: cpactions.Ec2DeploySpecifications.inline({
+        targetDirectory: 'deploy',
+        postScript: 'scripts/post-deploy.sh',
+      }),
+    });
+
+    // THEN
+    expect(() => new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        { stageName: 'Source', actions: [source] },
+        { stageName: 'Deploy', actions: [action] },
+      ],
     })).toThrow('The targetDirectory must be an absolute path.');
   });
 
@@ -433,8 +510,10 @@ describe('EC2 deploy action', () => {
       instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
-      targetDirectory: '/home/ec2-user/deploy',
-      postScript: 'scripts/post-deploy.sh',
+      deploySpecifications: cpactions.Ec2DeploySpecifications.inline({
+        targetDirectory: '/home/ec2-user/deploy',
+        postScript: 'scripts/post-deploy.sh',
+      }),
       maxBatch: cpactions.Ec2MaxInstances.targets(maxBatch),
     })).toThrow(`targets must be a positive integer. got ${maxBatch}`);
   });
@@ -446,8 +525,10 @@ describe('EC2 deploy action', () => {
       instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
-      targetDirectory: '/home/ec2-user/deploy',
-      postScript: 'scripts/post-deploy.sh',
+      deploySpecifications: cpactions.Ec2DeploySpecifications.inline({
+        targetDirectory: '/home/ec2-user/deploy',
+        postScript: 'scripts/post-deploy.sh',
+      }),
       maxBatch: cpactions.Ec2MaxInstances.percentage(maxBatch),
     })).toThrow(`percentage must be a positive integer between 1 and 100. got ${maxBatch}`);
   });
@@ -459,8 +540,10 @@ describe('EC2 deploy action', () => {
       instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
-      targetDirectory: '/home/ec2-user/deploy',
-      postScript: 'scripts/post-deploy.sh',
+      deploySpecifications: cpactions.Ec2DeploySpecifications.inline({
+        targetDirectory: '/home/ec2-user/deploy',
+        postScript: 'scripts/post-deploy.sh',
+      }),
       maxError: cpactions.Ec2MaxInstances.targets(maxError),
     })).toThrow(`targets must be a positive integer. got ${maxError}`);
   });
@@ -472,8 +555,10 @@ describe('EC2 deploy action', () => {
       instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
-      targetDirectory: '/home/ec2-user/deploy',
-      postScript: 'scripts/post-deploy.sh',
+      deploySpecifications: cpactions.Ec2DeploySpecifications.inline({
+        targetDirectory: '/home/ec2-user/deploy',
+        postScript: 'scripts/post-deploy.sh',
+      }),
       maxError: cpactions.Ec2MaxInstances.percentage(maxError),
     })).toThrow(`percentage must be a positive integer between 1 and 100. got ${maxError}`);
   });

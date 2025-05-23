@@ -946,9 +946,11 @@ const deployAction = new codepipeline_actions.Ec2DeployAction({
   instanceType: codepipeline_actions.Ec2InstanceType.EC2,
   instanceTagKey: 'Name',
   instanceTagValue: 'MyInstance',
-  targetDirectory: '/home/ec2-user/deploy',
-  preScript: 'scripts/pre-deploy.sh',
-  postScript: 'scripts/post-deploy.sh',
+  deploySpecifications: codepipeline_actions.Ec2DeploySpecifications.inline({
+    targetDirectory: '/home/ec2-user/deploy',
+    preScript: 'scripts/pre-deploy.sh',
+    postScript: 'scripts/post-deploy.sh',
+  }),
 });
 const deployStage = pipeline.addStage({
   stageName: 'Deploy',

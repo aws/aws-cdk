@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
-import { ArnFormat, Stack, Token, Tokenization, UnscopedValidationError } from '../../../core';
+import { ArnFormat, Stack, Token, Tokenization, UnscopedValidationError, ValidationError } from '../../../core';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 
@@ -34,10 +34,9 @@ export interface Ec2DeployActionProps extends codepipeline.CommonAwsActionProps 
   readonly instanceType: Ec2InstanceType;
 
   /**
-   * The location of the target directory you want to deploy to.
-   * Use an absolute path like `/home/ec2-user/deploy`.
+   * The deploy specifications.
    */
-  readonly targetDirectory: string;
+  readonly deploySpecifications: Ec2DeploySpecifications;
 
   /**
    * The number or percentage of instances that can deploy in parallel.
@@ -62,6 +61,28 @@ export interface Ec2DeployActionProps extends codepipeline.CommonAwsActionProps 
    * @default - No target groups
    */
   readonly targetGroups?: elbv2.ITargetGroup[];
+}
+
+/**
+ * The type of instances or SSM nodes created in Amazon EC2.
+ * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-EC2Deploy.html#action-reference-EC2Deploy-parameters
+ */
+export enum Ec2InstanceType {
+  /** Amazon EC2 instances */
+  EC2 = 'EC2',
+  /** AWS System Manager (SSM) managed nodes */
+  SSM_MANAGED_NODE = 'SSM_MANAGED_NODE',
+}
+
+/**
+ * Properties of `Ec2DeploySpecifications.inline()`.
+ */
+export interface Ec2DeploySpecificationsInlineProps {
+  /**
+   * The location of the target directory you want to deploy to.
+   * Use an absolute path like `/home/ec2-user/deploy`.
+   */
+  readonly targetDirectory: string;
 
   /**
    * Path to the executable script file that runs BEFORE the Deploy phase.
@@ -81,14 +102,72 @@ export interface Ec2DeployActionProps extends codepipeline.CommonAwsActionProps 
 }
 
 /**
- * The type of instances or SSM nodes created in Amazon EC2.
- * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-EC2Deploy.html#action-reference-EC2Deploy-parameters
+ * Properties of `Ec2DeploySpecifications.deploySpec()`.
  */
-export enum Ec2InstanceType {
-  /** Amazon EC2 instances */
-  EC2 = 'EC2',
-  /** AWS System Manager (SSM) managed nodes */
-  SSM_MANAGED_NODE = 'SSM_MANAGED_NODE',
+export interface Ec2DeploySpecificationsDeploySpecProps {
+  /**
+   * The path to the deploy spec file.
+   * It should be relative to the root directory of your uploaded source artifact.
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-EC2Deploy.html#action-reference-EC2Deploy-spec-reference
+   */
+  readonly deploySpec: string;
+}
+
+/**
+ * A deploy specifications for EC2 deploy action.
+ */
+export abstract class Ec2DeploySpecifications {
+  /**
+   * Store deploy specifications as action configurations.
+   */
+  public static inline(props: Ec2DeploySpecificationsInlineProps): Ec2DeploySpecifications {
+    return new Ec2DeploySpecificationsInline(props);
+  }
+
+  /**
+   * Store deploy specifications in a YAML-formatted DeploySpec file.
+   */
+  public static deploySpec(props: Ec2DeploySpecificationsDeploySpecProps): Ec2DeploySpecifications {
+    return new Ec2DeploySpecificationsDeploySpec(props);
+  }
+
+  /**
+   * The callback invoked when this deploy specifications is bound to an action.
+   *
+   * @param scope the Construct tree scope
+   * @returns the action configurations
+   */
+  abstract bind(scope: Construct): any;
+}
+
+class Ec2DeploySpecificationsInline extends Ec2DeploySpecifications {
+  constructor(private readonly props: Ec2DeploySpecificationsInlineProps) {
+    super();
+  }
+
+  bind(scope: Construct) {
+    if (!Token.isUnresolved(this.props.targetDirectory) && !this.props.targetDirectory.startsWith('/')) {
+      throw new ValidationError('The targetDirectory must be an absolute path.', scope);
+    }
+
+    return {
+      TargetDirectory: this.props.targetDirectory,
+      PreScript: this.props.preScript,
+      PostScript: this.props.postScript,
+    };
+  }
+}
+
+class Ec2DeploySpecificationsDeploySpec extends Ec2DeploySpecifications {
+  constructor(private readonly props: Ec2DeploySpecificationsDeploySpecProps) {
+    super();
+  }
+
+  bind(_scope: Construct) {
+    return {
+      DeploySpec: this.props.deploySpec,
+    };
+  }
 }
 
 /**
@@ -127,9 +206,7 @@ export abstract class Ec2MaxInstances {
  * CodePipeline Action to deploy EC2 instances.
  */
 export class Ec2DeployAction extends Action {
-  private readonly props: Ec2DeployActionProps;
-
-  constructor(props: Ec2DeployActionProps) {
+  constructor(private readonly props: Ec2DeployActionProps) {
     super({
       ...props,
       category: codepipeline.ActionCategory.DEPLOY,
@@ -137,18 +214,13 @@ export class Ec2DeployAction extends Action {
       artifactBounds: deployArtifactBounds(),
       inputs: [props.input],
     });
-
-    if (Token.isUnresolved(props.instanceTagKey)) {
-      throw new UnscopedValidationError('The instanceTagKey must be a non-empty concrete value.');
-    }
-    if (!Token.isUnresolved(props.targetDirectory) && !props.targetDirectory.startsWith('/')) {
-      throw new UnscopedValidationError('The targetDirectory must be an absolute path.');
-    }
-
-    this.props = props;
   }
 
   protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
+    if (Token.isUnresolved(this.props.instanceTagKey)) {
+      throw new ValidationError('The instanceTagKey must be a non-empty concrete value.', scope);
+    }
+
     // Permissions based on CodePipeline documentation:
     // https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-EC2Deploy.html#action-reference-EC2Deploy-permissions-action
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
@@ -203,12 +275,10 @@ export class Ec2DeployAction extends Action {
         InstanceTagKey: this.props.instanceTagKey,
         InstanceTagValue: this.props.instanceTagValue,
         InstanceType: this.props.instanceType,
-        TargetDirectory: this.props.targetDirectory,
         MaxBatch: this.props.maxBatch?.value,
         MaxError: this.props.maxError?.value,
         TargetGroupNameList: this.props.targetGroups?.length ? this.props.targetGroups.map((tg) => tg.targetGroupName).join(',') : undefined,
-        PreScript: this.props.preScript,
-        PostScript: this.props.postScript,
+        ...this.props.deploySpecifications.bind(scope),
       },
     };
   }
