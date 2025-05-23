@@ -541,6 +541,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
           permanent: true,
         }),
       });
+      // Ensure the redirect listener is created after the main listener,
+      // otherwise we run into a race condition that adds 2 listeners on port 80.
+      this.redirectListener.node.addDependency(this.listener);
     }
 
     let domainName = loadBalancer.loadBalancerDnsName;
