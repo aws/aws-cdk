@@ -633,7 +633,7 @@ rule.addTarget(new targets.RedshiftQuery(workgroup.attrWorkgroupWorkgroupArn, {
 
 Use the `SnsTopic` target to publish to an SNS Topic. 
 
-The code snippet below creates the scheduled event rule that publishes to an SNS Topic.
+The code snippet below creates the scheduled event rule that publishes to an SNS Topic using a resource policy.
 
 ```ts
 import * as sns from 'aws-cdk-lib/aws-sns';
@@ -647,10 +647,9 @@ const rule = new events.Rule(this, 'Rule', {
 rule.addTarget(new targets.SnsTopic(topic));
 ```
 
-You can pass an existing role with the proper permissions to be used for the target when the rule is triggered. The code snippet below uses an existing role and grants permissions to publish to the SNS Topic.
+Alternatively, a role can be attached to the target when the rule is triggered.
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 
 declare const topic: sns.ITopic;
@@ -659,9 +658,5 @@ const rule = new events.Rule(this, 'Rule', {
   schedule: events.Schedule.rate(cdk.Duration.hours(1)),
 });
 
-const role = new iam.Role(this, 'Role', {
-  assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
-});
-
-rule.addTarget(new targets.SnsTopic(topic, { role }));
+rule.addTarget(new targets.SnsTopic(topic, { authorizeUsingRole: true }));
 ```
