@@ -943,9 +943,11 @@ const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
 const deployAction = new codepipeline_actions.Ec2DeployAction({
   actionName: 'Ec2Deploy',
   input: sourceOutput,
+  instanceType: codepipeline_actions.Ec2InstanceType.EC2,
   instanceTagKey: 'Name',
   instanceTagValue: 'MyInstance',
   targetDirectory: '/home/ec2-user/deploy',
+  preScript: 'scripts/pre-deploy.sh',
   postScript: 'scripts/post-deploy.sh',
 });
 const deployStage = pipeline.addStage({

@@ -20,7 +20,6 @@ beforeEach(() => {
 
 describe('EC2 deploy action', () => {
   test.each([
-    [undefined, 'EC2'],
     [cpactions.Ec2InstanceType.EC2, 'EC2'],
     [cpactions.Ec2InstanceType.SSM_MANAGED_NODE, 'SSM_MANAGED_NODE'],
   ])('can be created with instanceType %s without load balancers', (instanceType, templateValue) => {
@@ -114,7 +113,6 @@ describe('EC2 deploy action', () => {
   });
 
   test.each([
-    [undefined, 'EC2'],
     [cpactions.Ec2InstanceType.EC2, 'EC2'],
     [cpactions.Ec2InstanceType.SSM_MANAGED_NODE, 'SSM_MANAGED_NODE'],
   ])('can be created with instanceType %s with load balancers', (instanceType, templateValue) => {
@@ -245,6 +243,7 @@ describe('EC2 deploy action', () => {
     const action = new cpactions.Ec2DeployAction({
       actionName: 'EC2',
       input: artifact,
+      instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
       targetDirectory: '/home/ec2-user/deploy',
@@ -286,6 +285,7 @@ describe('EC2 deploy action', () => {
     const action = new cpactions.Ec2DeployAction({
       actionName: 'EC2',
       input: artifact,
+      instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
       targetDirectory: '/home/ec2-user/deploy',
@@ -323,6 +323,7 @@ describe('EC2 deploy action', () => {
     const action = new cpactions.Ec2DeployAction({
       actionName: 'EC2',
       input: artifact,
+      instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
       targetDirectory: '/home/ec2-user/deploy',
@@ -364,6 +365,7 @@ describe('EC2 deploy action', () => {
     const action = new cpactions.Ec2DeployAction({
       actionName: 'EC2',
       input: artifact,
+      instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
       targetDirectory: '/home/ec2-user/deploy',
@@ -404,6 +406,7 @@ describe('EC2 deploy action', () => {
     expect(() => new cpactions.Ec2DeployAction({
       actionName: 'EC2',
       input: artifact,
+      instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: tagKey.valueAsString,
       instanceTagValue: 'MyDeployTarget',
       targetDirectory: '/home/ec2-user/deploy',
@@ -415,6 +418,7 @@ describe('EC2 deploy action', () => {
     expect(() => new cpactions.Ec2DeployAction({
       actionName: 'EC2',
       input: artifact,
+      instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
       targetDirectory: 'deploy',
@@ -426,6 +430,7 @@ describe('EC2 deploy action', () => {
     expect(() => new cpactions.Ec2DeployAction({
       actionName: 'EC2',
       input: artifact,
+      instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
       targetDirectory: '/home/ec2-user/deploy',
@@ -438,6 +443,7 @@ describe('EC2 deploy action', () => {
     expect(() => new cpactions.Ec2DeployAction({
       actionName: 'EC2',
       input: artifact,
+      instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
       targetDirectory: '/home/ec2-user/deploy',
@@ -450,6 +456,7 @@ describe('EC2 deploy action', () => {
     expect(() => new cpactions.Ec2DeployAction({
       actionName: 'EC2',
       input: artifact,
+      instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
       targetDirectory: '/home/ec2-user/deploy',
@@ -462,6 +469,7 @@ describe('EC2 deploy action', () => {
     expect(() => new cpactions.Ec2DeployAction({
       actionName: 'EC2',
       input: artifact,
+      instanceType: cpactions.Ec2InstanceType.EC2,
       instanceTagKey: 'Target',
       instanceTagValue: 'MyDeployTarget',
       targetDirectory: '/home/ec2-user/deploy',

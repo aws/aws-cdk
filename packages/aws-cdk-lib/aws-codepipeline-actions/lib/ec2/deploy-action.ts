@@ -30,10 +30,8 @@ export interface Ec2DeployActionProps extends codepipeline.CommonAwsActionProps 
    * The type of instances or SSM nodes created in Amazon EC2.
    *
    * You must have already created, tagged, and installed the SSM agent on all instances.
-   *
-   * @default Ec2InstanceType.EC2
    */
-  readonly instanceType?: Ec2InstanceType;
+  readonly instanceType: Ec2InstanceType;
 
   /**
    * The location of the target directory you want to deploy to.
@@ -204,7 +202,7 @@ export class Ec2DeployAction extends Action {
       configuration: {
         InstanceTagKey: this.props.instanceTagKey,
         InstanceTagValue: this.props.instanceTagValue,
-        InstanceType: this.props.instanceType ?? Ec2InstanceType.EC2,
+        InstanceType: this.props.instanceType,
         TargetDirectory: this.props.targetDirectory,
         MaxBatch: this.props.maxBatch?.value,
         MaxError: this.props.maxError?.value,

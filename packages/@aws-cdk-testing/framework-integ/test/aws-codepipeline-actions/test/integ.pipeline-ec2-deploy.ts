@@ -72,6 +72,7 @@ const sourceAction = new cpactions.S3SourceAction({
 
 const actionProps = {
   input: sourceArtifact,
+  instanceType: cpactions.Ec2InstanceType.EC2,
   instanceTagKey: 'Target',
   instanceTagValue: 'EC2-Target',
   targetDirectory: '/var/www/html',
