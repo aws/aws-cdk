@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.198.0](https://github.com/aws/aws-cdk/compare/v2.197.0...v2.198.0) (2025-05-22)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#34528](https://github.com/aws/aws-cdk/issues/34528)) ([92ad68a](https://github.com/aws/aws-cdk/commit/92ad68a4acae7786ee09734c9201e17c697544d1))
+
+
+### Bug Fixes
+
+* synthesis fails if `tree.json` exceeds 512MB ([#34478](https://github.com/aws/aws-cdk/issues/34478)) ([ff2f4af](https://github.com/aws/aws-cdk/commit/ff2f4af6302209d559c63124c37d4e761d6e4d80))
+* **aws-ecs-patterns:** add missing redirectHTTP dependency on default ALB listener ([7b9a07b](https://github.com/aws/aws-cdk/commit/7b9a07baa21f77c93073820782a63162c828c2e9))
+* **ecs-patterns:** add missing redirectHTTP dependency on main listener in ApplicationLoadBalancedFargateService ([#34510](https://github.com/aws/aws-cdk/issues/34510)) ([8e4ca14](https://github.com/aws/aws-cdk/commit/8e4ca1449196394101f1c4cb01f3767307df2b56)), closes [#34235](https://github.com/aws/aws-cdk/issues/34235) [/github.com/aws/aws-cdk/blob/2bdc07e45f836a710bc049d43a2462806af1c75d/packages/aws-cdk-lib/aws-ecs-patterns/lib/base/application-load-balanced-service-base.ts#L508](https://github.com/aws//github.com/aws/aws-cdk/blob/2bdc07e45f836a710bc049d43a2462806af1c75d/packages/aws-cdk-lib/aws-ecs-patterns/lib/base/application-load-balanced-service-base.ts/issues/L508)
+* **route53:** avoid setting unnecessary properties for Recovery Control type Route53 health check ([#34272](https://github.com/aws/aws-cdk/issues/34272)) ([6bc01c9](https://github.com/aws/aws-cdk/commit/6bc01c9d449f93c40fd90e34fcb5a0014b4e5841)), closes [#34262](https://github.com/aws/aws-cdk/issues/34262)
+* **ses-actions:** condition should use SourceAccount ([#34081](https://github.com/aws/aws-cdk/issues/34081)) ([f68b947](https://github.com/aws/aws-cdk/commit/f68b9479e6fdfec0447b2760ae5a97543e2c673d)), closes [#29811](https://github.com/aws/aws-cdk/issues/29811) [#30143](https://github.com/aws/aws-cdk/issues/30143) [#29833](https://github.com/aws/aws-cdk/issues/29833) [#30375](https://github.com/aws/aws-cdk/issues/30375)
+
+## [2.197.0](https://github.com/aws/aws-cdk/compare/v2.196.1...v2.197.0) (2025-05-20)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#34497](https://github.com/aws/aws-cdk/issues/34497)) ([6b7cdcf](https://github.com/aws/aws-cdk/commit/6b7cdcfc683b81523863d6610c1d5828fb75715e))
+* **cloudwatch:** anomaly detection alarms ([#31232](https://github.com/aws/aws-cdk/issues/31232)) ([e2aa338](https://github.com/aws/aws-cdk/commit/e2aa338a744ee367c23f5579dee974fac3210d19)), closes [#10540](https://github.com/aws/aws-cdk/issues/10540) [#10540](https://github.com/aws/aws-cdk/issues/10540)
+* **custom-resource:** update default node runtime to node22 in custom resources for commercial, china and gov regions ([#34319](https://github.com/aws/aws-cdk/issues/34319)) ([eb5e688](https://github.com/aws/aws-cdk/commit/eb5e688ebb6a72c2f106da73ecedb86749f159fa))
+
+
+### Bug Fixes
+
+* **core:** `platform` is ignored during asset bundling ([#33865](https://github.com/aws/aws-cdk/issues/33865)) ([91bec88](https://github.com/aws/aws-cdk/commit/91bec884da06d44b000e839121d5e2d8c5171daf)), closes [#30239](https://github.com/aws/aws-cdk/issues/30239)
+* **lambda-nodejs:** instantiating `NodejsFunction` without the `entry` property fails ([#34498](https://github.com/aws/aws-cdk/issues/34498)) ([36ce84d](https://github.com/aws/aws-cdk/commit/36ce84de93acdcdacf68f42720c5f12a5b8b2e9f))
+
 ## [2.196.1](https://github.com/aws/aws-cdk/compare/v2.196.0...v2.196.1) (2025-05-19)
 
 
