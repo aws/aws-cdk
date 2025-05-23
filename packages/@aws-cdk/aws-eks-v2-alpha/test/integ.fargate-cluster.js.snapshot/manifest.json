@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/48604463956184667a195b66893a75a03fc98c5aeadfe803736c72b9037d21bc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/72692454045e2c4871d1e68c7d145a59b9c127e4356aeddf983da4fe3c3dfbda.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -804,6 +804,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateTestClusterCoreDnsComputeTypePatch423C0C1E"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/ConfigCommand": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterConfigCommand2A490881"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/GetTokenCommand": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterGetTokenCommandA967CDC7"
           }
         ],
         "/eks-fargate-cluster-test-stack/FargateTestCluster/fargate-profile-default/PodExecutionRole": [

@@ -1017,6 +1017,40 @@
   }
  },
  "Outputs": {
+  "FargateClusterConfigCommand46D4A6C7": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "aws eks update-kubeconfig --name ",
+      {
+       "Ref": "FargateCluster019F03E8"
+      },
+      " --region ",
+      {
+       "Ref": "AWS::Region"
+      }
+     ]
+    ]
+   }
+  },
+  "FargateClusterGetTokenCommand4ADED7BB": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "aws eks get-token --cluster-name ",
+      {
+       "Ref": "FargateCluster019F03E8"
+      },
+      " --region ",
+      {
+       "Ref": "AWS::Region"
+      }
+     ]
+    ]
+   }
+  },
   "ExportsOutputRefDummyVpcB6C30D0C8DA8CBBF": {
    "Value": {
     "Ref": "DummyVpcB6C30D0C"
