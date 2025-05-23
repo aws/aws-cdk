@@ -52,19 +52,19 @@ export class SnsTopic implements events.IRuleTarget {
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sns-permissions
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
-    // role can't be passed when authorizeUsingRole is false
-    if (this.props.authorizeUsingRole === false && this.props.role) {
-      throw new ValidationError('Cannot provide a role when authorizeUsingRole is false', _rule);
+    let role: iam.IRole | undefined;
+    if (this.props.authorizeUsingRole ?? this.props.role) {
+      // role-based authorization
+      role = this.props.role ?? singletonEventRole(_rule);
+      this.topic.grantPublish(role);
+    } else {
+      // role can't be passed when authorizeUsingRole is false
+      if (this.props.role) {
+        throw new ValidationError('Cannot provide a role when authorizeUsingRole is false', _rule);
+      }
+      // deduplicated automatically
+      this.topic.grantPublish(new iam.ServicePrincipal('events.amazonaws.com'));
     }
-
-    // role is used when authorizeUsingRole is true or role is provided
-    const useRole = this.props.authorizeUsingRole || this.props.role;
-
-    // deduplicated automatically, only needed if role is not used
-    if (!useRole) this.topic.grantPublish(new iam.ServicePrincipal('events.amazonaws.com'));
-
-    const role = useRole ? this.props.role ?? singletonEventRole(_rule): undefined;
-    if (role) this.topic.grantPublish(role);
 
     if (this.props.deadLetterQueue) {
       addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
