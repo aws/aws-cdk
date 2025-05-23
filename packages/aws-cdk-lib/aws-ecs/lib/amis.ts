@@ -46,7 +46,14 @@ export enum WindowsOptimizedVersion {
  * Windows Server Core variants for ECS-optimized AMIs.
  */
 export enum WindowsOptimizedCoreVersion {
+  /**
+   * Windows Server 2022 Core
+   */
   SERVER_2022_CORE = '2022',
+
+  /**
+   * Windows Server 2019 Core
+   */
   SERVER_2019_CORE = '2019',
 }
 
