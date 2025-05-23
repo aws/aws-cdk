@@ -125,7 +125,7 @@ export abstract class Ec2MaxInstances {
 }
 
 /**
- * CodePipeline Action to deploy an ECS Service.
+ * CodePipeline Action to deploy EC2 instances.
  */
 export class Ec2DeployAction extends Action {
   private readonly props: Ec2DeployActionProps;
