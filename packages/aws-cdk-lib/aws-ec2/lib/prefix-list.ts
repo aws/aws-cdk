@@ -79,8 +79,15 @@ abstract class PrefixListBase extends Resource implements IPrefixList {
    */
   public abstract readonly prefixListId: string;
 
-  public readonly canInlineRule = false;
+  /**
+   * The network connections associated with this resource.
+   */
   public readonly connections: Connections = new Connections({ peer: this });
+
+  /**
+   * Whether the rule can be inlined into a SecurityGroup or not
+   */
+  public readonly canInlineRule = false;
 
   /**
    * A unique identifier for this connection peer
