@@ -1081,7 +1081,7 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   },
   // Fargate will try to ensure an even spread of newly launched tasks across
   // all AZs corresponding to the public subnets of the VPC.
-  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+  taskSubnets: { subnetType: ec2.SubnetType.PUBLIC },
 });
 ```
 
@@ -1110,9 +1110,6 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
-  // Fargate will try to ensure an even spread of newly launched tasks across
-  // all AZs corresponding to the public subnets of the VPC.
-  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
   availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
 });
 ```
