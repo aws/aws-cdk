@@ -1,7 +1,7 @@
 {
   "version": "41.0.0",
   "files": {
-    "f186e1e3b5e79fe44ebc7223aa416757c4867390b2da96d76d27f6f63709d5b8": {
+    "f9544818513e11f4fef198a351598026bb962634b5feb7e1cad1d4181d0217f1": {
       "displayName": "cdk-amplify-app Template",
       "source": {
         "path": "cdk-amplify-app.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f186e1e3b5e79fe44ebc7223aa416757c4867390b2da96d76d27f6f63709d5b8.json",
+          "objectKey": "f9544818513e11f4fef198a351598026bb962634b5feb7e1cad1d4181d0217f1.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
