@@ -553,6 +553,8 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_2_11_4 = AuroraMysqlEngineVersion.builtIn_5_7('2.11.4');
   /** Version "5.7.mysql_aurora.2.11.5". */
   public static readonly VER_2_11_5 = AuroraMysqlEngineVersion.builtIn_5_7('2.11.5');
+  /** Version "5.7.mysql_aurora.2.11.6". */
+  public static readonly VER_2_11_6 = AuroraMysqlEngineVersion.builtIn_5_7('2.11.6');
   /** Version "5.7.mysql_aurora.2.12.0". */
   public static readonly VER_2_12_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.12.0');
   /** Version "5.7.mysql_aurora.2.12.1". */
@@ -563,6 +565,8 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_2_12_3 = AuroraMysqlEngineVersion.builtIn_5_7('2.12.3');
   /** Version "5.7.mysql_aurora.2.12.4". */
   public static readonly VER_2_12_4 = AuroraMysqlEngineVersion.builtIn_5_7('2.12.4');
+  /** Version "5.7.mysql_aurora.2.12.5". */
+  public static readonly VER_2_12_5 = AuroraMysqlEngineVersion.builtIn_5_7('2.12.5');
   /**
    * Version "8.0.mysql_aurora.3.01.0"
    * @deprecated Aurora MySQL 8.0.mysql_aurora.3.01.0 is no longer supported by Amazon RDS.
@@ -621,6 +625,8 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_3_04_2 = AuroraMysqlEngineVersion.builtIn_8_0('3.04.2');
   /** Version "8.0.mysql_aurora.3.04.3". */
   public static readonly VER_3_04_3 = AuroraMysqlEngineVersion.builtIn_8_0('3.04.3');
+  /** Version "8.0.mysql_aurora.3.04.4". */
+  public static readonly VER_3_04_4 = AuroraMysqlEngineVersion.builtIn_8_0('3.04.4');
   /**
    * Version "8.0.mysql_aurora.3.05.0"
    * @deprecated Aurora MySQL 8.0.mysql_aurora.3.05.0 is no longer supported by Amazon RDS.
@@ -657,7 +663,7 @@ export class AuroraMysqlEngineVersion {
    *   defaults to "5.7"
    */
   public static of(auroraMysqlFullVersion: string, auroraMysqlMajorVersion?: string): AuroraMysqlEngineVersion {
-    return new AuroraMysqlEngineVersion(auroraMysqlFullVersion, auroraMysqlMajorVersion);
+    return new AuroraMysqlEngineVersion(auroraMysqlFullVersion, auroraMysqlMajorVersion, auroraMysqlMajorVersion ? auroraMysqlMajorVersion !== '5.7' : false);
   }
 
   private static builtIn_5_7(minorVersion: string, addStandardPrefix: boolean = true): AuroraMysqlEngineVersion {

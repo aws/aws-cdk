@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import { Content } from './content';
 import { CfnScript } from 'aws-cdk-lib/aws-gamelift';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Your configuration and custom game logic for use with Realtime Servers.
@@ -116,7 +117,11 @@ export interface ScriptProps {
  *
  * @resource AWS::GameLift::Script
  */
+@propertyInjectable
 export class Script extends ScriptBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-gamelift-alpha.Script';
+
   /**
    * Create a new realtime server script from s3 content
    */

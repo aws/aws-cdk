@@ -15,6 +15,7 @@ Currently supported are:
   - [Start a StepFunctions state machine](#start-a-stepfunctions-state-machine)
   - [Queue a Batch job](#queue-a-batch-job)
   - [Invoke an API Gateway REST API](#invoke-an-api-gateway-rest-api)
+  - [Invoke an API Gateway V2 HTTP API](#invoke-an-api-gateway-v2-http-api)
   - [Invoke an API Destination](#invoke-an-api-destination)
   - [Invoke an AppSync GraphQL API](#invoke-an-appsync-graphql-api)
   - [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
@@ -25,7 +26,7 @@ Currently supported are:
     - [Enable Amazon ECS Exec for ECS Task](#enable-amazon-ecs-exec-for-ecs-task)
     - [Overriding Values in the Task Definition](#overriding-values-in-the-task-definition)
   - [Schedule a Redshift query (serverless or cluster)](#schedule-a-redshift-query-serverless-or-cluster)
-  - [Put a message to a SQS Queue](#put-a-message-to-a-sqs-queue)
+  - [Publish to an SNS Topic](#publish-to-an-sns-topic)
 
 See the README of the `aws-cdk-lib/aws-events` library for more information on
 EventBridge.
@@ -630,22 +631,34 @@ rule.addTarget(new targets.RedshiftQuery(workgroup.attrWorkgroupWorkgroupArn, {
 }));
 ```
 
-## Put a message to a SQS Queue
+## Publish to an SNS Topic
 
-Use the `SqsQueue` target to put a message to a SQS Queue.
+Use the `SnsTopic` target to publish to an SNS Topic. 
 
-The code snippet below creates the scheduled event rule that put a message to SQS Queue.
+The code snippet below creates the scheduled event rule that publishes to an SNS Topic using a resource policy.
 
 ```ts
+import * as sns from 'aws-cdk-lib/aws-sns';
+
+declare const topic: sns.ITopic;
+
 const rule = new events.Rule(this, 'Rule', {
   schedule: events.Schedule.rate(cdk.Duration.hours(1)),
 });
 
-const queue = new sqs.Queue(this, 'queue');
+rule.addTarget(new targets.SnsTopic(topic));
+```
 
-rule.addTarget(new targets.SqsQueue(queue, {
-  message: RuleTargetInput.fromObject({
-    message: "content"
-  })
-}));
+Alternatively, a role can be attached to the target when the rule is triggered.
+
+```ts
+import * as sns from 'aws-cdk-lib/aws-sns';
+
+declare const topic: sns.ITopic;
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(new targets.SnsTopic(topic, { authorizeUsingRole: true }));
 ```

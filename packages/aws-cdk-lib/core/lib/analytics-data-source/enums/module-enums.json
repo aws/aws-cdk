@@ -768,6 +768,10 @@
     "UnreferencedFileRemovalStatus": [
       "Enabled",
       "Disabled"
+    ],
+    "TableBucketEncryption": [
+      "aws:kms",
+      "AES256"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts": {
@@ -1249,7 +1253,8 @@
       "AMAZON_OPENSEARCH_SERVICE",
       "HTTP",
       "RELATIONAL_DATABASE",
-      "AMAZON_BEDROCK_RUNTIME"
+      "AMAZON_BEDROCK_RUNTIME",
+      "AMAZON_ELASTICSEARCH"
     ],
     "LambdaInvokeType": [
       "EVENT",
@@ -2524,6 +2529,8 @@
       "is4gen",
       "storage7-intel-storage-optimized",
       "i7ie",
+      "io7_intel",
+      "i7i",
       "storage8-graviton",
       "i8g",
       "burstable2",
@@ -4765,6 +4772,11 @@
       "REQUIRE",
       "OPTIONAL"
     ],
+    "HttpsPolicy": [
+      "REQUIRE",
+      "REQUIRE_OPEN_ONLY",
+      "OPTIONAL"
+    ],
     "SuppressionReasons": [
       "BOUNCES_AND_COMPLAINTS",
       "BOUNCES_ONLY",
@@ -5293,7 +5305,8 @@
       "nodejs14.x",
       "nodejs16.x",
       "nodejs18.x",
-      "nodejs20.x"
+      "nodejs20.x",
+      "nodejs22.x"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/deps.ts": {
@@ -5430,7 +5443,8 @@
     ],
     "Runtime": [
       "nodejs18.x",
-      "nodejs20.x"
+      "nodejs20.x",
+      "nodejs22.x"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/triggers/lib/trigger.ts": {
