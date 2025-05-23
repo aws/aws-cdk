@@ -535,7 +535,8 @@
     },
     "Port": 80,
     "Protocol": "HTTP"
-   }
+   },
+   "DependsOn": ["myServiceLBPublicListenerC78AE8A0","myServiceLBPublicListenerECSGroup17E9BBC1"]
   },
   "myServiceCertificate152F9DDA": {
    "Type": "AWS::CertificateManager::Certificate",

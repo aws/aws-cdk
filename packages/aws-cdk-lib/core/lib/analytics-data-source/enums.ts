@@ -1720,6 +1720,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'is4gen',
     'storage7-intel-storage-optimized',
     'i7ie',
+    'io7_intel',
+    'i7i',
     'storage8-graviton',
     'i8g',
     'burstable2',
