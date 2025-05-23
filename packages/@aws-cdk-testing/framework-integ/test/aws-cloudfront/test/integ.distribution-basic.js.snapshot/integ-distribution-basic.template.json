@@ -134,6 +134,11 @@
     "PolicyDocument": {
      "Statement": [
       {
+       "Action": "cloudfront:ListDistributions",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
        "Action": "cloudfront:ListInvalidations",
        "Effect": "Allow",
        "Resource": {
