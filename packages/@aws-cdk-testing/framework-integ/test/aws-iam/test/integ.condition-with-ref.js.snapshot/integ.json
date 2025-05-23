@@ -9,5 +9,6 @@
       "assertionStack": "iam-test-condition-with-ref/DefaultTest/DeployAssert",
       "assertionStackName": "iamtestconditionwithrefDefaultTestDeployAssert5E44A64B"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

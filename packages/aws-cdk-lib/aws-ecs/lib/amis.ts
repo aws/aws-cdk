@@ -4,6 +4,7 @@ import * as ssm from '../../aws-ssm';
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct } from 'constructs';
+import { UnscopedValidationError } from '../../core';
 
 /**
  * The ECS-optimized AMI variant to use. For more information, see
@@ -218,40 +219,27 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
 
     // Multiple OS/version validation
     if (props?.windowsVersion && props?.windowsCoreVersion) {
-      throw new Error(
-        'Cannot specify both windowsVersion and windowsCoreVersion',
-      );
+      throw new UnscopedValidationError('Cannot specify both windowsVersion and windowsCoreVersion');
     }
 
     if (props && props.generation) {
       // generation defined in the props object
-      if (
-        props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX &&
-        this.hwType !== AmiHardwareType.STANDARD
-      ) {
-        throw new Error(
-          'Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead',
-        );
+      if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX && this.hwType !== AmiHardwareType.STANDARD) {
+        throw new UnscopedValidationError('Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
       } else if (props.windowsVersion || props.windowsCoreVersion) {
-        throw new Error(
-          'Windows image and Linux image generation cannot be both set',
-        );
+        throw new UnscopedValidationError('Windows image and Linux image generation cannot be both set');
       } else {
         this.generation = props.generation;
       }
     } else if (props && props.windowsVersion) {
       if (this.hwType !== AmiHardwareType.STANDARD) {
-        throw new Error(
-          'Windows Server does not support special hardware type',
-        );
+        throw new UnscopedValidationError('Windows Server does not support special hardware type');
       } else {
         this.windowsVersion = props.windowsVersion;
       }
     } else if (props && props.windowsCoreVersion) {
       if (this.hwType !== AmiHardwareType.STANDARD) {
-        throw new Error(
-          'Windows Server Core does not support special hardware type',
-        );
+        throw new UnscopedValidationError('Windows Server Core does not support special hardware type');
       } else {
         this.windowsCoreVersion = props.windowsCoreVersion;
       }
@@ -414,48 +402,29 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     this.windowsCoreVersion = props?.windowsCoreVersion;
 
     // Check for conflicting OS/version specifications
-    if (
-      (props?.windowsVersion && props?.windowsCoreVersion) ||
-      (props?.windowsVersion && props?.generation) ||
-      (props?.windowsCoreVersion && props?.generation)
-    ) {
-      throw new Error(
-        'Cannot specify more than one of: windowsVersion, windowsCoreVersion, or generation',
-      );
+    if ((props?.windowsVersion && props?.windowsCoreVersion) ||
+        (props?.windowsVersion && props?.generation) ||
+        (props?.windowsCoreVersion && props?.generation)) {
+      throw new UnscopedValidationError('Cannot specify more than one of: windowsVersion, windowsCoreVersion, or generation');
     }
 
     if (props?.windowsVersion) {
       // Validate hardware type compatibility with Windows
-      if (
-        props.hardwareType &&
-        props.hardwareType !== AmiHardwareType.STANDARD
-      ) {
-        throw new Error(
-          'Windows Server does not support special hardware types',
-        );
+      if (props.hardwareType && props.hardwareType !== AmiHardwareType.STANDARD) {
+        throw new UnscopedValidationError('Windows Server does not support special hardware types');
       }
       this.windowsVersion = props.windowsVersion;
     } else if (props?.windowsCoreVersion) {
       // Validate hardware type compatibility with Windows Core
-      if (
-        props.hardwareType &&
-        props.hardwareType !== AmiHardwareType.STANDARD
-      ) {
-        throw new Error(
-          'Windows Server Core does not support special hardware types',
-        );
+      if (props.hardwareType && props.hardwareType !== AmiHardwareType.STANDARD) {
+        throw new UnscopedValidationError('Windows Server Core does not support special hardware types');
       }
       this.windowsCoreVersion = props.windowsCoreVersion;
     } else if (props?.generation) {
       // Validate hardware type compatibility with Amazon Linux
-      if (
-        props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX &&
-        props.hardwareType &&
-        props.hardwareType !== AmiHardwareType.STANDARD
-      ) {
-        throw new Error(
-          'Amazon Linux does not support special hardware types. Use Amazon Linux 2 instead',
-        );
+      if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX &&
+          props.hardwareType && props.hardwareType !== AmiHardwareType.STANDARD) {
+        throw new UnscopedValidationError('Amazon Linux does not support special hardware types. Use Amazon Linux 2 instead');
       }
       this.generation = props.generation;
     } else {

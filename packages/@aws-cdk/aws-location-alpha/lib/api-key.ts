@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import { CfnAPIKey } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * An API Key
@@ -225,7 +226,11 @@ export enum AllowRoutesAction {
  *
  * @see https://docs.aws.amazon.com/location/latest/developerguide/using-apikeys.html
  */
+@propertyInjectable
 export class ApiKey extends Resource implements IApiKey {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-location-alpha.ApiKey';
+
   /**
    * Use an existing api key by name
    */
