@@ -230,7 +230,7 @@ describe('EC2 deploy action', () => {
             Action: 'ssm:SendCommand',
             Resource: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ec2:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':instance/*']] },
             Condition: {
-              Null: { 'aws:ResourceTag/Target': false },
+              Null: { 'aws:ResourceTag/Target': 'false' },
             },
           },
         ]),

@@ -19,23 +19,26 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
   restrictDefaultSecurityGroup: false,
 });
 
-const instances = [0, 1].map((index) => {
-  const userData = ec2.UserData.forLinux();
-  userData.addCommands( 'dnf install httpd -y', 'systemctl start httpd' );
-  const instance = new ec2.Instance(stack, `Instance${index}`, {
-    vpc,
-    vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
-    availabilityZone: vpc.publicSubnets[index].availabilityZone,
-    machineImage: ec2.MachineImage.latestAmazonLinux2023({ cpuType: ec2.AmazonLinuxCpuType.ARM_64 }),
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE4_GRAVITON, ec2.InstanceSize.MICRO),
-    ssmSessionPermissions: true,
-    userData,
+const instances = Object.fromEntries(Object.entries({ NoLB: [0, 1], LB: [0, 1] }).map(([tagValue, indexs]) => {
+  const innerInstances = indexs.map((index) => {
+    const userData = ec2.UserData.forLinux();
+    userData.addCommands('dnf install httpd -y', 'mkdir -p /var/www/html', 'touch /var/www/html/index.html', 'systemctl start httpd');
+    const instance = new ec2.Instance(stack, `Instance-${tagValue}-${index}`, {
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      availabilityZone: vpc.publicSubnets[index].availabilityZone,
+      machineImage: ec2.MachineImage.latestAmazonLinux2023({ cpuType: ec2.AmazonLinuxCpuType.ARM_64 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE4_GRAVITON, ec2.InstanceSize.MICRO),
+      ssmSessionPermissions: true,
+      userData,
+    });
+    instance.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+    instance.connections.allowFromAnyIpv4(ec2.Port.HTTP);
+    cdk.Tags.of(instance).add('EC2-Target', tagValue);
+    return instance;
   });
-  instance.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
-  instance.connections.allowFromAnyIpv4(ec2.Port.HTTP);
-  cdk.Tags.of(instance).add('Target', 'EC2-Target');
-  return instance;
-});
+  return [tagValue, innerInstances];
+}));
 
 const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc, internetFacing: true });
 const albTg = new elbv2.ApplicationTargetGroup(stack, 'ALB-TG', {
@@ -48,14 +51,15 @@ alb.addListener('HTTP', {
   defaultTargetGroups: [albTg],
 });
 alb.connections.allowToAnyIpv4(ec2.Port.HTTP);
-albTg.addTarget(...instances.map((instance) => new targets.InstanceTarget(instance)));
+albTg.addTarget(...instances.LB.map((instance) => new targets.InstanceTarget(instance)));
 
 const bucket = new s3.Bucket(stack, 'ArtifactBucket', {
   versioned: true,
   autoDeleteObjects: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
-instances.forEach((instance) => bucket.grantRead(instance));
+instances.LB.forEach((instance) => bucket.grantRead(instance));
+instances.NoLB.forEach((instance) => bucket.grantRead(instance));
 const deployment = new s3deployment.BucketDeployment(stack, 'ArtifactDeployment', {
   destinationBucket: bucket,
   sources: [s3deployment.Source.asset(path.join(__dirname, 'ec2-deploy', 'artifact.zip'))],
@@ -70,16 +74,45 @@ const sourceAction = new cpactions.S3SourceAction({
   bucketKey: cdk.Fn.select(0, deployment.objectKeys),
 });
 
-const actionProps = {
+const ec2ActionProps = {
   input: sourceArtifact,
   instanceType: cpactions.Ec2InstanceType.EC2,
-  instanceTagKey: 'Target',
-  instanceTagValue: 'EC2-Target',
-  targetDirectory: '/var/www/html',
+  instanceTagKey: 'EC2-Target',
   preScript: 'scripts/pre-deploy.sh',
   postScript: 'scripts/post-deploy.sh',
 };
-const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
+const ec2Pipeline = new codepipeline.Pipeline(stack, 'MyPipelineForEC2', {
+  pipelineType: codepipeline.PipelineType.V2,
+  artifactBucket: bucket,
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Deploy',
+      actions: [
+        new cpactions.Ec2DeployAction({
+          actionName: 'EC2-NoLB',
+          maxBatch: cpactions.Ec2MaxInstances.targets(2),
+          targetDirectory: '/var/www/html/NoLB',
+          instanceTagValue: 'NoLB',
+          ...ec2ActionProps,
+        }),
+        new cpactions.Ec2DeployAction({
+          actionName: 'EC2-LB',
+          maxBatch: cpactions.Ec2MaxInstances.targets(1),
+          targetGroups: [albTg],
+          targetDirectory: '/var/www/html/LB',
+          instanceTagValue: 'LB',
+          ...ec2ActionProps,
+        }),
+      ],
+    },
+  ],
+});
+
+const ssmPipeline = new codepipeline.Pipeline(stack, 'MyPipelineForSSMManagedNode', {
   pipelineType: codepipeline.PipelineType.V2,
   artifactBucket: bucket,
   stages: [
@@ -92,16 +125,13 @@ const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
       actions: [
         new cpactions.Ec2DeployAction({
           runOrder: 1,
-          actionName: 'EC2-NoLB',
-          maxBatch: cpactions.Ec2MaxInstances.targets(2),
-          ...actionProps,
-        }),
-        new cpactions.Ec2DeployAction({
-          runOrder: 2,
-          actionName: 'EC2-LB',
-          maxBatch: cpactions.Ec2MaxInstances.targets(1),
-          targetGroups: [albTg],
-          ...actionProps,
+          actionName: 'SSM-NoLB',
+          input: sourceArtifact,
+          instanceType: cpactions.Ec2InstanceType.SSM_MANAGED_NODE,
+          instanceTagKey: 'SSM-Target',
+          targetDirectory: '/var/www/html',
+          preScript: 'scripts/pre-deploy.sh',
+          postScript: 'scripts/post-deploy.sh',
         }),
       ],
     },
@@ -112,20 +142,28 @@ const integ = new IntegTest(app, 'ec2-deploy-action-integ', {
   testCases: [stack],
 });
 
-const pipelineExecutionId = integ.assertions
-  .awsApiCall('codepipeline', 'StartPipelineExecution', { name: pipeline.pipelineName })
+const ec2PipelineExecutionId = integ.assertions
+  .awsApiCall('codepipeline', 'StartPipelineExecution', { name: ec2Pipeline.pipelineName })
   .getAttString('pipelineExecutionId');
 const waitPipelieneSuccess = integ.assertions
-  .awsApiCall('codepipeline', 'GetPipelineExecution', { pipelineName: pipeline.pipelineName, pipelineExecutionId })
+  .awsApiCall('codepipeline', 'GetPipelineExecution', { pipelineName: ec2Pipeline.pipelineName, pipelineExecutionId: ec2PipelineExecutionId })
   .waitForAssertions({ interval: cdk.Duration.seconds(30) })
   .expect(ExpectedResult.objectLike({ pipelineExecution: { status: 'Succeeded' } }));
 waitPipelieneSuccess.next(
   integ.assertions
-    .httpApiCall(`http://${alb.loadBalancerDnsName}/index.html`)
+    .httpApiCall(`http://${alb.loadBalancerDnsName}/LB/index.html`)
     .expect(ExpectedResult.objectLike({ status: 200 })),
 );
-instances.forEach((instance) => waitPipelieneSuccess.next(
+instances.NoLB.forEach((instance) => waitPipelieneSuccess.next(
   integ.assertions
-    .httpApiCall(`http://${instance.instancePublicDnsName}/index.html`)
+    .httpApiCall(`http://${instance.instancePublicDnsName}/NoLB/index.html`)
     .expect(ExpectedResult.objectLike({ status: 200 })),
 ));
+
+const ssmPipelineExecutionId = integ.assertions
+  .awsApiCall('codepipeline', 'StartPipelineExecution', { name: ssmPipeline.pipelineName })
+  .getAttString('pipelineExecutionId');
+integ.assertions
+  .awsApiCall('codepipeline', 'GetPipelineExecution', { pipelineName: ssmPipeline.pipelineName, pipelineExecutionId: ssmPipelineExecutionId })
+  .waitForAssertions({ interval: cdk.Duration.seconds(30) })
+  .expect(ExpectedResult.objectLike({ pipelineExecution: { status: 'Succeeded' } }));

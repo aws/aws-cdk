@@ -295,10 +295,10 @@
     }
    }
   },
-  "Instance0InstanceSecurityGroup7897592D": {
+  "InstanceNoLB0InstanceSecurityGroup83B31944": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-cdk-codepipeline-ec2-deploy/Instance0/InstanceSecurityGroup",
+    "GroupDescription": "aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-0/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -317,12 +317,12 @@
     ],
     "Tags": [
      {
-      "Key": "Name",
-      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance0"
+      "Key": "EC2-Target",
+      "Value": "NoLB"
      },
      {
-      "Key": "Target",
-      "Value": "EC2-Target"
+      "Key": "Name",
+      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-0"
      }
     ],
     "VpcId": {
@@ -330,7 +330,7 @@
     }
    }
   },
-  "Instance0InstanceRole6927D768": {
+  "InstanceNoLB0InstanceRole145B7449": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -361,17 +361,17 @@
     ],
     "Tags": [
      {
-      "Key": "Name",
-      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance0"
+      "Key": "EC2-Target",
+      "Value": "NoLB"
      },
      {
-      "Key": "Target",
-      "Value": "EC2-Target"
+      "Key": "Name",
+      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-0"
      }
     ]
    }
   },
-  "Instance0InstanceRoleDefaultPolicy395C3CE0": {
+  "InstanceNoLB0InstanceRoleDefaultPolicyB8BC3ED4": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -409,25 +409,25 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "Instance0InstanceRoleDefaultPolicy395C3CE0",
+    "PolicyName": "InstanceNoLB0InstanceRoleDefaultPolicyB8BC3ED4",
     "Roles": [
      {
-      "Ref": "Instance0InstanceRole6927D768"
+      "Ref": "InstanceNoLB0InstanceRole145B7449"
      }
     ]
    }
   },
-  "Instance0InstanceProfile3A61DE71": {
+  "InstanceNoLB0InstanceProfile4D57E6D5": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
      {
-      "Ref": "Instance0InstanceRole6927D768"
+      "Ref": "InstanceNoLB0InstanceRole145B7449"
      }
     ]
    }
   },
-  "Instance008A4B15C": {
+  "InstanceNoLB0F5BE1CB1": {
    "Type": "AWS::EC2::Instance",
    "Properties": {
     "AvailabilityZone": {
@@ -439,7 +439,7 @@
      ]
     },
     "IamInstanceProfile": {
-     "Ref": "Instance0InstanceProfile3A61DE71"
+     "Ref": "InstanceNoLB0InstanceProfile4D57E6D5"
     },
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61arm64C96584B6F00A464EAD1953AFF4B05118Parameter"
@@ -448,7 +448,7 @@
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "Instance0InstanceSecurityGroup7897592D",
+       "InstanceNoLB0InstanceSecurityGroup83B31944",
        "GroupId"
       ]
      }
@@ -458,29 +458,29 @@
     },
     "Tags": [
      {
-      "Key": "Name",
-      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance0"
+      "Key": "EC2-Target",
+      "Value": "NoLB"
      },
      {
-      "Key": "Target",
-      "Value": "EC2-Target"
+      "Key": "Name",
+      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-0"
      }
     ],
     "UserData": {
-     "Fn::Base64": "#!/bin/bash\ndnf install httpd -y\nsystemctl start httpd"
+     "Fn::Base64": "#!/bin/bash\ndnf install httpd -y\nmkdir -p /var/www/html\ntouch /var/www/html/index.html\nsystemctl start httpd"
     }
    },
    "DependsOn": [
-    "Instance0InstanceRoleDefaultPolicy395C3CE0",
-    "Instance0InstanceRole6927D768"
+    "InstanceNoLB0InstanceRoleDefaultPolicyB8BC3ED4",
+    "InstanceNoLB0InstanceRole145B7449"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "Instance1InstanceSecurityGroup50841F79": {
+  "InstanceNoLB1InstanceSecurityGroupC650BF86": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-cdk-codepipeline-ec2-deploy/Instance1/InstanceSecurityGroup",
+    "GroupDescription": "aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-1/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -499,12 +499,12 @@
     ],
     "Tags": [
      {
-      "Key": "Name",
-      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance1"
+      "Key": "EC2-Target",
+      "Value": "NoLB"
      },
      {
-      "Key": "Target",
-      "Value": "EC2-Target"
+      "Key": "Name",
+      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-1"
      }
     ],
     "VpcId": {
@@ -512,7 +512,7 @@
     }
    }
   },
-  "Instance1InstanceRoleBC4D05C6": {
+  "InstanceNoLB1InstanceRole8D77ECB7": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -543,17 +543,17 @@
     ],
     "Tags": [
      {
-      "Key": "Name",
-      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance1"
+      "Key": "EC2-Target",
+      "Value": "NoLB"
      },
      {
-      "Key": "Target",
-      "Value": "EC2-Target"
+      "Key": "Name",
+      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-1"
      }
     ]
    }
   },
-  "Instance1InstanceRoleDefaultPolicyC4C8F339": {
+  "InstanceNoLB1InstanceRoleDefaultPolicy5FEB70E7": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -591,25 +591,25 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "Instance1InstanceRoleDefaultPolicyC4C8F339",
+    "PolicyName": "InstanceNoLB1InstanceRoleDefaultPolicy5FEB70E7",
     "Roles": [
      {
-      "Ref": "Instance1InstanceRoleBC4D05C6"
+      "Ref": "InstanceNoLB1InstanceRole8D77ECB7"
      }
     ]
    }
   },
-  "Instance1InstanceProfileC04770B7": {
+  "InstanceNoLB1InstanceProfile379D29A7": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
      {
-      "Ref": "Instance1InstanceRoleBC4D05C6"
+      "Ref": "InstanceNoLB1InstanceRole8D77ECB7"
      }
     ]
    }
   },
-  "Instance14BC3991D": {
+  "InstanceNoLB1840A0492": {
    "Type": "AWS::EC2::Instance",
    "Properties": {
     "AvailabilityZone": {
@@ -621,7 +621,7 @@
      ]
     },
     "IamInstanceProfile": {
-     "Ref": "Instance1InstanceProfileC04770B7"
+     "Ref": "InstanceNoLB1InstanceProfile379D29A7"
     },
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61arm64C96584B6F00A464EAD1953AFF4B05118Parameter"
@@ -630,7 +630,7 @@
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "Instance1InstanceSecurityGroup50841F79",
+       "InstanceNoLB1InstanceSecurityGroupC650BF86",
        "GroupId"
       ]
      }
@@ -640,21 +640,385 @@
     },
     "Tags": [
      {
-      "Key": "Name",
-      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance1"
+      "Key": "EC2-Target",
+      "Value": "NoLB"
      },
      {
-      "Key": "Target",
-      "Value": "EC2-Target"
+      "Key": "Name",
+      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-1"
      }
     ],
     "UserData": {
-     "Fn::Base64": "#!/bin/bash\ndnf install httpd -y\nsystemctl start httpd"
+     "Fn::Base64": "#!/bin/bash\ndnf install httpd -y\nmkdir -p /var/www/html\ntouch /var/www/html/index.html\nsystemctl start httpd"
     }
    },
    "DependsOn": [
-    "Instance1InstanceRoleDefaultPolicyC4C8F339",
-    "Instance1InstanceRoleBC4D05C6"
+    "InstanceNoLB1InstanceRoleDefaultPolicy5FEB70E7",
+    "InstanceNoLB1InstanceRole8D77ECB7"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "InstanceLB0InstanceSecurityGroupBF5438C2": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-codepipeline-ec2-deploy/Instance-LB-0/InstanceSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "from 0.0.0.0/0:80",
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "EC2-Target",
+      "Value": "LB"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance-LB-0"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "InstanceLB0InstanceRole16E2BE6A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonSSMManagedInstanceCore"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "EC2-Target",
+      "Value": "LB"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance-LB-0"
+     }
+    ]
+   }
+  },
+  "InstanceLB0InstanceRoleDefaultPolicyA7450842": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ArtifactBucket7410C9EF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ArtifactBucket7410C9EF",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "InstanceLB0InstanceRoleDefaultPolicyA7450842",
+    "Roles": [
+     {
+      "Ref": "InstanceLB0InstanceRole16E2BE6A"
+     }
+    ]
+   }
+  },
+  "InstanceLB0InstanceProfile99F8CE1D": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "InstanceLB0InstanceRole16E2BE6A"
+     }
+    ]
+   }
+  },
+  "InstanceLB0F4B9C387": {
+   "Type": "AWS::EC2::Instance",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "IamInstanceProfile": {
+     "Ref": "InstanceLB0InstanceProfile99F8CE1D"
+    },
+    "ImageId": {
+     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61arm64C96584B6F00A464EAD1953AFF4B05118Parameter"
+    },
+    "InstanceType": "t4g.micro",
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "InstanceLB0InstanceSecurityGroupBF5438C2",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    "Tags": [
+     {
+      "Key": "EC2-Target",
+      "Value": "LB"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance-LB-0"
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": "#!/bin/bash\ndnf install httpd -y\nmkdir -p /var/www/html\ntouch /var/www/html/index.html\nsystemctl start httpd"
+    }
+   },
+   "DependsOn": [
+    "InstanceLB0InstanceRoleDefaultPolicyA7450842",
+    "InstanceLB0InstanceRole16E2BE6A"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "InstanceLB1InstanceSecurityGroup71398A6C": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-codepipeline-ec2-deploy/Instance-LB-1/InstanceSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "from 0.0.0.0/0:80",
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "EC2-Target",
+      "Value": "LB"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance-LB-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "InstanceLB1InstanceRoleEE4579FC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonSSMManagedInstanceCore"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "EC2-Target",
+      "Value": "LB"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance-LB-1"
+     }
+    ]
+   }
+  },
+  "InstanceLB1InstanceRoleDefaultPolicy93111654": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ArtifactBucket7410C9EF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ArtifactBucket7410C9EF",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "InstanceLB1InstanceRoleDefaultPolicy93111654",
+    "Roles": [
+     {
+      "Ref": "InstanceLB1InstanceRoleEE4579FC"
+     }
+    ]
+   }
+  },
+  "InstanceLB1InstanceProfileBD0293BE": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "InstanceLB1InstanceRoleEE4579FC"
+     }
+    ]
+   }
+  },
+  "InstanceLB10E6184C8": {
+   "Type": "AWS::EC2::Instance",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "IamInstanceProfile": {
+     "Ref": "InstanceLB1InstanceProfileBD0293BE"
+    },
+    "ImageId": {
+     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61arm64C96584B6F00A464EAD1953AFF4B05118Parameter"
+    },
+    "InstanceType": "t4g.micro",
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "InstanceLB1InstanceSecurityGroup71398A6C",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
+    },
+    "Tags": [
+     {
+      "Key": "EC2-Target",
+      "Value": "LB"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codepipeline-ec2-deploy/Instance-LB-1"
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": "#!/bin/bash\ndnf install httpd -y\nmkdir -p /var/www/html\ntouch /var/www/html/index.html\nsystemctl start httpd"
+    }
+   },
+   "DependsOn": [
+    "InstanceLB1InstanceRoleDefaultPolicy93111654",
+    "InstanceLB1InstanceRoleEE4579FC"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -758,12 +1122,12 @@
     "Targets": [
      {
       "Id": {
-       "Ref": "Instance008A4B15C"
+       "Ref": "InstanceLB0F4B9C387"
       }
      },
      {
       "Id": {
-       "Ref": "Instance14BC3991D"
+       "Ref": "InstanceLB10E6184C8"
       }
      }
     ],
@@ -936,7 +1300,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8a84a8f465fbe0c48af2c256847ec9abfe095d23781b749728b998315f3ad732.zip"
+     "S3Key": "b8ab94266984268614c3fb2824a1c3a55395746c48b28c003b08bc1d08688f3e.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1127,7 +1491,7 @@
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
    ]
   },
-  "MyPipelineRoleC0D47CA4": {
+  "MyPipelineForEC2Role37401503": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -1144,7 +1508,7 @@
     }
    }
   },
-  "MyPipelineRoleDefaultPolicy34F09EFA": {
+  "MyPipelineForEC2RoleDefaultPolicy0E7C4BA3": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1192,19 +1556,19 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "MyPipelineDeployEC2LBCodePipelineActionRoleD964DCD4",
+          "MyPipelineForEC2DeployEC2LBCodePipelineActionRole693D7B3D",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "MyPipelineDeployEC2NoLBCodePipelineActionRole0BEB25A3",
+          "MyPipelineForEC2DeployEC2NoLBCodePipelineActionRole2EF1A1B0",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "MyPipelineSourceCodePipelineActionRoleAA05D76F",
+          "MyPipelineForEC2SourceCodePipelineActionRole2D004A9F",
           "Arn"
          ]
         }
@@ -1213,15 +1577,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyPipelineRoleDefaultPolicy34F09EFA",
+    "PolicyName": "MyPipelineForEC2RoleDefaultPolicy0E7C4BA3",
     "Roles": [
      {
-      "Ref": "MyPipelineRoleC0D47CA4"
+      "Ref": "MyPipelineForEC2Role37401503"
      }
     ]
    }
   },
-  "MyPipelineAED38ECF": {
+  "MyPipelineForEC26F90FA9C": {
    "Type": "AWS::CodePipeline::Pipeline",
    "Properties": {
     "ArtifactStore": {
@@ -1233,7 +1597,7 @@
     "PipelineType": "V2",
     "RoleArn": {
      "Fn::GetAtt": [
-      "MyPipelineRoleC0D47CA4",
+      "MyPipelineForEC2Role37401503",
       "Arn"
      ]
     },
@@ -1271,7 +1635,7 @@
         ],
         "RoleArn": {
          "Fn::GetAtt": [
-          "MyPipelineSourceCodePipelineActionRoleAA05D76F",
+          "MyPipelineForEC2SourceCodePipelineActionRole2D004A9F",
           "Arn"
          ]
         },
@@ -1290,10 +1654,10 @@
          "Version": "1"
         },
         "Configuration": {
-         "InstanceTagKey": "Target",
-         "InstanceTagValue": "EC2-Target",
+         "InstanceTagKey": "EC2-Target",
+         "InstanceTagValue": "NoLB",
          "InstanceType": "EC2",
-         "TargetDirectory": "/var/www/html",
+         "TargetDirectory": "/var/www/html/NoLB",
          "MaxBatch": "2",
          "PreScript": "scripts/pre-deploy.sh",
          "PostScript": "scripts/post-deploy.sh"
@@ -1306,7 +1670,7 @@
         "Name": "EC2-NoLB",
         "RoleArn": {
          "Fn::GetAtt": [
-          "MyPipelineDeployEC2NoLBCodePipelineActionRole0BEB25A3",
+          "MyPipelineForEC2DeployEC2NoLBCodePipelineActionRole2EF1A1B0",
           "Arn"
          ]
         },
@@ -1320,10 +1684,10 @@
          "Version": "1"
         },
         "Configuration": {
-         "InstanceTagKey": "Target",
-         "InstanceTagValue": "EC2-Target",
+         "InstanceTagKey": "EC2-Target",
+         "InstanceTagValue": "LB",
          "InstanceType": "EC2",
-         "TargetDirectory": "/var/www/html",
+         "TargetDirectory": "/var/www/html/LB",
          "MaxBatch": "1",
          "TargetGroupNameList": {
           "Fn::GetAtt": [
@@ -1342,11 +1706,11 @@
         "Name": "EC2-LB",
         "RoleArn": {
          "Fn::GetAtt": [
-          "MyPipelineDeployEC2LBCodePipelineActionRoleD964DCD4",
+          "MyPipelineForEC2DeployEC2LBCodePipelineActionRole693D7B3D",
           "Arn"
          ]
         },
-        "RunOrder": 2
+        "RunOrder": 1
        }
       ],
       "Name": "Deploy"
@@ -1354,11 +1718,11 @@
     ]
    },
    "DependsOn": [
-    "MyPipelineRoleDefaultPolicy34F09EFA",
-    "MyPipelineRoleC0D47CA4"
+    "MyPipelineForEC2RoleDefaultPolicy0E7C4BA3",
+    "MyPipelineForEC2Role37401503"
    ]
   },
-  "MyPipelineSourceCodePipelineActionRoleAA05D76F": {
+  "MyPipelineForEC2SourceCodePipelineActionRole2D004A9F": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -1369,7 +1733,7 @@
        "Principal": {
         "AWS": {
          "Fn::GetAtt": [
-          "MyPipelineRoleC0D47CA4",
+          "MyPipelineForEC2Role37401503",
           "Arn"
          ]
         }
@@ -1380,7 +1744,7 @@
     }
    }
   },
-  "MyPipelineSourceCodePipelineActionRoleDefaultPolicy10C831A9": {
+  "MyPipelineForEC2SourceCodePipelineActionRoleDefaultPolicy2874064A": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1463,15 +1827,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyPipelineSourceCodePipelineActionRoleDefaultPolicy10C831A9",
+    "PolicyName": "MyPipelineForEC2SourceCodePipelineActionRoleDefaultPolicy2874064A",
     "Roles": [
      {
-      "Ref": "MyPipelineSourceCodePipelineActionRoleAA05D76F"
+      "Ref": "MyPipelineForEC2SourceCodePipelineActionRole2D004A9F"
      }
     ]
    }
   },
-  "MyPipelineDeployEC2NoLBCodePipelineActionRole0BEB25A3": {
+  "MyPipelineForEC2DeployEC2NoLBCodePipelineActionRole2EF1A1B0": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -1482,7 +1846,7 @@
        "Principal": {
         "AWS": {
          "Fn::GetAtt": [
-          "MyPipelineRoleC0D47CA4",
+          "MyPipelineForEC2Role37401503",
           "Arn"
          ]
         }
@@ -1493,7 +1857,7 @@
     }
    }
   },
-  "MyPipelineDeployEC2NoLBCodePipelineActionRoleDefaultPolicy98D89899": {
+  "MyPipelineForEC2DeployEC2NoLBCodePipelineActionRoleDefaultPolicy4571BADB": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1536,7 +1900,7 @@
           },
           ":log-group:/aws/codepipeline/",
           {
-           "Ref": "MyPipelineAED38ECF"
+           "Ref": "MyPipelineForEC26F90FA9C"
           },
           ":*"
          ]
@@ -1547,7 +1911,7 @@
        "Action": "ssm:SendCommand",
        "Condition": {
         "StringEquals": {
-         "aws:ResourceTag/Target": "EC2-Target"
+         "aws:ResourceTag/EC2-Target": "NoLB"
         }
        },
        "Effect": "Allow",
@@ -1613,15 +1977,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyPipelineDeployEC2NoLBCodePipelineActionRoleDefaultPolicy98D89899",
+    "PolicyName": "MyPipelineForEC2DeployEC2NoLBCodePipelineActionRoleDefaultPolicy4571BADB",
     "Roles": [
      {
-      "Ref": "MyPipelineDeployEC2NoLBCodePipelineActionRole0BEB25A3"
+      "Ref": "MyPipelineForEC2DeployEC2NoLBCodePipelineActionRole2EF1A1B0"
      }
     ]
    }
   },
-  "MyPipelineDeployEC2LBCodePipelineActionRoleD964DCD4": {
+  "MyPipelineForEC2DeployEC2LBCodePipelineActionRole693D7B3D": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -1632,7 +1996,7 @@
        "Principal": {
         "AWS": {
          "Fn::GetAtt": [
-          "MyPipelineRoleC0D47CA4",
+          "MyPipelineForEC2Role37401503",
           "Arn"
          ]
         }
@@ -1643,7 +2007,7 @@
     }
    }
   },
-  "MyPipelineDeployEC2LBCodePipelineActionRoleDefaultPolicyCE046AB3": {
+  "MyPipelineForEC2DeployEC2LBCodePipelineActionRoleDefaultPolicyE8E2559B": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1686,7 +2050,7 @@
           },
           ":log-group:/aws/codepipeline/",
           {
-           "Ref": "MyPipelineAED38ECF"
+           "Ref": "MyPipelineForEC26F90FA9C"
           },
           ":*"
          ]
@@ -1697,7 +2061,7 @@
        "Action": "ssm:SendCommand",
        "Condition": {
         "StringEquals": {
-         "aws:ResourceTag/Target": "EC2-Target"
+         "aws:ResourceTag/EC2-Target": "LB"
         }
        },
        "Effect": "Allow",
@@ -1773,10 +2137,460 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyPipelineDeployEC2LBCodePipelineActionRoleDefaultPolicyCE046AB3",
+    "PolicyName": "MyPipelineForEC2DeployEC2LBCodePipelineActionRoleDefaultPolicyE8E2559B",
     "Roles": [
      {
-      "Ref": "MyPipelineDeployEC2LBCodePipelineActionRoleD964DCD4"
+      "Ref": "MyPipelineForEC2DeployEC2LBCodePipelineActionRole693D7B3D"
+     }
+    ]
+   }
+  },
+  "MyPipelineForSSMManagedNodeRoleA4C1F4B5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codepipeline.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyPipelineForSSMManagedNodeRoleDefaultPolicy351C7D17": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ArtifactBucket7410C9EF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ArtifactBucket7410C9EF",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyPipelineForSSMManagedNodeDeploySSMNoLBCodePipelineActionRole3A1FD28F",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "MyPipelineForSSMManagedNodeSourceCodePipelineActionRoleF1BD61B4",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyPipelineForSSMManagedNodeRoleDefaultPolicy351C7D17",
+    "Roles": [
+     {
+      "Ref": "MyPipelineForSSMManagedNodeRoleA4C1F4B5"
+     }
+    ]
+   }
+  },
+  "MyPipelineForSSMManagedNodeB362EEB7": {
+   "Type": "AWS::CodePipeline::Pipeline",
+   "Properties": {
+    "ArtifactStore": {
+     "Location": {
+      "Ref": "ArtifactBucket7410C9EF"
+     },
+     "Type": "S3"
+    },
+    "PipelineType": "V2",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "MyPipelineForSSMManagedNodeRoleA4C1F4B5",
+      "Arn"
+     ]
+    },
+    "Stages": [
+     {
+      "Actions": [
+       {
+        "ActionTypeId": {
+         "Category": "Source",
+         "Owner": "AWS",
+         "Provider": "S3",
+         "Version": "1"
+        },
+        "Configuration": {
+         "S3Bucket": {
+          "Ref": "ArtifactBucket7410C9EF"
+         },
+         "S3ObjectKey": {
+          "Fn::Select": [
+           0,
+           {
+            "Fn::GetAtt": [
+             "ArtifactDeploymentCustomResource42DDE719",
+             "SourceObjectKeys"
+            ]
+           }
+          ]
+         }
+        },
+        "Name": "Source",
+        "OutputArtifacts": [
+         {
+          "Name": "SourceArtifact"
+         }
+        ],
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "MyPipelineForSSMManagedNodeSourceCodePipelineActionRoleF1BD61B4",
+          "Arn"
+         ]
+        },
+        "RunOrder": 1
+       }
+      ],
+      "Name": "Source"
+     },
+     {
+      "Actions": [
+       {
+        "ActionTypeId": {
+         "Category": "Deploy",
+         "Owner": "AWS",
+         "Provider": "EC2",
+         "Version": "1"
+        },
+        "Configuration": {
+         "InstanceTagKey": "SSM-Target",
+         "InstanceType": "SSM_MANAGED_NODE",
+         "TargetDirectory": "/var/www/html",
+         "PreScript": "scripts/pre-deploy.sh",
+         "PostScript": "scripts/post-deploy.sh"
+        },
+        "InputArtifacts": [
+         {
+          "Name": "SourceArtifact"
+         }
+        ],
+        "Name": "SSM-NoLB",
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "MyPipelineForSSMManagedNodeDeploySSMNoLBCodePipelineActionRole3A1FD28F",
+          "Arn"
+         ]
+        },
+        "RunOrder": 1
+       }
+      ],
+      "Name": "Deploy"
+     }
+    ]
+   },
+   "DependsOn": [
+    "MyPipelineForSSMManagedNodeRoleDefaultPolicy351C7D17",
+    "MyPipelineForSSMManagedNodeRoleA4C1F4B5"
+   ]
+  },
+  "MyPipelineForSSMManagedNodeSourceCodePipelineActionRoleF1BD61B4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "MyPipelineForSSMManagedNodeRoleA4C1F4B5",
+          "Arn"
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyPipelineForSSMManagedNodeSourceCodePipelineActionRoleDefaultPolicyBFA753D7": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ArtifactBucket7410C9EF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ArtifactBucket7410C9EF",
+             "Arn"
+            ]
+           },
+           "/",
+           {
+            "Fn::Select": [
+             0,
+             {
+              "Fn::GetAtt": [
+               "ArtifactDeploymentCustomResource42DDE719",
+               "SourceObjectKeys"
+              ]
+             }
+            ]
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ArtifactBucket7410C9EF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ArtifactBucket7410C9EF",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyPipelineForSSMManagedNodeSourceCodePipelineActionRoleDefaultPolicyBFA753D7",
+    "Roles": [
+     {
+      "Ref": "MyPipelineForSSMManagedNodeSourceCodePipelineActionRoleF1BD61B4"
+     }
+    ]
+   }
+  },
+  "MyPipelineForSSMManagedNodeDeploySSMNoLBCodePipelineActionRole3A1FD28F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "MyPipelineForSSMManagedNodeRoleA4C1F4B5",
+          "Arn"
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyPipelineForSSMManagedNodeDeploySSMNoLBCodePipelineActionRoleDefaultPolicyAAEE3709": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ec2:DescribeInstances",
+        "elasticloadbalancing:DescribeTargetGroupAttributes",
+        "elasticloadbalancing:DescribeTargetGroups",
+        "elasticloadbalancing:DescribeTargetHealth",
+        "ssm:CancelCommand",
+        "ssm:DescribeInstanceInformation",
+        "ssm:ListCommandInvocations"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:/aws/codepipeline/",
+          {
+           "Ref": "MyPipelineForSSMManagedNodeB362EEB7"
+          },
+          ":*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ssm:SendCommand",
+       "Condition": {
+        "Null": {
+         "aws:ResourceTag/SSM-Target": "false"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ec2:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":instance/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ssm:SendCommand",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ssm:",
+           {
+            "Ref": "AWS::Region"
+           },
+           "::document/AWS-RunPowerShellScript"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ssm:",
+           {
+            "Ref": "AWS::Region"
+           },
+           "::document/AWS-RunShellScript"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyPipelineForSSMManagedNodeDeploySSMNoLBCodePipelineActionRoleDefaultPolicyAAEE3709",
+    "Roles": [
+     {
+      "Ref": "MyPipelineForSSMManagedNodeDeploySSMNoLBCodePipelineActionRole3A1FD28F"
      }
     ]
    }
@@ -1924,12 +2738,12 @@
   }
  },
  "Outputs": {
-  "ExportsOutputRefMyPipelineAED38ECFE2E6B334": {
+  "ExportsOutputRefMyPipelineForEC26F90FA9CFF5C9763": {
    "Value": {
-    "Ref": "MyPipelineAED38ECF"
+    "Ref": "MyPipelineForEC26F90FA9C"
    },
    "Export": {
-    "Name": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputRefMyPipelineAED38ECFE2E6B334"
+    "Name": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputRefMyPipelineForEC26F90FA9CFF5C9763"
    }
   },
   "ExportsOutputFnGetAttALBAEE750D2DNSNameE026139E": {
@@ -1943,26 +2757,34 @@
     "Name": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputFnGetAttALBAEE750D2DNSNameE026139E"
    }
   },
-  "ExportsOutputFnGetAttInstance008A4B15CPublicDnsName211D6617": {
+  "ExportsOutputFnGetAttInstanceNoLB0F5BE1CB1PublicDnsNameAF6BAD8D": {
    "Value": {
     "Fn::GetAtt": [
-     "Instance008A4B15C",
+     "InstanceNoLB0F5BE1CB1",
      "PublicDnsName"
     ]
    },
    "Export": {
-    "Name": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputFnGetAttInstance008A4B15CPublicDnsName211D6617"
+    "Name": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputFnGetAttInstanceNoLB0F5BE1CB1PublicDnsNameAF6BAD8D"
    }
   },
-  "ExportsOutputFnGetAttInstance14BC3991DPublicDnsName634B3316": {
+  "ExportsOutputFnGetAttInstanceNoLB1840A0492PublicDnsName4FB1136A": {
    "Value": {
     "Fn::GetAtt": [
-     "Instance14BC3991D",
+     "InstanceNoLB1840A0492",
      "PublicDnsName"
     ]
    },
    "Export": {
-    "Name": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputFnGetAttInstance14BC3991DPublicDnsName634B3316"
+    "Name": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputFnGetAttInstanceNoLB1840A0492PublicDnsName4FB1136A"
+   }
+  },
+  "ExportsOutputRefMyPipelineForSSMManagedNodeB362EEB7C86531E5": {
+   "Value": {
+    "Ref": "MyPipelineForSSMManagedNodeB362EEB7"
+   },
+   "Export": {
+    "Name": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputRefMyPipelineForSSMManagedNodeB362EEB7C86531E5"
    }
   }
  },

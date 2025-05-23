@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallcodepipelineStartPipelineExecutionad2a8e13b355c597dd9ba3bb8c937882": {
+  "AwsApiCallcodepipelineStartPipelineExecutionfeb16ff3b44ba76d9aef304be26cbe3d": {
    "Type": "Custom::DeployAssert@SdkCallcodepipelineStartPipelineExecuti",
    "Properties": {
     "ServiceToken": {
@@ -18,7 +18,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputRefMyPipelineAED38ECFE2E6B334"
+         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputRefMyPipelineForEC26F90FA9CFF5C9763"
         },
         "\""
        ]
@@ -29,7 +29,7 @@
     "outputPaths": [
      "pipelineExecutionId"
     ],
-    "salt": "1747645882173"
+    "salt": "1747993109903"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -86,6 +86,33 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "codepipeline:StartPipelineExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "codepipeline:GetPipelineExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -109,7 +136,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -121,7 +148,7 @@
     }
    }
   },
-  "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0": {
+  "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17": {
    "Type": "Custom::DeployAssert@SdkCallcodepipelineGetPipelineExecution",
    "Properties": {
     "ServiceToken": {
@@ -134,7 +161,7 @@
     "api": "GetPipelineExecution",
     "expected": "{\"$ObjectLike\":{\"pipelineExecution\":{\"status\":\"Succeeded\"}}}",
     "stateMachineArn": {
-     "Ref": "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitFor66DAA5A7"
+     "Ref": "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForFD8525EB"
     },
     "parameters": {
      "pipelineName": {
@@ -143,7 +170,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputRefMyPipelineAED38ECFE2E6B334"
+         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputRefMyPipelineForEC26F90FA9CFF5C9763"
         },
         "\""
        ]
@@ -156,7 +183,7 @@
         "\"",
         {
          "Fn::GetAtt": [
-          "AwsApiCallcodepipelineStartPipelineExecutionad2a8e13b355c597dd9ba3bb8c937882",
+          "AwsApiCallcodepipelineStartPipelineExecutionfeb16ff3b44ba76d9aef304be26cbe3d",
           "apiCallResponse.pipelineExecutionId"
          ]
         },
@@ -166,12 +193,12 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1747645882174"
+    "salt": "1747993109904"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForIsCompleteProviderInvokeD9F10281": {
+  "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForIsCompleteProviderInvoke6BF78B4C": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -183,13 +210,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForRole162EA17D",
+      "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForRoleBDAD634A",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForTimeoutProviderInvokeFBF4C27C": {
+  "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForTimeoutProviderInvokeA1E5E769": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -201,13 +228,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForRole162EA17D",
+      "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForRoleBDAD634A",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForRole162EA17D": {
+  "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForRoleBDAD634A": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -252,7 +279,7 @@
     ]
    }
   },
-  "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitFor66DAA5A7": {
+  "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForFD8525EB": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
     "DefinitionString": {
@@ -279,13 +306,13 @@
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForRole162EA17D",
+      "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForRoleBDAD634A",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForRole162EA17D"
+    "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForRoleBDAD634A"
    ]
   },
   "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB": {
@@ -322,6 +349,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "codepipeline:GetPipelineExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -345,7 +381,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -395,7 +431,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -407,7 +443,7 @@
     }
    }
   },
-  "HttpApiCall8ad0b2005051185f43edc49e25ed2ada": {
+  "HttpApiCall27af9e605d6e315bf4a33d7c8b61846f": {
    "Type": "Custom::DeployAssert@HttpCall",
    "Properties": {
     "ServiceToken": {
@@ -425,26 +461,26 @@
         {
          "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputFnGetAttALBAEE750D2DNSNameE026139E"
         },
-        "/index.html"
+        "/LB/index.html"
        ]
       ]
      }
     },
     "expected": "{\"$ObjectLike\":{\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1747645882178"
+    "salt": "1747993109910"
    },
    "DependsOn": [
-    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0",
-    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForIsCompleteProviderInvokeD9F10281",
-    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitFor66DAA5A7",
-    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForRole162EA17D",
-    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForTimeoutProviderInvokeFBF4C27C"
+    "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17",
+    "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForIsCompleteProviderInvoke6BF78B4C",
+    "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForFD8525EB",
+    "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForRoleBDAD634A",
+    "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForTimeoutProviderInvokeA1E5E769"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "HttpApiCallade9a502fc0cb2323a976e736984ea2c": {
+  "HttpApiCallfc1c5a80a56be49afaec52c14ab25ad5": {
    "Type": "Custom::DeployAssert@HttpCall",
    "Properties": {
     "ServiceToken": {
@@ -460,28 +496,28 @@
        [
         "http://",
         {
-         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputFnGetAttInstance008A4B15CPublicDnsName211D6617"
+         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputFnGetAttInstanceNoLB0F5BE1CB1PublicDnsNameAF6BAD8D"
         },
-        "/index.html"
+        "/NoLB/index.html"
        ]
       ]
      }
     },
     "expected": "{\"$ObjectLike\":{\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1747645882180"
+    "salt": "1747993109912"
    },
    "DependsOn": [
-    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0",
-    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForIsCompleteProviderInvokeD9F10281",
-    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitFor66DAA5A7",
-    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForRole162EA17D",
-    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForTimeoutProviderInvokeFBF4C27C"
+    "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17",
+    "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForIsCompleteProviderInvoke6BF78B4C",
+    "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForFD8525EB",
+    "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForRoleBDAD634A",
+    "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForTimeoutProviderInvokeA1E5E769"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "HttpApiCall6ecfef513b0ddcfe6726e389c2bf0705": {
+  "HttpApiCall4a4ff02ea43ff833e2ebd6a46c03dced": {
    "Type": "Custom::DeployAssert@HttpCall",
    "Properties": {
     "ServiceToken": {
@@ -497,26 +533,227 @@
        [
         "http://",
         {
-         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputFnGetAttInstance14BC3991DPublicDnsName634B3316"
+         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputFnGetAttInstanceNoLB1840A0492PublicDnsName4FB1136A"
         },
-        "/index.html"
+        "/NoLB/index.html"
        ]
       ]
      }
     },
     "expected": "{\"$ObjectLike\":{\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1747645882181"
+    "salt": "1747993109913"
    },
    "DependsOn": [
-    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0",
-    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForIsCompleteProviderInvokeD9F10281",
-    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitFor66DAA5A7",
-    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForRole162EA17D",
-    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForTimeoutProviderInvokeFBF4C27C"
+    "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17",
+    "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForIsCompleteProviderInvoke6BF78B4C",
+    "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForFD8525EB",
+    "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForRoleBDAD634A",
+    "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17WaitForTimeoutProviderInvokeA1E5E769"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallcodepipelineStartPipelineExecutionc9f49f33c9a8595a4cba74281cdc9085": {
+   "Type": "Custom::DeployAssert@SdkCallcodepipelineStartPipelineExecuti",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "codepipeline",
+    "api": "StartPipelineExecution",
+    "parameters": {
+     "name": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputRefMyPipelineForSSMManagedNodeB362EEB7C86531E5"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "pipelineExecutionId"
+    ],
+    "salt": "1747993109914"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallcodepipelineGetPipelineExecution53e6e77d770000c7b3ede123a3dc78f8": {
+   "Type": "Custom::DeployAssert@SdkCallcodepipelineGetPipelineExecution",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "codepipeline",
+    "api": "GetPipelineExecution",
+    "expected": "{\"$ObjectLike\":{\"pipelineExecution\":{\"status\":\"Succeeded\"}}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallcodepipelineGetPipelineExecution53e6e77d770000c7b3ede123a3dc78f8WaitFor9DA65B64"
+    },
+    "parameters": {
+     "pipelineName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputRefMyPipelineForSSMManagedNodeB362EEB7C86531E5"
+        },
+        "\""
+       ]
+      ]
+     },
+     "pipelineExecutionId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::GetAtt": [
+          "AwsApiCallcodepipelineStartPipelineExecutionc9f49f33c9a8595a4cba74281cdc9085",
+          "apiCallResponse.pipelineExecutionId"
+         ]
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1747993109914"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallcodepipelineGetPipelineExecution53e6e77d770000c7b3ede123a3dc78f8WaitForIsCompleteProviderInvoke3C2EF3F7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallcodepipelineGetPipelineExecution53e6e77d770000c7b3ede123a3dc78f8WaitForRole608DACCD",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallcodepipelineGetPipelineExecution53e6e77d770000c7b3ede123a3dc78f8WaitForTimeoutProviderInvokeC08EEEFC": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallcodepipelineGetPipelineExecution53e6e77d770000c7b3ede123a3dc78f8WaitForRole608DACCD",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallcodepipelineGetPipelineExecution53e6e77d770000c7b3ede123a3dc78f8WaitForRole608DACCD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "AwsApiCallcodepipelineGetPipelineExecution53e6e77d770000c7b3ede123a3dc78f8WaitFor9DA65B64": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":30,\"MaxAttempts\":60,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallcodepipelineGetPipelineExecution53e6e77d770000c7b3ede123a3dc78f8WaitForRole608DACCD",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallcodepipelineGetPipelineExecution53e6e77d770000c7b3ede123a3dc78f8WaitForRole608DACCD"
+   ]
   }
  },
  "Mappings": {
@@ -650,34 +887,42 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0": {
+  "AssertionResultsAwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0",
+     "AwsApiCallcodepipelineGetPipelineExecution08bed61d0ef4a8821a1bbd88a53ebb17",
      "assertion"
     ]
    }
   },
-  "AssertionResultsHttpApiCall8ad0b2005051185f43edc49e25ed2ada": {
+  "AssertionResultsHttpApiCall27af9e605d6e315bf4a33d7c8b61846f": {
    "Value": {
     "Fn::GetAtt": [
-     "HttpApiCall8ad0b2005051185f43edc49e25ed2ada",
+     "HttpApiCall27af9e605d6e315bf4a33d7c8b61846f",
      "assertion"
     ]
    }
   },
-  "AssertionResultsHttpApiCallade9a502fc0cb2323a976e736984ea2c": {
+  "AssertionResultsHttpApiCallfc1c5a80a56be49afaec52c14ab25ad5": {
    "Value": {
     "Fn::GetAtt": [
-     "HttpApiCallade9a502fc0cb2323a976e736984ea2c",
+     "HttpApiCallfc1c5a80a56be49afaec52c14ab25ad5",
      "assertion"
     ]
    }
   },
-  "AssertionResultsHttpApiCall6ecfef513b0ddcfe6726e389c2bf0705": {
+  "AssertionResultsHttpApiCall4a4ff02ea43ff833e2ebd6a46c03dced": {
    "Value": {
     "Fn::GetAtt": [
-     "HttpApiCall6ecfef513b0ddcfe6726e389c2bf0705",
+     "HttpApiCall4a4ff02ea43ff833e2ebd6a46c03dced",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallcodepipelineGetPipelineExecution53e6e77d770000c7b3ede123a3dc78f8": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallcodepipelineGetPipelineExecution53e6e77d770000c7b3ede123a3dc78f8",
      "assertion"
     ]
    }

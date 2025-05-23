@@ -181,7 +181,7 @@ export class Ec2DeployAction extends Action {
       resources: [Stack.of(scope).formatArn({ service: 'ec2', resource: 'instance', resourceName: '*' })],
       conditions: this.props.instanceTagValue ?
         { StringEquals: { [`aws:ResourceTag/${this.props.instanceTagKey}`]: this.props.instanceTagValue } } :
-        { Null: { [`aws:ResourceTag/${this.props.instanceTagKey}`]: false } },
+        { Null: { [`aws:ResourceTag/${this.props.instanceTagKey}`]: 'false' } },
     }));
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['ssm:SendCommand'],
