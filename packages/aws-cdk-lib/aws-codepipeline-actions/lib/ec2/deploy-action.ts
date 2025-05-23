@@ -22,8 +22,9 @@ export interface Ec2DeployActionProps extends codepipeline.CommonAwsActionProps 
 
   /**
    * The tag value of the instances that you created in Amazon EC2.
+   * @default - all instances with `instanceTagKey` will be matched
    */
-  readonly instanceTagValue: string;
+  readonly instanceTagValue?: string;
 
   /**
    * The type of instances or SSM nodes created in Amazon EC2.
@@ -180,9 +181,9 @@ export class Ec2DeployAction extends Action {
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['ssm:SendCommand'],
       resources: [Stack.of(scope).formatArn({ service: 'ec2', resource: 'instance', resourceName: '*' })],
-      conditions: {
-        StringEquals: { [`aws:ResourceTag/${this.props.instanceTagKey}`]: this.props.instanceTagValue },
-      },
+      conditions: this.props.instanceTagValue ?
+        { StringEquals: { [`aws:ResourceTag/${this.props.instanceTagKey}`]: this.props.instanceTagValue } } :
+        { Null: { [`aws:ResourceTag/${this.props.instanceTagKey}`]: false } },
     }));
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['ssm:SendCommand'],

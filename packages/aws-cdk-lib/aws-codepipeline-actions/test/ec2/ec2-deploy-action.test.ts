@@ -1,4 +1,4 @@
-import { Template } from '../../../assertions';
+import { Match, Template } from '../../../assertions';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
@@ -37,14 +37,8 @@ describe('EC2 deploy action', () => {
     });
     new codepipeline.Pipeline(stack, 'Pipeline', {
       stages: [
-        {
-          stageName: 'Source',
-          actions: [source],
-        },
-        {
-          stageName: 'Deploy',
-          actions: [action],
-        },
+        { stageName: 'Source', actions: [source] },
+        { stageName: 'Deploy', actions: [action] },
       ],
     });
 
@@ -73,6 +67,50 @@ describe('EC2 deploy action', () => {
         },
       ],
     });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Effect: 'Allow',
+            Action: [
+              'ec2:DescribeInstances',
+              'elasticloadbalancing:DescribeTargetGroupAttributes',
+              'elasticloadbalancing:DescribeTargetGroups',
+              'elasticloadbalancing:DescribeTargetHealth',
+              'ssm:CancelCommand',
+              'ssm:DescribeInstanceInformation',
+              'ssm:ListCommandInvocations',
+            ],
+            Resource: '*',
+          },
+          {
+            Effect: 'Allow',
+            Action: [
+              'logs:CreateLogGroup',
+              'logs:CreateLogStream',
+              'logs:PutLogEvents',
+            ],
+            Resource: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':logs:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':log-group:/aws/codepipeline/', { Ref: 'PipelineC660917D' }, ':*']] },
+          },
+          {
+            Effect: 'Allow',
+            Action: 'ssm:SendCommand',
+            Resource: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ec2:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':instance/*']] },
+            Condition: {
+              StringEquals: { 'aws:ResourceTag/Target': 'MyDeployTarget' },
+            },
+          },
+          {
+            Effect: 'Allow',
+            Action: 'ssm:SendCommand',
+            Resource: [
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, '::document/AWS-RunPowerShellScript']] },
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, '::document/AWS-RunShellScript']] },
+            ],
+          },
+        ]),
+      },
+    });
   });
 
   test.each([
@@ -98,14 +136,8 @@ describe('EC2 deploy action', () => {
     });
     new codepipeline.Pipeline(stack, 'Pipeline', {
       stages: [
-        {
-          stageName: 'Source',
-          actions: [source],
-        },
-        {
-          stageName: 'Deploy',
-          actions: [action],
-        },
+        { stageName: 'Source', actions: [source] },
+        { stageName: 'Deploy', actions: [action] },
       ],
     });
 
@@ -139,6 +171,73 @@ describe('EC2 deploy action', () => {
         },
       ],
     });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Effect: 'Allow',
+            Action: ['elasticloadbalancing:DeregisterTargets', 'elasticloadbalancing:RegisterTargets'],
+            Resource: [{ Ref: 'ALBTG9414664F' }, { Ref: 'NLBTG89886EBE' }],
+          },
+        ]),
+      },
+    });
+  });
+
+  test('can be created without instanceTagValue', () => {
+    // WHEN
+    const action = new cpactions.Ec2DeployAction({
+      actionName: 'EC2',
+      input: artifact,
+      instanceType: cpactions.Ec2InstanceType.EC2,
+      instanceTagKey: 'Target',
+      targetDirectory: '/home/ec2-user/deploy',
+      postScript: 'scripts/post-deploy.sh',
+    });
+    new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        { stageName: 'Source', actions: [source] },
+        { stageName: 'Deploy', actions: [action] },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        {},
+        {
+          Actions: [
+            {
+              Name: 'EC2',
+              ActionTypeId: {
+                Category: 'Deploy',
+                Provider: 'EC2',
+              },
+              Configuration: {
+                InstanceType: 'EC2',
+                InstanceTagKey: 'Target',
+                TargetDirectory: '/home/ec2-user/deploy',
+                PostScript: 'scripts/post-deploy.sh',
+              },
+            },
+          ],
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Effect: 'Allow',
+            Action: 'ssm:SendCommand',
+            Resource: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ec2:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':instance/*']] },
+            Condition: {
+              Null: { 'aws:ResourceTag/Target': false },
+            },
+          },
+        ]),
+      },
+    });
   });
 
   test('can be created with targets maxBatch and maxError', () => {
@@ -155,14 +254,8 @@ describe('EC2 deploy action', () => {
     });
     new codepipeline.Pipeline(stack, 'Pipeline', {
       stages: [
-        {
-          stageName: 'Source',
-          actions: [source],
-        },
-        {
-          stageName: 'Deploy',
-          actions: [action],
-        },
+        { stageName: 'Source', actions: [source] },
+        { stageName: 'Deploy', actions: [action] },
       ],
     });
 
@@ -202,14 +295,8 @@ describe('EC2 deploy action', () => {
     });
     new codepipeline.Pipeline(stack, 'Pipeline', {
       stages: [
-        {
-          stageName: 'Source',
-          actions: [source],
-        },
-        {
-          stageName: 'Deploy',
-          actions: [action],
-        },
+        { stageName: 'Source', actions: [source] },
+        { stageName: 'Deploy', actions: [action] },
       ],
     });
 
@@ -245,14 +332,8 @@ describe('EC2 deploy action', () => {
     });
     new codepipeline.Pipeline(stack, 'Pipeline', {
       stages: [
-        {
-          stageName: 'Source',
-          actions: [source],
-        },
-        {
-          stageName: 'Deploy',
-          actions: [action],
-        },
+        { stageName: 'Source', actions: [source] },
+        { stageName: 'Deploy', actions: [action] },
       ],
     });
 
@@ -292,14 +373,8 @@ describe('EC2 deploy action', () => {
     });
     new codepipeline.Pipeline(stack, 'Pipeline', {
       stages: [
-        {
-          stageName: 'Source',
-          actions: [source],
-        },
-        {
-          stageName: 'Deploy',
-          actions: [action],
-        },
+        { stageName: 'Source', actions: [source] },
+        { stageName: 'Deploy', actions: [action] },
       ],
     });
 
@@ -318,91 +393,6 @@ describe('EC2 deploy action', () => {
           ],
         },
       ],
-    });
-  });
-
-  test('adds appropreate policy statements', () => {
-    // GIVEN
-    const vpc = new ec2.Vpc(stack, 'Vpc');
-    const albTg = new elbv2.ApplicationTargetGroup(stack, 'ALB-TG', { vpc });
-    const nlbTg = new elbv2.NetworkTargetGroup(stack, 'NLB-TG', { vpc, port: 80 });
-
-    // WHEN
-    const action = new cpactions.Ec2DeployAction({
-      actionName: 'EC2',
-      input: artifact,
-      instanceTagKey: 'Target',
-      instanceTagValue: 'MyDeployTarget',
-      targetGroups: [albTg, nlbTg],
-      targetDirectory: '/home/ec2-user/deploy',
-      postScript: 'scripts/post-deploy.sh',
-    });
-    new codepipeline.Pipeline(stack, 'Pipeline', {
-      stages: [
-        {
-          stageName: 'Source',
-          actions: [source],
-        },
-        {
-          stageName: 'Deploy',
-          actions: [action],
-        },
-      ],
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyName: 'PipelineDeployEC2CodePipelineActionRoleDefaultPolicyEC681CE3',
-      PolicyDocument: {
-        Statement: [
-          {
-            Effect: 'Allow',
-            Action: [
-              'ec2:DescribeInstances',
-              'elasticloadbalancing:DescribeTargetGroupAttributes',
-              'elasticloadbalancing:DescribeTargetGroups',
-              'elasticloadbalancing:DescribeTargetHealth',
-              'ssm:CancelCommand',
-              'ssm:DescribeInstanceInformation',
-              'ssm:ListCommandInvocations',
-            ],
-            Resource: '*',
-          },
-          {
-            Effect: 'Allow',
-            Action: [
-              'logs:CreateLogGroup',
-              'logs:CreateLogStream',
-              'logs:PutLogEvents',
-            ],
-            Resource: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':logs:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':log-group:/aws/codepipeline/', { Ref: 'PipelineC660917D' }, ':*']] },
-          },
-          {
-            Effect: 'Allow',
-            Action: 'ssm:SendCommand',
-            Resource: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ec2:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':instance/*']] },
-            Condition: {
-              StringEquals: { 'aws:ResourceTag/Target': 'MyDeployTarget' },
-            },
-          },
-          {
-            Effect: 'Allow',
-            Action: 'ssm:SendCommand',
-            Resource: [
-              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, '::document/AWS-RunPowerShellScript']] },
-              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, '::document/AWS-RunShellScript']] },
-            ],
-          },
-          {
-            Effect: 'Allow',
-            Action: ['elasticloadbalancing:DeregisterTargets', 'elasticloadbalancing:RegisterTargets'],
-            Resource: [
-              { Ref: 'ALBTG9414664F' },
-              { Ref: 'NLBTG89886EBE' },
-            ],
-          },
-        ],
-      },
     });
   });
 
