@@ -24,6 +24,7 @@ Currently supported are:
     - [Assign public IP addresses to tasks](#assign-public-ip-addresses-to-tasks)
     - [Enable Amazon ECS Exec for ECS Task](#enable-amazon-ecs-exec-for-ecs-task)
   - [Run a Redshift query](#schedule-a-redshift-query-serverless-or-cluster)
+  - [Publish to an SNS topic](#publish-to-an-sns-topic)
 
 See the README of the `aws-cdk-lib/aws-events` library for more information on
 EventBridge.
@@ -626,4 +627,41 @@ rule.addTarget(new targets.RedshiftQuery(workgroup.attrWorkgroupWorkgroupArn, {
   deadLetterQueue: dlq,
   sql: ['SELECT * FROM foo','SELECT * FROM baz'],
 }));
+```
+
+## Publish to an SNS Topic
+
+Use the `SnsTopic` target to publish to an SNS Topic. 
+
+The code snippet below creates the scheduled event rule that publishes to an SNS Topic.
+
+```ts
+import * as sns from 'aws-cdk-lib/aws-sns';
+
+declare const topic: sns.ITopic;
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(new targets.SnsTopic(topic));
+```
+
+You can pass an existing role with the proper permissions to be used for the target when the rule is triggered. The code snippet below uses an existing role and grants permissions to publish to the SNS Topic.
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as sns from 'aws-cdk-lib/aws-sns';
+
+declare const topic: sns.ITopic;
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+});
+
+rule.addTarget(new targets.SnsTopic(topic, { role }));
 ```
