@@ -1025,3 +1025,29 @@ test('test Fargate queue worker service construct - with healthCheckGracePeriod'
     HealthCheckGracePeriodSeconds: 120,
   });
 });
+
+test.each([
+  { name: 'not provided', azRebalance: undefined, expected: Match.absent() },
+  { name: 'enabled', azRebalance: ecs.AvailabilityZoneRebalancing.ENABLED, expected: 'ENABLED' },
+  { name: 'disabled', azRebalance: ecs.AvailabilityZoneRebalancing.DISABLED, expected: 'DISABLED' },
+
+])('AZ rebalancing: $name', ({ azRebalance, expected }) => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  const queue = new sqs.Queue(stack, 'Queue');
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    queue,
+    image: ecs.ContainerImage.fromRegistry('test'),
+    availabilityZoneRebalancing: azRebalance,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    AvailabilityZoneRebalancing: expected,
+  });
+});
