@@ -920,14 +920,6 @@
     }
    }
   },
-  "DualstackVpcEIGW61425E04A": {
-   "Type": "AWS::EC2::EgressOnlyInternetGateway",
-   "Properties": {
-    "VpcId": {
-     "Ref": "DualstackVpc3B16059D"
-    }
-   }
-  },
   "DualstackVpcRestrictDefaultSecurityGroupCustomResource4FDA257A": {
    "Type": "Custom::VpcRestrictDefaultSG",
    "Properties": {
