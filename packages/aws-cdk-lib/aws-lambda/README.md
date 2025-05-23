@@ -937,7 +937,7 @@ const fn = lambda.Function.fromFunctionName(this, 'Function', 'MyFn');
 
 A dead-letter queue can be automatically created for a Lambda function by
 setting the `deadLetterQueueEnabled: true` configuration. In such case CDK creates
-a `sqs.Queue` as `deadLetterQueue`.
+a `sqs.Queue` as `deadLetterQueue`. This dead-letter queue will have SSL enforced.
 
 ```ts
 const fn = new lambda.Function(this, 'MyFunction', {
