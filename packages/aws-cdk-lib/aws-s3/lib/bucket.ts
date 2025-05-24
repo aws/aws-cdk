@@ -30,6 +30,7 @@ import {
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
 import * as cxapi from '../../cx-api';
 import * as regionInformation from '../../region-info';
@@ -1182,6 +1183,10 @@ export interface BlockPublicAccessOptions {
 }
 
 export class BlockPublicAccess {
+  /**
+   * Use this option if you want to ensure every public access method is blocked.
+   * However keep in mind that this is the default state of an S3 bucket, and leaving blockPublicAccess undefined would also work.
+   */
   public static readonly BLOCK_ALL = new BlockPublicAccess({
     blockPublicAcls: true,
     blockPublicPolicy: true,
@@ -1189,9 +1194,23 @@ export class BlockPublicAccess {
     restrictPublicBuckets: true,
   });
 
+  /**
+   *
+   * @deprecated Use `BLOCK_ACLS_ONLY` instead.
+   */
   public static readonly BLOCK_ACLS = new BlockPublicAccess({
     blockPublicAcls: true,
     ignorePublicAcls: true,
+  });
+
+  /**
+   * Use this option if you want to only block the ACLs, using this will set blockPublicPolicy and restrictPublicBuckets to false.
+   */
+  public static readonly BLOCK_ACLS_ONLY = new BlockPublicAccess({
+    blockPublicAcls: true,
+    blockPublicPolicy: false,
+    ignorePublicAcls: true,
+    restrictPublicBuckets: false,
   });
 
   public blockPublicAcls: boolean | undefined;
@@ -2078,7 +2097,13 @@ export interface Tag {
  * });
  *
  */
+@propertyInjectable
 export class Bucket extends BucketBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-s3.Bucket';
+
   public static fromBucketArn(scope: Construct, id: string, bucketArn: string): IBucket {
     return Bucket.fromBucketAttributes(scope, id, { bucketArn });
   }
@@ -2310,6 +2335,11 @@ export class Bucket extends BucketBase {
 
     Bucket.validateBucketName(this.physicalName);
 
+    let publicAccessBlockConfig: BlockPublicAccessOptions | undefined = props.blockPublicAccess;
+    if (props.blockPublicAccess && FeatureFlags.of(this).isEnabled(cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT)) {
+      publicAccessBlockConfig = this.setDefaultPublicAccessBlockConfig(props.blockPublicAccess);
+    }
+
     const websiteConfiguration = this.renderWebsiteConfiguration(props);
     this.isWebsite = (websiteConfiguration !== undefined);
 
@@ -2324,7 +2354,7 @@ export class Bucket extends BucketBase {
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
       lifecycleConfiguration: Lazy.any({ produce: () => this.parseLifecycleConfiguration() }),
       websiteConfiguration,
-      publicAccessBlockConfiguration: props.blockPublicAccess,
+      publicAccessBlockConfiguration: publicAccessBlockConfig,
       metricsConfigurations: Lazy.any({ produce: () => this.parseMetricConfiguration() }),
       corsConfiguration: Lazy.any({ produce: () => this.parseCorsConfiguration() }),
       accessControl: Lazy.string({ produce: () => this.accessControl }),
@@ -3140,6 +3170,20 @@ export class Bucket extends BucketBase {
     // we can set `autoDeleteObjects: false` without the removal of the CR emptying
     // the bucket as a side effect.
     Tags.of(this._resource).add(AUTO_DELETE_OBJECTS_TAG, 'true');
+  }
+
+  /**
+   * Function to set the blockPublicAccessOptions to a true default if not defined.
+   * If no blockPublicAccessOptions are specified at all, this is already the case as an s3 default in aws
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html
+   */
+  private setDefaultPublicAccessBlockConfig(blockPublicAccessOptions: BlockPublicAccessOptions) {
+    return {
+      blockPublicAcls: blockPublicAccessOptions.blockPublicAcls ?? true,
+      blockPublicPolicy: blockPublicAccessOptions.blockPublicPolicy ?? true,
+      ignorePublicAcls: blockPublicAccessOptions.ignorePublicAcls ?? true,
+      restrictPublicBuckets: blockPublicAccessOptions.restrictPublicBuckets ?? true,
+    };
   }
 }
 

@@ -58,7 +58,8 @@
       "PHP_81",
       "PYTHON_3",
       "PYTHON_311",
-      "RUBY_31"
+      "RUBY_31",
+      "NODEJS_22"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/access-entry.ts": {
@@ -253,7 +254,9 @@
       "V3_7_X",
       "V3_7_X_KRAFT",
       "V3_8_X",
-      "V3_8_X_KRAFT"
+      "V3_8_X_KRAFT",
+      "V3_9_X",
+      "V3_9_X_KRAFT"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-neptune-alpha/lib/cluster.ts": {
@@ -588,6 +591,7 @@
       "AMAZON_NOVA_REEL_V1_0",
       "AMAZON_NOVA_REEL_V1_1",
       "AMAZON_NOVA_SONIC_V1_0",
+      "AMAZON_NOVA_PREMIER_V1_0",
       "AI21_J2_MID",
       "AI21_LABS_JURASSIC_2_MID_V1",
       "AI21_J2_ULTRA",
@@ -660,6 +664,8 @@
       "META_LLAMA_3_2_11B_INSTRUCT_V1",
       "META_LLAMA_3_2_90B_INSTRUCT_V1",
       "META_LLAMA_3_3_70B_INSTRUCT_V1",
+      "META_LLAMA_4_MAVERICK_17B_INSTRUCT_V1_0",
+      "META_LLAMA_4_SCOUT_17B_INSTRUCT_V1_0",
       "MISTRAL_MISTRAL_7B_INSTRUCT_V0_2",
       "MISTRAL_MIXTRAL_8X7B_INSTRUCT_V0_1",
       "MISTRAL_LARGE_V0_1",
@@ -675,7 +681,9 @@
       "STABILITY_STABLE_IMAGE_ULTRA_V1_0",
       "STABILITY_STABLE_IMAGE_ULTRA_V1_1",
       "STABILITY_STABLE_IMAGE_CORE_V1_0",
-      "STABILITY_STABLE_IMAGE_CORE_V1_1"
+      "STABILITY_STABLE_IMAGE_CORE_V1_1",
+      "WRITER_PALMYRA_X4_V1_0",
+      "WRITER_PALMYRA_X5_V1_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
@@ -1552,6 +1560,7 @@
       "DIRECTORY_SERVICE_DATA",
       "DYNAMODB",
       "DYNAMODB_FIPS",
+      "DYNAMODB_STREAMS",
       "EBS_DIRECT",
       "EC2",
       "EC2_MESSAGES",
@@ -2294,7 +2303,8 @@
       "OPENSEARCH_2_11",
       "OPENSEARCH_2_13",
       "OPENSEARCH_2_15",
-      "OPENSEARCH_2_17"
+      "OPENSEARCH_2_17",
+      "OPENSEARCH_2_19"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/ca-certificate.ts": {
@@ -2381,11 +2391,13 @@
       "VER_2_11_3",
       "VER_2_11_4",
       "VER_2_11_5",
+      "VER_2_11_6",
       "VER_2_12_0",
       "VER_2_12_1",
       "VER_2_12_2",
       "VER_2_12_3",
       "VER_2_12_4",
+      "VER_2_12_5",
       "VER_3_01_0",
       "VER_3_01_1",
       "VER_3_02_0",
@@ -2400,6 +2412,7 @@
       "VER_3_04_1",
       "VER_3_04_2",
       "VER_3_04_3",
+      "VER_3_04_4",
       "VER_3_05_0",
       "VER_3_05_1",
       "VER_3_05_2",
@@ -2520,8 +2533,10 @@
       "VER_16_6",
       "VER_16_6_LIMITLESS",
       "VER_16_8",
+      "VER_16_8_LIMITLESS",
       "VER_17_1",
-      "VER_17_2"
+      "VER_17_2",
+      "VER_17_4"
     ],
     "DatabaseClusterEngine": [
       "AURORA",
@@ -2714,8 +2729,10 @@
       "VER_8_0_39",
       "VER_8_0_40",
       "VER_8_0_41",
+      "VER_8_0_42",
       "VER_8_4_3",
-      "VER_8_4_4"
+      "VER_8_4_4",
+      "VER_8_4_5"
     ],
     "PostgresEngineVersion": [
       "VER_9_5",
@@ -2851,6 +2868,7 @@
       "VER_13_18",
       "VER_13_19",
       "VER_13_20",
+      "VER_13_21",
       "VER_14",
       "VER_14_1",
       "VER_14_2",
@@ -2869,6 +2887,7 @@
       "VER_14_15",
       "VER_14_16",
       "VER_14_17",
+      "VER_14_18",
       "VER_15",
       "VER_15_2",
       "VER_15_3",
@@ -2881,6 +2900,7 @@
       "VER_15_10",
       "VER_15_11",
       "VER_15_12",
+      "VER_15_13",
       "VER_16",
       "VER_16_1",
       "VER_16_2",
@@ -2890,11 +2910,13 @@
       "VER_16_6",
       "VER_16_7",
       "VER_16_8",
+      "VER_16_9",
       "VER_17",
       "VER_17_1",
       "VER_17_2",
       "VER_17_3",
-      "VER_17_4"
+      "VER_17_4",
+      "VER_17_5"
     ],
     "OracleLegacyEngineVersion": [
       "VER_11_2",
@@ -3143,7 +3165,8 @@
   "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts": {
     "BlockPublicAccess": [
       "BLOCK_ALL",
-      "BLOCK_ACLS"
+      "BLOCK_ACLS",
+      "BLOCK_ACLS_ONLY"
     ],
     "ReplicationTimeValue": [
       "FIFTEEN_MINUTES"
@@ -3262,7 +3285,9 @@
       "SYNTHETICS_PYTHON_SELENIUM_2_1",
       "SYNTHETICS_PYTHON_SELENIUM_3_0",
       "SYNTHETICS_PYTHON_SELENIUM_4_0",
-      "SYNTHETICS_PYTHON_SELENIUM_4_1"
+      "SYNTHETICS_PYTHON_SELENIUM_4_1",
+      "SYNTHETICS_PYTHON_SELENIUM_5_0",
+      "SYNTHETICS_PYTHON_SELENIUM_5_1"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/cfn-pseudo.ts": {

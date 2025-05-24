@@ -8,5 +8,6 @@
       "assertionStack": "MinimumCapacityUnitNlbInteg/DefaultTest/DeployAssert",
       "assertionStackName": "MinimumCapacityUnitNlbIntegDefaultTestDeployAssertACF1B56D"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
