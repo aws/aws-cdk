@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0af5924d8e4830f0c4a6f483942949b949299bb510a9ca6f6b3621ddddf212b0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ea7af658562cc95e20be6f9b00173bea484699162568bfe2ee8c67da4dc34fe0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -883,6 +883,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterAwsAuthmanifestFE51F8AE"
+          }
+        ],
+        "/EksClusterWithAddonStack/Cluster/ConfigCommand": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterConfigCommand43AAE40F"
+          }
+        ],
+        "/EksClusterWithAddonStack/Cluster/GetTokenCommand": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterGetTokenCommand06AE992E"
           }
         ],
         "/EksClusterWithAddonStack/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer": [

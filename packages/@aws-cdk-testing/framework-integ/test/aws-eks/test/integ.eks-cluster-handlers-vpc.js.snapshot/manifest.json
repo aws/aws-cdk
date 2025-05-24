@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a0c7ca305f864c117691be79f714badd221dd8b3444b1046990ab79b47df623f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bd1ec7fb7375a317137c55755b6ee809814879af62cbec9d7cedf83688925b4e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -865,6 +865,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EksAllHandlersInVpcStackAwsAuthmanifest66335CD9"
+          }
+        ],
+        "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/ConfigCommand": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksAllHandlersInVpcStackConfigCommandE25F67E8"
+          }
+        ],
+        "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/GetTokenCommand": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksAllHandlersInVpcStackGetTokenCommand5EB9ED5B"
           }
         ],
         "/aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer": [
@@ -2235,5 +2247,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1014.0"
+  "minimumCliVersion": "2.1015.0"
 }

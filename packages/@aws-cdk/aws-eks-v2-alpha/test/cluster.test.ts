@@ -990,7 +990,7 @@ describe('cluster', () => {
   });
 
   describe('outputs', () => {
-    test('no outputs are synthesized by default', () => {
+    test('ConfigCommand and GetTokenCommand are output by default', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
@@ -1000,7 +1000,10 @@ describe('cluster', () => {
       // THEN
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
-      expect(template.Outputs).toBeUndefined(); // no outputs
+      expect(template.Outputs).toEqual({
+        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'ClusterEB0386A7' }, ' --region us-east-1']] } },
+        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'ClusterEB0386A7' }, ' --region us-east-1']] } },
+      });
     });
 
     describe('boostrap user-data', () => {

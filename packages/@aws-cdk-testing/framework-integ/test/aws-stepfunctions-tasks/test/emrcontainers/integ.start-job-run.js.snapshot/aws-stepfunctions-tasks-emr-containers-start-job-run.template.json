@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "77675805670406a68c1baf43392c7e699bee435fe9b667ef4f9f1134b8c41d0e.zip"
+     "S3Key": "a5110b475e7a506b8a1282cdfb3c2f7ae59bcf00ba96273a702339b8819dd17f.zip"
     },
     "Description": "/opt/kubectl/kubectl 1.31.9; /opt/helm/helm 3.17.3",
     "LicenseInfo": "Apache-2.0"
@@ -1775,6 +1775,47 @@
    ]
   }
  },
+ "Outputs": {
+  "integrationtesteksclusterConfigCommandFA814999": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "aws eks update-kubeconfig --name ",
+      {
+       "Ref": "integrationtesteksclusterE5C0ED98"
+      },
+      " --region ",
+      {
+       "Ref": "AWS::Region"
+      }
+     ]
+    ]
+   }
+  },
+  "integrationtesteksclusterGetTokenCommandD7B92682": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "aws eks get-token --cluster-name ",
+      {
+       "Ref": "integrationtesteksclusterE5C0ED98"
+      },
+      " --region ",
+      {
+       "Ref": "AWS::Region"
+      }
+     ]
+    ]
+   }
+  },
+  "stateMachineArn": {
+   "Value": {
+    "Ref": "StateMachine2E01A3A5"
+   }
+  }
+ },
  "Mappings": {
   "LatestNodeRuntimeMap": {
    "af-south-1": {
@@ -1902,13 +1943,6 @@
    },
    "us-west-2": {
     "value": "nodejs22.x"
-   }
-  }
- },
- "Outputs": {
-  "stateMachineArn": {
-   "Value": {
-    "Ref": "StateMachine2E01A3A5"
    }
   }
  },
