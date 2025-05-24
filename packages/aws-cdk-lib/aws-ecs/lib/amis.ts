@@ -234,7 +234,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
       if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX && this.hwType !== AmiHardwareType.STANDARD) {
         throw new UnscopedValidationError('Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
       } else if (props.windowsVersion || props.windowsCoreVersion) {
-        throw new UnscopedValidationError('Windows image and Linux image generation cannot be both set');
+        throw new UnscopedValidationError('"windowsVersion" and Linux image "generation" cannot be both set');
       } else {
         this.generation = props.generation;
       }

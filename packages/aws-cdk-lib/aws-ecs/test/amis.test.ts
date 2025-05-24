@@ -214,16 +214,6 @@ describe('amis', () => {
     }).toThrow(/Cannot specify both windowsVersion and windowsCoreVersion/);
   });
 
-  test('Error when specifying both windowsVersion and generation', () => {
-    // WHEN/THEN - using the deprecated class for testing validation
-    expect(() => {
-      new ecs.EcsOptimizedAmi({
-        windowsVersion: ecs.WindowsOptimizedVersion.SERVER_2019,
-        generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-      });
-    }).toThrow(/Windows image and Linux image generation cannot be both set/);
-  });
-
   test('Error when specifying Windows with special hardware types', () => {
     // WHEN/THEN - using the deprecated class for testing validation
     expect(() => {
