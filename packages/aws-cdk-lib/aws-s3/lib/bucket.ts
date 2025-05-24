@@ -541,9 +541,9 @@ export interface GrantReplicationPermissionProps {
   /**
    * The destination buckets for replication.
    * Specify the KMS key to use for encryption if a destination bucket needs to be encrypted with a customer-managed KMS key.
-   * Required one or more destination buckets.
+   * One or more destination buckets are required if replication configuration is enabled (i.e., `replicationRole` is specified).
    *
-   * @default - empty array
+   * @default - empty array (valid only if the `replicationRole` property is NOT specified)
    */
   readonly destinations: GrantReplicationPermissionDestinationProps[];
 }
