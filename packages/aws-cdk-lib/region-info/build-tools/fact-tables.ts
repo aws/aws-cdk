@@ -83,6 +83,7 @@ enum Partition {
   UsIsoB = 'aws-iso-b',
   UsIsoF = 'aws-iso-f',
   EuIsoE = 'aws-iso-e',
+  Eusc = 'aws-eusc',
 }
 
 interface Region { partition: Partition; domainSuffix: string }
@@ -95,6 +96,7 @@ export const PARTITION_MAP: { [region: string]: Region } = {
   'us-isob-': { partition: Partition.UsIsoB, domainSuffix: 'sc2s.sgov.gov' },
   'us-isof-': { partition: Partition.UsIsoF, domainSuffix: 'csp.hci.ic.gov' },
   'eu-isoe-': { partition: Partition.EuIsoE, domainSuffix: 'cloud.adc-e.uk' },
+  'eusc-': { partition: Partition.Eusc, domainSuffix: 'amazonaws.eu' },
 };
 
 export const PARTITION_SAML_SIGN_ON_URL: Partial<Record<Partition, string>> = {
@@ -119,6 +121,7 @@ export const LATEST_NODE_RUNTIME_MAP: Record<Partition, string> = {
   [Partition.UsIsoB]: Runtime.NODE_18,
   [Partition.UsIsoF]: Runtime.NODE_18,
   [Partition.EuIsoE]: Runtime.NODE_18,
+  [Partition.Eusc]: Runtime.NODE_22,
 };
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
@@ -187,6 +190,7 @@ export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
   'us-west-1': '763104351884',
   'us-west-2': '763104351884',
   'ap-east-2': '975050140332',
+  'eusc-de-east-1': '204133271717',
 };
 
 // https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
@@ -278,6 +282,7 @@ export const APPCONFIG_LAMBDA_LAYER_ARNS: { [key: string]: any } = {
       'us-gov-west-1': 'arn:aws-us-gov:lambda:us-gov-west-1:946746059096:layer:AWS-AppConfig-Extension:46',
       'us-west-1': 'arn:aws:lambda:us-west-1:958113053741:layer:AWS-AppConfig-Extension:124',
       'us-west-2': 'arn:aws:lambda:us-west-2:359756378197:layer:AWS-AppConfig-Extension:146',
+      'ap-east-2': 'arn:aws:lambda:ap-east-2:730335625313:layer:AWS-AppConfig-Extension:26',
     },
   },
   '2.0.165': {
@@ -553,6 +558,7 @@ export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS: { [key: string]: any } = {
       'sa-east-1': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:54',
       'us-gov-east-1': 'arn:aws-us-gov:lambda:us-gov-east-1:122132214140:layer:LambdaInsightsExtension:23',
       'us-gov-west-1': 'arn:aws-us-gov:lambda:us-gov-west-1:751350123760:layer:LambdaInsightsExtension:23',
+      'ap-east-2': 'arn:aws:lambda:ap-east-2:145023102084:layer:LambdaInsightsExtension:3',
     },
   },
   '1.0.333.0': {

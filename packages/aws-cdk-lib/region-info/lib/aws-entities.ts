@@ -69,6 +69,8 @@ export const AWS_REGIONS_AND_RULES: readonly (string | symbol)[] = [
   'eu-isoe-west-1', // EU ISO-E West
   'us-isob-west-1', // US ISOB West
   'ap-east-2', // Asia Pacific (Taipei)
+  'eusc-de-east-1', // EU (Germany)
+  'ap-southeast-6', // Asia Pacific (New Zealand)
 ];
 
 /**
