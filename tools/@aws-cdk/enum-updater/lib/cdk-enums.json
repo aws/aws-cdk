@@ -2974,7 +2974,9 @@
         "V3_7_X",
         "V3_7_X_KRAFT",
         "V3_8_X",
-        "V3_8_X_KRAFT"
+        "V3_8_X_KRAFT",
+        "V3_9_X",
+        "V3_9_X_KRAFT"
       ]
     }
   },
@@ -3191,6 +3193,14 @@
       "values": [
         "Enabled",
         "Disabled"
+      ]
+    },
+    "TableBucketEncryption": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.ts",
+      "enumLike": false,
+      "values": [
+        "aws:kms",
+        "AES256"
       ]
     }
   },
@@ -4083,7 +4093,8 @@
         "AMAZON_OPENSEARCH_SERVICE",
         "HTTP",
         "RELATIONAL_DATABASE",
-        "AMAZON_BEDROCK_RUNTIME"
+        "AMAZON_BEDROCK_RUNTIME",
+        "AMAZON_ELASTICSEARCH"
       ]
     },
     "LambdaInvokeType": {
@@ -8599,11 +8610,13 @@
         "VER_2_11_3",
         "VER_2_11_4",
         "VER_2_11_5",
+        "VER_2_11_6",
         "VER_2_12_0",
         "VER_2_12_1",
         "VER_2_12_2",
         "VER_2_12_3",
         "VER_2_12_4",
+        "VER_2_12_5",
         "VER_3_01_0",
         "VER_3_01_1",
         "VER_3_02_0",
@@ -8618,6 +8631,7 @@
         "VER_3_04_1",
         "VER_3_04_2",
         "VER_3_04_3",
+        "VER_3_04_4",
         "VER_3_05_0",
         "VER_3_05_1",
         "VER_3_05_2",
@@ -8742,6 +8756,7 @@
         "VER_16_6",
         "VER_16_6_LIMITLESS",
         "VER_16_8",
+        "VER_16_8_LIMITLESS",
         "VER_17_1",
         "VER_17_2",
         "VER_17_4"
@@ -9090,6 +9105,7 @@
         "VER_13_18",
         "VER_13_19",
         "VER_13_20",
+        "VER_13_21",
         "VER_14",
         "VER_14_1",
         "VER_14_2",
@@ -9108,6 +9124,7 @@
         "VER_14_15",
         "VER_14_16",
         "VER_14_17",
+        "VER_14_18",
         "VER_15",
         "VER_15_2",
         "VER_15_3",
@@ -9120,6 +9137,7 @@
         "VER_15_10",
         "VER_15_11",
         "VER_15_12",
+        "VER_15_13",
         "VER_16",
         "VER_16_1",
         "VER_16_2",
@@ -9129,11 +9147,13 @@
         "VER_16_6",
         "VER_16_7",
         "VER_16_8",
+        "VER_16_9",
         "VER_17",
         "VER_17_1",
         "VER_17_2",
         "VER_17_3",
-        "VER_17_4"
+        "VER_17_4",
+        "VER_17_5"
       ]
     },
     "OracleLegacyEngineVersion": {
@@ -9651,7 +9671,8 @@
       "enumLike": true,
       "values": [
         "BLOCK_ALL",
-        "BLOCK_ACLS"
+        "BLOCK_ACLS",
+        "BLOCK_ACLS_ONLY"
       ]
     },
     "ReplicationTimeValue": {
@@ -9848,6 +9869,15 @@
       "enumLike": false,
       "values": [
         "REQUIRE",
+        "OPTIONAL"
+      ]
+    },
+    "HttpsPolicy": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set.ts",
+      "enumLike": false,
+      "values": [
+        "REQUIRE",
+        "REQUIRE_OPEN_ONLY",
         "OPTIONAL"
       ]
     },
@@ -10554,7 +10584,9 @@
         "SYNTHETICS_PYTHON_SELENIUM_2_1",
         "SYNTHETICS_PYTHON_SELENIUM_3_0",
         "SYNTHETICS_PYTHON_SELENIUM_4_0",
-        "SYNTHETICS_PYTHON_SELENIUM_4_1"
+        "SYNTHETICS_PYTHON_SELENIUM_4_1",
+        "SYNTHETICS_PYTHON_SELENIUM_5_0",
+        "SYNTHETICS_PYTHON_SELENIUM_5_1"
       ]
     }
   },
