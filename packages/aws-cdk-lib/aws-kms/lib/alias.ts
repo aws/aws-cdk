@@ -188,7 +188,11 @@ export class Alias extends AliasBase {
    * Import an existing KMS Alias defined outside the CDK app, by the alias name. This method should be used
    * instead of 'fromAliasAttributes' when the underlying KMS Key ARN is not available.
    * This Alias will not have a direct reference to the KMS Key, so addAlias method is not supported.
-   * The grant* methods will use the kms:ResourceAliases condition to grant permissions to the specific alias name. They will also only modify the principal policy, not the key resource policy.
+   *
+   * If the `@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal` feature flag is set to `true`,
+   * the grant* methods will use the kms:ResourceAliases condition to grant permissions to the specific alias name.
+   * They will only modify the principal policy, not the key resource policy.
+   * Without the feature flag `grant*` methods will be a no-op.
    *
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
