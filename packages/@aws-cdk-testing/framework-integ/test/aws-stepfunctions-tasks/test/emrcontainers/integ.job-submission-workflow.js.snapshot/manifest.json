@@ -43,7 +43,10 @@
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
+            "data": "KubectlLayer600207B5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster": [
@@ -2456,5 +2459,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1015.0"
+  "minimumCliVersion": "2.1016.1"
 }

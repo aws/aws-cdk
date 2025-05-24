@@ -34,8 +34,10 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [SubmitJob](#submitjob)
   - [Bedrock](#bedrock)
     - [InvokeModel](#invokemodel)
+    - [createModelCustomizationJob](#createmodelcustomizationjob)
   - [CodeBuild](#codebuild)
     - [StartBuild](#startbuild)
+    - [StartBuildBatch](#startbuildbatch)
   - [DynamoDB](#dynamodb)
     - [GetItem](#getitem)
     - [PutItem](#putitem)
@@ -45,6 +47,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [RunTask](#runtask)
       - [EC2](#ec2)
       - [Fargate](#fargate)
+      - [ECS enable Exec](#ecs-enable-exec)
   - [EMR](#emr)
     - [Create Cluster](#create-cluster)
     - [Termination Protection](#termination-protection)
@@ -62,8 +65,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [EventBridge](#eventbridge)
     - [Put Events](#put-events)
   - [Glue](#glue)
-    - [Start Job Run](#start-job-run)
-    - [Start Crawler Run](#startcrawlerrun)
+    - [StartJobRun](#startjobrun)
+    - [StartCrawlerRun](#startcrawlerrun)
   - [Glue DataBrew](#glue-databrew)
     - [Start Job Run](#start-job-run-1)
   - [Lambda](#lambda)
@@ -500,6 +503,60 @@ const task = new tasks.BedrockInvokeModel(this, 'Prompt Model with guardrail', {
   guardrail: tasks.Guardrail.enable('guardrailId', 1),
   resultSelector: {
     names: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
+  },
+});
+```
+
+### createModelCustomizationJob
+
+The [CreateModelCustomizationJob](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_CreateModelCustomizationJob.html) API creates a fine-tuning job to customize a base model.
+
+```ts
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const outputBucket: s3.IBucket;
+declare const trainingBucket: s3.IBucket;
+declare const validationBucket: s3.IBucket;
+declare const kmsKey: kms.IKey;
+declare const vpc: ec2.IVpc;
+
+const model = bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
+);
+
+const task = new tasks.BedrockCreateModelCustomizationJob(this, 'CreateModelCustomizationJob', {
+  baseModel: model,
+  clientRequestToken: 'MyToken',
+  customizationType: tasks.CustomizationType.FINE_TUNING,
+  customModelKmsKey: kmsKey,
+  customModelName: 'MyCustomModel', // required
+  customModelTags: [{ key: 'key1', value: 'value1' }],
+  hyperParameters: {
+    batchSize: '10',
+  },
+  jobName: 'MyCustomizationJob', // required
+  jobTags: [{ key: 'key2', value: 'value2' }],
+  outputData: {
+    bucket: outputBucket, // required
+    path: 'output-data/',
+  },
+  trainingData: {
+    bucket: trainingBucket,
+    path: 'training-data/data.json',
+  }, // required
+  // If you don't provide validation data, you have to specify `Evaluation percentage` hyperparameter.
+  validationData: [
+    {
+      bucket: validationBucket,
+      path: 'validation-data/data.json',
+    },
+  ],
+  vpcConfig: {
+    securityGroups: [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc })],
+    subnets: vpc.privateSubnets,
   },
 });
 ```

@@ -1,0 +1,13 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "CreateModelCustomizationJob/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-tasks-bedrock-invoke-model-integ"
+      ],
+      "assertionStack": "CreateModelCustomizationJob/DefaultTest/DeployAssert",
+      "assertionStackName": "CreateModelCustomizationJobDefaultTestDeployAssertEC679DFE"
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}

@@ -43,7 +43,10 @@
         "/aws-stepfunctions-tasks-eks-call-integ-test/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
+            "data": "KubectlLayer600207B5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster": [
@@ -2154,5 +2157,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1015.0"
+  "minimumCliVersion": "2.1016.1"
 }
