@@ -63,6 +63,13 @@ export interface LogQueryWidgetProps {
   readonly queryLines?: string[];
 
   /**
+   * The query language to use for the query.
+   * Supported values include: 'Logs', 'SQL', 'PPL'
+   * @default - Logs Insights Query Language (default CloudWatch Logs query language)
+   */
+  readonly queryLanguage?: string;
+
+  /**
    * The region the metrics of this widget should be taken from
    *
    * @default Current region
@@ -109,7 +116,6 @@ export class LogQueryWidget extends ConcreteWidget {
       throw new cdk.UnscopedValidationError('Specify exactly one of \'queryString\' and \'queryLines\'');
     }
   }
-
   public toJson(): any[] {
     const sources = this.props.logGroupNames.map(l => `SOURCE '${l}'`).join(' | ');
     const query = this.props.queryLines
@@ -117,13 +123,18 @@ export class LogQueryWidget extends ConcreteWidget {
       : this.props.queryString;
 
     const properties: any = {
-      view: this.props.view? this.props.view : LogQueryVisualizationType.TABLE,
+      view: this.props.view ? this.props.view : LogQueryVisualizationType.TABLE,
       title: this.props.title,
       region: this.props.region || cdk.Aws.REGION,
       query: `${sources} | ${query}`,
     };
 
-    // adding stacked property in case of LINE or STACKEDAREA
+    // Add queryLanguage property if specified
+    if (this.props.queryLanguage) {
+      properties.queryLanguage = this.props.queryLanguage;
+    }
+
+    // Add stacked property in case of LINE or STACKEDAREA
     if (this.props.view === LogQueryVisualizationType.LINE || this.props.view === LogQueryVisualizationType.STACKEDAREA) {
       // assign the right native view value. both types share the same value
       properties.view = 'timeSeries',

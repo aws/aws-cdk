@@ -93,6 +93,13 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   queryString: `fields @message
                 | filter @message like /Error/`,
 }));
+dashboard.addWidgets(new cloudwatch.LogQueryWidget({
+  title: 'Errors in my log group - pie',
+  view: cloudwatch.LogQueryVisualizationType.PIE,
+  logGroupNames: ['my-log-group'],
+  queryString: "SELECT count(*) as count FROM 'my-log-group'",
+  queryLanguage: 'SQL',
+}));
 dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   title: 'Sent message size',
   metrics: [sentMessageSizeMetric],
