@@ -909,7 +909,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    */
   public grantReplicationPermission(identity: iam.IGrantable, props: GrantReplicationPermissionProps): iam.Grant {
     if (props.destinations.length === 0) {
-      throw new ValidationError('destinations must be specified', this);
+      throw new ValidationError('At least one destination bucket must be specified in the destinations array', this);
     }
 
     // add permissions to the role
