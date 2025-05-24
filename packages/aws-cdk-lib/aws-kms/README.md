@@ -91,9 +91,9 @@ const trail = new cloudtrail.Trail(this, 'myCloudTrail', {
 });
 ```
 
-Note that calls to `addToResourcePolicy` method on `myKeyAlias` will be a no-op, and 
-`addAlias` and `aliasTargetKey` will fail, as the imported alias does not have a reference
-to the underlying KMS Key.
+Note that calls to `addToResourcePolicy` method on `myKeyAlias` will be a no-op,  
+`addAlias` and `aliasTargetKey` will fail and `grant*` methods will not modify the key policy, 
+as the imported alias does not have a reference to the underlying KMS Key.
 
 ### Lookup key by alias
 
