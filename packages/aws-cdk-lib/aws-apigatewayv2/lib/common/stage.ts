@@ -25,6 +25,14 @@ export interface IStage extends IResource {
    * @default - average over 5 minutes
    */
   metric(metricName: string, props?: MetricOptions): Metric;
+
+  /**
+   * Adds a stage variable to this stage.
+   *
+   * @param name The name of the stage variable. Names can only contain alphanumeric characters and underscores.
+   * @param value The value of the stage variable. Values can contain letters, numbers, and the following characters: _, ., :, /, +, -, @
+   */
+  addStageVariable(name: string, value: string): void;
 }
 
 /**
@@ -89,6 +97,14 @@ export interface StageOptions {
    * @default - No access logging
    */
   readonly accessLogSettings?: IAccessLogSettings;
+
+  /**
+   * Stage variables for the stage.
+   * These are key-value pairs that you can define and use in your API routes.
+   *
+   * @default - No stage variables
+   */
+  readonly stageVariables?: {[key: string]: string};
 }
 
 /**
