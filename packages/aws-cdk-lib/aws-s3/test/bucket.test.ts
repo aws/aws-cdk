@@ -4285,12 +4285,6 @@ describe('bucket', () => {
         assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
       });
 
-      (srcEncryptionKey.node.defaultChild as kms.CfnKey).overrideLogicalId('SrcEncryptionKey');
-      (dstEncryptionKey.node.defaultChild as kms.CfnKey).overrideLogicalId('DstEncryptionKey');
-      (dstBucket.node.defaultChild as s3.CfnBucket).overrideLogicalId('DstBucket');
-      (dstBucketNoEncryption.node.defaultChild as s3.CfnBucket).overrideLogicalId('DstBucketNoEncryption');
-      (replicationRole.node.defaultChild as iam.CfnRole).overrideLogicalId('CustomReplicationRole');
-
       const bucket = new s3.Bucket(stack, 'SrcBucket', {
         versioned: true,
         replicationRole,
@@ -4300,7 +4294,6 @@ describe('bucket', () => {
           { destination: dstBucketNoEncryption, priority: 2 },
         ],
       });
-      (bucket.node.defaultChild as s3.CfnBucket).overrideLogicalId('SrcBucket');
       const grant = bucket.grantReplicationPermission(replicationRole, {
         sourceDecryptionKey: srcEncryptionKey,
         destinations: [{
