@@ -4465,7 +4465,7 @@ describe('bucket', () => {
         bucket.grantReplicationPermission(replicationRole, {
           destinations: [],
         });
-      }).toThrow('destinations must be specified');
+      }).toThrow('At least one destination bucket must be specified in the destinations array');
     });
 
     test('cross account', () => {
