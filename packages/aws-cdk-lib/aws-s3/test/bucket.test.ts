@@ -4310,14 +4310,14 @@ describe('bucket', () => {
         VersioningConfiguration: { Status: 'Enabled' },
         ReplicationConfiguration: {
           Role: {
-            'Fn::GetAtt': ['CustomReplicationRole', 'Arn'],
+            'Fn::GetAtt': ['ReplicationRoleCE149CEC', 'Arn'],
           },
           Rules: [
             {
               Priority: 1,
               Destination: {
                 Bucket: {
-                  'Fn::GetAtt': ['DstBucket', 'Arn'],
+                  'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
                 },
               },
               Status: 'Enabled',
@@ -4332,7 +4332,7 @@ describe('bucket', () => {
               Priority: 2,
               Destination: {
                 Bucket: {
-                  'Fn::GetAtt': ['DstBucketNoEncryption', 'Arn'],
+                  'Fn::GetAtt': ['DstBucketNoEncryptionB500C798', 'Arn'],
                 },
               },
               Status: 'Enabled',
@@ -4357,7 +4357,7 @@ describe('bucket', () => {
               Action: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': ['SrcBucket', 'Arn'],
+                'Fn::GetAtt': ['SrcBucket613E28A1', 'Arn'],
               },
             },
             {
@@ -4373,7 +4373,7 @@ describe('bucket', () => {
                   [
                     {
                       'Fn::GetAtt': [
-                        'SrcBucket',
+                        'SrcBucket613E28A1',
                         'Arn',
                       ],
                     },
@@ -4396,7 +4396,7 @@ describe('bucket', () => {
                   [
                     {
                       'Fn::GetAtt': [
-                        'DstBucket',
+                        'DstBucket3E241BF2',
                         'Arn',
                       ],
                     },
@@ -4414,7 +4414,7 @@ describe('bucket', () => {
               Effect: 'Allow',
               Resource: {
                 'Fn::GetAtt': [
-                  'DstEncryptionKey',
+                  'DstEncryptionKey8C28AFFA',
                   'Arn',
                 ],
               },
@@ -4423,7 +4423,7 @@ describe('bucket', () => {
               Action: 'kms:Decrypt',
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': ['SrcEncryptionKey', 'Arn'],
+                'Fn::GetAtt': ['SrcEncryptionKeyCCB1A334', 'Arn'],
               },
             },
           ],
@@ -4431,7 +4431,7 @@ describe('bucket', () => {
         },
         Roles: [
           {
-            'Ref': 'CustomReplicationRole',
+            'Ref': 'ReplicationRoleCE149CEC',
           },
         ],
       });
