@@ -19,9 +19,33 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-      'ApplicationName': {
-        'Ref': 'MyApp3CE31C26',
+      ApplicationName: {
+        Ref: 'MyApp3CE31C26',
       },
+    });
+  });
+
+  test('trigger config is created if specified', () => {
+    const stack = new cdk.Stack();
+    const application = new codedeploy.ServerApplication(stack, 'MyApp');
+    new codedeploy.ServerDeploymentGroup(stack, 'MyDG', {
+      application,
+      triggerConfigurations: [{
+        events: [codedeploy.TriggerEvent.DEPLOYMENT_SUCCESS],
+        name: 'testName',
+        targetArn: 'testArn',
+      }],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
+      ApplicationName: {
+        Ref: 'MyApp3CE31C26',
+      },
+      TriggerConfigurations: [{
+        TriggerEvents: ['DeploymentSuccess'],
+        TriggerName: 'testName',
+        TriggerTargetArn: 'testArn',
+      }],
     });
   });
 
