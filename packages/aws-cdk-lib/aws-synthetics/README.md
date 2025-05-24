@@ -20,7 +20,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
   environmentVariables: {
     stage: 'prod',
   },
@@ -102,7 +102,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
   activeTracing: true, // active tracing enabled
 });
 ```
@@ -120,7 +120,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
   memory: cdk.Size.mebibytes(1024), // 1024 MiB
 });
 ```
@@ -138,7 +138,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
   timeout: cdk.Duration.seconds(60), // 60 seconds
 });
 ```
@@ -165,7 +165,7 @@ const canary = new synthetics.Canary(this, 'Canary', {
     code: synthetics.Code.fromInline('/* Synthetics handler code'),
   }),
   provisionedResourceCleanup: true,
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
 });
 ```
 
@@ -193,7 +193,7 @@ new synthetics.Canary(this, 'Inline Canary', {
     code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     handler: 'index.handler', // must be 'index.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
 });
 
 // To supply the code from your local filesystem:
@@ -202,7 +202,7 @@ new synthetics.Canary(this, 'Asset Canary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
 });
 
 // To supply the code from a S3 bucket:
@@ -213,7 +213,7 @@ new synthetics.Canary(this, 'Bucket Canary', {
     code: synthetics.Code.fromBucket(bucket, 'canary.zip'),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
 });
 ```
 
@@ -265,7 +265,7 @@ new synthetics.Canary(this, 'Vpc Canary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
   vpc,
 });
 ```
@@ -312,7 +312,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
   artifactsBucketLifecycleRules: [{
     expiration: Duration.days(30),
   }],
