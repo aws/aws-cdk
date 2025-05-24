@@ -55,7 +55,7 @@ export interface AddonProps {
    *
    * @default - Use default configuration.
    */
-  readonly configurationValues?: string;
+  readonly configurationValues?: Record<string, any>;
 }
 
 /**
@@ -150,7 +150,7 @@ export class Addon extends Resource implements IAddon {
       clusterName: this.clusterName,
       addonVersion: props.addonVersion,
       preserveOnDelete: props.preserveOnDelete,
-      configurationValues: props.configurationValues,
+      configurationValues: this.stack.toJsonString(props.configurationValues),
     });
 
     this.addonName = this.getResourceNameAttribute(resource.ref);

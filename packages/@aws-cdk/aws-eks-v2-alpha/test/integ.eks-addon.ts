@@ -21,9 +21,9 @@ class EksClusterStack extends Stack {
       addonName: 'coredns',
       cluster,
       preserveOnDelete: true,
-      configurationValues: JSON.stringify({
+      configurationValues: {
         replicaCount: 2,
-      }),
+      },
     });
   }
 }

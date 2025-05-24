@@ -80,7 +80,9 @@ describe('Addon', () => {
     new Addon(stack, 'TestAddonWithPreserveOnDelete', {
       addonName: 'test-addon',
       cluster,
-      configurationValues: 'test',
+      configurationValues: {
+        replicaCount: 2,
+      },
     });
 
     // THEN
@@ -89,7 +91,7 @@ describe('Addon', () => {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
-      ConfigurationValues: 'test',
+      ConfigurationValues: '{\"replicaCount\":2}',
     });
   });
 
