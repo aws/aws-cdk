@@ -10,6 +10,7 @@ import {
   IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy,
   IpAddressType,
   ApplicationLoadBalancerProps,
+  IApplicationListener,
 } from '../../../aws-elasticloadbalancingv2';
 import { IRole } from '../../../aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '../../../aws-route53';
@@ -179,6 +180,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - a new load balancer will be created.
    */
   readonly loadBalancer?: IApplicationLoadBalancer;
+
+  /**
+   * The application load balancer's listener that traffic should be served over.
+   * Only has an effect when specifying `loadBalancer`.
+   *
+   * @default - a new listener will be created.
+   */
+  readonly listener?: IApplicationListener;
 
   /**
    * Listener port of the application load balancer that will serve traffic to the service.
@@ -430,7 +439,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
   /**
    * The listener for the service.
    */
-  public readonly listener: ApplicationListener;
+  public readonly listener: IApplicationListener;
 
   /**
    * The redirect listener for the service if redirectHTTP is enabled.
@@ -505,7 +514,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       protocolVersion: props.protocolVersion,
     };
 
-    this.listener = loadBalancer.addListener('PublicListener', {
+    this.listener = props.listener ?? loadBalancer.addListener('PublicListener', {
       protocol,
       port: props.listenerPort,
       open: props.openListener ?? true,
