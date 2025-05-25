@@ -22,7 +22,7 @@ export interface KubernetesObjectValueProps {
   /**
    * The name of the object to query.
    */
-  readonly objectName: string;
+  readonly objectName?: string;
 
   /**
    * The namespace the object belongs to.
@@ -74,7 +74,7 @@ export class KubernetesObjectValue extends Construct {
       properties: {
         ClusterName: props.cluster.clusterName,
         ObjectType: props.objectType,
-        ObjectName: props.objectName,
+        ObjectName: props.objectName ?? '--all-namespaces=false',
         ObjectNamespace: props.objectNamespace ?? 'default',
         JsonPath: props.jsonPath,
         TimeoutSeconds: (props?.timeout ?? Duration.minutes(5)).toSeconds(),

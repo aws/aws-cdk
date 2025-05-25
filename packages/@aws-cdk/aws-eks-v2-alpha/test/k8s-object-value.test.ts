@@ -98,4 +98,48 @@ describe('k8s object value', () => {
 
     expect(stack.resolve(attribute.value)).toEqual({ 'Fn::GetAtt': [expectedCustomResourceId, 'Value'] });
   });
+
+  test('creates the correct custom resource without objectName', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+      },
+    });
+
+    // WHEN
+    const attribute = new KubernetesObjectValue(stack, 'MyAttribute', {
+      cluster: cluster,
+      jsonPath: '.apiVersion',
+      objectType: 'pod',
+    });
+
+    const expectedCustomResourceId = 'MyAttributeF1E9B10D';
+    const app = stack.node.root as App;
+    const stackTemplate = app.synth().getStackArtifact(stack.stackName).template;
+    expect(stackTemplate.Resources[expectedCustomResourceId]).toEqual({
+      Type: 'Custom::AWSCDK-EKS-KubernetesObjectValue',
+      Properties: {
+        ServiceToken: {
+          'Fn::GetAtt': [
+            'MyClusterKubectlProviderframeworkonEvent7B04B277',
+            'Arn',
+          ],
+        },
+        ClusterName: { Ref: 'MyCluster4C1BA579' },
+        ObjectType: 'pod',
+        ObjectName: '--all-namespaces=false',
+        ObjectNamespace: 'default',
+        JsonPath: '.apiVersion',
+        TimeoutSeconds: 300,
+      },
+      DependsOn: ['MyClusterKubectlReadyBarrier7547948A'],
+      UpdateReplacePolicy: 'Delete',
+      DeletionPolicy: 'Delete',
+    });
+
+    expect(stack.resolve(attribute.value)).toEqual({ 'Fn::GetAtt': [expectedCustomResourceId, 'Value'] });
+  });
 });
