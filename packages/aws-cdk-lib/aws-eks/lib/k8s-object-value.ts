@@ -21,6 +21,8 @@ export interface KubernetesObjectValueProps {
 
   /**
    * The name of the object to query.
+   *
+   *  @default No objectName
    */
   readonly objectName?: string;
 
