@@ -717,6 +717,35 @@ secret.grantRead(lambdaFunction);
 parameter.grantRead(lambdaFunction);
 ```
 
+To use the Parameters and Secrets Extension with the latest version, please specify lambda.ParamsAndSecretsVersions.LATEST as shown below:
+
+```ts
+import * as sm from 'aws-cdk-lib/aws-secretsmanager';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
+
+const secret = new sm.Secret(this, 'Secret');
+const parameter = new ssm.StringParameter(this, 'Parameter', {
+  parameterName: 'mySsmParameterName',
+  stringValue: 'mySsmParameterValue',
+});
+
+const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.LATEST, {
+  cacheSize: 500,
+  logLevel: lambda.ParamsAndSecretsLogLevel.DEBUG,
+});
+
+const lambdaFunction = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_20_X,
+  handler: 'index.handler',
+  architecture: lambda.Architecture.ARM_64,
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  paramsAndSecrets,
+});
+
+secret.grantRead(lambdaFunction);
+parameter.grantRead(lambdaFunction);
+```
+
 If the version of Parameters and Secrets Extension is not yet available in the CDK, you can also provide the ARN directly as so:
 
 ```ts
