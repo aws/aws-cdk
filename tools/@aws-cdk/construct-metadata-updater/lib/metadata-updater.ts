@@ -24,6 +24,12 @@ const NOT_INJECTABLE_CLASSES = [
     "filePath": "packages/aws-cdk-lib/aws-lambda/lib/function-base.ts",
     "className": "LatestVersion"
   },
+  // because this construct reflects on its own callstack, which gets changed
+  // once the decorator is added. TODO - fix to consider the call layer added by the decorator. 
+  {
+    "filePath": "packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.ts",
+    "className": "NodejsFunction"
+  },
 ]
 
 interface ResourceClass {

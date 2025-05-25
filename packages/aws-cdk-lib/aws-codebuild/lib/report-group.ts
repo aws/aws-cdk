@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The interface representing the ReportGroup resource -
@@ -132,7 +133,11 @@ export interface ReportGroupProps {
 /**
  * The ReportGroup resource class.
  */
+@propertyInjectable
 export class ReportGroup extends ReportGroupBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codebuild.ReportGroup';
+
   /**
    * Reference an existing ReportGroup,
    * defined outside of the CDK code,
