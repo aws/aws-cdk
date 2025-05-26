@@ -88,7 +88,7 @@
     jsonschema "~1.4.1"
     semver "^7.7.1"
 
-"@aws-cdk/integ-runner@^2.186.9":
+"@aws-cdk/integ-runner@^2.186.0", "@aws-cdk/integ-runner@^2.186.9":
   version "2.186.9"
   resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.186.9.tgz#f87f79edf739e43edecab3aa8802882d56484920"
   integrity sha512-0LCmb7bONOxCdF3nxBOOpQtwlOlGyEo9YmnGsYwDbvoYHGM4vHUYJP1F5m0ZjC9uolN2q2JFjIE9W7zePhVe4w==
@@ -5354,11 +5354,17 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
+aws-cdk@2.1007.0:
+  version "2.1007.0"
+  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1007.0.tgz#cdeca2bd3a4a628c73c9dab3ac37f29d3f63b223"
+  integrity sha512-/UOYOTGWUm+pP9qxg03tID5tL6euC+pb+xo0RBue+xhnUWwj/Bbsw6DbqbpOPMrNzTUxmM723/uMEQmM6S26dw==
+  optionalDependencies:
+    fsevents "2.3.2"
+
 aws-cdk@2.1016.1:
   version "2.1016.1"
   resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1016.1.tgz#09df749f3c35ec7b858277711e1b5456688fb2bc"
-  integrity sha512-248TBiluT8jHUjkpzvWJOHv2fS+An9fiII3eji8H7jwfTu5yMBk7on4B/AVNr9A1GXJk9I32qf9Q0A3rLWRYPQ== 
-
+  integrity sha512-248TBiluT8jHUjkpzvWJOHv2fS+An9fiII3eji8H7jwfTu5yMBk7on4B/AVNr9A1GXJk9I32qf9Q0A3rLWRYPQ==
   optionalDependencies:
     fsevents "2.3.2"
 
@@ -13758,7 +13764,7 @@ ts-api-utils@^2.1.0:
   resolved "https://registry.npmjs.org/ts-api-utils/-/ts-api-utils-2.1.0.tgz#595f7094e46eed364c13fd23e75f9513d29baf91"
   integrity sha512-CUgTZL1irw8u29bzrOD/nH85jqyc74D6SshFgujOIA7osm2Rz7dYH77agkx7H4FBNxDq7Cjf+IjaX/8zwFW+ZQ==
 
-ts-jest@^29, ts-jest@^29.3.4:
+ts-jest@^29, ts-jest@^29.2.5, ts-jest@^29.3.4:
   version "29.3.4"
   resolved "https://registry.npmjs.org/ts-jest/-/ts-jest-29.3.4.tgz#9354472aceae1d3867a80e8e02014ea5901aee41"
   integrity sha512-Iqbrm8IXOmV+ggWHOTEbjwyCf2xZlUMv5npExksXohL+tk8va4Fjhb+X2+Rt9NBmgO7bJ8WpnMLOwih/DnMlFA==
