@@ -289,7 +289,7 @@ class PolicyGrantPrincipal implements IPrincipal {
     // lambda.Function.grantInvoke() wants policyFragment to be readable to use as a dedupe hash.
     // The ARN is referenced to add policy statements as a resource-based policy.
     // We should fail to synth because a managed policy cannot be used as a principal of a policy document.
-    // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
+    // cf. https://github.com/aws/aws-cdk/issues/32980
     const arn = Lazy.string({ produce: () => { throw this.principalError(); } });
     this.policyFragment = new ArnPrincipal(arn).policyFragment;
     this.principalAccount = _policy.env.account;
