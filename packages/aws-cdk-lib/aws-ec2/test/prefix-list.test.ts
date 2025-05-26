@@ -130,6 +130,7 @@ describe('prefix list', () => {
           PrefixListName: 'com.amazonaws.us-east-1.testprefixlist',
         },
         propertiesToReturn: ['PrefixListId'],
+        expectedMatchCount: 'exactly-one',
       },
       dummyValue: [
         { PrefixListId: 'pl-xxxxxxxx' },
@@ -164,6 +165,7 @@ describe('prefix list', () => {
           AddressFamily: 'IPv6',
         },
         propertiesToReturn: ['PrefixListId'],
+        expectedMatchCount: 'exactly-one',
       },
       dummyValue: [
         { PrefixListId: 'pl-xxxxxxxx' },
@@ -182,9 +184,11 @@ describe('prefix list', () => {
     }).toThrow('All arguments to look up a managed prefix list must be concrete (no Tokens)');
   });
 
-  test('fromLookup throws if not found', () => {
+  test.each([
+    [[]],
+    [[{ PrefixListId: 'pl-xxxxxxxx' }, { PrefixListId: 'pl-yyyyyyyy' }]],
+  ])('fromLookup throws for unexpected result', (resultObjs) => {
     // GIVEN
-    const resultObjs = [];
     jest.spyOn(ContextProvider, 'getValue').mockReturnValue({ value: resultObjs });
 
     // WHEN
@@ -195,22 +199,6 @@ describe('prefix list', () => {
       PrefixList.fromLookup(stack, 'PrefixList', {
         prefixListName: 'com.amazonaws.us-east-1.missingprefixlist',
       });
-    }).toThrow('Could not find any managed prefix lists matching');
-  });
-
-  test('fromLookup throws if multiple resources found', () => {
-    // GIVEN
-    const resultObjs = [{ PrefixListId: 'pl-xxxxxxxx' }, { PrefixListId: 'pl-yyyyyyyy' }];
-    jest.spyOn(ContextProvider, 'getValue').mockReturnValue({ value: resultObjs });
-
-    // WHEN
-    const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
-
-    // THEN
-    expect(() => {
-      PrefixList.fromLookup(stack, 'PrefixList', {
-        prefixListName: 'com.amazonaws.us-east-1.missingprefixlist',
-      });
-    }).toThrow('Found 2 managed prefix lists matching');
+    }).toThrow('Unexpected response received from the context provider.');
   });
 });
