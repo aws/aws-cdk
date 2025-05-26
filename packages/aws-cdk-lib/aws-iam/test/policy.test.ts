@@ -1,7 +1,7 @@
 import { Template } from '../../assertions';
-import { App, CfnResource, Resource, Stack } from '../../core';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
+import { App, CfnResource, Resource, Stack } from '../../core';
 import { AddToPrincipalPolicyResult, AnyPrincipal, CfnPolicy, Grant, Group, IResourceWithPolicy, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 /* eslint-disable quote-props */
