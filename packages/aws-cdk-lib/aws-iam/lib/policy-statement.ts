@@ -7,7 +7,6 @@ import {
 import { normalizeStatement } from './private/postprocess-policy-document';
 import { LITERAL_STRING_KEY, mergePrincipal, sum } from './private/util';
 import * as cdk from '../../core';
-import { ManagedPolicyGrantPrincipal, PolicyGrantPrincipal } from './private/policy-grant-principal';
 
 const ensureArrayOrUndefined = (field: any) => {
   if (field === undefined) {
@@ -244,13 +243,7 @@ export class PolicyStatement {
 
   private validatePolicyPrincipal(principal: IPrincipal) {
     if (principal instanceof Group) {
-      throw new Error(`Cannot use an IAM Group '${principal.node.path}' as the \'Principal\' or \'NotPrincipal\' in an IAM Policy`);
-    }
-    if (principal instanceof PolicyGrantPrincipal) {
-      throw new Error(`Cannot use a Policy '${principal._policy.node.path}' as the \'Principal\' or \'NotPrincipal\' in an IAM Policy`);
-    }
-    if (principal instanceof ManagedPolicyGrantPrincipal) {
-      throw new Error(`Cannot use a ManagedPolicy '${principal._managedPolicy.node.path}' as the \'Principal\' or \'NotPrincipal\' in an IAM Policy`);
+      throw new Error('Cannot use an IAM Group as the \'Principal\' or \'NotPrincipal\' in an IAM Policy');
     }
   }
 
