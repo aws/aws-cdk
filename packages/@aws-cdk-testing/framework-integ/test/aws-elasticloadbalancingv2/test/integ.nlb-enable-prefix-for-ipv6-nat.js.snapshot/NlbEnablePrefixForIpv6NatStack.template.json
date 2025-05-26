@@ -464,14 +464,6 @@
     }
    }
   },
-  "VpcEIGW61416F369": {
-   "Type": "AWS::EC2::EgressOnlyInternetGateway",
-   "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
   "DisabledLbSgB7154DC8": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
