@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as route53 from 'aws-cdk-lib/aws-route53';
+import * as route53recoverycontrol from 'aws-cdk-lib/aws-route53recoverycontrol';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
@@ -120,6 +121,32 @@ new route53.ARecord(stack, 'ARecordCloudWatch', {
 new route53.ARecord(stack, 'ARecordCloudWatch2', {
   zone,
   recordName: '_cloudwatch',
+  target: route53.RecordTarget.fromValues('5.6.7.8'),
+  weight: 0,
+});
+
+const routingControl = new route53recoverycontrol.CfnRoutingControl(stack, 'RoutingControl', {
+  name: 'routing-control-name',
+  clusterArn: new route53recoverycontrol.CfnCluster(stack, 'Cluster', {
+    name: 'cluster',
+  }).attrClusterArn,
+});
+
+const healthCheckRecoveryControl = new route53.HealthCheck(stack, 'HealthCheckRecoveryControl', {
+  type: route53.HealthCheckType.RECOVERY_CONTROL,
+  routingControl: routingControl.attrRoutingControlArn,
+});
+
+new route53.ARecord(stack, 'ARecordRecoveryControl', {
+  zone,
+  recordName: '_recoverycontrol',
+  target: route53.RecordTarget.fromValues('1.2.3.4'),
+  healthCheck: healthCheckRecoveryControl,
+  weight: 100,
+});
+new route53.ARecord(stack, 'ARecordRecoveryControl2', {
+  zone,
+  recordName: '_recoverycontrol',
   target: route53.RecordTarget.fromValues('5.6.7.8'),
   weight: 0,
 });
@@ -248,6 +275,24 @@ cloudWatchHealthCheckCreated.expect(
           Name: cloudwatchAlarm.alarmName,
         },
         InsufficientDataHealthStatus: 'LastKnownStatus',
+        Inverted: false,
+        Disabled: false,
+      },
+    },
+  }),
+);
+
+// healthCheckRecoveryControl
+const recoveryControlHealthCheckCreated = integ.assertions.awsApiCall('Route53', 'GetHealthCheck', {
+  HealthCheckId: healthCheckRecoveryControl.healthCheckId,
+});
+
+recoveryControlHealthCheckCreated.expect(
+  ExpectedResult.objectLike({
+    HealthCheck: {
+      HealthCheckConfig: {
+        Type: 'RECOVERY_CONTROL',
+        RoutingControlArn: routingControl.attrRoutingControlArn,
         Inverted: false,
         Disabled: false,
       },

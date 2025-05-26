@@ -464,14 +464,6 @@
     }
    }
   },
-  "DualStackVpcEIGW64639A9F2": {
-   "Type": "AWS::EC2::EgressOnlyInternetGateway",
-   "Properties": {
-    "VpcId": {
-     "Ref": "DualStackVpcE812233C"
-    }
-   }
-  },
   "DualStackVpcRestrictDefaultSecurityGroupCustomResource5AA79B96": {
    "Type": "Custom::VpcRestrictDefaultSG",
    "Properties": {
