@@ -1,5 +1,7 @@
 import { Template } from '../../assertions';
 import { App, CfnResource, Resource, Stack } from '../../core';
+import * as lambda from '../../aws-lambda';
+import * as s3 from '../../aws-s3';
 import { AddToPrincipalPolicyResult, AnyPrincipal, CfnPolicy, Grant, Group, IResourceWithPolicy, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 /* eslint-disable quote-props */
@@ -564,7 +566,7 @@ describe('IAM policy', () => {
     expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
   });
 
-  test('Policies can be granted principal permissions', () => {
+  test('Policy can be granted principal permissions', () => {
     const pol = new Policy(stack, 'Policy', {
       policyName: 'MyPolicyName',
     });
@@ -582,7 +584,33 @@ describe('IAM policy', () => {
     });
   });
 
-  test('addPrincipalOrResource() correctly grants Policies permissions', () => {
+  test('Policy can be granted via lambda.Function.grantInvoke()', () => {
+    const func = new lambda.Function(stack, 'Function', { code: lambda.Code.fromInline('export const handler = () => {}'), runtime: lambda.Runtime.NODEJS_LATEST, handler: 'index.handler' });
+    const pol = new Policy(stack, 'Policy', {
+      policyName: 'MyPolicyName',
+    });
+    func.grantInvoke(pol);
+    pol.attachToUser(new User(stack, 'User'));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: 'MyPolicyName',
+      PolicyDocument: {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: 'lambda:InvokeFunction',
+            Resource: [
+              { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Function76856677', 'Arn'] }, ':*']] },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('addPrincipalOrResource() correctly grants Policy permissions', () => {
     const pol = new Policy(stack, 'Policy', {
       policyName: 'MyPolicyName',
     });
@@ -607,38 +635,30 @@ describe('IAM policy', () => {
     });
   });
 
-  test('Policies cannot be granted principal permissions across accounts', () => {
+  test('Policy cannot be granted principal permissions across accounts', () => {
     const pol = new Policy(stack, 'Policy', {
       policyName: 'MyPolicyName',
     });
+    const crossAccountStack = new Stack(app, 'CrossAccountStack', { env: { account: '5678' } });
+    const bucket = new s3.Bucket(crossAccountStack, 'CrossAccountBucket', {
+      bucketName: 'cross-account-bucket',
+    });
+    bucket.grantRead(pol);
 
-    class DummyResource extends Resource implements IResourceWithPolicy {
-      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
-        throw new Error('should not be called.');
-      }
-    }
-    const resource = new DummyResource(stack, 'Dummy', { account: '5678' });
-
-    expect(() => {
-      Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'], resource });
-    }).toThrow(/Cannot use a Policy 'MyStack\/Policy'/);
+    expect(() => app.synth()).toThrow('This grant operation needs to add a resource policy so needs access to a principal.');
   });
 
   test('Policies cannot be granted resource permissions', () => {
     const pol = new Policy(stack, 'Policy', {
       policyName: 'MyPolicyName',
     });
+    const crossAccountStack = new Stack(app, 'CrossAccountStack', { env: { account: '5678' } });
+    const bucket = new s3.Bucket(crossAccountStack, 'CrossAccountBucket', {
+      bucketName: 'cross-account-bucket',
+    });
+    Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'], resource: bucket });
 
-    class DummyResource extends Resource implements IResourceWithPolicy {
-      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
-        throw new Error('should not be called.');
-      }
-    }
-    const resource = new DummyResource(stack, 'Dummy');
-
-    expect(() => {
-      Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'], resource });
-    }).toThrow(/Cannot use a Policy 'MyStack\/Policy'/);
+    expect(() => app.synth()).toThrow('This grant operation needs to add a resource policy so needs access to a principal.');
   });
 });
 

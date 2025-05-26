@@ -3,11 +3,11 @@ import { IGroup } from './group';
 import { CfnManagedPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
-import { ArnFormat, Resource, Stack, Arn, Aws } from '../../core';
+import { ArnFormat, Resource, Stack, Arn, Aws, Lazy } from '../../core';
 import { getCustomizeRolesConfig, PolicySynthesizer } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -335,20 +335,24 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
 }
 
 class ManagedPolicyGrantPrincipal implements IPrincipal {
-  public readonly assumeRoleAction = 'sts:AssumeRole';
-  public readonly grantPrincipal: IPrincipal;
+  public readonly policyFragment: PrincipalPolicyFragment;
   public readonly principalAccount?: string;
+  public readonly grantPrincipal: IPrincipal = this;
 
   constructor(private _managedPolicy: ManagedPolicy) {
-    this.grantPrincipal = this;
+    // lambda.Function.grantInvoke() wants policyFragment to be readable to use as a dedupe hash.
+    // The ARN is referenced to add policy statements as a resource-based policy.
+    // We should fail to synth because a managed policy cannot be used as a principal of a policy document.
+    // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
+    const arn = Lazy.string({ produce: () => { throw this.principalError(); } });
+    this.policyFragment = new ArnPrincipal(arn).policyFragment;
     this.principalAccount = _managedPolicy.env.account;
   }
 
-  public get policyFragment(): PrincipalPolicyFragment {
+  public get assumeRoleAction(): string {
     // This property is referenced to add policy statements as a resource-based policy.
     // We should fail because a managed policy cannot be used as a principal of a policy document.
-    // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
-    throw new Error(`Cannot use a ManagedPolicy '${this._managedPolicy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
+    throw this.principalError();
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
@@ -358,5 +362,9 @@ class ManagedPolicyGrantPrincipal implements IPrincipal {
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     this._managedPolicy.addStatements(statement);
     return { statementAdded: true, policyDependable: this._managedPolicy };
+  }
+
+  private principalError() {
+    new Error(`This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a ManagedPolicy [${this._managedPolicy.node.path}].`);
   }
 }
