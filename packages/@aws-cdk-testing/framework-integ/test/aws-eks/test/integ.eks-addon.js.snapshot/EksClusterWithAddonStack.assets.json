@@ -15,16 +15,16 @@
         }
       }
     },
-    "9953ad4c3e84d120643ece4b2e51caf43fd9850063641b4d78bf30fbe6b4d381": {
+    "6094cb0ff874f89ab5ab24fb6b9417df0fdeb6966645f90c88ec1d7e28130112": {
       "displayName": "KubectlLayer/Code",
       "source": {
-        "path": "asset.9953ad4c3e84d120643ece4b2e51caf43fd9850063641b4d78bf30fbe6b4d381.zip",
+        "path": "asset.6094cb0ff874f89ab5ab24fb6b9417df0fdeb6966645f90c88ec1d7e28130112.zip",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9953ad4c3e84d120643ece4b2e51caf43fd9850063641b4d78bf30fbe6b4d381.zip",
+          "objectKey": "6094cb0ff874f89ab5ab24fb6b9417df0fdeb6966645f90c88ec1d7e28130112.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -75,6 +75,26 @@ describe('Addon', () => {
     });
   });
 
+  test('create a new Addon with configurationValues', () => {
+    // WHEN
+    new Addon(stack, 'TestAddonWithPreserveOnDelete', {
+      addonName: 'test-addon',
+      cluster,
+      configurationValues: {
+        replicaCount: 2,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Addon', {
+      AddonName: 'test-addon',
+      ClusterName: {
+        Ref: 'ClusterEB0386A7',
+      },
+      ConfigurationValues: '{\"replicaCount\":2}',
+    });
+  });
+
   test('creates an Addon from attributes', () => {
     // GIVEN
     const addonName = 'test-addon';
