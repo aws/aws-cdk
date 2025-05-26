@@ -586,23 +586,36 @@ export class Agent extends AgentBase implements IAgent {
     // Handle permissions to access the schema file from S3
     if (actionGroup.apiSchema instanceof AssetApiSchema) {
       const rendered = actionGroup.apiSchema._render();
-      if ('s3' in rendered && rendered.s3) {
-        const s3Config = rendered.s3;
-        if ('s3BucketName' in s3Config && 's3ObjectKey' in s3Config) {
-          const bucketName = s3Config.s3BucketName;
-          const objectKey = s3Config.s3ObjectKey;
-          if (bucketName && objectKey) {
-            const bucket = s3.Bucket.fromBucketName(this, `${actionGroup.name}SchemaBucket`, bucketName);
-            bucket.grantRead(this.role, objectKey);
-          }
-        }
+      if (!('s3' in rendered) || !rendered.s3) {
+        throw new ValidationError('S3 configuration is missing in AssetApiSchema', this);
       }
+      const s3Config = rendered.s3;
+      if (!('s3BucketName' in s3Config) || !('s3ObjectKey' in s3Config)) {
+        throw new ValidationError('S3 bucket name and object key are required in AssetApiSchema', this);
+      }
+      const bucketName = s3Config.s3BucketName;
+      const objectKey = s3Config.s3ObjectKey;
+      if (!bucketName || bucketName.trim() === '') {
+        throw new ValidationError('S3 bucket name cannot be empty in AssetApiSchema', this);
+      }
+      if (!objectKey || objectKey.trim() === '') {
+        throw new ValidationError('S3 object key cannot be empty in AssetApiSchema', this);
+      }
+      const bucket = s3.Bucket.fromBucketName(this, `${actionGroup.name}SchemaBucket`, bucketName);
+      bucket.grantRead(this.role, objectKey);
     } else if (actionGroup.apiSchema instanceof S3ApiSchema) {
       const s3File = actionGroup.apiSchema.s3File;
-      if (s3File && s3File.bucketName && s3File.objectKey) {
-        const bucket = s3.Bucket.fromBucketName(this, `${actionGroup.name}SchemaBucket`, s3File.bucketName);
-        bucket.grantRead(this.role, s3File.objectKey);
+      if (!s3File) {
+        throw new ValidationError('S3 file configuration is missing in S3ApiSchema', this);
       }
+      if (!s3File.bucketName || s3File.bucketName.trim() === '') {
+        throw new ValidationError('S3 bucket name cannot be empty in S3ApiSchema', this);
+      }
+      if (!s3File.objectKey || s3File.objectKey.trim() === '') {
+        throw new ValidationError('S3 object key cannot be empty in S3ApiSchema', this);
+      }
+      const bucket = s3.Bucket.fromBucketName(this, `${actionGroup.name}SchemaBucket`, s3File.bucketName);
+      bucket.grantRead(this.role, s3File.objectKey);
     }
   }
 

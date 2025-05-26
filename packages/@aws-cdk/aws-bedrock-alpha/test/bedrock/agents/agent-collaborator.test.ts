@@ -46,17 +46,6 @@ describe('AgentCollaborator', () => {
     expect(collaborator.relayConversationHistory).toBe(true);
   });
 
-  test('throws error when agentAlias is missing', () => {
-    // THEN
-    expect(() => {
-      new AgentCollaborator({
-        agentAlias: undefined as any,
-        collaborationInstruction: 'Test instruction',
-        collaboratorName: 'Test collaborator',
-      });
-    }).toThrow('agentAlias is required for AgentCollaborator');
-  });
-
   test('throws error when using TSTALIASID', () => {
     // GIVEN
     const testAlias = {
@@ -72,50 +61,6 @@ describe('AgentCollaborator', () => {
         collaboratorName: 'Test collaborator',
       });
     }).toThrow('Agent cannot collaborate with TSTALIASID alias of another agent');
-  });
-
-  test('throws error when collaborationInstruction is empty', () => {
-    // THEN
-    expect(() => {
-      new AgentCollaborator({
-        agentAlias: mockAgentAlias,
-        collaborationInstruction: '',
-        collaboratorName: 'Test collaborator',
-      });
-    }).toThrow('collaborationInstruction is required and cannot be empty');
-  });
-
-  test('throws error when collaborationInstruction is whitespace', () => {
-    // THEN
-    expect(() => {
-      new AgentCollaborator({
-        agentAlias: mockAgentAlias,
-        collaborationInstruction: '   ',
-        collaboratorName: 'Test collaborator',
-      });
-    }).toThrow('collaborationInstruction is required and cannot be empty');
-  });
-
-  test('throws error when collaboratorName is empty', () => {
-    // THEN
-    expect(() => {
-      new AgentCollaborator({
-        agentAlias: mockAgentAlias,
-        collaborationInstruction: 'Test instruction',
-        collaboratorName: '',
-      });
-    }).toThrow('collaboratorName is required and cannot be empty');
-  });
-
-  test('throws error when collaboratorName is whitespace', () => {
-    // THEN
-    expect(() => {
-      new AgentCollaborator({
-        agentAlias: mockAgentAlias,
-        collaborationInstruction: 'Test instruction',
-        collaboratorName: '   ',
-      });
-    }).toThrow('collaboratorName is required and cannot be empty');
   });
 
   test('renders with relayConversationHistory true', () => {

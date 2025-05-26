@@ -137,7 +137,7 @@ export class FunctionParameter {
       const descErrors = validation.validateStringFieldLength({
         fieldName: 'parameter description',
         value: props.description,
-        minLength: 0,
+        minLength: 1,
         maxLength: 500,
       });
 

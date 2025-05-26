@@ -109,21 +109,8 @@ export class AgentCollaborator {
   }
 
   private validateProps(props: AgentCollaboratorProps) {
-    // Validate required properties
-    if (!props.agentAlias) {
-      throw new ValidationError('agentAlias is required for AgentCollaborator');
-    }
-
     if (props.agentAlias.aliasId === 'TSTALIASID') {
       throw new ValidationError('Agent cannot collaborate with TSTALIASID alias of another agent');
-    }
-
-    if (!props.collaborationInstruction || props.collaborationInstruction.trim() === '') {
-      throw new ValidationError('collaborationInstruction is required and cannot be empty');
-    }
-
-    if (!props.collaboratorName || props.collaboratorName.trim() === '') {
-      throw new ValidationError('collaboratorName is required and cannot be empty');
     }
   }
 
