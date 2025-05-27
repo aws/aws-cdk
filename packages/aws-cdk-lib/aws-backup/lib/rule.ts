@@ -87,6 +87,7 @@ export interface BackupPlanRuleProps {
 
   /**
    * To help search your backups, you can enable Backup indexes by assigning index actions.
+   * Currently, you can only have up to a single index action per BackupRule.
    *
    * @default - no index actions.
    */
