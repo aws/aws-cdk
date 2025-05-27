@@ -18,6 +18,7 @@ import { LambdaFunction } from '../lib';
 const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
 });
 const stack = new cdk.Stack(app, 'aws-cdk-pipes-lambda-target');
