@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
 * **cloudformation:** Some L1 resources experienced breaking changes due to updated CloudFormation resources. Please check the notes for each specific module for more information.
-* **aws-cdl-lib.vpc_lattice**: the `name` and `resourceConfigurationType` property in `CfnResourceConfigurationProps` has changed from optional to required. Also, the `name`, `subnetIds` and `vpcIdentifier` properties in `CfnResourceGatewayProps` have changed form optional to mandatory.
+* **vpc-lattice**: the `name` and `resourceConfigurationType` property in `CfnResourceConfigurationProps` has changed from optional to required. Also, the `name`, `subnetIds` and `vpcIdentifier` properties in `CfnResourceGatewayProps` have changed from optional to mandatory.
 
 ### Features
 
