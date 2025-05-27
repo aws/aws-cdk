@@ -5,10 +5,6 @@ All notable changes to this project will be documented in this file. See [standa
 ## [2.199.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.198.0-alpha.0...v2.199.0-alpha.0) (2025-05-27)
 
 
-### Reverts
-
-* **ec2:** update `PrefixList.fromLookup()` to expect the result from CcApi context provider has exactly one resource ([#34557](https://github.com/aws/aws-cdk/issues/34557)) ([0bce2f0](https://github.com/aws/aws-cdk/commit/0bce2f0d61821920728d337fba2d23276e2b61ec)), closes [aws/aws-cdk#34199](https://github.com/aws/aws-cdk/issues/34199)
-
 ## [2.198.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.197.0-alpha.0...v2.198.0-alpha.0) (2025-05-22)
 
 
