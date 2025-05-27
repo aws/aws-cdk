@@ -3,6 +3,7 @@ import { IFileSystem } from './efs-file-system';
 import { CfnAccessPoint } from './efs.generated';
 import { ArnFormat, IResource, Resource, Stack, Tags, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an EFS AccessPoint
@@ -174,7 +175,11 @@ abstract class AccessPointBase extends Resource implements IAccessPoint {
 /**
  * Represents the AccessPoint
  */
+@propertyInjectable
 export class AccessPoint extends AccessPointBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-efs.AccessPoint';
+
   /**
    * Import an existing Access Point by attributes
    */
@@ -248,7 +253,10 @@ export class AccessPoint extends AccessPointBase {
   }
 }
 
+@propertyInjectable
 class ImportedAccessPoint extends AccessPointBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-efs.ImportedAccessPoint';
   public readonly accessPointId: string;
   public readonly accessPointArn: string;
   private readonly _fileSystem?: IFileSystem;

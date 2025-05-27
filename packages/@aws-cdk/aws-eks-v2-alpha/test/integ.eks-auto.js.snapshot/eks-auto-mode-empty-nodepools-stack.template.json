@@ -496,7 +496,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x",
+    "Runtime": "nodejs22.x",
     "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
    },
    "DependsOn": [
@@ -913,7 +913,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "12157b27d30ab71eb24ae65825f672ba5cc2c09dbb1703cd7adfcff3aeaca136.zip"
+     "S3Key": "8a84a8f465fbe0c48af2c256847ec9abfe095d23781b749728b998315f3ad732.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -997,6 +997,16 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "helloeksclusterKubectlProviderHandler87F7258C",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -1042,7 +1052,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x",
+    "Runtime": "nodejs22.x",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
@@ -1066,38 +1076,6 @@
    "DependsOn": [
     "helloeksclusterKubectlProviderframeworkonEventServiceRoleDefaultPolicyF8C6BB77",
     "helloeksclusterKubectlProviderframeworkonEventServiceRole7DA17438",
-    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
-    "VpcPrivateSubnet2DefaultRoute060D2087",
-    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
-   ]
-  },
-  "helloeksclusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0C64804B1": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "helloeksclusterKubectlProviderHandler87F7258C",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "helloeksclusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0C64804B1",
-    "Roles": [
-     {
-      "Ref": "helloeksclusterKubectlProviderframeworkonEventServiceRole7DA17438"
-     }
-    ]
-   },
-   "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
     "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
     "VpcPrivateSubnet2DefaultRoute060D2087",

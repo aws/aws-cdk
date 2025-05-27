@@ -4,6 +4,7 @@ import { InputValidator } from './private/validation';
 import { CfnTagOption } from './servicecatalog.generated';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for TagOptions.
@@ -24,7 +25,10 @@ export interface TagOptionsProps {
  *
  * @resource AWS::ServiceCatalog::TagOption
  */
+@propertyInjectable
 export class TagOptions extends cdk.Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicecatalog.TagOptions';
   /**
    * List of underlying CfnTagOption resources.
    *

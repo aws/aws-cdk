@@ -8,5 +8,6 @@
       "assertionStack": "alb-weight-rando-algorithm-test-integ/DefaultTest/DeployAssert",
       "assertionStackName": "albweightrandoalgorithmtestintegDefaultTestDeployAssertD1584525"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

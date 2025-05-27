@@ -71,5 +71,7 @@
   "@aws-cdk/core:aspectPrioritiesMutating": true,
   "@aws-cdk/aws-dynamodb:retainTableReplica": true,
   "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
-  "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true
+  "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
+  "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
+  "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true
 }

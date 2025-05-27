@@ -2,6 +2,54 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.198.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.197.0-alpha.0...v2.198.0-alpha.0) (2025-05-22)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **amplify:** A compute role is created when `platform` is `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.
+
+### Features
+
+* **amplify:** add compute role support for Amplify app ([#33962](https://github.com/aws/aws-cdk/issues/33962)) ([7490b92](https://github.com/aws/aws-cdk/commit/7490b921aa2c464e32ad27064fa4b84571d5ba1a)), closes [#33882](https://github.com/aws/aws-cdk/issues/33882)
+* **ec2:** add i7i instance class ([#34453](https://github.com/aws/aws-cdk/issues/34453)) ([3fe8ab4](https://github.com/aws/aws-cdk/commit/3fe8ab4bb100e23042f3d55d4a52bfc8cdbf495a))
+
+## [2.197.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.196.1-alpha.0...v2.197.0-alpha.0) (2025-05-20)
+
+## [2.196.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.196.0-alpha.0...v2.196.1-alpha.0) (2025-05-19)
+
+## [2.196.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.195.0-alpha.0...v2.196.0-alpha.0) (2025-05-15)
+
+
+### Features
+
+* **msk:** support Kafka versions 3.9.x and 3.9.x Kraft ([#34213](https://github.com/aws/aws-cdk/issues/34213)) ([a1226db](https://github.com/aws/aws-cdk/commit/a1226db3164f885ab1bbf13a18697831cfde74d0))
+* **pipes-targets:** add SNS ([#34159](https://github.com/aws/aws-cdk/issues/34159)) ([2f846b3](https://github.com/aws/aws-cdk/commit/2f846b395cc5061363bd6def946a04740ac0139b))
+* **s3tables:** server-side encryption by customer managed KMS key ([#34229](https://github.com/aws/aws-cdk/issues/34229)) ([488f0db](https://github.com/aws/aws-cdk/commit/488f0db714c20fcaf5dbdf682277a70c6a938d3f))
+
+
+### Bug Fixes
+
+* **ec2:**  dual-stack vpc without private subnets creates EgressOnlyInternetGateway (under feature flag) ([#34437](https://github.com/aws/aws-cdk/issues/34437)) ([35e818b](https://github.com/aws/aws-cdk/commit/35e818b4f86638b5fe6074705511d1eee16266d2)), closes [#30981](https://github.com/aws/aws-cdk/issues/30981)
+* **ec2-alpha:** fix resource id references and tags for migration behind feature flag ([#34377](https://github.com/aws/aws-cdk/issues/34377)) ([aa73534](https://github.com/aws/aws-cdk/commit/aa735341a8e95224a14241b5e1c5c5ba71de5022))
+
+## [2.195.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.194.0-alpha.0...v2.195.0-alpha.0) (2025-05-07)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **iot:** By default, `deviceDertificateAgeCheck` is automatically enabled.
+
+### Features
+
+* **iot:** device certificate age check audit configuration ([#33816](https://github.com/aws/aws-cdk/issues/33816)) ([9ad383d](https://github.com/aws/aws-cdk/commit/9ad383d5300c5d5f5a9d2552fbd541436570a404))
+* **location:** support L2 API Key Construct ([#32733](https://github.com/aws/aws-cdk/issues/32733)) ([d867878](https://github.com/aws/aws-cdk/commit/d86787889dd49dce220324d141bf48e1bfa8fc3b)), closes [#30684](https://github.com/aws/aws-cdk/issues/30684)
+
+
+### Bug Fixes
+
+* **amplify-alpha:** example code for adding a custom rule is wrong  ([#34353](https://github.com/aws/aws-cdk/issues/34353)) ([8ab2606](https://github.com/aws/aws-cdk/commit/8ab2606b7b8de068a70dfaf02c5d96651ef5d286)), closes [#34351](https://github.com/aws/aws-cdk/issues/34351)
+
 ## [2.194.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.193.0-alpha.0...v2.194.0-alpha.0) (2025-05-01)
 
 ## [2.193.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.192.0-alpha.0...v2.193.0-alpha.0) (2025-04-30)
