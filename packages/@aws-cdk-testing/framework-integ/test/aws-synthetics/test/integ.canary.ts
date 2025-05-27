@@ -41,6 +41,7 @@ const inlineAsset = new Canary(stack, 'InlineAsset', {
   schedule: Schedule.rate(cdk.Duration.minutes(1)),
   artifactsBucketLocation: { bucket, prefix },
   runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+  maxRetries: 2,
   cleanup: Cleanup.LAMBDA,
 });
 
