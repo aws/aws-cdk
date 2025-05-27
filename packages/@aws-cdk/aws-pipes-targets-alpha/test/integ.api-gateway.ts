@@ -14,7 +14,6 @@ import { ApiGatewayTarget } from '../lib/api-gateway';
  * SQS (pipe source) --> API Gateway REST API (pipe target) --> Lambda function
  */
 
-
 const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
