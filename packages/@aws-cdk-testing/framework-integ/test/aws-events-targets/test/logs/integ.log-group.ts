@@ -8,7 +8,8 @@ import { LogGroupTargetInput } from 'aws-cdk-lib/aws-events-targets';
 
 const app = new cdk.App({
   postCliContext: {
-    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 

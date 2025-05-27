@@ -21,7 +21,8 @@ class TestStack extends Stack {
 
 const app = new App({
   postCliContext: {
-    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,    [LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES]: true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    [LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES]: true,
   },
 });
 const stack = new TestStack(app, 'cdk-integ-lambda-nodejs-18-exclude-smithy');

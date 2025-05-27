@@ -73,7 +73,8 @@ class EksClusterAlbControllerStack extends Stack {
 
 const app = new App({
   postCliContext: {
-    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });

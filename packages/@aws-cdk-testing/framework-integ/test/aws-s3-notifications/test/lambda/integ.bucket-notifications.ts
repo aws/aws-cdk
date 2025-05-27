@@ -8,7 +8,8 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App({
   postCliContext: {
-    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,    '@aws-cdk/aws-s3:keepNotificationInImportedBucket': false,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-s3:keepNotificationInImportedBucket': false,
   },
 });
 

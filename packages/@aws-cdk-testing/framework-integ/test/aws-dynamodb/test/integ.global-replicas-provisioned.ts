@@ -5,7 +5,8 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 
 const app = new cdk.App({
   postCliContext: {
-    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
     '@aws-cdk/aws-dynamodb:retainTableReplica': false,
   },
 });
