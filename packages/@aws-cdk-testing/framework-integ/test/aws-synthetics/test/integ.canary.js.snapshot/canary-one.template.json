@@ -340,10 +340,7 @@
     "RuntimeVersion": "syn-nodejs-puppeteer-7.0",
     "Schedule": {
      "DurationInSeconds": "0",
-     "Expression": "rate(1 minute)",
-     "RetryConfig": {
-      "MaxRetries": 2
-     }
+     "Expression": "rate(1 minute)"
     },
     "StartCanaryAfterCreation": true,
     "Tags": [
