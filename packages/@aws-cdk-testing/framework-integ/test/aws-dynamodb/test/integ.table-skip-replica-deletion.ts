@@ -26,7 +26,7 @@ class TestStack extends Stack {
 
 const app = new App({
   postCliContext: {
-    '@aws-cdk/aws-dynamodb:retainTableReplica': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,    '@aws-cdk/aws-dynamodb:retainTableReplica': true,
   },
 });
 const stack = new TestStack(app, 'cdk-dynamodb-skip-replica-deletion');

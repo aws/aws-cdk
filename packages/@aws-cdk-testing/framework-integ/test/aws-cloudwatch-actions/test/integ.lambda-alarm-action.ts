@@ -68,7 +68,11 @@ class LambdaAlarmActionIntegrationTestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new LambdaAlarmActionIntegrationTestStack(app, 'LambdaAlarmActionIntegrationTestStack');
 new integ.IntegTest(app, 'LambdaAlarmActionIntegrationTest', {
   testCases: [stack],

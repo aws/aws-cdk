@@ -139,7 +139,7 @@ class PipelineStack extends Stack {
 
 const app = new App({
   postCliContext: {
-    '@aws-cdk/pipelines:reduceStageRoleTrustScope': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,    '@aws-cdk/pipelines:reduceStageRoleTrustScope': true,
   },
 });
 

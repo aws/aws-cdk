@@ -115,7 +115,7 @@ class TestStack extends cdk.Stack {
 
 const app = new cdk.App({
   postCliContext: {
-    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 const stack = new TestStack(app, 'aws-stepfunctions-aws-sdk-integ');

@@ -37,7 +37,7 @@ class EksHybridNodesStack extends Stack {
 
 const app = new App({
   postCliContext: {
-    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 const stack = new EksHybridNodesStack(app, 'aws-cdk-eks-cluster-hybrid-nodes');

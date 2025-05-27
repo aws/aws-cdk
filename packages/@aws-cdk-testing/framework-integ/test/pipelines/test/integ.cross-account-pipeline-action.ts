@@ -108,7 +108,7 @@ class PipelineStack extends Stack {
 
 const app = new App({
   postCliContext: {
-    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
     '@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope': true,
   },
 });

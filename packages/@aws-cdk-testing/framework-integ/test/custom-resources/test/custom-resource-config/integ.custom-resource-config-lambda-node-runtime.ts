@@ -6,7 +6,7 @@ import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
 
 const app = new cdk.App({
   postCliContext: {
-    '@aws-cdk/aws-dynamodb:retainTableReplica': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,    '@aws-cdk/aws-dynamodb:retainTableReplica': true,
   },
 });
 const stack = new cdk.Stack(app, 'MyStack');

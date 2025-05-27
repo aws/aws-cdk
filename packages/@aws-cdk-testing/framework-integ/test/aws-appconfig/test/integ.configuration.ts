@@ -36,7 +36,7 @@ def handler(event, context):
 
 const app = new App({
   postCliContext: {
-    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
   },
 });
 

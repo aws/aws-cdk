@@ -12,7 +12,7 @@ import { AwsCliLayer } from 'aws-cdk-lib/lambda-layer-awscli';
 
 const app = new cdk.App({
   postCliContext: {
-    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
   },
 });
 const stack = new cdk.Stack(app, 'lambda-layer-awscli-integ-stack');

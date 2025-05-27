@@ -7,7 +7,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 
 const app = new cdk.App({
   postCliContext: {
-    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
     '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
