@@ -15,7 +15,7 @@
         }
       }
     },
-    "607c00fca266b62e5148d4fa529149a3471b585eae8d8128a52767546327bd58": {
+    "c7245731f8f2ff3cb6eb22c813c9882b4e27bbad24c0dc9ed4040c540dc0efe0": {
       "displayName": "FsxLustreFileSystemTypeVersionStack Template",
       "source": {
         "path": "FsxLustreFileSystemTypeVersionStack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "607c00fca266b62e5148d4fa529149a3471b585eae8d8128a52767546327bd58.json",
+          "objectKey": "c7245731f8f2ff3cb6eb22c813c9882b4e27bbad24c0dc9ed4040c540dc0efe0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

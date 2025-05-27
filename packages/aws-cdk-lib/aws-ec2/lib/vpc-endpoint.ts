@@ -240,7 +240,11 @@ export interface GatewayVpcEndpointProps extends GatewayVpcEndpointOptions {
  * A gateway VPC endpoint.
  * @resource AWS::EC2::VPCEndpoint
  */
+@propertyInjectable
 export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoint {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.GatewayVpcEndpoint';
+
   public static fromGatewayVpcEndpointId(scope: Construct, id: string, gatewayVpcEndpointId: string): IGatewayVpcEndpoint {
     class Import extends VpcEndpoint {
       public vpcEndpointId = gatewayVpcEndpointId;
@@ -476,6 +480,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly DIRECTORY_SERVICE_DATA = new InterfaceVpcEndpointAwsService('ds-data');
   public static readonly DYNAMODB = new InterfaceVpcEndpointAwsService('dynamodb');
   public static readonly DYNAMODB_FIPS = new InterfaceVpcEndpointAwsService('dynamodb-fips');
+  public static readonly DYNAMODB_STREAMS = new InterfaceVpcEndpointAwsService('dynamodb-streams');
   public static readonly EBS_DIRECT = new InterfaceVpcEndpointAwsService('ebs');
   public static readonly EC2 = new InterfaceVpcEndpointAwsService('ec2');
   public static readonly EC2_MESSAGES = new InterfaceVpcEndpointAwsService('ec2messages');

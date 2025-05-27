@@ -8,5 +8,6 @@
       "assertionStack": "EnableLocalWriteForwardingClusterStackInteg/DefaultTest/DeployAssert",
       "assertionStackName": "EnableLocalWriteForwardingClusterStackIntegDefaultTestDeployAssertFA53AD26"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

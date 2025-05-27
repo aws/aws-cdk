@@ -4,7 +4,7 @@ import { renderEnvironment, renderTags } from './private/utils';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
-import { Duration, Lazy, Size, Stack, Token } from '../../../core';
+import { Duration, Lazy, Size, Stack, Token, ValidationError } from '../../../core';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
@@ -196,12 +196,12 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
 
     // check that either algorithm name or image is defined
     if (!props.algorithmSpecification.algorithmName && !props.algorithmSpecification.trainingImage) {
-      throw new Error('Must define either an algorithm name or training image URI in the algorithm specification');
+      throw new ValidationError('Must define either an algorithm name or training image URI in the algorithm specification', this);
     }
 
     // check that both algorithm name and image are not defined
     if (props.algorithmSpecification.algorithmName && props.algorithmSpecification.trainingImage) {
-      throw new Error('Cannot define both an algorithm name and training image URI in the algorithm specification');
+      throw new ValidationError('Cannot define both an algorithm name and training image URI in the algorithm specification', this);
     }
 
     // validate algorithm name
@@ -240,14 +240,14 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
    */
   public get role(): iam.IRole {
     if (this._role === undefined) {
-      throw new Error('role not available yet--use the object in a Task first');
+      throw new ValidationError('role not available yet--use the object in a Task first', this);
     }
     return this._role;
   }
 
   public get grantPrincipal(): iam.IPrincipal {
     if (this._grantPrincipal === undefined) {
-      throw new Error('Principal not available yet--use the object in a Task first');
+      throw new ValidationError('Principal not available yet--use the object in a Task first', this);
     }
     return this._grantPrincipal;
   }
@@ -378,12 +378,12 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     }
 
     if (algorithmName.length < 1 || 170 < algorithmName.length) {
-      throw new Error(`Algorithm name length must be between 1 and 170, but got ${algorithmName.length}`);
+      throw new ValidationError(`Algorithm name length must be between 1 and 170, but got ${algorithmName.length}`, this);
     }
 
     const regex = /^(arn:aws[a-z\-]*:sagemaker:[a-z0-9\-]*:[0-9]{12}:[a-z\-]*\/)?([a-zA-Z0-9]([a-zA-Z0-9-]){0,62})(?<!-)$/;
     if (!regex.test(algorithmName)) {
-      throw new Error(`Expected algorithm name to match pattern ${regex.source}, but got ${algorithmName}`);
+      throw new ValidationError(`Expected algorithm name to match pattern ${regex.source}, but got ${algorithmName}`, this);
     }
   }
 

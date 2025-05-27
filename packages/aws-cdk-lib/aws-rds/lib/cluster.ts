@@ -365,7 +365,7 @@ interface DatabaseClusterBaseProps {
   /**
    * The storage type to be associated with the DB cluster.
    *
-   * @default - DBClusterStorageType.AURORA_IOPT1
+   * @default - DBClusterStorageType.AURORA
    */
   readonly storageType?: DBClusterStorageType;
 
@@ -1213,7 +1213,10 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 /**
  * Represents an imported database cluster.
  */
+@propertyInjectable
 class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ImportedDatabaseCluster';
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
   public readonly engine?: IClusterEngine;

@@ -4,6 +4,7 @@ import * as constructs from 'constructs';
 import { ClusterBase, ICluster } from '.';
 import { CfnServerlessCluster } from 'aws-cdk-lib/aws-msk';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  *  Properties for a MSK Serverless Cluster
@@ -54,7 +55,11 @@ export interface VpcConfig {
  *
  * @resource AWS::MSK::ServerlessCluster
  */
+@propertyInjectable
 export class ServerlessCluster extends ClusterBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-msk-alpha.ServerlessCluster';
+
   /**
    * Reference an existing cluster, defined outside of the CDK code, by name.
    */

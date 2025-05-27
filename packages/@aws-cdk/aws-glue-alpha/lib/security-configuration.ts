@@ -4,6 +4,7 @@ import { Lazy, Names } from 'aws-cdk-lib/core';
 import * as constructs from 'constructs';
 import { CfnSecurityConfiguration } from 'aws-cdk-lib/aws-glue';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Interface representing a created or an imported `SecurityConfiguration`.
@@ -149,7 +150,11 @@ export interface SecurityConfigurationProps {
  * - Attach a security configuration to an ETL job to write its jobs bookmarks as encrypted Amazon S3 data.
  * - Attach a security configuration to a development endpoint to write encrypted Amazon S3 targets.
  */
+@propertyInjectable
 export class SecurityConfiguration extends cdk.Resource implements ISecurityConfiguration {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.SecurityConfiguration';
+
   /**
    * Creates a Connection construct that represents an external security configuration.
    *

@@ -230,7 +230,7 @@ export class FirelensLogRouter extends ContainerDefinition {
     const options = props.firelensConfig.options;
     if (options) {
       if ((options.configFileValue && options.configFileType === undefined) || (options.configFileValue === undefined && options.configFileType)) {
-        throw new Error('configFileValue and configFileType must be set together to define a custom config source');
+        throw new cdk.ValidationError('configFileValue and configFileType must be set together to define a custom config source', this);
       }
 
       const hasConfig = (options.configFileValue !== undefined);
