@@ -13,6 +13,7 @@ import {
   Application,
   ConfigurationContent,
   ConfigurationSource,
+  DeletionProtectionCheck,
   DeploymentStrategy,
   HostedConfiguration,
   JsonSchemaValidator,
@@ -57,6 +58,7 @@ const deploymentStrategy = new DeploymentStrategy(stack, 'MyDeployStrategy', {
 new HostedConfiguration(stack, 'MyHostedConfigFromFile', {
   application: appConfigApp,
   content: ConfigurationContent.fromFile('config.json'),
+  deletionProtectionCheck: DeletionProtectionCheck.BYPASS,
 });
 
 // create basic config profile and add config version
@@ -110,6 +112,7 @@ new SourcedConfiguration(stack, 'MyConfigFromParameter', {
     LambdaValidator.fromFunction(func),
   ],
   deploymentStrategy,
+  deletionProtectionCheck: DeletionProtectionCheck.BYPASS,
 });
 
 // ssm document as configuration source
