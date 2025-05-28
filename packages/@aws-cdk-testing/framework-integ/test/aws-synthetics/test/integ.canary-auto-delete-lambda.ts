@@ -55,6 +55,8 @@ class TestStack extends Stack {
 const app = new App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault': false,
+    '@aws-cdk/customresources:installLatestAwsSdkDefault': false,
   },
 });
 
