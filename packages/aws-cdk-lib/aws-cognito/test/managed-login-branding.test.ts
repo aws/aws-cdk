@@ -1,8 +1,9 @@
 import { Template } from '../../assertions';
 import { Stack } from '../../core';
 import {
-  BrandingAssetCategory,
-  BrandingColorMode,
+  AssetCategory,
+  AssetExtension,
+  ColorMode,
   ManagedLoginBranding,
   UserPool,
 } from '../lib';
@@ -15,7 +16,7 @@ describe('ManagedLoginBranding', () => {
 
     // WHEN
     new ManagedLoginBranding(stack, 'ManagedLoginBranding', {
-      userPool,
+      userPoolId: userPool.userPoolId,
     });
 
     // THEN
@@ -35,8 +36,8 @@ describe('ManagedLoginBranding', () => {
 
     // WHEN
     new ManagedLoginBranding(stack, 'ManagedLoginBranding', {
-      userPool,
-      client,
+      userPoolId: userPool.userPoolId,
+      clientId: client.userPoolClientId,
     });
 
     // THEN
@@ -49,6 +50,25 @@ describe('ManagedLoginBranding', () => {
     );
   });
 
+  test('with string user pool ID', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userPoolId = 'us-east-1_abcdefghi';
+
+    // WHEN
+    new ManagedLoginBranding(stack, 'ManagedLoginBranding', {
+      userPoolId,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::Cognito::ManagedLoginBranding',
+      {
+        UserPoolId: userPoolId,
+      },
+    );
+  });
+
   test('with assets', () => {
     // GIVEN
     const stack = new Stack();
@@ -56,13 +76,19 @@ describe('ManagedLoginBranding', () => {
 
     // WHEN
     new ManagedLoginBranding(stack, 'ManagedLoginBranding', {
-      userPool,
+      userPoolId: userPool.userPoolId,
       assets: [
         {
-          category: BrandingAssetCategory.LOGO,
-          colorMode: BrandingColorMode.LIGHT,
-          extension: 'png',
+          category: AssetCategory.PAGE_HEADER_LOGO,
+          colorMode: ColorMode.LIGHT,
+          extension: AssetExtension.PNG,
           bytes: 'YmFzZTY0LWVuY29kZWQtaW1hZ2UtZGF0YQ==',
+        },
+        {
+          category: AssetCategory.FAVICON_SVG,
+          colorMode: ColorMode.DYNAMIC,
+          extension: AssetExtension.SVG,
+          bytes: 'c3ZnLWltYWdlLWRhdGEtaW4tYmFzZTY0',
         },
       ],
     });
@@ -74,10 +100,16 @@ describe('ManagedLoginBranding', () => {
         UserPoolId: stack.resolve(userPool.userPoolId),
         Assets: [
           {
-            Category: 'LOGO',
+            Category: 'PAGE_HEADER_LOGO',
             ColorMode: 'LIGHT',
-            Extension: 'png',
+            Extension: 'PNG',
             Bytes: 'YmFzZTY0LWVuY29kZWQtaW1hZ2UtZGF0YQ==',
+          },
+          {
+            Category: 'FAVICON_SVG',
+            ColorMode: 'DYNAMIC',
+            Extension: 'SVG',
+            Bytes: 'c3ZnLWltYWdlLWRhdGEtaW4tYmFzZTY0',
           },
         ],
       },
@@ -91,11 +123,27 @@ describe('ManagedLoginBranding', () => {
 
     // WHEN
     new ManagedLoginBranding(stack, 'ManagedLoginBranding', {
-      userPool,
+      userPoolId: userPool.userPoolId,
       settings: {
-        colors: {
-          primary: '#FF0000',
-          background: '#FFFFFF',
+        components: {
+          pageBackground: {
+            lightMode: { color: 'ffffffff' },
+            darkMode: { color: '0f1b2aff' },
+          },
+          primaryButton: {
+            lightMode: {
+              defaults: {
+                backgroundColor: '0972d3ff',
+                textColor: 'ffffffff',
+              },
+            },
+          },
+        },
+        categories: {
+          global: {
+            colorSchemeMode: 'LIGHT',
+            spacingDensity: 'REGULAR',
+          },
         },
       },
     });
@@ -106,9 +154,25 @@ describe('ManagedLoginBranding', () => {
       {
         UserPoolId: stack.resolve(userPool.userPoolId),
         Settings: {
-          colors: {
-            primary: '#FF0000',
-            background: '#FFFFFF',
+          components: {
+            pageBackground: {
+              lightMode: { color: 'ffffffff' },
+              darkMode: { color: '0f1b2aff' },
+            },
+            primaryButton: {
+              lightMode: {
+                defaults: {
+                  backgroundColor: '0972d3ff',
+                  textColor: 'ffffffff',
+                },
+              },
+            },
+          },
+          categories: {
+            global: {
+              colorSchemeMode: 'LIGHT',
+              spacingDensity: 'REGULAR',
+            },
           },
         },
       },
@@ -122,7 +186,7 @@ describe('ManagedLoginBranding', () => {
 
     // WHEN
     new ManagedLoginBranding(stack, 'ManagedLoginBranding', {
-      userPool,
+      userPoolId: userPool.userPoolId,
       useCognitoProvidedValues: true,
     });
 
@@ -144,11 +208,17 @@ describe('ManagedLoginBranding', () => {
     // WHEN / THEN
     expect(() => {
       new ManagedLoginBranding(stack, 'ManagedLoginBranding', {
-        userPool,
+        userPoolId: userPool.userPoolId,
         useCognitoProvidedValues: true,
         settings: {
-          colors: {
-            primary: '#FF0000',
+          components: {
+            primaryButton: {
+              lightMode: {
+                defaults: {
+                  backgroundColor: '0972d3ff',
+                },
+              },
+            },
           },
         },
       });
@@ -165,13 +235,13 @@ describe('ManagedLoginBranding', () => {
     // WHEN / THEN
     expect(() => {
       new ManagedLoginBranding(stack, 'ManagedLoginBranding', {
-        userPool,
+        userPoolId: userPool.userPoolId,
         useCognitoProvidedValues: true,
         assets: [
           {
-            category: BrandingAssetCategory.LOGO,
-            colorMode: BrandingColorMode.LIGHT,
-            extension: 'png',
+            category: AssetCategory.PAGE_HEADER_LOGO,
+            colorMode: ColorMode.LIGHT,
+            extension: AssetExtension.PNG,
             bytes: 'YmFzZTY0LWVuY29kZWQtaW1hZ2UtZGF0YQ==',
           },
         ],
@@ -188,7 +258,7 @@ describe('ManagedLoginBranding', () => {
 
     // WHEN
     new ManagedLoginBranding(stack, 'ManagedLoginBranding', {
-      userPool,
+      userPoolId: userPool.userPoolId,
       returnMergedResources: true,
     });
 
@@ -198,6 +268,28 @@ describe('ManagedLoginBranding', () => {
       {
         UserPoolId: stack.resolve(userPool.userPoolId),
         ReturnMergedResources: true,
+      },
+    );
+  });
+
+  test('with string client ID', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userPool = new UserPool(stack, 'UserPool');
+    const clientId = 'abc123def456ghi';
+
+    // WHEN
+    new ManagedLoginBranding(stack, 'ManagedLoginBranding', {
+      userPoolId: userPool.userPoolId,
+      clientId,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::Cognito::ManagedLoginBranding',
+      {
+        UserPoolId: stack.resolve(userPool.userPoolId),
+        ClientId: clientId,
       },
     );
   });

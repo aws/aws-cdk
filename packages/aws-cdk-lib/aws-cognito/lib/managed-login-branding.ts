@@ -1,8 +1,11 @@
 import { Construct } from 'constructs';
 import { CfnManagedLoginBranding } from './cognito.generated';
-import { IUserPool } from './user-pool';
-import { UserPoolClient } from './user-pool-client';
-import { IResource, Resource } from '../../core';
+import { IResource, Resource, Token } from '../../core';
+import {
+  AssetCategory,
+  AssetExtension,
+  ColorMode,
+} from './private/managed-login-branding';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -19,77 +22,43 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  */
 
 /**
- * The category of image assets
+ * Export enums for asset categories, extensions, and color modes
  */
-export enum BrandingAssetCategory {
-  /**
-   * Background image
-   */
-  BACKGROUND = 'BACKGROUND',
-
-  /**
-   * Company logo
-   */
-  LOGO = 'LOGO',
-
-  /**
-   * Favicon
-   */
-  FAVICON = 'FAVICON',
-
-  /**
-   * Brand square logo
-   */
-  BRAND_SQUARE_LOGO = 'BRAND_SQUARE_LOGO',
-}
-
-/**
- * The color mode for branding assets
- */
-export enum BrandingColorMode {
-  /**
-   * Light mode
-   */
-  LIGHT = 'LIGHT',
-
-  /**
-   * Dark mode
-   */
-  DARK = 'DARK',
-
-  /**
-   * Browser-adaptive mode
-   */
-  BROWSER_ADAPTIVE = 'BROWSER_ADAPTIVE',
-}
+export { AssetCategory, AssetExtension, ColorMode };
 
 /**
  * An asset for managed login branding
  */
 export interface BrandingAsset {
   /**
-   * The category of the asset
+   * The category that the image corresponds to in your managed login configuration.
+   * Managed login has asset categories for different types of logos, backgrounds, and icons.
    */
-  readonly category: BrandingAssetCategory;
+  readonly category: AssetCategory;
 
   /**
-   * The color mode of the asset
+   * The display-mode target of the asset: light, dark, or browser-adaptive.
+   * For example, Amazon Cognito displays a dark-mode image only when the browser or application
+   * is in dark mode, but displays a browser-adaptive file in all contexts.
    */
-  readonly colorMode: BrandingColorMode;
+  readonly colorMode: ColorMode;
 
   /**
-   * The file extension of the asset
+   * The file type of the image file.
    */
-  readonly extension: string;
+  readonly extension: AssetExtension;
 
   /**
-   * The bytes of the asset
-   * This should be a base64-encoded string of the image file
+   * The image file, in Base64-encoded binary.
+   *
+   * @default - No bytes are provided
    */
   readonly bytes?: string;
 
   /**
-   * Resource ID of the asset
+   * The ID of the asset.
+   *
+   * @default - No resource ID is provided
    */
   readonly resourceId?: string;
 }
@@ -110,18 +79,18 @@ export interface IManagedLoginBranding extends IResource {
  */
 export interface ManagedLoginBrandingProps {
   /**
-   * The user pool where the branding style is assigned.
+   * The user pool ID where the branding style is assigned.
    */
-  readonly userPool: IUserPool;
+  readonly userPoolId: string;
 
   /**
-   * The app client to assign the branding style to.
+   * The app client ID that you want to assign the branding style to.
    *
    * Each style is linked to an app client until it is deleted.
    *
    * @default - No specific client ID is assigned
    */
-  readonly client?: UserPoolClient;
+  readonly clientId?: string;
 
   /**
    * An array of image files that you want to apply to roles like backgrounds, logos, and icons.
@@ -132,6 +101,7 @@ export interface ManagedLoginBrandingProps {
    */
   readonly assets?: BrandingAsset[];
 
+  // TODO: create a detailed type for settings as there isn't a json schema published yet.
   /**
    * A JSON settings object with the settings that you want to apply to your style.
    *
@@ -169,7 +139,7 @@ export interface ManagedLoginBrandingProps {
    * @default - No custom settings are provided
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-managedloginbranding.html
    */
-  readonly settings?: any;
+  readonly settings?: Record<string, any>;
 
   /**
    * When true, returns values for branding options that are unchanged from Amazon Cognito defaults.
@@ -199,9 +169,7 @@ export interface ManagedLoginBrandingProps {
  * This allows you to customize the look and feel of the managed login UI for your Cognito User Pool.
  */
 @propertyInjectable
-export class ManagedLoginBranding
-  extends Resource
-  implements IManagedLoginBranding {
+export class ManagedLoginBranding extends Resource implements IManagedLoginBranding {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string =
     'aws-cdk-lib.aws-cognito.ManagedLoginBranding';
@@ -244,6 +212,61 @@ export class ManagedLoginBranding
       );
     }
 
+    // Validate userPoolId format
+    if (!Token.isUnresolved(props.userPoolId)) {
+      const userPoolIdPattern = /[\w-]+_[0-9a-zA-Z]+/;
+      if (!userPoolIdPattern.test(props.userPoolId)) {
+        throw new ValidationError(
+          `userPoolId must match pattern [\w-]+_[0-9a-zA-Z]+, got: ${props.userPoolId}`,
+          this,
+        );
+      }
+      if (props.userPoolId.length < 1 || props.userPoolId.length > 55) {
+        throw new ValidationError(
+          `userPoolId length must be between 1 and 55 characters, got: ${props.userPoolId.length}`,
+          this,
+        );
+      }
+    }
+
+    // Validate assets array
+    if (props.assets) {
+      if (props.assets.length > 40) {
+        throw new ValidationError(
+          `assets array can have a maximum of 40 items, got: ${props.assets.length}`,
+          this,
+        );
+      }
+
+      // Validate each asset
+      for (const asset of props.assets) {
+        // Validate bytes length
+        if (asset.bytes && !Token.isUnresolved(asset.bytes) && asset.bytes.length > 1000000) {
+          throw new ValidationError(
+            `Asset bytes must not exceed 1000000 characters, got: ${asset.bytes.length}`,
+            this,
+          );
+        }
+
+        // Validate resourceId if provided
+        if (asset.resourceId && !Token.isUnresolved(asset.resourceId)) {
+          const resourceIdPattern = /^[\w\- ]+$/;
+          if (!resourceIdPattern.test(asset.resourceId)) {
+            throw new ValidationError(
+              `Asset resourceId must match pattern ^[\\w\\- ]+$, got: ${asset.resourceId}`,
+              this,
+            );
+          }
+          if (asset.resourceId.length < 1 || asset.resourceId.length > 40) {
+            throw new ValidationError(
+              `Asset resourceId length must be between 1 and 40 characters, got: ${asset.resourceId.length}`,
+              this,
+            );
+          }
+        }
+      }
+    }
+
     // Convert assets to the format expected by L1 construct
     const assets = props.assets?.map((asset) => {
       return {
@@ -256,8 +279,8 @@ export class ManagedLoginBranding
     });
 
     this.resource = new CfnManagedLoginBranding(this, 'Resource', {
-      userPoolId: props.userPool.userPoolId,
-      clientId: props.client?.userPoolClientId,
+      userPoolId: props.userPoolId,
+      clientId: props.clientId,
       assets: assets,
       settings: props.settings,
       returnMergedResources: props.returnMergedResources,
