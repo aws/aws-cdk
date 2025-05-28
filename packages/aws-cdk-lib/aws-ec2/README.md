@@ -771,7 +771,6 @@ let peer = ec2.Peer.ipv4('10.0.0.0/16');
 peer = ec2.Peer.anyIpv4();
 peer = ec2.Peer.ipv6('::0/0');
 peer = ec2.Peer.anyIpv6();
-peer = ec2.Peer.prefixList('pl-12345');
 appFleet.connections.allowTo(peer, ec2.Port.HTTPS, 'Allow outbound HTTPS');
 ```
 
@@ -786,6 +785,15 @@ declare const appFleet: autoscaling.AutoScalingGroup;
 fleet1.connections.allowTo(fleet2, ec2.Port.HTTP, 'Allow between fleets');
 
 appFleet.connections.allowFromAnyIpv4(ec2.Port.HTTP, 'Allow from load balancer');
+```
+
+A managed prefix list is also a connection peer:
+
+``` ts
+declare const appFleet: autoscaling.AutoScalingGroup;
+
+const prefixList = new ec2.PrefixList(this, 'PrefixList', { maxEntries: 10 });
+appFleet.connections.allowFrom(prefixList, ec2.Port.HTTPS);
 ```
 
 ### Port Ranges
@@ -2268,10 +2276,10 @@ new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 declare const vpc: ec2.Vpc;
-declare const deliveryStream: firehose.CfnDeliveryStream;
+declare const deliveryStream: firehose.DeliveryStream;
 
-vpc.addFlowLog('FlowLogsKinesisDataFirehose', {
-  destination: ec2.FlowLogDestination.toKinesisDataFirehoseDestination(deliveryStream.attrArn),
+vpc.addFlowLog('FlowLogsFirehose', {
+  destination: ec2.FlowLogDestination.toFirehose(deliveryStream),
 });
 ```
 

@@ -5,7 +5,11 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-appsync-function-max-batch-size');
 
 const api = new appsync.GraphqlApi(stack, 'LambdaAPI', {
