@@ -1,7 +1,8 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+      "displayName": "S3Stack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
         "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
         "packaging": "zip"
@@ -14,33 +15,36 @@
         }
       }
     },
-    "12157b27d30ab71eb24ae65825f672ba5cc2c09dbb1703cd7adfcff3aeaca136": {
+    "b8ab94266984268614c3fb2824a1c3a55395746c48b28c003b08bc1d08688f3e": {
+      "displayName": "BucketDeployment/AwsCliLayer/Code",
       "source": {
-        "path": "asset.12157b27d30ab71eb24ae65825f672ba5cc2c09dbb1703cd7adfcff3aeaca136.zip",
+        "path": "asset.b8ab94266984268614c3fb2824a1c3a55395746c48b28c003b08bc1d08688f3e.zip",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "12157b27d30ab71eb24ae65825f672ba5cc2c09dbb1703cd7adfcff3aeaca136.zip",
+          "objectKey": "b8ab94266984268614c3fb2824a1c3a55395746c48b28c003b08bc1d08688f3e.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "4fe0aba5e672b596d0f72505a9eec502f98d46906bb30fae2511fbdc1df4956f": {
+    "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d": {
+      "displayName": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code",
       "source": {
-        "path": "asset.4fe0aba5e672b596d0f72505a9eec502f98d46906bb30fae2511fbdc1df4956f",
+        "path": "asset.9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d",
         "packaging": "zip"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4fe0aba5e672b596d0f72505a9eec502f98d46906bb30fae2511fbdc1df4956f.zip",
+          "objectKey": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
     "b077b2ec224aacc66364b65a395813dc2a3436a2205ffded3c92116e59f5e975": {
+      "displayName": "BucketDeployment/Asset1",
       "source": {
         "path": "asset.b077b2ec224aacc66364b65a395813dc2a3436a2205ffded3c92116e59f5e975",
         "packaging": "zip"
@@ -54,6 +58,7 @@
       }
     },
     "d19f123f7417660caba345fe33585440b4bdddf84c7d743fdcd62fa9711803b5": {
+      "displayName": "BucketDeployment/Asset2",
       "source": {
         "path": "asset.d19f123f7417660caba345fe33585440b4bdddf84c7d743fdcd62fa9711803b5",
         "packaging": "zip"
@@ -67,6 +72,7 @@
       }
     },
     "a0283ad80e0316927423bcf52e7df87f128ea4076ed6464f70287b9e41ad6d82": {
+      "displayName": "BucketDeployment/Asset3",
       "source": {
         "path": "asset.a0283ad80e0316927423bcf52e7df87f128ea4076ed6464f70287b9e41ad6d82",
         "packaging": "zip"
@@ -79,7 +85,8 @@
         }
       }
     },
-    "eb720ee088ad586142c4d8474e1a35e4891f401eaf0ab46465601fed586352d6": {
+    "652018a39f3c30b1ad9cd382bbb79d2dc0f19358e4c6919c0d252eb43219aeb5": {
+      "displayName": "S3Stack Template",
       "source": {
         "path": "S3Stack.template.json",
         "packaging": "file"
@@ -87,7 +94,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "eb720ee088ad586142c4d8474e1a35e4891f401eaf0ab46465601fed586352d6.json",
+          "objectKey": "652018a39f3c30b1ad9cd382bbb79d2dc0f19358e4c6919c0d252eb43219aeb5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

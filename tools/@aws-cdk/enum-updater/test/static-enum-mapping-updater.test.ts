@@ -1,14 +1,13 @@
 import axios from 'axios';
 import * as fs from 'fs';
 import * as tmp from 'tmp';
-import { 
-  parseAwsSdkEnums,
+import {
   normalizeValue,
   normalizeEnumValues,
   extractModuleName,
   entryMethod,
   generateAndSaveStaticMapping,
-  findMatchingEnum
+  findMatchingEnum,
 } from '../lib/static-enum-mapping-updater';
 
 jest.mock('axios');
@@ -71,41 +70,6 @@ describe('File Operations', () => {
     (tmp.fileSync as jest.Mock).mockReturnValue(mockTmpFile);
     (tmp.dirSync as jest.Mock).mockReturnValue(mockDir);
   });
-
-  describe('parseAwsSdkEnums', () => {
-    const mockShapesData = {
-      "com.amazonaws.apigateway#AccessAssociationSourceType": {
-        "type": "enum",
-        "members": {
-          "VPCE": {
-            "traits": {
-              "smithy.api#enumValue": "VPCE"
-            }
-          }
-        }
-      }
-    };
-
-    beforeEach(() => {
-      (fs.readdirSync as jest.Mock).mockReturnValue(['service.json']);
-      (fs.readFileSync as jest.Mock).mockReturnValue(JSON.stringify({ shapes: mockShapesData }));
-    });
-
-    it('should parse SDK enum definitions', async () => {
-      await parseAwsSdkEnums('/mock/path');
-      expect(fs.writeFileSync).toHaveBeenCalled();
-      const writeCall = (fs.writeFileSync as jest.Mock).mock.calls[0];
-      const writtenContent = JSON.parse(writeCall[1]);
-      expect(writtenContent.apigateway.AccessAssociationSourceType).toContain('VPCE');
-    });
-
-    it('should handle invalid JSON files', async () => {
-      (fs.readFileSync as jest.Mock).mockReturnValueOnce('invalid json');
-      await parseAwsSdkEnums('/mock/path');
-      expect(fs.writeFileSync).toHaveBeenCalled();
-    });
-  });
-});
 
 describe('Enum Matching Functions', () => {
   describe('findMatchingEnum', () => {
@@ -181,7 +145,8 @@ describe('Static Mapping Generation', () => {
       await generateAndSaveStaticMapping(
         mockCdkEnums,
         mockSdkEnums,
-        mockManualMappings
+        mockManualMappings,
+        {}
       );
   
       // Verify the file write operation
@@ -197,6 +162,7 @@ describe('Static Mapping Generation', () => {
       await generateAndSaveStaticMapping(
         mockCdkEnums,
         mockSdkEnums,
+        {},
         {}
       );
   
@@ -206,6 +172,77 @@ describe('Static Mapping Generation', () => {
       const writtenContent = JSON.parse(writeCall[1]);
       
       expect(writtenContent.service1).toBeUndefined();
+    });
+
+
+    it('should prioritize manual mappings over automatic ones', async () => {
+      // Setup test data
+      const mockCdkEnums = {
+        amplify: {
+          ManualEnum: {
+            path: "path/to/enum",
+            enumLike: false,
+            values: ['VALUE1', 'VALUE2']
+          },
+          AutoEnum: {
+            path: "path/to/auto/enum",
+            enumLike: false,
+            values: ['AUTO1', 'AUTO2']
+          }
+        }
+      };
+  
+      const mockSdkEnums = {
+        amplify: {
+          SomeEnum: ['VALUE1', 'VALUE2', 'VALUE3'],
+          AutoEnum: ['AUTO1', 'AUTO2', 'AUTO3']
+        }
+      };
+  
+      const mockModuleMappings = {
+        amplify: ['amplify']
+      };
+  
+      const testManualEnumMappings = {
+        amplify: {
+          ManualEnum: {
+            cdk_path: "path/to/enum",
+            sdk_service: "amplify",
+            sdk_enum_name: "OverrideManualEnum",
+            match_percentage: 1.0,
+          }
+        }
+      };
+  
+      // Execute the functionI
+      await generateAndSaveStaticMapping(
+        mockCdkEnums,
+        mockSdkEnums,
+        mockModuleMappings,
+        testManualEnumMappings
+      );
+  
+      // Find the call that writes to static-enum-mapping.json
+      const writeCall = (fs.writeFileSync as jest.Mock).mock.calls.find(
+        call => String(call[0]).includes('static-enum-mapping.json')
+      );
+      expect(writeCall).toBeDefined();
+  
+      const writtenContent = JSON.parse(writeCall[1]);
+  
+      // Check that the manual mapping was used for ManualEnum
+      expect(writtenContent.amplify.ManualEnum).toBeDefined();
+      expect(writtenContent.amplify.ManualEnum.sdk_service).toBe('amplify');
+      expect(writtenContent.amplify.ManualEnum.sdk_enum_name).toBe('OverrideManualEnum');
+      expect(writtenContent.amplify.ManualEnum.cdk_path).toBe('path/to/enum');
+      expect(writtenContent.amplify.ManualEnum.manual).toBe(true);
+  
+      // Check that automatic mapping was used for AutoEnum
+      expect(writtenContent.amplify.AutoEnum).toBeDefined();
+      expect(writtenContent.amplify.AutoEnum.sdk_service).toBe('amplify');
+      expect(writtenContent.amplify.AutoEnum.sdk_enum_name).toBe('AutoEnum');
+      expect(writtenContent.amplify.AutoEnum.cdk_path).toBe('path/to/auto/enum');
+      expect(writtenContent.amplify.AutoEnum.manual).toBeUndefined();
     });
   });
   
@@ -265,5 +302,4 @@ describe('Static Mapping Generation', () => {
       await expect(entryMethod()).resolves.toBeUndefined();
     });
   });
-  
-  
+});

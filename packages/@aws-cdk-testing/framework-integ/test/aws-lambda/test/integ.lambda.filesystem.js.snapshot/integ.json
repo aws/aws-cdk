@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "testCases": {
     "aws-efs-lambda-test/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "aws-efs-lambda-test/DefaultTest/DeployAssert",
       "assertionStackName": "awsefslambdatestDefaultTestDeployAssert5DC2C506"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
