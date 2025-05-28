@@ -816,14 +816,12 @@ export class Volume extends VolumeBase {
       if (!props.snapshotId) {
         throw new ValidationError('volumeInitializationRate can only be specified when creating a volume from a snapshot.', this);
       }
-      if (
-        !props.volumeInitializationRate.isUnresolved &&
-          (
-            props.volumeInitializationRate.toMebibytes() < 100 ||
-            props.volumeInitializationRate.toMebibytes() > 300
-          )
-      ) {
-        throw new ValidationError(`volumeInitializationRate must be between 100 and 300 MiB/s, got: ${props.volumeInitializationRate}`, this);
+
+      if (!props.volumeInitializationRate.isUnresolved()) {
+        const rateMiBs = props.volumeInitializationRate.toBytes() / (1024 * 1024);
+        if (rateMiBs < 100 || rateMiBs > 300) {
+          throw new ValidationError(`volumeInitializationRate must be between 100 and 300 MiB/s, got: ${rateMiBs} MiB/s`, this);
+        }
       }
     }
   }
