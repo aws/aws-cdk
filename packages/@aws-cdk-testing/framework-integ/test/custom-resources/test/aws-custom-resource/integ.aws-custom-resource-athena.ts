@@ -21,6 +21,8 @@ import { AwsCustomResource, PhysicalResourceId, PhysicalResourceIdReference } fr
 const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault': false,
+    '@aws-cdk/customresources:installLatestAwsSdkDefault': false,
   },
 });
 const stack = new cdk.Stack(app, 'aws-cdk-customresources-athena');
