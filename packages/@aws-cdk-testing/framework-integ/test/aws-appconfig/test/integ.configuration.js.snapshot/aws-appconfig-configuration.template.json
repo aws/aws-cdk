@@ -105,6 +105,7 @@
     "ApplicationId": {
      "Ref": "MyAppConfigB4B63E75"
     },
+    "DeletionProtectionCheck": "BYPASS",
     "LocationUri": "hosted",
     "Name": "awsappconfigconfiguration-MyHostedConfigFromFile-8ED1123C"
    }
@@ -399,6 +400,7 @@
     "ApplicationId": {
      "Ref": "MyAppConfigB4B63E75"
     },
+    "DeletionProtectionCheck": "BYPASS",
     "Description": "This is a configuration profile used for integ testing",
     "LocationUri": {
      "Fn::Join": [
