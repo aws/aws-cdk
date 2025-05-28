@@ -1843,6 +1843,25 @@ new ec2.Volume(this, 'Volume', {
 });
 ```
 
+#### Volume initialization rate
+
+When creating an EBS volume from a snapshot, you can specify the initialization rate at which the snapshot blocks are downloaded from Amazon S3 to the volume.
+Specifying a volume initialization rate ensures that the volume is initialized at a predictable and consistent rate after creation.
+
+```ts
+new ec2.Volume(this, 'Volume', {
+  availabilityZone: 'us-east-1a',
+  size: Size.gibibytes(500),
+  snapshotId: 'snap-1234567890abcdef0',
+  volumeInitializationRate: Size.mebibytes(250),
+});
+```
+
+The `volumeInitializationRate` must be:
+
+* Between 100 and 300 MiB/s
+* Only specified when creating a volume from a snapshot
+
 ### Configuring Instance Metadata Service (IMDS)
 
 #### Toggling IMDSv1
