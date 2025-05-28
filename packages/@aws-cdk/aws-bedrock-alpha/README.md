@@ -158,6 +158,13 @@ const actionGroup = new bedrock.AgentActionGroup({
   enabled: true,
   apiSchema: inlineSchema,
 });
+
+const agent = new bedrock.Agent(this, 'Agent', {
+  foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_HAIKU_V1_0,
+  instruction: 'You are a helpful and friendly agent that answers questions about literature.',
+});
+
+agent.addActionGroup(actionGroup);
 ```
 
 From an existing S3 file:
@@ -179,6 +186,13 @@ const actionGroup = new bedrock.AgentActionGroup({
   enabled: true,
   apiSchema: s3Schema,
 });
+
+const agent = new bedrock.Agent(this, 'Agent', {
+  foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_HAIKU_V1_0,
+  instruction: 'You are a helpful and friendly agent that answers questions about literature.',
+});
+
+agent.addActionGroup(actionGroup);
 ```
 
 ### Using FunctionSchema with Action Groups
@@ -353,6 +367,31 @@ Bedrock Agents allows you to customize the prompts and LLM configuration for dif
 |---|---|---|---|
 | steps | PromptStepConfiguration[] | Yes | Array of step configurations for different parts of the agent sequence |
 | parser | lambda.IFunction | No | Lambda function for custom parsing of agent responses |
+
+#### Prompt Step Configuration Properties
+
+Each step in the `steps` array supports the following properties:
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| stepType | AgentStepType | Yes | The type of step being configured (PRE_PROCESSING, ORCHESTRATION, POST_PROCESSING, ROUTING_CLASSIFIER, MEMORY_SUMMARIZATION, KNOWLEDGE_BASE_RESPONSE_GENERATION) |
+| stepEnabled | boolean | No | Whether this step is enabled. Defaults to true |
+| customPromptTemplate | string | No | Custom prompt template to use for this step |
+| inferenceConfig | InferenceConfiguration | No | Configuration for model inference parameters |
+| foundationModel | BedrockFoundationModel | No | Alternative foundation model to use for this step (only valid for ROUTING_CLASSIFIER step) |
+| useCustomParser | boolean | No | Whether to use a custom parser for this step. Requires parser to be provided in PromptOverrideConfiguration |
+
+#### Inference Configuration Properties
+
+When providing `inferenceConfig`, the following properties are supported:
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| temperature | number | No | Controls randomness in the model's output (0.0-1.0) |
+| topP | number | No | Controls diversity via nucleus sampling (0.0-1.0) |
+| topK | number | No | Controls diversity by limiting the cumulative probability |
+| maximumLength | number | No | Maximum length of generated text |
+| stopSequences | string[] | No | Sequences where the model should stop generating |
 
 The following steps can be configured:
 

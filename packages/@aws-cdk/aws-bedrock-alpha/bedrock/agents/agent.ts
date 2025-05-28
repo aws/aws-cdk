@@ -129,15 +129,22 @@ export abstract class AgentBase extends Resource implements IAgent {
    * - detail: { 'agent-id': [this.agentId] }
    * @returns An EventBridge Rule configured for agent events
    */
-  public onEvent(id: string, options: events.OnEventOptions= {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      source: ['aws.bedrock'],
-      detail: {
-        'agent-id': [this.agentId],
+  public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
+    // Create rule with minimal props and event pattern
+    const rule = new events.Rule(this, id, {
+      description: options.description,
+      eventPattern: {
+        source: ['aws.bedrock'],
+        detail: {
+          'agent-id': [this.agentId],
+        },
       },
     });
+
+    // Add target if provided
+    if (options.target) {
+      rule.addTarget(options.target);
+    }
     return rule;
   }
 

@@ -27,7 +27,7 @@ export enum AgentCollaboratorType {
  * Enum for collaborator's relay conversation history types.
  * @internal
  */
-export enum RelayConversationHistoryType {
+enum RelayConversationHistoryType {
   /**
    * Sending to the collaborator.
    */

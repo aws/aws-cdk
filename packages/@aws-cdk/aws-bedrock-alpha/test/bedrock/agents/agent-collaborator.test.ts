@@ -1,6 +1,6 @@
 import { Stack } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { AgentCollaborator, RelayConversationHistoryType } from '../../../bedrock/agents/agent-collaborator';
+import { AgentCollaborator } from '../../../bedrock/agents/agent-collaborator';
 import { IAgentAlias } from '../../../bedrock/agents/agent-alias';
 
 describe('AgentCollaborator', () => {
@@ -82,7 +82,7 @@ describe('AgentCollaborator', () => {
       },
       collaborationInstruction: 'Test instruction',
       collaboratorName: 'Test collaborator',
-      relayConversationHistory: RelayConversationHistoryType.TO_COLLABORATOR,
+      relayConversationHistory: 'TO_COLLABORATOR',
     });
   });
 
@@ -105,7 +105,7 @@ describe('AgentCollaborator', () => {
       },
       collaborationInstruction: 'Test instruction',
       collaboratorName: 'Test collaborator',
-      relayConversationHistory: RelayConversationHistoryType.DISABLED,
+      relayConversationHistory: 'DISABLED',
     });
   });
 
@@ -127,7 +127,7 @@ describe('AgentCollaborator', () => {
       },
       collaborationInstruction: 'Test instruction',
       collaboratorName: 'Test collaborator',
-      relayConversationHistory: RelayConversationHistoryType.DISABLED,
+      relayConversationHistory: 'DISABLED',
     });
   });
 
