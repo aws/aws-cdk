@@ -6,7 +6,11 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as triggers from 'aws-cdk-lib/triggers';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'MyStack');
 
 const topic1 = new sns.Topic(stack, 'Topic1');

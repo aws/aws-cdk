@@ -363,6 +363,25 @@
     "GetHandlerServiceRole9313FCB8"
    ]
   },
+  "GetHandlerLogGroup488A16BF": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "GetHandlerEF5E42BB"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "PostHandlerServiceRoleA5E1C273": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -412,6 +431,25 @@
    "DependsOn": [
     "PostHandlerServiceRoleA5E1C273"
    ]
+  },
+  "PostHandlerLogGroup75D47477": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "PostHandler0D20EBFB"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "ForbiddenHandlerServiceRole993EA274": {
    "Type": "AWS::IAM::Role",
@@ -463,6 +501,25 @@
     "ForbiddenHandlerServiceRole993EA274"
    ]
   },
+  "ForbiddenHandlerLogGroup08BF0C77": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ForbiddenHandler630D1ED1"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "EchoHandlerServiceRole659EA5BA": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -512,6 +569,25 @@
    "DependsOn": [
     "EchoHandlerServiceRole659EA5BA"
    ]
+  },
+  "EchoHandlerLogGroup2ACA3184": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "EchoHandlerB75BC5D4"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "Stage0E8C2AF5": {
    "Type": "AWS::ApiGatewayV2::Stage",

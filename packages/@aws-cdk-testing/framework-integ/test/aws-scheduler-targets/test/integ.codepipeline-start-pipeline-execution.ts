@@ -19,6 +19,7 @@ import { CodePipelineStartPipelineExecution } from 'aws-cdk-lib/aws-scheduler-ta
  */
 const app = new cdk.App({
   postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
   },
 });

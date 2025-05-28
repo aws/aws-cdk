@@ -58,7 +58,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 new IntegTest(app, 'cdk-integ-s3-bucket-auto-delete-objects', {
   testCases: [new TestStack(app, 'cdk-s3-bucket-auto-delete-objects')],

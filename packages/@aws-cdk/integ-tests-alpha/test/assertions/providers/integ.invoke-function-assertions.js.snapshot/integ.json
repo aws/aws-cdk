@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "43.0.0",
   "testCases": {
     "AssertionsTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "AssertionsTest/DefaultTest/DeployAssert",
       "assertionStackName": "AssertionsTestDefaultTestDeployAssertDC0672BB"
     }
-  }
+  },
+  "minimumCliVersion": "2.1014.0"
 }

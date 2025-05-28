@@ -49,6 +49,25 @@
    "DependsOn": [
     "TargetFuncServiceRoleD60C6577"
    ]
+  },
+  "TargetFuncLogGroupB724196D": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "TargetFunc08E2AFD9"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Outputs": {

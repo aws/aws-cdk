@@ -17,7 +17,11 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
  *
  *********************************************************************************************************************/
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-config-custompolicy');
 
 // A custom rule that runs on configuration changes of EC2 instances

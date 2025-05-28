@@ -14,7 +14,11 @@ import { STANDARD_NODEJS_RUNTIME } from '../../../config';
  * * aws stepfunctions describe-execution --execution-arn <execution-arn generated before> --query 'output': should return the string \"hello, world!\"
  */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const apiStack = new cdk.Stack(app, 'CallRestApiInteg-ApiStack', {
   env: {
     region: 'us-west-2',

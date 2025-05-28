@@ -18,7 +18,11 @@ class SqsEventSourceTest extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new SqsEventSourceTest(app, 'sqs-event-source-max-concurrency');
 
 new IntegTest(app, 'sqs-max-concurrency-integ-test', {

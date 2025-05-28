@@ -3,7 +3,11 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cr from 'aws-cdk-lib/custom-resources';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'Stack');
 
 const vpc = new ec2.Vpc(stack, 'MyVpc');

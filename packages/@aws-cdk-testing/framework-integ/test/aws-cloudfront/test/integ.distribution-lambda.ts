@@ -4,7 +4,11 @@ import { TestOrigin } from './test-origin';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'integ-distribution-lambda', { env: { region: 'us-east-1' } });
 
 const lambdaFunction = new lambda.Function(stack, 'Lambda', {
