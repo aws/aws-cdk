@@ -66,18 +66,18 @@
     "@aws-cdk/service-spec-types" "^0.0.139"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/aws-service-spec@^0.1.75":
-  version "0.1.75"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.75.tgz#c76a16a0390b2affd33c306803760571d4aa04c1"
-  integrity sha512-yo4zSEGmwVE4xvErTZWYtAYly+qjdjC0d4FOv/ULH7WkYWLkBzOoInWqDB0YmVSYHsHRxXSSFludHhTj2I/03Q==
+"@aws-cdk/aws-service-spec@^0.1.76":
+  version "0.1.76"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.76.tgz#bbca16e92a824a10616b9d31a9d289a4bb741f6c"
+  integrity sha512-szKooftLf88j08pZkwYTnbYlhcofW4kQJM1a9yFteuvYjm6o+1lh5ouxuBus5UeCYKl21497LXRN3rHvID+LWg==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.141"
+    "@aws-cdk/service-spec-types" "^0.0.142"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/cloud-assembly-schema@^43.6.0":
-  version "43.9.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-43.9.0.tgz#795c491f703c0faa71b4c97a888086a54614b2d4"
-  integrity sha512-S6fiiNGSRoTqCnpAH3mXV52Ssj6i+eUB6LSKYqGdKqzrgGkyvR/acurMGYtCJt5gsf3uZ+5J6utYs2X6dcg8Vw==
+"@aws-cdk/cloud-assembly-schema@^41.2.0":
+  version "41.2.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-41.2.0.tgz#c1ef513e1cc0528dbc05948ae39d5631306af423"
+  integrity sha512-JaulVS6z9y5+u4jNmoWbHZRs9uGOnmn/ktXygNWKNu1k6lF3ad4so3s18eRu15XCbUIomxN9WPYT6Ehh7hzONw==
   dependencies:
     jsonschema "~1.4.1"
     semver "^7.7.1"
@@ -147,10 +147,10 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/service-spec-types@^0.0.141":
-  version "0.0.141"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.141.tgz#41fde6f9a63f53c5cc7741c2bde6c004f93cc838"
-  integrity sha512-nAACNOm78P0HLyEJy/8Ka6ADT+07ZHSBI4TGxYlck/1ijyQ6IquRHLfYnqZbovEf6SKHkqqxX8y/Zw+rS6PdTw==
+"@aws-cdk/service-spec-types@^0.0.142":
+  version "0.0.142"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.142.tgz#7b8925e385f1ce5a710d079c626f27755706f958"
+  integrity sha512-OlS/mtdvW0UABiV+JgMlk/OPP0h6la//2774zllaMakMCkDdXroUht24bUs2QSd+CFk2W6ugwI/ngS3y8dJY1A==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 

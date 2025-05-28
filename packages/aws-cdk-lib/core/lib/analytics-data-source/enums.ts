@@ -877,6 +877,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'ENFORCED',
     'AUDIT'
   ],
+  'CustomizationType': [
+    'FINE_TUNING',
+    'CONTINUED_PRE_TRAINING',
+    'DISTILLATION'
+  ],
   'DBClusterStorageType': [
     'aurora',
     'aurora-iopt1'
