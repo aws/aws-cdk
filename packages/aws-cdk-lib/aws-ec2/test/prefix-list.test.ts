@@ -1,6 +1,7 @@
 import { Template } from '../../assertions';
 import * as cxschema from '../../cloud-assembly-schema';
 import { CfnParameter, ContextProvider, Stack } from '../../core';
+import { Port, SecurityGroup, Vpc } from '../lib';
 import { AddressFamily, PrefixList } from '../lib/prefix-list';
 
 afterEach(() => {
@@ -55,6 +56,56 @@ describe('prefix list', () => {
         { Cidr: '10.0.0.1/32' },
         { Cidr: '10.0.0.2/32', Description: 'sample1' },
       ],
+    });
+  });
+
+  test('prefixlist can be used as Peer', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'Vpc');
+    const securityGroup = new SecurityGroup(stack, 'SecurityGroup', { vpc, allowAllOutbound: false });
+    const prefixList = new PrefixList(stack, 'prefix-list', {
+      maxEntries: 100,
+    });
+
+    // WHEN
+    securityGroup.addIngressRule(prefixList, Port.SSH);
+    securityGroup.addEgressRule(prefixList, Port.HTTP);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+      SourcePrefixListId: { 'Fn::GetAtt': ['prefixlist1C1855BF', 'PrefixListId'] },
+      IpProtocol: 'tcp',
+      FromPort: 22,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
+      DestinationPrefixListId: { 'Fn::GetAtt': ['prefixlist1C1855BF', 'PrefixListId'] },
+      IpProtocol: 'tcp',
+      FromPort: 80,
+    });
+  });
+
+  test('imported prefixlist can be used as Peer', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'Vpc');
+    const securityGroup = new SecurityGroup(stack, 'SecurityGroup', { vpc, allowAllOutbound: false });
+    const prefixList = PrefixList.fromPrefixListId(stack, 'prefix-list', 'pl-xxxxxxxx');
+
+    // WHEN
+    securityGroup.connections.allowFrom(prefixList, Port.SSH);
+    securityGroup.connections.allowTo(prefixList, Port.HTTP);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+      SourcePrefixListId: 'pl-xxxxxxxx',
+      IpProtocol: 'tcp',
+      FromPort: 22,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
+      DestinationPrefixListId: 'pl-xxxxxxxx',
+      IpProtocol: 'tcp',
+      FromPort: 80,
     });
   });
 
