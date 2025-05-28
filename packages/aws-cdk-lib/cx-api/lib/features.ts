@@ -856,7 +856,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
-    compatibilityWithOldBehaviorMd: `Remove calls to the grant* methods on the aliases referenced by name`,
+    compatibilityWithOldBehaviorMd: 'Remove calls to the grant* methods on the aliases referenced by name',
   },
 
   //////////////////////////////////////////////////////////////////////
