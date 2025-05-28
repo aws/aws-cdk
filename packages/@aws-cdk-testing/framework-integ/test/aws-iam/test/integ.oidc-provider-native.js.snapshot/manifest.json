@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "oidc-provider-native-integ-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e40bdaff510d57b730ef01d0b8b96de982cb3f99015cc6cdab2ba232174b610a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/417e68367e346728e08309aa5898dc8e0aa40e0278655308389df266ce06d54f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -40,12 +40,6 @@
             "data": "Provider2281708E"
           }
         ],
-        "/oidc-provider-native-integ-stack/Minimal/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Minimal107EFE55"
-          }
-        ],
         "/oidc-provider-native-integ-stack/Arn": [
           {
             "type": "aws:cdk:logicalId",
@@ -58,6 +52,12 @@
             "data": "Issuer"
           }
         ],
+        "/oidc-provider-native-integ-stack/Minimal/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Minimal107EFE55"
+          }
+        ],
         "/oidc-provider-native-integ-stack/MinimalArn": [
           {
             "type": "aws:cdk:logicalId",
@@ -68,6 +68,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MinimalIssuer"
+          }
+        ],
+        "/oidc-provider-native-integ-stack/Exports/Output{\"Ref\":\"Provider2281708E\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefProvider2281708E9B27F851"
+          }
+        ],
+        "/oidc-provider-native-integ-stack/Exports/Output{\"Ref\":\"Minimal107EFE55\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMinimal107EFE55C8EECFEF"
           }
         ],
         "/oidc-provider-native-integ-stack/BootstrapVersion": [
@@ -133,11 +145,131 @@
       },
       "displayName": "oidc-provider-native-integ-test/DefaultTest/DeployAssert"
     },
+    "oidcprovidernativeintegtestwithassertionsDefaultTestDeployAssert1E605358.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "oidcprovidernativeintegtestwithassertionsDefaultTestDeployAssert1E605358.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "oidcprovidernativeintegtestwithassertionsDefaultTestDeployAssert1E605358": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "oidcprovidernativeintegtestwithassertionsDefaultTestDeployAssert1E605358.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ff0961b5e1c940f6d07622617187ae7a3a414c0c636cfb91d7db282cc072b088.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "oidcprovidernativeintegtestwithassertionsDefaultTestDeployAssert1E605358.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "oidc-provider-native-integ-stack",
+        "oidcprovidernativeintegtestwithassertionsDefaultTestDeployAssert1E605358.assets"
+      ],
+      "metadata": {
+        "/oidc-provider-native-integ-test-with-assertions/DefaultTest/DeployAssert/AwsApiCallIAMgetOpenIDConnectProvider9970b144e54590cd101fb3c9f249a8b3/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/oidc-provider-native-integ-test-with-assertions/DefaultTest/DeployAssert/AwsApiCallIAMgetOpenIDConnectProvider9970b144e54590cd101fb3c9f249a8b3/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallIAMgetOpenIDConnectProvider9970b144e54590cd101fb3c9f249a8b3"
+          }
+        ],
+        "/oidc-provider-native-integ-test-with-assertions/DefaultTest/DeployAssert/AwsApiCallIAMgetOpenIDConnectProvider9970b144e54590cd101fb3c9f249a8b3/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallIAMgetOpenIDConnectProvider9970b144e54590cd101fb3c9f249a8b3"
+          }
+        ],
+        "/oidc-provider-native-integ-test-with-assertions/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/oidc-provider-native-integ-test-with-assertions/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/oidc-provider-native-integ-test-with-assertions/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/oidc-provider-native-integ-test-with-assertions/DefaultTest/DeployAssert/AwsApiCallIAMgetOpenIDConnectProviderdc5cf65e5200b0832f06b51481c5d9e8/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/oidc-provider-native-integ-test-with-assertions/DefaultTest/DeployAssert/AwsApiCallIAMgetOpenIDConnectProviderdc5cf65e5200b0832f06b51481c5d9e8/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallIAMgetOpenIDConnectProviderdc5cf65e5200b0832f06b51481c5d9e8"
+          }
+        ],
+        "/oidc-provider-native-integ-test-with-assertions/DefaultTest/DeployAssert/AwsApiCallIAMgetOpenIDConnectProviderdc5cf65e5200b0832f06b51481c5d9e8/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallIAMgetOpenIDConnectProviderdc5cf65e5200b0832f06b51481c5d9e8"
+          }
+        ],
+        "/oidc-provider-native-integ-test-with-assertions/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/oidc-provider-native-integ-test-with-assertions/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "oidc-provider-native-integ-test-with-assertions/DefaultTest/DeployAssert"
+    },
     "Tree": {
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1016.1"
 }

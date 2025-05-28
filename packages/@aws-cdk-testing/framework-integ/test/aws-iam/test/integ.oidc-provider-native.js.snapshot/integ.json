@@ -1,13 +1,14 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "testCases": {
-    "oidc-provider-native-integ-test/DefaultTest": {
+    "oidc-provider-native-integ-test-with-assertions/DefaultTest": {
       "stacks": [
         "oidc-provider-native-integ-stack"
       ],
       "diffAssets": true,
-      "assertionStack": "oidc-provider-native-integ-test/DefaultTest/DeployAssert",
-      "assertionStackName": "oidcprovidernativeintegtestDefaultTestDeployAssert9F17FB34"
+      "assertionStack": "oidc-provider-native-integ-test-with-assertions/DefaultTest/DeployAssert",
+      "assertionStackName": "oidcprovidernativeintegtestwithassertionsDefaultTestDeployAssert1E605358"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

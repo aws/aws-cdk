@@ -64,6 +64,22 @@
      }
     ]
    }
+  },
+  "ExportsOutputRefProvider2281708E9B27F851": {
+   "Value": {
+    "Ref": "Provider2281708E"
+   },
+   "Export": {
+    "Name": "oidc-provider-native-integ-stack:ExportsOutputRefProvider2281708E9B27F851"
+   }
+  },
+  "ExportsOutputRefMinimal107EFE55C8EECFEF": {
+   "Value": {
+    "Ref": "Minimal107EFE55"
+   },
+   "Export": {
+    "Name": "oidc-provider-native-integ-stack:ExportsOutputRefMinimal107EFE55C8EECFEF"
+   }
   }
  },
  "Parameters": {
