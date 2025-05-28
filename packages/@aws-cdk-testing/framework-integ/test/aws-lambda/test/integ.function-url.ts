@@ -71,7 +71,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 new IntegTest(app, 'IntegTest', {
   testCases: [
     new TestStack(app, 'Stack1'),
