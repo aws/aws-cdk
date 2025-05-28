@@ -476,6 +476,10 @@ export interface VolumeProps {
    * Valid range is between 100 and 300 MiB/s.
    *
    * This parameter is supported only for volumes created from snapshots.
+   *
+   * @see https://docs.aws.amazon.com/ebs/latest/userguide/initalize-volume.html#volume-initialization-rate
+   *
+   * @default undefined - The volume initialization rate is not set.
    */
   readonly volumeInitializationRate?: Size;
 }

@@ -1845,7 +1845,7 @@ new ec2.Volume(this, 'Volume', {
 
 #### Volume initialization rate
 
-When creating an EBS volume from a snapshot, you can specify the initialization rate at which the snapshot blocks are downloaded from Amazon S3 to the volume.
+When creating an EBS volume from a snapshot, you can specify the [volume initialization rate](https://docs.aws.amazon.com/ebs/latest/userguide/initalize-volume.html#volume-initialization-rate) at which the snapshot blocks are downloaded from Amazon S3 to the volume.
 Specifying a volume initialization rate ensures that the volume is initialized at a predictable and consistent rate after creation.
 
 ```ts
