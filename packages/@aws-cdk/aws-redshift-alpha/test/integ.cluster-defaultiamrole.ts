@@ -46,7 +46,11 @@ class RedshiftEnv extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 new integ.IntegTest(app, 'DefaultIamRoleInteg', {
   testCases: [new RedshiftEnv(app, 'redshift-defaultiamrole-integ')],

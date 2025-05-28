@@ -50,7 +50,10 @@ class GraphQLApiLambdaAuthStack extends cdk.Stack {
     });
   }
 }
-const myFeatureFlag = { [cxapi.APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION]: false };
+const myFeatureFlag = {
+  [cxapi.APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION]: false,
+  '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+};
 
 const app = new cdk.App({
   postCliContext: myFeatureFlag,
