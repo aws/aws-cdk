@@ -5,7 +5,11 @@ import * as cdk from 'aws-cdk-lib';
 import * as codedeploy from 'aws-cdk-lib/aws-codedeploy';
 import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-codedeploy-lambda');
 
 const handler = new lambda.Function(stack, 'Handler', {
