@@ -10,6 +10,8 @@ const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+    '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault': false,
+    '@aws-cdk/customresources:installLatestAwsSdkDefault': false,
   },
 });
 
