@@ -4272,6 +4272,195 @@ describe('bucket', () => {
       Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
     });
 
+    test('grant permissions to custom replication role', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const dstEncryptionKey = new kms.Key(stack, 'DstEncryptionKey');
+      const srcEncryptionKey = new kms.Key(stack, 'SrcEncryptionKey');
+      const dstBucket = new s3.Bucket(stack, 'DstBucket', {
+        encryptionKey: dstEncryptionKey,
+      });
+      const dstBucketNoEncryption = new s3.Bucket(stack, 'DstBucketNoEncryption');
+      const replicationRole = new iam.Role(stack, 'ReplicationRole', {
+        assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+      });
+
+      const bucket = new s3.Bucket(stack, 'SrcBucket', {
+        versioned: true,
+        replicationRole,
+        encryptionKey: srcEncryptionKey,
+        replicationRules: [
+          { destination: dstBucket, kmsKey: dstEncryptionKey, priority: 1 },
+          { destination: dstBucketNoEncryption, priority: 2 },
+        ],
+      });
+      const grant = bucket.grantReplicationPermission(replicationRole, {
+        sourceDecryptionKey: srcEncryptionKey,
+        destinations: [{
+          bucket: dstBucket,
+          encryptionKey: dstEncryptionKey,
+        }],
+      });
+
+      grant.assertSuccess();
+      // 5 because of the 3 actions for `s3:*`, the 1 kms decrypt action for source bucket, and the 1 kms encrypt action for destination bucket
+      expect(grant.principalStatements).toHaveLength(5);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        VersioningConfiguration: { Status: 'Enabled' },
+        ReplicationConfiguration: {
+          Role: {
+            'Fn::GetAtt': ['ReplicationRoleCE149CEC', 'Arn'],
+          },
+          Rules: [
+            {
+              Priority: 1,
+              Destination: {
+                Bucket: {
+                  'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
+                },
+              },
+              Status: 'Enabled',
+              Filter: {
+                Prefix: '',
+              },
+              DeleteMarkerReplication: {
+                Status: 'Disabled',
+              },
+            },
+            {
+              Priority: 2,
+              Destination: {
+                Bucket: {
+                  'Fn::GetAtt': ['DstBucketNoEncryptionB500C798', 'Arn'],
+                },
+              },
+              Status: 'Enabled',
+              Filter: {
+                Prefix: '',
+              },
+              DeleteMarkerReplication: {
+                Status: 'Disabled',
+              },
+            },
+          ],
+        },
+      });
+
+      // assert that the built-in replication role is not created
+      Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['SrcBucket613E28A1', 'Arn'],
+              },
+            },
+            {
+              Action: [
+                's3:GetObjectVersionForReplication',
+                's3:GetObjectVersionAcl',
+                's3:GetObjectVersionTagging',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'SrcBucket613E28A1',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: [
+                's3:ReplicateObject',
+                's3:ReplicateDelete',
+                's3:ReplicateTags',
+                's3:ObjectOwnerOverrideToBucketOwner',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'DstBucket3E241BF2',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: [
+                'kms:Encrypt',
+                'kms:ReEncrypt*',
+                'kms:GenerateDataKey*',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'DstEncryptionKey8C28AFFA',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['SrcEncryptionKeyCCB1A334', 'Arn'],
+              },
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+        Roles: [
+          {
+            'Ref': 'ReplicationRoleCE149CEC',
+          },
+        ],
+      });
+    });
+
+    test('throw error when attempting to grant permissions with no destinations', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const dstBucket = new s3.Bucket(stack, 'DstBucket');
+      const dstBucketNoEncryption = new s3.Bucket(stack, 'DstBucketNoEncryption');
+      const replicationRole = new iam.Role(stack, 'ReplicationRole', {
+        assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+      });
+
+      const bucket = new s3.Bucket(stack, 'SrcBucket', {
+        versioned: true,
+        replicationRole,
+        replicationRules: [
+          { destination: dstBucket, priority: 1 },
+        ],
+      });
+
+      expect(() => {
+        bucket.grantReplicationPermission(replicationRole, {
+          destinations: [],
+        });
+      }).toThrow('At least one destination bucket must be specified in the destinations array');
+    });
+
     test('cross account', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'stack', {
