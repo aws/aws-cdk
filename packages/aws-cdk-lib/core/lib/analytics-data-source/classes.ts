@@ -53,6 +53,23 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'platform': 'Platform',
       'cacheConfigType': 'CacheConfigType',
+      'computeRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
       'addCustomRule': [
         '*'
       ],
@@ -4290,7 +4307,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prune': 'boolean'
       },
-      'preserveOnDelete': 'boolean'
+      'preserveOnDelete': 'boolean',
+      'configurationValues': '*'
     },
     'Cluster': {
       'compute': {
@@ -15170,7 +15188,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'prune': 'boolean',
         'authenticationMode': 'AuthenticationMode'
       },
-      'preserveOnDelete': 'boolean'
+      'preserveOnDelete': 'boolean',
+      'configurationValues': '*'
     },
     'Cluster': {
       'defaultCapacity': '*',
