@@ -7,6 +7,7 @@ import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
 import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime } from './util';
 import { Architecture, AssetCode, Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
+import { ValidationError } from '../../core';
 import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';
 
 const ESBUILD_MAJOR_VERSION = '0';
@@ -100,7 +101,7 @@ export class Bundling implements cdk.BundlingOptions {
   private readonly externals: string[];
   private readonly packageManager: PackageManager;
 
-  constructor(scope: IConstruct, private readonly props: BundlingProps) {
+  constructor(private readonly scope: IConstruct, private readonly props: BundlingProps) {
     this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath, props.logLevel);
 
     Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? PackageInstallation.detect('esbuild');
@@ -111,7 +112,7 @@ export class Bundling implements cdk.BundlingOptions {
     this.relativeDepsLockFilePath = path.relative(this.projectRoot, path.resolve(props.depsLockFilePath));
 
     if (this.relativeDepsLockFilePath.includes('..')) {
-      throw new Error(`Expected depsLockFilePath: ${props.depsLockFilePath} to be under projectRoot: ${this.projectRoot} (${this.relativeDepsLockFilePath})`);
+      throw new ValidationError(`Expected depsLockFilePath: ${props.depsLockFilePath} to be under projectRoot: ${this.projectRoot} (${this.relativeDepsLockFilePath})`, scope);
     }
 
     if (props.tsconfig) {
@@ -119,11 +120,11 @@ export class Bundling implements cdk.BundlingOptions {
     }
 
     if (props.preCompilation && !/\.tsx?$/.test(props.entry)) {
-      throw new Error('preCompilation can only be used with typescript files');
+      throw new ValidationError('preCompilation can only be used with typescript files', scope);
     }
 
     if (props.format === OutputFormat.ESM && !isEsmRuntime(props.runtime)) {
-      throw new Error(`ECMAScript module output format is not supported by the ${props.runtime.name} runtime`);
+      throw new ValidationError(`ECMAScript module output format is not supported by the ${props.runtime.name} runtime`, scope);
     }
 
     /**
@@ -220,7 +221,7 @@ export class Bundling implements cdk.BundlingOptions {
     if (this.props.preCompilation) {
       const tsconfig = this.props.tsconfig ?? findUp('tsconfig.json', path.dirname(this.props.entry));
       if (!tsconfig) {
-        throw new Error('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`');
+        throw new ValidationError('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', this.scope);
       }
       const compilerOptions = getTsconfigCompilerOptions(tsconfig);
       tscCommand = `${options.tscRunner} "${relativeEntryPath}" ${compilerOptions}`;
@@ -231,7 +232,7 @@ export class Bundling implements cdk.BundlingOptions {
     const defines = Object.entries(this.props.define ?? {});
 
     if (this.props.sourceMap === false && this.props.sourceMapMode) {
-      throw new Error('sourceMapMode cannot be used when sourceMap is false');
+      throw new ValidationError('sourceMapMode cannot be used when sourceMap is false', this.scope);
     }
 
     const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
@@ -243,7 +244,7 @@ export class Bundling implements cdk.BundlingOptions {
     const esbuildCommand: string[] = [
       options.esbuildRunner,
       '--bundle', `"${relativeEntryPath}"`,
-      `--target=${this.props.target ?? toTarget(this.props.runtime)}`,
+      `--target=${this.props.target ?? toTarget(this.scope, this.props.runtime)}`,
       '--platform=node',
       ...this.props.format ? [`--format=${this.props.format}`] : [],
       `--outfile="${pathJoin(options.outputDir, outFile)}"`,
@@ -270,7 +271,7 @@ export class Bundling implements cdk.BundlingOptions {
       // modules versions from it.
       const pkgPath = findUp('package.json', path.dirname(this.props.entry));
       if (!pkgPath) {
-        throw new Error('Cannot find a `package.json` in this project. Using `nodeModules` requires a `package.json`.');
+        throw new ValidationError('Cannot find a `package.json` in this project. Using `nodeModules` requires a `package.json`.', this.scope);
       }
 
       // Determine dependencies versions, lock file and installer
@@ -315,6 +316,7 @@ export class Bundling implements cdk.BundlingOptions {
     });
     const environment = this.props.environment ?? {};
     const cwd = this.projectRoot;
+    const scope = this.scope;
 
     return {
       tryBundle(outputDir: string) {
@@ -324,7 +326,7 @@ export class Bundling implements cdk.BundlingOptions {
         }
 
         if (!Bundling.esbuildInstallation.version.startsWith(`${ESBUILD_MAJOR_VERSION}.`)) {
-          throw new Error(`Expected esbuild version ${ESBUILD_MAJOR_VERSION}.x but got ${Bundling.esbuildInstallation.version}`);
+          throw new ValidationError(`Expected esbuild version ${ESBUILD_MAJOR_VERSION}.x but got ${Bundling.esbuildInstallation.version}`, scope);
         }
 
         const localCommand = createLocalCommand(outputDir, Bundling.esbuildInstallation, Bundling.tscInstallation);
@@ -436,11 +438,11 @@ function osPathJoin(platform: NodeJS.Platform) {
 /**
  * Converts a runtime to an esbuild node target
  */
-function toTarget(runtime: Runtime): string {
+function toTarget(scope: IConstruct, runtime: Runtime): string {
   const match = runtime.name.match(/nodejs(\d+)/);
 
   if (!match) {
-    throw new Error('Cannot extract version from runtime.');
+    throw new ValidationError('Cannot extract version from runtime.', scope);
   }
 
   return `node${match[1]}`;
