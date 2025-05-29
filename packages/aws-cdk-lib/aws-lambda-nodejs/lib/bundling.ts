@@ -101,7 +101,7 @@ export class Bundling implements cdk.BundlingOptions {
   private readonly externals: string[];
   private readonly packageManager: PackageManager;
 
-  constructor(private readonly scope: IConstruct, private readonly props: BundlingProps) {
+  constructor(scope: IConstruct, private readonly props: BundlingProps) {
     this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath, props.logLevel);
 
     Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? PackageInstallation.detect('esbuild');
@@ -187,7 +187,7 @@ export class Bundling implements cdk.BundlingOptions {
       })
       : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
 
-    const bundlingCommand = this.createBundlingCommand({
+    const bundlingCommand = this.createBundlingCommand(scope, {
       inputDir: cdk.AssetStaging.BUNDLING_INPUT_DIR,
       outputDir: cdk.AssetStaging.BUNDLING_OUTPUT_DIR,
       esbuildRunner: 'esbuild', // esbuild is installed globally in the docker image
@@ -209,11 +209,11 @@ export class Bundling implements cdk.BundlingOptions {
 
     // Local bundling
     if (!props.forceDockerBundling) { // only if Docker is not forced
-      this.local = this.getLocalBundlingProvider();
+      this.local = this.getLocalBundlingProvider(scope);
     }
   }
 
-  private createBundlingCommand(options: BundlingCommandOptions): string {
+  private createBundlingCommand(scope: IConstruct, options: BundlingCommandOptions): string {
     const pathJoin = osPathJoin(options.osPlatform);
     let relativeEntryPath = pathJoin(options.inputDir, this.relativeEntryPath);
     let tscCommand = '';
@@ -221,7 +221,7 @@ export class Bundling implements cdk.BundlingOptions {
     if (this.props.preCompilation) {
       const tsconfig = this.props.tsconfig ?? findUp('tsconfig.json', path.dirname(this.props.entry));
       if (!tsconfig) {
-        throw new ValidationError('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', this.scope);
+        throw new ValidationError('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
       }
       const compilerOptions = getTsconfigCompilerOptions(tsconfig);
       tscCommand = `${options.tscRunner} "${relativeEntryPath}" ${compilerOptions}`;
@@ -232,7 +232,7 @@ export class Bundling implements cdk.BundlingOptions {
     const defines = Object.entries(this.props.define ?? {});
 
     if (this.props.sourceMap === false && this.props.sourceMapMode) {
-      throw new ValidationError('sourceMapMode cannot be used when sourceMap is false', this.scope);
+      throw new ValidationError('sourceMapMode cannot be used when sourceMap is false', scope);
     }
 
     const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
@@ -244,7 +244,7 @@ export class Bundling implements cdk.BundlingOptions {
     const esbuildCommand: string[] = [
       options.esbuildRunner,
       '--bundle', `"${relativeEntryPath}"`,
-      `--target=${this.props.target ?? toTarget(this.scope, this.props.runtime)}`,
+      `--target=${this.props.target ?? toTarget(scope, this.props.runtime)}`,
       '--platform=node',
       ...this.props.format ? [`--format=${this.props.format}`] : [],
       `--outfile="${pathJoin(options.outputDir, outFile)}"`,
@@ -271,7 +271,7 @@ export class Bundling implements cdk.BundlingOptions {
       // modules versions from it.
       const pkgPath = findUp('package.json', path.dirname(this.props.entry));
       if (!pkgPath) {
-        throw new ValidationError('Cannot find a `package.json` in this project. Using `nodeModules` requires a `package.json`.', this.scope);
+        throw new ValidationError('Cannot find a `package.json` in this project. Using `nodeModules` requires a `package.json`.', scope);
       }
 
       // Determine dependencies versions, lock file and installer
@@ -305,9 +305,9 @@ export class Bundling implements cdk.BundlingOptions {
     ]);
   }
 
-  private getLocalBundlingProvider(): cdk.ILocalBundling {
+  private getLocalBundlingProvider(scope: IConstruct): cdk.ILocalBundling {
     const osPlatform = os.platform();
-    const createLocalCommand = (outputDir: string, esbuild: PackageInstallation, tsc?: PackageInstallation) => this.createBundlingCommand({
+    const createLocalCommand = (outputDir: string, esbuild: PackageInstallation, tsc?: PackageInstallation) => this.createBundlingCommand(scope, {
       inputDir: this.projectRoot,
       outputDir,
       esbuildRunner: esbuild.isLocal ? this.packageManager.runBinCommand('esbuild') : 'esbuild',
@@ -316,7 +316,6 @@ export class Bundling implements cdk.BundlingOptions {
     });
     const environment = this.props.environment ?? {};
     const cwd = this.projectRoot;
-    const scope = this.scope;
 
     return {
       tryBundle(outputDir: string) {
