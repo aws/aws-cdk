@@ -102,18 +102,6 @@ export interface Ec2DeploySpecificationsInlineProps {
 }
 
 /**
- * Properties of `Ec2DeploySpecifications.deploySpec()`.
- */
-export interface Ec2DeploySpecificationsDeploySpecProps {
-  /**
-   * The path to the deploy spec file.
-   * It should be relative to the root directory of your uploaded source artifact.
-   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-EC2Deploy.html#action-reference-EC2Deploy-spec-reference
-   */
-  readonly deploySpec: string;
-}
-
-/**
  * A deploy specifications for EC2 deploy action.
  */
 export abstract class Ec2DeploySpecifications {
@@ -122,13 +110,6 @@ export abstract class Ec2DeploySpecifications {
    */
   public static inline(props: Ec2DeploySpecificationsInlineProps): Ec2DeploySpecifications {
     return new Ec2DeploySpecificationsInline(props);
-  }
-
-  /**
-   * Store deploy specifications in a YAML-formatted DeploySpec file.
-   */
-  public static deploySpec(props: Ec2DeploySpecificationsDeploySpecProps): Ec2DeploySpecifications {
-    return new Ec2DeploySpecificationsDeploySpec(props);
   }
 
   /**
@@ -154,18 +135,6 @@ class Ec2DeploySpecificationsInline extends Ec2DeploySpecifications {
       TargetDirectory: this.props.targetDirectory,
       PreScript: this.props.preScript,
       PostScript: this.props.postScript,
-    };
-  }
-}
-
-class Ec2DeploySpecificationsDeploySpec extends Ec2DeploySpecifications {
-  constructor(private readonly props: Ec2DeploySpecificationsDeploySpecProps) {
-    super();
-  }
-
-  bind(_scope: Construct) {
-    return {
-      DeploySpec: this.props.deploySpec,
     };
   }
 }

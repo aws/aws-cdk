@@ -186,50 +186,6 @@ describe('EC2 deploy action', () => {
     });
   });
 
-  test('can be created with DeploySpec', () => {
-    // WHEN
-    const action = new cpactions.Ec2DeployAction({
-      actionName: 'EC2',
-      input: artifact,
-      instanceType: cpactions.Ec2InstanceType.EC2,
-      instanceTagKey: 'Target',
-      instanceTagValue: 'MyDeployTarget',
-      deploySpecifications: cpactions.Ec2DeploySpecifications.deploySpec({
-        deploySpec: 'deployspec.yml',
-      }),
-    });
-    new codepipeline.Pipeline(stack, 'Pipeline', {
-      stages: [
-        { stageName: 'Source', actions: [source] },
-        { stageName: 'Deploy', actions: [action] },
-      ],
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      Stages: [
-        {},
-        {
-          Actions: [
-            {
-              Name: 'EC2',
-              ActionTypeId: {
-                Category: 'Deploy',
-                Provider: 'EC2',
-              },
-              Configuration: {
-                InstanceTagKey: 'Target',
-                InstanceTagValue: 'MyDeployTarget',
-                InstanceType: 'EC2',
-                DeploySpec: 'deployspec.yml',
-              },
-            },
-          ],
-        },
-      ],
-    });
-  });
-
   test('can be created without instanceTagValue', () => {
     // WHEN
     const action = new cpactions.Ec2DeployAction({
