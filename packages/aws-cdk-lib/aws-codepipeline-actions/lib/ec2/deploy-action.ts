@@ -192,6 +192,11 @@ export class Ec2DeployAction extends Action {
 
     // Permissions based on CodePipeline documentation:
     // https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-EC2Deploy.html#action-reference-EC2Deploy-permissions-action
+
+    // Statement with all resources. See the Service Authorization Reference for details.
+    // https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonec2.html
+    // https://docs.aws.amazon.com/service-authorization/latest/reference/list_awselasticloadbalancingv2.html
+    // https://docs.aws.amazon.com/service-authorization/latest/reference/list_awssystemsmanager.html
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: [
         'ec2:DescribeInstances',
@@ -204,6 +209,7 @@ export class Ec2DeployAction extends Action {
       ],
       resources: ['*'],
     }));
+    // Statement for logs
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: [
         'logs:CreateLogGroup',
@@ -217,6 +223,7 @@ export class Ec2DeployAction extends Action {
         arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       })],
     }));
+    // Statement for SSM on tagged instances
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['ssm:SendCommand'],
       resources: [Stack.of(scope).formatArn({ service: 'ec2', resource: 'instance', resourceName: '*' })],
@@ -224,6 +231,7 @@ export class Ec2DeployAction extends Action {
         { StringEquals: { [`aws:ResourceTag/${this.props.instanceTagKey}`]: this.props.instanceTagValue } } :
         { Null: { [`aws:ResourceTag/${this.props.instanceTagKey}`]: 'false' } },
     }));
+    // Statement for SSM approved documents
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['ssm:SendCommand'],
       resources: [
@@ -232,6 +240,7 @@ export class Ec2DeployAction extends Action {
       ],
     }));
 
+    // Statement for Elastic Load Balancing
     if (this.props.targetGroups?.length) {
       options.role.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['elasticloadbalancing:DeregisterTargets', 'elasticloadbalancing:RegisterTargets'],
