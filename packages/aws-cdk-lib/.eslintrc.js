@@ -22,7 +22,6 @@ const noThrowDefaultErrorNotYetSupported = [
   'aws-lambda-event-sources',
   'aws-lambda-nodejs',
   'aws-secretsmanager',
-  'aws-servicecatalog',
   'core',
   'custom-resources',
   'region-info',
