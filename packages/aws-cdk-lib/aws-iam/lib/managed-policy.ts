@@ -350,7 +350,7 @@ class ManagedPolicyGrantPrincipal implements IPrincipal {
   }
 
   public get assumeRoleAction(): string {
-    // This property is referenced to add policy statements as a resource-based policy.
+    // This property is referenced to add policy statements as a trust policy.
     // We should fail because a managed policy cannot be used as a principal of a policy document.
     // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
     throw new Error(this.principalError());
