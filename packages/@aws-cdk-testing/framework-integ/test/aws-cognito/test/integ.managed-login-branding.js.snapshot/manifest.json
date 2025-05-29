@@ -1,0 +1,192 @@
+{
+  "version": "43.0.0",
+  "artifacts": {
+    "IntegManagedLoginBranding.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "IntegManagedLoginBranding.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "IntegManagedLoginBranding": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IntegManagedLoginBranding.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0f256039451080fe117d39f17b6db245e60659fafad2de1d939f47cf22916959.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "IntegManagedLoginBranding.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "IntegManagedLoginBranding.assets"
+      ],
+      "metadata": {
+        "/IntegManagedLoginBranding/UserPool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/IntegManagedLoginBranding/UserPool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPool6BA7E5F2"
+          }
+        ],
+        "/IntegManagedLoginBranding/UserPool/BasicClient": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/IntegManagedLoginBranding/UserPool/BasicClient/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolBasicClient452991CA"
+          }
+        ],
+        "/IntegManagedLoginBranding/UserPool/AssetClient": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/IntegManagedLoginBranding/UserPool/AssetClient/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolAssetClientA573A85C"
+          }
+        ],
+        "/IntegManagedLoginBranding/UserPool/DefaultClient": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/IntegManagedLoginBranding/UserPool/DefaultClient/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolDefaultClient9DBB6AC7"
+          }
+        ],
+        "/IntegManagedLoginBranding/BasicBranding": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/IntegManagedLoginBranding/BasicBranding/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BasicBrandingD5FDB222"
+          }
+        ],
+        "/IntegManagedLoginBranding/AssetBranding": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/IntegManagedLoginBranding/AssetBranding/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetBranding3B69F30D"
+          }
+        ],
+        "/IntegManagedLoginBranding/DefaultBranding": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/IntegManagedLoginBranding/DefaultBranding/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultBrandingAE95024D"
+          }
+        ],
+        "/IntegManagedLoginBranding/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/IntegManagedLoginBranding/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "IntegManagedLoginBranding"
+    },
+    "ManagedLoginBrandingTestDefaultTestDeployAssertF9997DCF.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ManagedLoginBrandingTestDefaultTestDeployAssertF9997DCF.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ManagedLoginBrandingTestDefaultTestDeployAssertF9997DCF": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ManagedLoginBrandingTestDefaultTestDeployAssertF9997DCF.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ManagedLoginBrandingTestDefaultTestDeployAssertF9997DCF.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ManagedLoginBrandingTestDefaultTestDeployAssertF9997DCF.assets"
+      ],
+      "metadata": {
+        "/ManagedLoginBrandingTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ManagedLoginBrandingTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ManagedLoginBrandingTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1015.0"
+}

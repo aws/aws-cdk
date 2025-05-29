@@ -23,14 +23,14 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
       - [Code Verification](#code-verification)
       - [Link Verification](#link-verification)
     - [Sign In](#sign-in)
-      - [Choice-based authentication](#choice-based-authentication-passwordless-sign-in--passkey-sign-in)
+      - [Choice-based authentication: passwordless sign-in / passkey sign-in](#choice-based-authentication-passwordless-sign-in--passkey-sign-in)
     - [Attributes](#attributes)
     - [Attribute verification](#attribute-verification)
     - [Security](#security)
       - [Multi-factor Authentication (MFA)](#multi-factor-authentication-mfa)
       - [Account Recovery Settings](#account-recovery-settings)
       - [Advanced Security Mode](#advanced-security-mode)
-      - [Threat Protection](#threat-protection)
+    - [Threat Protection](#threat-protection)
     - [Emails](#emails)
     - [Device Tracking](#device-tracking)
     - [Lambda Triggers](#lambda-triggers)
@@ -41,6 +41,9 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Resource Servers](#resource-servers)
     - [Domains](#domains)
     - [Deletion protection](#deletion-protection)
+    - [Managed Login Branding](#managed-login-branding)
+    - [`email_verified` Attribute Mapping](#email_verified-attribute-mapping)
+    - [User Pool Group](#user-pool-group)
     - [Analytics Configuration](#analytics-configuration)
       - [When specifying a Pinpoint application from the same account](#when-specifying-a-pinpoint-application-from-the-same-account)
       - [When specifying a Pinpoint application from a different account](#when-specifying-a-pinpoint-application-from-a-different-account)
@@ -1163,6 +1166,94 @@ const userpool = new cognito.UserPool(this, 'UserPool', {
 ```
 
 By default deletion protection is disabled.
+
+### Managed Login Branding
+
+Amazon Cognito Managed Login Branding allows you to customize the login experience for your users with brand colors, logos, and other UI elements. You can configure these settings for your user pool's domain to provide a more consistent brand experience.
+
+To create managed login branding for a user pool client:
+
+```ts
+declare const userPool: cognito.UserPool;
+declare const client: cognito.UserPoolClient;
+
+new cognito.ManagedLoginBranding(this, 'Branding', {
+  userPoolId: userPool.userPoolId,
+  clientId: client.userPoolClientId,
+  settings: {
+    categories: {
+      global: {
+        colorSchemeMode: 'LIGHT',
+        spacingDensity: 'REGULAR',
+      },
+      form: {
+        sessionTimerDisplay: 'STATIC',
+      },
+    },
+    components: {
+      pageBackground: {
+        lightMode: { color: 'ffffffff' },
+      },
+      primaryButton: {
+        lightMode: {
+          defaults: {
+            backgroundColor: '0972d3ff',
+            textColor: 'ffffffff',
+          },
+        },
+      },
+    },
+  },
+});
+```
+
+You can also use the Cognito-provided default values:
+
+```ts
+new cognito.ManagedLoginBranding(this, 'DefaultBranding', {
+  userPoolId: userPool.userPoolId,
+  clientId: client.userPoolClientId,
+  useCognitoProvidedValues: true,
+});
+```
+
+For branding with custom assets like logos and favicons:
+
+```ts
+new cognito.ManagedLoginBranding(this, 'BrandingWithAssets', {
+  userPoolId: userPool.userPoolId,
+  clientId: client.userPoolClientId,
+  assets: [
+    {
+      category: cognito.AssetCategory.FAVICON_SVG,
+      colorMode: cognito.ColorMode.DYNAMIC,
+      extension: cognito.AssetExtension.SVG,
+      bytes: 'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjwvc3ZnPg==', // Base64 encoded SVG
+    },
+    {
+      category: cognito.AssetCategory.LOGO_SIGN_IN,
+      colorMode: cognito.ColorMode.LIGHT,
+      extension: cognito.AssetExtension.PNG,
+      bytes: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', // Base64 encoded PNG
+    },
+  ],
+  // Required when using assets
+  settings: {
+    components: {
+      primaryButton: {
+        lightMode: {
+          defaults: {
+            backgroundColor: '0972d3ff',
+            textColor: 'ffffffff',
+          },
+        },
+      },
+    },
+  },
+});
+```
+
+Learn more about [customizing the managed login experience](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-managed-login.html) in the Amazon Cognito documentation.
 
 ### `email_verified` Attribute Mapping
 

@@ -1,11 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnManagedLoginBranding } from './cognito.generated';
 import { IResource, Resource, Token } from '../../core';
-import {
-  AssetCategory,
-  AssetExtension,
-  ColorMode,
-} from './private/managed-login-branding';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -22,9 +17,135 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  */
 
 /**
- * Export enums for asset categories, extensions, and color modes
+ * The category that the image corresponds to in your managed login configuration.
+ * Managed login has asset categories for different types of logos, backgrounds, and icons.
  */
-export { AssetCategory, AssetExtension, ColorMode };
+export enum AssetCategory {
+  /**
+   * Favicon (ICO format)
+   */
+  FAVICON_ICO = 'FAVICON_ICO',
+
+  /**
+   * Favicon (SVG format)
+   */
+  FAVICON_SVG = 'FAVICON_SVG',
+
+  /**
+   * Email graphic
+   */
+  EMAIL_GRAPHIC = 'EMAIL_GRAPHIC',
+
+  /**
+   * SMS graphic
+   */
+  SMS_GRAPHIC = 'SMS_GRAPHIC',
+
+  /**
+   * Authentication app graphic
+   */
+  AUTH_APP_GRAPHIC = 'AUTH_APP_GRAPHIC',
+
+  /**
+   * Password graphic
+   */
+  PASSWORD_GRAPHIC = 'PASSWORD_GRAPHIC',
+
+  /**
+   * Passkey graphic
+   */
+  PASSKEY_GRAPHIC = 'PASSKEY_GRAPHIC',
+
+  /**
+   * Page header logo
+   */
+  PAGE_HEADER_LOGO = 'PAGE_HEADER_LOGO',
+
+  /**
+   * Page header background
+   */
+  PAGE_HEADER_BACKGROUND = 'PAGE_HEADER_BACKGROUND',
+
+  /**
+   * Page footer logo
+   */
+  PAGE_FOOTER_LOGO = 'PAGE_FOOTER_LOGO',
+
+  /**
+   * Page footer background
+   */
+  PAGE_FOOTER_BACKGROUND = 'PAGE_FOOTER_BACKGROUND',
+
+  /**
+   * Page background
+   */
+  PAGE_BACKGROUND = 'PAGE_BACKGROUND',
+
+  /**
+   * Form background
+   */
+  FORM_BACKGROUND = 'FORM_BACKGROUND',
+
+  /**
+   * Form logo
+   */
+  FORM_LOGO = 'FORM_LOGO',
+
+  /**
+   * Identity provider button icon
+   */
+  IDP_BUTTON_ICON = 'IDP_BUTTON_ICON',
+}
+
+/**
+ * The display-mode target of the asset: light, dark, or dynamic (browser-adaptive).
+ */
+export enum ColorMode {
+  /**
+   * Light mode
+   */
+  LIGHT = 'LIGHT',
+
+  /**
+   * Dark mode
+   */
+  DARK = 'DARK',
+
+  /**
+   * Browser-adaptive mode (displays in all contexts)
+   */
+  DYNAMIC = 'DYNAMIC',
+}
+
+/**
+ * The file type of the image file.
+ */
+export enum AssetExtension {
+  /**
+   * ICO file type
+   */
+  ICO = 'ICO',
+
+  /**
+   * JPEG file type
+   */
+  JPEG = 'JPEG',
+
+  /**
+   * PNG file type
+   */
+  PNG = 'PNG',
+
+  /**
+   * SVG file type
+   */
+  SVG = 'SVG',
+
+  /**
+   * WEBP file type
+   */
+  WEBP = 'WEBP',
+}
 
 /**
  * An asset for managed login branding
@@ -91,6 +212,13 @@ export interface ManagedLoginBrandingProps {
    * @default - No specific client ID is assigned
    */
   readonly clientId?: string;
+
+  /**
+   * Name for the managed login branding.
+   *
+   * @default - A name is automatically generated.
+   */
+  readonly managedLoginBrandingName?: string;
 
   /**
    * An array of image files that you want to apply to roles like backgrounds, logos, and icons.
@@ -169,7 +297,9 @@ export interface ManagedLoginBrandingProps {
  * This allows you to customize the look and feel of the managed login UI for your Cognito User Pool.
  */
 @propertyInjectable
-export class ManagedLoginBranding extends Resource implements IManagedLoginBranding {
+export class ManagedLoginBranding
+  extends Resource
+  implements IManagedLoginBranding {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string =
     'aws-cdk-lib.aws-cognito.ManagedLoginBranding';
@@ -197,7 +327,9 @@ export class ManagedLoginBranding extends Resource implements IManagedLoginBrand
   private readonly resource: CfnManagedLoginBranding;
 
   constructor(scope: Construct, id: string, props: ManagedLoginBrandingProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.managedLoginBrandingName,
+    });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
@@ -241,7 +373,11 @@ export class ManagedLoginBranding extends Resource implements IManagedLoginBrand
       // Validate each asset
       for (const asset of props.assets) {
         // Validate bytes length
-        if (asset.bytes && !Token.isUnresolved(asset.bytes) && asset.bytes.length > 1000000) {
+        if (
+          asset.bytes &&
+          !Token.isUnresolved(asset.bytes) &&
+          asset.bytes.length > 1000000
+        ) {
           throw new ValidationError(
             `Asset bytes must not exceed 1000000 characters, got: ${asset.bytes.length}`,
             this,
@@ -286,6 +422,10 @@ export class ManagedLoginBranding extends Resource implements IManagedLoginBrand
       returnMergedResources: props.returnMergedResources,
       useCognitoProvidedValues: props.useCognitoProvidedValues,
     });
+
+    if (props.managedLoginBrandingName) {
+      this.node.addMetadata('aws:cdk:hasPhysicalName', props.managedLoginBrandingName);
+    }
 
     this.managedLoginBrandingId = this.resource.attrManagedLoginBrandingId;
   }
