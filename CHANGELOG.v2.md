@@ -2,6 +2,67 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.199.0](https://github.com/aws/aws-cdk/compare/v2.198.0...v2.199.0) (2025-05-27)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **cloudformation:** Some L1 resources experienced breaking changes due to updated CloudFormation resources. Please check the notes for each specific module for more information.
+* **vpc-lattice**: the `name` and `resourceConfigurationType` property in `CfnResourceConfigurationProps` has changed from optional to required. Also, the `name`, `subnetIds` and `vpcIdentifier` properties in `CfnResourceGatewayProps` have changed from optional to mandatory.
+
+### Features
+
+* **appconfig:** deletion protection check for configuration profile ([#34418](https://github.com/aws/aws-cdk/issues/34418)) ([ce88c76](https://github.com/aws/aws-cdk/commit/ce88c7616188183059640f9e16fedc2e256e0b40))
+* **cloudformation:** update L1 CloudFormation resource definitions ([#34555](https://github.com/aws/aws-cdk/issues/34555)) ([64662b2](https://github.com/aws/aws-cdk/commit/64662b2225dce18ee2da0eb46331a3a0155ecfb5))
+* **ecs-patterns:** add minHealthyPercent and maxHealthyPercent props to NetworkMultipleTargetGroupsFargateService ([#34516](https://github.com/aws/aws-cdk/issues/34516)) ([a434aed](https://github.com/aws/aws-cdk/commit/a434aed1c9edc1b427a891cf70cc26f1657600d6)), closes [#34368](https://github.com/aws/aws-cdk/issues/34368)
+* **eks:** `Addon` support configurationValues ([#34061](https://github.com/aws/aws-cdk/issues/34061)) ([b420033](https://github.com/aws/aws-cdk/commit/b42003344d75bbdb2df71e7da52f9af5e956f64b)), closes [#34001](https://github.com/aws/aws-cdk/issues/34001)
+* **events-targets:** enable opt-in to use an IAM role for SnsTopic target ([#34259](https://github.com/aws/aws-cdk/issues/34259)) ([a3a0cf0](https://github.com/aws/aws-cdk/commit/a3a0cf0dc2ea2ecfc077af3f1939117623baa559))
+* **stepfunctions-tasks:** bedrock createModelCustomizationJob integration ([#31913](https://github.com/aws/aws-cdk/issues/31913)) ([0c653d3](https://github.com/aws/aws-cdk/commit/0c653d3a1d29324025a0ab451e72e4ca3f048ca3)), closes [#29042](https://github.com/aws/aws-cdk/issues/29042)
+
+
+### Bug Fixes
+
+* **elasticloadbalancingv2:** add validation on application listeners for certificates on HTTP protocol ([#34233](https://github.com/aws/aws-cdk/issues/34233)) ([ca065bb](https://github.com/aws/aws-cdk/commit/ca065bbd936372098e7d76e4cf8f890f20d4c085))
+* **rds:** fix incorrect import/export combination check in AuroraMysqlEngineVersion.of() ([#33564](https://github.com/aws/aws-cdk/issues/33564)) ([9e41154](https://github.com/aws/aws-cdk/commit/9e41154c31253932520887748307405a3f38d0e7)), closes [#33562](https://github.com/aws/aws-cdk/issues/33562) [#33562](https://github.com/aws/aws-cdk/issues/33562)
+
+## [2.198.0](https://github.com/aws/aws-cdk/compare/v2.197.0...v2.198.0) (2025-05-22)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#34528](https://github.com/aws/aws-cdk/issues/34528)) ([92ad68a](https://github.com/aws/aws-cdk/commit/92ad68a4acae7786ee09734c9201e17c697544d1))
+
+
+### Bug Fixes
+
+* synthesis fails if `tree.json` exceeds 512MB ([#34478](https://github.com/aws/aws-cdk/issues/34478)) ([ff2f4af](https://github.com/aws/aws-cdk/commit/ff2f4af6302209d559c63124c37d4e761d6e4d80))
+* **aws-ecs-patterns:** add missing redirectHTTP dependency on default ALB listener ([7b9a07b](https://github.com/aws/aws-cdk/commit/7b9a07baa21f77c93073820782a63162c828c2e9))
+* **ecs-patterns:** add missing redirectHTTP dependency on main listener in ApplicationLoadBalancedFargateService ([#34510](https://github.com/aws/aws-cdk/issues/34510)) ([8e4ca14](https://github.com/aws/aws-cdk/commit/8e4ca1449196394101f1c4cb01f3767307df2b56)), closes [#34235](https://github.com/aws/aws-cdk/issues/34235) [/github.com/aws/aws-cdk/blob/2bdc07e45f836a710bc049d43a2462806af1c75d/packages/aws-cdk-lib/aws-ecs-patterns/lib/base/application-load-balanced-service-base.ts#L508](https://github.com/aws//github.com/aws/aws-cdk/blob/2bdc07e45f836a710bc049d43a2462806af1c75d/packages/aws-cdk-lib/aws-ecs-patterns/lib/base/application-load-balanced-service-base.ts/issues/L508)
+* **route53:** avoid setting unnecessary properties for Recovery Control type Route53 health check ([#34272](https://github.com/aws/aws-cdk/issues/34272)) ([6bc01c9](https://github.com/aws/aws-cdk/commit/6bc01c9d449f93c40fd90e34fcb5a0014b4e5841)), closes [#34262](https://github.com/aws/aws-cdk/issues/34262)
+* **ses-actions:** condition should use SourceAccount ([#34081](https://github.com/aws/aws-cdk/issues/34081)) ([f68b947](https://github.com/aws/aws-cdk/commit/f68b9479e6fdfec0447b2760ae5a97543e2c673d)), closes [#29811](https://github.com/aws/aws-cdk/issues/29811) [#30143](https://github.com/aws/aws-cdk/issues/30143) [#29833](https://github.com/aws/aws-cdk/issues/29833) [#30375](https://github.com/aws/aws-cdk/issues/30375)
+
+## [2.197.0](https://github.com/aws/aws-cdk/compare/v2.196.1...v2.197.0) (2025-05-20)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#34497](https://github.com/aws/aws-cdk/issues/34497)) ([6b7cdcf](https://github.com/aws/aws-cdk/commit/6b7cdcfc683b81523863d6610c1d5828fb75715e))
+* **cloudwatch:** anomaly detection alarms ([#31232](https://github.com/aws/aws-cdk/issues/31232)) ([e2aa338](https://github.com/aws/aws-cdk/commit/e2aa338a744ee367c23f5579dee974fac3210d19)), closes [#10540](https://github.com/aws/aws-cdk/issues/10540) [#10540](https://github.com/aws/aws-cdk/issues/10540)
+* **custom-resource:** update default node runtime to node22 in custom resources for commercial, china and gov regions ([#34319](https://github.com/aws/aws-cdk/issues/34319)) ([eb5e688](https://github.com/aws/aws-cdk/commit/eb5e688ebb6a72c2f106da73ecedb86749f159fa))
+
+
+### Bug Fixes
+
+* **core:** `platform` is ignored during asset bundling ([#33865](https://github.com/aws/aws-cdk/issues/33865)) ([91bec88](https://github.com/aws/aws-cdk/commit/91bec884da06d44b000e839121d5e2d8c5171daf)), closes [#30239](https://github.com/aws/aws-cdk/issues/30239)
+* **lambda-nodejs:** instantiating `NodejsFunction` without the `entry` property fails ([#34498](https://github.com/aws/aws-cdk/issues/34498)) ([36ce84d](https://github.com/aws/aws-cdk/commit/36ce84de93acdcdacf68f42720c5f12a5b8b2e9f))
+
+## [2.196.1](https://github.com/aws/aws-cdk/compare/v2.196.0...v2.196.1) (2025-05-19)
+
+
+### Bug Fixes
+
+* **lambda-nodejs:** instantiating `NodejsFunction` without the `entry` property fails ([#34498](https://github.com/aws/aws-cdk/issues/34498)) ([27e0f3a](https://github.com/aws/aws-cdk/commit/27e0f3a1d525512db53fc99432597d8e091ab9d0))
+
 ## [2.196.0](https://github.com/aws/aws-cdk/compare/v2.195.0...v2.196.0) (2025-05-15)
 
 

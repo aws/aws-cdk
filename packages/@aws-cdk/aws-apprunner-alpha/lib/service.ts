@@ -229,6 +229,11 @@ export class Runtime {
   public static readonly RUBY_31 = Runtime.of('RUBY_31');
 
   /**
+   * NodeJS 22
+   */
+  public static readonly NODEJS_22 = Runtime.of('NODEJS_22');
+
+  /**
    * Other runtimes
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-codeconfigurationvalues.html#cfn-apprunner-service-codeconfigurationvalues-runtime for all available runtimes.
