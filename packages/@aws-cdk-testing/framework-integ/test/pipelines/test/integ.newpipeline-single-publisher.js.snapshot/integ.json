@@ -8,5 +8,6 @@
       "assertionStack": "PipelineStackSinglePublisher-integ/DefaultTest/DeployAssert",
       "assertionStackName": "PipelineStackSinglePublisherintegDefaultTestDeployAssertCDD49B07"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
