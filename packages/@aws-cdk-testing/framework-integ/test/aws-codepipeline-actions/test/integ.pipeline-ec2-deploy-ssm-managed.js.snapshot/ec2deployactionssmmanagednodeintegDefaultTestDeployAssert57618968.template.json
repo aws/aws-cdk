@@ -18,7 +18,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputRefMyPipelineAED38ECFE2E6B334"
+         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node:ExportsOutputRefMyPipelineAED38ECFE2E6B334"
         },
         "\""
        ]
@@ -29,7 +29,7 @@
     "outputPaths": [
      "pipelineExecutionId"
     ],
-    "salt": "1748500086805"
+    "salt": "1748500144829"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -143,7 +143,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputRefMyPipelineAED38ECFE2E6B334"
+         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node:ExportsOutputRefMyPipelineAED38ECFE2E6B334"
         },
         "\""
        ]
@@ -166,7 +166,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1748500086806"
+    "salt": "1748500144830"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -423,7 +423,7 @@
        [
         "http://",
         {
-         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputFnGetAttALBAEE750D2DNSNameE026139E"
+         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node:ExportsOutputFnGetAttALBAEE750D2DNSNameE026139E"
         },
         "/LB/index.html"
        ]
@@ -432,7 +432,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1748500086812"
+    "salt": "1748500144834"
    },
    "DependsOn": [
     "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0",
@@ -460,7 +460,7 @@
        [
         "http://",
         {
-         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputFnGetAttInstanceNoLB0F5BE1CB1PublicDnsNameAF6BAD8D"
+         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node:ExportsOutputFnGetAttInstanceNoLB0F5BE1CB1PublicDnsNameAF6BAD8D"
         },
         "/NoLB/index.html"
        ]
@@ -469,7 +469,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1748500086814"
+    "salt": "1748500144836"
    },
    "DependsOn": [
     "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0",
@@ -497,7 +497,7 @@
        [
         "http://",
         {
-         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy:ExportsOutputFnGetAttInstanceNoLB1840A0492PublicDnsName4FB1136A"
+         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node:ExportsOutputFnGetAttInstanceNoLB1840A0492PublicDnsName4FB1136A"
         },
         "/NoLB/index.html"
        ]
@@ -506,7 +506,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1748500086815"
+    "salt": "1748500144839"
    },
    "DependsOn": [
     "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0",

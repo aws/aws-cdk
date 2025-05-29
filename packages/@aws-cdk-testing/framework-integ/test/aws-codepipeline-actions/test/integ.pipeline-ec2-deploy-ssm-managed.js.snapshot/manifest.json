@@ -1,28 +1,28 @@
 {
   "version": "43.0.0",
   "artifacts": {
-    "aws-cdk-codepipeline-ec2-deploy.assets": {
+    "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-codepipeline-ec2-deploy.assets.json",
+        "file": "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-codepipeline-ec2-deploy": {
+    "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-codepipeline-ec2-deploy.template.json",
+        "templateFile": "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8bd6941ae91eeb70d77c6395f4937a7b809dc8e7bbd0678f49fa33753ecd2b39.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eb92ae489d265be016a9f806dc8a2316faa1fe464ecc1f7a17c473050d38210d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-codepipeline-ec2-deploy.assets"
+          "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,10 +31,10 @@
         }
       },
       "dependencies": [
-        "aws-cdk-codepipeline-ec2-deploy.assets"
+        "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node.assets"
       ],
       "metadata": {
-        "/aws-cdk-codepipeline-ec2-deploy/VPC": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -44,13 +44,13 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/PublicSubnet1": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -78,31 +78,31 @@
             "data": {}
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/PublicSubnet1/Subnet": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1SubnetB4246D30"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/PublicSubnet1/RouteTable": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableFEE4B781"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/PublicSubnet1/RouteTableAssociation": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/PublicSubnet1/DefaultRoute": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1DefaultRoute91CEF279"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/PublicSubnet2": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -130,31 +130,31 @@
             "data": {}
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/PublicSubnet2/Subnet": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2Subnet74179F39"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/PublicSubnet2/RouteTable": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTable6F1A15F1"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/PublicSubnet2/RouteTableAssociation": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/PublicSubnet2/DefaultRoute": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/IsolatedSubnet1": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/IsolatedSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -178,25 +178,25 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/IsolatedSubnet1/Subnet": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/IsolatedSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIsolatedSubnet1SubnetEBD00FC6"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/IsolatedSubnet1/RouteTable": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/IsolatedSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIsolatedSubnet1RouteTableEB156210"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/IsolatedSubnet1/RouteTableAssociation": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/IsolatedSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/IsolatedSubnet2": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/IsolatedSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -220,37 +220,37 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/IsolatedSubnet2/Subnet": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/IsolatedSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIsolatedSubnet2Subnet4B1C8CAA"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/IsolatedSubnet2/RouteTable": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/IsolatedSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIsolatedSubnet2RouteTable9B4F78DC"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/IsolatedSubnet2/RouteTableAssociation": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/IsolatedSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/IGW": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIGWB7E252D3"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/VPC/VPCGW": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/VPC/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-0": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-0": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -266,7 +266,7 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-0/InstanceSecurityGroup": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-0/InstanceSecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -291,13 +291,13 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-0/InstanceSecurityGroup/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-0/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceNoLB0InstanceSecurityGroup83B31944"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-0/InstanceRole": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-0/InstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -342,19 +342,19 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-0/InstanceRole/ImportInstanceRole": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-0/InstanceRole/ImportInstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-0/InstanceRole/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-0/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceNoLB0InstanceRole145B7449"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-0/InstanceRole/DefaultPolicy": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-0/InstanceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -384,31 +384,31 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-0/InstanceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-0/InstanceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceNoLB0InstanceRoleDefaultPolicyB8BC3ED4"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-0/InstanceProfile": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-0/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceNoLB0InstanceProfile4D57E6D5"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-0/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-0/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceNoLB0F5BE1CB1"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-arm64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-arm64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61arm64C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-1": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -424,7 +424,7 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-1/InstanceSecurityGroup": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-1/InstanceSecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -449,13 +449,13 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-1/InstanceSecurityGroup/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-1/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceNoLB1InstanceSecurityGroupC650BF86"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-1/InstanceRole": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-1/InstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -500,19 +500,19 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-1/InstanceRole/ImportInstanceRole": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-1/InstanceRole/ImportInstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-1/InstanceRole/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-1/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceNoLB1InstanceRole8D77ECB7"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-1/InstanceRole/DefaultPolicy": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-1/InstanceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -542,25 +542,25 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-1/InstanceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-1/InstanceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceNoLB1InstanceRoleDefaultPolicy5FEB70E7"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-1/InstanceProfile": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-1/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceNoLB1InstanceProfile379D29A7"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-NoLB-1/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-NoLB-1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceNoLB1840A0492"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-0": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-0": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -576,7 +576,7 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-0/InstanceSecurityGroup": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-0/InstanceSecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -601,13 +601,13 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-0/InstanceSecurityGroup/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-0/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceLB0InstanceSecurityGroupBF5438C2"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-0/InstanceRole": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-0/InstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -652,19 +652,19 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-0/InstanceRole/ImportInstanceRole": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-0/InstanceRole/ImportInstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-0/InstanceRole/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-0/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceLB0InstanceRole16E2BE6A"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-0/InstanceRole/DefaultPolicy": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-0/InstanceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -694,25 +694,25 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-0/InstanceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-0/InstanceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceLB0InstanceRoleDefaultPolicyA7450842"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-0/InstanceProfile": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-0/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceLB0InstanceProfile99F8CE1D"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-0/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-0/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceLB0F4B9C387"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-1": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -728,7 +728,7 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-1/InstanceSecurityGroup": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-1/InstanceSecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -753,13 +753,13 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-1/InstanceSecurityGroup/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-1/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceLB1InstanceSecurityGroup71398A6C"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-1/InstanceRole": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-1/InstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -804,19 +804,19 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-1/InstanceRole/ImportInstanceRole": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-1/InstanceRole/ImportInstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-1/InstanceRole/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-1/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceLB1InstanceRoleEE4579FC"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-1/InstanceRole/DefaultPolicy": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-1/InstanceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -846,25 +846,25 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-1/InstanceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-1/InstanceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceLB1InstanceRoleDefaultPolicy93111654"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-1/InstanceProfile": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-1/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceLB1InstanceProfileBD0293BE"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Instance-LB-1/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Instance-LB-1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceLB10E6184C8"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ALB": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ALB": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -874,13 +874,13 @@
             "data": "*"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ALB/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ALB/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ALBAEE750D2"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ALB/SecurityGroup": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ALB/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -920,31 +920,31 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ALB/SecurityGroup/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ALB/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ALBSecurityGroup8B8624F8"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ALB/HTTP": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ALB/HTTP": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ALB/HTTP/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ALB/HTTP/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ALBHTTP3BDC2BD0"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ALB-TG/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ALB-TG/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ALBTG9414664F"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ArtifactBucket": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ArtifactBucket": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -954,13 +954,13 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ArtifactBucket/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ArtifactBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ArtifactBucket7410C9EF"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ArtifactBucket/Policy": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ArtifactBucket/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -968,61 +968,61 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ArtifactBucket/Policy/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ArtifactBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ArtifactBucketPolicy4B4B7752"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ArtifactBucket/AutoDeleteObjectsCustomResource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ArtifactBucket/AutoDeleteObjectsCustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ArtifactBucket/AutoDeleteObjectsCustomResource/Default": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ArtifactBucket/AutoDeleteObjectsCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ArtifactBucketAutoDeleteObjectsCustomResource0BB47FD6"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/LatestNodeRuntimeMap": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/LatestNodeRuntimeMap": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
             "data": true
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ArtifactDeployment/AwsCliLayer": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ArtifactDeployment/AwsCliLayer": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {}
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ArtifactDeployment/AwsCliLayer/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ArtifactDeployment/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ArtifactDeploymentAwsCliLayer44AFA38E"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ArtifactDeployment/CustomResourceHandler": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ArtifactDeployment/CustomResourceHandler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1064,7 +1064,7 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ArtifactDeployment/CustomResource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ArtifactDeployment/CustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1074,13 +1074,13 @@
             "data": "*"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/ArtifactDeployment/CustomResource/Default": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/ArtifactDeployment/CustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ArtifactDeploymentCustomResource42DDE719"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1127,7 +1127,7 @@
             "data": 2
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1175,19 +1175,19 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1225,19 +1225,19 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1281,7 +1281,7 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Role": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1341,19 +1341,19 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Role/ImportRole": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Role/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyPipelineRoleC0D47CA4"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Role/DefaultPolicy": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1407,19 +1407,19 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Role/DefaultPolicy/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyPipelineRoleDefaultPolicy34F09EFA"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyPipelineAED38ECF"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Source/Source/CodePipelineActionRole": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Source/Source/CodePipelineActionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1479,19 +1479,19 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Source/Source/CodePipelineActionRole/ImportCodePipelineActionRole": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Source/Source/CodePipelineActionRole/ImportCodePipelineActionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Source/Source/CodePipelineActionRole/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Source/Source/CodePipelineActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyPipelineSourceCodePipelineActionRoleAA05D76F"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Source/Source/CodePipelineActionRole/DefaultPolicy": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Source/Source/CodePipelineActionRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1529,13 +1529,13 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Source/Source/CodePipelineActionRole/DefaultPolicy/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Source/Source/CodePipelineActionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyPipelineSourceCodePipelineActionRoleDefaultPolicy10C831A9"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Deploy/EC2-NoLB/CodePipelineActionRole": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Deploy/EC2-NoLB/CodePipelineActionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1611,19 +1611,19 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Deploy/EC2-NoLB/CodePipelineActionRole/ImportCodePipelineActionRole": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Deploy/EC2-NoLB/CodePipelineActionRole/ImportCodePipelineActionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Deploy/EC2-NoLB/CodePipelineActionRole/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Deploy/EC2-NoLB/CodePipelineActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyPipelineDeployEC2NoLBCodePipelineActionRole0BEB25A3"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Deploy/EC2-NoLB/CodePipelineActionRole/DefaultPolicy": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Deploy/EC2-NoLB/CodePipelineActionRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1677,13 +1677,13 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Deploy/EC2-NoLB/CodePipelineActionRole/DefaultPolicy/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Deploy/EC2-NoLB/CodePipelineActionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyPipelineDeployEC2NoLBCodePipelineActionRoleDefaultPolicy98D89899"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Deploy/EC2-LB/CodePipelineActionRole": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Deploy/EC2-LB/CodePipelineActionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1767,19 +1767,19 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Deploy/EC2-LB/CodePipelineActionRole/ImportCodePipelineActionRole": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Deploy/EC2-LB/CodePipelineActionRole/ImportCodePipelineActionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Deploy/EC2-LB/CodePipelineActionRole/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Deploy/EC2-LB/CodePipelineActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyPipelineDeployEC2LBCodePipelineActionRoleD964DCD4"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Deploy/EC2-LB/CodePipelineActionRole/DefaultPolicy": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Deploy/EC2-LB/CodePipelineActionRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1841,73 +1841,73 @@
             }
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/MyPipeline/Deploy/EC2-LB/CodePipelineActionRole/DefaultPolicy/Resource": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/MyPipeline/Deploy/EC2-LB/CodePipelineActionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyPipelineDeployEC2LBCodePipelineActionRoleDefaultPolicyCE046AB3"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Exports/Output{\"Ref\":\"MyPipelineAED38ECF\"}": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Exports/Output{\"Ref\":\"MyPipelineAED38ECF\"}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputRefMyPipelineAED38ECFE2E6B334"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Exports/Output{\"Fn::GetAtt\":[\"ALBAEE750D2\",\"DNSName\"]}": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Exports/Output{\"Fn::GetAtt\":[\"ALBAEE750D2\",\"DNSName\"]}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputFnGetAttALBAEE750D2DNSNameE026139E"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Exports/Output{\"Fn::GetAtt\":[\"InstanceNoLB0F5BE1CB1\",\"PublicDnsName\"]}": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Exports/Output{\"Fn::GetAtt\":[\"InstanceNoLB0F5BE1CB1\",\"PublicDnsName\"]}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputFnGetAttInstanceNoLB0F5BE1CB1PublicDnsNameAF6BAD8D"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/Exports/Output{\"Fn::GetAtt\":[\"InstanceNoLB1840A0492\",\"PublicDnsName\"]}": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Exports/Output{\"Fn::GetAtt\":[\"InstanceNoLB1840A0492\",\"PublicDnsName\"]}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputFnGetAttInstanceNoLB1840A0492PublicDnsName4FB1136A"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/BootstrapVersion": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-codepipeline-ec2-deploy/CheckBootstrapVersion": [
+        "/aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-codepipeline-ec2-deploy"
+      "displayName": "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node"
     },
-    "ec2deployactionintegDefaultTestDeployAssert9BE1FE4E.assets": {
+    "ec2deployactionssmmanagednodeintegDefaultTestDeployAssert57618968.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "ec2deployactionintegDefaultTestDeployAssert9BE1FE4E.assets.json",
+        "file": "ec2deployactionssmmanagednodeintegDefaultTestDeployAssert57618968.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "ec2deployactionintegDefaultTestDeployAssert9BE1FE4E": {
+    "ec2deployactionssmmanagednodeintegDefaultTestDeployAssert57618968": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "ec2deployactionintegDefaultTestDeployAssert9BE1FE4E.template.json",
+        "templateFile": "ec2deployactionssmmanagednodeintegDefaultTestDeployAssert57618968.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2ebe9a4edc996354ed8a33a7e043058cc7d29b87204e947524c50d9b7e5bffc3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/755bbbff659801e592cd517ffc1a32f4f9daaae0203d7c034d5b21343a2ae57c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "ec2deployactionintegDefaultTestDeployAssert9BE1FE4E.assets"
+          "ec2deployactionssmmanagednodeintegDefaultTestDeployAssert57618968.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -1916,11 +1916,11 @@
         }
       },
       "dependencies": [
-        "aws-cdk-codepipeline-ec2-deploy",
-        "ec2deployactionintegDefaultTestDeployAssert9BE1FE4E.assets"
+        "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node",
+        "ec2deployactionssmmanagednodeintegDefaultTestDeployAssert57618968.assets"
       ],
       "metadata": {
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineStartPipelineExecutionad2a8e13b355c597dd9ba3bb8c937882/Default": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineStartPipelineExecutionad2a8e13b355c597dd9ba3bb8c937882/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1934,31 +1934,31 @@
             "data": "*"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineStartPipelineExecutionad2a8e13b355c597dd9ba3bb8c937882/Default/Default": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineStartPipelineExecutionad2a8e13b355c597dd9ba3bb8c937882/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallcodepipelineStartPipelineExecutionad2a8e13b355c597dd9ba3bb8c937882"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0/Default": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1972,67 +1972,67 @@
             "data": "*"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0/Default/Default": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0/WaitFor/IsCompleteProvider/Invoke": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0/WaitFor/IsCompleteProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForIsCompleteProviderInvokeD9F10281"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0/WaitFor/TimeoutProvider/Invoke": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0/WaitFor/TimeoutProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForTimeoutProviderInvokeFBF4C27C"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0/WaitFor/Role": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0/WaitFor/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForRole162EA17D"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0/WaitFor/Resource": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0/WaitFor/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitFor66DAA5A7"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0/AssertionResults": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/HttpApiCall27af9e605d6e315bf4a33d7c8b61846f/Default": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/HttpApiCall27af9e605d6e315bf4a33d7c8b61846f/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -2046,19 +2046,19 @@
             "data": "*"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/HttpApiCall27af9e605d6e315bf4a33d7c8b61846f/Default/Default": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/HttpApiCall27af9e605d6e315bf4a33d7c8b61846f/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HttpApiCall27af9e605d6e315bf4a33d7c8b61846f"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/HttpApiCall27af9e605d6e315bf4a33d7c8b61846f/AssertionResults": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/HttpApiCall27af9e605d6e315bf4a33d7c8b61846f/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsHttpApiCall27af9e605d6e315bf4a33d7c8b61846f"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/HttpApiCallfc1c5a80a56be49afaec52c14ab25ad5/Default": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/HttpApiCallfc1c5a80a56be49afaec52c14ab25ad5/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -2072,19 +2072,19 @@
             "data": "*"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/HttpApiCallfc1c5a80a56be49afaec52c14ab25ad5/Default/Default": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/HttpApiCallfc1c5a80a56be49afaec52c14ab25ad5/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HttpApiCallfc1c5a80a56be49afaec52c14ab25ad5"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/HttpApiCallfc1c5a80a56be49afaec52c14ab25ad5/AssertionResults": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/HttpApiCallfc1c5a80a56be49afaec52c14ab25ad5/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsHttpApiCallfc1c5a80a56be49afaec52c14ab25ad5"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/HttpApiCall4a4ff02ea43ff833e2ebd6a46c03dced/Default": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/HttpApiCall4a4ff02ea43ff833e2ebd6a46c03dced/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -2098,32 +2098,32 @@
             "data": "*"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/HttpApiCall4a4ff02ea43ff833e2ebd6a46c03dced/Default/Default": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/HttpApiCall4a4ff02ea43ff833e2ebd6a46c03dced/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HttpApiCall4a4ff02ea43ff833e2ebd6a46c03dced"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/HttpApiCall4a4ff02ea43ff833e2ebd6a46c03dced/AssertionResults": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/HttpApiCall4a4ff02ea43ff833e2ebd6a46c03dced/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsHttpApiCall4a4ff02ea43ff833e2ebd6a46c03dced"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/ec2-deploy-action-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "ec2-deploy-action-integ/DefaultTest/DeployAssert"
+      "displayName": "ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

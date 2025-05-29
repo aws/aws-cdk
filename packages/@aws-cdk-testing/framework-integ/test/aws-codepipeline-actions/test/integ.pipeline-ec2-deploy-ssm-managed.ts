@@ -11,7 +11,7 @@ import * as path from 'path';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-ec2-deploy');
+const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-ec2-deploy-ssm-managed-node');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAzs: 2,
@@ -88,7 +88,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
         new cpactions.Ec2DeployAction({
           actionName: 'EC2-NoLB',
           input: sourceArtifact,
-          instanceType: cpactions.Ec2InstanceType.EC2,
+          instanceType: cpactions.Ec2InstanceType.SSM_MANAGED_NODE,
           instanceTagKey: 'EC2-Target',
           instanceTagValue: 'NoLB',
           deploySpecifications: cpactions.Ec2DeploySpecifications.inline({
@@ -101,7 +101,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
         new cpactions.Ec2DeployAction({
           actionName: 'EC2-LB',
           input: sourceArtifact,
-          instanceType: cpactions.Ec2InstanceType.EC2,
+          instanceType: cpactions.Ec2InstanceType.SSM_MANAGED_NODE,
           instanceTagKey: 'EC2-Target',
           instanceTagValue: 'LB',
           deploySpecifications: cpactions.Ec2DeploySpecifications.inline({
@@ -117,7 +117,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
   ],
 });
 
-const integ = new IntegTest(app, 'ec2-deploy-action-integ', {
+const integ = new IntegTest(app, 'ec2-deploy-action-ssm-managed-node-integ', {
   testCases: [stack],
 });
 

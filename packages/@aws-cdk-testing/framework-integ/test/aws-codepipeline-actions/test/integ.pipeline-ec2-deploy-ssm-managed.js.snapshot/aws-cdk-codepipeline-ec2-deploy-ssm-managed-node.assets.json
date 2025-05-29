@@ -2,7 +2,7 @@
   "version": "41.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
-      "displayName": "aws-cdk-codepipeline-ec2-deploy/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "displayName": "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
         "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
         "packaging": "zip"
@@ -57,16 +57,16 @@
         }
       }
     },
-    "8bd6941ae91eeb70d77c6395f4937a7b809dc8e7bbd0678f49fa33753ecd2b39": {
-      "displayName": "aws-cdk-codepipeline-ec2-deploy Template",
+    "eb92ae489d265be016a9f806dc8a2316faa1fe464ecc1f7a17c473050d38210d": {
+      "displayName": "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node Template",
       "source": {
-        "path": "aws-cdk-codepipeline-ec2-deploy.template.json",
+        "path": "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8bd6941ae91eeb70d77c6395f4937a7b809dc8e7bbd0678f49fa33753ecd2b39.json",
+          "objectKey": "eb92ae489d265be016a9f806dc8a2316faa1fe464ecc1f7a17c473050d38210d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
