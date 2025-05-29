@@ -46,13 +46,7 @@ class AppStage extends Stage {
   }
 }
 
-const app = new App({
-  postCliContext: {
-    '@aws-cdk/core:newStyleStackSynthesis': '1',
-    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
-    '@aws-cdk/pipelines:reduceStageRoleTrustScope': true,
-  },
-});
+const app = new App();
 const stack = new PipelineStack(app, 'PipelineStackSinglePublisher');
 new IntegTest(app, 'PipelineStackSinglePublisher-integ', {
   testCases: [stack],
