@@ -1,15 +1,16 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "files": {
-    "15c8cb52f09652fe3bd7535c6150b68402578e8ba29176dbc1dd358cda7a8b1d": {
+    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+      "displayName": "oidcprovidernativeintegtestDefaultTestDeployAssert9F17FB34 Template",
       "source": {
-        "path": "integ-ec2-prefix-list-test.template.json",
+        "path": "oidcprovidernativeintegtestDefaultTestDeployAssert9F17FB34.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "15c8cb52f09652fe3bd7535c6150b68402578e8ba29176dbc1dd358cda7a8b1d.json",
+          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
