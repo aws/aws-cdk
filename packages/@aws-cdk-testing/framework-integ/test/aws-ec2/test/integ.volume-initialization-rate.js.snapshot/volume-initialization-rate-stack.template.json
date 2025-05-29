@@ -6,7 +6,7 @@
     "AvailabilityZone": "us-east-1a",
     "MultiAttachEnabled": false,
     "Size": 1,
-    "SnapshotId": "snap-02409784a90cc58a4",
+    "SnapshotId": "snap-123456789abcdef0",
     "VolumeInitializationRate": 100,
     "VolumeType": "gp3"
    },
