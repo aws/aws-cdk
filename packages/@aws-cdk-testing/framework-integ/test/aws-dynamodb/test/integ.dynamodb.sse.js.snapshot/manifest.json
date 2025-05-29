@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "aws-cdk-dynamodb.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-dynamodb.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/67bada7a8e782ac86bb16bf47c61bc2039c780e5e42eaae93c8bc65e9b3e7cbb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7f3abba164da711a6e4b78e06234d0b0e82c01fc3fb18f5b2ec2e2313186bb84.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,28 @@
         "aws-cdk-dynamodb.assets"
       ],
       "metadata": {
+        "/aws-cdk-dynamodb/Table": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "removalPolicy": "destroy",
+              "encryption": "CUSTOMER_MANAGED"
+            }
+          }
+        ],
+        "/aws-cdk-dynamodb/Table/Key": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "enableKeyRotation": true
+            }
+          }
+        ],
         "/aws-cdk-dynamodb/Table/Key/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -45,10 +68,184 @@
             "data": "TableCD117FA1"
           }
         ],
+        "/aws-cdk-dynamodb/Table/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "pointInTimeRecovery": true,
+              "encryption": "AWS_MANAGED",
+              "stream": "KEYS_ONLY",
+              "timeToLiveAttribute": "*",
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "sortKey": {
+                "name": "*",
+                "type": "N"
+              },
+              "removalPolicy": "destroy"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addGlobalSecondaryIndex": [
+                {
+                  "indexName": "*",
+                  "partitionKey": {
+                    "name": "*",
+                    "type": "S"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addGlobalSecondaryIndex": [
+                {
+                  "indexName": "*",
+                  "partitionKey": {
+                    "name": "*",
+                    "type": "S"
+                  },
+                  "readCapacity": "*",
+                  "writeCapacity": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addGlobalSecondaryIndex": [
+                {
+                  "indexName": "*",
+                  "partitionKey": {
+                    "name": "*",
+                    "type": "S"
+                  },
+                  "projectionType": "KEYS_ONLY"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addGlobalSecondaryIndex": [
+                {
+                  "indexName": "*",
+                  "partitionKey": {
+                    "name": "*",
+                    "type": "S"
+                  },
+                  "projectionType": "INCLUDE",
+                  "nonKeyAttributes": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addGlobalSecondaryIndex": [
+                {
+                  "indexName": "*",
+                  "partitionKey": {
+                    "name": "*",
+                    "type": "N"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLocalSecondaryIndex": [
+                {
+                  "indexName": "*",
+                  "sortKey": {
+                    "name": "*",
+                    "type": "N"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLocalSecondaryIndex": [
+                {
+                  "indexName": "*",
+                  "sortKey": {
+                    "name": "*",
+                    "type": "N"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLocalSecondaryIndex": [
+                {
+                  "indexName": "*",
+                  "sortKey": {
+                    "name": "*",
+                    "type": "N"
+                  },
+                  "projectionType": "KEYS_ONLY"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLocalSecondaryIndex": [
+                {
+                  "indexName": "*",
+                  "sortKey": {
+                    "name": "*",
+                    "type": "N"
+                  },
+                  "projectionType": "INCLUDE",
+                  "nonKeyAttributes": "*"
+                }
+              ]
+            }
+          }
+        ],
         "/aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TableWithGlobalAndLocalSecondaryIndexBC540710"
+          }
+        ],
+        "/aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-dynamodb/Key": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "enableKeyRotation": true
+            }
           }
         ],
         "/aws-cdk-dynamodb/Key/Resource": [
@@ -57,10 +254,74 @@
             "data": "Key961B73FD"
           }
         ],
+        "/aws-cdk-dynamodb/TableWithGlobalSecondaryIndex": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "removalPolicy": "destroy",
+              "encryptionKey": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addGlobalSecondaryIndex": [
+                {
+                  "indexName": "*",
+                  "partitionKey": {
+                    "name": "*",
+                    "type": "S"
+                  }
+                }
+              ]
+            }
+          }
+        ],
         "/aws-cdk-dynamodb/TableWithGlobalSecondaryIndex/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TableWithGlobalSecondaryIndexCC8E841E"
+          }
+        ],
+        "/aws-cdk-dynamodb/TableWithGlobalSecondaryIndex/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-dynamodb/TableWithLocalSecondaryIndex": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "sortKey": {
+                "name": "*",
+                "type": "N"
+              },
+              "removalPolicy": "destroy",
+              "encryption": "AWS_OWNED"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLocalSecondaryIndex": [
+                {
+                  "indexName": "*",
+                  "sortKey": {
+                    "name": "*",
+                    "type": "N"
+                  }
+                }
+              ]
+            }
           }
         ],
         "/aws-cdk-dynamodb/TableWithLocalSecondaryIndex/Resource": [
@@ -69,10 +330,119 @@
             "data": "TableWithLocalSecondaryIndex4DA3D08F"
           }
         ],
+        "/aws-cdk-dynamodb/TableWithLocalSecondaryIndex/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-dynamodb/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-dynamodb/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-dynamodb/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Role1ABCC5F0"
+          }
+        ],
+        "/aws-cdk-dynamodb/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-dynamodb/Role/DefaultPolicy/Resource": [
@@ -102,5 +472,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1016.1"
 }

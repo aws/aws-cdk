@@ -1,7 +1,5 @@
 export const READ_DATA_ACTIONS = [
   'dynamodb:BatchGetItem',
-  'dynamodb:GetRecords',
-  'dynamodb:GetShardIterator',
   'dynamodb:Query',
   'dynamodb:GetItem',
   'dynamodb:Scan',
