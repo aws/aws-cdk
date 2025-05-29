@@ -33,6 +33,10 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 new TestStack(app, 'cdk-integ-compilations-lambda-nodejs');
 app.synth();

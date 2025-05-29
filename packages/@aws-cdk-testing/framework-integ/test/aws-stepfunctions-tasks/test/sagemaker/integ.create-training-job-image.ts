@@ -7,7 +7,11 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import * as path from 'path';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'sfn-sm-training-job-image');
 
 // Please manually cleanup this bucket after testing.

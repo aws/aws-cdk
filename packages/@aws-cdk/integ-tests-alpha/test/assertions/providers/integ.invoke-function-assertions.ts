@@ -2,7 +2,11 @@ import { App, Stack, Duration } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { ExpectedResult, IntegTest, InvocationType } from '../../../lib';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': true,
+  },
+});
 const stack = new Stack(app, 'InvokeFunctionAssertions');
 
 const targetFunc = new lambda.Function(stack, 'TargetFunc', {

@@ -6,7 +6,11 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as targets from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-elbv2-lambda-multi-value-headers');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {

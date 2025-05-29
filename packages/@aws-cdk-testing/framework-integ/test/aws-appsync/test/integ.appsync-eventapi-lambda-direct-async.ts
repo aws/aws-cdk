@@ -51,7 +51,11 @@ class EventApiLambdaDirectAsyncStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new EventApiLambdaDirectAsyncStack(app, 'EventApiLambdaDirectAsyncStack');
 
 const integTest = new IntegTest(app, 'appsync-eventapi-lambda-direct-async-test', {

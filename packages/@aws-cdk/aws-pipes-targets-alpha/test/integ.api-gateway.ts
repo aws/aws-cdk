@@ -14,7 +14,11 @@ import { ApiGatewayTarget } from '../lib/api-gateway';
  * SQS (pipe source) --> API Gateway REST API (pipe target) --> Lambda function
  */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-api-gw');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 

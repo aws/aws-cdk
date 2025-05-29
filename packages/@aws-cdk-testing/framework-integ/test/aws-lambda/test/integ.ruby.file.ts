@@ -49,7 +49,11 @@ class Ruby34Stack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const ruby32Stack = new Ruby32Stack(app, 'lambda-test-assets-file-for-ruby32');
 const ruby33Stack = new Ruby33Stack(app, 'lambda-test-assets-file-for-ruby33');

@@ -304,16 +304,6 @@
        }
       },
       {
-       "Action": "kms:Decrypt",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "SourceKmsKeyFE472F1C",
-         "Arn"
-        ]
-       }
-      },
-      {
        "Action": [
         "kms:Encrypt",
         "kms:GenerateDataKey*",
@@ -323,6 +313,16 @@
        "Resource": {
         "Fn::GetAtt": [
          "DestinationKmsKey0D94AA3C",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "kms:Decrypt",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SourceKmsKeyFE472F1C",
          "Arn"
         ]
        }

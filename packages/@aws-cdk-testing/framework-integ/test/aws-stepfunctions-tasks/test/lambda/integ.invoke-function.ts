@@ -4,7 +4,11 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-stepfunctions-integ');
 
 const handler = new Function(stack, 'Handler', {

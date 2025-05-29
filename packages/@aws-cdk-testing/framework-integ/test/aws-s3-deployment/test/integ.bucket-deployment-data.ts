@@ -6,7 +6,11 @@ import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as path from 'path';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'TestBucketDeploymentContent');
 const bucket = new Bucket(stack, 'Bucket', {
   removalPolicy: RemovalPolicy.DESTROY, // Allow bucket deletion

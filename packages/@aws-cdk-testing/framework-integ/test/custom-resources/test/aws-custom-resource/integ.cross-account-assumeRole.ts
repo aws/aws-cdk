@@ -28,7 +28,11 @@ import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '
  *     - `yarn integ custom-resources/test/aws-custom-resource/integ.cross-account-assumeRole.js --profiles cross-account`
  */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const account = process.env.CDK_INTEG_ACCOUNT || '123456789012';
 

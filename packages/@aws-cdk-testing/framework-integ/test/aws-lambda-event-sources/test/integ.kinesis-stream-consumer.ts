@@ -6,7 +6,11 @@ import { KinesisConsumerEventSource } from 'aws-cdk-lib/aws-lambda-event-sources
 import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'lambda-event-source-kinesis-stream-consumer');
 
 const fn = new TestFunction(stack, 'F');

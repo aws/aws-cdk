@@ -49,7 +49,11 @@ class TestStackSecretLogged extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCaseNotLogged = new TestStackSecretNotLogged(app, 'integ-user-pool-client-secret-not-logged');
 const testCaseLogged = new TestStackSecretLogged(app, 'integ-user-pool-client-secret-logged');
 

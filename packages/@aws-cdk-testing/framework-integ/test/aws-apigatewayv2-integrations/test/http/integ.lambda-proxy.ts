@@ -8,7 +8,11 @@ import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations
  * "curl <endpoint-in-the-stack-output>" should return 'success'
  */
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new Stack(app, 'integ-lambda-proxy');
 

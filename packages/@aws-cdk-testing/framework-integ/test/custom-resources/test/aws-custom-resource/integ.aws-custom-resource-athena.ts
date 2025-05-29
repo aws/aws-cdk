@@ -18,7 +18,11 @@ import { AwsCustomResource, PhysicalResourceId, PhysicalResourceIdReference } fr
  *      --query 'StackEvents[?starts_with(LogicalResourceId,`AthenaNotebook`)]'
  *
  */
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-customresources-athena');
 
 const athenaResultBucket = new Bucket(stack, 'AthenaResultBucket');

@@ -5,7 +5,11 @@ import { Code } from 'aws-cdk-lib/aws-lambda';
 import { DynamicInput, EnrichmentParametersConfig, IEnrichment, IPipe, ISource, ITarget, InputTransformation, Pipe, SourceConfig, TargetConfig } from '../lib';
 import { name } from '../package.json';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-pipes');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 const targetQueue = new cdk.aws_sqs.Queue(stack, 'TargetQueue');

@@ -6,7 +6,11 @@ import * as cdk from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'AppSyncJsResolverTestStack');
 
 const logConfig: appsync.LogConfig = {

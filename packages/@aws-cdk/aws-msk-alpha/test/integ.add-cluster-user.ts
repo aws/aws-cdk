@@ -3,8 +3,11 @@ import { ClientAuthentication, Cluster, KafkaVersion } from '../lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
-
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'ScramSecretTestStack');
 
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });

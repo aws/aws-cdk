@@ -941,11 +941,14 @@ To replicate objects to a destination bucket, you can specify the `replicationRu
 declare const destinationBucket1: s3.IBucket;
 declare const destinationBucket2: s3.IBucket;
 declare const replicationRole: iam.IRole;
-declare const kmsKey: kms.IKey;
+declare const encryptionKey: kms.IKey;
+declare const destinationEncryptionKey: kms.IKey;
 
 const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
   // Versioning must be enabled on both the source and destination bucket
   versioned: true,
+  // Optional. Specify the KMS key to use for encrypts objects in the source bucket.
+  encryptionKey,
   // Optional. If not specified, a new role will be created.
   replicationRole,
   replicationRules: [
@@ -970,7 +973,7 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
       // If set, metrics will be output to indicate whether replication by S3 RTC took longer than the configured time.
       metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
       // The kms key to use for the destination bucket.
-      kmsKey,
+      kmsKey: destinationEncryptionKey,
       // The storage class to use for the destination bucket.
       storageClass: s3.StorageClass.INFREQUENT_ACCESS,
       // Whether to replicate objects with SSE-KMS encryption.
@@ -996,6 +999,20 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
       }
     },
   ],
+});
+
+// Grant permissions to the replication role.
+// This method is not required if you choose to use an auto-generated replication role or manually grant permissions.
+sourceBucket.grantReplicationPermission(replicationRole, {
+  // Optional. Specify the KMS key to use for decrypting objects in the source bucket.
+  sourceDecryptionKey: encryptionKey,
+  destinations: [
+    { bucket: destinationBucket1 },
+    { bucket: destinationBucket2, encryptionKey: destinationEncryptionKey },
+  ],
+  // The 'encryptionKey' property within the 'destinations' array is optional.
+  // If not specified for a destination bucket, this method assumes that
+  // given destination bucket is not encrypted.
 });
 ```
 
