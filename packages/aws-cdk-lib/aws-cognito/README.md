@@ -1174,9 +1174,11 @@ Amazon Cognito Managed Login Branding allows you to customize the login experien
 To create managed login branding for a user pool client:
 
 ```ts
-declare const userPool: cognito.UserPool;
-declare const client: cognito.UserPoolClient;
+// First, create a user pool and a client
+const userPool = new cognito.UserPool(this, 'UserPool');
+const client = userPool.addClient('Client');
 
+// Then create the managed login branding
 new cognito.ManagedLoginBranding(this, 'Branding', {
   userPoolId: userPool.userPoolId,
   clientId: client.userPoolClientId,
@@ -1210,6 +1212,11 @@ new cognito.ManagedLoginBranding(this, 'Branding', {
 You can also use the Cognito-provided default values:
 
 ```ts
+// First, create a user pool and a client
+const userPool = new cognito.UserPool(this, 'UserPool');
+const client = userPool.addClient('Client');
+
+// Then create the managed login branding with default values
 new cognito.ManagedLoginBranding(this, 'DefaultBranding', {
   userPoolId: userPool.userPoolId,
   clientId: client.userPoolClientId,
@@ -1220,6 +1227,11 @@ new cognito.ManagedLoginBranding(this, 'DefaultBranding', {
 For branding with custom assets like logos and favicons:
 
 ```ts
+// First, create a user pool and a client
+const userPool = new cognito.UserPool(this, 'UserPool');
+const client = userPool.addClient('Client');
+
+// Then create the managed login branding with custom assets
 new cognito.ManagedLoginBranding(this, 'BrandingWithAssets', {
   userPoolId: userPool.userPoolId,
   clientId: client.userPoolClientId,
@@ -1231,7 +1243,7 @@ new cognito.ManagedLoginBranding(this, 'BrandingWithAssets', {
       bytes: 'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjwvc3ZnPg==', // Base64 encoded SVG
     },
     {
-      category: cognito.AssetCategory.LOGO_SIGN_IN,
+      category: cognito.AssetCategory.PAGE_HEADER_LOGO,
       colorMode: cognito.ColorMode.LIGHT,
       extension: cognito.AssetExtension.PNG,
       bytes: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', // Base64 encoded PNG

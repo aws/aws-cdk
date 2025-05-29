@@ -344,15 +344,8 @@ export class ManagedLoginBranding
       );
     }
 
-    // Validate userPoolId format
+    // Validate userPoolId length
     if (!Token.isUnresolved(props.userPoolId)) {
-      const userPoolIdPattern = /[\w-]+_[0-9a-zA-Z]+/;
-      if (!userPoolIdPattern.test(props.userPoolId)) {
-        throw new ValidationError(
-          `userPoolId must match pattern [\w-]+_[0-9a-zA-Z]+, got: ${props.userPoolId}`,
-          this,
-        );
-      }
       if (props.userPoolId.length < 1 || props.userPoolId.length > 55) {
         throw new ValidationError(
           `userPoolId length must be between 1 and 55 characters, got: ${props.userPoolId.length}`,
@@ -386,13 +379,6 @@ export class ManagedLoginBranding
 
         // Validate resourceId if provided
         if (asset.resourceId && !Token.isUnresolved(asset.resourceId)) {
-          const resourceIdPattern = /^[\w\- ]+$/;
-          if (!resourceIdPattern.test(asset.resourceId)) {
-            throw new ValidationError(
-              `Asset resourceId must match pattern ^[\\w\\- ]+$, got: ${asset.resourceId}`,
-              this,
-            );
-          }
           if (asset.resourceId.length < 1 || asset.resourceId.length > 40) {
             throw new ValidationError(
               `Asset resourceId length must be between 1 and 40 characters, got: ${asset.resourceId.length}`,
@@ -424,7 +410,10 @@ export class ManagedLoginBranding
     });
 
     if (props.managedLoginBrandingName) {
-      this.node.addMetadata('aws:cdk:hasPhysicalName', props.managedLoginBrandingName);
+      this.node.addMetadata(
+        'aws:cdk:hasPhysicalName',
+        props.managedLoginBrandingName,
+      );
     }
 
     this.managedLoginBrandingId = this.resource.attrManagedLoginBrandingId;
