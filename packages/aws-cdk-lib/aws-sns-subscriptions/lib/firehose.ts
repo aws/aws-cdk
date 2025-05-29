@@ -50,16 +50,14 @@ export class FirehoseSubscription implements sns.ITopicSubscription {
     const role = this.props.role
       ?? (this.deliveryStream.node.tryFindChild('TopicSubscriptionRole') as iam.IRole)
       ?? new iam.Role(this.deliveryStream, 'TopicSubscriptionRole', { assumedBy: new iam.ServicePrincipal('sns.amazonaws.com') });
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: [
-        'firehose:DescribeDeliveryStream',
-        'firehose:ListDeliveryStreams',
-        'firehose:ListTagsForDeliveryStream',
-        'firehose:PutRecord',
-        'firehose:PutRecordBatch',
-      ],
-      resources: [this.deliveryStream.deliveryStreamArn],
-    }));
+    this.deliveryStream.grant(
+      role,
+      'firehose:DescribeDeliveryStream',
+      'firehose:ListDeliveryStreams',
+      'firehose:ListTagsForDeliveryStream',
+      'firehose:PutRecord',
+      'firehose:PutRecordBatch',
+    );
 
     // if the topic and delivery stream are created in different stacks
     // then we need to make sure the topic is created first
