@@ -273,6 +273,7 @@ describe('Amazon Data Firehose delivery stream subscription cross-stack', () => 
         }],
       },
     });
+    expect(firehoseStack.dependencies).toContain(topicStack);
   });
 
   test('creates same-region configuration', () => {
