@@ -19,7 +19,6 @@ baseConfig.rules['@cdklabs/no-throw-default-error'] = ['error'];
 const noThrowDefaultErrorNotYetSupported = [
   'aws-iam',
   'aws-secretsmanager',
-  'aws-servicecatalog',
   'core',
   'custom-resources',
   'region-info',
