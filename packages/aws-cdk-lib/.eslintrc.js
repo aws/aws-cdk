@@ -17,7 +17,6 @@ baseConfig.rules['import/no-extraneous-dependencies'] = [
 baseConfig.rules['@cdklabs/no-throw-default-error'] = ['error'];
 // not yet supported
 const noThrowDefaultErrorNotYetSupported = [
-  'aws-secretsmanager',
   'core',
   'custom-resources',
   'region-info',
