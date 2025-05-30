@@ -1,36 +1,40 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import { Construct } from 'constructs';
 
-/**
- * Deployment notice:
- *
- * The fleet allocation might take >10 minutes to complete,
- * which can cause the integ test to timeout and fail.
- *
- * You can try deploying to a different region, or
- * or Deploying the stack without integ tests first, with the --no-clean flag,
- * waiting for the fleet allocation to reach its capacity,
- * and then running the integ test was the workaround used.
- */
-
 type StackConfiguration = {
+  computeConfiguration: codebuild.ComputeConfiguration;
   vpcProps?: ec2.VpcProps;
   subnetSelection?: ec2.SubnetSelection;
   securityGroupProps?: Array<Omit<ec2.SecurityGroupProps, 'vpc'>>;
 }
 const configurations: Array<StackConfiguration> = [
   {
+    computeConfiguration: {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+    },
   },
   {
+    computeConfiguration: {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+      disk: cdk.Size.gibibytes(10),
+    },
+  },
+  {
+    computeConfiguration: {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+    },
     vpcProps: {
       maxAzs: 1,
       restrictDefaultSecurityGroup: false,
     },
   },
   {
+    computeConfiguration: {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+    },
     vpcProps: {
       maxAzs: 1,
       // Incredibly, if you pass a SubnetSelection that produces more than 1
@@ -51,7 +55,7 @@ class FleetStack extends cdk.Stack {
   public readonly fleet: codebuild.Fleet;
   public readonly project: codebuild.Project;
 
-  constructor(scope: Construct, id: string, { vpcProps, subnetSelection, securityGroupProps }: StackConfiguration) {
+  constructor(scope: Construct, id: string, { computeConfiguration, vpcProps, subnetSelection, securityGroupProps }: StackConfiguration) {
     super(scope, id);
 
     let vpc: ec2.Vpc | undefined;
@@ -66,7 +70,8 @@ class FleetStack extends cdk.Stack {
 
     this.fleet = new codebuild.Fleet(this, 'MyFleet', {
       baseCapacity: 1,
-      computeType: codebuild.FleetComputeType.SMALL,
+      computeType: codebuild.FleetComputeType.CUSTOM_INSTANCE_TYPE,
+      computeConfiguration,
       environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
       vpc,
       securityGroups,
@@ -92,12 +97,12 @@ const app = new cdk.App();
 const stacks = configurations.map(
   (config, index) => new FleetStack(
     app,
-    `FleetIntegStack${index}`,
+    `CustomInstanceTypeComputeFleetIntegStack${index}`,
     config,
   ),
 );
 
-const test = new integ.IntegTest(app, 'FleetIntegTest', {
+const test = new integ.IntegTest(app, 'CustomInstanceTypeComputeFleetIntegTest', {
   testCases: stacks,
 });
 
