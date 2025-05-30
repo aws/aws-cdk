@@ -18,18 +18,22 @@ baseConfig.rules['@cdklabs/no-throw-default-error'] = ['error'];
 // not yet supported
 const noThrowDefaultErrorNotYetSupported = [
   'core',
-  'custom-resources',
   'region-info',
 ];
 baseConfig.overrides.push({
   files: [
+    // Build and test files can have whatever error they like
     "./scripts/**",
     "./*/build-tools/**",
     "./*/test/**",
+
+    // Lambda Runtime code should use regular errors
+    "./custom-resources/lib/provider-framework/runtime/**",
+
+    // Not yet supported modules
     ...noThrowDefaultErrorNotYetSupported.map(m => `./${m}/lib/**`)
   ],
   rules: { "@cdklabs/no-throw-default-error": "off" },
 });
-
 
 module.exports = baseConfig;
