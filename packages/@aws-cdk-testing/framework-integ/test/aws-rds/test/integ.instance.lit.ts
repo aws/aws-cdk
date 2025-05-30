@@ -18,7 +18,11 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
  *
  *********************************************************************************************************************/
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 class DatabaseInstanceStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
