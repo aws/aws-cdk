@@ -376,7 +376,7 @@ interface DatabaseClusterBaseProps {
   /**
    * The storage type to be associated with the DB cluster.
    *
-   * @default - DBClusterStorageType.AURORA_IOPT1
+   * @default - DBClusterStorageType.AURORA
    */
   readonly storageType?: DBClusterStorageType;
 

@@ -4,7 +4,11 @@ import { AdvancedSecurityMode, FeaturePlan, LambdaVersion, UserPool, UserPoolOpe
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'integ-user-pool-pre-token-generation-v2');
 
 const triggerLambda = new lambda.Function(stack, 'preTokenGenerationLambda', {
