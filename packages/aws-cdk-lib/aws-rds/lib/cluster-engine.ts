@@ -691,13 +691,19 @@ export class AuroraMysqlEngineVersion {
    *   for example "5.7.mysql_aurora.2.78.3.6"
    * @param auroraMysqlMajorVersion the major version of the engine,
    *   defaults to "5.7"
+   * @param auroraMysqlEngineFeatures the supported features for the DB engine
    */
-  public static of(auroraMysqlFullVersion: string, auroraMysqlMajorVersion?: string): AuroraMysqlEngineVersion {
+  public static of(
+    auroraMysqlFullVersion: string, auroraMysqlMajorVersion?: string,
+    auroraMysqlEngineFeatures?: AuroraMysqlEngineFeatures,
+  ): AuroraMysqlEngineVersion {
     return new AuroraMysqlEngineVersion(
       auroraMysqlFullVersion, auroraMysqlMajorVersion,
       {
-        combineImportAndExportRoles: auroraMysqlMajorVersion ? auroraMysqlMajorVersion !== '5.7' : false,
-        serverlessV2AutoPause: auroraMysqlFullVersion >= '3.08.0',
+        combineImportAndExportRoles:
+          auroraMysqlEngineFeatures?.combineImportAndExportRoles ??
+          (auroraMysqlMajorVersion ? auroraMysqlMajorVersion !== '5.7' : false),
+        serverlessV2AutoPause: auroraMysqlEngineFeatures?.serverlessV2AutoPause,
       },
     );
   }
@@ -720,7 +726,7 @@ export class AuroraMysqlEngineVersion {
    *
    * @internal
    */
-  public readonly _features?: AuroraMysqlEngineFeatures;
+  public readonly _features: AuroraMysqlEngineFeatures;
 
   private constructor(
     auroraMysqlFullVersion: string,
@@ -729,7 +735,7 @@ export class AuroraMysqlEngineVersion {
   ) {
     this.auroraMysqlFullVersion = auroraMysqlFullVersion;
     this.auroraMysqlMajorVersion = auroraMysqlMajorVersion;
-    this._features = auroraMysqlEngineFeatures;
+    this._features = auroraMysqlEngineFeatures ?? {};
   }
 }
 
@@ -753,8 +759,8 @@ class AuroraMysqlClusterEngine extends MySqlClusterEngineBase {
         }
         : undefined,
       defaultMajorVersion: '5.7',
-      combineImportAndExportRoles: version?._features?.combineImportAndExportRoles,
-      serverlessV2AutoPause: version?._features?.serverlessV2AutoPause,
+      combineImportAndExportRoles: version?._features.combineImportAndExportRoles,
+      serverlessV2AutoPause: version?._features.serverlessV2AutoPause,
     });
   }
 
