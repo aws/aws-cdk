@@ -575,6 +575,32 @@ test('assets can have display names that conflict with calculated action names',
   });
 });
 
+test('action name does not reflect display names if publishAssetsInParallel is false', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    publishAssetsInParallel: false,
+  });
+  pipeline.addStage(new MultipleFileAssetsApp(pipelineStack, 'App', {
+    n: 2,
+    displayNames: ['asdf1', 'asdf2'],
+  }));
+
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+
+  // We expect a single `FileAsset` action in the pipeline
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'Assets',
+      Actions: [
+        Match.objectLike({
+          Name: 'FileAsset',
+        }),
+      ],
+    }]),
+  });
+});
+
 test('action name is calculated properly if it has cross-stack dependencies', () => {
   // GIVEN
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
