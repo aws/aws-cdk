@@ -7,7 +7,7 @@ import { AddToPrincipalPolicyResult, ArnPrincipal, IGrantable, IPrincipal, Princ
 import { generatePolicyName, undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
-import { IResource, Lazy, Resource, UnscopedValidationError } from '../../core';
+import { IResource, Lazy, Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -290,7 +290,7 @@ class PolicyGrantPrincipal implements IPrincipal {
     // The ARN is referenced to add policy statements as a resource-based policy.
     // We should fail to synth because a managed policy cannot be used as a principal of a policy document.
     // cf. https://github.com/aws/aws-cdk/issues/32980
-    const arn = Lazy.string({ produce: () => { throw new Error(this.principalError()); } });
+    const arn = Lazy.string({ produce: () => { throw new ValidationError(this.principalError(), _policy); } });
     this.policyFragment = new ArnPrincipal(arn).policyFragment;
     this.principalAccount = _policy.env.account;
   }
@@ -299,7 +299,7 @@ class PolicyGrantPrincipal implements IPrincipal {
     // This property is referenced to add policy statements as a trust policy.
     // We should fail because a policy cannot be used as a principal of a policy document.
     // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
-    throw new UnscopedValidationError(this.principalError());
+    throw new ValidationError(this.principalError(), this._policy);
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
