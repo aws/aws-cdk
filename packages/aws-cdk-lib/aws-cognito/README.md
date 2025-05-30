@@ -1183,29 +1183,29 @@ new cognito.ManagedLoginBranding(this, 'Branding', {
   userPoolId: userPool.userPoolId,
   clientId: client.userPoolClientId,
   settings: {
-    categories: {
-      global: {
-        colorSchemeMode: 'LIGHT',
-        spacingDensity: 'REGULAR',
+    'categories': {
+      'global': {
+        'colorSchemeMode': 'LIGHT',
+        'spacingDensity': 'REGULAR'
       },
-      form: {
-        sessionTimerDisplay: 'STATIC',
-      },
+      'form': {
+        'sessionTimerDisplay': 'STATIC'
+      }
     },
-    components: {
-      pageBackground: {
-        lightMode: { color: 'ffffffff' },
+    'components': {
+      'pageBackground': {
+        'lightMode': { 'color': 'ffffffff' }
       },
-      primaryButton: {
-        lightMode: {
-          defaults: {
-            backgroundColor: '0972d3ff',
-            textColor: 'ffffffff',
-          },
-        },
-      },
-    },
-  },
+      'primaryButton': {
+        'lightMode': {
+          'defaults': {
+            'backgroundColor': '0972d3ff',
+            'textColor': 'ffffffff'
+          }
+        }
+      }
+    }
+  }
 });
 ```
 
@@ -1256,7 +1256,7 @@ new cognito.ManagedLoginBranding(this, 'BrandingWithAssets', {
         lightMode: {
           defaults: {
             backgroundColor: '0972d3ff',
-            textColor: 'ffffffff',
+            textColor: 'ffffffff'
           },
         },
       },
