@@ -554,12 +554,15 @@ describe('cluster new api', () => {
     });
 
     test.each([
-      ['MySQL', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_12_5 })],
-      ['MySQL', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_0 })],
-      ['PostgreSQL', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_13_14 })],
-      ['PostgreSQL', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_11 })],
-      ['PostgreSQL', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_15_6 })],
-      ['PostgreSQL', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_2 })],
+      // For prerequisites of engine version, see
+      // https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html#auto-pause-prereqs
+      ['MySQL 2.12.5', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_12_5 })],
+      ['MySQL 3.07.0', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_0 })],
+      ['PostgreSQL 12.22', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_12_22 })],
+      ['PostgreSQL 13.14', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_13_14 })],
+      ['PostgreSQL 14.11', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_11 })],
+      ['PostgreSQL 15.6', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_15_6 })],
+      ['PostgreSQL 16.2', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_2 })],
     ])('throws when serverlessV2 auto-pause is not supported for Aurora %s', (type: string, engine: IClusterEngine) => {
       // GIVEN
       const stack = testStack();
