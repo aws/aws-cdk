@@ -158,7 +158,8 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.ts",
       "sdk_service": "ec2",
       "sdk_enum_name": "IpAddressType",
-      "match_percentage": 1
+      "match_percentage": 1,
+      "manual": true
     },
     "VpcEndpointDnsRecordIpType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.ts",
