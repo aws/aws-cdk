@@ -66,21 +66,21 @@
     "@aws-cdk/service-spec-types" "^0.0.142"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/cloud-assembly-schema@^44.0.0":
-  version "44.0.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-44.0.0.tgz#22fb425d1b23e1f19e8c11a79ce5f16071a1f7dd"
-  integrity sha512-UvKvaimF00Xrmwb/2o2sPpXyQq7oDRZlqwjbi+wMuIytgIOcY/qaVYc8I8HpJ9QH/j+AuAbsjfD2y7zqmvzRAQ==
+"@aws-cdk/cloud-assembly-schema@^44.1.0":
+  version "44.1.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-44.1.0.tgz#4100f98e3e28b57527bb3f5ec22685cf8bf7456a"
+  integrity sha512-WvesvSbBw5FrVbH8LZfjX5iDDRdixDkEnbsFGN8H2GNR9geBo4kIBI1nlOiqoGB6dwPwif8qDEM/4NOfuzIChQ==
   dependencies:
     jsonschema "~1.4.1"
     semver "^7.7.2"
 
-"@aws-cdk/integ-runner@^2.186.10":
-  version "2.186.10"
-  resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.186.10.tgz#8873c165c325e3915baa73f3dab917ec84570471"
-  integrity sha512-weJrBiVv81UKOq3sHJdoNK2Pro1UKerfabOXzfHyNuuG+qtwryEO2mdWAJc/1ADAmdMDq977yKq+UQN16XhMZQ==
+"@aws-cdk/integ-runner@^2.186.11":
+  version "2.186.11"
+  resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.186.11.tgz#1174047d4227bde08a9d411310273b63d502bce6"
+  integrity sha512-dfp1/MZqhP2m3GLnkap/rMkLUdew5XLFNIlTkB5v+Ntdqj4OEiwmcI0diSVS2kmI5em3FOfJ70n0GE9xJatDVA==
   dependencies:
     "@aws-cdk/aws-service-spec" "0.1.76"
-    aws-cdk "2.1017.0"
+    aws-cdk "2.1017.1"
   optionalDependencies:
     fsevents "2.3.2"
 
@@ -5318,10 +5318,10 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-aws-cdk@2.1017.0:
-  version "2.1017.0"
-  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1017.0.tgz#2679cf8e15609954d7db99be6aac324160550e45"
-  integrity sha512-KnpU9kOCR1k2tAcpYoqtIdq7UqKVX4ooNrGJq+dXUKRnIwQr66tSe5YEoeQGYxImAHv1LuZAyAAm5DcEPhbjNg==
+aws-cdk@2.1017.1:
+  version "2.1017.1"
+  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1017.1.tgz#3091e8f295c3fda397f3e691f5ffad8ad4be5d96"
+  integrity sha512-KtDdkMhfVjDeexjpMrVoSlz2mTYI5BE/KotvJ7iFbZy1G0nkpW1ImZ54TdBefeeFmZ+8DAjU3I6nUFtymyOI1A==
   optionalDependencies:
     fsevents "2.3.2"
 
