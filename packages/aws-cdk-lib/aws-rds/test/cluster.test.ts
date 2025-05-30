@@ -177,7 +177,7 @@ describe('cluster new api', () => {
       expect(() => {
         // WHEN
         new DatabaseCluster(stack, 'Database', {
-          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_08_0 }),
           vpc,
           vpcSubnets: vpc.selectSubnets( { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } ),
           serverlessV2AutoPause: autoPause,
@@ -527,14 +527,17 @@ describe('cluster new api', () => {
       });
     });
 
-    test('with serverlessV2 auto-pause configuration', () => {
+    test.each([
+      ['MySQL', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_08_0 })],
+      ['PostgreSQL', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_17_4 })],
+    ])('with serverlessV2 auto-pause configuration for Aurora %s', (type: string, engine: IClusterEngine) => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
 
       // WHEN
-      new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA_MYSQL,
+      new DatabaseCluster(stack, type, {
+        engine,
         vpc,
         writer: ClusterInstance.serverlessV2('writer'),
         serverlessV2AutoPause: cdk.Duration.hours(1),
@@ -548,6 +551,30 @@ describe('cluster new api', () => {
           SecondsUntilAutoPause: 3600,
         },
       });
+    });
+
+    test.each([
+      ['MySQL', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_12_5 })],
+      ['MySQL', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_0 })],
+      ['PostgreSQL', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_13_14 })],
+      ['PostgreSQL', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_11 })],
+      ['PostgreSQL', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_15_6 })],
+      ['PostgreSQL', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_2 })],
+    ])('throws when serverlessV2 auto-pause is not supported for Aurora %s', (type: string, engine: IClusterEngine) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // THEN
+      expect(() => {
+        new DatabaseCluster(stack, type, {
+          engine,
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+          serverlessV2AutoPause: cdk.Duration.hours(1),
+          iamAuthentication: true,
+        });
+      }).toThrow('serverlessV2 auto-pause feature is not supported');
     });
 
     test.each([

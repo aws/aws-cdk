@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IAuroraClusterInstance, IClusterInstance, InstanceType } from './aurora-cluster-instance';
-import { IClusterEngine } from './cluster-engine';
+import { ClusterEngineConfig, IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { Endpoint } from './endpoint';
 import { NetworkType } from './instance';
@@ -822,7 +822,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     this.serverlessV2MaxCapacity = props.serverlessV2MaxCapacity ?? 2;
     this.serverlessV2MinCapacity = props.serverlessV2MinCapacity ?? 0.5;
     this.serverlessV2AutoPause = props.serverlessV2AutoPause;
-    this.validateServerlessScalingConfig();
 
     this.enableDataApi = props.enableDataApi;
 
@@ -902,6 +901,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     }
 
     validateDatabaseClusterProps(this, props);
+    this.validateServerlessScalingConfig(clusterEngineBindConfig);
 
     const enablePerformanceInsights = props.enablePerformanceInsights
       || props.performanceInsightRetention !== undefined
@@ -1160,7 +1160,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     return this.metric('ACUUtilization', { statistic: 'Average', ...props });
   }
 
-  private validateServerlessScalingConfig(): void {
+  private validateServerlessScalingConfig(config: ClusterEngineConfig): void {
     if (this.serverlessV2MaxCapacity > 256 || this.serverlessV2MaxCapacity < 1) {
       throw new ValidationError('serverlessV2MaxCapacity must be >= 1 & <= 256', this);
     }
@@ -1179,11 +1179,16 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       `min: ${this.serverlessV2MaxCapacity}, max: ${this.serverlessV2MaxCapacity}`, this);
     }
 
-    if (
-      this.serverlessV2AutoPause && !this.serverlessV2AutoPause.isUnresolved() &&
-      (this.serverlessV2AutoPause.toSeconds() < 300 || this.serverlessV2AutoPause.toSeconds() > 86400)
-    ) {
-      throw new ValidationError(`serverlessV2AutoPause must be between 300 seconds (5 minutes) and 86,400 seconds (24 hours), received ${this.serverlessV2AutoPause.toSeconds()} seconds`, this);
+    if (this.serverlessV2AutoPause) {
+      if (!config.features?.serverlessV2AutoPause) {
+        throw new ValidationError(`serverlessV2 auto-pause feature is not supported by ${this.engine?.engineType} ${this.engine?.engineVersion?.fullVersion}.`, this);
+      }
+      if (
+        !this.serverlessV2AutoPause.isUnresolved() &&
+        (this.serverlessV2AutoPause.toSeconds() < 300 || this.serverlessV2AutoPause.toSeconds() > 86400)
+      ) {
+        throw new ValidationError(`serverlessV2AutoPause must be between 300 seconds (5 minutes) and 86,400 seconds (24 hours), received ${this.serverlessV2AutoPause.toSeconds()} seconds`, this);
+      }
     }
   }
 
