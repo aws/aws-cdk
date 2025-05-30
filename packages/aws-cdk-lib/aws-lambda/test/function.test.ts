@@ -1031,6 +1031,19 @@ describe('function', () => {
       MessageRetentionPeriod: 1209600,
     });
 
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+      Queues: [{ Ref: 'MyLambdaDeadLetterQueue399EEA2D' }],
+      PolicyDocument: {
+        Statement: [{
+          Action: 'sqs:*',
+          Condition: { Bool: { 'aws:SecureTransport': 'false' } },
+          Effect: 'Deny',
+          Principal: { AWS: '*' },
+          Resource: { 'Fn::GetAtt': ['MyLambdaDeadLetterQueue399EEA2D', 'Arn'] },
+        }],
+      },
+    });
+
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       DeadLetterConfig: {
         TargetArn: {
