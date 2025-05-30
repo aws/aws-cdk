@@ -1508,6 +1508,21 @@ describe('cluster', () => {
       expect(template.Outputs).toBeUndefined(); // no outputs
     });
 
+    test('throws warning when `outputConfigCommand=true` and `mastersRole` is not specified', () => {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        outputConfigCommand: true,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Stack/Cluster', 'If you do not specify \'mastersRole\', you won\'t have access to the cluster from outside of the CDK application.\nsee: https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_eks-readme.html#masters-role [ack: @aws-cdk/aws-eks:clusterMastersroleNotSpecified]');
+    });
+
     test('`outputClusterName` can be used to synthesize an output with the cluster name', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
