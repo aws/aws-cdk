@@ -311,6 +311,10 @@ class PolicyGrantPrincipal implements IPrincipal {
     return { statementAdded: true, policyDependable: this._policy };
   }
 
+  public toString(): string {
+    return `Policy(${this._policy.node.path})`;
+  }
+
   private principalError() {
     return `This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a Policy '${this._policy.node.path}'.`;
   }
