@@ -3,6 +3,7 @@ import * as path from 'path';
 import { IgnoreStrategy } from './ignore';
 import { CopyOptions, SymlinkFollowMode } from './options';
 import { shouldFollow } from './utils';
+import { UnscopedValidationError } from '../errors';
 
 export function copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
   const follow = options.follow ?? SymlinkFollowMode.EXTERNAL;
@@ -12,7 +13,7 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
   const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, rootDir);
 
   if (!fs.statSync(srcDir).isDirectory()) {
-    throw new Error(`${srcDir} is not a directory`);
+    throw new UnscopedValidationError(`${srcDir} is not a directory`);
   }
 
   const files = fs.readdirSync(srcDir);

@@ -7,6 +7,7 @@ import { Stack } from '../stack';
 import { Token } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
 import { makeUniqueId } from './uniqueid';
+import { UnscopedValidationError } from '../errors';
 
 /**
  * Routines that know how to do operations at the CloudFormation document language level
@@ -183,7 +184,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
     if (obj === undefined) { return; }
 
     if (Token.isUnresolved(obj)) {
-      throw new Error("This shouldn't happen anymore");
+      throw new UnscopedValidationError("This shouldn't happen anymore");
     }
     if (Array.isArray(obj)) {
       return renderCollection('[', ']', obj, recurse);
@@ -271,7 +272,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
         return;
     }
 
-    throw new Error(`Unexpected type hint: ${resolvedTypeHint(intrinsic)}`);
+    throw new UnscopedValidationError(`Unexpected type hint: ${resolvedTypeHint(intrinsic)}`);
   }
 
   /**

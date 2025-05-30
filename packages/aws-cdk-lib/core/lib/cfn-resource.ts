@@ -14,7 +14,7 @@ import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
 import { ResolutionTypeHint } from './type-hints';
 import * as cxapi from '../../cx-api';
-import { ValidationError } from './errors';
+import { AssumptionError, ValidationError } from './errors';
 
 export interface CfnResourceProps {
   /**
@@ -156,7 +156,7 @@ export class CfnResource extends CfnRefElement {
         const problematicSnapshotPolicy = !snapshottableResourceTypes.includes(this.cfnResourceType);
         if (problematicSnapshotPolicy) {
           if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY) ) {
-            throw new Error(`${this.cfnResourceType} does not support snapshot removal policy`);
+            throw new ValidationError(`${this.cfnResourceType} does not support snapshot removal policy`, this);
           } else {
             Annotations.of(this).addWarningV2(`@aws-cdk/core:${this.cfnResourceType}SnapshotRemovalPolicyIgnored`, `${this.cfnResourceType} does not support snapshot removal policy. This policy will be ignored.`);
           }
@@ -167,7 +167,7 @@ export class CfnResource extends CfnRefElement {
         break;
 
       default:
-        throw new Error(`Invalid removal policy: ${policy}`);
+        throw new ValidationError(`Invalid removal policy: ${policy}`, this);
     }
 
     this.cfnOptions.deletionPolicy = deletionPolicy;
@@ -344,7 +344,7 @@ export class CfnResource extends CfnRefElement {
       this.removeDependency(target);
       this.addDependency(newTarget);
     } else {
-      throw new Error(`"${Node.of(this).path}" does not depend on "${Node.of(target).path}"`);
+      throw new ValidationError(`"${Node.of(this).path}" does not depend on "${Node.of(target).path}"`, this);
     }
   }
 
@@ -649,7 +649,7 @@ const MERGE_EXCLUDE_KEYS: string[] = [
 function deepMerge(target: any, ...sources: any[]) {
   for (const source of sources) {
     if (typeof(source) !== 'object' || typeof(target) !== 'object') {
-      throw new Error(`Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must be objects`);
+      throw new AssumptionError(`Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must be objects`);
     }
 
     for (const key of Object.keys(source)) {
