@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "testCases": {
     "ManagedPolicyInteg/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "ManagedPolicyInteg/DefaultTest/DeployAssert",
       "assertionStackName": "ManagedPolicyIntegDefaultTestDeployAssert27007DC6"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
