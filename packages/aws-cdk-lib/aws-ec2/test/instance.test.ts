@@ -347,6 +347,26 @@ describe('instance', () => {
       });
     });
 
+    test('warns if throughput is specified for an EBS volume', () => {
+      // WHEN
+      new Instance(stack, 'Instance', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: BlockDeviceVolume.ebs(15, {
+            deleteOnTermination: true,
+            encrypted: true,
+            volumeType: EbsDeviceVolumeType.GP3,
+            throughput: 125,
+          }),
+        }],
+      });
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Default/Instance', Match.stringLikeRegexp('The throughput property is not supported on EC2 instances. Use a Launch Template instead'));
+    });
+
     test('throws if ephemeral volumeIndex < 0', () => {
       // THEN
       expect(() => {
