@@ -1178,34 +1178,37 @@ To create managed login branding for a user pool client:
 const userPool = new cognito.UserPool(this, 'UserPool');
 const client = userPool.addClient('Client');
 
-// Then create the managed login branding
-new cognito.ManagedLoginBranding(this, 'Branding', {
-  userPoolId: userPool.userPoolId,
-  clientId: client.userPoolClientId,
-  settings: {
-    'categories': {
-      'global': {
-        'colorSchemeMode': 'LIGHT',
-        'spacingDensity': 'REGULAR'
-      },
-      'form': {
-        'sessionTimerDisplay': 'STATIC'
-      }
+// Create settings for branding
+const brandingSettings = {
+  categories: {
+    global: {
+      colorSchemeMode: 'LIGHT',
+      spacingDensity: 'REGULAR'
     },
-    'components': {
-      'pageBackground': {
-        'lightMode': { 'color': 'ffffffff' }
-      },
-      'primaryButton': {
-        'lightMode': {
-          'defaults': {
-            'backgroundColor': '0972d3ff',
-            'textColor': 'ffffffff'
-          }
+    form: {
+      sessionTimerDisplay: 'STATIC'
+    }
+  },
+  components: {
+    pageBackground: {
+      lightMode: { color: 'ffffffff' }
+    },
+    primaryButton: {
+      lightMode: {
+        defaults: {
+          backgroundColor: '0972d3ff',
+          textColor: 'ffffffff'
         }
       }
     }
   }
+};
+
+// Then create the managed login branding
+new cognito.ManagedLoginBranding(this, 'Branding', {
+  userPoolId: userPool.userPoolId,
+  clientId: client.userPoolClientId,
+  settings: brandingSettings
 });
 ```
 
@@ -1231,37 +1234,42 @@ For branding with custom assets like logos and favicons:
 const userPool = new cognito.UserPool(this, 'UserPool');
 const client = userPool.addClient('Client');
 
+// Create assets array for branding
+const brandingAssets = [
+  {
+    category: cognito.AssetCategory.FAVICON_SVG,
+    colorMode: cognito.ColorMode.DYNAMIC,
+    extension: cognito.AssetExtension.SVG,
+    bytes: 'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjwvc3ZnPg=='
+  },
+  {
+    category: cognito.AssetCategory.PAGE_HEADER_LOGO,
+    colorMode: cognito.ColorMode.LIGHT,
+    extension: cognito.AssetExtension.PNG,
+    bytes: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='
+  }
+];
+
+// Create settings for the branding
+const assetBrandingSettings = {
+  components: {
+    primaryButton: {
+      lightMode: {
+        defaults: {
+          backgroundColor: '0972d3ff',
+          textColor: 'ffffffff'
+        }
+      }
+    }
+  }
+};
+
 // Then create the managed login branding with custom assets
 new cognito.ManagedLoginBranding(this, 'BrandingWithAssets', {
   userPoolId: userPool.userPoolId,
   clientId: client.userPoolClientId,
-  assets: [
-    {
-      category: cognito.AssetCategory.FAVICON_SVG,
-      colorMode: cognito.ColorMode.DYNAMIC,
-      extension: cognito.AssetExtension.SVG,
-      bytes: 'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjwvc3ZnPg==', // Base64 encoded SVG
-    },
-    {
-      category: cognito.AssetCategory.PAGE_HEADER_LOGO,
-      colorMode: cognito.ColorMode.LIGHT,
-      extension: cognito.AssetExtension.PNG,
-      bytes: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', // Base64 encoded PNG
-    },
-  ],
-  // Required when using assets
-  settings: {
-    components: {
-      primaryButton: {
-        lightMode: {
-          defaults: {
-            backgroundColor: '0972d3ff',
-            textColor: 'ffffffff'
-          },
-        },
-      },
-    },
-  },
+  assets: brandingAssets,
+  settings: assetBrandingSettings
 });
 ```
 
