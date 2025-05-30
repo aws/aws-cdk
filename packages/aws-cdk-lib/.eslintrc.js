@@ -18,7 +18,6 @@ baseConfig.rules['@cdklabs/no-throw-default-error'] = ['error'];
 // not yet supported
 const noThrowDefaultErrorNotYetSupported = [
   'core',
-  'region-info',
 ];
 baseConfig.overrides.push({
   files: [
