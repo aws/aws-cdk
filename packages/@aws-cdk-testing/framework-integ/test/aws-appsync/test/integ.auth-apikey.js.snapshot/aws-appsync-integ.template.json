@@ -63,8 +63,6 @@
         "dynamodb:DeleteItem",
         "dynamodb:DescribeTable",
         "dynamodb:GetItem",
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
         "dynamodb:PutItem",
         "dynamodb:Query",
         "dynamodb:Scan",
@@ -103,8 +101,6 @@
       "ApiId"
      ]
     },
-    "Name": "testDataSource",
-    "Type": "AMAZON_DYNAMODB",
     "DynamoDBConfig": {
      "AwsRegion": {
       "Ref": "AWS::Region"
@@ -113,12 +109,14 @@
       "Ref": "TestTable5769773A"
      }
     },
+    "Name": "testDataSource",
     "ServiceRoleArn": {
      "Fn::GetAtt": [
       "ApitestDataSourceServiceRoleACBC3F3D",
       "Arn"
      ]
-    }
+    },
+    "Type": "AMAZON_DYNAMODB"
    }
   },
   "ApiQueryGetTestsF8C40170": {
@@ -130,12 +128,12 @@
       "ApiId"
      ]
     },
-    "FieldName": "getTests",
-    "TypeName": "Query",
     "DataSourceName": "testDataSource",
+    "FieldName": "getTests",
     "Kind": "UNIT",
     "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
-    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)",
+    "TypeName": "Query"
    },
    "DependsOn": [
     "ApiSchema510EECD7",
@@ -151,12 +149,12 @@
       "ApiId"
      ]
     },
-    "FieldName": "addTest",
-    "TypeName": "Mutation",
     "DataSourceName": "testDataSource",
+    "FieldName": "addTest",
     "Kind": "UNIT",
     "RequestMappingTemplate": "\n      #set($input = $ctx.args.test)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
-    "ResponseMappingTemplate": "$util.toJson($ctx.result)"
+    "ResponseMappingTemplate": "$util.toJson($ctx.result)",
+    "TypeName": "Mutation"
    },
    "DependsOn": [
     "ApiSchema510EECD7",
@@ -166,19 +164,19 @@
   "TestTable5769773A": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
-    "KeySchema": [
-     {
-      "AttributeName": "id",
-      "KeyType": "HASH"
-     }
-    ],
     "AttributeDefinitions": [
      {
       "AttributeName": "id",
       "AttributeType": "S"
      }
     ],
-    "BillingMode": "PAY_PER_REQUEST"
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

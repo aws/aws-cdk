@@ -72,8 +72,6 @@
         "dynamodb:DeleteItem",
         "dynamodb:DescribeTable",
         "dynamodb:GetItem",
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
         "dynamodb:PutItem",
         "dynamodb:Query",
         "dynamodb:Scan",
@@ -105,7 +103,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1562fec408cadc998a2adcbb8efdf9dddb242d81216ce22bd3696b36c3a7e68f.zip"
+     "S3Key": "6e2b6f8cffd330061ae8dbcdf80c171df5d6823c9ed9590f42c60cab88e365ea.zip"
     },
     "Environment": {
      "Variables": {
