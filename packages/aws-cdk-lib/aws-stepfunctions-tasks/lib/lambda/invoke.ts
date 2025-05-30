@@ -4,11 +4,17 @@ import * as lambda from '../../../aws-lambda';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core';
+import * as cxapi from '../../../cx-api';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 interface LambdaInvokeBaseProps {
   /**
    * Lambda function to invoke
+   *
+   * When the feature flag STEPFUNCTIONS_TASKS_LAMBDA_INVOKE_GRANT_ALL_VERSIONS is enabled,
+   * this will grant permissions to all versions of the Lambda function even if a specific
+   * Lambda version is set to be invoked. This prevents permission failures in in-flight
+   * Step Function executions.
    */
   readonly lambdaFunction: lambda.IFunction;
 
@@ -150,9 +156,22 @@ export class LambdaInvoke extends sfn.TaskStateBase {
       },
     };
 
+    const grantAllVersions = cdk.FeatureFlags.of(this).isEnabled(cxapi.STEPFUNCTIONS_TASKS_LAMBDA_INVOKE_GRANT_ALL_VERSIONS);
+    const functionArn = this.props.lambdaFunction.functionArn;
+    let resources: string[];
+    if (grantAllVersions) {
+      const baseArn = functionArn.replace(/:[^:]*$/, '');
+      resources = [
+        functionArn,
+        `${baseArn}:*`,
+      ];
+    } else {
+      resources = this.props.lambdaFunction.resourceArnsForGrantInvoke;
+    }
+
     this.taskPolicies = [
       new iam.PolicyStatement({
-        resources: this.props.lambdaFunction.resourceArnsForGrantInvoke,
+        resources,
         actions: ['lambda:InvokeFunction'],
       }),
     ];
