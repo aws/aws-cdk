@@ -2,6 +2,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { IgnoreStrategy } from './ignore';
+import { matchIncludePatterns } from './include';
 import { FingerprintOptions, IgnoreMode, SymlinkFollowMode } from './options';
 import { shouldFollow } from './utils';
 import { Cache } from '../private/cache';
@@ -65,7 +66,8 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   return hash.digest('hex');
 
   function _processFileOrDirectory(symbolicPath: string, isRootDir: boolean = false, realPath = symbolicPath) {
-    if (!isRootDir && ignoreStrategy.ignores(symbolicPath)) {
+    if (!isRootDir && (ignoreStrategy.ignores(symbolicPath) ||
+      (options.include && !matchIncludePatterns(options.include, fileOrDirectory, symbolicPath)))) {
       return;
     }
 
