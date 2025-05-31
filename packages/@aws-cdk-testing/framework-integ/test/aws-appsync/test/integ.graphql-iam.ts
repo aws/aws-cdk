@@ -31,7 +31,11 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
  * -- bash verify.integ.graphql-iam.sh --clean             -- clean dependencies/deploy  --
  */
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'aws-appsync-integ');
 const userPool = new UserPool(stack, 'Pool', {
   userPoolName: 'myPool',

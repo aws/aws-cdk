@@ -227,9 +227,9 @@ export class Provider extends Construct implements ICustomResourceProvider {
         || props.waiterStateMachineLogOptions
         || props.disableWaiterStateMachineLogging !== undefined
       ) {
-        throw new Error('"queryInterval", "totalTimeout", "waiterStateMachineLogOptions", and "disableWaiterStateMachineLogging" '
+        throw new ValidationError('"queryInterval", "totalTimeout", "waiterStateMachineLogOptions", and "disableWaiterStateMachineLogging" '
           + 'can only be configured if "isCompleteHandler" is specified. '
-          + 'Otherwise, they have no meaning');
+          + 'Otherwise, they have no meaning', this);
       }
     }
 
@@ -258,7 +258,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
       const isCompleteFunction = this.createFunction(consts.FRAMEWORK_IS_COMPLETE_HANDLER_NAME, undefined, props.frameworkCompleteAndTimeoutRole);
       const timeoutFunction = this.createFunction(consts.FRAMEWORK_ON_TIMEOUT_HANDLER_NAME, undefined, props.frameworkCompleteAndTimeoutRole);
 
-      const retry = calculateRetryPolicy(props);
+      const retry = calculateRetryPolicy(this, props);
       const waiterStateMachine = new WaiterStateMachine(this, 'waiter-state-machine', {
         isCompleteHandler: isCompleteFunction,
         timeoutHandler: timeoutFunction,

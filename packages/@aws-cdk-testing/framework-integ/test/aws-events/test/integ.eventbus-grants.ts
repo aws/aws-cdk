@@ -9,7 +9,11 @@ import * as cxapi from 'aws-cdk-lib/cx-api';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 // Create a single app for both stacks
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 // Stack with feature flag enabled
 const stackWithFlag = new Stack(app, 'EventBusGrantsTestStackWithFlag', {

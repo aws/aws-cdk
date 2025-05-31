@@ -99,7 +99,7 @@ export class StepScalingAction extends Construct {
   }
 
   /**
-   * Add an adjusment interval to the ScalingAction
+   * Add an adjustment interval to the ScalingAction
    */
   public addAdjustment(adjustment: AdjustmentTier) {
     if (adjustment.lowerBound === undefined && adjustment.upperBound === undefined) {
@@ -165,7 +165,7 @@ export interface AdjustmentTier {
   /**
    * What number to adjust the capacity with
    *
-   * The number is interpeted as an added capacity, a new fixed capacity or an
+   * The number is interpreted as an added capacity, a new fixed capacity or an
    * added percentage depending on the AdjustmentType value of the
    * StepScalingPolicy.
    *

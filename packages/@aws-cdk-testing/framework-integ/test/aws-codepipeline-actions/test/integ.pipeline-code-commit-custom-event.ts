@@ -13,6 +13,7 @@ const defaultFeatureFlag = {
   [CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME]: true,
   [CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2]: false,
   [PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE]: false,
+  '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
 };
 const app = new cdk.App({ postCliContext: defaultFeatureFlag });
 

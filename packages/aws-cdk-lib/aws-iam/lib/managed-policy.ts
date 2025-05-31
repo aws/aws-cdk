@@ -7,7 +7,7 @@ import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFrag
 import { undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
-import { ArnFormat, Resource, Stack, Arn, Aws } from '../../core';
+import { ArnFormat, Resource, Stack, Arn, Aws, UnscopedValidationError } from '../../core';
 import { getCustomizeRolesConfig, PolicySynthesizer } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -348,7 +348,7 @@ class ManagedPolicyGrantPrincipal implements IPrincipal {
     // This property is referenced to add policy statements as a resource-based policy.
     // We should fail because a managed policy cannot be used as a principal of a policy document.
     // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
-    throw new Error(`Cannot use a ManagedPolicy '${this._managedPolicy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
+    throw new UnscopedValidationError(`Cannot use a ManagedPolicy '${this._managedPolicy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {

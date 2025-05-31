@@ -7,7 +7,7 @@ import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './private/util';
-import { Arn, ArnFormat, Lazy, Resource, SecretValue, Stack } from '../../core';
+import { Arn, ArnFormat, Lazy, Resource, SecretValue, Stack, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -227,7 +227,7 @@ export class User extends Resource implements IIdentity, IUser {
       }
 
       public addManagedPolicy(_policy: IManagedPolicy): void {
-        throw new Error('Cannot add managed policy to imported User');
+        throw new ValidationError('Cannot add managed policy to imported User', this);
       }
     }
 
@@ -354,7 +354,7 @@ export class User extends Resource implements IIdentity, IUser {
     }
 
     if (props.passwordResetRequired) {
-      throw new Error('Cannot set "passwordResetRequired" without specifying "initialPassword"');
+      throw new ValidationError('Cannot set "passwordResetRequired" without specifying "initialPassword"', this);
     }
 
     return undefined; // no console access

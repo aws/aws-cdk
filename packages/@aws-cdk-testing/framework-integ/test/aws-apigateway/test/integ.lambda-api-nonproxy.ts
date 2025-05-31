@@ -34,7 +34,11 @@ class LambdaApiIntegrationOptionsNonProxyIntegrationStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new LambdaApiIntegrationOptionsNonProxyIntegrationStack(app);
 new IntegTest(app, 'lambda-non-proxy-integration', {
   testCases: [testCase],

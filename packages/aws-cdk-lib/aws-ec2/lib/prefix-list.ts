@@ -1,5 +1,7 @@
 import { Construct } from 'constructs';
+import { Connections } from './connections';
 import { CfnPrefixList } from './ec2.generated';
+import { IPeer } from './peer';
 import * as cxschema from '../../cloud-assembly-schema';
 import { IResource, Lazy, Resource, Names, ContextProvider, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -8,7 +10,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A prefix list
  */
-export interface IPrefixList extends IResource {
+export interface IPrefixList extends IResource, IPeer {
   /**
    * The ID of the prefix list
    *
@@ -76,6 +78,37 @@ abstract class PrefixListBase extends Resource implements IPrefixList {
    * @attribute
    */
   public abstract readonly prefixListId: string;
+
+  /**
+   * The network connections associated with this resource.
+   */
+  public readonly connections: Connections = new Connections({ peer: this });
+
+  /**
+   * Whether the rule can be inlined into a SecurityGroup or not
+   */
+  public readonly canInlineRule = false;
+
+  /**
+   * A unique identifier for this connection peer
+   */
+  get uniqueId() {
+    return this.prefixListId;
+  }
+
+  /**
+   * Produce the ingress rule JSON for the given connection
+   */
+  public toIngressRuleConfig(): any {
+    return { sourcePrefixListId: this.prefixListId };
+  }
+
+  /**
+   * Produce the egress rule JSON for the given connection
+   */
+  public toEgressRuleConfig(): any {
+    return { destinationPrefixListId: this.prefixListId };
+  }
 }
 
 /**
@@ -123,7 +156,7 @@ export class PrefixList extends PrefixListBase {
    * Look up prefix list by id.
    */
   public static fromPrefixListId(scope: Construct, id: string, prefixListId: string): IPrefixList {
-    class Import extends Resource implements IPrefixList {
+    class Import extends PrefixListBase {
       public readonly prefixListId = prefixListId;
     }
     return new Import(scope, id);
@@ -148,15 +181,14 @@ export class PrefixList extends PrefixListBase {
           ...(options.addressFamily ? { AddressFamily: options.addressFamily } : undefined),
         },
         propertiesToReturn: ['PrefixListId'],
+        expectedMatchCount: 'exactly-one',
       } satisfies Omit<cxschema.CcApiContextQuery, 'account'|'region'>,
       dummyValue: [dummyResponse] satisfies PrefixListContextResponse[],
     }).value;
 
     // getValue returns a list of result objects. We are expecting 1 result or Error.
-    if (response.length === 0) {
-      throw new ValidationError(`Could not find any managed prefix lists matching ${JSON.stringify(options)}`, scope);
-    } else if (response.length > 1) {
-      throw new ValidationError(`Found ${response.length} managed prefix lists matching ${JSON.stringify(options)}; please narrow the search criteria`, scope);
+    if (response.length !== 1) {
+      throw new ValidationError('Unexpected response received from the context provider. Please clear out the context key using `cdk context --remove` and try again.', scope);
     }
 
     const prefixList = response[0];

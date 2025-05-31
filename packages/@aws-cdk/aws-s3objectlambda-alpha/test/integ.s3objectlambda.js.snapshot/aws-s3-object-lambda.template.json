@@ -55,6 +55,25 @@
     "MyFunction1ServiceRole9852B06B"
    ]
   },
+  "MyFunction1LogGroup9D1F6BC2": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "MyFunction12A744C2E"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "MyFunction1inlinePolicyAddedToExecutionRole0BD012510": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
@@ -125,6 +144,25 @@
    "DependsOn": [
     "MyFunction2ServiceRole07E5BE0E"
    ]
+  },
+  "MyFunction2LogGroupE13FF08E": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "MyFunction2F2A964CA"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "MyFunction2inlinePolicyAddedToExecutionRole0DB08BBEE": {
    "Type": "AWS::IAM::Policy",

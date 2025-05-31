@@ -25,7 +25,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new TestStack(app, 'cdk-integ-lambda-golang');
 
 const integTest = new integ.IntegTest(app, 'cdk-integ-lambda-golang-al2-integ-test', {

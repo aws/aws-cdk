@@ -5,7 +5,11 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as route53recoverycontrol from 'aws-cdk-lib/aws-route53recoverycontrol';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-route53-health-check');
 
 const zone = new route53.HostedZone(stack, 'HostedZone', {

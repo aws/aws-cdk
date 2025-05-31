@@ -4929,6 +4929,13 @@
       "CSE_KMS"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/bedrock/create-model-customization-job.ts": {
+    "CustomizationType": [
+      "FINE_TUNING",
+      "CONTINUED_PRE_TRAINING",
+      "DISTILLATION"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/dynamodb/private/utils.ts": {
     "DynamoMethod": [
       "Get",
