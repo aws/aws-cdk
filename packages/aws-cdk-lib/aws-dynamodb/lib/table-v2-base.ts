@@ -137,7 +137,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
     return Grant.addToPrincipal({
       grantee,
       actions: ['dynamodb:ListStreams'],
-      resourceArns: [this.tableStreamArn],
+      resourceArns: ['*'],
     });
   }
 

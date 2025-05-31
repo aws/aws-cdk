@@ -8,5 +8,6 @@
       "assertionStack": "appsync-eventapi-dynamodb-test/DefaultTest/DeployAssert",
       "assertionStackName": "appsynceventapidynamodbtestDefaultTestDeployAssert08DEAAC3"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
