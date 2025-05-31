@@ -106,13 +106,6 @@ called `cdk.context.json`. You must commit this file to source control so
 that the lookup values are available in non-privileged environments such
 as CI build steps, and to ensure your template builds are repeatable.
 
-
-This allows you to have multiple lookups with the same parameters
-to cache their values separately. This can be useful if you want to
-scope the context variable to a construct (ie, using `additionalCacheKey: this.node.path`),
-so that if the value in the cache needs to be updated, it does not need to be updated
-for all constructs at the same time.
-
 Here's how `Key.fromLookup()` can be used:
 
 ```ts

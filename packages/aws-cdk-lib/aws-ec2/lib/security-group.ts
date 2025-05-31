@@ -376,22 +376,22 @@ export class SecurityGroup extends SecurityGroupBase {
    *
    * @deprecated Use `fromLookupById()` instead
    */
-  public static fromLookup(scope: Construct, id: string, securityGroupId: string, options?: BaseSecurityGroupLookupOptions) {
-    return this.fromLookupAttributes(scope, id, { securityGroupId, ...options });
+  public static fromLookup(scope: Construct, id: string, securityGroupId: string) {
+    return this.fromLookupAttributes(scope, id, { securityGroupId });
   }
 
   /**
    * Look up a security group by id.
    */
-  public static fromLookupById(scope: Construct, id: string, securityGroupId: string, options?: BaseSecurityGroupLookupOptions) {
-    return this.fromLookupAttributes(scope, id, { securityGroupId, ...options });
+  public static fromLookupById(scope: Construct, id: string, securityGroupId: string) {
+    return this.fromLookupAttributes(scope, id, { securityGroupId });
   }
 
   /**
    * Look up a security group by name.
    */
-  public static fromLookupByName(scope: Construct, id: string, securityGroupName: string, vpc: IVpc, options?: BaseSecurityGroupLookupOptions) {
-    return this.fromLookupAttributes(scope, id, { securityGroupName, vpc, ...options });
+  public static fromLookupByName(scope: Construct, id: string, securityGroupName: string, vpc: IVpc) {
+    return this.fromLookupAttributes(scope, id, { securityGroupName, vpc });
   }
 
   /**
@@ -456,7 +456,6 @@ export class SecurityGroup extends SecurityGroupBase {
         securityGroupId: 'sg-12345678',
         allowAllOutbound: true,
       } as cxapi.SecurityGroupContextResponse,
-      additionalCacheKey: options.additionalCacheKey,
     }).value;
 
     return SecurityGroup.fromSecurityGroupId(scope, id, attributes.securityGroupId, {
@@ -824,23 +823,11 @@ function isAllTrafficRule(rule: any) {
 }
 
 /**
- * Base properties for looking up an existing SecurityGroup.
- */
-export interface BaseSecurityGroupLookupOptions {
-  /**
-   * Adds an additional discriminator to the `cdk.context.json` cache key.
-   *
-   * @default - no additional cache key
-   */
-  readonly additionalCacheKey?: string;
-}
-
-/**
  * Properties for looking up an existing SecurityGroup.
  *
  * Either `securityGroupName` or `securityGroupId` has to be specified.
  */
-interface SecurityGroupLookupOptions extends BaseSecurityGroupLookupOptions {
+interface SecurityGroupLookupOptions {
   /**
    * The name of the security group
    *
@@ -867,11 +854,4 @@ interface SecurityGroupLookupOptions extends BaseSecurityGroupLookupOptions {
    * @default Don't filter on VPC
    */
   readonly vpc?: IVpc;
-
-  /**
-   * Adds an additional discriminator to the `cdk.context.json` cache key.
-   *
-   * @default - no additional cache key
-   */
-  readonly additionalCacheKey?: string;
 }

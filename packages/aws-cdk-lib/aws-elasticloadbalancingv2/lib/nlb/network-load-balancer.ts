@@ -217,11 +217,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   /**
    * Looks up the network load balancer.
    */
-  public static fromLookup(
-    scope: Construct,
-    id: string,
-    options: NetworkLoadBalancerLookupOptions,
-  ): INetworkLoadBalancer {
+  public static fromLookup(scope: Construct, id: string, options: NetworkLoadBalancerLookupOptions): INetworkLoadBalancer {
     const props = BaseLoadBalancer._queryContextProvider(scope, {
       userOptions: options,
       loadBalancerType: cxschema.LoadBalancerType.NETWORK,

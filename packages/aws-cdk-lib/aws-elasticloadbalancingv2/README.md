@@ -953,18 +953,6 @@ following lookup methods:
 * `NetworkListener.fromLookup(options)` - Look up a network load balancer
   listener.
 
-The result of a `fromLookup()` operation will be written to a file
-called `cdk.context.json`. You must commit this file to source control so
-that the lookup values are available in non-privileged environments such
-as CI build steps, and to ensure your template builds are repeatable.
-
-To customize the cache key, use the `additionalCacheKey` parameter.
-This allows you to have multiple lookups with the same parameters
-cache their values separately. This can be useful if you want to
-scope the context variable to a construct (ie, using `additionalCacheKey: this.node.path`),
-so that if the value in the cache needs to be updated, it does not need to be updated
-for all constructs at the same time.
-
 ### Load Balancer lookup options
 
 You may look up a load balancer by ARN or by associated tags. When you look a
@@ -994,20 +982,7 @@ const loadBalancer = elbv2.ApplicationLoadBalancer.fromLookup(this, 'ALB', {
 });
 ```
 
-**Look up a Application Load Balancer by ARN, customizing the cache key**
-
-```ts
-const loadBalancer = elbv2.ApplicationLoadBalancer.fromLookup(this, 'ALB', {
-  loadBalancerArn: 'arn:aws:elasticloadbalancing:us-east-2:123456789012:loadbalancer/app/my-load-balancer/1234567890123456',
-  // creates a distinct context variable for this load balancer, instead of resolving to the same
-  // value anywhere this lookup is done in your app
-  additionalCacheKey: this.node.path,
-});
-```
-
-**
-
-### Load Balancer Listener lookup options
+## Load Balancer Listener lookup options
 
 You may look up a load balancer listener by the following criteria:
 
@@ -1052,19 +1027,6 @@ const listener = elbv2.NetworkListener.fromLookup(this, 'ALBListener', {
   },
   listenerProtocol: elbv2.Protocol.TCP,
   listenerPort: 12345,
-});
-```
-
-**Look up a Listener by associated Load Balancer, Port, and Protocol**
-
-```ts
-const listener = elbv2.ApplicationListener.fromLookup(this, 'ALBListener', {
-  loadBalancerArn: 'arn:aws:elasticloadbalancing:us-east-2:123456789012:loadbalancer/app/my-load-balancer/1234567890123456',
-  listenerProtocol: elbv2.ApplicationProtocol.HTTPS,
-  listenerPort: 443,
-  // creates a distinct context variable for this application listener, instead of resolving to the same
-  // value anywhere this lookup is done in your app
-  additionalCacheKey: this.node.path,
 });
 ```
 

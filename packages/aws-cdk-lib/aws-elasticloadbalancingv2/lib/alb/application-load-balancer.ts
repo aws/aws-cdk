@@ -164,11 +164,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   /**
    * Look up an application load balancer.
    */
-  public static fromLookup(
-    scope: Construct,
-    id: string,
-    options: ApplicationLoadBalancerLookupOptions,
-  ): IApplicationLoadBalancer {
+  public static fromLookup(scope: Construct, id: string, options: ApplicationLoadBalancerLookupOptions): IApplicationLoadBalancer {
     const props = BaseLoadBalancer._queryContextProvider(scope, {
       userOptions: options,
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,

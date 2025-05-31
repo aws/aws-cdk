@@ -211,11 +211,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   /**
    * Look up an ApplicationListener.
    */
-  public static fromLookup(
-    scope: Construct,
-    id: string,
-    options: ApplicationListenerLookupOptions,
-  ): IApplicationListener {
+  public static fromLookup(scope: Construct, id: string, options: ApplicationListenerLookupOptions): IApplicationListener {
     if (Token.isUnresolved(options.listenerArn)) {
       throw new ValidationError('All arguments to look up a load balancer listener must be concrete (no Tokens)', scope);
     }

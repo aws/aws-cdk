@@ -23,11 +23,4 @@ export interface HostedZoneProviderProps {
    * @default - No VPC ID
    */
   readonly vpcId?: string;
-
-  /**
-   * Adds an additional discriminator to the `cdk.context.json` cache key.
-   *
-   * @default - no additional cache key
-   */
-  readonly additionalCacheKey?: string;
 }

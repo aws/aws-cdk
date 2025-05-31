@@ -750,7 +750,6 @@ export class Key extends KeyBase {
         keyId: Key.DEFAULT_DUMMY_KEY_ID,
       },
       mustExist: !options.returnDummyKeyOnMissing,
-      additionalCacheKey: options.additionalCacheKey,
     }).value;
 
     return new Import(attributes.keyId,

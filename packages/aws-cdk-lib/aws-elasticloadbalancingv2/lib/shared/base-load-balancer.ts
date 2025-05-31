@@ -188,13 +188,6 @@ export interface BaseLoadBalancerLookupOptions {
    * @default - does not match load balancers by tags
    */
   readonly loadBalancerTags?: Record<string, string>;
-
-  /**
-   * Adds an additional discriminator to the `cdk.context.json` cache key.
-   *
-   * @default - no additional cache key
-   */
-  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -221,10 +214,7 @@ export abstract class BaseLoadBalancer extends Resource {
    * Queries the load balancer context provider for load balancer info.
    * @internal
    */
-  protected static _queryContextProvider(
-    scope: Construct,
-    options: LoadBalancerQueryContextProviderOptions,
-  ) {
+  protected static _queryContextProvider(scope: Construct, options: LoadBalancerQueryContextProviderOptions) {
     if (Token.isUnresolved(options.userOptions.loadBalancerArn)
       || Object.values(options.userOptions.loadBalancerTags ?? {}).some(Token.isUnresolved)) {
       throw new ValidationError('All arguments to look up a load balancer must be concrete (no Tokens)', scope);
@@ -251,7 +241,6 @@ export abstract class BaseLoadBalancer extends Resource {
         securityGroupIds: ['sg-1234'],
         vpcId: 'vpc-12345',
       } as cxapi.LoadBalancerContextResponse,
-      additionalCacheKey: options.userOptions.additionalCacheKey,
     }).value;
 
     return props;
