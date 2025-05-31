@@ -70,7 +70,7 @@ so that if the value in the cache needs to be updated, it does not need to be up
 for all constructs at the same time.
 
 ```ts
-const stringValue = ssm.StringParameter.valueFromLookup(this, '/My/Public/Parameter', undefined, this.node.path);
+const stringValue = ssm.StringParameter.valueFromLookup(this, '/My/Public/Parameter', undefined, { additionalCacheKey: this.node.path });
 ```
 
 When using `valueFromLookup` an initial value of 'dummy-value-for-${parameterName}'
