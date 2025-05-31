@@ -28,7 +28,7 @@
      "Payload": "\"{\\\"action\\\":\\\"subscribe\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1740448207022"
+    "salt": "1746133888358"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -336,7 +336,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4a8b2d1ae3fba266ef36adae459ae53392d074ee550352d271d073f06413f06b.zip"
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -376,7 +376,7 @@
      "Payload": "\"{\\\"action\\\":\\\"publish\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1740448207023"
+    "salt": "1746133888359"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -407,7 +407,7 @@
     },
     "service": "Lambda",
     "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"Payload\":\"{\\\"statusCode\\\":200,\\\"msg\\\":\\\"subscribe_success\\\",\\\"pubStatusCode\\\":200,\\\"pubMsg\\\":\\\"Hello World!\\\"}\"}}",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"{\\\"statusCode\\\":200,\\\"msg\\\":\\\"subscribe_success\\\",\\\"pubStatusCode\\\":200,\\\"pubMsg\\\":[{\\\"message\\\":\\\"Hello World!\\\"}]}\"}}",
     "parameters": {
      "FunctionName": {
       "Fn::Join": [
@@ -424,7 +424,7 @@
      "Payload": "\"{\\\"action\\\":\\\"pubSub\\\",\\\"channel\\\":\\\"pubsub\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1740448207023"
+    "salt": "1746133888360"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -472,7 +472,7 @@
      "Payload": "\"{\\\"action\\\":\\\"publish\\\",\\\"channel\\\":\\\"test1\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1740448207023"
+    "salt": "1746133888360"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -520,7 +520,7 @@
      "Payload": "\"{\\\"action\\\":\\\"subscribe\\\",\\\"channel\\\":\\\"test1\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1740448207024"
+    "salt": "1746133888360"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -551,7 +551,7 @@
     },
     "service": "Lambda",
     "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"Payload\":\"{\\\"statusCode\\\":200,\\\"msg\\\":\\\"subscribe_success\\\",\\\"pubStatusCode\\\":200,\\\"pubMsg\\\":\\\"Hello World!\\\"}\"}}",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"{\\\"statusCode\\\":200,\\\"msg\\\":\\\"subscribe_success\\\",\\\"pubStatusCode\\\":200,\\\"pubMsg\\\":[{\\\"message\\\":\\\"Hello World!\\\"}]}\"}}",
     "parameters": {
      "FunctionName": {
       "Fn::Join": [
@@ -568,7 +568,7 @@
      "Payload": "\"{\\\"action\\\":\\\"pubSub\\\",\\\"channel\\\":\\\"test1/subtest\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1740448207024"
+    "salt": "1746133888360"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -645,6 +645,9 @@
     "value": "nodejs20.x"
    },
    "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
     "value": "nodejs20.x"
    },
    "ap-northeast-1": {
@@ -753,6 +756,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {

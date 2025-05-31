@@ -4,6 +4,7 @@ import * as ssm from '../../aws-ssm';
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct } from 'constructs';
+import { UnscopedValidationError } from '../../core';
 
 /**
  * The ECS-optimized AMI variant to use. For more information, see
@@ -130,15 +131,15 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
     this.hwType = (props && props.hardwareType) || AmiHardwareType.STANDARD;
     if (props && props.generation) { // generation defined in the props object
       if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX && this.hwType !== AmiHardwareType.STANDARD) {
-        throw new Error('Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
+        throw new UnscopedValidationError('Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
       } else if (props.windowsVersion) {
-        throw new Error('"windowsVersion" and Linux image "generation" cannot be both set');
+        throw new UnscopedValidationError('"windowsVersion" and Linux image "generation" cannot be both set');
       } else {
         this.generation = props.generation;
       }
     } else if (props && props.windowsVersion) {
       if (this.hwType !== AmiHardwareType.STANDARD) {
-        throw new Error('Windows Server does not support special hardware type');
+        throw new UnscopedValidationError('Windows Server does not support special hardware type');
       } else {
         this.windowsVersion = props.windowsVersion;
       }
@@ -286,7 +287,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     } else if (props.generation) {
       this.generation = props.generation;
     } else {
-      throw new Error('This error should never be thrown');
+      throw new UnscopedValidationError('This error should never be thrown');
     }
 
     // set the SSM parameter name

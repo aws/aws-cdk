@@ -10,6 +10,7 @@ import * as kms from '../../../aws-kms';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import { Duration, ValidationError } from '../../../core';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
 const FRAMEWORK_HANDLER_TIMEOUT = Duration.minutes(15); // keep it simple for now
@@ -182,7 +183,13 @@ export interface ProviderProps {
 /**
  * Defines an AWS CloudFormation custom resource provider.
  */
+@propertyInjectable
 export class Provider extends Construct implements ICustomResourceProvider {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-custom-resources.Provider';
+
   /**
    * The user-defined AWS Lambda function which is invoked for all resource
    * lifecycle operations (CREATE/UPDATE/DELETE).
@@ -220,9 +227,9 @@ export class Provider extends Construct implements ICustomResourceProvider {
         || props.waiterStateMachineLogOptions
         || props.disableWaiterStateMachineLogging !== undefined
       ) {
-        throw new Error('"queryInterval", "totalTimeout", "waiterStateMachineLogOptions", and "disableWaiterStateMachineLogging" '
+        throw new ValidationError('"queryInterval", "totalTimeout", "waiterStateMachineLogOptions", and "disableWaiterStateMachineLogging" '
           + 'can only be configured if "isCompleteHandler" is specified. '
-          + 'Otherwise, they have no meaning');
+          + 'Otherwise, they have no meaning', this);
       }
     }
 
@@ -251,7 +258,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
       const isCompleteFunction = this.createFunction(consts.FRAMEWORK_IS_COMPLETE_HANDLER_NAME, undefined, props.frameworkCompleteAndTimeoutRole);
       const timeoutFunction = this.createFunction(consts.FRAMEWORK_ON_TIMEOUT_HANDLER_NAME, undefined, props.frameworkCompleteAndTimeoutRole);
 
-      const retry = calculateRetryPolicy(props);
+      const retry = calculateRetryPolicy(this, props);
       const waiterStateMachine = new WaiterStateMachine(this, 'waiter-state-machine', {
         isCompleteHandler: isCompleteFunction,
         timeoutHandler: timeoutFunction,

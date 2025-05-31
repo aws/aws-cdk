@@ -5,6 +5,7 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import { Aws, Names } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Construction properties for a DatabaseSecret.
@@ -75,7 +76,13 @@ export interface DatabaseSecretProps {
  *
  * @resource AWS::SecretsManager::Secret
  */
+@propertyInjectable
 export class DatabaseSecret extends secretsmanager.Secret {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseSecret';
+
   constructor(scope: Construct, id: string, props: DatabaseSecretProps) {
     const excludeCharacters = props.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS;
 

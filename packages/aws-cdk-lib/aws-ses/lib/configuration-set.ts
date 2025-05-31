@@ -5,6 +5,7 @@ import { undefinedIfNoKeys } from './private/utils';
 import { CfnConfigurationSet } from './ses.generated';
 import { Duration, IResource, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A configuration set
@@ -84,6 +85,13 @@ export interface ConfigurationSetProps {
   readonly customTrackingRedirectDomain?: string;
 
   /**
+   * The https policy to use for tracking open and click events.
+   *
+   * @default - HttpsPolicy.OPTIONAL if customTrackingRedirectDomain is set, otherwise undefined
+   */
+  readonly customTrackingHttpsPolicy?: HttpsPolicy;
+
+  /**
    * The Virtual Deliverability Manager (VDM) options that apply to the configuration set
    *
    * @default - VDM options not configured at the configuration set level. In this case, use account level settings. (To set the account level settings using CDK, use the `VdmAttributes` Construct.)
@@ -135,6 +143,28 @@ export enum ConfigurationSetTlsPolicy {
 }
 
 /**
+ * HTTPS policy option for the protocol of the open and click tracking links for your custom redirect domain.
+ */
+export enum HttpsPolicy {
+  /**
+   * Open and Click tracking links will both be wrapped using HTTPS.
+   */
+  REQUIRE = 'REQUIRE',
+
+  /**
+   * Open tracking links will be wrapped using HTTPS.
+   * Click tracking links will be wrapped using the original protocol of the link.
+   */
+  REQUIRE_OPEN_ONLY = 'REQUIRE_OPEN_ONLY',
+
+  /**
+   * Open tracking links will be wrapped using HTTP.
+   * Click tracking links will be wrapped using the original protocol of the link.
+   */
+  OPTIONAL = 'OPTIONAL',
+}
+
+/**
  * Reasons for which recipient email addresses should be automatically added
  * to your account's suppression list
  */
@@ -158,7 +188,13 @@ export enum SuppressionReasons {
 /**
  * A configuration set
  */
+@propertyInjectable
 export class ConfigurationSet extends Resource implements IConfigurationSet {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ses.ConfigurationSet';
+
   /**
    * Use an existing configuration set
    */
@@ -189,6 +225,9 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
         throw new ValidationError(`The maximum delivery duration must be less than or equal to 14 hours (50400 seconds), got: ${props.maxDeliveryDuration.toSeconds()} seconds.`, this);
       }
     }
+    if (props.customTrackingHttpsPolicy && !props.customTrackingRedirectDomain) {
+      throw new ValidationError('customTrackingHttpsPolicy can only be set when customTrackingRedirectDomain is also set.', this);
+    }
 
     const configurationSet = new CfnConfigurationSet(this, 'Resource', {
       deliveryOptions: undefinedIfNoKeys({
@@ -208,6 +247,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
       }),
       trackingOptions: undefinedIfNoKeys({
         customRedirectDomain: props.customTrackingRedirectDomain,
+        httpsPolicy: props.customTrackingHttpsPolicy,
       }),
       vdmOptions: undefinedIfNoKeys({
         dashboardOptions: props.vdmOptions?.engagementMetrics !== undefined ? {

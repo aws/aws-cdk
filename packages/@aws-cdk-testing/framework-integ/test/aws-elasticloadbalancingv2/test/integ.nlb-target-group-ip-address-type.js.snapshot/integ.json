@@ -8,5 +8,6 @@
       "assertionStack": "NlbTargetGroupIpAddressTypeTestInteg/DefaultTest/DeployAssert",
       "assertionStackName": "NlbTargetGroupIpAddressTypeTestIntegDefaultTestDeployAssertF4BE6039"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

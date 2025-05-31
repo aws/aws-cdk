@@ -8,5 +8,6 @@
       "assertionStack": "networkLoadBalancedFargateServiceTest/DefaultTest/DeployAssert",
       "assertionStackName": "networkLoadBalancedFargateServiceTestDefaultTestDeployAssertBFBAA75B"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
