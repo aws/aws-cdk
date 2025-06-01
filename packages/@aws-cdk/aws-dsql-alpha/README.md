@@ -15,7 +15,7 @@
 
 <!--END STABILITY BANNER-->
 
-Amazon Neptune is a fast, reliable, fully managed graph database service that makes it easy to build and run applications that work with highly connected datasets. The core of Neptune is a purpose-built, high-performance graph database engine. This engine is optimized for storing billions of relationships and querying the graph with milliseconds latency. Neptune supports the popular graph query languages Apache TinkerPop Gremlin and W3C’s SPARQL, enabling you to build queries that efficiently navigate highly connected datasets.
+Amazon Aurora DSQL is a serverless, distributed relational database service optimized for transactional workloads. Aurora DSQL offers virtually unlimited scale and doesn't require you to manage infrastructure. The active-active highly available architecture provides 99.99% single-Region and 99.999% multi-Region availability.
 
 The `@aws-cdk/aws-dsql-alpha` package contains primitives for setting up Aurora DSQL clusters.
 
@@ -25,7 +25,7 @@ import * as dsql from '@aws-cdk/aws-dsql-alpha';
 
 ## Creating an Aurora DSQL Cluster
 
-To create an Aurora DSQL cluster, define a `Cluster`.
+To create an Aurora DSQL cluster, define a `Cluster`:
 
 ```ts
 const cluster = new dsql.Cluster(this, 'Cluster', {
