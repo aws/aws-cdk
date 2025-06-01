@@ -92,7 +92,7 @@ describe('Aurora DSQL Cluster', () => {
 });
 
 describe('Aurora DSQL Cluster - Imports', () => {
-  test('imported cluster via attrs has supplied attributes', () => {
+  test('imported cluster has supplied attributes', () => {
     // GIVEN
     const stack = testStack();
 
@@ -107,19 +107,11 @@ describe('Aurora DSQL Cluster - Imports', () => {
     expect(cluster.clusterIdentifier).toEqual('identifier');
     expect(cluster.clusterName).toEqual('my-dsql-cluster');
     expect(cluster.vpcEndpointServiceName).toEqual('vpce');
-  });
-
-  test('imported cluster via id has supplied identifier', () => {
-    // GIVEN
-    const stack = testStack();
-
-    // WHEN
-    const cluster = Cluster.fromClusterIdentifier(stack, 'identifier');
-
-    // THEN
-    expect(cluster.clusterIdentifier).toEqual('identifier');
-    expect(cluster.clusterName).toEqual(undefined);
-    expect(cluster.vpcEndpointServiceName).toEqual(undefined);
+    expect(cluster.clusterArn).toEqual(stack.formatArn({
+      service: 'dsql',
+      resource: 'cluster',
+      resourceName: 'identifier',
+    }));
   });
 });
 
