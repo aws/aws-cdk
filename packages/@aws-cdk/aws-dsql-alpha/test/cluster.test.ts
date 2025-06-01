@@ -99,13 +99,11 @@ describe('Aurora DSQL Cluster - Imports', () => {
     // WHEN
     const cluster = Cluster.fromClusterAttributes(stack, 'Database', {
       clusterIdentifier: 'identifier',
-      clusterName: 'my-dsql-cluster',
       vpcEndpointServiceName: 'vpce',
     });
 
     // THEN
     expect(cluster.clusterIdentifier).toEqual('identifier');
-    expect(cluster.clusterName).toEqual('my-dsql-cluster');
     expect(cluster.vpcEndpointServiceName).toEqual('vpce');
     expect(cluster.clusterArn).toEqual(stack.formatArn({
       service: 'dsql',
