@@ -20,16 +20,14 @@ class TestStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    const importedClusterAttrs = Cluster.fromClusterAttributes(this, 'ImportedCluster', {
+    const importedCluster = Cluster.fromClusterAttributes(this, 'ImportedCluster', {
       clusterIdentifier: cluster.clusterIdentifier,
       clusterName: cluster.clusterName,
       vpcEndpointServiceName: cluster.vpcEndpointServiceName,
     });
 
-    const importedClusterId = Cluster.fromClusterIdentifier(this, cluster.clusterIdentifier);
-
-    importedClusterAttrs.grantConnect(func);
-    importedClusterId.grantConnectAdmin(func);
+    importedCluster.grantConnect(func);
+    importedCluster.grantConnectAdmin(func);
   }
 }
 

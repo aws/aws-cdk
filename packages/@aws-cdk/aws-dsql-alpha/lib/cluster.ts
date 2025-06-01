@@ -1,4 +1,5 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Aws, IResource, RemovalPolicy, Resource, Tags } from 'aws-cdk-lib/core';
 import { CfnCluster } from 'aws-cdk-lib/aws-dsql';
@@ -45,14 +46,19 @@ export interface ICluster extends IResource {
   readonly clusterIdentifier: string;
 
   /**
-   * Name of the cluster
+   * Arn of the cluster
    */
-  readonly clusterName?: string;
+  readonly clusterArn: string;
 
   /**
    * The VPC endpoint service name for the cluster
    */
-  readonly vpcEndpointServiceName?: string;
+  readonly vpcEndpointServiceName: string;
+
+  /**
+   * Name of the cluster
+   */
+  readonly clusterName?: string;
 
   /**
    * Grant the given identity the specified actions
@@ -84,14 +90,14 @@ export interface ClusterAttributes {
   readonly clusterIdentifier: string;
 
   /**
+   * The VPC endpoint service name for the cluster
+   */
+  readonly vpcEndpointServiceName: string;
+
+  /**
    * Name of the cluster
    */
   readonly clusterName?: string;
-
-  /**
-   * The VPC endpoint service name for the cluster
-   */
-  readonly vpcEndpointServiceName?: string;
 }
 
 /**
@@ -99,25 +105,17 @@ export interface ClusterAttributes {
  */
 export abstract class ClusterBase extends Resource implements ICluster {
   /**
-   * Import an existing DqslCluster from identifier
-   */
-  public static fromClusterIdentifier(scope: Construct, id: string): ICluster {
-    class Import extends ClusterBase implements ICluster {
-      public readonly clusterIdentifier = id;
-      public readonly vpcEndpointServiceName = undefined;
-      public readonly clusterName = undefined;
-    }
-
-    return new Import(scope, id);
-  }
-
-  /**
-   * Import an existing DqslCluster from attributes
+   * Import an existing Cluster from attributes
    */
   public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
     class Import extends ClusterBase implements ICluster {
       public readonly clusterIdentifier = attrs.clusterIdentifier;
-      public readonly vpcEndpointServiceName? = attrs.vpcEndpointServiceName || undefined;
+      public readonly vpcEndpointServiceName = attrs.vpcEndpointServiceName;
+      public readonly clusterArn = cdk.Stack.of(this).formatArn({
+        service: 'dsql',
+        resource: 'cluster',
+        resourceName: this.clusterIdentifier,
+      });
       public readonly clusterName? = attrs.clusterName || undefined;
     }
 
@@ -130,14 +128,19 @@ export abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly clusterIdentifier: string;
 
   /**
-   * Name of the cluster
+   * Arn of the cluster
    */
-  public abstract readonly clusterName?: string;
+  public abstract readonly clusterArn: string;
 
   /**
    * The VPC endpoint service name for the cluster
    */
-  public abstract readonly vpcEndpointServiceName?: string;
+  public abstract readonly vpcEndpointServiceName: string;
+
+  /**
+   * Name of the cluster
+   */
+  public abstract readonly clusterName?: string;
 
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
@@ -179,6 +182,11 @@ export class Cluster extends ClusterBase {
   public readonly clusterIdentifier: string;
 
   /**
+   * Arn of the cluster
+   */
+  public readonly clusterArn: string;
+
+  /**
    * The VPC endpoint service name for the cluster
    */
   public readonly vpcEndpointServiceName: string;
@@ -200,6 +208,7 @@ export class Cluster extends ClusterBase {
     });
 
     this.clusterIdentifier = this.cluster.ref;
+    this.clusterArn = this.cluster.attrResourceArn;
     this.vpcEndpointServiceName = this.cluster.attrVpcEndpointServiceName;
 
     if (props?.clusterName) {
