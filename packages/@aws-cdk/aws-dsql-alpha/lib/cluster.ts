@@ -42,23 +42,21 @@ export interface ClusterProps {
 export interface ICluster extends IResource {
   /**
    * Identifier of the cluster
+   * @attribute Identifier
    */
   readonly clusterIdentifier: string;
 
   /**
    * Arn of the cluster
+   * @attribute ResourceArn
    */
   readonly clusterArn: string;
 
   /**
-   * The VPC endpoint service name for the cluster
+   * VPC endpoint service name for the cluster
+   * @attribute VpcEndpointServiceName
    */
   readonly vpcEndpointServiceName: string;
-
-  /**
-   * Name of the cluster
-   */
-  readonly clusterName?: string;
 
   /**
    * Grant the given identity the specified actions
@@ -90,14 +88,9 @@ export interface ClusterAttributes {
   readonly clusterIdentifier: string;
 
   /**
-   * The VPC endpoint service name for the cluster
+   * VPC endpoint service name for the cluster
    */
   readonly vpcEndpointServiceName: string;
-
-  /**
-   * Name of the cluster
-   */
-  readonly clusterName?: string;
 }
 
 /**
@@ -116,7 +109,6 @@ export abstract class ClusterBase extends Resource implements ICluster {
         resource: 'cluster',
         resourceName: this.clusterIdentifier,
       });
-      public readonly clusterName? = attrs.clusterName || undefined;
     }
 
     return new Import(scope, id);
@@ -133,14 +125,9 @@ export abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly clusterArn: string;
 
   /**
-   * The VPC endpoint service name for the cluster
+   * VPC endpoint service name for the cluster
    */
   public abstract readonly vpcEndpointServiceName: string;
-
-  /**
-   * Name of the cluster
-   */
-  public abstract readonly clusterName?: string;
 
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
@@ -187,14 +174,9 @@ export class Cluster extends ClusterBase {
   public readonly clusterArn: string;
 
   /**
-   * The VPC endpoint service name for the cluster
+   * VPC endpoint service name for the cluster
    */
   public readonly vpcEndpointServiceName: string;
-
-  /**
-   * Name of the cluster
-   */
-  public readonly clusterName?: string;
 
   constructor(scope: Construct, id: string, props?: ClusterProps) {
     super(scope, id);
@@ -212,7 +194,6 @@ export class Cluster extends ClusterBase {
     this.vpcEndpointServiceName = this.cluster.attrVpcEndpointServiceName;
 
     if (props?.clusterName) {
-      this.clusterName = props.clusterName;
       Tags.of(this.cluster).add('Name', props.clusterName);
     }
 
