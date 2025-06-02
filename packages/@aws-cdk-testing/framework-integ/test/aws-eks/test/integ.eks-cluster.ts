@@ -43,7 +43,7 @@ class EksClusterStack extends Stack {
       vpcSubnets,
       mastersRole,
       defaultCapacity: 2,
-      ...getClusterVersionConfig(this),
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_32),
       secretsEncryptionKey,
       tags: {
         foo: 'bar',
@@ -300,7 +300,6 @@ class EksClusterStack extends Stack {
         kubeletExtraArgs: '--node-labels foo=bar,goo=far',
         awsApiRetryAttempts: 5,
       },
-      spotInterruptHandler: false, // aws-node-termination-handler not compatible with latest k8s version #33108
     });
   }
   private assertBottlerocket() {

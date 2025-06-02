@@ -18,7 +18,7 @@ const versionMap: { [key: string]: new (scope: Construct, id: string) => lambda.
 };
 
 export function getClusterVersionConfig(scope: Construct, version?: eks.KubernetesVersion) {
-  const _version = version ?? eks.KubernetesVersion.V1_29;
+  const _version = version ?? eks.KubernetesVersion.V1_32;
   return {
     version: _version,
     // Crazy type-casting is required because KubectlLayer peer depends on
