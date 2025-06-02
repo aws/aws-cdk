@@ -43,7 +43,7 @@ class EksClusterStack extends Stack {
       vpcSubnets,
       mastersRole,
       defaultCapacity: 2,
-      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_32),
+      ...getClusterVersionConfig(this),
       secretsEncryptionKey,
       tags: {
         foo: 'bar',
