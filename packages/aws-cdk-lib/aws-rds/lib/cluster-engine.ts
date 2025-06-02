@@ -653,6 +653,8 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_3_08_1 = AuroraMysqlEngineVersion.builtIn_8_0('3.08.1');
   /** Version "8.0.mysql_aurora.3.08.2". */
   public static readonly VER_3_08_2 = AuroraMysqlEngineVersion.builtIn_8_0('3.08.2');
+  /** Version "8.0.mysql_aurora.3.09.0". */
+  public static readonly VER_3_09_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.09.0');
 
   /**
    * Create a new AuroraMysqlEngineVersion with an arbitrary version.
@@ -663,7 +665,7 @@ export class AuroraMysqlEngineVersion {
    *   defaults to "5.7"
    */
   public static of(auroraMysqlFullVersion: string, auroraMysqlMajorVersion?: string): AuroraMysqlEngineVersion {
-    return new AuroraMysqlEngineVersion(auroraMysqlFullVersion, auroraMysqlMajorVersion);
+    return new AuroraMysqlEngineVersion(auroraMysqlFullVersion, auroraMysqlMajorVersion, auroraMysqlMajorVersion ? auroraMysqlMajorVersion !== '5.7' : false);
   }
 
   private static builtIn_5_7(minorVersion: string, addStandardPrefix: boolean = true): AuroraMysqlEngineVersion {

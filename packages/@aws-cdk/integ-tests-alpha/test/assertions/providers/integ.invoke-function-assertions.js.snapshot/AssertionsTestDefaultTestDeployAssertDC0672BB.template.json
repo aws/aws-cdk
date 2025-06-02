@@ -32,7 +32,7 @@
      "Payload": "\"{\\\"days\\\":1}\""
     },
     "flattenResponse": "false",
-    "salt": "1746828607696"
+    "salt": "1748295416364"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -445,6 +445,9 @@
     "value": "nodejs22.x"
    },
    "ap-east-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-east-2": {
     "value": "nodejs22.x"
    },
    "ap-northeast-1": {
