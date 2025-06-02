@@ -1567,6 +1567,7 @@ Any object that implements the `IGrantable` interface (has an associated princip
 * `stateMachine.grantRead(principal)` - grants the principal read access
 * `stateMachine.grantTaskResponse(principal)` - grants the principal the ability to send task tokens to the state machine
 * `stateMachine.grantExecution(principal, actions)` - grants the principal execution-level permissions for the IAM actions specified
+* `stateMachine.grantRedriveExecution(principal)` - grants the principal permission to redrive the executions of the state machine
 * `stateMachine.grant(principal, actions)` - grants the principal state-machine-level permissions for the IAM actions specified
 
 ### Start Execution Permission
@@ -1647,6 +1648,27 @@ The following read permissions are provided to a service principal by the `grant
 ### Execution-level Permissions
 
 Grant execution-level permissions to a state machine by calling the `grantExecution()` API:
+
+### Redrive Execution Permission
+
+Grant the given identity permission to redrive the execution of the state machine:
+
+```ts
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+declare const definition: sfn.IChainable;
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
+});
+
+// Give role permission to start execution of state machine
+stateMachine.grantStartExecution(role);
+// Give role permission to redrive any executions of the state machine
+stateMachine.grantRedriveExecution(role);
+```
+
 
 ```ts
 const role = new iam.Role(this, 'Role', {
