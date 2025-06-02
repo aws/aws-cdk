@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * update L1 CloudFormation resource definitions ([#34594](https://github.com/aws/aws-cdk/issues/34594)) ([1e37ee7](https://github.com/aws/aws-cdk/commit/1e37ee71971a3cdb619ba40e321def3072112e2b))
 * **custom-resources:** throw `ValidationError` instead of untyped Errors ([#33392](https://github.com/aws/aws-cdk/issues/33392)) ([1dacaa3](https://github.com/aws/aws-cdk/commit/1dacaa30fc7311ee1344493715787561118b660d)), closes [#32569](https://github.com/aws/aws-cdk/issues/32569)
+* **ec2:** implement `IPeer` to `PrefixList` to be usable as a connection peer ([#33617](https://github.com/aws/aws-cdk/issues/33617)) ([c277419](https://github.com/aws/aws-cdk/commit/c277419f3931ab50f757844323863b25be875d96)), closes [#33607](https://github.com/aws/aws-cdk/issues/33607)
 * **iam:** introduce `OidcProviderNative` construct utilizing the native CloudFormation resource ([#28634](https://github.com/aws/aws-cdk/issues/28634)) ([d8e6c09](https://github.com/aws/aws-cdk/commit/d8e6c09083d4958c1967bc19ff30cf15820580af)), closes [#21197](https://github.com/aws/aws-cdk/issues/21197)
 * **iam:** throw `ValidationError`s instead of untyped errors ([#34579](https://github.com/aws/aws-cdk/issues/34579)) ([bd5caba](https://github.com/aws/aws-cdk/commit/bd5caba44ed4485a8a8360f475c76543c2d0c4e4)), closes [#32569](https://github.com/aws/aws-cdk/issues/32569)
 * **lambda:** allow propagating function tags to loggroup ([#34556](https://github.com/aws/aws-cdk/issues/34556)) ([f556fd1](https://github.com/aws/aws-cdk/commit/f556fd18f789a8498f32298c07973e8aae4d3798))
@@ -23,6 +24,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
+* **ec2:** validate throughput property on EC2 instance block devices ([#34571](https://github.com/aws/aws-cdk/issues/34571)) ([b31580a](https://github.com/aws/aws-cdk/commit/b31580a202aea30b8657988daaa232283053e856)), closes [#34033](https://github.com/aws/aws-cdk/issues/34033)
 * **elasticloadbalancingv2:** fix incorrect max for minimumCapacityUnit ([#34586](https://github.com/aws/aws-cdk/issues/34586)) ([8f19b26](https://github.com/aws/aws-cdk/commit/8f19b2646a4085b436f662a79236a17c41fa1162)), closes [#34582](https://github.com/aws/aws-cdk/issues/34582)
 
 ## [2.199.0](https://github.com/aws/aws-cdk/compare/v2.198.0...v2.199.0) (2025-05-27)
