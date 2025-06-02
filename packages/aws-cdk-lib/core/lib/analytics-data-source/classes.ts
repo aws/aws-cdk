@@ -17039,6 +17039,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ]
     },
+    'OidcProviderNative': {
+      'oidcProviderName': '*',
+      'url': '*',
+      'clientIds': '*',
+      'thumbprints': '*'
+    },
     'OpenIdConnectProvider': {
       'url': '*',
       'clientIds': '*',
