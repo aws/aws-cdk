@@ -1493,17 +1493,7 @@
                   "vpc": "*",
                   "version": "*",
                   "kubectlLayer": "*",
-                  "defaultCapacity": "*",
-                  "remoteNodeNetworks": [
-                    {
-                      "cidrs": "*"
-                    }
-                  ],
-                  "remotePodNetworks": [
-                    {
-                      "cidrs": "*"
-                    }
-                  ]
+                  "defaultCapacity": "*"
                 }
               ]
             }
@@ -1694,7 +1684,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "4aa2054a2faf51ae8bb7f5eef6d64aee2ccaaa4983e22796e95e8351fe736f80.zip"
+                          "s3Key": "572dd2416e786aa13287a5bcd2330ca9b49d9bb7403340990da8b466445db001.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -1878,7 +1868,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "4aa2054a2faf51ae8bb7f5eef6d64aee2ccaaa4983e22796e95e8351fe736f80.zip"
+                          "s3Key": "572dd2416e786aa13287a5bcd2330ca9b49d9bb7403340990da8b466445db001.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -3737,7 +3727,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/30cc69b9ed4e3a3d57b79ec678dbf923ba38d9d4ed923761c62693ed11bf0fe3.json"
+                          "/aa88ccc598df3431a0de3b0db04f15df32f07bd03f31037d5bcc231302158854.json"
                         ]
                       ]
                     }
@@ -3799,7 +3789,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "96b83d7c7535f7e731e0679249de9470f417342331b121e36664078b4ef4a11b.zip"
+                          "s3Key": "fba306965da4b2680dd8b4e6916610efe237162f913f22b10146f647b3f6bce4.zip"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "environment": {
@@ -4462,7 +4452,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/c6a6e3db1553cb3cb020f68b426c27885701635f6aa484f6263b4cab03306d35.json"
+                          "/ddf1a3310fed97ce1f8a1c8666c92ec28539cfa55e1154f1c82fa1298f322147.json"
                         ]
                       ]
                     }

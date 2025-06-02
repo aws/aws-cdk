@@ -815,7 +815,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 5
+    "AttributesRevision": 4
    },
    "DependsOn": [
     "integrationtesteksclusterDefaultVpcIGW9ADAFE6F",
@@ -1066,7 +1066,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/12c312149c67eaa2df8398838fae0a87e00ec80c9e488590a51ebe7e9de02a01.json"
+       "/c44c5758d8da1f3b3f396a2c91e770c6ee98ed82100a1f4ba6220264505f1f55.json"
       ]
      ]
     }
@@ -1116,7 +1116,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/4fc09729ccbd48f2119b880a692f901d92bd33ab5e89211a40aa0c381171c928.json"
+       "/5442e1763f080be504bdd2eaebc03277faca9e5750d8f2559a90d0833a0eb91b.json"
       ]
      ]
     }

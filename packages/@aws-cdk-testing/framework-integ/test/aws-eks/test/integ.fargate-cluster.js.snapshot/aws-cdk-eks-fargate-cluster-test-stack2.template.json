@@ -336,7 +336,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 5
+    "AttributesRevision": 4
    },
    "DependsOn": [
     "FargateClusterCreationRoleDefaultPolicy629049D0",
@@ -477,7 +477,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/e78cec51e3f286f0c14ba7d8bf12b4fed3f364efef115c0ef88d9632fa717104.json"
+       "/51bcf8439244afb4aa4b5c95de5a1764591163deab89e608411e436d6b721ba1.json"
       ]
      ]
     }
@@ -521,7 +521,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/b584c6b15807949a86ddc4b7641a70bf64068672e3eabcee22b9beda1526b442.json"
+       "/b1f9ddc224a43fdba46507feb14a47a501b1e9a7ea9c2d47e1e86e08d0b4629d.json"
       ]
      ]
     }

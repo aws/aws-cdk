@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6acdf22a8425a4cf9e86d32be7b72d3ceb21266daf6ca71db2fdc4bf87975cf4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2e9f77cd7b8bf091f389f4d6a6403afaf96b0f5daf245b4358b3c9cecf7baff1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -309,17 +309,7 @@
               "vpc": "*",
               "version": "*",
               "kubectlLayer": "*",
-              "defaultCapacity": "*",
-              "remoteNodeNetworks": [
-                {
-                  "cidrs": "*"
-                }
-              ],
-              "remotePodNetworks": [
-                {
-                  "cidrs": "*"
-                }
-              ]
+              "defaultCapacity": "*"
             }
           }
         ],
