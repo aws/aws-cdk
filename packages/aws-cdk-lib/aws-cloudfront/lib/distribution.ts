@@ -91,7 +91,6 @@ export interface DistributionAttributes {
 
 interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
   readonly origin: IOrigin;
-  readonly originGroupId?: string;
 }
 
 /**
@@ -157,7 +156,7 @@ export interface DistributionProps {
   /**
    * Whether CloudFront will respond to IPv6 DNS requests with an IPv6 address.
    *
-   * If you specify false, CloudFront responds to IPv6 DNS requests with the DNS response code NOERROR and with no IP addresses.
+   * If you specify false, CloudFront responds to IPv6 DNS requests with the DNS response code NO and with no IP addresses.
    * This allows viewers to submit a second request, for an IPv4 address for your distribution.
    *
    * @default true
@@ -236,9 +235,9 @@ export interface DistributionProps {
   /**
    * How CloudFront should handle requests that are not successful (e.g., PageNotFound).
    *
-   * @default - No custom error responses.
+   * @default - No custom  responses.
    */
-  readonly errorResponses?: ErrorResponse[];
+  readonly Responses?: Response[];
 
   /**
    * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
@@ -327,7 +326,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly boundOrigins: BoundOrigin[] = [];
   private readonly originGroups: CfnDistribution.OriginGroupProperty[] = [];
 
-  private readonly errorResponses: ErrorResponse[];
+  private readonly Responses: Response[];
   private readonly certificate?: acm.ICertificate;
   private readonly publishAdditionalMetrics?: boolean;
   private webAclId?: string;
@@ -700,14 +699,15 @@ export class Distribution extends Resource implements IDistribution {
         throw new ValidationError(`Origin with id ${duplicateId.originProperty?.id} already exists. OriginIds must be unique within a distribution`, this);
       }
       if (!originBindConfig.failoverConfig) {
-        this.boundOrigins.push({ origin, originId, distributionId, ...originBindConfig });
+        this.addBoundOrigin({ origin, originId, distributionId, ...originBindConfig });
       } else {
         if (isFailoverOrigin) {
           throw new ValidationError('An Origin cannot use an Origin with its own failover configuration as its fallback origin!', this);
         }
         const groupIndex = this.originGroups.length + 1;
-        const originGroupId = Names.uniqueId(new Construct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
-        this.boundOrigins.push({ origin, originId, distributionId, originGroupId, ...originBindConfig });
+        const originGroupId = originBindConfig.originGroupId ??
+          Names.uniqueId(new Construct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
+        this.addBoundOrigin({ origin, originId, distributionId, ...originBindConfig, originGroupId });
 
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
         this.addOriginGroup(
@@ -721,6 +721,24 @@ export class Distribution extends Resource implements IDistribution {
       }
       return originBindConfig.originProperty?.id ?? originId;
     }
+  }
+
+  private addBoundOrigin(boundOrigin: BoundOrigin) {
+    const { originId } = boundOrigin;
+    if (originId === boundOrigin.originGroupId) {
+      throw new ValidationError(`OriginGroup id ${originId} duplicates the primary Origin id. OriginIds must be unique within a distribution`, this);
+    }
+    const duplicate = this.findDuplicateOriginId(originId) ?? this.findDuplicateOriginId(boundOrigin.originGroupId);
+    if (duplicate) {
+      throw new ValidationError(`Origin with id ${duplicate} already exists. OriginIds must be unique within a distribution`, this);
+    }
+    this.boundOrigins.push(boundOrigin);
+  }
+
+  private findDuplicateOriginId(originId: string | undefined): string | undefined {
+    const duplicate = originId && this.boundOrigins.some(boundOrigin =>
+      boundOrigin.originId === originId || boundOrigin.originGroupId === originId);
+    return duplicate ? originId : undefined;
   }
 
   private addOriginGroup(
