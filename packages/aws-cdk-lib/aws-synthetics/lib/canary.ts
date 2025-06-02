@@ -305,7 +305,7 @@ export interface CanaryProps {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/performing-safe-canary-upgrades.html
    *
-   * @default false
+   * @default undefined - AWS CloudWatch default is false
    */
   readonly dryRunAndUpdate?: boolean;
 }
@@ -420,6 +420,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
           ? 'AUTOMATIC'
           : 'OFF'
         : undefined,
+      dryRunAndUpdate: props.dryRunAndUpdate,
     });
     this._resource = resource;
 

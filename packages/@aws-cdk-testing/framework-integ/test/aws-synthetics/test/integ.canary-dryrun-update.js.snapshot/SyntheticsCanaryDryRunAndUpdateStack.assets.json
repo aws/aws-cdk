@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "0af3c7f2b1384aa6d7175ddf8c7f9b5952d23d6264904bc6c90d24a117ec5559": {
+      "displayName": "SyntheticsCanaryDryRunAndUpdateStack Template",
+      "source": {
+        "path": "SyntheticsCanaryDryRunAndUpdateStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0af3c7f2b1384aa6d7175ddf8c7f9b5952d23d6264904bc6c90d24a117ec5559.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
