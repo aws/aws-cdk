@@ -62,7 +62,11 @@ class EventApiHttpStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new EventApiHttpStack(app, 'EventApiHttpStack');
 
 const integTest = new IntegTest(app, 'appsync-eventapi-Http-test', {

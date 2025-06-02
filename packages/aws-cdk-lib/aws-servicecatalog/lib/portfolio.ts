@@ -14,6 +14,7 @@ import * as iam from '../../aws-iam';
 import { IBucket } from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
+import { ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -324,7 +325,7 @@ export class Portfolio extends PortfolioBase {
     const portfolioId = arn.resourceName;
 
     if (!portfolioId) {
-      throw new Error('Missing required Portfolio ID from Portfolio ARN: ' + portfolioArn);
+      throw new ValidationError('Missing required Portfolio ID from Portfolio ARN: ' + portfolioArn, scope);
     }
 
     class Import extends PortfolioBase {

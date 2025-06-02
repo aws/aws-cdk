@@ -26,6 +26,10 @@ class ParentStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 new ParentStack(app, 'nested-stacks-assets');
 app.synth();

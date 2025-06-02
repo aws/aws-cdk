@@ -1,5 +1,6 @@
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
+import { UnscopedValidationError } from '../../../core';
 
 /**
  * Class to validate that inputs match requirements.
@@ -10,7 +11,7 @@ export class InputValidator {
    */
   public static validateLength(resourceName: string, inputName: string, minLength: number, maxLength: number, inputString?: string): void {
     if (!cdk.Token.isUnresolved(inputString) && inputString !== undefined && (inputString.length < minLength || inputString.length > maxLength)) {
-      throw new Error(`Invalid ${inputName} for resource ${resourceName}, must have length between ${minLength} and ${maxLength}, got: '${this.truncateString(inputString, 100)}'`);
+      throw new UnscopedValidationError(`Invalid ${inputName} for resource ${resourceName}, must have length between ${minLength} and ${maxLength}, got: '${this.truncateString(inputString, 100)}'`);
     }
   }
 
@@ -19,7 +20,7 @@ export class InputValidator {
    */
   public static validateRegex(resourceName: string, inputName: string, regexp: RegExp, inputString?: string): void {
     if (!cdk.Token.isUnresolved(inputString) && inputString !== undefined && !regexp.test(inputString)) {
-      throw new Error(`Invalid ${inputName} for resource ${resourceName}, must match regex pattern ${regexp}, got: '${this.truncateString(inputString, 100)}'`);
+      throw new UnscopedValidationError(`Invalid ${inputName} for resource ${resourceName}, must match regex pattern ${regexp}, got: '${this.truncateString(inputString, 100)}'`);
     }
   }
 
@@ -43,7 +44,7 @@ export class InputValidator {
   public static validateRoleNameSetForLocalLaunchRole(role: iam.IRole): void {
     if (role.node.defaultChild) {
       if (cdk.Token.isUnresolved((role.node.defaultChild as iam.CfnRole).roleName)) {
-        throw new Error(`Role ${role.node.id} used for Local Launch Role must have roleName explicitly set`);
+        throw new UnscopedValidationError(`Role ${role.node.id} used for Local Launch Role must have roleName explicitly set`);
       }
     }
   }

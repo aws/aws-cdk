@@ -11,7 +11,11 @@ import * as servicecatalog from 'aws-cdk-lib/aws-servicecatalog';
 import { ProductStackHistory, ProductStackProps } from 'aws-cdk-lib/aws-servicecatalog';
 import { ServerSideEncryption } from 'aws-cdk-lib/aws-s3-deployment';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'integ-servicecatalog-product-encrypted-asset', {
   env: {
     account: process.env.CDK_INTEG_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT,

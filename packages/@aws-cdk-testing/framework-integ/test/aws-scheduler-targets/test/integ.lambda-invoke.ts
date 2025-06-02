@@ -23,6 +23,7 @@ const LAMBDA_TAGGING_PERMISSION = new iam.PolicyStatement(
  */
 const app = new cdk.App({
   postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
   },
 });

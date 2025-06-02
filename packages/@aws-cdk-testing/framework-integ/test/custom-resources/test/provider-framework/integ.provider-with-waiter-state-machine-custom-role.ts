@@ -47,7 +47,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new TestStack(app, 'integ-provider-with-waiter-state-machine-custom-role');
 
 new integ.IntegTest(app, 'IntegProviderWithWaiterStateMachineCustomRole', {

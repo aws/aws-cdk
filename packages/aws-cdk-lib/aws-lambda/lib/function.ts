@@ -29,11 +29,14 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
+import {
+  Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy,
+  Names, Size, Stack, Token,
+} from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
+import { LAMBDA_RECOGNIZE_LAYER_VERSION, USE_CDK_MANAGED_LAMBDA_LOGGROUP } from '../../cx-api';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -1129,6 +1132,10 @@ export class Function extends FunctionBase {
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
       this._logRetention = logRetention;
+    } else if (!props.logGroup && (FeatureFlags.of(this).isEnabled(USE_CDK_MANAGED_LAMBDA_LOGGROUP))) { // logRetention:f/undef, logGroup:f/undef, FF.isEnabled()
+      this._logGroup = new logs.LogGroup(this, 'LogGroup', {
+        logGroupName: `/aws/lambda/${this.functionName}`,
+      });
     }
 
     props.code.bindToResource(resource);

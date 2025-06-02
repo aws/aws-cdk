@@ -50,7 +50,11 @@ class LambdaStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new LambdaStack(app, 'lambda-logssubscription-integ');
 
 const integ = new IntegTest(app, 'LambdaInteg', {

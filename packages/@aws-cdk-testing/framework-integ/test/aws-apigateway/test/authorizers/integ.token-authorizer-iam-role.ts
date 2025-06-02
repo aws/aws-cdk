@@ -13,7 +13,11 @@ import { STANDARD_NODEJS_RUNTIME } from '../../../config';
  * * `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: allow' <url>` should return 200
  */
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'TokenAuthorizerIAMRoleInteg');
 
 const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {

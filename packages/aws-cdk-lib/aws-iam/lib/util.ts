@@ -1,6 +1,6 @@
 import { IConstruct } from 'constructs';
 import { IPolicy } from './policy';
-import { captureStackTrace, DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, Lazy, StringConcat, Token, Tokenization } from '../../core';
+import { captureStackTrace, DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, Lazy, StringConcat, Token, Tokenization, UnscopedValidationError, ValidationError } from '../../core';
 
 const MAX_POLICY_NAME_LEN = 128;
 
@@ -60,7 +60,7 @@ export class AttachedPolicies {
     }
 
     if (this.policies.find(p => p.policyName === policy.policyName)) {
-      throw new Error(`A policy named "${policy.policyName}" is already attached`);
+      throw new ValidationError(`A policy named "${policy.policyName}" is already attached`, policy);
     }
 
     this.policies.push(policy);
@@ -79,7 +79,7 @@ export function mergePrincipal(target: { [key: string]: string[] }, source: { [k
 
   if ((LITERAL_STRING_KEY in source && targetKeys.some(k => k !== LITERAL_STRING_KEY)) ||
     (LITERAL_STRING_KEY in target && sourceKeys.some(k => k !== LITERAL_STRING_KEY))) {
-    throw new Error(`Cannot merge principals ${JSON.stringify(target)} and ${JSON.stringify(source)}; if one uses a literal principal string the other one must be empty`);
+    throw new UnscopedValidationError(`Cannot merge principals ${JSON.stringify(target)} and ${JSON.stringify(source)}; if one uses a literal principal string the other one must be empty`);
   }
 
   for (const key of sourceKeys) {

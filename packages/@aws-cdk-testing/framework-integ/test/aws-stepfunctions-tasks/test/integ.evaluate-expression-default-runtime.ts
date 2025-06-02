@@ -48,7 +48,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 new integ.IntegTest(app, 'EvaluateExpressionInteg', {
   testCases: [new TestStack(app, 'cdk-sfn-evaluate-expression-default-runtime-integ')],

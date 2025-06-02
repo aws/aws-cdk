@@ -256,7 +256,8 @@
       "V3_8_X",
       "V3_8_X_KRAFT",
       "V3_9_X",
-      "V3_9_X_KRAFT"
+      "V3_9_X_KRAFT",
+      "V4_0_X_KRAFT"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-neptune-alpha/lib/cluster.ts": {
@@ -2424,7 +2425,8 @@
       "VER_3_07_1",
       "VER_3_08_0",
       "VER_3_08_1",
-      "VER_3_08_2"
+      "VER_3_08_2",
+      "VER_3_09_0"
     ],
     "AuroraPostgresEngineVersion": [
       "VER_9_6_8",
@@ -2705,6 +2707,7 @@
       "VER_5_7_44_RDS_20240808",
       "VER_5_7_44_RDS_20250103",
       "VER_5_7_44_RDS_20250213",
+      "VER_5_7_44_RDS_20250508",
       "VER_8_0",
       "VER_8_0_11",
       "VER_8_0_13",

@@ -10,7 +10,11 @@ import * as fs from 'fs';
 import * as crypto from 'crypto';
 import * as os from 'os';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'TestBucketDeploymentLargeFile');
 const bucket = new Bucket(stack, 'Bucket', {
   removalPolicy: RemovalPolicy.DESTROY, // Allow bucket deletion

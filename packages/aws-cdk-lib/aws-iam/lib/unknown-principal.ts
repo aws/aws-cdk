@@ -1,7 +1,7 @@
 import { DependencyGroup, IConstruct, Node } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
-import { Annotations, Stack } from '../../core';
+import { Annotations, Stack, UnscopedValidationError } from '../../core';
 
 /**
  * Properties for an UnknownPrincipal
@@ -35,7 +35,7 @@ export class UnknownPrincipal implements IPrincipal {
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    throw new Error(`Cannot get policy fragment of ${Node.of(this.resource).path}, resource imported without a role`);
+    throw new UnscopedValidationError(`Cannot get policy fragment of ${Node.of(this.resource).path}, resource imported without a role`);
   }
 
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {

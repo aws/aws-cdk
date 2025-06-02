@@ -71,7 +71,11 @@ class EventApiCognitoAuthStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new EventApiCognitoAuthStack(app, 'EventApiCognitoAuthStack');
 
 const integTest = new IntegTest(app, 'appsync-event-api-cognito-auth', {

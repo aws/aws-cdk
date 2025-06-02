@@ -192,11 +192,15 @@ describe('cluster engine', () => {
     const engine_ver_3_08_2 = DatabaseClusterEngine.auroraMysql({
       version: AuroraMysqlEngineVersion.VER_3_08_2,
     });
+    const engine_ver_3_09_0 = DatabaseClusterEngine.auroraMysql({
+      version: AuroraMysqlEngineVersion.VER_3_09_0,
+    });
 
     // THEN
     expect(engine_ver_3_07_1.parameterGroupFamily).toEqual('aurora-mysql8.0');
     expect(engine_ver_3_08_0.parameterGroupFamily).toEqual('aurora-mysql8.0');
     expect(engine_ver_3_08_1.parameterGroupFamily).toEqual('aurora-mysql8.0');
     expect(engine_ver_3_08_2.parameterGroupFamily).toEqual('aurora-mysql8.0');
+    expect(engine_ver_3_09_0.parameterGroupFamily).toEqual('aurora-mysql8.0');
   });
 });

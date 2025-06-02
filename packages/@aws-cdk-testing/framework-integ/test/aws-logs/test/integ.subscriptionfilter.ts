@@ -24,7 +24,11 @@ class SubscriptionFilterIntegStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new SubscriptionFilterIntegStack(app, 'aws-cdk-subscriptionfilter-integ');
 
 new IntegTest(app, 'integ-test', {

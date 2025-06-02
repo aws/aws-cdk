@@ -3,8 +3,9 @@ import { SubscriptionProps } from './subscription';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
-import { ArnFormat, FeatureFlags, Names, Stack, Token, ValidationError } from '../../core';
+import { FeatureFlags, Names, ValidationError } from '../../core';
 import * as cxapi from '../../cx-api';
+import { regionFromArn } from './private/util';
 
 /**
  * Properties for an SQS subscription
@@ -88,25 +89,9 @@ export class SqsSubscription implements sns.ITopicSubscription {
       rawMessageDelivery: this.props.rawMessageDelivery,
       filterPolicy: this.props.filterPolicy,
       filterPolicyWithMessageBody: this.props.filterPolicyWithMessageBody,
-      region: this.regionFromArn(topic),
+      region: regionFromArn(topic, this.queue),
       deadLetterQueue: this.props.deadLetterQueue,
       subscriptionDependency: queuePolicyDependable,
     };
-  }
-
-  private regionFromArn(topic: sns.ITopic): string | undefined {
-    // no need to specify `region` for topics defined within the same stack
-    if (topic instanceof sns.Topic) {
-      if (topic.stack !== this.queue.stack) {
-        // only if we know the region, will not work for
-        // env agnostic stacks
-        if (!Token.isUnresolved(topic.env.region) &&
-          (topic.env.region !== this.queue.env.region)) {
-          return topic.env.region;
-        }
-      }
-      return undefined;
-    }
-    return Stack.of(topic).splitArn(topic.topicArn, ArnFormat.SLASH_RESOURCE_NAME).region;
   }
 }

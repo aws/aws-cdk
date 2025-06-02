@@ -56,7 +56,11 @@ class GaStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new GaStack(app, 'integ-globalaccelerator');
 new IntegTest(app, 'GlobalAcceleratorInteg', {
   testCases: [stack],

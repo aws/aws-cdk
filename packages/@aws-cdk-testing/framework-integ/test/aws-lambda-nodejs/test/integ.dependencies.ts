@@ -63,7 +63,11 @@ class SdkV3BundledStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const sdkV3testCase = new SdkV3TestStack(app, 'cdk-integ-lambda-nodejs-dependencies-for-sdk-v3');
 const sdkV3BundledSdk = new SdkV3BundledStack(app, 'cdk-integ-lambda-nodejs-dependencies-for-sdk-v3-bundled');
 
