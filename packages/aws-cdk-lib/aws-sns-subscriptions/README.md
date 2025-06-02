@@ -13,8 +13,9 @@ Subscriptions can be added to the following endpoints:
 * AWS Lambda
 * Email
 * SMS
+* Amazon Data Firehose
 
-Subscriptions to Amazon SQS and AWS Lambda can be added on topics across regions.
+Subscriptions to Amazon SQS, AWS Lambda and Amazon Data Firehose can be added on topics across regions.
 
 Create an Amazon SNS Topic to add subscriptions.
 
@@ -146,4 +147,30 @@ const myTopic = new sns.Topic(this, 'Topic');
 const smsNumber = new CfnParameter(this, 'sms-param');
 
 myTopic.addSubscription(new subscriptions.SmsSubscription(smsNumber.valueAsString));
+```
+
+### Amazon Data Firehose
+
+Subscribe an Amazon Data Firehose delivery stream to your topic:
+
+```ts
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+
+const myTopic = new sns.Topic(this, 'Topic');
+declare const stream: firehose.DeliveryStream;
+
+myTopic.addSubscription(new subscriptions.FirehoseSubscription(stream));
+```
+
+To remove any Amazon SNS metadata from published messages, specify `rawMessageDelivery` to true.
+
+```ts
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+
+const myTopic = new sns.Topic(this, 'Topic');
+declare const stream: firehose.DeliveryStream;
+
+myTopic.addSubscription(new subscriptions.FirehoseSubscription(stream, {
+  rawMessageDelivery: true,
+}));
 ```
