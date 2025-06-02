@@ -1862,6 +1862,10 @@ export class Cluster extends ClusterBase {
         this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity }) : undefined;
     }
 
+    if (props.outputConfigCommand && !props.mastersRole) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:clusterMastersroleNotSpecified', '\'outputConfigCommand\' will be ignored as \'mastersRole\' has not been specified.');
+    }
+
     const outputConfigCommand = (props.outputConfigCommand ?? true) && props.mastersRole;
     if (outputConfigCommand) {
       const postfix = commonCommandOptions.join(' ');
