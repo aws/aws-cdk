@@ -44,6 +44,7 @@ test('create a plan and add rules', () => {
           },
           RuleName: 'PlanRule0',
           ScheduleExpression: 'cron(30 3 15 * ? *)',
+          ScheduleExpressionTimezone: 'UTC',
           StartWindowMinutes: 60,
           TargetBackupVault: {
             'Fn::GetAtt': [
