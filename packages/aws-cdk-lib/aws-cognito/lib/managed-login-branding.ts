@@ -236,7 +236,7 @@ export interface ManagedLoginBrandingProps {
    * The settings object has a complex structure with nested properties for components, componentClasses,
    * and categories. For the complete structure, refer to the AWS documentation or export existing branding
    * settings using the AWS CLI command:
-   * `aws cognito-idp describe-managed-login-branding --user-pool-id YOUR_POOL_ID`
+   * `aws cognito-idp describe-managed-login-branding --user-pool-id YOUR_POOL_ID --managed-login-branding-id YOUR_BRANDING_ID`
    *
    * @default - No custom settings are provided
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-managedloginbranding.html
