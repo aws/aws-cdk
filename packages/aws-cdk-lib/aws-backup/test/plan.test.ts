@@ -25,6 +25,7 @@ test('create a plan and add rules', () => {
           hour: '3',
           minute: '30',
         }),
+        scheduleExpressionTimezone: 'UTC',
         moveToColdStorageAfter: Duration.days(30),
       }),
     ],
