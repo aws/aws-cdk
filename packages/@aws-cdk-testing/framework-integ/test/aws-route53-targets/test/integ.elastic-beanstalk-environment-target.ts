@@ -77,7 +77,7 @@ class TestStack extends cdk.Stack {
 
     const eb = new elasticbeanstalk.CfnEnvironment(this, 'Environment', {
       applicationName: appName,
-      solutionStackName: '64bit Amazon Linux 2023 v6.3.0 running Node.js 20',
+      solutionStackName: '64bit Amazon Linux 2023 v6.4.3 running Node.js 20',
       environmentName: 'MyEnvironment',
       optionSettings: optionSettingProperties,
       versionLabel: appVersion.ref,
@@ -134,7 +134,11 @@ class TestStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new TestStack(app, 'aws-cdk-elasticbeanstalk-integ');
 
 new IntegTest(app, 'aws-cdk-elasticbeanstalk-integ-test', {

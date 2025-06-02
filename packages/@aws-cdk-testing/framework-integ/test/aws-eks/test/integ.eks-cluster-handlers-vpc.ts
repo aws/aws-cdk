@@ -17,7 +17,12 @@ class EksAllHandlersInVpcStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 
 const stack = new EksAllHandlersInVpcStack(app, 'aws-cdk-eks-handlers-in-vpc-test');
 new integ.IntegTest(app, 'aws-cdk-eks-handlers-in-vpc', {

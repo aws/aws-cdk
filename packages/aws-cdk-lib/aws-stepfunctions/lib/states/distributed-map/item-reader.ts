@@ -1,6 +1,6 @@
 import * as iam from '../../../../aws-iam';
 import { IBucket } from '../../../../aws-s3';
-import { Arn, ArnFormat, Aws } from '../../../../core';
+import { Arn, ArnFormat, Aws, UnscopedValidationError } from '../../../../core';
 import { FieldUtils } from '../../fields';
 import { QueryLanguage } from '../../types';
 
@@ -95,7 +95,7 @@ export class S3ObjectsItemReader implements IItemReader {
    */
   public get bucket(): IBucket {
     if (!this._bucket) {
-      throw new Error('`bucket` is undefined');
+      throw new UnscopedValidationError('`bucket` is undefined');
     }
     return this._bucket;
   }
@@ -211,7 +211,7 @@ abstract class S3FileItemReader implements IItemReader {
    */
   public get bucket(): IBucket {
     if (!this._bucket) {
-      throw new Error('`bucket` is undefined');
+      throw new UnscopedValidationError('`bucket` is undefined');
     }
     return this._bucket;
   }
@@ -328,6 +328,13 @@ export class S3JsonItemReader extends S3FileItemReader {
 }
 
 /**
+ * Item Reader configuration for iterating over the rows of the JSONL file stored in S3
+ */
+export class S3JsonLItemReader extends S3FileItemReader {
+  protected readonly inputType: string = 'JSONL';
+}
+
+/**
  * CSV header location options
  */
 export enum CsvHeaderLocation {
@@ -389,6 +396,44 @@ export interface S3CsvItemReaderProps extends S3FileItemReaderProps {
    * @default - CsvHeaders with CsvHeadersLocation.FIRST_ROW
    */
   readonly csvHeaders?: CsvHeaders;
+
+  /**
+   * Delimiter used in a CSV file
+   *
+   * @default undefined - Default setting is COMMA.
+   */
+  readonly csvDelimiter?: CsvDelimiter;
+}
+
+/**
+ * Delimiter used in CSV file
+ */
+export enum CsvDelimiter {
+
+  /**
+   * Comma delimiter
+   */
+  COMMA = 'COMMA',
+
+  /**
+   * Pipe delimiter
+   */
+  PIPE = 'PIPE',
+
+  /**
+   * Semicolon delimiter
+   */
+  SEMICOLON = 'SEMICOLON',
+
+  /**
+   * Space delimiter
+   */
+  SPACE = 'SPACE',
+
+  /**
+   * Tab delimiter
+   */
+  TAB = 'TAB',
 }
 
 /**
@@ -399,11 +444,16 @@ export class S3CsvItemReader extends S3FileItemReader {
    * CSV headers configuration
    */
   readonly csvHeaders: CsvHeaders;
+  /**
+   * Delimiter used in CSV file
+   */
+  readonly csvDelimiter?: CsvDelimiter;
   protected readonly inputType: string = 'CSV';
 
   constructor(props: S3CsvItemReaderProps) {
     super(props);
     this.csvHeaders = props.csvHeaders ?? CsvHeaders.useFirstRow();
+    this.csvDelimiter = props.csvDelimiter;
   }
 
   public render(queryLanguage?: QueryLanguage): any {
@@ -412,6 +462,7 @@ export class S3CsvItemReader extends S3FileItemReader {
     rendered.ReaderConfig = FieldUtils.renderObject({
       ...rendered.ReaderConfig,
       ...{
+        CSVDelimiter: this.csvDelimiter,
         CSVHeaderLocation: this.csvHeaders.headerLocation,
         ...(this.csvHeaders.headers && { CSVHeaders: this.csvHeaders.headers }),
       },

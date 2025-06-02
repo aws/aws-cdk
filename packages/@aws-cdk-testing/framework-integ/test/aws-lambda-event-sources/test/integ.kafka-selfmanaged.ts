@@ -110,10 +110,30 @@ zp2mwJn2NYB7AZ7+imp0azDZb+8YG2aUCiyqb6PnnA==
         maximumPollers: 3,
       },
     }));
+
+    const fn4 = new TestFunction(this, 'F4');
+    rootCASecret.grantRead(fn4);
+    clientCertificatesSecret.grantRead(fn4);
+
+    fn4.addEventSource(new SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'my-test-topic4',
+      consumerGroupId: 'myTestConsumerGroup4',
+      secret: clientCertificatesSecret,
+      authenticationMethod:
+        AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
+      rootCACertificate: rootCASecret,
+      startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1730270400,
+    }));
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new KafkaSelfManagedEventSourceTest(
   app,
   'lambda-event-source-kafka-self-managed',

@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "testCases": {
     "DynamoImportSourceIntegTest/DefaultTest": {
       "stacks": [
@@ -10,5 +10,6 @@
       "assertionStack": "DynamoImportSourceIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "DynamoImportSourceIntegTestDefaultTestDeployAssert540810E4"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

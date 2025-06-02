@@ -694,6 +694,23 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
+To provide additional Helm chart values supported by `albController` in CDK, use the `additionalHelmChartValues` property. For example, the following code snippet shows how to set the `enableWafV2` flag:
+
+```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
+new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_32,
+  albController: {
+    version: eks.AlbControllerVersion.V2_8_2,
+    additionalHelmChartValues: {
+      enableWafv2: false
+    }
+  },
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
+});
+```
+
 The `albController` requires `defaultCapacity` or at least one nodegroup. If there's no `defaultCapacity` or available
 nodegroup for the cluster, the `albController` deployment would fail.
 
@@ -1935,10 +1952,13 @@ declare const cluster: eks.Cluster;
 
 new eks.Addon(this, 'Addon', {
   cluster,
-  addonName: 'aws-guardduty-agent',
-  addonVersion: 'v1.6.1',
+  addonName: 'coredns',
+  addonVersion: 'v1.11.4-eksbuild.2',
   // whether to preserve the add-on software on your cluster but Amazon EKS stops managing any settings for the add-on.
   preserveOnDelete: false,
+  configurationValues: {
+    replicaCount: 2,
+  },
 });
 ```
 
@@ -2021,6 +2041,19 @@ const cluster = new eks.Cluster(this, 'Cluster', {
     eks.ClusterLoggingTypes.SCHEDULER,
   ],
   kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
+});
+```
+
+## NodeGroup Repair Config
+
+You can enable Managed Node Group [auto-repair config](https://docs.aws.amazon.com/eks/latest/userguide/node-health.html#node-auto-repair) using `enableNodeAutoRepair`
+property. For example:
+
+```ts
+declare const cluster: eks.Cluster;
+
+cluster.addNodegroupCapacity('NodeGroup', {
+  enableNodeAutoRepair:true,
 });
 ```
 

@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "MinimumCapacityUnitNlbStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/645819341e5027e1e6fbff2545a904671d46da4c650efff662a21fbe9078e4fe.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/797ec0b857b3281bfb152461758a9e199e09ee61bab3c2c84474fe4dc86a4ee0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,54 @@
         "MinimumCapacityUnitNlbStack.assets"
       ],
       "metadata": {
+        "/MinimumCapacityUnitNlbStack/Stack": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*"
+            }
+          }
+        ],
         "/MinimumCapacityUnitNlbStack/Stack/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Stack8A423254"
+          }
+        ],
+        "/MinimumCapacityUnitNlbStack/Stack/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/MinimumCapacityUnitNlbStack/Stack/PublicSubnet1/Subnet": [
@@ -76,6 +120,34 @@
             "data": "StackPublicSubnet1NATGatewayD2E1ABF7"
           }
         ],
+        "/MinimumCapacityUnitNlbStack/Stack/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/MinimumCapacityUnitNlbStack/Stack/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -112,6 +184,12 @@
             "data": "StackVPCGWFFCB6290"
           }
         ],
+        "/MinimumCapacityUnitNlbStack/Stack/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/MinimumCapacityUnitNlbStack/Stack/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -142,10 +220,30 @@
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
+        "/MinimumCapacityUnitNlbStack/LB": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/MinimumCapacityUnitNlbStack/LB/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LB8A12904C"
+          }
+        ],
+        "/MinimumCapacityUnitNlbStack/LB/Listener": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/MinimumCapacityUnitNlbStack/LB/Listener/Resource": [
@@ -229,5 +327,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

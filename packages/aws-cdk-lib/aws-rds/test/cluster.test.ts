@@ -21,6 +21,7 @@ import {
   ClusterScailabilityType,
   DBClusterStorageType,
   DatabaseInsightsMode,
+  EngineLifecycleSupport,
 } from '../lib';
 
 describe('cluster new api', () => {
@@ -167,6 +168,29 @@ describe('cluster new api', () => {
   });
 
   describe('cluster options', () => {
+    test.each([
+      EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
+      EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    ])('specify engine lifecycle support for %s', (engineLifecycleSupport) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        engineLifecycleSupport,
+        writer: ClusterInstance.serverlessV2('writer'),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        EngineLifecycleSupport: engineLifecycleSupport,
+      });
+    });
+
     test.each([true, false])('specify auto minor version upgrade', (autoMinorVersionUpgrade) => {
       // GIVEN
       const stack = testStack();
@@ -4467,6 +4491,47 @@ describe('cluster', () => {
     expect(meta[0].data).toEqual('Cluster requires at least 2 subnets, got 0');
   });
 
+  test('create a read replica using replicationSourceIdentifier', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        vpc,
+      },
+      replicationSourceIdentifier: 'identifier',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
+      Properties: {
+        Engine: 'aurora-mysql',
+        ReplicationSourceIdentifier: 'identifier',
+      },
+    });
+  });
+
+  test('throws when replicationSourceIdentifier and credentials both specified', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      credentials: {
+        username: 'admin',
+      },
+      instanceProps: {
+        vpc,
+      },
+      replicationSourceIdentifier: 'identifier',
+    })).toThrow('Cannot specify both `replicationSourceIdentifier` and `credentials`');
+  });
+
   test('create a cluster from a snapshot', () => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -5065,6 +5130,38 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       Engine: 'aurora-mysql',
       PubliclyAccessible: false,
+    });
+  });
+
+  test('can set availability zone for instance', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      writer: ClusterInstance.provisioned('writer', {
+        instanceIdentifier: 'writer-instance',
+        availabilityZone: 'us-east-1a',
+      }),
+      readers: [ClusterInstance.serverlessV2('reader', {
+        instanceIdentifier: 'reader-instance',
+        availabilityZone: 'us-east-1b',
+      })],
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      Engine: 'aurora-mysql',
+      DBInstanceIdentifier: 'writer-instance',
+      AvailabilityZone: 'us-east-1a',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      Engine: 'aurora-mysql',
+      DBInstanceIdentifier: 'reader-instance',
+      AvailabilityZone: 'us-east-1b',
     });
   });
 

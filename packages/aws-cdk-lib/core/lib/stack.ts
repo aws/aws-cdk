@@ -4,7 +4,7 @@ import { IConstruct, Construct, Node } from 'constructs';
 import { Annotations } from './annotations';
 import { App } from './app';
 import { Arn, ArnComponents, ArnFormat } from './arn';
-import { AspectPriority, Aspects } from './aspect';
+import { Aspects } from './aspect';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
@@ -18,6 +18,7 @@ import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/clo
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
+import { IPropertyInjector, PropertyInjectors } from './prop-injectors';
 import * as cxschema from '../../cloud-assembly-schema';
 import { INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION } from '../../cx-api';
 import * as cxapi from '../../cx-api';
@@ -38,7 +39,6 @@ const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
 const MAX_RESOURCES = 500;
 
-const STRING_LIST_REFERENCE_DELIMITER = '||';
 export interface StackProps {
   /**
    * A description of the stack.
@@ -197,6 +197,12 @@ export interface StackProps {
    * @default - the value of `@aws-cdk/core:suppressTemplateIndentation`, or `false` if that is not set.
    */
   readonly suppressTemplateIndentation?: boolean;
+
+  /**
+   * A list of IPropertyInjector attached to this Stack.
+   * @default - no PropertyInjectors
+   */
+  readonly propertyInjectors?: IPropertyInjector[];
 }
 
 /**
@@ -208,7 +214,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
-  public static isStack(x: any): x is Stack {
+  public static isStack(this: void, x: any): x is Stack {
     return x !== null && typeof(x) === 'object' && STACK_SYMBOL in x;
   }
 
@@ -433,6 +439,11 @@ export class Stack extends Construct implements ITaggable {
 
     super(scope, id);
 
+    if (props.propertyInjectors) {
+      const injectors = PropertyInjectors.of(this);
+      injectors.add(...props.propertyInjectors);
+    }
+
     this._missingContext = new Array<cxschema.MissingContext>();
     this._stackDependencies = { };
     this.templateOptions = { };
@@ -488,9 +499,11 @@ export class Stack extends Construct implements ITaggable {
     const featureFlags = FeatureFlags.of(this);
     const stackNameDupeContext = featureFlags.isEnabled(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT);
     const newStyleSynthesisContext = featureFlags.isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
-    this.artifactId = (stackNameDupeContext || newStyleSynthesisContext)
+    const artifactId = (stackNameDupeContext || newStyleSynthesisContext)
       ? this.generateStackArtifactId()
       : this.stackName;
+    // Sanitize artifact id, since it is used as part of a file name
+    this.artifactId = artifactId.replace(/[^A-Za-z0-9_\-\.]/g, '_');
 
     this.templateFile = `${this.artifactId}.template.json`;
 
@@ -583,7 +596,9 @@ export class Stack extends Construct implements ITaggable {
             node.addPropertyOverride('PermissionsBoundary', permissionsBoundaryArn);
           }
         },
-      }, { priority: AspectPriority.MUTATING });
+      }, {
+        priority: mutatingAspectPrio32333(this),
+      });
     }
   }
 
@@ -602,7 +617,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Convert an object, potentially containing tokens, to a JSON string
    */
-  public toJsonString(obj: any, space?: number): string {
+  public toJsonString(this: void, obj: any, space?: number): string {
     return CloudFormationLang.toJSON(obj, space).toString();
   }
 
@@ -1781,7 +1796,7 @@ interface StackDependency {
 }
 
 interface ResolvedExport {
-  exportable: Reference;
+  exportable: Intrinsic;
   exportsScope: Construct;
   id: string;
   exportName: string;
@@ -1831,8 +1846,11 @@ import { StringSpecializer } from './helpers-internal/string-specializer';
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
-import { getExportable } from './private/refs';
+import { getExportable, STRING_LIST_REFERENCE_DELIMITER } from './private/refs';
 import { Fact, RegionInfo } from '../../region-info';
 import { deployTimeLookup } from './private/region-lookup';
-import { makeUniqueResourceName } from './private/unique-resource-name';import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
+import { makeUniqueResourceName } from './private/unique-resource-name';
+import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
+import { Intrinsic } from './private/intrinsic';
+import { mutatingAspectPrio32333 } from './private/aspect-prio';
 /* eslint-enable import/order */

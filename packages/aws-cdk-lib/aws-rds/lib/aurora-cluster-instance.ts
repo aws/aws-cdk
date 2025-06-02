@@ -13,6 +13,7 @@ import * as kms from '../../aws-kms';
 import { IResource, Resource, Duration, RemovalPolicy, ArnFormat, FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS } from '../../cx-api';
 
 /**
@@ -224,6 +225,17 @@ export interface ClusterInstanceOptions {
    * @default - `true` if the cluster's `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
    */
   readonly publiclyAccessible?: boolean;
+
+  /**
+   * The Availability Zone (AZ) where the database will be created.
+   *
+   * For Amazon Aurora, each Aurora DB cluster hosts copies of its storage in three separate Availability Zones.
+   * Specify one of these Availability Zones. Aurora automatically chooses an appropriate Availability Zone if you don't specify one.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.RegionsAndAvailabilityZones.html
+   * @default - A random, system-chosen Availability Zone in the endpointʼs AWS Region.
+   */
+  readonly availabilityZone?: string;
 
   /**
    * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
@@ -472,7 +484,10 @@ export interface IAuroraClusterInstance extends IResource {
   readonly performanceInsightEncryptionKey?: kms.IKey;
 }
 
+@propertyInjectable
 class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.AuroraClusterInstance';
   public readonly dbInstanceArn: string;
   public readonly dbiResourceId: string;
   public readonly dbInstanceEndpointAddress: string;
@@ -552,6 +567,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         // Instance properties
         dbInstanceClass: props.instanceType ? databaseInstanceType(instanceType) : undefined,
         publiclyAccessible,
+        availabilityZone: props.availabilityZone,
         preferredMaintenanceWindow: props.preferredMaintenanceWindow,
         enablePerformanceInsights: this.performanceInsightsEnabled || props.enablePerformanceInsights, // fall back to undefined if not set
         performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,

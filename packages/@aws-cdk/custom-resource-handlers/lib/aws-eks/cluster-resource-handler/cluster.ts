@@ -134,21 +134,14 @@ export class ClusterResourceHandler extends ResourceHandler {
       return this.onCreate();
     }
 
-    // We can only update one type of the UpdateTypes:
-    type UpdateTypes = {
-      updateLogging: boolean;
-      updateAccess: boolean;
-      updateVpc: boolean;
-      updateAuthMode: boolean;
-    };
     // validate updates
-    const updateTypes = Object.keys(updates) as (keyof UpdateTypes)[];
+    const updateTypes = Object.keys(updates).filter(type => type !== 'updateTags') as (keyof UpdateMap)[];
     const enabledUpdateTypes = updateTypes.filter((type) => updates[type]);
     console.log(enabledUpdateTypes);
 
     if (enabledUpdateTypes.length > 1) {
       throw new Error(
-        'Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed',
+        `Only one type of update - ${updateTypes.join(', ')} can be allowed`,
       );
     }
 
@@ -224,6 +217,18 @@ export class ClusterResourceHandler extends ResourceHandler {
       }
 
       if (updates.updateAuthMode) {
+        // update-authmode will fail if we try to update to the same mode,
+        // so skip in this case.
+        try {
+          const cluster = (await this.eks.describeCluster({ name: this.clusterName })).cluster;
+          if (cluster?.accessConfig?.authenticationMode === this.newProps.accessConfig?.authenticationMode) {
+            console.log(`cluster already at ${cluster?.accessConfig?.authenticationMode}, skipping authMode update`);
+            return;
+          }
+        } catch (e: any) {
+          throw e;
+        }
+
         // the update path must be
         // `undefined or CONFIG_MAP` -> `API_AND_CONFIG_MAP` -> `API`
         // and it's one way path.
@@ -252,17 +257,6 @@ export class ClusterResourceHandler extends ResourceHandler {
         if (this.oldProps.accessConfig?.authenticationMode === 'CONFIG_MAP' &&
           this.newProps.accessConfig?.authenticationMode === 'API') {
           throw new Error('Cannot update from CONFIG_MAP to API');
-        }
-        // update-authmode will fail if we try to update to the same mode,
-        // so skip in this case.
-        try {
-          const cluster = (await this.eks.describeCluster({ name: this.clusterName })).cluster;
-          if (cluster?.accessConfig?.authenticationMode === this.newProps.accessConfig?.authenticationMode) {
-            console.log(`cluster already at ${cluster?.accessConfig?.authenticationMode}, skipping authMode update`);
-            return;
-          }
-        } catch (e: any) {
-          throw e;
         }
         config.accessConfig = this.newProps.accessConfig;
       }

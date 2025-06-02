@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster-al2023-nodegroup-test.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/55d146642494abe95d03de6df5a92b0ab7531ebecc5aefd95cf9664cbb37f6f1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/30197e038c13588b9597a6ef9b869aea7fcd5860d16eb1a82c804b3a3a059cc1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -812,6 +812,18 @@
             "data": "ClustermastersRoleAccess698EBA51"
           }
         ],
+        "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/ConfigCommand": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterConfigCommand43AAE40F"
+          }
+        ],
+        "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/GetTokenCommand": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterGetTokenCommand06AE992E"
+          }
+        ],
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_X86_64_STANDARD": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -1147,5 +1159,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

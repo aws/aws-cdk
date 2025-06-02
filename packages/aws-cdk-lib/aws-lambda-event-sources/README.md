@@ -163,7 +163,7 @@ and add it to your Lambda function. The following parameters will impact Amazon 
 * __reportBatchItemFailures__: Allow functions to return partially successful responses for a batch of records.
 * __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of delayed processing.
 * __maxRecordAge__: The maximum age of a record that will be sent to the function for processing. Records that exceed the max age will be treated as failures.
-* __onFailure__: In the event a record fails after all retries or if the record age has exceeded the configured value, the record will be sent to SQS queue or SNS topic that is specified here
+* __onFailure__: In the event a record fails after all retries or if the record age has exceeded the configured value, the record will be sent to S3 bucket, SQS queue or SNS topic that is specified here
 * __parallelizationFactor__: The number of batches to concurrently process on each shard.
 * __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all records that arrived prior to attaching the event source.
@@ -229,10 +229,10 @@ behavior:
 * __reportBatchItemFailures__: Allow functions to return partially successful responses for a batch of records.
 * __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of possibly delaying processing.
 * __maxRecordAge__: The maximum age of a record that will be sent to the function for processing. Records that exceed the max age will be treated as failures.
-* __onFailure__: In the event a record fails and consumes all retries, the record will be sent to SQS queue or SNS topic that is specified here
+* __onFailure__: In the event a record fails and consumes all retries, the record will be sent to S3 bucket, SQS queue or SNS topic that is specified here
 * __parallelizationFactor__: The number of batches to concurrently process on each shard.
 * __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
-* __startingPosition__: Will determine where to begin consumption. 'LATEST' will start at the most recent record and ignore all records that arrived prior to attaching the event source, 'TRIM_HORIZON' will start at the oldest record and ensure you process all available data, while 'AT_TIMESTAMP' will start reading records from a specified time stamp. Note that 'AT_TIMESTAMP' is only supported for Amazon Kinesis streams.
+* __startingPosition__: Will determine where to begin consumption. 'LATEST' will start at the most recent record and ignore all records that arrived prior to attaching the event source, 'TRIM_HORIZON' will start at the oldest record and ensure you process all available data, while 'AT_TIMESTAMP' will start reading records from a specified time stamp.
 * __startingPositionTimestamp__: The time stamp from which to start reading. Used in conjunction with __startingPosition__ when set to 'AT_TIMESTAMP'.
 * __tumblingWindow__: The duration in seconds of a processing window when using streams.
 * __enabled__: If the event source mapping should be enabled. The default is true.
@@ -271,7 +271,14 @@ myFunction.addEventSource(new KinesisConsumerEventSource(streamConsumer, {
 
 ## Kafka
 
-You can write Lambda functions to process data either from [Amazon MSK](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html) or a [self managed Kafka](https://docs.aws.amazon.com/lambda/latest/dg/kafka-smaa.html) cluster.
+You can write Lambda functions to process data either from [Amazon MSK](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html) or a [self-managed Kafka](https://docs.aws.amazon.com/lambda/latest/dg/kafka-smaa.html) cluster. The following parameters will impact to the polling behavior:
+
+* __startingPosition__: Will determine where to begin consumption. 'LATEST' will start at the most recent record and ignore all records that arrived prior to attaching the event source, 'TRIM_HORIZON' will start at the oldest record and ensure you process all available data, while 'AT_TIMESTAMP' will start reading records from a specified time stamp.
+* __startingPositionTimestamp__: The time stamp from which to start reading. Used in conjunction with __startingPosition__ when set to 'AT_TIMESTAMP'.
+* __batchSize__: Determines how many records are buffered before invoking your lambda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
+* __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of possibly delaying processing.
+* __onFailure__: In the event a record fails and consumes all retries, the record will be sent to SQS queue or SNS topic that is specified here
+* __enabled__: If the Kafka event source mapping should be enabled. The default is true.
 
 The following code sets up Amazon MSK as an event source for a lambda function. Credentials will need to be configured to access the
 MSK cluster, as described in [Username/Password authentication](https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html).

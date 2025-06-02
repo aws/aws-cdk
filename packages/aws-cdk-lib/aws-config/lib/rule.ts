@@ -4,8 +4,9 @@ import { CfnConfigRule } from './config.generated';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
-import { IResource, Lazy, Resource, Stack } from '../../core';
+import { IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface representing an AWS Config rule
@@ -272,7 +273,10 @@ export interface ManagedRuleProps extends RuleProps {
  *
  * @resource AWS::Config::ConfigRule
  */
+@propertyInjectable
 export class ManagedRule extends RuleNew {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-config.ManagedRule';
   /** @attribute */
   public readonly configRuleName: string;
 
@@ -403,7 +407,10 @@ export interface CustomRuleProps extends RuleProps {
  *
  * @resource AWS::Config::ConfigRule
  */
+@propertyInjectable
 export class CustomRule extends RuleNew {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-config.CustomRule';
   /** @attribute */
   public readonly configRuleName: string;
 
@@ -424,7 +431,7 @@ export class CustomRule extends RuleNew {
     addConstructMetadata(this, props);
 
     if (!props.configurationChanges && !props.periodic) {
-      throw new Error('At least one of `configurationChanges` or `periodic` must be set to true.');
+      throw new ValidationError('At least one of `configurationChanges` or `periodic` must be set to true.', this);
     }
 
     const sourceDetails: SourceDetail[] = [];
@@ -449,6 +456,7 @@ export class CustomRule extends RuleNew {
     }
     const hash = createHash('sha256')
       .update(JSON.stringify({
+        /* eslint-disable-next-line @typescript-eslint/unbound-method *//* REMOVEME: this is a latent bug */
         fnName: props.lambdaFunction.functionName.toString,
         accountId: Stack.of(this).resolve(this.env.account),
         region: Stack.of(this).resolve(this.env.region),
@@ -520,7 +528,13 @@ export interface CustomPolicyProps extends RuleProps {
  *
  * @resource AWS::Config::ConfigRule
  */
+@propertyInjectable
 export class CustomPolicy extends RuleNew {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-config.CustomPolicy';
+
   /** @attribute */
   public readonly configRuleName: string;
 
@@ -541,10 +555,10 @@ export class CustomPolicy extends RuleNew {
     addConstructMetadata(this, props);
 
     if (!props.policyText || [...props.policyText].length === 0) {
-      throw new Error('Policy Text cannot be empty.');
+      throw new ValidationError('Policy Text cannot be empty.', this);
     }
     if ([...props.policyText].length > 10000) {
-      throw new Error('Policy Text is limited to 10,000 characters or less.');
+      throw new ValidationError('Policy Text is limited to 10,000 characters or less.', this);
     }
 
     const sourceDetails: SourceDetail[] = [];
@@ -2753,7 +2767,7 @@ export class ResourceType {
   public static readonly IAM_SAML_PROVIDER = new ResourceType('AWS::IAM::SAMLProvider');
   /** AWS IAM ServerCertificate */
   public static readonly IAM_SERVER_CERTIFICATE = new ResourceType('AWS::IAM::ServerCertificate');
-  /** Amazon Kinesis Firehose DeliveryStream */
+  /** Amazon Data Firehose DeliveryStream */
   public static readonly KINESIS_FIREHOSE_DELIVERY_STREAM = new ResourceType('AWS::KinesisFirehose::DeliveryStream');
   /** Amazon Pinpoint Campaign */
   public static readonly PINPOINT_CAMPAIGN = new ResourceType('AWS::Pinpoint::Campaign');

@@ -143,7 +143,7 @@ const updateLabels = tasks.HttpInvoke.jsonata(this, 'Update Issue Labels', {
   apiRoot: "{% 'https://' & $states.input.hostname %}",
   apiEndpoint: sfn.TaskInput.fromText("{% 'issues/' & $states.input.issue.id & 'labels' %}"),
   method: sfn.TaskInput.fromText('POST'),
-  body: sfn.TaskInput.fromObject({ 
+  body: sfn.TaskInput.fromObject({
     labels: '{% [$type, $component] %}',
   }),
 });
@@ -231,7 +231,7 @@ in the `aws-cdk-lib/aws-stepfunctions-tasks` package.
 
 With variables and state output, you can pass data between the steps of your workflow.
 
-Using workflow variables, you can store data in a step and retrieve that data in future steps. For example, you could store an API response that contains data you might need later. Conversely, state output can only be used as input to the very next step. 
+Using workflow variables, you can store data in a step and retrieve that data in future steps. For example, you could store an API response that contains data you might need later. Conversely, state output can only be used as input to the very next step.
 
 ### Variable
 
@@ -661,7 +661,7 @@ in a `Parallel` state if you want to catch and recover from this.
 
 #### JSONata
 
-When you're using JSONata, use the `jsonata` function to specify the condition using a JSONata expression: 
+When you're using JSONata, use the `jsonata` function to specify the condition using a JSONata expression:
 
 ```ts
 sfn.Condition.jsonata('{% 1+1 = 2 %}'); // true
@@ -725,7 +725,8 @@ see [step function comparison operators](https://docs.aws.amazon.com/step-functi
 ### Parallel
 
 A `Parallel` state executes one or more subworkflows in parallel. It can also
-be used to catch and recover from errors in subworkflows.
+be used to catch and recover from errors in subworkflows. The `parameters` property
+can be used to transform the input that is passed to each branch of the parallel execution.
 
 ```ts
 const parallel = new sfn.Parallel(this, 'Do the work in parallel');
@@ -1012,10 +1013,13 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
 * CSV file stored in S3
 * S3 inventory manifest stored in S3
 
-Map states in Distributed mode also support writing results of the iterator to an S3 bucket and optional prefix.  Use a `ResultWriter` object provided via the optional `resultWriter` property to configure which S3 location iterator results will be written. The default behavior id `resultWriter` is omitted is to use the state output payload. However, if the iterator results are larger than the 256 kb limit for Step Functions payloads then the State Machine will fail.
+Map states in Distributed mode also support writing results of the iterator to an S3 bucket and optional prefix.  Use a `ResultWriterV2` object provided via the optional `resultWriter` property to configure which S3 location iterator results will be written. The default behavior id `resultWriter` is omitted is to use the state output payload. However, if the iterator results are larger than the 256 kb limit for Step Functions payloads then the State Machine will fail.
 
-ResultWriter object will default to use the Distributed map's query language. If the Distributed map's does not specify a query language, then it
+ResultWriterV2 object will default to use the Distributed map's query language. If the Distributed map's does not specify a query language, then it
 will fall back to the State machine's query langauge.
+
+Note: `ResultWriter` has been deprecated, use `ResultWriterV2` instead. To enable `ResultWriterV2`,
+you will have to set the value for `'@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2'` to true in the  CDK context
 
 ```ts
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -1023,14 +1027,37 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 // create a bucket
 const bucket = new s3.Bucket(this, 'Bucket');
 
+// create a WriterConfig
+
 const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
-  resultWriter: new sfn.ResultWriter({
+  resultWriterV2: new sfn.ResultWriterV2({
     bucket: bucket,
     prefix: 'my-prefix',
+    writerConfig: {
+      outputType: sfn.OutputType.JSONL,
+      transformation: sfn.Transformation.NONE,
+    },
   })
 });
 distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
 ```
+
+* If information about `bucket` is only known while starting execution of `StateMachine` (dynamically or at run-time) via JSON state input:
+```ts
+/**
+ * JSON state input:
+ *  {
+ *    "bucketName": "my-bucket"
+ *  }
+ */
+const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
+  resultWriterV2: new sfn.ResultWriterV2({
+    bucketNamePath: sfn.JsonPath.stringAt('$.bucketName'),
+  }),
+});
+distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
+```
+* Both `bucket` and `bucketNamePath` are mutually exclusive.
 
 If you want to specify the execution type for the ItemProcessor in the DistributedMap, you must set the `mapExecutionType` property in the `DistributedMap` class. When using the `DistributedMap` class, the `ProcessorConfig.executionType` property is ignored.
 
@@ -1402,10 +1429,10 @@ new sfn.StateMachine(this, 'MyStateMachine', {
 });
 ```
 
-## Encryption 
+## Encryption
 You can encrypt your data using a customer managed key for AWS Step Functions state machines and activities. You can configure a symmetric AWS KMS key and data key reuse period when creating or updating a State Machine or when creating an Activity. The execution history and state machine definition will be encrypted with the key applied to the State Machine. Activity inputs will be encrypted with the key applied to the Activity.
 
-### Encrypting state machines 
+### Encrypting state machines
 You can provide a symmetric KMS key to encrypt the state machine definition and execution history:
 ```ts
 import * as kms from 'aws-cdk-lib/aws-kms';
@@ -1540,6 +1567,7 @@ Any object that implements the `IGrantable` interface (has an associated princip
 * `stateMachine.grantRead(principal)` - grants the principal read access
 * `stateMachine.grantTaskResponse(principal)` - grants the principal the ability to send task tokens to the state machine
 * `stateMachine.grantExecution(principal, actions)` - grants the principal execution-level permissions for the IAM actions specified
+* `stateMachine.grantRedriveExecution(principal)` - grants the principal permission to redrive the executions of the state machine
 * `stateMachine.grant(principal, actions)` - grants the principal state-machine-level permissions for the IAM actions specified
 
 ### Start Execution Permission
@@ -1620,6 +1648,27 @@ The following read permissions are provided to a service principal by the `grant
 ### Execution-level Permissions
 
 Grant execution-level permissions to a state machine by calling the `grantExecution()` API:
+
+### Redrive Execution Permission
+
+Grant the given identity permission to redrive the execution of the state machine:
+
+```ts
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+declare const definition: sfn.IChainable;
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
+});
+
+// Give role permission to start execution of state machine
+stateMachine.grantStartExecution(role);
+// Give role permission to redrive any executions of the state machine
+stateMachine.grantRedriveExecution(role);
+```
+
 
 ```ts
 const role = new iam.Role(this, 'Role', {

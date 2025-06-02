@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Template, Match } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as lambda from '../../aws-lambda';
 import { CfnRoutingControl } from '../../aws-route53recoverycontrol';
@@ -236,6 +236,9 @@ describe('health check', () => {
         HealthCheckConfig: {
           Type: 'RECOVERY_CONTROL',
           RoutingControlArn: stack.resolve(routingControl.attrRoutingControlArn),
+          FailureThreshold: Match.absent(),
+          MeasureLatency: Match.absent(),
+          RequestInterval: Match.absent(),
         },
       });
     });

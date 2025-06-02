@@ -1,7 +1,22 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "files": {
-    "eebea849f4344a11d34ac850355164c44b2778d3a1f213a5a7cd7392315ac1c2": {
+    "cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1": {
+      "displayName": "CognitoConfigTestFunction/Code",
+      "source": {
+        "path": "asset.cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "1434ea7905818eb800de1c8539023d50ebecb00266158d2e1d38227472f6a41b": {
+      "displayName": "EventApiCognitoAuthStack Template",
       "source": {
         "path": "EventApiCognitoAuthStack.template.json",
         "packaging": "file"
@@ -9,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "eebea849f4344a11d34ac850355164c44b2778d3a1f213a5a7cd7392315ac1c2.json",
+          "objectKey": "1434ea7905818eb800de1c8539023d50ebecb00266158d2e1d38227472f6a41b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

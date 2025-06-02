@@ -6,6 +6,7 @@ import { FleetBase, FleetProps, IFleet } from './fleet-base';
 import { CfnFleet } from 'aws-cdk-lib/aws-gamelift';
 import { Port, IPeer, IngressRule } from './ingress-rule';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents a GameLift Fleet used to run a custom game build.
@@ -44,7 +45,11 @@ export interface BuildFleetProps extends FleetProps {
  *
  * @resource AWS::GameLift::Fleet
  */
+@propertyInjectable
 export class BuildFleet extends FleetBase implements IBuildFleet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-gamelift-alpha.BuildFleet';
+
   /**
    * Import an existing fleet from its identifier.
    */

@@ -14,6 +14,7 @@ import { ClusterParameterGroup, IClusterParameterGroup } from './parameter-group
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
 import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Possible Node Types to use in the cluster
@@ -184,6 +185,23 @@ export interface RotationMultiUserOptions {
    * @default Duration.days(30)
    */
   readonly automaticallyAfter?: Duration;
+}
+
+/**
+ * The maintenance track for the cluster.
+ *
+ * @see https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-considerations.html#rs-mgmt-maintenance-tracks
+ */
+export enum MaintenanceTrackName {
+  /**
+   * Updated to the most recently certified maintenance release.
+   */
+  CURRENT = 'current',
+
+  /**
+   * Update to the previously certified maintenance release.
+   */
+  TRAILING = 'trailing',
 }
 
 /**
@@ -443,6 +461,15 @@ export interface ClusterProps {
    * @default - false
    */
   readonly availabilityZoneRelocation?: boolean;
+
+  /**
+   * The maintenance track name for the cluster.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-considerations.html#rs-mgmt-maintenance-tracks
+   *
+   * @default undefined - Redshift default is current
+   */
+  readonly maintenanceTrackName?: MaintenanceTrackName;
 }
 
 /**
@@ -480,7 +507,11 @@ abstract class ClusterBase extends Resource implements ICluster {
  *
  * @resource AWS::Redshift::Cluster
  */
+@propertyInjectable
 export class Cluster extends ClusterBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-redshift-alpha.Cluster';
+
   /**
    * Import an existing DatabaseCluster from properties
    */
@@ -640,6 +671,7 @@ export class Cluster extends ClusterBase {
     this.cluster = new CfnCluster(this, 'Resource', {
       // Basic
       allowVersionUpgrade: true,
+      maintenanceTrackName: props.maintenanceTrackName,
       automatedSnapshotRetentionPeriod: 1,
       clusterType,
       clusterIdentifier: props.clusterName,

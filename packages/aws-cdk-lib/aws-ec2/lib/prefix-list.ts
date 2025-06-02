@@ -1,12 +1,16 @@
 import { Construct } from 'constructs';
+import { Connections } from './connections';
 import { CfnPrefixList } from './ec2.generated';
-import { IResource, Lazy, Resource, Names } from '../../core';
+import { IPeer } from './peer';
+import * as cxschema from '../../cloud-assembly-schema';
+import { IResource, Lazy, Resource, Names, ContextProvider, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A prefix list
  */
-export interface IPrefixList extends IResource {
+export interface IPrefixList extends IResource, IPeer {
   /**
    * The ID of the prefix list
    *
@@ -74,23 +78,123 @@ abstract class PrefixListBase extends Resource implements IPrefixList {
    * @attribute
    */
   public abstract readonly prefixListId: string;
+
+  /**
+   * The network connections associated with this resource.
+   */
+  public readonly connections: Connections = new Connections({ peer: this });
+
+  /**
+   * Whether the rule can be inlined into a SecurityGroup or not
+   */
+  public readonly canInlineRule = false;
+
+  /**
+   * A unique identifier for this connection peer
+   */
+  get uniqueId() {
+    return this.prefixListId;
+  }
+
+  /**
+   * Produce the ingress rule JSON for the given connection
+   */
+  public toIngressRuleConfig(): any {
+    return { sourcePrefixListId: this.prefixListId };
+  }
+
+  /**
+   * Produce the egress rule JSON for the given connection
+   */
+  public toEgressRuleConfig(): any {
+    return { destinationPrefixListId: this.prefixListId };
+  }
+}
+
+/**
+ * Properties for looking up an existing managed prefix list.
+ */
+export interface PrefixListLookupOptions {
+  /**
+   * The name of the managed prefix list.
+   */
+  readonly prefixListName: string;
+  /**
+   * The ID of the AWS account that owns the managed prefix list.
+   *
+   * @default - Don't filter on ownerId
+   */
+  readonly ownerId?: string;
+  /**
+   * The address family of the managed prefix list.
+   *
+   * @default - Don't filter on addressFamily
+   */
+  readonly addressFamily?: AddressFamily;
+}
+
+/**
+ * Result of CC API context query in fromLookup()
+ */
+interface PrefixListContextResponse {
+  /**
+   * The id of the prefix list
+   */
+  readonly PrefixListId: string;
 }
 
 /**
  * A managed prefix list.
  * @resource AWS::EC2::PrefixList
  */
+@propertyInjectable
 export class PrefixList extends PrefixListBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.PrefixList';
+
   /**
    * Look up prefix list by id.
-   *
    */
   public static fromPrefixListId(scope: Construct, id: string, prefixListId: string): IPrefixList {
-    class Import extends Resource implements IPrefixList {
+    class Import extends PrefixListBase {
       public readonly prefixListId = prefixListId;
     }
     return new Import(scope, id);
   }
+
+  /**
+   * Look up prefix list by name
+   */
+  public static fromLookup(scope: Construct, id: string, options: PrefixListLookupOptions): IPrefixList {
+    if (Token.isUnresolved(options.prefixListName)) {
+      throw new ValidationError('All arguments to look up a managed prefix list must be concrete (no Tokens)', scope);
+    }
+
+    const dummyResponse = { PrefixListId: 'pl-xxxxxxxx' };
+    const response: PrefixListContextResponse[] = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.CC_API_PROVIDER,
+      props: {
+        typeName: 'AWS::EC2::PrefixList',
+        propertyMatch: {
+          PrefixListName: options.prefixListName,
+          ...(options.ownerId ? { OwnerId: options.ownerId } : undefined),
+          ...(options.addressFamily ? { AddressFamily: options.addressFamily } : undefined),
+        },
+        propertiesToReturn: ['PrefixListId'],
+        expectedMatchCount: 'exactly-one',
+      } satisfies Omit<cxschema.CcApiContextQuery, 'account'|'region'>,
+      dummyValue: [dummyResponse] satisfies PrefixListContextResponse[],
+    }).value;
+
+    // getValue returns a list of result objects. We are expecting 1 result or Error.
+    if (response.length !== 1) {
+      throw new ValidationError('Unexpected response received from the context provider. Please clear out the context key using `cdk context --remove` and try again.', scope);
+    }
+
+    const prefixList = response[0];
+    return this.fromPrefixListId(scope, id, prefixList.PrefixListId);
+  }
+
   /**
    * The ID of the prefix list
    *
@@ -141,10 +245,10 @@ export class PrefixList extends PrefixListBase {
 
     if (props?.prefixListName) {
       if ( props.prefixListName.startsWith('com.amazonaws')) {
-        throw new Error('The name cannot start with \'com.amazonaws.\'');
+        throw new ValidationError('The name cannot start with \'com.amazonaws.\'', this);
       }
       if (props.prefixListName.length > 255 ) {
-        throw new Error('Lengths exceeding 255 characters cannot be set.');
+        throw new ValidationError('Lengths exceeding 255 characters cannot be set.', this);
       }
     }
 
@@ -158,7 +262,7 @@ export class PrefixList extends PrefixListBase {
         const ipv6Regex = /^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?$/i;
         for (const entry of entries) {
           if (!ipv6Regex.test(entry.cidr)) {
-            throw new Error(`Invalid IPv6 address range: ${entry.cidr}`);
+            throw new ValidationError(`Invalid IPv6 address range: ${entry.cidr}`, this);
           }
         }
       // Regular expressions for validating IPv4 addresses
@@ -166,7 +270,7 @@ export class PrefixList extends PrefixListBase {
         const ipv4Regex = /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/i;
         for (const entry of entries) {
           if (!ipv4Regex.test(entry.cidr)) {
-            throw new Error(`Invalid IPv4 address range: ${entry.cidr}`);
+            throw new ValidationError(`Invalid IPv4 address range: ${entry.cidr}`, this);
           }
         }
       }

@@ -6,7 +6,11 @@ import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { ApiDestinationTarget } from '../lib/api-destination';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-api-dest');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 

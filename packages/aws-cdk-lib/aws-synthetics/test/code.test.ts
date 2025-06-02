@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import * as fs from 'fs';
 import * as path from 'path';
 import { Template } from '../../assertions';

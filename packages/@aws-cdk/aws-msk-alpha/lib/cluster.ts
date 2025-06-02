@@ -14,6 +14,7 @@ import { addressOf } from 'constructs/lib/private/uniqueid';
 import { KafkaVersion } from './';
 import { CfnCluster } from 'aws-cdk-lib/aws-msk';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents a MSK Cluster
@@ -46,7 +47,7 @@ export abstract class ClusterBase extends core.Resource implements ICluster {
   /** Manages connections for the cluster */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new Error('An imported Cluster cannot manage its security groups');
+      throw new core.ValidationError('An imported Cluster cannot manage its security groups', this);
     }
     return this._connections;
   }
@@ -275,7 +276,7 @@ export interface MonitoringConfiguration {
  */
 export interface BrokerLogging {
   /**
-   * The Kinesis Data Firehose delivery stream that is the destination for broker logs.
+   * The Amazon Data Firehose delivery stream that is the destination for broker logs.
    *
    * @default - disabled
    */
@@ -440,7 +441,11 @@ export class ClientAuthentication {
  *
  * @resource AWS::MSK::Cluster
  */
+@propertyInjectable
 export class Cluster extends ClusterBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-msk-alpha.Cluster';
+
   /**
    * Reference an existing cluster, defined outside of the CDK code, by name.
    */
@@ -477,26 +482,24 @@ export class Cluster extends ClusterBase {
     });
 
     if (subnetSelection.subnets.length < 2) {
-      throw Error(`Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length}`);
+      throw new core.ValidationError(`Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length}`, this);
     }
 
     if (props.encryptionInTransit?.clientBroker === ClientBrokerEncryption.PLAINTEXT && props.clientAuthentication) {
-      throw Error('To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.');
+      throw new core.ValidationError('To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.', this);
     } else if (
       props.encryptionInTransit?.clientBroker ===
         ClientBrokerEncryption.TLS_PLAINTEXT &&
       (props.clientAuthentication?.saslProps?.scram ||
         props.clientAuthentication?.saslProps?.iam)
     ) {
-      throw Error(
-        'To enable SASL/SCRAM or IAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.',
-      );
+      throw new core.ValidationError('To enable SASL/SCRAM or IAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.', this);
     }
 
     const volumeSize = props.ebsStorageInfo?.volumeSize ?? 1000;
     // Minimum: 1 GiB, maximum: 16384 GiB
     if (volumeSize < 1 || volumeSize > 16384) {
-      throw Error('EBS volume size should be in the range 1-16384');
+      throw new core.ValidationError('EBS volume size should be in the range 1-16384', this);
     }
 
     const instanceType = props.instanceType
@@ -507,12 +510,12 @@ export class Cluster extends ClusterBase {
 
     if (props.storageMode && props.storageMode === StorageMode.TIERED) {
       if (!props.kafkaVersion.isTieredStorageCompatible()) {
-        throw Error(`To deploy a tiered cluster you must select a compatible Kafka version, got ${props.kafkaVersion.version}`);
+        throw new core.ValidationError(`To deploy a tiered cluster you must select a compatible Kafka version, got ${props.kafkaVersion.version}`, this);
       }
       if (instanceType === this.mskInstanceType(
         ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL),
       )) {
-        throw Error('Tiered storage doesn\'t support broker type t3.small');
+        throw new core.ValidationError('Tiered storage doesn\'t support broker type t3.small', this);
       }
     }
 
@@ -883,9 +886,7 @@ export class Cluster extends ClusterBase {
         installLatestAwsSdk: false,
       });
     } else {
-      throw Error(
-        'Cannot create users if an authentication KMS key has not been created/provided.',
-      );
+      throw new core.ValidationError('Cannot create users if an authentication KMS key has not been created/provided.', this);
     }
   }
 }

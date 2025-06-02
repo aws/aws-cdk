@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "aws-stepfunctions-aws-sdk-cross-region-task-token-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e9002dd43f071dede4588c4e2fb8e1a4239da394ca55cf6e415c9e8a1bd789c8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0b061a6426fae56d8aeb5d71ada3b9228123bd63756e1fab60e03ac67bd2785b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -170,44 +170,6 @@
             }
           }
         ],
-        "/aws-stepfunctions-aws-sdk-cross-region-task-token-integ/StartExecution/Handler/inlinePolicyAddedToExecutionRole-0": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-stepfunctions-aws-sdk-cross-region-task-token-integ/StartExecution/Handler/inlinePolicyAddedToExecutionRole-0/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StartExecutionHandlerinlinePolicyAddedToExecutionRole08677ED81"
-          }
-        ],
         "/aws-stepfunctions-aws-sdk-cross-region-task-token-integ/LatestNodeRuntimeMap": [
           {
             "type": "aws:cdk:logicalId",
@@ -251,6 +213,14 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
               "attachInlinePolicy": [
                 "*"
               ]
@@ -275,6 +245,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520"
+          }
+        ],
+        "/aws-stepfunctions-aws-sdk-cross-region-task-token-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-stepfunctions-aws-sdk-cross-region-task-token-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRoleDefaultPolicy63AE5FEF"
           }
         ],
         "/aws-stepfunctions-aws-sdk-cross-region-task-token-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/Resource": [
@@ -426,7 +432,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a4033ba9608369e6e2cd4111810a1c460a8590be4de05bcc673bf96cf19b2da1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/07b22bbace293516d17c43af91004a11404ef038eafa585aef763e17458b6092.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -576,5 +582,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

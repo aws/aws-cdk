@@ -121,7 +121,12 @@ class Snapshoter extends Construct {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 const stack = new TestStack(app, 'cdk-integ-cluster-snapshot');
 
 new IntegTest(app, 'ClusterSnapshotInteg', {

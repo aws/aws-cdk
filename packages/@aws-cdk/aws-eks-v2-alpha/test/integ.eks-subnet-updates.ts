@@ -15,6 +15,7 @@ class EksClusterStack extends Stack {
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
       },
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 0,
       endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
       vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
@@ -22,7 +23,12 @@ class EksClusterStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-stack');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster', {

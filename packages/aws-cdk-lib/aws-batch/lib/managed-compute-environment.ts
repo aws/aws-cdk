@@ -7,6 +7,7 @@ import * as iam from '../../aws-iam';
 import { IRole } from '../../aws-iam';
 import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a Managed ComputeEnvironment. Batch will provision EC2 Instances to
@@ -194,7 +195,12 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
    *
    * If you specify a specific AMI, this property will be ignored.
    *
-   * @default true
+   * Note: the CDK will never set this value by default, `false` will set by CFN.
+   * This is to avoid a deployment failure that occurs when this value is set.
+   *
+   * @see https://github.com/aws/aws-cdk/issues/27054
+   *
+   * @default false
    */
   readonly updateToLatestImageVersion?: boolean;
 }
@@ -597,7 +603,11 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
  *
  * @resource AWS::Batch::ComputeEnvironment
  */
+@propertyInjectable
 export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2EcsComputeEnvironment {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.ManagedEc2EcsComputeEnvironment';
+
   /**
    * refer to an existing ComputeEnvironment by its arn.
    */
@@ -982,7 +992,10 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
  *
  * @resource AWS::Batch::ComputeEnvironment
  */
+@propertyInjectable
 export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2EksComputeEnvironment {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.ManagedEc2EksComputeEnvironment';
   public readonly kubernetesNamespace?: string;
   public readonly eksCluster: eks.ICluster;
 
@@ -1095,7 +1108,11 @@ export interface FargateComputeEnvironmentProps extends ManagedComputeEnvironmen
  *
  * @resource AWS::Batch::ComputeEnvironment
  */
+@propertyInjectable
 export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase implements IFargateComputeEnvironment {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.FargateComputeEnvironment';
+
   /**
    * Reference an existing FargateComputeEnvironment by its arn
    */

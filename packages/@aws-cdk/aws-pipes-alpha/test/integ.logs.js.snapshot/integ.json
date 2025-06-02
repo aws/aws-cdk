@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "testCases": {
     "integtest-pipes-logs/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "integtest-pipes-logs/DefaultTest/DeployAssert",
       "assertionStackName": "integtestpipeslogsDefaultTestDeployAssert461F2E1A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

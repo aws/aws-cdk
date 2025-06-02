@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "testCases": {
     "aws-cdk-eks-standard-access-entry-integ/DefaultTest": {
       "stacks": [
@@ -16,5 +16,6 @@
       "assertionStack": "aws-cdk-eks-standard-access-entry-integ/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksstandardaccessentryintegDefaultTestDeployAssert5983936D"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

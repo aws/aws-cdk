@@ -371,7 +371,10 @@ export class MariaDbEngineVersion {
    */
   public static readonly VER_10_3_39 = MariaDbEngineVersion.of('10.3.39', '10.3');
 
-  /** Version "10.4" (only a major version, without a specific minor version). */
+  /**
+   * Version "10.4" (only a major version, without a specific minor version)
+   * @deprecated MariaDB 10.4 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4 = MariaDbEngineVersion.of('10.4', '10.4');
   /**
    * Version "10.4.8"
@@ -423,17 +426,35 @@ export class MariaDbEngineVersion {
    * @deprecated MariaDB 10.4.28 is no longer supported by Amazon RDS.
    */
   public static readonly VER_10_4_28 = MariaDbEngineVersion.of('10.4.28', '10.4');
-  /** Version "10.4.29". */
+  /**
+   * Version "10.4.29"
+   * @deprecated MariaDB 10.4.29 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_29 = MariaDbEngineVersion.of('10.4.29', '10.4');
-  /** Version "10.4.30". */
+  /**
+   * Version "10.4.30"
+   * @deprecated MariaDB 10.4.30 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_30 = MariaDbEngineVersion.of('10.4.30', '10.4');
-  /** Version "10.4.31". */
+  /**
+   * Version "10.4.31"
+   * @deprecated MariaDB 10.4.31 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_31 = MariaDbEngineVersion.of('10.4.31', '10.4');
-  /** Version "10.4.32". */
+  /**
+   * Version "10.4.32"
+   * @deprecated MariaDB 10.4.32 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_32 = MariaDbEngineVersion.of('10.4.32', '10.4');
-  /** Version "10.4.33". */
+  /**
+   * Version "10.4.33"
+   * @deprecated MariaDB 10.4.33 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_33 = MariaDbEngineVersion.of('10.4.33', '10.4');
-  /** Version "10.4.34". */
+  /**
+   * Version "10.4.34"
+   * @deprecated MariaDB 10.4.34 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_34 = MariaDbEngineVersion.of('10.4.34', '10.4');
 
   /** Version "10.5" (only a major version, without a specific minor version). */
@@ -499,6 +520,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_5_26 = MariaDbEngineVersion.of('10.5.26', '10.5');
   /** Version "10.5.27". */
   public static readonly VER_10_5_27 = MariaDbEngineVersion.of('10.5.27', '10.5');
+  /** Version "10.5.28". */
+  public static readonly VER_10_5_28 = MariaDbEngineVersion.of('10.5.28', '10.5');
 
   /** Version "10.6" (only a major version, without a specific minor version). */
   public static readonly VER_10_6 = MariaDbEngineVersion.of('10.6', '10.6');
@@ -548,6 +571,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_6_19 = MariaDbEngineVersion.of('10.6.19', '10.6');
   /** Version "10.6.20". */
   public static readonly VER_10_6_20 = MariaDbEngineVersion.of('10.6.20', '10.6');
+  /** Version "10.6.21". */
+  public static readonly VER_10_6_21 = MariaDbEngineVersion.of('10.6.21', '10.6');
 
   /** Version "10.11" (only a major version, without a specific minor version). */
   public static readonly VER_10_11 = MariaDbEngineVersion.of('10.11', '10.11');
@@ -565,10 +590,14 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_11_9 = MariaDbEngineVersion.of('10.11.9', '10.11');
   /** Version "10.11.10". */
   public static readonly VER_10_11_10 = MariaDbEngineVersion.of('10.11.10', '10.11');
+  /** Version "10.11.11". */
+  public static readonly VER_10_11_11 = MariaDbEngineVersion.of('10.11.11', '10.11');
   /** Version "11.4.3". */
   public static readonly VER_11_4_3 = MariaDbEngineVersion.of('11.4.3', '11.4');
   /** Version "11.4.4". */
   public static readonly VER_11_4_4 = MariaDbEngineVersion.of('11.4.4', '11.4');
+  /** Version "11.4.5". */
+  public static readonly VER_11_4_5 = MariaDbEngineVersion.of('11.4.5', '11.4');
 
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
@@ -860,6 +889,12 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_44_RDS_20240529 = MysqlEngineVersion.of('5.7.44-rds.20240529', '5.7');
   /** Version "5.7.44-rds.20240808". */
   public static readonly VER_5_7_44_RDS_20240808 = MysqlEngineVersion.of('5.7.44-rds.20240808', '5.7');
+  /** Version "5.7.44-rds.20250103". */
+  public static readonly VER_5_7_44_RDS_20250103 = MysqlEngineVersion.of('5.7.44-rds.20250103', '5.7');
+  /** Version "5.7.44-rds.20250213". */
+  public static readonly VER_5_7_44_RDS_20250213 = MysqlEngineVersion.of('5.7.44-rds.20250213', '5.7');
+  /** Version "5.7.44-rds.20250508". */
+  public static readonly VER_5_7_44_RDS_20250508 = MysqlEngineVersion.of('5.7.44-rds.20250508', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
@@ -959,8 +994,16 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_39 = MysqlEngineVersion.of('8.0.39', '8.0');
   /** Version "8.0.40". */
   public static readonly VER_8_0_40 = MysqlEngineVersion.of('8.0.40', '8.0');
+  /** Version "8.0.41". */
+  public static readonly VER_8_0_41 = MysqlEngineVersion.of('8.0.41', '8.0');
+  /** Version "8.0.42". */
+  public static readonly VER_8_0_42 = MysqlEngineVersion.of('8.0.42', '8.0');
   /** Version "8.4.3". */
   public static readonly VER_8_4_3 = MysqlEngineVersion.of('8.4.3', '8.4');
+  /** Version "8.4.4". */
+  public static readonly VER_8_4_4 = MysqlEngineVersion.of('8.4.4', '8.4');
+  /** Version "8.4.5". */
+  public static readonly VER_8_4_5 = MysqlEngineVersion.of('8.4.5', '8.4');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
@@ -1548,19 +1591,40 @@ export class PostgresEngineVersion {
    * @deprecated PostgreSQL 12.14 is no longer supported by Amazon RDS.
    */
   public static readonly VER_12_14 = PostgresEngineVersion.of('12.14', '12', { s3Import: true, s3Export: true });
-  /** Version "12.15". */
+  /**
+   * Version "12.15"
+   * @deprecated PostgreSQL 12.15 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_15 = PostgresEngineVersion.of('12.15', '12', { s3Import: true, s3Export: true });
-  /** Version "12.16". */
+  /**
+   * Version "12.16"
+   * @deprecated PostgreSQL 12.16 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_16 = PostgresEngineVersion.of('12.16', '12', { s3Import: true, s3Export: true });
-  /** Version "12.17". */
+  /**
+   * Version "12.17"
+   * @deprecated PostgreSQL 12.17 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_17 = PostgresEngineVersion.of('12.17', '12', { s3Import: true, s3Export: true });
-  /** Version "12.18". */
+  /**
+   * Version "12.18"
+   * @deprecated PostgreSQL 12.18 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_18 = PostgresEngineVersion.of('12.18', '12', { s3Import: true, s3Export: true });
-  /** Version "12.19". */
+  /**
+   * Version "12.19"
+   * @deprecated PostgreSQL 12.19 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_19 = PostgresEngineVersion.of('12.19', '12', { s3Import: true, s3Export: true });
-  /** Version "12.20". */
+  /**
+   * Version "12.20"
+   * @deprecated PostgreSQL 12.20 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_20 = PostgresEngineVersion.of('12.20', '12', { s3Import: true, s3Export: true });
-  /** Version "12.21". */
+  /**
+   * Version "12.21"
+   * @deprecated PostgreSQL 12.21 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_21 = PostgresEngineVersion.of('12.21', '12', { s3Import: true, s3Export: true });
   /** Version "12.22". */
   public static readonly VER_12_22 = PostgresEngineVersion.of('12.22', '12', { s3Import: true, s3Export: true });
@@ -1617,13 +1681,25 @@ export class PostgresEngineVersion {
    * @deprecated PostgreSQL 13.10 is no longer supported by Amazon RDS.
    */
   public static readonly VER_13_10 = PostgresEngineVersion.of('13.10', '13', { s3Import: true, s3Export: true });
-  /** Version "13.11". */
+  /**
+   * Version "13.11".
+   * @deprecated PostgreSQL 13.11 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_11 = PostgresEngineVersion.of('13.11', '13', { s3Import: true, s3Export: true });
-  /** Version "13.12". */
+  /**
+   * Version "13.12".
+   * @deprecated PostgreSQL 13.12 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_12 = PostgresEngineVersion.of('13.12', '13', { s3Import: true, s3Export: true });
-  /** Version "13.13". */
+  /**
+   * Version "13.13".
+   * @deprecated PostgreSQL 13.13 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_13 = PostgresEngineVersion.of('13.13', '13', { s3Import: true, s3Export: true });
-  /** Version "13.14". */
+  /**
+   * Version "13.14".
+   * @deprecated PostgreSQL 13.14 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_14 = PostgresEngineVersion.of('13.14', '13', { s3Import: true, s3Export: true });
   /** Version "13.15". */
   public static readonly VER_13_15 = PostgresEngineVersion.of('13.15', '13', { s3Import: true, s3Export: true });
@@ -1633,6 +1709,12 @@ export class PostgresEngineVersion {
   public static readonly VER_13_17 = PostgresEngineVersion.of('13.17', '13', { s3Import: true, s3Export: true });
   /** Version "13.18". */
   public static readonly VER_13_18 = PostgresEngineVersion.of('13.18', '13', { s3Import: true, s3Export: true });
+  /** Version "13.19". */
+  public static readonly VER_13_19 = PostgresEngineVersion.of('13.19', '13', { s3Import: true, s3Export: true });
+  /** Version "13.20". */
+  public static readonly VER_13_20 = PostgresEngineVersion.of('13.20', '13', { s3Import: true, s3Export: true });
+  /** Version "13.21". */
+  public static readonly VER_13_21 = PostgresEngineVersion.of('13.21', '13', { s3Import: true, s3Export: true });
 
   /** Version "14" (only a major version, without a specific minor version). */
   public static readonly VER_14 = PostgresEngineVersion.of('14', '14', { s3Import: true, s3Export: true });
@@ -1676,11 +1758,20 @@ export class PostgresEngineVersion {
    * @deprecated PostgreSQL 14.8 is no longer supported by Amazon RDS.
    */
   public static readonly VER_14_8 = PostgresEngineVersion.of('14.8', '14', { s3Import: true, s3Export: true });
-  /** Version "14.9". */
+  /**
+   * Version "14.9".
+   * @deprecated PostgreSQL 14.9 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_14_9 = PostgresEngineVersion.of('14.9', '14', { s3Import: true, s3Export: true });
-  /** Version "14.10". */
+  /**
+   * Version "14.10".
+   * @deprecated PostgreSQL 14.10 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_14_10 = PostgresEngineVersion.of('14.10', '14', { s3Import: true, s3Export: true });
-  /** Version "14.11". */
+  /**
+   * Version "14.11".
+   * @deprecated PostgreSQL 14.11 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_14_11 = PostgresEngineVersion.of('14.11', '14', { s3Import: true, s3Export: true });
   /** Version "14.12". */
   public static readonly VER_14_12 = PostgresEngineVersion.of('14.12', '14', { s3Import: true, s3Export: true });
@@ -1690,6 +1781,12 @@ export class PostgresEngineVersion {
   public static readonly VER_14_14 = PostgresEngineVersion.of('14.14', '14', { s3Import: true, s3Export: true });
   /** Version "14.15". */
   public static readonly VER_14_15 = PostgresEngineVersion.of('14.15', '14', { s3Import: true, s3Export: true });
+  /** Version "14.16". */
+  public static readonly VER_14_16 = PostgresEngineVersion.of('14.16', '14', { s3Import: true, s3Export: true });
+  /** Version "14.17". */
+  public static readonly VER_14_17 = PostgresEngineVersion.of('14.17', '14', { s3Import: true, s3Export: true });
+  /** Version "14.18". */
+  public static readonly VER_14_18 = PostgresEngineVersion.of('14.18', '14', { s3Import: true, s3Export: true });
 
   /** Version "15" (only a major version, without a specific minor version). */
   public static readonly VER_15 = PostgresEngineVersion.of('15', '15', { s3Import: true, s3Export: true });
@@ -1703,11 +1800,20 @@ export class PostgresEngineVersion {
    * @deprecated PostgreSQL 15.3 is no longer supported by Amazon RDS.
    */
   public static readonly VER_15_3 = PostgresEngineVersion.of('15.3', '15', { s3Import: true, s3Export: true });
-  /** Version "15.4". */
+  /**
+   * Version "15.4".
+   * @deprecated PostgreSQL 15.4 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_15_4 = PostgresEngineVersion.of('15.4', '15', { s3Import: true, s3Export: true });
-  /** Version "15.5". */
+  /**
+   * Version "15.5".
+   * @deprecated PostgreSQL 15.5 is no longer supported by Amazon RDS
+   */
   public static readonly VER_15_5 = PostgresEngineVersion.of('15.5', '15', { s3Import: true, s3Export: true });
-  /** Version "15.6". */
+  /**
+   * Version "15.6".
+   * @deprecated PostgreSQL 15.6 is no longer supported by Amazon RDS
+   */
   public static readonly VER_15_6 = PostgresEngineVersion.of('15.6', '15', { s3Import: true, s3Export: true });
   /** Version "15.7". */
   public static readonly VER_15_7 = PostgresEngineVersion.of('15.7', '15', { s3Import: true, s3Export: true });
@@ -1717,12 +1823,24 @@ export class PostgresEngineVersion {
   public static readonly VER_15_9 = PostgresEngineVersion.of('15.9', '15', { s3Import: true, s3Export: true });
   /** Version "15.10". */
   public static readonly VER_15_10 = PostgresEngineVersion.of('15.10', '15', { s3Import: true, s3Export: true });
+  /** Version "15.11". */
+  public static readonly VER_15_11 = PostgresEngineVersion.of('15.11', '15', { s3Import: true, s3Export: true });
+  /** Version "15.12". */
+  public static readonly VER_15_12 = PostgresEngineVersion.of('15.12', '15', { s3Import: true, s3Export: true });
+  /** Version "15.13". */
+  public static readonly VER_15_13 = PostgresEngineVersion.of('15.13', '15', { s3Import: true, s3Export: true });
 
   /** Version "16" (only a major version, without a specific minor version). */
   public static readonly VER_16 = PostgresEngineVersion.of('16', '16', { s3Import: true, s3Export: true });
-  /** Version "16.1". */
+  /**
+   * Version "16.1".
+   * @deprecated PostgreSQL 16.1 is no longer supported by Amazon RDS
+   */
   public static readonly VER_16_1 = PostgresEngineVersion.of('16.1', '16', { s3Import: true, s3Export: true });
-  /** Version "16.2". */
+  /**
+   * Version "16.2".
+   * @deprecated PostgreSQL 16.2 is no longer supported by Amazon RDS
+   */
   public static readonly VER_16_2 = PostgresEngineVersion.of('16.2', '16', { s3Import: true, s3Export: true });
   /** Version "16.3". */
   public static readonly VER_16_3 = PostgresEngineVersion.of('16.3', '16', { s3Import: true, s3Export: true });
@@ -1734,6 +1852,10 @@ export class PostgresEngineVersion {
   public static readonly VER_16_6 = PostgresEngineVersion.of('16.6', '16', { s3Import: true, s3Export: true });
   /** Version "16.7" */
   public static readonly VER_16_7 = PostgresEngineVersion.of('16.7', '16', { s3Import: true, s3Export: true });
+  /** Version "16.8" */
+  public static readonly VER_16_8 = PostgresEngineVersion.of('16.8', '16', { s3Import: true, s3Export: true });
+  /** Version "16.9" */
+  public static readonly VER_16_9 = PostgresEngineVersion.of('16.9', '16', { s3Import: true, s3Export: true });
 
   /** Version "17" (only a major version, without a specific minor version). */
   public static readonly VER_17 = PostgresEngineVersion.of('17', '17', { s3Import: true, s3Export: true });
@@ -1741,6 +1863,12 @@ export class PostgresEngineVersion {
   public static readonly VER_17_1 = PostgresEngineVersion.of('17.1', '17', { s3Import: true, s3Export: true });
   /** Version "17.2". */
   public static readonly VER_17_2 = PostgresEngineVersion.of('17.2', '17', { s3Import: true, s3Export: true });
+  /** Version "17.3". */
+  public static readonly VER_17_3 = PostgresEngineVersion.of('17.3', '17', { s3Import: true, s3Export: true });
+  /** Version "17.4". */
+  public static readonly VER_17_4 = PostgresEngineVersion.of('17.4', '17', { s3Import: true, s3Export: true });
+  /** Version "17.5". */
+  public static readonly VER_17_5 = PostgresEngineVersion.of('17.5', '17', { s3Import: true, s3Export: true });
 
   /**
    * Create a new PostgresEngineVersion with an arbitrary version.
@@ -2744,6 +2872,10 @@ export class SqlServerEngineVersion {
   public static readonly VER_15_00_4410_1_V1 = SqlServerEngineVersion.of('15.00.4410.1.v1', '15.00');
   /** Version "15.00.4415.2.v1". */
   public static readonly VER_15_00_4415_2_V1 = SqlServerEngineVersion.of('15.00.4415.2.v1', '15.00');
+  /** Version "15.00.4420.2.v1". */
+  public static readonly VER_15_00_4420_2_V1 = SqlServerEngineVersion.of('15.00.4420.2.v1', '15.00');
+  /** Version "15.00.4430.1.v1". */
+  public static readonly VER_15_00_4430_1_V1 = SqlServerEngineVersion.of('15.00.4430.1.v1', '15.00');
 
   /** Version "16.00" (only a major version, without a specific minor version). */
   public static readonly VER_16 = SqlServerEngineVersion.of('16.00', '16.00');
@@ -2771,6 +2903,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_16_00_4165_4_V1 = SqlServerEngineVersion.of('16.00.4165.4.v1', '16.00');
   /** Version "16.00.4175.1.v1". */
   public static readonly VER_16_00_4175_1_V1 = SqlServerEngineVersion.of('16.00.4175.1.v1', '16.00');
+  /** Version "16.00.4185.3.v1". */
+  public static readonly VER_16_00_4185_3_V1 = SqlServerEngineVersion.of('16.00.4185.3.v1', '16.00');
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.

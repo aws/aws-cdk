@@ -15,7 +15,12 @@ import { LambdaFunction } from '../lib';
  *    Value: <RandomUUID>
  * 3. The assertion verifies that the expected tag is created by calling listTags on the Lambda Function.
  */
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-pipes-lambda-target');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 

@@ -124,7 +124,12 @@ class TestStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 
 const testCase = new TestStack(app, 'ApiGatewayVpcEndpointTestStack');
 const integ = new IntegTest(app, 'ApiGatewayVpcEndpointInteg', {

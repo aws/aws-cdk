@@ -1,6 +1,5 @@
 # AWS CodePipeline Actions
 
-
 This package contains Actions that can be used in a CodePipeline.
 
 ```ts nofixture
@@ -610,6 +609,54 @@ const buildAction = new codepipeline_actions.JenkinsAction({
   jenkinsProvider: jenkinsProvider,
   projectName: 'MyProject',
   type: codepipeline_actions.JenkinsActionType.BUILD,
+});
+```
+
+## Build
+
+### ECR Build And Publish
+
+This build action `ECRBuildAndPublish` allows you to automate building and pushing a new image when a change occurs in your source.
+
+This action builds based on a specified Docker file location and pushes the image. This build action is not the
+same as the Amazon ECR source action in CodePipeline, which triggers pipeline when a change occurs in your
+Amazon ECR source repository.
+
+For information about the `ECRBuildAndPublish` build action,
+see [ECRBuildAndPublish build action reference](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECRBuildAndPublish.html).
+
+```ts
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+
+declare const pipeline: codepipeline.Pipeline;
+declare const repository: ecr.IRepository;
+
+const sourceOutput = new codepipeline.Artifact();
+// your source repository
+const sourceAction = new codepipeline_actions.CodeStarConnectionsSourceAction({
+  actionName: 'CodeStarConnectionsSourceAction',
+  output: sourceOutput,
+  connectionArn: 'your-connection-arn',
+  owner: 'your-owner',
+  repo: 'your-repo',
+});
+
+const buildAction = new codepipeline_actions.EcrBuildAndPublishAction({
+  actionName: 'EcrBuildAndPublishAction',
+  repositoryName: repository.repositoryName,
+  registryType: codepipeline_actions.RegistryType.PRIVATE,
+  dockerfileDirectoryPath: './my-dir', // The path indicates ./my-dir/Dockerfile in the source repository
+  imageTags: ['my-tag-1', 'my-tag-2'],
+  input: sourceOutput,
+});
+
+pipeline.addStage({
+  stageName: 'Source',
+  actions: [sourceAction],
+});
+pipeline.addStage({
+  stageName: 'Build',
+  actions: [buildAction],
 });
 ```
 
@@ -1258,6 +1305,107 @@ pipeline.addStage({
 
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-StepFunctions.html)
 for information on Action structure reference.
+
+### Pipeline
+
+This module contains an Action that allows you to invoke another pipeline execution in a pipeline:
+
+```ts
+import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const targetPipeline = codepipeline.Pipeline.fromPipelineArn(this, 'Pipeline',
+    'arn:aws:codepipeline:us-east-1:123456789012:InvokePipelineAction'); // If targetPipeline is not created by cdk, import from arn.
+pipeline.addStage({
+  stageName: 'stageName',
+  actions: [new cpactions.PipelineInvokeAction({
+  actionName: 'Invoke',
+  targetPipeline,
+  variables: [{
+    name: 'name1',
+    value: 'value1',
+  }],
+  sourceRevisions: [{
+    actionName: 'Source',
+    revisionType: cpactions.RevisionType.S3_OBJECT_VERSION_ID,
+    revisionValue: 'testRevisionValue',
+    }],
+  })],
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-PipelineInvoke.html)
+for information on Action structure reference.
+
+## Invoke
+
+### Inspector
+
+Amazon Inspector is a vulnerability management service that automatically discovers workloads and continually scans them
+for software vulnerabilities and unintended network exposure.
+
+The actions `InspectorSourceCodeScanAction` and `InspectorEcrImageScanAction` automate detecting and fixing security
+vulnerabilities in your open source code. The actions are managed compute actions with security scanning capabilities.
+You can use the actions with application source code in your third-party repository, such as GitHub or Bitbucket Cloud,
+or with images for container applications.
+
+Your actions will scan and report on vulnerability levels and alerts that you configure.
+
+#### Inspector Source Code Scan
+
+The `InspectorSourceCodeScanAction` allows you to scan the application source code for vulnerabilities in your repository.
+
+```ts
+declare const pipeline: codepipeline.Pipeline;
+
+const sourceOutput = new codepipeline.Artifact();
+const sourceAction = new codepipeline_actions.CodeStarConnectionsSourceAction({
+  actionName: 'CodeStarConnectionsSourceAction',
+  output: sourceOutput,
+  connectionArn: 'your-connection-arn',
+  owner: 'your-owner',
+  repo: 'your-repo',
+});
+
+const scanOutput = new codepipeline.Artifact();
+const scanAction = new codepipeline_actions.InspectorSourceCodeScanAction({
+  actionName: 'InspectorSourceCodeScanAction',
+  input: sourceOutput,
+  output: scanOutput,
+});
+
+pipeline.addStage({
+  stageName: 'Source',
+  actions: [sourceAction],
+});
+pipeline.addStage({
+  stageName: 'Scan',
+  actions: [scanAction],
+});
+```
+
+#### Inspector ECR Image Scan
+
+The `InspectorEcrImageScanAction` allows you to scan the image for vulnerabilities in your container applications.
+
+```ts
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+
+declare const pipeline: codepipeline.Pipeline;
+declare const repository: ecr.IRepository;
+
+const scanOutput = new codepipeline.Artifact();
+const scanAction = new codepipeline_actions.InspectorEcrImageScanAction({
+  actionName: 'InspectorEcrImageScanAction',
+  output: scanOutput,
+  repository: repository,
+});
+
+pipeline.addStage({
+  stageName: 'Scan',
+  actions: [scanAction],
+});
+```
 
 ## Compute
 

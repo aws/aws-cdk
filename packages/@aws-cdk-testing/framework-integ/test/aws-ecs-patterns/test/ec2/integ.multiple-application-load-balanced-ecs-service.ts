@@ -7,9 +7,11 @@ import { REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS } from 'aws-cdk-lib/cx-api';
 
 const app = new App({
   postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     [REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS]: false,
     '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
     '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 const stack = new Stack(app, 'aws-ecs-integ-multiple-alb');

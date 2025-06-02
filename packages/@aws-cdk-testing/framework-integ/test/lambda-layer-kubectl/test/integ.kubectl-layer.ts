@@ -9,7 +9,12 @@ import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
  * Test verifies that kubectl and helm are invoked successfully inside Lambda runtime.
  */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 const stack = new cdk.Stack(app, 'lambda-layer-kubectl-integ-stack');
 const layer = new KubectlV31Layer(stack, 'KubectlLayer');
 

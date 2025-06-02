@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import * as child_process from 'child_process';
 import { bockfs } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Template, Match } from '../../assertions';

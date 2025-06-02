@@ -21,11 +21,19 @@ class EksClusterStack extends Stack {
       addonName: 'coredns',
       cluster,
       preserveOnDelete: true,
+      configurationValues: {
+        replicaCount: 2,
+      },
     });
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new EksClusterStack(app, 'EksClusterWithAddonStack');
 new integ.IntegTest(app, 'EksClusterwithAddon', {

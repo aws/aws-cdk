@@ -26,6 +26,7 @@ class EksClusterStack extends Stack {
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
       mastersRole,
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 0,
       version: eks.KubernetesVersion.V1_32,
       kubectlProviderOptions: {
@@ -55,7 +56,12 @@ class EksClusterStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-al2023-nodegroup-test');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-al2023-nodegroup', {

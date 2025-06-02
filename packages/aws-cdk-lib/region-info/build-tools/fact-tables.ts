@@ -17,6 +17,7 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'ap-southeast-3': 'Z01846753K324LI26A3VV',
   'ap-southeast-4': 'Z0312387243XT5FE14WFO',
   'ap-southeast-5': 'Z08660063OXLMA7F1FJHU',
+  'ap-southeast-7': 'Z0031014GXUMRZG6I14G',
   'ca-central-1': 'Z1QDHH18159H29',
   'cn-north-1': 'Z5CN8UMXT92WN',
   'cn-northwest-1': 'Z282HJ1KT0DH03',
@@ -38,6 +39,7 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'us-gov-west-1': 'Z31GFT0UA1I2HV',
   'us-west-1': 'Z2F56UZL2M1ACD',
   'us-west-2': 'Z3BJ6K6RIION7M',
+  'ap-east-2': 'Z064739330DAH7WJVOO93',
 };
 
 /**
@@ -106,12 +108,13 @@ export const PARTITION_SAML_SIGN_ON_URL: Partial<Record<Partition, string>> = {
 enum Runtime {
   NODE_18 = 'nodejs18.x',
   NODE_20 = 'nodejs20.x',
+  NODE_22 = 'nodejs22.x',
 }
 
 export const LATEST_NODE_RUNTIME_MAP: Record<Partition, string> = {
-  [Partition.Default]: Runtime.NODE_20,
-  [Partition.Cn]: Runtime.NODE_20,
-  [Partition.UsGov]: Runtime.NODE_20,
+  [Partition.Default]: Runtime.NODE_22,
+  [Partition.Cn]: Runtime.NODE_22,
+  [Partition.UsGov]: Runtime.NODE_22,
   [Partition.UsIso]: Runtime.NODE_18,
   [Partition.UsIsoB]: Runtime.NODE_18,
   [Partition.UsIsoF]: Runtime.NODE_18,
@@ -183,6 +186,7 @@ export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
   'us-east-2': '763104351884',
   'us-west-1': '763104351884',
   'us-west-2': '763104351884',
+  'ap-east-2': '975050140332',
 };
 
 // https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
@@ -213,6 +217,7 @@ export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
   'us-east-2': '840364872350',
   'us-west-1': '840364872350',
   'us-west-2': '840364872350',
+  'ap-east-2': '058264503299',
 };
 
 // https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-integration-lambda-extensions-versions.html
@@ -523,6 +528,7 @@ export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS: { [key: string]: any } = {
       'ap-southeast-3': 'arn:aws:lambda:ap-southeast-3:439286490199:layer:LambdaInsightsExtension:32',
       'ap-southeast-5': 'arn:aws:lambda:ap-southeast-5:590183865173:layer:LambdaInsightsExtension:3',
       'ap-southeast-4': 'arn:aws:lambda:ap-southeast-4:158895979263:layer:LambdaInsightsExtension:23',
+      'ap-southeast-7': 'arn:aws:lambda:ap-southeast-7:761018874580:layer:LambdaInsightsExtension:2',
       'ap-south-1': 'arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:53',
       'ap-northeast-3': 'arn:aws:lambda:ap-northeast-3:194566237122:layer:LambdaInsightsExtension:36',
       'ap-northeast-2': 'arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:54',
@@ -1156,6 +1162,7 @@ export const FIREHOSE_CIDR_BLOCKS: { [region: string]: string } = {
   'ap-southeast-3': '108.136.221.64',
   'ap-southeast-4': '16.50.161.128',
   'ap-southeast-5': '43.216.58.0',
+  'ap-southeast-7': '43.208.112.96',
   'ca-central-1': '35.183.92.128',
   'ca-west-1': '40.176.98.192',
   'cn-north-1': '52.81.151.32',

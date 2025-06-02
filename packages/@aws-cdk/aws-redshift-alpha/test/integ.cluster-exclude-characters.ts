@@ -36,7 +36,12 @@ class RedshiftEnv extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 new integ.IntegTest(app, 'ExcludeCharactersInteg', {
   testCases: [new RedshiftEnv(app, 'redshift-exclude-characters-integ')],

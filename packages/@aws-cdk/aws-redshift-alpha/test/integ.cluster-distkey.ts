@@ -12,7 +12,12 @@ import * as redshift from '../lib';
  * 2. Creates a stack with the same cluster to update the table and cause the disktkey creation.
  */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 interface RedshiftDistKeyStackProps extends cdk.StackProps {
   hasDistKey: boolean;

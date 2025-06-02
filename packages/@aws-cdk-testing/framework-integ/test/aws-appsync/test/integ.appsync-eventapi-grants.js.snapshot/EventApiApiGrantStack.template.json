@@ -37,6 +37,7 @@
       "ApiId"
      ]
     },
+    "HandlerConfigs": {},
     "Name": "default"
    }
   },
@@ -49,6 +50,7 @@
       "ApiId"
      ]
     },
+    "HandlerConfigs": {},
     "Name": "pubsub"
    }
   },
@@ -61,6 +63,7 @@
       "ApiId"
      ]
     },
+    "HandlerConfigs": {},
     "Name": "test1"
    }
   },
@@ -73,6 +76,7 @@
       "ApiId"
      ]
     },
+    "HandlerConfigs": {},
     "Name": "test2"
    }
   },
@@ -191,20 +195,38 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "279231bfd143911647f5f97345b4e6df26bb23f1d5f9078ac65fbf68c94e7ba3.zip"
+     "S3Key": "cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1.zip"
     },
     "Environment": {
      "Variables": {
       "EVENT_API_REALTIME_URL": {
-       "Fn::GetAtt": [
-        "EventApiApiGrantBFB2D6A9",
-        "Dns.Realtime"
+       "Fn::Join": [
+        "",
+        [
+         "wss://",
+         {
+          "Fn::GetAtt": [
+           "EventApiApiGrantBFB2D6A9",
+           "Dns.Realtime"
+          ]
+         },
+         "/event/realtime"
+        ]
        ]
       },
       "EVENT_API_HTTP_URL": {
-       "Fn::GetAtt": [
-        "EventApiApiGrantBFB2D6A9",
-        "Dns.Http"
+       "Fn::Join": [
+        "",
+        [
+         "https://",
+         {
+          "Fn::GetAtt": [
+           "EventApiApiGrantBFB2D6A9",
+           "Dns.Http"
+          ]
+         },
+         "/event"
+        ]
        ]
       }
      }
@@ -309,20 +331,38 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "279231bfd143911647f5f97345b4e6df26bb23f1d5f9078ac65fbf68c94e7ba3.zip"
+     "S3Key": "cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1.zip"
     },
     "Environment": {
      "Variables": {
       "EVENT_API_REALTIME_URL": {
-       "Fn::GetAtt": [
-        "EventApiApiGrantBFB2D6A9",
-        "Dns.Realtime"
+       "Fn::Join": [
+        "",
+        [
+         "wss://",
+         {
+          "Fn::GetAtt": [
+           "EventApiApiGrantBFB2D6A9",
+           "Dns.Realtime"
+          ]
+         },
+         "/event/realtime"
+        ]
        ]
       },
       "EVENT_API_HTTP_URL": {
-       "Fn::GetAtt": [
-        "EventApiApiGrantBFB2D6A9",
-        "Dns.Http"
+       "Fn::Join": [
+        "",
+        [
+         "https://",
+         {
+          "Fn::GetAtt": [
+           "EventApiApiGrantBFB2D6A9",
+           "Dns.Http"
+          ]
+         },
+         "/event"
+        ]
        ]
       }
      }
@@ -460,20 +500,38 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "279231bfd143911647f5f97345b4e6df26bb23f1d5f9078ac65fbf68c94e7ba3.zip"
+     "S3Key": "cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1.zip"
     },
     "Environment": {
      "Variables": {
       "EVENT_API_REALTIME_URL": {
-       "Fn::GetAtt": [
-        "EventApiApiGrantBFB2D6A9",
-        "Dns.Realtime"
+       "Fn::Join": [
+        "",
+        [
+         "wss://",
+         {
+          "Fn::GetAtt": [
+           "EventApiApiGrantBFB2D6A9",
+           "Dns.Realtime"
+          ]
+         },
+         "/event/realtime"
+        ]
        ]
       },
       "EVENT_API_HTTP_URL": {
-       "Fn::GetAtt": [
-        "EventApiApiGrantBFB2D6A9",
-        "Dns.Http"
+       "Fn::Join": [
+        "",
+        [
+         "https://",
+         {
+          "Fn::GetAtt": [
+           "EventApiApiGrantBFB2D6A9",
+           "Dns.Http"
+          ]
+         },
+         "/event"
+        ]
        ]
       }
      }
@@ -611,20 +669,38 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "279231bfd143911647f5f97345b4e6df26bb23f1d5f9078ac65fbf68c94e7ba3.zip"
+     "S3Key": "cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1.zip"
     },
     "Environment": {
      "Variables": {
       "EVENT_API_REALTIME_URL": {
-       "Fn::GetAtt": [
-        "EventApiApiGrantBFB2D6A9",
-        "Dns.Realtime"
+       "Fn::Join": [
+        "",
+        [
+         "wss://",
+         {
+          "Fn::GetAtt": [
+           "EventApiApiGrantBFB2D6A9",
+           "Dns.Realtime"
+          ]
+         },
+         "/event/realtime"
+        ]
        ]
       },
       "EVENT_API_HTTP_URL": {
-       "Fn::GetAtt": [
-        "EventApiApiGrantBFB2D6A9",
-        "Dns.Http"
+       "Fn::Join": [
+        "",
+        [
+         "https://",
+         {
+          "Fn::GetAtt": [
+           "EventApiApiGrantBFB2D6A9",
+           "Dns.Http"
+          ]
+         },
+         "/event"
+        ]
        ]
       }
      }

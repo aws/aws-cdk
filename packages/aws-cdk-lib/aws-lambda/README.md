@@ -24,6 +24,8 @@ related to a missing environment variable. To work around this, you can invoke
 your function against a version or alias by default, rather than the `$LATEST`
 version.
 
+To further mitigate these issues, you can ensure consistency between your function code and infrastructure configuration by defining environment variables as a single source of truth in your CDK stack. You can define them in a separate `env.ts` file and reference them in both your handler and CDK configuration. This approach allows you to catch errors at compile time, benefit from improved IDE support, minimize the risk of mismatched configurations, and enhance maintainability.
+
 ## Handler Code
 
 The `lambda.Code` class includes static convenience methods for various types of
@@ -216,6 +218,68 @@ new lambda.Function(this, 'Lambda', {
 ```
 
 To use `applicationLogLevelV2` and/or `systemLogLevelV2` you must set `loggingFormat` to `LoggingFormat.JSON`.
+
+## Customizing Log Group Creation
+
+### Log Group Creation Methods
+
+| Method | Description | Tag Propagation | Prop Injection | Aspects | Notes |
+|--------|-------------|-----------------|----------------|---------|-------|
+| **logRetention prop** | Legacy approach using Custom Resource | False | False | False | Does not support TPA |
+| **logGroup prop** | Explicitly supplied by user in CDK app | True | True | True | Full support for TPA |
+| **Lazy creation** | Lambda service creates logGroup on first invocation | False | False | False | Occurs when both logRetention and logGroup are undefined and USE_CDK_MANAGED_LAMBDA_LOGGROUP is false |
+| **USE_CDK_MANAGED_LAMBDA_LOGGROUP** | CDK Lambda function construct creates log group with default props | True | True | True | Feature flag must be enabled |
+
+*TPA: Tag propagation, Prop Injection, Aspects*
+
+#### Order of precedence 
+```text
+                       Highest Precedence
+                             |
+             +---------------+---------------+
+             |                               |
+  +-------------------------+      +------------------------+
+  |   logRetention is set   |      |     logGroup is set    |
+  +-----------+-------------+      +----------+-------------+
+              |                               |
+              v                               v
+      Create LogGroup via            Use the provided LogGroup
+  Custom Resource (retention       instance (CDK-managed, 
+  managed, logGroup disallowed)    logRetention disallowed)
+              |                               |
+              +---------------+---------------+
+                              |
+                              v
+          +-----------------------------------------------+
+          |         Feature flag enabled:                 |
+          | aws-cdk:aws-lambda:useCdkManagedLogGroup      |
+          +------------------ +---------------------------+
+                              |
+                              v
+              Create LogGroup at synth time 
+          (CDK-managed, default settings for logGroup)
+                              |
+                              v
+                  +---------------------------+
+                  | Default (no config set)   |
+                  +------------+--------------+
+                              |
+                              v
+     Lambda service creates log group on first invocation runtime
+            (CDK does not manage the log group resource)
+```
+### Tag Propagation
+
+Refer section `Log Group Creation Methods` to find out which modes support tag propagation. 
+As an example, adding the following line in your cdk app will also propagate to the logGroup. 
+```
+const fn = new lambda.Function(this, 'MyFunctionWithFFTrue', {
+  runtime: lambda.Runtime.NODEJS_20_X,
+  handler: 'handler.main',
+  code: lambda.Code.fromAsset('lambda'),
+});
+cdk.Tags.of(fn).add('env', 'dev'); // the tag is also added to the log group
+```
 
 ## Resource-based Policies
 
@@ -867,7 +931,7 @@ fn.addEventSource(new eventsources.DynamoEventSource(table, {
 
 ### Observability
 
-Customers can now opt-in to get enhanced metrics for their event source mapping that capture each stage of processing using the `MetrcisConfig` property.
+Customers can now opt-in to get enhanced metrics for their event source mapping that capture each stage of processing using the `MetricsConfig` property.
 
 The following code shows how to opt in for the enhanced metrics. 
 

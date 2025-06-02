@@ -148,7 +148,11 @@ class LambdaStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const efsStack = new EfsStack(app, 'aws-cdk-efs');
 

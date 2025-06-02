@@ -402,9 +402,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c475180f5b1bbabac165414da13a9b843b111cd3b6d5fae9c954c006640c4064.zip"
+     "S3Key": "6094cb0ff874f89ab5ab24fb6b9417df0fdeb6966645f90c88ec1d7e28130112.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.24; /opt/helm/helm 3.9",
+    "Description": "/opt/kubectl/kubectl 1.32.3; /opt/helm/helm 3.17.2",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -786,7 +786,7 @@
      ]
     },
     "Config": {
-     "version": "1.24",
+     "version": "1.32",
      "roleArn": {
       "Fn::GetAtt": [
        "ClusterRoleFA261979",
@@ -1464,7 +1464,7 @@
       }
      },
      "ImageId": {
-      "Ref": "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
      },
      "InstanceType": "inf1.2xlarge",
      "Monitoring": {
@@ -1916,7 +1916,7 @@
       }
      },
      "ImageId": {
-      "Ref": "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
      },
      "InstanceType": "inf2.xlarge",
      "Monitoring": {
@@ -2118,7 +2118,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/e53a01653b78ff1ede88799ed24eae464a86a208b2c0bc16fcb9ade302dcb3f1.json"
+       "/43bef54f6ecb241b119de75c0a5a1874c634b12e386a94de784aecf2da26e5f4.json"
       ]
      ]
     }
@@ -2168,7 +2168,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/f2ee922a8ea4013d4be8e9793c1ebc95899ac837073f08284c5d35baf4d3ffc5.json"
+       "/7d2e5156a847073e82b92131bc9bf7909ec3bb9db2215e9bf7418868fb089970.json"
       ]
      ]
     }
@@ -2977,109 +2977,112 @@
  "Mappings": {
   "LatestNodeRuntimeMap": {
    "af-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
+   },
+   "ap-east-2": {
+    "value": "nodejs22.x"
    },
    "ap-northeast-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-northeast-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-northeast-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-south-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-4": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-5": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-7": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ca-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ca-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "cn-north-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-central-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-isoe-west-1": {
     "value": "nodejs18.x"
    },
    "eu-north-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-south-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "il-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "me-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "me-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "mx-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "sa-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-east-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"
@@ -3090,18 +3093,21 @@
    "us-isob-east-1": {
     "value": "nodejs18.x"
    },
+   "us-isob-west-1": {
+    "value": "nodejs18.x"
+   },
    "us-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-west-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    }
   }
  },
  "Parameters": {
-  "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/aws/service/eks/optimized-ami/1.24/amazon-linux-2-gpu/recommended/image_id"
+   "Default": "/aws/service/eks/optimized-ami/1.32/amazon-linux-2-gpu/recommended/image_id"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

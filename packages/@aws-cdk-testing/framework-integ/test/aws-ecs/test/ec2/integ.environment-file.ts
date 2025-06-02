@@ -9,8 +9,10 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App({
   postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
     '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 const stack = new cdk.Stack(app, 'aws-ecs-integ');

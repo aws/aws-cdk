@@ -67,29 +67,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "StartExecutionHandlerinlinePolicyAddedToExecutionRole08677ED81": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "states:startExecution",
-       "Effect": "Allow",
-       "Resource": {
-        "Ref": "AcceptorStateMachine3C18A968"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "StartExecutionHandlerinlinePolicyAddedToExecutionRole08677ED81",
-    "Roles": [
-     {
-      "Ref": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520"
-     }
-    ]
-   }
-  },
   "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -117,6 +94,29 @@
         ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
        ]
       ]
+     }
+    ]
+   }
+  },
+  "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRoleDefaultPolicy63AE5FEF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "states:startExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "AcceptorStateMachine3C18A968"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRoleDefaultPolicy63AE5FEF",
+    "Roles": [
+     {
+      "Ref": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520"
      }
     ]
    }
@@ -149,6 +149,7 @@
     "Timeout": 30
    },
    "DependsOn": [
+    "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRoleDefaultPolicy63AE5FEF",
     "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520"
    ]
   },
@@ -259,109 +260,112 @@
  "Mappings": {
   "LatestNodeRuntimeMap": {
    "af-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
+   },
+   "ap-east-2": {
+    "value": "nodejs22.x"
    },
    "ap-northeast-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-northeast-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-northeast-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-south-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-4": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-5": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-7": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ca-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ca-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "cn-north-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-central-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-isoe-west-1": {
     "value": "nodejs18.x"
    },
    "eu-north-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-south-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "il-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "me-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "me-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "mx-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "sa-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-east-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"
@@ -372,11 +376,14 @@
    "us-isob-east-1": {
     "value": "nodejs18.x"
    },
+   "us-isob-west-1": {
+    "value": "nodejs18.x"
+   },
    "us-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-west-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    }
   }
  },

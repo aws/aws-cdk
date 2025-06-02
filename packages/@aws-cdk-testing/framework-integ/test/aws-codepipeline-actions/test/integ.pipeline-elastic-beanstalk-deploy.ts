@@ -23,7 +23,9 @@ import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 
 const app = new App({
   postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+    '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,
   },
 });
 
@@ -83,7 +85,7 @@ const beanstalkEnv = new elasticbeanstalk.CfnEnvironment(stack, 'beanstlk-env', 
   applicationName: beanstalkApp.applicationName!,
   environmentName: 'codepipeline-test-env',
   // see https://docs.aws.amazon.com/elasticbeanstalk/latest/platforms/platforms-supported.html#platforms-supported.nodejs
-  solutionStackName: '64bit Amazon Linux 2023 v6.2.2 running Node.js 20',
+  solutionStackName: '64bit Amazon Linux 2023 v6.4.3 running Node.js 20',
   optionSettings: [
     {
       namespace: 'aws:autoscaling:launchconfiguration',

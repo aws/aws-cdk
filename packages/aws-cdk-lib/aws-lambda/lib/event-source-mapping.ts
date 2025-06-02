@@ -7,6 +7,7 @@ import { IKey } from '../../aws-kms';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The type of authentication protocol or the VPC components for your event source's SourceAccessConfiguration
@@ -48,6 +49,11 @@ export class SourceAccessConfigurationType {
    * The Secrets Manager ARN of your secret key containing the root CA certificate (X.509 PEM) used for TLS encryption of your Apache Kafka brokers.
    */
   public static readonly SERVER_ROOT_CA_CERTIFICATE = new SourceAccessConfigurationType('SERVER_ROOT_CA_CERTIFICATE');
+
+  /**
+   * The name of the virtual host in your RabbitMQ broker. Lambda uses this RabbitMQ host as the event source.
+   */
+  public static readonly VIRTUAL_HOST = new SourceAccessConfigurationType('VIRTUAL_HOST');
 
   /** A custom source access configuration property */
   public static of(name: string): SourceAccessConfigurationType {
@@ -129,7 +135,7 @@ export interface EventSourceMappingOptions {
   readonly bisectBatchOnError?: boolean;
 
   /**
-   * An Amazon SQS queue or Amazon SNS topic destination for discarded records.
+   * An Amazon S3, Amazon SQS queue or Amazon SNS topic destination for discarded records.
    *
    * @default discarded records are ignored
    */
@@ -283,8 +289,7 @@ export interface EventSourceMappingOptions {
   readonly filterEncryption?: IKey;
 
   /**
-   * Check if support S3 onfailure destination(ODF). Currently only MSK and self managed kafka event support S3 ODF
-   *
+   * Check if support S3 onfailure destination(OFD). Kinesis, DynamoDB, MSK and self managed kafka event support S3 OFD
    * @default false
    */
   readonly supportS3OnFailureDestination?: boolean;
@@ -371,7 +376,13 @@ export interface IEventSourceMapping extends cdk.IResource {
  * The `SqsEventSource` class will automatically create the mapping, and will also
  * modify the Lambda's execution role so it can consume messages from the queue.
  */
+@propertyInjectable
 export class EventSourceMapping extends cdk.Resource implements IEventSourceMapping {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.EventSourceMapping';
+
   /**
    * Import an event source into this stack from its event source id.
    */
@@ -447,8 +458,9 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     }
 
     props.retryAttempts !== undefined && cdk.withResolved(props.retryAttempts, (attempts) => {
-      if (attempts < 0 || attempts > 10000) {
-        throw new ValidationError(`retryAttempts must be between 0 and 10000 inclusive, got ${attempts}`, this);
+      // Allow -1 for infinite retries, otherwise validate the 0-10000 range
+      if (!(attempts === -1 || (attempts >= 0 && attempts <= 10000))) {
+        throw new ValidationError(`retryAttempts must be -1 (for infinite) or between 0 and 10000 inclusive, got ${attempts}`, this);
       }
     });
 

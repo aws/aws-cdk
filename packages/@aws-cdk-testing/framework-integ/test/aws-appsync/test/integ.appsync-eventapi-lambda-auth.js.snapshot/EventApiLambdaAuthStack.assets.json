@@ -1,7 +1,22 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "files": {
-    "a23502018e98761dadeea712f4b7b8552f528fce830bd02ed222eaa09fcbfbc2": {
+    "cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1": {
+      "displayName": "LambdaConfigTestFunction/Code",
+      "source": {
+        "path": "asset.cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "16f26e47ad3b3781eb0e490f0c7468bbf5f8a512f423cc239df450b5c2aef3ee": {
+      "displayName": "EventApiLambdaAuthStack Template",
       "source": {
         "path": "EventApiLambdaAuthStack.template.json",
         "packaging": "file"
@@ -9,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a23502018e98761dadeea712f4b7b8552f528fce830bd02ed222eaa09fcbfbc2.json",
+          "objectKey": "16f26e47ad3b3781eb0e490f0c7468bbf5f8a512f423cc239df450b5c2aef3ee.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -12,6 +12,10 @@ const useColumnIds = { [REDSHIFT_COLUMN_ID]: true };
 
 const app = new cdk.App({
   context: useColumnIds,
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
 });
 
 const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database');

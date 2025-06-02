@@ -114,7 +114,7 @@
    "Properties": {
     "Content": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
+     "S3Key": "b8ab94266984268614c3fb2824a1c3a55395746c48b28c003b08bc1d08688f3e.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -137,6 +137,10 @@
      "e2204c9fddfc339ea362dec9143b4c22f883d4c18dd38c456f8f6a7161c1073d.zip"
     ],
     "SourceMarkers": [
+     {},
+     {}
+    ],
+    "SourceMarkersConfig": [
      {},
      {}
     ],
@@ -330,7 +334,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "c6358465bf49dfae556bb430bf9c81fa578c221b82c308e3707901b1dd654762.zip"
+     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
     },
     "Environment": {
      "Variables": {

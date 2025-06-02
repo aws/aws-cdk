@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "testCases": {
     "OpenSearchInteg/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "OpenSearchInteg/DefaultTest/DeployAssert",
       "assertionStackName": "OpenSearchIntegDefaultTestDeployAssertFAE78D8A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

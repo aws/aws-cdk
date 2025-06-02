@@ -16,7 +16,11 @@ import { STANDARD_NODEJS_RUNTIME } from '../../../config';
  * -- aws stepfunctions start-execution --state-machine-arn <state-machine-arn-from-output> provides execution arn
  * -- aws stepfunctions describe-execution --execution-arn <state-machine-arn-from-output> returns a status of `Succeeded`
  */
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-lambda-invoke-integ');
 
 const submitJobLambda = new Function(stack, 'submitJobLambda', {

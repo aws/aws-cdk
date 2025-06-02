@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { DataProtectionPolicy } from './data-protection-policy';
+import { FieldIndexPolicy } from './field-index-policy';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -9,8 +10,9 @@ import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { Annotations, Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { Annotations, Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface ILogGroup extends iam.IResourceWithPolicy {
   /**
@@ -507,6 +509,13 @@ export interface LogGroupProps {
   readonly dataProtectionPolicy?: DataProtectionPolicy;
 
   /**
+   * Field Index Policies for this log group.
+   *
+   * @default - no field index policies for this log group.
+   */
+  readonly fieldIndexPolicies?: FieldIndexPolicy[];
+
+  /**
    * How long, in days, the log contents will be retained.
    *
    * To retain all logs, set this value to RetentionDays.INFINITE.
@@ -557,7 +566,13 @@ export enum Distribution {
 /**
  * Define a CloudWatch Log Group
  */
+@propertyInjectable
 export class LogGroup extends LogGroupBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-log.LogGroup';
+
   /**
    * Import an existing LogGroup given its ARN
    */
@@ -615,7 +630,7 @@ export class LogGroup extends LogGroupBase {
     if (retentionInDays === Infinity || retentionInDays === RetentionDays.INFINITE) { retentionInDays = undefined; }
 
     if (retentionInDays !== undefined && !Token.isUnresolved(retentionInDays) && retentionInDays <= 0) {
-      throw new Error(`retentionInDays must be positive, got ${retentionInDays}`);
+      throw new ValidationError(`retentionInDays must be positive, got ${retentionInDays}`, this);
     }
 
     let logGroupClass = props.logGroupClass;
@@ -630,6 +645,12 @@ export class LogGroup extends LogGroupBase {
     }
 
     const dataProtectionPolicy = props.dataProtectionPolicy?._bind(this);
+    const fieldIndexPolicies: any[] = [];
+    if (props.fieldIndexPolicies) {
+      props.fieldIndexPolicies.forEach((fieldIndexPolicy) => {
+        fieldIndexPolicies.push(fieldIndexPolicy._bind(this));
+      });
+    }
 
     const resource = new CfnLogGroup(this, 'Resource', {
       kmsKeyId: props.encryptionKey?.keyArn,
@@ -643,6 +664,7 @@ export class LogGroup extends LogGroupBase {
         Statement: dataProtectionPolicy?.statement,
         Configuration: dataProtectionPolicy?.configuration,
       } : undefined,
+      ...(props.fieldIndexPolicies && { fieldIndexPolicies: fieldIndexPolicies }),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);

@@ -6,7 +6,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
-import { ArnComponents, CustomResource, Token, Stack, Lazy } from '../../core';
+import { ArnComponents, CustomResource, Token, Stack, Lazy, ValidationError } from '../../core';
 
 export interface ClusterResourceProps {
   readonly resourcesVpcConfig: CfnCluster.ResourcesVpcConfigProperty;
@@ -57,7 +57,7 @@ export class ClusterResource extends Construct {
     super(scope, id);
 
     if (!props.roleArn) {
-      throw new Error('"roleArn" is required');
+      throw new ValidationError('"roleArn" is required', this);
     }
 
     const provider = ClusterResourceProvider.getOrCreate(this, {

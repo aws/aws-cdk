@@ -40,6 +40,7 @@ class EksClusterStack extends Stack {
     // create the cluster with a default nodegroup capacity
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 2,
       version: eks.KubernetesVersion.V1_32,
       kubectlProviderOptions: {
@@ -204,6 +205,8 @@ class EksClusterStack extends Stack {
 const app = new App({
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
 });
 const stack = new EksClusterStack(app, 'aws-cdk-eks-import-cluster-test');

@@ -1,14 +1,15 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Job, JobProperties } from './job';
+import { Job, JobProps } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, PythonVersion, MaxCapacity, JobLanguage } from '../constants';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties for creating a Python Shell job
  */
-export interface PythonShellJobProps extends JobProperties {
+export interface PythonShellJobProps extends JobProps {
   /**
    * Python Version
    * The version of Python to use to execute this job
@@ -43,7 +44,10 @@ export interface PythonShellJobProps extends JobProperties {
  * depends on the AWS Glue version you are using.
  * This can be used to schedule and run tasks that don't require an Apache Spark environment.
  */
+@propertyInjectable
 export class PythonShellJob extends Job {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.PythonShellJob';
   public readonly jobArn: string;
   public readonly jobName: string;
   public readonly role: iam.IRole;
@@ -58,10 +62,7 @@ export class PythonShellJob extends Job {
     addConstructMetadata(this, props);
 
     // Set up role and permissions for principal
-    this.role = props.role, {
-      assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole')],
-    };
+    this.role = props.role;
     this.grantPrincipal = this.role;
 
     // Enable CloudWatch metrics and continuous logging by default as a best practice

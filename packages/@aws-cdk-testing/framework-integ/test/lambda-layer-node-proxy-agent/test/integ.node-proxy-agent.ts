@@ -12,7 +12,12 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
  * Test verifies that node-proxy-agent is invoked successfully inside Lambda runtime.
  */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 const stack = new cdk.Stack(app, 'lambda-layer-node-proxy-agent-integ-stack');
 const layer = new NodeProxyAgentLayer(stack, 'NodeProxyAgentLayer');
 

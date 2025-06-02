@@ -86,6 +86,15 @@ export class FoundationModelIdentifier {
   /** Base model "amazon.nova-reel-v1:0". */
   public static readonly AMAZON_NOVA_REEL_V1_0 = new FoundationModelIdentifier('amazon.nova-reel-v1:0');
 
+  /** Base model "amazon.nova-reel-v1:1". */
+  public static readonly AMAZON_NOVA_REEL_V1_1 = new FoundationModelIdentifier('amazon.nova-reel-v1:1');
+
+  /** Base model "amazon.nova-sonic-v1:0". */
+  public static readonly AMAZON_NOVA_SONIC_V1_0 = new FoundationModelIdentifier('amazon.nova-sonic-v1:0');
+
+  /** Base model "amazon.nova-premier-v1:0". */
+  public static readonly AMAZON_NOVA_PREMIER_V1_0 = new FoundationModelIdentifier('amazon.nova-premier-v1:0');
+
   /**
    * Base model "ai21.j2-mid".
    * @deprecated use latest version of the model
@@ -212,6 +221,12 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-3-5-sonnet-20241022-v2:0:200k". */
   public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_200K = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20241022-v2:0:200k');
 
+  /** Base model "anthropic.claude-3-7-sonnet-20250219-v1:0" */
+  public static readonly ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-7-sonnet-20250219-v1:0');
+
+  /** Base model "anthropic.claude-sonnet-4-20250514-v1:0" */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_4_20250514_V1_0 = new FoundationModelIdentifier('anthropic.claude-sonnet-4-20250514-v1:0');
+
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0". */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0');
 
@@ -235,6 +250,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "anthropic.claude-3-opus-20240229-v1:0:200k". */
   public static readonly ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_200K = new FoundationModelIdentifier('anthropic.claude-3-opus-20240229-v1:0:200k');
+
+  /** Base model "anthropic.claude-opus-4-20250514-v1:0" */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_20250514_V1_0 = new FoundationModelIdentifier('anthropic.claude-opus-4-20250514-v1:0');
 
   /**
    * Base model "anthropic.claude-instant-v1".
@@ -280,6 +298,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "cohere.embed-multilingual-v3:0:512". */
   public static readonly COHERE_EMBED_MULTILINGUAL_V3_0_512 = new FoundationModelIdentifier('cohere.embed-multilingual-v3:0:512');
+
+  /** Base model "deepseek.r1-v1:0". */
+  public static readonly DEEP_SEEK_R1_V1_0 = new FoundationModelIdentifier('deepseek.r1-v1:0');
 
   /** Base model "luma.ray-v2:0". */
   public static readonly LUMA_RAY_V2_0 = new FoundationModelIdentifier('luma.ray-v2:0');
@@ -368,6 +389,12 @@ export class FoundationModelIdentifier {
   /** Base model "meta.llama3-3-70b-instruct-v1:0". */
   public static readonly META_LLAMA_3_3_70B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-3-70b-instruct-v1:0');
 
+  /** Base model "meta.llama4-maverick-17b-instruct-v1:0". */
+  public static readonly META_LLAMA_4_MAVERICK_17B_INSTRUCT_V1_0 = new FoundationModelIdentifier('meta.llama4-maverick-17b-instruct-v1:0');
+
+  /** Base model "meta.llama4-scout-17b-instruct-v1:0". */
+  public static readonly META_LLAMA_4_SCOUT_17B_INSTRUCT_V1_0 = new FoundationModelIdentifier('meta.llama4-scout-17b-instruct-v1:0');
+
   /** Base model "mistral.mistral-7b-instruct-v0:2". */
   public static readonly MISTRAL_MISTRAL_7B_INSTRUCT_V0_2 = new FoundationModelIdentifier('mistral.mistral-7b-instruct-v0:2');
 
@@ -382,6 +409,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "mistral.mistral-large-2407-v1:0". */
   public static readonly MISTRAL_LARGE_2_V0_1 = new FoundationModelIdentifier('mistral.mistral-large-2407-v1:0');
+
+  /** Base model "mistral.pixtral-large-2502-v1:0". */
+  public static readonly MISTRAL_PIXTRAL_LARGE_2502_V1_0 = new FoundationModelIdentifier('mistral.pixtral-large-2502-v1:0');
 
   /**
    * Base model "stability.stable-diffusion-xl".
@@ -424,6 +454,12 @@ export class FoundationModelIdentifier {
 
   /** Base model "stability.stable-image-core-v1:1". */
   public static readonly STABILITY_STABLE_IMAGE_CORE_V1_1 = new FoundationModelIdentifier('stability.stable-image-core-v1:1');
+
+  /** Base model "writer.palmyra-x4-v1:0". */
+  public static readonly WRITER_PALMYRA_X4_V1_0 = new FoundationModelIdentifier('writer.palmyra-x4-v1:0');
+
+  /** Base model "writer.palmyra-x5-v1:0". */
+  public static readonly WRITER_PALMYRA_X5_V1_0 = new FoundationModelIdentifier('writer.palmyra-x5-v1:0');
 
   /**
    * Constructor for foundation model identifier

@@ -1,6 +1,6 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { cx_api } from '../..';
-import { Template } from '../../assertions';
+import { Template, Match } from '../../assertions';
 import { UserPool } from '../../aws-cognito';
 import { GatewayVpcEndpoint } from '../../aws-ec2';
 import * as ec2 from '../../aws-ec2';
@@ -9,11 +9,13 @@ import { App, CfnElement, CfnResource, Lazy, RemovalPolicy, Size, Stack } from '
 import { JSII_RUNTIME_SYMBOL } from '../../core/lib/constants';
 import * as apigw from '../lib';
 
+let stack: Stack;
+beforeEach(() => {
+  stack = new Stack();
+});
+
 describe('restapi', () => {
   test('minimal setup', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const api = new apigw.RestApi(stack, 'my-api');
     api.root.addMethod('GET'); // must have at least one method or an API definition
@@ -107,9 +109,6 @@ describe('restapi', () => {
   });
 
   test('restApiName is set correctly', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const myapi = new apigw.RestApi(stack, 'myapi');
     const yourapi = new apigw.RestApi(stack, 'yourapi', {
@@ -122,15 +121,11 @@ describe('restapi', () => {
   });
 
   test('defaultChild is set correctly', () => {
-    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'my-api');
     expect(api.node.defaultChild instanceof apigw.CfnRestApi).toBeDefined();
   });
 
   test('"name" is defaulted to resource physical name', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const api = new apigw.RestApi(stack, 'restapi', {
       deploy: false,
@@ -148,7 +143,7 @@ describe('restapi', () => {
   test('fails in synthesis if there are no methods or definition', () => {
     // GIVEN
     const app = new App();
-    const stack = new Stack(app, 'my-stack');
+    stack = new Stack(app, 'my-stack');
     const api = new apigw.RestApi(stack, 'API');
 
     // WHEN
@@ -160,8 +155,6 @@ describe('restapi', () => {
   });
 
   test('"addResource" can be used on "IRestApiResource" to form a tree', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
@@ -193,8 +186,6 @@ describe('restapi', () => {
   });
 
   test('"addResource" allows configuration of proxy paths', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
@@ -213,9 +204,6 @@ describe('restapi', () => {
   });
 
   test('"addMethod" can be used to add methods to resources', () => {
-    // GIVEN
-    const stack = new Stack();
-
     const api = new apigw.RestApi(stack, 'restapi', { deploy: false, cloudWatchRole: false });
     const r1 = api.root.addResource('r1');
 
@@ -287,8 +275,6 @@ describe('restapi', () => {
   });
 
   test('resourcePath returns the full path of the resource within the API', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'restapi');
 
     // WHEN
@@ -308,8 +294,6 @@ describe('restapi', () => {
   });
 
   test('resource path part validation', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'restapi');
 
     // THEN
@@ -321,10 +305,6 @@ describe('restapi', () => {
   });
 
   test('fails if "deployOptions" is set with "deploy" disabled', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // THEN
     expect(() => new apigw.RestApi(stack, 'myapi', {
       deploy: false,
       deployOptions: { cachingEnabled: true },
@@ -332,8 +312,6 @@ describe('restapi', () => {
   });
 
   test('uses correct description for Deployment from "deployOptions"', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'restapi', {
       description: 'Api description',
       deployOptions: { description: 'Deployment description' },
@@ -351,8 +329,6 @@ describe('restapi', () => {
   });
 
   test('CloudWatch role is created for API Gateway', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'myapi');
     api.root.addMethod('GET');
 
@@ -368,7 +344,7 @@ describe('restapi', () => {
         '@aws-cdk/aws-apigateway:disableCloudWatchRole': true,
       },
     });
-    const stack = new Stack(app);
+    stack = new Stack(app);
     const api = new apigw.RestApi(stack, 'myapi');
     api.root.addMethod('GET');
 
@@ -378,8 +354,6 @@ describe('restapi', () => {
   });
 
   test('"url" and "urlForPath" return the URL endpoints of the deployed API', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
@@ -413,8 +387,6 @@ describe('restapi', () => {
   });
 
   test('"urlForPath" would not work if there is no deployment', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api', { deploy: false });
     api.root.addMethod('GET');
 
@@ -424,8 +396,6 @@ describe('restapi', () => {
   });
 
   test('"urlForPath" requires that path will begin with "/"', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
@@ -434,8 +404,6 @@ describe('restapi', () => {
   });
 
   test('"executeApiArn" returns the execute-api ARN for a resource/method', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
@@ -459,8 +427,6 @@ describe('restapi', () => {
   });
 
   test('"executeApiArn" path must begin with "/"', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
@@ -469,8 +435,6 @@ describe('restapi', () => {
   });
 
   test('"executeApiArn" path can be a token', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
@@ -479,9 +443,6 @@ describe('restapi', () => {
   });
 
   test('"executeApiArn" will convert ANY to "*"', () => {
-    // GIVEN
-    const stack = new Stack();
-
     const api = new apigw.RestApi(stack, 'api');
     const method = api.root.addMethod('ANY');
 
@@ -504,9 +465,6 @@ describe('restapi', () => {
   });
 
   test('"endpointTypes" can be used to specify endpoint configuration for the api', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const api = new apigw.RestApi(stack, 'api', {
       endpointTypes: [apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE],
@@ -526,9 +484,6 @@ describe('restapi', () => {
   });
 
   test('"endpointConfiguration" can be used to specify endpoint types for the api', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const api = new apigw.RestApi(stack, 'api', {
       endpointConfiguration: {
@@ -547,9 +502,6 @@ describe('restapi', () => {
   });
 
   test('"endpointConfiguration" can be used to specify vpc endpoints on the API', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const api = new apigw.RestApi(stack, 'api', {
       endpointConfiguration: {
@@ -579,9 +531,6 @@ describe('restapi', () => {
   });
 
   test('"endpointTypes" and "endpointConfiguration" can NOT both be used to specify endpoint configuration for the api', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // THEN
     expect(() => new apigw.RestApi(stack, 'api', {
       endpointConfiguration: {
@@ -592,9 +541,40 @@ describe('restapi', () => {
     })).toThrow(/Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed/);
   });
 
+  test.each([
+    apigw.IpAddressType.IPV4,
+    apigw.IpAddressType.DUAL_STACK,
+  ])('configure ip address type', (ipAddressType) => {
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {
+      endpointConfiguration: {
+        types: [apigw.EndpointType.EDGE],
+        ipAddressType,
+      },
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      EndpointConfiguration: {
+        Types: ['EDGE'],
+        IpAddressType: ipAddressType,
+      },
+    });
+  });
+
+  test('throw error for configuring IPv4 for private endpoint', () => {
+    // THEN
+    expect(() => new apigw.RestApi(stack, 'api', {
+      endpointConfiguration: {
+        types: [apigw.EndpointType.PRIVATE],
+        ipAddressType: apigw.IpAddressType.IPV4,
+      },
+    })).toThrow('Private APIs can only have a dualstack IP address type.');
+  });
+
   test('"cloneFrom" can be used to clone an existing API', () => {
-    // GIVEN
-    const stack = new Stack();
     const cloneFrom = apigw.RestApi.fromRestApiId(stack, 'RestApi', 'foobar');
 
     // WHEN
@@ -611,8 +591,6 @@ describe('restapi', () => {
   });
 
   test('allow taking a dependency on the rest api (includes deployment and stage)', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'myapi');
     api.root.addMethod('GET');
     const resource = new CfnResource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
@@ -634,8 +612,6 @@ describe('restapi', () => {
   });
 
   test('defaultIntegration and defaultMethodOptions can be used at any level', () => {
-    // GIVEN
-    const stack = new Stack();
     const rootInteg = new apigw.AwsIntegration({
       service: 's3',
       action: 'GetObject',
@@ -712,8 +688,6 @@ describe('restapi', () => {
   });
 
   test('addApiKey is supported', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'myapi');
     api.root.addMethod('OPTIONS');
 
@@ -738,8 +712,6 @@ describe('restapi', () => {
   });
 
   test('addModel is supported', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'myapi');
     api.root.addMethod('OPTIONS');
 
@@ -766,8 +738,6 @@ describe('restapi', () => {
   });
 
   test('addRequestValidator is supported', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'myapi');
     api.root.addMethod('OPTIONS');
 
@@ -800,9 +770,6 @@ describe('restapi', () => {
   });
 
   test('creates output with given "exportName"', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const api = new apigw.RestApi(stack, 'myapi', { endpointExportName: 'my-given-export-name' });
     api.root.addMethod('GET');
@@ -833,9 +800,6 @@ describe('restapi', () => {
   });
 
   test('creates output when "exportName" is not specified', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const api = new apigw.RestApi(stack, 'myapi');
     api.root.addMethod('GET');
@@ -865,9 +829,6 @@ describe('restapi', () => {
   });
 
   testDeprecated('"restApi" and "api" properties return the RestApi correctly', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const api = new apigw.RestApi(stack, 'test-api');
     const method = api.root.addResource('pets').addMethod('GET');
@@ -879,9 +840,6 @@ describe('restapi', () => {
   });
 
   testDeprecated('"restApi" throws an error on imported while "api" returns correctly', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const api = apigw.RestApi.fromRestApiAttributes(stack, 'test-api', {
       restApiId: 'test-rest-api-id',
@@ -902,7 +860,7 @@ describe('restapi', () => {
       },
     });
 
-    const stack = new Stack(app);
+    stack = new Stack(app);
     const api = new apigw.RestApi(stack, 'RestApi', {
       minCompressionSize: Size.bytes(1024),
     });
@@ -925,7 +883,7 @@ describe('restapi', () => {
       },
     });
 
-    const stack = new Stack(app);
+    stack = new Stack(app);
     const api = new apigw.RestApi(stack, 'RestApi', {
       minimumCompressionSize: 1024,
     });
@@ -949,7 +907,7 @@ describe('restapi', () => {
     });
 
     // WHEN
-    const stack = new Stack(app);
+    stack = new Stack(app);
 
     // THEN
     expect(() => new apigw.RestApi(stack, 'RestApi', {
@@ -959,9 +917,6 @@ describe('restapi', () => {
   });
 
   test('can specify CloudWatch Role and Account removal policy', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const api = new apigw.RestApi(stack, 'myapi', {
       cloudWatchRole: true,
@@ -997,9 +952,6 @@ describe('restapi', () => {
 
 describe('Import', () => {
   test('fromRestApiId()', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const imported = apigw.RestApi.fromRestApiId(stack, 'imported-api', 'api-rxt4498f');
 
@@ -1009,9 +961,6 @@ describe('Import', () => {
   });
 
   test('fromRestApiAttributes()', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const imported = apigw.RestApi.fromRestApiAttributes(stack, 'imported-api', {
       restApiId: 'test-restapi-id',
@@ -1033,9 +982,6 @@ describe('Import', () => {
   });
 
   test('fromRestApiAttributes() with restApiName', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const imported = apigw.RestApi.fromRestApiAttributes(stack, 'imported-api', {
       restApiId: 'test-restapi-id',
@@ -1060,8 +1006,6 @@ describe('Import', () => {
 
 describe('SpecRestApi', () => {
   test('add Methods and Resources', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
       apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
     });
@@ -1084,9 +1028,6 @@ describe('SpecRestApi', () => {
   });
 
   test('"endpointTypes" can be used to specify endpoint configuration for SpecRestApi', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const api = new apigw.SpecRestApi(stack, 'api', {
       apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
@@ -1107,8 +1048,6 @@ describe('SpecRestApi', () => {
   });
 
   testDeprecated('addApiKey is supported', () => {
-    // GIVEN
-    const stack = new Stack();
     const api = new apigw.SpecRestApi(stack, 'myapi', {
       apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
     });
@@ -1142,7 +1081,7 @@ describe('SpecRestApi', () => {
       },
     });
 
-    const stack = new Stack(app);
+    stack = new Stack(app);
     const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
       apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
     });
@@ -1164,7 +1103,7 @@ describe('SpecRestApi', () => {
       },
     });
 
-    const stack = new Stack(app);
+    stack = new Stack(app);
     const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
       apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
       minCompressionSize: Size.bytes(1024),
@@ -1180,10 +1119,70 @@ describe('SpecRestApi', () => {
     });
   });
 
+  test('"endpointConfiguration" can be used to specify endpoint types for the api', () => {
+    // WHEN
+    const api = new apigw.SpecRestApi(stack, 'api', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      endpointConfiguration: {
+        types: [apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE],
+      },
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      EndpointConfiguration: {
+        Types: ['EDGE', 'PRIVATE'],
+      },
+    });
+  });
+
+  test('"endpointConfiguration" can be used to specify vpc endpoints on the API', () => {
+    // WHEN
+    const api = new apigw.SpecRestApi(stack, 'api', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      endpointConfiguration: {
+        types: [apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE],
+        vpcEndpoints: [
+          GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint', 'vpcEndpoint'),
+          GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint2', 'vpcEndpoint2'),
+        ],
+      },
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      EndpointConfiguration: {
+        Types: [
+          'EDGE',
+          'PRIVATE',
+        ],
+        VpcEndpointIds: [
+          'vpcEndpoint',
+          'vpcEndpoint2',
+        ],
+      },
+    });
+  });
+
+  test('"endpointTypes" and "endpointConfiguration" can NOT both be used to specify endpoint configuration for the api', () => {
+    // THEN
+    expect(() => new apigw.SpecRestApi(stack, 'api', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      endpointConfiguration: {
+        types: [apigw.EndpointType.PRIVATE],
+        vpcEndpoints: [GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint', 'vpcEndpoint')],
+      },
+      endpointTypes: [apigw.EndpointType.PRIVATE],
+    })).toThrow(/Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed/);
+  });
+
   describe('Metrics', () => {
     test('metric', () => {
       // GIVEN
-      const stack = new Stack();
       const api = new apigw.RestApi(stack, 'my-api');
       const metricName = '4XXError';
       const statistic = 'Sum';
@@ -1200,7 +1199,6 @@ describe('SpecRestApi', () => {
 
     test('metricClientError', () => {
       // GIVEN
-      const stack = new Stack();
       const api = new apigw.RestApi(stack, 'my-api');
       const color = '#00ff00';
 
@@ -1215,7 +1213,6 @@ describe('SpecRestApi', () => {
 
     test('metricServerError', () => {
       // GIVEN
-      const stack = new Stack();
       const api = new apigw.RestApi(stack, 'my-api');
       const color = '#00ff00';
 
@@ -1230,7 +1227,6 @@ describe('SpecRestApi', () => {
 
     test('metricCacheHitCount', () => {
       // GIVEN
-      const stack = new Stack();
       const api = new apigw.RestApi(stack, 'my-api');
       const color = '#00ff00';
 
@@ -1245,7 +1241,6 @@ describe('SpecRestApi', () => {
 
     test('metricCacheMissCount', () => {
       // GIVEN
-      const stack = new Stack();
       const api = new apigw.RestApi(stack, 'my-api');
       const color = '#00ff00';
 
@@ -1260,7 +1255,6 @@ describe('SpecRestApi', () => {
 
     test('metricCount', () => {
       // GIVEN
-      const stack = new Stack();
       const api = new apigw.RestApi(stack, 'my-api');
       const color = '#00ff00';
 
@@ -1275,7 +1269,6 @@ describe('SpecRestApi', () => {
 
     test('metricIntegrationLatency', () => {
       // GIVEN
-      const stack = new Stack();
       const api = new apigw.RestApi(stack, 'my-api');
       const color = '#00ff00';
 
@@ -1289,7 +1282,6 @@ describe('SpecRestApi', () => {
 
     test('metricLatency', () => {
       // GIVEN
-      const stack = new Stack();
       const api = new apigw.RestApi(stack, 'my-api');
       const color = '#00ff00';
 
@@ -1303,9 +1295,6 @@ describe('SpecRestApi', () => {
   });
 
   test('disableExecuteApiEndpoint is false when set to false in RestApi', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const api = new apigw.RestApi(stack, 'my-api', { disableExecuteApiEndpoint: false });
     api.root.addMethod('GET');
@@ -1317,9 +1306,6 @@ describe('SpecRestApi', () => {
   });
 
   test('disableExecuteApiEndpoint is true when set to true in RestApi', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const api = new apigw.RestApi(stack, 'my-api', { disableExecuteApiEndpoint: true });
     api.root.addMethod('GET');
@@ -1331,9 +1317,6 @@ describe('SpecRestApi', () => {
   });
 
   test('disableExecuteApiEndpoint is false when set to false in SpecRestApi', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const api = new apigw.SpecRestApi(stack, 'my-api', {
       apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
@@ -1348,9 +1331,6 @@ describe('SpecRestApi', () => {
   });
 
   test('disableExecuteApiEndpoint is true when set to true in SpecRestApi', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const api = new apigw.SpecRestApi(stack, 'my-api', {
       apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
@@ -1366,9 +1346,6 @@ describe('SpecRestApi', () => {
 
   describe('Description', () => {
     test('description can be set', () => {
-      // GIVEN
-      const stack = new Stack();
-
       // WHEN
       const api = new apigw.RestApi(stack, 'my-api', { description: 'My API' });
       api.root.addMethod('GET');
@@ -1382,9 +1359,6 @@ describe('SpecRestApi', () => {
     });
 
     test('description is not set', () => {
-      // GIVEN
-      const stack = new Stack();
-
       // WHEN
       const api = new apigw.RestApi(stack, 'my-api');
       api.root.addMethod('GET');
@@ -1396,8 +1370,6 @@ describe('SpecRestApi', () => {
   });
 
   test('check if url property exists for a SpecRestApi', () => {
-    // GIVEN
-    const stack = new Stack();
     const restApiSwaggerDefinition = {
       openapi: '3.0.2',
       info: {
@@ -1453,9 +1425,6 @@ describe('SpecRestApi', () => {
   });
 
   test('can override "apiKeyRequired" set in "defaultMethodOptions" at the resource level', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const api = new apigw.RestApi(stack, 'myapi', {
       defaultMethodOptions: {
@@ -1480,10 +1449,29 @@ describe('SpecRestApi', () => {
     });
   });
 
+  test.each([
+    [apigw.RestApiMode.OVERWRITE, 'overwrite'],
+    [apigw.RestApiMode.MERGE, 'merge'],
+    [undefined, undefined],
+  ])('mode property is set (%s)', (mode, expectedMode) => {
+    // WHEN
+    const api = new apigw.SpecRestApi(stack, 'api', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      mode,
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      Name: 'api',
+      Mode: expectedMode ?? Match.absent(),
+    });
+  });
+
   describe('addToResourcePolicy', () => {
     test('add a statement to the resource policy for RestApi', () => {
       // GIVEN
-      const stack = new Stack();
       const api = new apigw.RestApi(stack, 'Api');
       api.root.addMethod('GET', undefined, {});
       const statement = new iam.PolicyStatement({
@@ -1526,7 +1514,6 @@ describe('SpecRestApi', () => {
 
     test('add a statement to the resource policy for RestApi with policy provided', () => {
       // GIVEN
-      const stack = new Stack();
       const api = new apigw.RestApi(stack, 'Api', {
         policy: new iam.PolicyDocument({
           statements: [
@@ -1615,7 +1602,6 @@ describe('SpecRestApi', () => {
 
     test('add a statement to the resource policy for SpecRestApi', () => {
       // GIVEN
-      const stack = new Stack();
       const api = new apigw.SpecRestApi(stack, 'Api', {
         apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
       });
@@ -1660,7 +1646,6 @@ describe('SpecRestApi', () => {
 
     test('add a statement to the resource policy for SpecRestApi with policy provided', () => {
       // GIVEN
-      const stack = new Stack();
       const api = new apigw.SpecRestApi(stack, 'Api', {
         apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
         policy: new iam.PolicyDocument({
@@ -1750,7 +1735,6 @@ describe('SpecRestApi', () => {
 
     test('cannot add a statement to the resource policy for imported RestApi from API ID', () => {
       // GIVEN
-      const stack = new Stack();
       const api = apigw.RestApi.fromRestApiId(stack, 'Api', 'api-id');
 
       // THEN
@@ -1768,7 +1752,6 @@ describe('SpecRestApi', () => {
 
     test('cannot add a statement to the resource policy for imported RestApi from API Attributes', () => {
       // GIVEN
-      const stack = new Stack();
       const api = apigw.RestApi.fromRestApiAttributes(stack, 'Api', {
         restApiId: 'api-id',
         rootResourceId: 'root-id',
@@ -1791,7 +1774,6 @@ describe('SpecRestApi', () => {
   describe('grantInvokeFromVpcEndpointOnly', () => {
     test('called once', () => {
       // GIVEN
-      const stack = new Stack();
       const vpc = new ec2.Vpc(stack, 'VPC');
       const vpcEndpoint = vpc.addInterfaceEndpoint('APIGatewayEndpoint', {
         service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY,
@@ -1831,7 +1813,6 @@ describe('SpecRestApi', () => {
 
     test('called once with multiple endpoints', () => {
       // GIVEN
-      const stack = new Stack();
       const vpc = new ec2.Vpc(stack, 'VPC');
       const vpcEndpoint1 = vpc.addInterfaceEndpoint('APIGatewayEndpoint1', {
         service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY,
@@ -1876,7 +1857,6 @@ describe('SpecRestApi', () => {
 
     test('called twice with the different endpoints', () => {
       // GIVEN
-      const stack = new Stack();
       const vpc = new ec2.Vpc(stack, 'VPC');
       const vpcEndpoint1 = vpc.addInterfaceEndpoint('APIGatewayEndpoint1', {
         service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY,
@@ -1922,7 +1902,6 @@ describe('SpecRestApi', () => {
 
     test('called twice with the same endpoint', () => {
       // GIVEN
-      const stack = new Stack();
       const vpc = new ec2.Vpc(stack, 'VPC');
       const vpcEndpoint = vpc.addInterfaceEndpoint('APIGatewayEndpoint', {
         service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY,
@@ -1967,7 +1946,7 @@ describe('telemetry metadata', () => {
   it('redaction happens when feature flag is enabled', () => {
     const app = new App();
     app.node.setContext(cx_api.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
-    const stack = new Stack(app);
+    stack = new Stack(app);
 
     const mockConstructor = {
       [JSII_RUNTIME_SYMBOL]: {
@@ -2002,7 +1981,7 @@ describe('telemetry metadata', () => {
   it('redaction happens when feature flag is disabled', () => {
     const app = new App();
     app.node.setContext(cx_api.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
-    const stack = new Stack(app);
+    stack = new Stack(app);
 
     const mockConstructor = {
       [JSII_RUNTIME_SYMBOL]: {

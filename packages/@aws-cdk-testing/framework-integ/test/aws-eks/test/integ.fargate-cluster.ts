@@ -28,7 +28,12 @@ class EksFargateClusterStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 
 // create fargate cluster with undefined auth mode
 const stack1 = new EksFargateClusterStack(app, 'aws-cdk-eks-fargate-cluster-test-stack1', {
