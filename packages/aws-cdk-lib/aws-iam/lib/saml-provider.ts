@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { Construct } from 'constructs';
 import { CfnSAMLProvider } from './iam.generated';
-import { IResource, Resource, Token } from '../../core';
+import { IResource, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -95,7 +95,7 @@ export class SamlProvider extends Resource implements ISamlProvider {
     addConstructMetadata(this, props);
 
     if (props.name && !Token.isUnresolved(props.name) && !/^[\w+=,.@-]{1,128}$/.test(props.name)) {
-      throw new Error('Invalid SAML provider name. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 128 characters.');
+      throw new ValidationError('Invalid SAML provider name. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 128 characters.', this);
     }
 
     const samlProvider = new CfnSAMLProvider(this, 'Resource', {
