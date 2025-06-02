@@ -1,0 +1,21 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "60a679f02ac3fad224765bbb6b1d228260c417f64a26b379ddee1e7c419c7496": {
+      "displayName": "aws-cdk-sns-firehose-topicstack Template",
+      "source": {
+        "path": "aws-cdk-sns-firehose-topicstack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "60a679f02ac3fad224765bbb6b1d228260c417f64a26b379ddee1e7c419c7496.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
