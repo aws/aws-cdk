@@ -238,32 +238,6 @@ export interface ManagedLoginBrandingProps {
    * settings using the AWS CLI command:
    * `aws cognito-idp describe-managed-login-branding --user-pool-id YOUR_POOL_ID`
    *
-   * Example:
-   * ```ts
-   * settings: {
-   *   components: {
-   *     primaryButton: {
-   *       lightMode: {
-   *         defaults: {
-   *           backgroundColor: '0972d3ff',
-   *           textColor: 'ffffffff',
-   *         }
-   *       }
-   *     },
-   *     pageBackground: {
-   *       lightMode: { color: 'ffffffff' },
-   *       darkMode: { color: '0f1b2aff' }
-   *     }
-   *   },
-   *   categories: {
-   *     global: {
-   *       colorSchemeMode: 'LIGHT',
-   *       spacingDensity: 'REGULAR'
-   *     }
-   *   }
-   * }
-   * ```
-   *
    * @default - No custom settings are provided
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-managedloginbranding.html
    */
