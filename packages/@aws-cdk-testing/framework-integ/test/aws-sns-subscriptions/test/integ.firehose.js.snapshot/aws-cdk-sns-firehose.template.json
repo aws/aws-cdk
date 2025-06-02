@@ -1,371 +1,34 @@
 {
  "Resources": {
-  "VPCB9E5F0B4": {
-   "Type": "AWS::EC2::VPC",
-   "Properties": {
-    "CidrBlock": "10.0.0.0/16",
-    "EnableDnsHostnames": true,
-    "EnableDnsSupport": true,
-    "InstanceTenancy": "default",
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC"
-     }
-    ]
-   }
+  "MyTopic86869434": {
+   "Type": "AWS::SNS::Topic"
   },
-  "VPCPublicSubnet1SubnetB4246D30": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.0.0/18",
-    "MapPublicIpOnLaunch": true,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Public"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Public"
-     },
-     {
-      "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PublicSubnet1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
+  "DeadLetterQueue9F481546": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "VPCPublicSubnet1RouteTableFEE4B781": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PublicSubnet1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
-  },
-  "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-    },
-    "SubnetId": {
-     "Ref": "VPCPublicSubnet1SubnetB4246D30"
-    }
-   }
-  },
-  "VPCPublicSubnet1DefaultRoute91CEF279": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Ref": "VPCIGWB7E252D3"
-    },
-    "RouteTableId": {
-     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-    }
-   },
-   "DependsOn": [
-    "VPCVPCGW99B986DC"
-   ]
-  },
-  "VPCPublicSubnet2Subnet74179F39": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      1,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.64.0/18",
-    "MapPublicIpOnLaunch": true,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Public"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Public"
-     },
-     {
-      "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PublicSubnet2"
-     }
-    ],
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
-  },
-  "VPCPublicSubnet2RouteTable6F1A15F1": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PublicSubnet2"
-     }
-    ],
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
-  },
-  "VPCPublicSubnet2RouteTableAssociation5A808732": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-    },
-    "SubnetId": {
-     "Ref": "VPCPublicSubnet2Subnet74179F39"
-    }
-   }
-  },
-  "VPCPublicSubnet2DefaultRouteB7481BBA": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Ref": "VPCIGWB7E252D3"
-    },
-    "RouteTableId": {
-     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-    }
-   },
-   "DependsOn": [
-    "VPCVPCGW99B986DC"
-   ]
-  },
-  "VPCIsolatedSubnet1SubnetEBD00FC6": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.128.0/18",
-    "MapPublicIpOnLaunch": false,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Isolated"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Isolated"
-     },
-     {
-      "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/IsolatedSubnet1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
-  },
-  "VPCIsolatedSubnet1RouteTableEB156210": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/IsolatedSubnet1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
-  },
-  "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCIsolatedSubnet1RouteTableEB156210"
-    },
-    "SubnetId": {
-     "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
-    }
-   }
-  },
-  "VPCIsolatedSubnet2Subnet4B1C8CAA": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      1,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.192.0/18",
-    "MapPublicIpOnLaunch": false,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Isolated"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Isolated"
-     },
-     {
-      "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/IsolatedSubnet2"
-     }
-    ],
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
-  },
-  "VPCIsolatedSubnet2RouteTable9B4F78DC": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/IsolatedSubnet2"
-     }
-    ],
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
-  },
-  "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCIsolatedSubnet2RouteTable9B4F78DC"
-    },
-    "SubnetId": {
-     "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
-    }
-   }
-  },
-  "VPCIGWB7E252D3": {
-   "Type": "AWS::EC2::InternetGateway",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC"
-     }
-    ]
-   }
-  },
-  "VPCVPCGW99B986DC": {
-   "Type": "AWS::EC2::VPCGatewayAttachment",
-   "Properties": {
-    "InternetGatewayId": {
-     "Ref": "VPCIGWB7E252D3"
-    },
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
-  },
-  "VPCFlowLogsFirehoseFlowLogA2070211": {
-   "Type": "AWS::EC2::FlowLog",
-   "Properties": {
-    "LogDestination": {
-     "Fn::GetAtt": [
-      "DeliveryStream58CF96DB",
-      "Arn"
-     ]
-    },
-    "LogDestinationType": "kinesis-data-firehose",
-    "ResourceId": {
-     "Ref": "VPCB9E5F0B4"
-    },
-    "ResourceType": "VPC",
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/FlowLogsFirehose"
-     }
-    ],
-    "TrafficType": "ALL"
-   }
-  },
-  "FlowLogsCWIAMRole017AD736": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "vpc-flow-logs.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "CustomFlowLogName"
-     }
-    ]
-   }
-  },
-  "FlowLogsCWIAMRoleDefaultPolicy943C8A20": {
-   "Type": "AWS::IAM::Policy",
+  "DeadLetterQueuePolicyB1FB890C": {
+   "Type": "AWS::SQS::QueuePolicy",
    "Properties": {
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "logs:CreateLogStream",
-        "logs:DescribeLogStreams",
-        "logs:PutLogEvents"
-       ],
+       "Action": "sqs:SendMessage",
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": {
+          "Ref": "MyTopic86869434"
+         }
+        }
+       },
        "Effect": "Allow",
+       "Principal": {
+        "Service": "sns.amazonaws.com"
+       },
        "Resource": {
         "Fn::GetAtt": [
-         "FlowLogsCWLogGroup0398E8F8",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "FlowLogsCWIAMRole017AD736",
+         "DeadLetterQueue9F481546",
          "Arn"
         ]
        }
@@ -373,52 +36,11 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "FlowLogsCWIAMRoleDefaultPolicy943C8A20",
-    "Roles": [
+    "Queues": [
      {
-      "Ref": "FlowLogsCWIAMRole017AD736"
+      "Ref": "DeadLetterQueue9F481546"
      }
     ]
-   }
-  },
-  "FlowLogsCWLogGroup0398E8F8": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "RetentionInDays": 731,
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "CustomFlowLogName"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
-  },
-  "FlowLogsCWFlowLog9CED86DA": {
-   "Type": "AWS::EC2::FlowLog",
-   "Properties": {
-    "DeliverLogsPermissionArn": {
-     "Fn::GetAtt": [
-      "FlowLogsCWIAMRole017AD736",
-      "Arn"
-     ]
-    },
-    "LogDestinationType": "cloud-watch-logs",
-    "LogGroupName": {
-     "Ref": "FlowLogsCWLogGroup0398E8F8"
-    },
-    "ResourceId": {
-     "Ref": "VPCB9E5F0B4"
-    },
-    "ResourceType": "VPC",
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "CustomFlowLogName"
-     }
-    ],
-    "TrafficType": "ALL"
    }
   },
   "Bucket83908E77": {
@@ -652,6 +274,10 @@
        "Arn"
       ]
      },
+     "BufferingHints": {
+      "IntervalInSeconds": 30,
+      "SizeInMBs": 5
+     },
      "RoleARN": {
       "Fn::GetAtt": [
        "DeliveryStreamS3DestinationRoleD96B8345",
@@ -663,6 +289,84 @@
    "DependsOn": [
     "DeliveryStreamS3DestinationRoleDefaultPolicyF652AD65"
    ]
+  },
+  "DeliveryStreamTopicSubscriptionRole4964AFE6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sns.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "DeliveryStreamTopicSubscriptionRoleDefaultPolicy7B1E3A87": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "firehose:DescribeDeliveryStream",
+        "firehose:ListDeliveryStreams",
+        "firehose:ListTagsForDeliveryStream",
+        "firehose:PutRecord",
+        "firehose:PutRecordBatch"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "DeliveryStream58CF96DB",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DeliveryStreamTopicSubscriptionRoleDefaultPolicy7B1E3A87",
+    "Roles": [
+     {
+      "Ref": "DeliveryStreamTopicSubscriptionRole4964AFE6"
+     }
+    ]
+   }
+  },
+  "DeliveryStreamawscdksnsfirehoseMyTopicC664C75DFE01A825": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
+    "Endpoint": {
+     "Fn::GetAtt": [
+      "DeliveryStream58CF96DB",
+      "Arn"
+     ]
+    },
+    "Protocol": "firehose",
+    "RedrivePolicy": {
+     "deadLetterTargetArn": {
+      "Fn::GetAtt": [
+       "DeadLetterQueue9F481546",
+       "Arn"
+      ]
+     }
+    },
+    "SubscriptionRoleArn": {
+     "Fn::GetAtt": [
+      "DeliveryStreamTopicSubscriptionRole4964AFE6",
+      "Arn"
+     ]
+    },
+    "TopicArn": {
+     "Ref": "MyTopic86869434"
+    }
+   }
   }
  },
  "Mappings": {
@@ -899,6 +603,24 @@
    },
    "us-west-2": {
     "FirehoseCidrBlock": "52.89.255.224/27"
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefMyTopic868694349D03D60F": {
+   "Value": {
+    "Ref": "MyTopic86869434"
+   },
+   "Export": {
+    "Name": "aws-cdk-sns-firehose:ExportsOutputRefMyTopic868694349D03D60F"
+   }
+  },
+  "ExportsOutputRefBucket83908E7781C90AC0": {
+   "Value": {
+    "Ref": "Bucket83908E77"
+   },
+   "Export": {
+    "Name": "aws-cdk-sns-firehose:ExportsOutputRefBucket83908E7781C90AC0"
    }
   }
  },
