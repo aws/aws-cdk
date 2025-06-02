@@ -293,6 +293,21 @@ export interface CanaryProps {
    * @default - no kms key if `artifactS3EncryptionMode` is set to `S3_MANAGED`. A key will be created if one is not provided and `artifactS3EncryptionMode` is set to `KMS`.
    */
   readonly artifactS3KmsKey?: kms.IKey;
+
+  /**
+   * Specifies whether to perform a dry run before updating the canary.
+   *
+   * If set to true, CDK will execute a dry run to validate the changes before applying them to the canary.
+   * If the dry run succeeds, the canary will be updated with the changes.
+   * If the dry run fails, the CloudFormation deployment will fail with the dry run’s failure reason.
+   *
+   * If set to false or omitted, the canary will be updated directly without first performing a dry run.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/performing-safe-canary-upgrades.html
+   *
+   * @default false
+   */
+  readonly dryRunAndUpdate?: boolean;
 }
 
 /**
