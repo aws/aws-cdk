@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0af3c7f2b1384aa6d7175ddf8c7f9b5952d23d6264904bc6c90d24a117ec5559.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ae7c6a4e014d2b1e3ee1ad38e7664f6c4606a0327578b49d5170f3754e3ed020.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,23 +37,13 @@
         "/SyntheticsCanaryDryRunAndUpdateStack/DryRunCanary": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "canaryName": "*",
-              "runtime": "*",
-              "test": "*",
-              "memory": "*",
-              "timeout": "*"
-            }
+            "data": "*"
           }
         ],
         "/SyntheticsCanaryDryRunAndUpdateStack/DryRunCanary/ArtifactsBucket": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "encryption": "KMS_MANAGED",
-              "enforceSSL": true,
-              "lifecycleRules": "*"
-            }
+            "data": "*"
           }
         ],
         "/SyntheticsCanaryDryRunAndUpdateStack/DryRunCanary/ArtifactsBucket/Resource": [
@@ -65,9 +55,7 @@
         "/SyntheticsCanaryDryRunAndUpdateStack/DryRunCanary/ArtifactsBucket/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
+            "data": "*"
           }
         ],
         "/SyntheticsCanaryDryRunAndUpdateStack/DryRunCanary/ArtifactsBucket/Policy/Resource": [
@@ -79,14 +67,7 @@
         "/SyntheticsCanaryDryRunAndUpdateStack/DryRunCanary/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "inlinePolicies": "*",
-              "managedPolicies": []
-            }
+            "data": "*"
           }
         ],
         "/SyntheticsCanaryDryRunAndUpdateStack/DryRunCanary/ServiceRole/ImportServiceRole": [

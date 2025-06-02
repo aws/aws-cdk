@@ -1,7 +1,21 @@
 {
   "version": "44.0.0",
   "files": {
-    "0af3c7f2b1384aa6d7175ddf8c7f9b5952d23d6264904bc6c90d24a117ec5559": {
+    "5178413cfe8db00b2d5dcfa9be417e934c64601d0da3031d88c145c8293bc27f": {
+      "displayName": "DryRunCanary/Code",
+      "source": {
+        "path": "asset.5178413cfe8db00b2d5dcfa9be417e934c64601d0da3031d88c145c8293bc27f",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5178413cfe8db00b2d5dcfa9be417e934c64601d0da3031d88c145c8293bc27f.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "ae7c6a4e014d2b1e3ee1ad38e7664f6c4606a0327578b49d5170f3754e3ed020": {
       "displayName": "SyntheticsCanaryDryRunAndUpdateStack Template",
       "source": {
         "path": "SyntheticsCanaryDryRunAndUpdateStack.template.json",
@@ -10,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0af3c7f2b1384aa6d7175ddf8c7f9b5952d23d6264904bc6c90d24a117ec5559.json",
+          "objectKey": "ae7c6a4e014d2b1e3ee1ad38e7664f6c4606a0327578b49d5170f3754e3ed020.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

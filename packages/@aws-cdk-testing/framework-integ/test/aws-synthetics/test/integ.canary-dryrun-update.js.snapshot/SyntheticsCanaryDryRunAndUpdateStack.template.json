@@ -176,8 +176,11 @@
      ]
     },
     "Code": {
-     "Handler": "index.handler",
-     "Script": "\n          exports.handler = async () => {\n            console.log('hello world');\n          };"
+     "Handler": "canary.handler",
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "5178413cfe8db00b2d5dcfa9be417e934c64601d0da3031d88c145c8293bc27f.zip"
     },
     "DryRunAndUpdate": true,
     "ExecutionRoleArn": {
@@ -191,7 +194,7 @@
      "MemoryInMB": 2048,
      "TimeoutInSeconds": 240
     },
-    "RuntimeVersion": "syn-nodejs-puppeteer-7.0",
+    "RuntimeVersion": "syn-python-selenium-5.1",
     "Schedule": {
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"

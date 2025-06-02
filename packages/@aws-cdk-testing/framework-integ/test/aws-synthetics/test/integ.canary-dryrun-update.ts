@@ -1,3 +1,4 @@
+import * as path from 'node:path';
 import { App, Duration, Size, Stack, StackProps } from 'aws-cdk-lib/core';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
@@ -11,13 +12,10 @@ class TestStack extends Stack {
 
     this.canary = new synthetics.Canary(this, 'DryRunCanary', {
       canaryName: 'dryrun',
-      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+      runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1,
       test: synthetics.Test.custom({
-        handler: 'index.handler',
-        code: synthetics.Code.fromInline(`
-          exports.handler = async () => {
-            console.log(\'hello world\');
-          };`),
+        handler: 'canary.handler',
+        code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
       }),
       memory: Size.mebibytes(2048),
       timeout: Duration.minutes(4),
