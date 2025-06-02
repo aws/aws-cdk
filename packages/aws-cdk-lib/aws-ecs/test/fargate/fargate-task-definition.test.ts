@@ -1,4 +1,4 @@
-import { Template } from '../../../assertions';
+import { Match, Template } from '../../../assertions';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import * as ecs from '../../lib';
@@ -249,6 +249,26 @@ describe('fargate task definition', () => {
           },
         });
       }).toThrow(/Volume Configurations must not be specified for 'nginx-vol' when 'configuredAtLaunch' is set to true/);
+    });
+  });
+
+  describe('When creating a Fargate TaskDefinition with createTaskRole set to false', () => {
+    test('does not create task role when createTaskRole is false', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        createTaskRole: false,
+        cpu: 256,
+        memoryLimitMiB: 512,
+      });
+
+      // THEN
+      expect(taskDefinition.taskRole).toBeUndefined();
+      Template.fromStack(stack).hasResource('AWS::ECS::TaskDefinition', {
+        Properties: {
+          TaskRoleArn: Match.absent(),
+        },
+      });
     });
   });
 

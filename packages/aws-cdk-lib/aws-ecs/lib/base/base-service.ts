@@ -717,7 +717,10 @@ export abstract class BaseService extends Resource
       ...additionalProps,
     });
 
-    this.node.addDependency(this.taskDefinition.taskRole);
+    // Add dependency on taskRole if it exists
+    if (this.taskDefinition.taskRole) {
+      this.node.addDependency(this.taskDefinition.taskRole);
+    }
 
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:externalDeploymentController', 'taskDefinition and launchType are blanked out when using external deployment controller.');

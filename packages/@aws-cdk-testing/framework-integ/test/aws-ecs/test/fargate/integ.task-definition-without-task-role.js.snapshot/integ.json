@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "FargateTaskDefinitionWithoutTaskRole/DefaultTest": {
+      "stacks": [
+        "aws-ecs-fargate-task-definition-without-task-role"
+      ],
+      "assertionStack": "FargateTaskDefinitionWithoutTaskRole/DefaultTest/DeployAssert",
+      "assertionStackName": "FargateTaskDefinitionWithoutTaskRoleDefaultTestDeployAssert911C4E0E"
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}

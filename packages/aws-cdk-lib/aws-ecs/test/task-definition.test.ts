@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { EbsDeviceVolumeType } from '../../aws-ec2';
 import * as ecr from '../../aws-ecr';
 import * as iam from '../../aws-iam';
@@ -683,6 +683,152 @@ describe('task definition', () => {
             cpu: 256,
           });
         }).toThrow('The sum of all container cpu values cannot be greater than the value of the task cpu');
+      });
+    });
+  });
+
+  describe('task role creation', () => {
+    test('A task definition creates a task role by default', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new ecs.TaskDefinition(stack, 'TD', {
+        compatibility: ecs.Compatibility.EC2,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'ecs-tasks.amazonaws.com',
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('Task role is not created when createTaskRole is false', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new ecs.TaskDefinition(stack, 'TD', {
+        compatibility: ecs.Compatibility.EC2,
+        createTaskRole: false,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::IAM::Role', 0);
+    });
+
+    test('Task role is not included in CloudFormation when createTaskRole is false', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new ecs.TaskDefinition(stack, 'TD', {
+        compatibility: ecs.Compatibility.EC2,
+        createTaskRole: false,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        NetworkMode: 'bridge',
+      });
+      Template.fromStack(stack).hasResource('AWS::ECS::TaskDefinition', {
+        Properties: {
+          TaskRoleArn: Match.absent(),
+        },
+      });
+    });
+
+    test('Adding policy to task role throws error when createTaskRole is false', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDef = new ecs.TaskDefinition(stack, 'TD', {
+        compatibility: ecs.Compatibility.EC2,
+        createTaskRole: false,
+      });
+
+      // WHEN
+      const statement = new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['s3:ListBucket'],
+        resources: ['*'],
+      });
+
+      // THEN
+      expect(() => {
+        taskDef.addToTaskRolePolicy(statement);
+      }).toThrow('Cannot add policy to task role when createTaskRole is set to false');
+    });
+
+    test('grantRun throws error when createTaskRole is false and executionRole is not specified', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AccountRootPrincipal(),
+      });
+      const taskDef = new ecs.TaskDefinition(stack, 'TD', {
+        compatibility: ecs.Compatibility.EC2,
+        createTaskRole: false,
+      });
+
+      // THEN
+      expect(() => {
+        taskDef.grantRun(role);
+      }).toThrow('Cannot create a passRoleStatement when neither taskRole nor executionRole is defined');
+    });
+
+    test('grantRun works when createTaskRole is false but executionRole is specified', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AccountRootPrincipal(),
+      });
+      const executionRole = new iam.Role(stack, 'ExecutionRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
+      const taskDef = new ecs.TaskDefinition(stack, 'TD', {
+        compatibility: ecs.Compatibility.EC2,
+        createTaskRole: false,
+        executionRole,
+      });
+
+      // WHEN
+      taskDef.grantRun(role);
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'iam:PassRole',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'ExecutionRole605A040B',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: 'ecs:RunTask',
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'TD49C78F36',
+              },
+            },
+          ],
+        },
       });
     });
   });

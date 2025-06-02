@@ -404,6 +404,22 @@ const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
 or later (Linux). Only the `task` option is supported for Linux containers. `pidMode` isn't supported for Windows containers on Fargate.
 If `pidMode` is specified for a Fargate task, then `runtimePlatform.operatingSystemFamily` must also be specified.
 
+### Task Role
+
+By default, each task definition has an IAM role associated with it. This role is used by the containers in the task to make AWS API calls. You can disable the automatic creation of this task role by setting the `createTaskRole` property to `false`.
+
+```ts
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef', {
+  createTaskRole: false, // No task role will be created
+});
+```
+
+Note that if you disable task role creation:
+
+- You won't be able to use the `taskDefinition.addToTaskRolePolicy()` method
+- You'll need to provide an execution role when using features that require one, such as ECR image pulling
+- The task won't have permissions to call any AWS APIs unless you provide an execution role with the necessary permissions
+
 To add containers to a task definition, call `addContainer()`:
 
 ```ts

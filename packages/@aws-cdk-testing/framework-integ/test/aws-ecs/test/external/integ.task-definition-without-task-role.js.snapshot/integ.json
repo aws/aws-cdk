@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "ExternalTaskDefinitionWithoutTaskRole/DefaultTest": {
+      "stacks": [
+        "aws-ecs-external-task-definition-without-task-role"
+      ],
+      "assertionStack": "ExternalTaskDefinitionWithoutTaskRole/DefaultTest/DeployAssert",
+      "assertionStackName": "ExternalTaskDefinitionWithoutTaskRoleDefaultTestDeployAssertE67439D0"
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}

@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Annotations, Template } from '../../../assertions';
+import { Annotations, Match, Template } from '../../../assertions';
 import { Protocol } from '../../../aws-ec2';
 import { Repository } from '../../../aws-ecr';
 import * as iam from '../../../aws-iam';
@@ -136,6 +136,22 @@ describe('external task definition', () => {
               Resource: '*',
             },
           ],
+        },
+      });
+    });
+
+    test('does not create task role when createTaskRole is false', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef', {
+        createTaskRole: false,
+      });
+
+      // THEN
+      expect(taskDefinition.taskRole).toBeUndefined();
+      Template.fromStack(stack).hasResource('AWS::ECS::TaskDefinition', {
+        Properties: {
+          TaskRoleArn: Match.absent(),
         },
       });
     });

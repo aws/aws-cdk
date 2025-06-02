@@ -56,7 +56,7 @@ export interface ITaskDefinition extends IResource {
   /**
    * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
    */
-  readonly taskRole: iam.IRole;
+  readonly taskRole?: iam.IRole;
 }
 
 /**
@@ -86,6 +86,14 @@ export interface CommonTaskDefinitionProps {
    * @default - A task role is automatically created for you.
    */
   readonly taskRole?: iam.IRole;
+
+  /**
+   * Whether to create a task role automatically.
+   * When set to false, no task role will be created or assigned to the task definition.
+   *
+   * @default true - A task role is automatically created.
+   */
+  readonly createTaskRole?: boolean;
 
   /**
    * The configuration details for the App Mesh proxy.
@@ -293,7 +301,7 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
   public abstract readonly compatibility: Compatibility;
   public abstract readonly networkMode: NetworkMode;
   public abstract readonly taskDefinitionArn: string;
-  public abstract readonly taskRole: iam.IRole;
+  public abstract readonly taskRole?: iam.IRole;
   public abstract readonly executionRole?: iam.IRole;
 
   /**
@@ -365,7 +373,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
    */
-  public readonly taskRole: iam.IRole;
+  public readonly taskRole?: iam.IRole;
 
   /**
    * The networking mode to use for the containers in the task.
@@ -483,9 +491,9 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     this._executionRole = props.executionRole;
 
-    this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
+    this.taskRole = props.taskRole || (props.createTaskRole !== false ? new iam.Role(this, 'TaskRole', {
       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-    });
+    }) : undefined);
 
     if (props.inferenceAccelerators) {
       props.inferenceAccelerators.forEach(ia => this.addInferenceAccelerator(ia));
@@ -510,7 +518,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       volumes: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
       executionRoleArn: Lazy.string({ produce: () => this.executionRole && this.executionRole.roleArn }),
       family: this.family,
-      taskRoleArn: this.taskRole.roleArn,
+      taskRoleArn: this.taskRole?.roleArn,
       requiresCompatibilities: [
         ...(isEc2Compatible(props.compatibility) ? ['EC2'] : []),
         ...(isFargateCompatible(props.compatibility) ? ['FARGATE'] : []),
@@ -644,6 +652,9 @@ export class TaskDefinition extends TaskDefinitionBase {
    */
   @MethodMetadata()
   public addToTaskRolePolicy(statement: iam.PolicyStatement) {
+    if (!this.taskRole) {
+      throw new ValidationError('Cannot add policy to task role when createTaskRole is set to false. Make sure to set createTaskRole: true or provide a custom task role.', this);
+    }
     this.taskRole.addToPrincipalPolicy(statement);
   }
 
@@ -880,10 +891,22 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private get passRoleStatement() {
     if (!this._passRoleStatement) {
+      if (!this.taskRole && !this.executionRole) {
+        throw new ValidationError('Cannot create a passRoleStatement when neither taskRole nor executionRole is defined. Either set createTaskRole: true, provide a custom task role, or define an execution role.', this);
+      }
+
+      let resources: string[] = [];
+      if (this.taskRole) {
+        resources.push(this.taskRole.roleArn);
+      }
+      if (this.executionRole) {
+        resources.push(this.executionRole.roleArn);
+      }
+
       this._passRoleStatement = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['iam:PassRole'],
-        resources: this.executionRole ? [this.taskRole.roleArn, this.executionRole.roleArn] : [this.taskRole.roleArn],
+        resources,
         conditions: {
           StringLike: { 'iam:PassedToService': 'ecs-tasks.amazonaws.com' },
         },
