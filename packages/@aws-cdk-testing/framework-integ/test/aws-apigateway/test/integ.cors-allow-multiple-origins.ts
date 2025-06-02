@@ -4,7 +4,11 @@ import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'stack-cors-allow-multiple-origins');
 
 const api = new apigw.RestApi(stack, 'cors-api-test', {
