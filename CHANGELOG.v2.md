@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.200.1](https://github.com/aws/aws-cdk/compare/v2.200.0...v2.200.1) (2025-06-03)
+
+
+### Bug Fixes
+
+* **lambda:** disable aws-lambda:useCdkManagedLogGroup feature flag when not set ([#34613](https://github.com/aws/aws-cdk/issues/34613)) ([b4cab7f](https://github.com/aws/aws-cdk/commit/b4cab7f41b311f48316220aaf9283833cb755ad9)), closes [#34612](https://github.com/aws/aws-cdk/issues/34612) [#34612](https://github.com/aws/aws-cdk/issues/34612)
+
 ## [2.200.0](https://github.com/aws/aws-cdk/compare/v2.199.0...v2.200.0) (2025-06-02)
 
 
