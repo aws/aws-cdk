@@ -487,7 +487,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
     });
 
-    if (props.inferenceAccelerators) {
+    if (props.inferenceAccelerators && props.inferenceAccelerators.length > 0) {
       props.inferenceAccelerators.forEach(ia => this.addInferenceAccelerator(ia));
     }
 
