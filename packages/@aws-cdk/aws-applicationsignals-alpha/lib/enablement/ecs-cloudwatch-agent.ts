@@ -152,7 +152,11 @@ export class CloudWatchAgentIntegration extends Construct {
   ) {
     super(scope, id);
 
-    props.taskDefinition.taskRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('CloudWatchAgentServerPolicy'));
+    if (props.taskDefinition.taskRole) {
+      props.taskDefinition.taskRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('CloudWatchAgentServerPolicy'));
+    } else {
+      throw new Error('Task definition must have a task role for CloudWatch Agent integration');
+    }
 
     this.agentContainer = props.taskDefinition.addContainer(props.containerName, {
       image: ecs.ContainerImage.fromRegistry(CloudWatchAgentVersion.getCloudWatchAgentImage(props.operatingSystemFamily)),
