@@ -32,6 +32,18 @@ export class FeatureFlags {
       }
       return true;
     }
-    return context !== undefined ? Boolean(context) : cxapi.futureFlagDefault(featureFlag);
+    if (context === undefined) {
+      return cxapi.futureFlagDefault(featureFlag);
+    }
+    if (typeof context === 'string') {
+      let parsedContext;
+      try {
+        parsedContext = JSON.parse(context.trim().toLowerCase());
+      } catch (e) {
+        throw new Error(`Feature flag '${featureFlag}' expected boolean context, but instead got '${context}'`);
+      }
+      return Boolean(parsedContext);
+    }
+    return Boolean(context);
   }
 }

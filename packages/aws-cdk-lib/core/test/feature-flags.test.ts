@@ -31,5 +31,13 @@ describe('feature flags', () => {
       const actual = FeatureFlags.of(stack).isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
       expect(actual).toEqual(true);
     });
+
+    test('strings are evaluated as boolean', () => {
+      const stack = new Stack();
+      stack.node.setContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT, 'false');
+
+      const actual = FeatureFlags.of(stack).isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
+      expect(actual).toEqual(false);
+    });
   });
 });
