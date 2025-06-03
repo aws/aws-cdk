@@ -507,7 +507,10 @@ export interface CommonClusterOptions {
   /**
    * Determines whether a CloudFormation output with the `aws eks
    * update-kubeconfig` command will be synthesized. This command will include
-   * the cluster name and, if applicable, the ARN of the masters IAM role.
+   * the cluster name and the ARN of the masters IAM role.
+   *
+   * Note: If mastersRole is not specified, this property will be ignored and no config command will be emitted.
+   * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_eks-readme.html#masters-role
    *
    * @default true
    */
