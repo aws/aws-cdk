@@ -2,7 +2,7 @@
   "version": "41.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
-      "displayName": "FlowLogsTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "displayName": "aws-cdk-sns-firehose/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
         "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
         "packaging": "zip"
@@ -15,16 +15,16 @@
         }
       }
     },
-    "8792083efd0785464f888848e43e07380fe3d2cf31fac2e82d4a791f5cff828b": {
-      "displayName": "FlowLogsTestStack Template",
+    "fa91ae7424b308673c0f3953199490c1f8001d7c361997978b5c6f23b5070020": {
+      "displayName": "aws-cdk-sns-firehose Template",
       "source": {
-        "path": "FlowLogsTestStack.template.json",
+        "path": "aws-cdk-sns-firehose.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8792083efd0785464f888848e43e07380fe3d2cf31fac2e82d4a791f5cff828b.json",
+          "objectKey": "fa91ae7424b308673c0f3953199490c1f8001d7c361997978b5c6f23b5070020.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
