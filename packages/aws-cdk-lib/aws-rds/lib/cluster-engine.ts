@@ -700,7 +700,7 @@ export class AuroraMysqlEngineVersion {
       auroraMysqlFullVersion, auroraMysqlMajorVersion,
       {
         combineImportAndExportRoles: (auroraMysqlMajorVersion ? auroraMysqlMajorVersion !== '5.7' : false),
-        serverlessV2AutoPause: auroraMysqlFullVersion >= '8.0.mysql_aurora.3.08.0',
+        serverlessV2AutoPause: versionGeq(auroraMysqlFullVersion, '8.0.mysql_aurora.3.08.0'),
       },
     );
   }
@@ -713,7 +713,7 @@ export class AuroraMysqlEngineVersion {
     // 8.0 of the MySQL engine needs to combine the import and export Roles
     return new AuroraMysqlEngineVersion(`8.0.mysql_aurora.${minorVersion}`, '8.0', {
       combineImportAndExportRoles: true,
-      serverlessV2AutoPause: minorVersion >= '3.08.0',
+      serverlessV2AutoPause: versionGeq(minorVersion, '3.08.0'),
     });
   }
 
@@ -1265,12 +1265,11 @@ export class AuroraPostgresEngineVersion {
     auroraPostgresFeatures?: AuroraPostgresEngineFeatures): AuroraPostgresEngineVersion {
     // See the document below for engine versions support auto-pause feature
     // https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html#auto-pause-prereqs
-    const [major, minor] = auroraPostgresFullVersion.split(/[-.]/).map((s) => parseInt(s, 10));
-    const serverlessV2AutoPause = major >= 17 ||
-      (major === 16 && minor >= 3) ||
-      (major === 15 && minor >= 7) ||
-      (major === 14 && minor >= 12) ||
-      (major === 13 && minor >= 15);
+    const serverlessV2AutoPause =
+      versionGeq(auroraPostgresFullVersion, '16.3') ||
+      versionGeq(auroraPostgresFullVersion, '15.7', true) ||
+      versionGeq(auroraPostgresFullVersion, '14.12', true) ||
+      versionGeq(auroraPostgresFullVersion, '13.15', true);
     return new AuroraPostgresEngineVersion(auroraPostgresFullVersion, auroraPostgresMajorVersion, {
       serverlessV2AutoPause,
       ...auroraPostgresFeatures,
@@ -1424,4 +1423,33 @@ export class DatabaseClusterEngine {
   public static auroraPostgres(props: AuroraPostgresClusterEngineProps): IClusterEngine {
     return new AuroraPostgresClusterEngine(props.version);
   }
+}
+
+/**
+ * Returns whether the `version` is greater than or equals to `minimumVersion`.
+ *
+ * @example
+ * versionGeq('1.1', '1.0')       // => true
+ * versionGeq('1.2', '1.10')      // => false
+ * versionGeq('2.0', '1.5')       // => true
+ * versionGeq('2.0', '1.5', true) // => false
+ *
+ * @param version The version to be checked
+ * @param minimumVersion The minimum version
+ * @param inMajorVersion If true, returns false when the major version differs
+ */
+function versionGeq(version: string, minimumVersion: string, inMajorVersion?: boolean) {
+  const versionComponents = version.split('.');
+  const minimumVersionComponents = minimumVersion.split('.');
+  const componentsLength = Math.max(versionComponents.length, minimumVersionComponents.length);
+  if (inMajorVersion && versionComponents[0] !== minimumVersionComponents[0]) {
+    return false;
+  }
+  for (let i = 0; i < componentsLength; ++i) {
+    const versionCurrent = parseInt(versionComponents[i], 10) || 0;
+    const minimumCurrent = parseInt(minimumVersionComponents[i], 10) || 0;
+    if (versionCurrent > minimumCurrent) return true;
+    if (versionCurrent < minimumCurrent) return false;
+  }
+  return true;
 }
