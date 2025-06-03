@@ -71,9 +71,30 @@ describe('cluster engine', () => {
   });
 
   test('AuroraMysqlEngineVersion.of() determines default combineImportAndExportRoles', () => {
-    expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3', '5.7')._features.combineImportAndExportRoles).toEqual(false);
-    expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3')._features.combineImportAndExportRoles).toEqual(false);
-    expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.07.1', '8.0')._features.combineImportAndExportRoles).toEqual(true);
+    expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3', '5.7')._combineImportAndExportRoles).toEqual(false);
+    expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3')._combineImportAndExportRoles).toEqual(false);
+    expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.07.1', '8.0')._combineImportAndExportRoles).toEqual(true);
+  });
+
+  test('AuroraMysqlEngineVersion.of() determines serverlessV2AutoPause', () => {
+    expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3', '5.7')._serverlessV2AutoPause).toEqual(false);
+    expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.07.1', '8.0')._serverlessV2AutoPause).toEqual(false);
+    expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.08.1', '8.0')._serverlessV2AutoPause).toEqual(true);
+  });
+
+  test('AuroraPostgresEngineVersion.of() determines serverlessV2AutoPause', () => {
+    expect(AuroraPostgresEngineVersion.of('12.99', '12')._features.serverlessV2AutoPause).toEqual(false);
+    expect(AuroraPostgresEngineVersion.of('13.14', '13')._features.serverlessV2AutoPause).toEqual(false);
+    expect(AuroraPostgresEngineVersion.of('13.15', '13')._features.serverlessV2AutoPause).toEqual(true);
+    expect(AuroraPostgresEngineVersion.of('14.11', '14')._features.serverlessV2AutoPause).toEqual(false);
+    expect(AuroraPostgresEngineVersion.of('14.12', '14')._features.serverlessV2AutoPause).toEqual(true);
+    expect(AuroraPostgresEngineVersion.of('15.6', '15')._features.serverlessV2AutoPause).toEqual(false);
+    expect(AuroraPostgresEngineVersion.of('15.7', '15')._features.serverlessV2AutoPause).toEqual(true);
+    expect(AuroraPostgresEngineVersion.of('15.10', '15')._features.serverlessV2AutoPause).toEqual(true);
+    expect(AuroraPostgresEngineVersion.of('16.2', '16')._features.serverlessV2AutoPause).toEqual(false);
+    expect(AuroraPostgresEngineVersion.of('16.3', '16')._features.serverlessV2AutoPause).toEqual(true);
+    expect(AuroraPostgresEngineVersion.of('16.10', '16')._features.serverlessV2AutoPause).toEqual(true);
+    expect(AuroraPostgresEngineVersion.of('17.1', '17')._features.serverlessV2AutoPause).toEqual(true);
   });
 
   test('cluster parameter group correctly determined for AURORA_POSTGRESQL and given version', () => {
