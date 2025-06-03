@@ -17,25 +17,22 @@ baseConfig.rules['import/no-extraneous-dependencies'] = [
 baseConfig.rules['@cdklabs/no-throw-default-error'] = ['error'];
 // not yet supported
 const noThrowDefaultErrorNotYetSupported = [
-  'aws-iam',
-  'aws-lambda-destinations',
-  'aws-lambda-event-sources',
-  'aws-lambda-nodejs',
-  'aws-secretsmanager',
-  'aws-servicecatalog',
   'core',
-  'custom-resources',
-  'region-info',
 ];
 baseConfig.overrides.push({
   files: [
+    // Build and test files can have whatever error they like
     "./scripts/**",
     "./*/build-tools/**",
     "./*/test/**",
+
+    // Lambda Runtime code should use regular errors
+    "./custom-resources/lib/provider-framework/runtime/**",
+
+    // Not yet supported modules
     ...noThrowDefaultErrorNotYetSupported.map(m => `./${m}/lib/**`)
   ],
   rules: { "@cdklabs/no-throw-default-error": "off" },
 });
-
 
 module.exports = baseConfig;
