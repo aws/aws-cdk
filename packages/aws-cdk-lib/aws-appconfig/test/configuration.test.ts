@@ -18,6 +18,7 @@ import {
   JsonSchemaValidator,
   ConfigurationContent,
   RolloutStrategy,
+  DeletionProtectionCheck,
 } from '../lib';
 
 describe('configuration', () => {
@@ -789,6 +790,61 @@ describe('configuration', () => {
     Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 0);
   });
 
+  test.each([
+    DeletionProtectionCheck.ACCOUNT_DEFAULT,
+    DeletionProtectionCheck.APPLY,
+    DeletionProtectionCheck.BYPASS,
+  ])('hosted configuration profile with deletion protection check', (deletionProtectionCheck) => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    new HostedConfiguration(stack, 'MyConfigurationProfile', {
+      name: 'TestConfigProfile',
+      application: app,
+      content: ConfigurationContent.fromInlineText('This is my content'),
+      deletionProtectionCheck,
+      deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
+      Name: 'TestConfigProfile',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      DeletionProtectionCheck: deletionProtectionCheck,
+    });
+  });
+
+  test.each([
+    DeletionProtectionCheck.ACCOUNT_DEFAULT,
+    DeletionProtectionCheck.APPLY,
+    DeletionProtectionCheck.BYPASS,
+  ])('sourced configuration profile with deletion protection check', (deletionProtectionCheck) => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    const bucket = new Bucket(stack, 'MyBucket');
+
+    new SourcedConfiguration(stack, 'MySourcedConfig', {
+      name: 'TestConfigProfile',
+      versionNumber: '1',
+      location: ConfigurationSource.fromBucket(bucket, 'path/to/object'),
+      application: app,
+      deletionProtectionCheck,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
+      Name: 'TestConfigProfile',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      DeletionProtectionCheck: deletionProtectionCheck,
+    });
+  });
+
   test('configuration profile with inline json schema validator', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig');
@@ -1383,5 +1439,30 @@ describe('configuration', () => {
       ],
     });
     Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 1);
+  });
+
+  test('hosted configuration profile with customer managed key', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    const kmsKey = new Key(stack, 'MyKey');
+    new HostedConfiguration(stack, 'MyHostedConfig', {
+      content: ConfigurationContent.fromInlineText('This is my content'),
+      application: app,
+      deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
+      }),
+      kmsKey,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
+      Name: 'MyHostedConfig',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      KmsKeyIdentifier: stack.resolve(kmsKey.keyArn),
+    });
   });
 });

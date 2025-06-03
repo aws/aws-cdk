@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "aws-cdk-aws-api-target-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e71c5963e315dcb1290924a3c0571d50e25881cfcbd5b5a7b8b5306f1743ad70.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2f9404a3047e6fca5b4842b8829320f6a5510eeece1a35b467d7557c69dd504c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -610,42 +610,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "ScheduleRuleScheduleRuleTarget0HandlerinlinePolicyAddedToExecutionRole060ECCF6C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ScheduleRuleScheduleRuleTarget0HandlerinlinePolicyAddedToExecutionRole060ECCF6C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ScheduleRuleScheduleRuleTarget1HandlerinlinePolicyAddedToExecutionRole026BB6AFF": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ScheduleRuleScheduleRuleTarget1HandlerinlinePolicyAddedToExecutionRole026BB6AFF",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "UpdateSSMRuleUpdateSSMRuleTarget0HandlerinlinePolicyAddedToExecutionRole06C9883FF": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "UpdateSSMRuleUpdateSSMRuleTarget0HandlerinlinePolicyAddedToExecutionRole06C9883FF",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EncryptDataRuleEncryptDataRuleTarget0HandlerinlinePolicyAddedToExecutionRole05E262763": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EncryptDataRuleEncryptDataRuleTarget0HandlerinlinePolicyAddedToExecutionRole05E262763",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-cdk-aws-api-target-integ"
@@ -667,7 +631,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/efd9e248ca19c8126026736f626b37c20fccc68868d60a46bb455ac99b88cbd8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e585bb2dabfde2f15468bd26e116302faafa3eb6100bdb84f07afac9f8a9574b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -809,5 +773,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

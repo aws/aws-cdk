@@ -8,6 +8,7 @@ import { getFeatureStatus } from './util';
 import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 import { Annotations } from 'aws-cdk-lib';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Options for Transit Gateway VPC Attachment.
@@ -121,7 +122,10 @@ export interface AttachVpcOptions extends BaseTransitGatewayVpcAttachmentProps {
  *
  * @resource AWS::EC2::TransitGatewayAttachment
  */
+@propertyInjectable
 export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase implements ITransitGatewayVpcAttachment {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.TransitGatewayVpcAttachment';
   public readonly transitGatewayAttachmentId: string;
   private readonly subnets: ISubnet[] = [];
 

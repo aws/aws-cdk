@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "testCases": {
     "IntegProviderFrameworkTest/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "IntegProviderFrameworkTest/DefaultTest/DeployAssert",
       "assertionStackName": "IntegProviderFrameworkTestDefaultTestDeployAssertAEF9AF2E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

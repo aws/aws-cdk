@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "S3Stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ab2943a5811c10eea11c0a4748b39ccd4159f57436d52857be8cea1762de0565.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/652018a39f3c30b1ad9cd382bbb79d2dc0f19358e4c6919c0d252eb43219aeb5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -108,7 +108,10 @@
         "/S3Stack/BucketDeployment/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BucketDeploymentAwsCliLayerB018DCE1"
+            "data": "BucketDeploymentAwsCliLayerB018DCE1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/S3Stack/BucketDeployment/CustomResourceHandler": [
@@ -549,7 +552,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/20ee507f678f27e7df9944cc435a27b28b90668202e953afec6bf7a6fe8e1112.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7c94c4de7e696b9071b726b3aa8df1f88ee02856a0e649d4591ff9b7a85ffb72.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -684,5 +687,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1015.0"
 }

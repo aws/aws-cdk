@@ -1,0 +1,108 @@
+{
+    "appsync": {
+        "AppSyncDataSourceType": {
+            "values": ["NONE"],
+            "comment": "NONE is not supported"
+        }
+    },
+    "codebuild": {
+        "FleetComputeType": {
+            "comment": "They values are already defined in a different place"
+        },
+        "ComputeType": {
+            "values": ["CUSTOM_INSTANCE_TYPE"],
+            "comment": "CUSTOM_INSTANCE_TYPE cannot be supported without additional logic. See https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html"
+        }
+    },
+    "eks": {
+        "NodegroupAmiType": {
+            "comment": "TBD"
+        }
+    },
+    "eks-v2": {
+        "NodegroupAmiType": {
+            "comment": "TBD"
+        }
+    },
+    "lambda": {
+        "RuntimeManagementMode": {
+            "comment": "Manual is already provided as a function https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-lambda/lib/runtime-management.ts#L26"
+        }
+    },
+    "lambda-event-sources": {
+        "AuthenticationMethod": {
+            "comment": "Wrong Mapping"
+        }
+    },
+    "autoscaling": {
+        "EbsDeviceVolumeType": {
+            "values": ["IO2"],
+            "comment": "io2 is not supported in CFN https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfiguration-blockdevice.html#cfn-autoscaling-launchconfiguration-blockdevice-volumetype"
+        },
+        "HealthCheckType": {
+            "comment": "Already defined in AddtionalHealthCheckType"
+        },
+        "AdditionalHealthCheckType": {
+            "comment": "EC2 is the default value and does not need to be defined in AdditionalHealthCheckType"
+        }
+    },
+    "glue": {
+        "ConnectionType": {
+            "comment": "SFTP is not supported in CFN https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-connectioninput.html#cfn-glue-connection-connectioninput-connectiontype"
+        }
+    },
+    "elasticloadbalancingv2": {
+        "Protocol": {
+            "comment": "GENEVE doesn't apply to NLB"
+        },
+        "ApplicationProtocol": {
+            "comment": "Wrong Mapping"
+        }
+    },
+    "cloudfront": {
+        "FailoverStatusCode": {
+            "comment": "Not applicable"
+        },
+        "FunctionEventType": {
+            "comment": "The origin-X events are only available to Lambda@Edge functions"
+        },
+        "PriceClass": {
+            "values": ["None"],
+            "comment": "NONE is not supported"
+        }
+    },
+    "iot": {
+        "SbomValidationStatus": {
+            "comment": "The matching is not right"
+        }
+    },
+    "ivs": {
+        "Preset": {
+            "comment": "Generated an empty enum value"
+        }
+    },
+    "iot-actions": {
+        "FirehoseRecordSeparator": {
+            "comment": "Wrong matching"
+        }
+    },
+    "cloudtrail": {
+        "DataResourceType": {
+            "comment": "New DataResourceType need further change. Backfilling enum is not enough"
+        }
+    },
+    "ec2": {
+        "VpcEndpointIpAddressType": {
+            "values": ["NOT_SPECIFIED"],
+            "comment": "Although NOT_SPECIFIED is a valid value, but for CDK customers can just not provide the value for that property"
+        },
+        "VpcEndpointDnsRecordIpType": {
+            "values": ["NOT_SPECIFIED"],
+            "comment": "Although NOT_SPECIFIED is a valid value, but for CDK customers can just not provide the value for that property"
+        },
+        "VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint": {
+            "values": ["NOTSPECIFIED"],
+            "comment": "Although NOTSPECIFIED is a valid value, but for CDK customers can just not provide the value for that property"
+        }
+    }
+}

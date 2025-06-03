@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "testCases": {
     "aws-cdk-eks-cluster-hybrid-nodes-integ/DefaultTest": {
       "stacks": [
@@ -16,5 +16,6 @@
       "assertionStack": "aws-cdk-eks-cluster-hybrid-nodes-integ/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksclusterhybridnodesintegDefaultTestDeployAssert8189222F"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

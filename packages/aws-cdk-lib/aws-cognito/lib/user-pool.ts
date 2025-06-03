@@ -15,6 +15,7 @@ import * as lambda from '../../aws-lambda';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -1056,7 +1057,13 @@ abstract class UserPoolBase extends Resource implements IUserPool {
 /**
  * Define a Cognito User Pool
  */
+@propertyInjectable
 export class UserPool extends UserPoolBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito.UserPool';
+
   /**
    * Import an existing user pool based on its id.
    */

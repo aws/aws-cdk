@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "aws-cdk-elasticbeanstalk-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/295f0acf02e40ccdcbb8c3597ab28322510d8653f73b431173f8dd227a2ea115.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ae815e6fbebebcf8d369a719fc0feace4570bef8932db91736f1d5da5370b7d4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -103,12 +103,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Environment"
-          }
-        ],
-        "/aws-cdk-elasticbeanstalk-integ/GetEnvironmentUrl": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
           }
         ],
         "/aws-cdk-elasticbeanstalk-integ/GetEnvironmentUrl/Provider": [
@@ -424,5 +418,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

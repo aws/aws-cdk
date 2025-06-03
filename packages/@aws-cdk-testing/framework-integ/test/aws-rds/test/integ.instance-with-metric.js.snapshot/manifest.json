@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "aws-cdk-rds-instance-with-metric.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/49ff4a154067b3363a632dc01c399c9dc73fe66280a5b317b9062ced925a0c72.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dbf15ddf40fc270f9489ceb2fc28f6cd43560fed51b5f71f8ebab9b2421318da.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,55 @@
         "aws-cdk-rds-instance-with-metric.assets"
       ],
       "metadata": {
+        "/aws-cdk-rds-instance-with-metric/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*",
+              "restrictDefaultSecurityGroup": false
+            }
+          }
+        ],
         "/aws-cdk-rds-instance-with-metric/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/aws-cdk-rds-instance-with-metric/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-rds-instance-with-metric/VPC/PublicSubnet1/Subnet": [
@@ -76,6 +121,42 @@
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
+        "/aws-cdk-rds-instance-with-metric/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/aws-cdk-rds-instance-with-metric/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -112,6 +193,34 @@
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
+        "/aws-cdk-rds-instance-with-metric/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/aws-cdk-rds-instance-with-metric/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -134,6 +243,34 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/aws-cdk-rds-instance-with-metric/VPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/aws-cdk-rds-instance-with-metric/VPC/PrivateSubnet2/Subnet": [
@@ -172,10 +309,55 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
+        "/aws-cdk-rds-instance-with-metric/Instance": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "engine": {
+                "engineType": "*",
+                "singleUserRotationApplication": "*",
+                "engineVersion": {
+                  "fullVersion": "*",
+                  "majorVersion": "*"
+                },
+                "parameterGroupFamily": "*",
+                "engineFamily": "*",
+                "defaultUsername": "*"
+              },
+              "vpc": "*",
+              "multiAz": false,
+              "publiclyAccessible": true,
+              "iamAuthentication": true,
+              "cloudwatchLogsExports": "*",
+              "cloudwatchLogsRetention": 90,
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/aws-cdk-rds-instance-with-metric/Instance/SubnetGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "removalPolicy": "*"
+            }
+          }
+        ],
         "/aws-cdk-rds-instance-with-metric/Instance/SubnetGroup/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceSubnetGroupF2CBA54F"
+          }
+        ],
+        "/aws-cdk-rds-instance-with-metric/Instance/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
           }
         ],
         "/aws-cdk-rds-instance-with-metric/Instance/SecurityGroup/Resource": [
@@ -184,10 +366,40 @@
             "data": "InstanceSecurityGroupB4E5FA83"
           }
         ],
+        "/aws-cdk-rds-instance-with-metric/Instance/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryptionKey": "*",
+              "secretName": "*",
+              "replicaRegions": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "username": "*",
+              "secretName": "*",
+              "encryptionKey": "*",
+              "excludeCharacters": "*",
+              "replaceOnPasswordCriteriaChanges": "*",
+              "replicaRegions": "*"
+            }
+          }
+        ],
         "/aws-cdk-rds-instance-with-metric/Instance/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceSecret478E0A47"
+          }
+        ],
+        "/aws-cdk-rds-instance-with-metric/Instance/Secret/Attachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "target": "*"
+            }
           }
         ],
         "/aws-cdk-rds-instance-with-metric/Instance/Secret/Attachment/Resource": [
@@ -208,10 +420,86 @@
             "data": "InstanceLogRetentionpostgresql4CD12757"
           }
         ],
+        "/aws-cdk-rds-instance-with-metric/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-rds-instance-with-metric/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-rds-instance-with-metric/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/aws-cdk-rds-instance-with-metric/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-rds-instance-with-metric/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
@@ -230,6 +518,21 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-cdk-rds-instance-with-metric/MetricFilter": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroup": "*",
+              "filterPattern": {
+                "logPatternString": "*"
+              },
+              "metricName": "*",
+              "metricNamespace": "*",
+              "defaultValue": "*",
+              "metricValue": "*"
+            }
           }
         ],
         "/aws-cdk-rds-instance-with-metric/MetricFilter/Resource": [
@@ -307,5 +610,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "aws-ecs-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1290546f152736d3977a4969c00d0e82e0693f79f55ecfff884608736ee848c9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aaaca564a0a67494229b6bd2ba29f9314379af02511f1cf5108de0350adfceeb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1046,7 +1046,10 @@
         "/aws-ecs-integ/EnvFileDeployment/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EnvFileDeploymentAwsCliLayerA8FC897D"
+            "data": "EnvFileDeploymentAwsCliLayerA8FC897D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ/EnvFileDeployment/CustomResourceHandler": [
@@ -1364,5 +1367,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1015.0"
 }

@@ -1,6 +1,6 @@
 {
   "enableLookups": true,
-  "version": "39.0.0",
+  "version": "41.0.0",
   "testCases": {
     "appsync-event-api-test/DefaultTest": {
       "stacks": [
@@ -10,5 +10,6 @@
       "assertionStack": "appsync-event-api-test/DefaultTest/DeployAssert",
       "assertionStackName": "appsynceventapitestDefaultTestDeployAssertBF937085"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
