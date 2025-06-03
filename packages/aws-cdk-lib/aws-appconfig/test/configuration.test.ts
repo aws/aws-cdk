@@ -1440,4 +1440,29 @@ describe('configuration', () => {
     });
     Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 1);
   });
+
+  test('hosted configuration profile with customer managed key', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    const kmsKey = new Key(stack, 'MyKey');
+    new HostedConfiguration(stack, 'MyHostedConfig', {
+      content: ConfigurationContent.fromInlineText('This is my content'),
+      application: app,
+      deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
+      }),
+      kmsKey,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
+      Name: 'MyHostedConfig',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      KmsKeyIdentifier: stack.resolve(kmsKey.keyArn),
+    });
+  });
 });
