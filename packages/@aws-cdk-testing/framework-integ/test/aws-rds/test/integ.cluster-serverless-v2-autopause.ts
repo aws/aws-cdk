@@ -13,7 +13,7 @@ export class TestStack extends Stack {
       engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_08_0 }),
       serverlessV2MaxCapacity: 1,
       serverlessV2MinCapacity: 0,
-      serverlessV2AutoPause: Duration.hours(1),
+      serverlessV2AutoPauseDuration: Duration.hours(1),
       writer: ClusterInstance.serverlessV2('writer'),
       removalPolicy: RemovalPolicy.DESTROY,
       vpc: vpc,
