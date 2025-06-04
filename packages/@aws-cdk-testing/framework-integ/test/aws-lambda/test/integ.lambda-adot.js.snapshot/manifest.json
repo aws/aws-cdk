@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "Stack1.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/786301e30e97f6b21391ce0e58f76a891f53cb3535dba60feb818e6561142a17.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/458a60da11b106f94252378c8db9c78392dcfc2a87bc6afbdab66eca2eba5957.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -671,51 +671,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "MyFunc1inlinePolicyAddedToExecutionRole050337A59": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunc1inlinePolicyAddedToExecutionRole050337A59",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyFunc2inlinePolicyAddedToExecutionRole0947C2F15": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunc2inlinePolicyAddedToExecutionRole0947C2F15",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyFunc3inlinePolicyAddedToExecutionRole07587DBB8": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunc3inlinePolicyAddedToExecutionRole07587DBB8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyFunc4inlinePolicyAddedToExecutionRole092E86F7D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunc4inlinePolicyAddedToExecutionRole092E86F7D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyFunc5inlinePolicyAddedToExecutionRole0431C1882": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunc5inlinePolicyAddedToExecutionRole0431C1882",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "Stack1"
@@ -737,7 +692,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a25d4d16a3c2cb56b193e4f8e0eb3ee6e51c90238e2b55e91dbee83c0625a30d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f74eb4d755744e94863801c06192aba5eabe647fe67f4449a37b67d1d2b45b07.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1390,51 +1345,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "MyFunc1inlinePolicyAddedToExecutionRole050337A59": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunc1inlinePolicyAddedToExecutionRole050337A59",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyFunc2inlinePolicyAddedToExecutionRole0947C2F15": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunc2inlinePolicyAddedToExecutionRole0947C2F15",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyFunc3inlinePolicyAddedToExecutionRole07587DBB8": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunc3inlinePolicyAddedToExecutionRole07587DBB8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyFunc4inlinePolicyAddedToExecutionRole092E86F7D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunc4inlinePolicyAddedToExecutionRole092E86F7D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyFunc5inlinePolicyAddedToExecutionRole0431C1882": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunc5inlinePolicyAddedToExecutionRole0431C1882",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "Stack2"
@@ -1493,5 +1403,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1017.1"
 }

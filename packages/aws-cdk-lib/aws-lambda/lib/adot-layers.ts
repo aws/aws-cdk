@@ -316,9 +316,9 @@ export class AdotLambdaLayerJavaAutoInstrumentationVersion extends AdotLambdaLay
  */
 export class AdotLambdaLayerPythonSdkVersion extends AdotLambdaLayerVersion {
   /**
-   * Version 1.29.0
+   * Version 1.32.0
    */
-  public static readonly V1_29_0_1 = new AdotLambdaLayerPythonSdkVersion('1.29.0-1');
+  public static readonly V1_32_0 = new AdotLambdaLayerPythonSdkVersion('1.32.0');
 
   /**
    * Version 1.29.0
@@ -389,7 +389,7 @@ export class AdotLambdaLayerPythonSdkVersion extends AdotLambdaLayerVersion {
    * The latest layer version available in this CDK version. New versions could
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
-  public static readonly LATEST = this.V1_29_0_1;
+  public static readonly LATEST = this.V1_32_0;
 
   private constructor(protected readonly layerVersion: string) {
     super(AdotLambdaLayerType.PYTHON_SDK, layerVersion);
@@ -451,9 +451,9 @@ export class AdotLambdaLayerJavaScriptSdkVersion extends AdotLambdaLayerVersion 
  */
 export class AdotLambdaLayerGenericVersion extends AdotLambdaLayerVersion {
   /**
-   * Version 0.115.0
+   * Version 0.117.0
    */
-  public static readonly V0_115_0_1 = new AdotLambdaLayerGenericVersion('0.115.0-1');
+  public static readonly V0_117_0 = new AdotLambdaLayerGenericVersion('0.117.0');
 
   /**
    * Version 0.115.0
@@ -499,7 +499,7 @@ export class AdotLambdaLayerGenericVersion extends AdotLambdaLayerVersion {
    * The latest layer version available in this CDK version. New versions could
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
-  public static readonly LATEST = this.V0_115_0_1;
+  public static readonly LATEST = this.V0_117_0;
 
   private constructor(protected readonly layerVersion: string) {
     super(AdotLambdaLayerType.GENERIC, layerVersion);
