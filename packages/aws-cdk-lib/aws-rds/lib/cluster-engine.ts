@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import * as semver from 'semver';
 import { IEngine } from './engine';
 import { EngineVersion } from './engine-version';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
@@ -696,11 +697,17 @@ export class AuroraMysqlEngineVersion {
    *   defaults to "5.7"
    */
   public static of(auroraMysqlFullVersion: string, auroraMysqlMajorVersion?: string): AuroraMysqlEngineVersion {
+    // Detects whether the auto-pause feature is supported.
+    // https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html#auto-pause-prereqs
+    const coercedVersion = semver.valid(semver.coerce(auroraMysqlMajorVersion));
+    const serverlessV2AutoPause = auroraMysqlMajorVersion === '8.0'
+      ? auroraMysqlFullVersion >= '8.0.mysql_aurora.3.08.0'
+      : (coercedVersion != null && semver.satisfies(coercedVersion, '>=8.1'));
     return new AuroraMysqlEngineVersion(
       auroraMysqlFullVersion, auroraMysqlMajorVersion,
       {
         combineImportAndExportRoles: (auroraMysqlMajorVersion ? auroraMysqlMajorVersion !== '5.7' : false),
-        serverlessV2AutoPause: versionGeq(auroraMysqlFullVersion, '8.0.mysql_aurora.3.08.0'),
+        serverlessV2AutoPause,
       },
     );
   }
@@ -713,7 +720,7 @@ export class AuroraMysqlEngineVersion {
     // 8.0 of the MySQL engine needs to combine the import and export Roles
     return new AuroraMysqlEngineVersion(`8.0.mysql_aurora.${minorVersion}`, '8.0', {
       combineImportAndExportRoles: true,
-      serverlessV2AutoPause: versionGeq(minorVersion, '3.08.0'),
+      serverlessV2AutoPause: minorVersion >= '3.08.0',
     });
   }
 
@@ -1263,13 +1270,10 @@ export class AuroraPostgresEngineVersion {
    */
   public static of(auroraPostgresFullVersion: string, auroraPostgresMajorVersion: string,
     auroraPostgresFeatures?: AuroraPostgresEngineFeatures): AuroraPostgresEngineVersion {
-    // See the document below for engine versions support auto-pause feature
+    // Detects whether the auto-pause feature is supported.
     // https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html#auto-pause-prereqs
-    const serverlessV2AutoPause =
-      versionGeq(auroraPostgresFullVersion, '16.3') ||
-      versionGeq(auroraPostgresFullVersion, '15.7', true) ||
-      versionGeq(auroraPostgresFullVersion, '14.12', true) ||
-      versionGeq(auroraPostgresFullVersion, '13.15', true);
+    const coercedVersion = semver.valid(semver.coerce(auroraPostgresFullVersion));
+    const serverlessV2AutoPause = coercedVersion != null && semver.satisfies(coercedVersion, '>=16.3 || ^15.7 || ^14.12 || ^13.15');
     return new AuroraPostgresEngineVersion(auroraPostgresFullVersion, auroraPostgresMajorVersion, {
       serverlessV2AutoPause,
       ...auroraPostgresFeatures,
@@ -1423,33 +1427,4 @@ export class DatabaseClusterEngine {
   public static auroraPostgres(props: AuroraPostgresClusterEngineProps): IClusterEngine {
     return new AuroraPostgresClusterEngine(props.version);
   }
-}
-
-/**
- * Returns whether the `version` is greater than or equals to `minimumVersion`.
- *
- * @example
- * versionGeq('1.1', '1.0')       // => true
- * versionGeq('1.2', '1.10')      // => false
- * versionGeq('2.0', '1.5')       // => true
- * versionGeq('2.0', '1.5', true) // => false
- *
- * @param version The version to be checked
- * @param minimumVersion The minimum version
- * @param inMajorVersion If true, returns false when the major version differs
- */
-function versionGeq(version: string, minimumVersion: string, inMajorVersion?: boolean) {
-  const versionComponents = version.split('.');
-  const minimumVersionComponents = minimumVersion.split('.');
-  const componentsLength = Math.max(versionComponents.length, minimumVersionComponents.length);
-  if (inMajorVersion && versionComponents[0] !== minimumVersionComponents[0]) {
-    return false;
-  }
-  for (let i = 0; i < componentsLength; ++i) {
-    const versionCurrent = parseInt(versionComponents[i], 10) || 0;
-    const minimumCurrent = parseInt(minimumVersionComponents[i], 10) || 0;
-    if (versionCurrent > minimumCurrent) return true;
-    if (versionCurrent < minimumCurrent) return false;
-  }
-  return true;
 }
