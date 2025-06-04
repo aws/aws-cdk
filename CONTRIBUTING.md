@@ -1341,6 +1341,28 @@ Adding a new flag looks as follows:
     - Double negatives should be avoided. If you want to add a flag that disables something that was previously
       enabled, set `default.v2` to `true` and the `recommendedValue` to `false`. You will need to update
       a test in `features.test.ts` -- this is okay if you have a good reason.
+    - A note on the fields
+      - default.v2: This is the boolean value used by the cdk commands at runtime unless its specified in `cdk.json`.
+      - recommendedValue: This is the boolean value will be set in `cdk.json` on `cdk init` when you init a new application.
+    - As a contributor, if you are advised to introduce a feature flag, consider the following scenarios when determining how your feature should behave for
+      - Customers who are creating new app (`cdk init`). `cdk.json` will now contain the new feature flag set to the `recommendedValue`.
+      - Customers who have an existing app. `cdk.json` doesnt contain the `new` feature flag. The value of the new feature flag set to the `default.v2` value in context of cdk commands.
+      - E.g. in the following case, unless overridden in `cdk.json`
+        - New apps will get [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: true
+        - Existing apps on cdk v2 will get [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: false
+        ```typescript
+        [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: {
+            type: FlagType.ApiDefault,
+            summary: 'When enabled, CDK creates and manages loggroup for the lambda function',
+            detailsMd: `
+                ...
+              `,
+            introducedIn: { v2: 'V2_NEXT' },
+            defaults: { v2: false },
+            recommendedValue: true,
+            compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
+        },
+        ```
 2. Use `FeatureFlags.of(construct).isEnabled(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
 3. Add your feature flag to the `FLAGS` map in
