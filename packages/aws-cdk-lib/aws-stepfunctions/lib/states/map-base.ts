@@ -104,7 +104,7 @@ export interface MapBaseOptions extends AssignableStateOptions {
   readonly maxConcurrency?: number;
 
   /**
-   * The JSON that you want to override your default iteration input (mutually exclusive  with `parameters`).
+   * The JSON that you want to override your default iteration input (mutually exclusive  with `parameters` and `jsonataItemSelector`).
    *
    * @see
    * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-itemselector.html
@@ -112,6 +112,13 @@ export interface MapBaseOptions extends AssignableStateOptions {
    * @default $
    */
   readonly itemSelector?: { [key: string]: any };
+
+  /**
+   * Jsonata expression that evaluates to a JSON text to override your default iteration input (mutually exclusive with `parameters` and `itemSelector`).
+   *
+   * @default $
+   */
+  readonly jsonataItemSelector?: string;
 }
 
 /**
@@ -150,6 +157,7 @@ export abstract class MapBase extends State implements INextable {
   protected readonly items?: ProvideItems;
   protected readonly itemsPath?: string;
   protected readonly itemSelector?: { [key: string]: any };
+  protected readonly jsonataItemSelector?: string;
 
   constructor(scope: Construct, id: string, props: MapBaseProps = {}) {
     super(scope, id, props);
@@ -159,6 +167,7 @@ export abstract class MapBase extends State implements INextable {
     this.items = props.items;
     this.itemsPath = props.itemsPath;
     this.itemSelector = props.itemSelector;
+    this.jsonataItemSelector = props.jsonataItemSelector;
   }
 
   /**
@@ -210,6 +219,10 @@ export abstract class MapBase extends State implements INextable {
       errors.push('Provide either `maxConcurrency` or `maxConcurrencyPath`, but not both');
     }
 
+    if (this.itemSelector && this.jsonataItemSelector) {
+      errors.push('Provide either `itemSelector` or `jsonataItemSelector`, but not both');
+    }
+
     return errors;
   }
 
@@ -223,9 +236,9 @@ export abstract class MapBase extends State implements INextable {
    * Render ItemSelector in ASL JSON format
    */
   private renderItemSelector(): any {
-    if (!this.itemSelector) return undefined;
+    if (!this.itemSelector && !this.jsonataItemSelector) return undefined;
     return FieldUtils.renderObject({
-      ItemSelector: this.itemSelector,
+      ItemSelector: this.itemSelector ?? this.jsonataItemSelector,
     });
   }
 }
