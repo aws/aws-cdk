@@ -101,7 +101,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - The default is 300 seconds (5 minutes).
    */
-  readonly serverlessV2AutoPause?: Duration;
+  readonly serverlessV2AutoPauseDuration?: Duration;
 
   /**
    * What subnets to run the RDS instances in.
@@ -793,7 +793,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   protected readonly serverlessV2MinCapacity: number;
   protected readonly serverlessV2MaxCapacity: number;
-  protected readonly serverlessV2AutoPause?: Duration;
+  protected readonly serverlessV2AutoPauseDuration?: Duration;
 
   protected hasServerlessInstance?: boolean;
   protected enableDataApi?: boolean;
@@ -821,7 +821,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     this.serverlessV2MaxCapacity = props.serverlessV2MaxCapacity ?? 2;
     this.serverlessV2MinCapacity = props.serverlessV2MinCapacity ?? 0.5;
-    this.serverlessV2AutoPause = props.serverlessV2AutoPause;
+    this.serverlessV2AutoPauseDuration = props.serverlessV2AutoPauseDuration;
 
     this.enableDataApi = props.enableDataApi;
 
@@ -955,7 +955,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
             return {
               minCapacity: this.serverlessV2MinCapacity,
               maxCapacity: this.serverlessV2MaxCapacity,
-              secondsUntilAutoPause: this.serverlessV2AutoPause?.toSeconds(),
+              secondsUntilAutoPause: this.serverlessV2AutoPauseDuration?.toSeconds(),
             } satisfies CfnDBCluster.ServerlessV2ScalingConfigurationProperty;
           }
           return undefined;
@@ -1179,15 +1179,15 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       `min: ${this.serverlessV2MaxCapacity}, max: ${this.serverlessV2MaxCapacity}`, this);
     }
 
-    if (this.serverlessV2AutoPause) {
+    if (this.serverlessV2AutoPauseDuration) {
       if (!config.features?.serverlessV2AutoPauseSupported) {
         throw new ValidationError(`serverlessV2 auto-pause feature is not supported by ${this.engine?.engineType} ${this.engine?.engineVersion?.fullVersion}.`, this);
       }
       if (
-        !this.serverlessV2AutoPause.isUnresolved() &&
-        (this.serverlessV2AutoPause.toSeconds() < 300 || this.serverlessV2AutoPause.toSeconds() > 86400)
+        !this.serverlessV2AutoPauseDuration.isUnresolved() &&
+        (this.serverlessV2AutoPauseDuration.toSeconds() < 300 || this.serverlessV2AutoPauseDuration.toSeconds() > 86400)
       ) {
-        throw new ValidationError(`serverlessV2AutoPause must be between 300 seconds (5 minutes) and 86,400 seconds (24 hours), received ${this.serverlessV2AutoPause.toSeconds()} seconds`, this);
+        throw new ValidationError(`serverlessV2AutoPause must be between 300 seconds (5 minutes) and 86,400 seconds (24 hours), received ${this.serverlessV2AutoPauseDuration.toSeconds()} seconds`, this);
       }
     }
   }

@@ -169,7 +169,7 @@ describe('cluster new api', () => {
     test.each([
       [cdk.Duration.seconds(299)],
       [cdk.Duration.seconds(86401)],
-    ])('when serverlessV2 auto-pause duration is incorrect', (autoPause) => {
+    ])('when serverlessV2 auto-pause duration is incorrect', (serverlessV2AutoPauseDuration) => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -180,7 +180,7 @@ describe('cluster new api', () => {
           engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_08_0 }),
           vpc,
           vpcSubnets: vpc.selectSubnets( { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } ),
-          serverlessV2AutoPause: autoPause,
+          serverlessV2AutoPauseDuration,
           iamAuthentication: true,
         });
         // THEN
@@ -540,7 +540,7 @@ describe('cluster new api', () => {
         engine,
         vpc,
         writer: ClusterInstance.serverlessV2('writer'),
-        serverlessV2AutoPause: cdk.Duration.hours(1),
+        serverlessV2AutoPauseDuration: cdk.Duration.hours(1),
         iamAuthentication: true,
       });
 
@@ -574,7 +574,7 @@ describe('cluster new api', () => {
           engine,
           vpc,
           writer: ClusterInstance.serverlessV2('writer'),
-          serverlessV2AutoPause: cdk.Duration.hours(1),
+          serverlessV2AutoPauseDuration: cdk.Duration.hours(1),
           iamAuthentication: true,
         });
       }).toThrow('serverlessV2 auto-pause feature is not supported');
