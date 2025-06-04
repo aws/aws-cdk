@@ -103,6 +103,7 @@ Flags come in three types:
 | [@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions](#aws-cdks3-notificationsadds3trustkeypolicyforsnssubscriptions) | Add an S3 trust policy to a KMS key resource policy for SNS subscriptions. | 2.195.0 | fix |
 | [@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway](#aws-cdkaws-ec2requireprivatesubnetsforegressonlyinternetgateway) | When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC. | 2.196.0 | fix |
 | [@aws-cdk/aws-s3:publicAccessBlockedByDefault](#aws-cdkaws-s3publicaccessblockedbydefault) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | 2.196.0 | fix |
+| [@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault](#aws-cdkaws-elasticloadbalancingv2networkloadbalancerwithsecuritygroupbydefault) | When enabled, Network Load Balancers will be created with a security group by default. | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -188,7 +189,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
     "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
-    "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true
+    "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
+    "@aws-cdk/aws-elasticloadbalancingv2:nlbWithSecurityGroupByDefault": true
   }
 }
 ```
@@ -2163,7 +2165,7 @@ When this feature flag is enabled, EgressOnlyGateway resource will not be create
 
 Flag type: Backwards incompatible bugfix
 
-When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console. 
+When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console.
 The previous behavior in cdk before this feature was; if only some of the BlockPublicAccessOptions were set (not all 4), then the ones undefined would default to false.
 This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
 The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
@@ -2174,5 +2176,17 @@ The new behavior from this feature will allow a user, for example, to set 1 of t
 | (not in v1) |  |  |
 | 2.196.0 | `false` | `true` |
 
+### @aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault
+
+*When enabled, the Network Load Balancer will be created with a security group by default.*
+
+Flag type: New default behavior
+
+When this feature flag is enabled, the Network Load Balancer will be created with a security group by default.
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 <!-- END details -->
