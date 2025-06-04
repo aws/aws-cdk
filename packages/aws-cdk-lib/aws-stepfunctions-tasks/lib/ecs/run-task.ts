@@ -470,7 +470,6 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     // Need to be able to pass both Task and Execution role, apparently
     const ret = new Array<iam.IRole>();
     ret.push(this.props.taskDefinition.taskRole);
-
     if (this.props.taskDefinition.executionRole) {
       ret.push(this.props.taskDefinition.executionRole);
     }
