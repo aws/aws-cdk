@@ -251,7 +251,7 @@ export interface LaunchTemplateProps {
   readonly machineImage?: IMachineImage;
 
   /**
-   * The AMI that will be used by instances.
+   * The user data to make available to the instance.
    *
    * @default - This Launch Template creates a UserData based on the type of provided
    * machineImage; no UserData is created if a machineImage is not provided
