@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "NlbSecurityGroupInteg/DefaultTest": {
+      "stacks": [
+        "NlbSecurityGroupStack"
+      ],
+      "assertionStack": "NlbSecurityGroupInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "NlbSecurityGroupIntegDefaultTestDeployAssertD87A91AD"
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}

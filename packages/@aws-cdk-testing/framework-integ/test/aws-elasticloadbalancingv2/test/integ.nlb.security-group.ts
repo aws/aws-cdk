@@ -1,8 +1,12 @@
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import { Stack, aws_ec2 as ec2, aws_elasticloadbalancingv2 as elbv2, App } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 class TestStack extends Stack {
+  public readonly lbWithSg: elbv2.NetworkLoadBalancer;
+  public readonly lbWithSg2: elbv2.NetworkLoadBalancer;
+  public readonly lbWithoutSg: elbv2.NetworkLoadBalancer;
+
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
@@ -11,18 +15,18 @@ class TestStack extends Stack {
       natGateways: 0,
     });
 
-    const lbWithSg = new elbv2.NetworkLoadBalancer(this, 'NlbWithSecurityGroup', {
+    this.lbWithSg = new elbv2.NetworkLoadBalancer(this, 'NlbWithSecurityGroup', {
       vpc,
     });
-    const lbWithSg2 = new elbv2.NetworkLoadBalancer(this, 'NlbWithSecurityGroup2', {
+    this.lbWithSg2 = new elbv2.NetworkLoadBalancer(this, 'NlbWithSecurityGroup2', {
       vpc,
       securityGroups: [new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc,
         allowAllOutbound: true,
       })],
     });
-    lbWithSg.connections.allowTo(lbWithSg2, ec2.Port.tcp(1229));
-    const lbWithoutSg = new elbv2.NetworkLoadBalancer(this, 'NlbWithoutSecurityGroup', {
+    this.lbWithSg.connections.allowTo(this.lbWithSg2, ec2.Port.tcp(1229));
+    this.lbWithoutSg = new elbv2.NetworkLoadBalancer(this, 'NlbWithoutSecurityGroup', {
       vpc,
       disableSecurityGroups: true,
     });
@@ -34,9 +38,33 @@ const app = new App({
     '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault': true,
   },
 });
-
+const stack = new TestStack(app, 'NlbSecurityGroupStack');
 const integ = new IntegTest(app, 'NlbSecurityGroupInteg', {
-  testCases: [
-    new TestStack(app, 'NlbSecurityGroupStack'),
-  ],
+  testCases: [stack],
 });
+integ.assertions.awsApiCall('elastic-load-balancing-v2', 'describeLoadBalancers', {
+  LoadBalancerArns: [
+    stack.lbWithSg.loadBalancerArn,
+    stack.lbWithSg2.loadBalancerArn,
+    stack.lbWithoutSg.loadBalancerArn,
+  ],
+}).expect(ExpectedResult.objectLike({
+  LoadBalancers: [
+    Match.objectLike({
+      LoadBalancerArn: stack.lbWithSg.loadBalancerArn,
+      SecurityGroups: Match.arrayWith([
+        Match.stringLikeRegexp('sg-[0-9a-f]{8,17}'),
+      ]),
+    }),
+    Match.objectLike({
+      LoadBalancerArn: stack.lbWithSg2.loadBalancerArn,
+      SecurityGroups: Match.arrayWith([
+        Match.stringLikeRegexp('sg-[0-9a-f]{8,17}'),
+      ]),
+    }),
+    Match.objectLike({
+      LoadBalancerArn: stack.lbWithoutSg.loadBalancerArn,
+      SecurityGroups: undefined,
+    }),
+  ],
+}));
