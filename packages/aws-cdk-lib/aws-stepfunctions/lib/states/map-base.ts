@@ -114,7 +114,9 @@ export interface MapBaseOptions extends AssignableStateOptions {
   readonly itemSelector?: { [key: string]: any };
 
   /**
-   * Jsonata expression that evaluates to a JSON text to override your default iteration input (mutually exclusive with `parameters` and `itemSelector`).
+   * Jsonata expression that evaluates to a JSON array to override your default iteration input (mutually exclusive with `parameters` and `itemSelector`).
+   *
+   * Example value: `{% {\"foo\": \"foo\", \"input\": $states.input} %}`
    *
    * @default $
    */
