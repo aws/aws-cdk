@@ -194,25 +194,6 @@
    "DependsOn": [
     "FunctionServiceRole675BB04A"
    ]
-  },
-  "FunctionLogGroup55B80E27": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/lambda/",
-       {
-        "Ref": "Function76856677"
-       }
-      ]
-     ]
-    },
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
   }
  },
  "Parameters": {

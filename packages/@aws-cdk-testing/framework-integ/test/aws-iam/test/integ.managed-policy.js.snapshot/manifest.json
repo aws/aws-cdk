@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "aws-cdk-iam-managed-policy.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eb843edf55eb72fa5c803b004a0aac0d9955f4db0443d1d13581aac7a2f1e8d2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3ccc26f333f67ff200e6308e54eb4b3614c564b5741602fb95bfc05b458430b6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,92 +34,10 @@
         "aws-cdk-iam-managed-policy.assets"
       ],
       "metadata": {
-        "/aws-cdk-iam-managed-policy/MyUser": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addManagedPolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addManagedPolicy": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
         "/aws-cdk-iam-managed-policy/MyUser/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyUserDC45028B"
-          }
-        ],
-        "/aws-cdk-iam-managed-policy/OneManagedPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "managedPolicyName": "*",
-              "description": "*",
-              "path": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToUser": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/aws-cdk-iam-managed-policy/OneManagedPolicy/Resource": [
@@ -128,116 +46,16 @@
             "data": "OneManagedPolicy77F9185F"
           }
         ],
-        "/aws-cdk-iam-managed-policy/TwoManagedPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
         "/aws-cdk-iam-managed-policy/TwoManagedPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TwoManagedPolicy7E701864"
           }
         ],
-        "/aws-cdk-iam-managed-policy/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "grantAssumeRole": [
-                {
-                  "policyFragment": "*",
-                  "principalAccount": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "grant": [
-                {
-                  "policyFragment": "*",
-                  "principalAccount": "*"
-                },
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-iam-managed-policy/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-iam-managed-policy/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Role1ABCC5F0"
-          }
-        ],
-        "/aws-cdk-iam-managed-policy/ImportedRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-iam-managed-policy/Function": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/aws-cdk-iam-managed-policy/Function/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-iam-managed-policy/Function/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-iam-managed-policy/Function/ServiceRole/Resource": [
@@ -250,20 +68,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Function76856677"
-          }
-        ],
-        "/aws-cdk-iam-managed-policy/Function/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "logGroupName": "*"
-            }
-          }
-        ],
-        "/aws-cdk-iam-managed-policy/Function/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FunctionLogGroup55B80E27"
           }
         ],
         "/aws-cdk-iam-managed-policy/BootstrapVersion": [
@@ -335,6 +139,5 @@
         "file": "tree.json"
       }
     }
-  },
-  "minimumCliVersion": "2.1016.1"
+  }
 }
