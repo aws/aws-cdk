@@ -231,7 +231,7 @@ describe('Map State', () => {
       stateName: 'My-Map-State',
       maxConcurrency: 1,
       itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
-      jsonataItemSelector: '{%  %}',
+      jsonataItemSelector: '{% {\"foo\": \"foo\", \"bar\": $states.input.bar} %}',
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
