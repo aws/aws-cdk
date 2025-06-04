@@ -3,6 +3,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { Annotations } from '../annotations';
 import { attachCustomSynthesis } from '../app';
+import { ValidationError } from '../errors';
 import { Reference } from '../reference';
 import { IResolvable, StringConcat, DefaultTokenResolver, IFragmentConcatenator } from '../resolvable';
 import { ISynthesisSession } from '../stack-synthesizers';
@@ -410,7 +411,7 @@ export class PolicySynthesizer extends Construct {
    */
   public addRole(rolePath: string, options: RoleReportOptions): void {
     if (this.roleReport.hasOwnProperty(rolePath)) {
-      throw new Error(`IAM Policy Report already has an entry for role: ${rolePath}`);
+      throw new ValidationError(`IAM Policy Report already has an entry for role: ${rolePath}`, this);
     }
     this.roleReport[rolePath] = options;
   }
@@ -423,7 +424,7 @@ export class PolicySynthesizer extends Construct {
    */
   public addManagedPolicy(policyPath: string, options: ManagedPolicyReportOptions): void {
     if (this.managedPolicyReport.hasOwnProperty(policyPath)) {
-      throw new Error(`IAM Policy Report already has an entry for managed policy: ${policyPath}`);
+      throw new ValidationError(`IAM Policy Report already has an entry for managed policy: ${policyPath}`, this);
     }
 
     this.managedPolicyReport[policyPath] = options;

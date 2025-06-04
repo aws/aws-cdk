@@ -1,5 +1,6 @@
 import { Construct, Node } from 'constructs';
 import { Annotations } from './annotations';
+import { ValidationError } from './errors';
 import { Stack } from './stack';
 import { Token } from './token';
 import * as cxschema from '../../cloud-assembly-schema';
@@ -142,9 +143,9 @@ export class ContextProvider {
     };
 
     if (Object.values(props).find(x => Token.isUnresolved(x))) {
-      throw new Error(
+      throw new ValidationError(
         `Cannot determine scope for context provider ${options.provider}.\n` +
-        'This usually happens when one or more of the provider props have unresolved tokens');
+        'This usually happens when one or more of the provider props have unresolved tokens', scope);
     }
 
     const propStrings = propsToArray(props);
@@ -156,16 +157,16 @@ export class ContextProvider {
 
   public static getValue(scope: Construct, options: GetContextValueOptions): GetContextValueResult {
     if ((options.mustExist !== undefined) && (options.ignoreErrorOnMissingContext !== undefined)) {
-      throw new Error('Only supply one of \'mustExist\' and \'ignoreErrorOnMissingContext\'');
+      throw new ValidationError('Only supply one of \'mustExist\' and \'ignoreErrorOnMissingContext\'', scope);
     }
 
     const stack = Stack.of(scope);
 
     if (Token.isUnresolved(stack.account) || Token.isUnresolved(stack.region)) {
-      throw new Error(`Cannot retrieve value from context provider ${options.provider} since account/region ` +
+      throw new ValidationError(`Cannot retrieve value from context provider ${options.provider} since account/region ` +
                       'are not specified at the stack level. Configure "env" with an account and region when ' +
                       'you define your stack.' +
-                      'See https://docs.aws.amazon.com/cdk/latest/guide/environments.html for more details.');
+                      'See https://docs.aws.amazon.com/cdk/latest/guide/environments.html for more details.', scope);
     }
 
     const { key, props } = this.getKey(scope, options);
