@@ -1180,7 +1180,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     }
 
     if (this.serverlessV2AutoPause) {
-      if (!config.features?.serverlessV2AutoPause) {
+      if (!config.features?.serverlessV2AutoPauseSupported) {
         throw new ValidationError(`serverlessV2 auto-pause feature is not supported by ${this.engine?.engineType} ${this.engine?.engineVersion?.fullVersion}.`, this);
       }
       if (
