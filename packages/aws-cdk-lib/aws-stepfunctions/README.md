@@ -840,6 +840,21 @@ const definition = choice
 map.itemProcessor(definition);
 ```
 
+When using `JSONata`, the `itemSelector` property in a Map state can be specified in one of two ways. You can provide a valid JSON object containing JSONata expressions for each value:
+
+```ts
+itemSelector: {
+  id: '{% $states.context.Map.Item.Value.id %}',
+  status: '{% $states.context.Map.Item.Value.status %}',
+}
+```
+
+Alternatively, you can use the `jsonataItemSelector` field to directly supply a JSONata string that evaluates to a complete JSON object:
+
+```ts
+jsonataItemSelector: '{% {\"id\": $states.input.id, \"status\": $states.input.status} %}'
+```
+
 To define a distributed `Map` state set `itemProcessors` mode to `ProcessorMode.DISTRIBUTED`.
 An `executionType` must be specified for the distributed `Map` workflow.
 
