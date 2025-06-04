@@ -822,7 +822,7 @@ export class Volume extends VolumeBase {
       }
 
       if (!props.volumeInitializationRate.isUnresolved()) {
-        const rateMiBs = props.volumeInitializationRate.toBytes() / (1024 * 1024);
+        const rateMiBs = props.volumeInitializationRate.toMebibytes({ rounding: SizeRoundingBehavior.NONE });
         if (rateMiBs < 100 || rateMiBs > 300) {
           throw new ValidationError(`volumeInitializationRate must be between 100 and 300 MiB/s, got: ${rateMiBs} MiB/s`, this);
         }

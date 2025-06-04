@@ -3,6 +3,7 @@ import { AccountRootPrincipal, Role } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { SnapStartConf } from '../../aws-lambda';
 import * as cdk from '../../core';
+import { SizeRoundingBehavior } from '../../core';
 import * as cxapi from '../../cx-api';
 import {
   AmazonLinuxGeneration,
@@ -1557,7 +1558,7 @@ describe('volume', () => {
           volumeInitializationRate: rate,
           snapshotId: 'snap-0123456789abcdefABCDEF',
         });
-      }).toThrow(`volumeInitializationRate must be between 100 and 300 MiB/s, got: ${rate.toBytes() / (1024 * 1024)} MiB/s`);
+      }).toThrow(`volumeInitializationRate must be between 100 and 300 MiB/s, got: ${rate.toMebibytes({ rounding: SizeRoundingBehavior.NONE })} MiB/s`);
     });
   });
 });
