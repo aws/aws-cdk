@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "4a48e52a4820e3c1561fc879d43098f04f87a67a04393cb57ab582336a398e18": {
+      "displayName": "volume-initialization-rate-stack Template",
+      "source": {
+        "path": "volume-initialization-rate-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4a48e52a4820e3c1561fc879d43098f04f87a67a04393cb57ab582336a398e18.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
