@@ -64,14 +64,6 @@
 "@aws-cdk/aws-lambda-python-alpha@file:packages/@aws-cdk/aws-lambda-python-alpha":
   version "0.0.0"
 
-"@aws-cdk/aws-service-spec@0.1.73":
-  version "0.1.73"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.73.tgz#bc34d318b2b153331a2dcdb2857583e761dc6a90"
-  integrity sha512-heSDSEYOCwHMdSrdb0DqifxRPqXE84uTNZn55bIKQAYmpT+E9wkVNH77jYYxSxgvaun555ck7lIiG9U8wHIiCg==
-  dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.139"
-    "@cdklabs/tskb" "^0.0.3"
-
 "@aws-cdk/aws-service-spec@0.1.76":
   version "0.1.76"
   resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.76.tgz#bbca16e92a824a10616b9d31a9d289a4bb741f6c"
@@ -96,7 +88,7 @@
     jsonschema "~1.4.1"
     semver "^7.7.2"
 
-"@aws-cdk/integ-runner@^2.186.11":
+"@aws-cdk/integ-runner@^2.186.0", "@aws-cdk/integ-runner@^2.186.11":
   version "2.186.11"
   resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.186.11.tgz#1174047d4227bde08a9d411310273b63d502bce6"
   integrity sha512-dfp1/MZqhP2m3GLnkap/rMkLUdew5XLFNIlTkB5v+Ntdqj4OEiwmcI0diSVS2kmI5em3FOfJ70n0GE9xJatDVA==
@@ -5353,6 +5345,13 @@ available-typed-arrays@^1.0.7:
   integrity sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==
   dependencies:
     possible-typed-array-names "^1.0.0"
+
+aws-cdk@2.1007.0:
+  version "2.1007.0"
+  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1007.0.tgz#cdeca2bd3a4a628c73c9dab3ac37f29d3f63b223"
+  integrity sha512-/UOYOTGWUm+pP9qxg03tID5tL6euC+pb+xo0RBue+xhnUWwj/Bbsw6DbqbpOPMrNzTUxmM723/uMEQmM6S26dw==
+  optionalDependencies:
+    fsevents "2.3.2"
 
 aws-cdk@2.1017.1:
   version "2.1017.1"
