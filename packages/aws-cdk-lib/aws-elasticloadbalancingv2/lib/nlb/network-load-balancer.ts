@@ -3,7 +3,7 @@ import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Lazy, Resource, Token } from '../../../core';
+import { Lazy, Names, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -94,6 +94,19 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    * @default undefined - The VPC default strategy for subnets is used
    */
   readonly subnetMappings?: SubnetMapping[];
+
+  /**
+   * Whether to create a Network Load Balancer without security groups.
+   *
+   * This property is only applicable when the `@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault` feature flag is enabled.
+   *
+   * If the feature flag is disabled, this property has no effect.
+   * If the feature flag is enabled, this property defaults to `false`, meaning that a security group will be created for the load balancer.
+   * If set to `true`, the load balancer will be created without a security group.
+   *
+   * @default false
+   */
+  readonly disableSecurityGroups?: boolean;
 }
 
 /**
@@ -318,7 +331,18 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     this.enablePrefixForIpv6SourceNat = props.enablePrefixForIpv6SourceNat;
     this.metrics = new NetworkLoadBalancerMetrics(this, this.loadBalancerFullName);
     this.isSecurityGroupsPropertyDefined = !!props.securityGroups;
-    this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
+
+    let securityGroups: ec2.ISecurityGroup[] | undefined;
+    if (cxapi.NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT && !props.disableSecurityGroups) {
+      securityGroups = props.securityGroups ?? [new ec2.SecurityGroup(this, 'SecurityGroup', {
+        vpc: props.vpc,
+        description: `Automatically created Security Group for ELB ${Names.uniqueId(this)}`,
+        allowAllOutbound: false,
+      })];
+    } else {
+      securityGroups = props.securityGroups;
+    }
+    this.connections = new ec2.Connections({ securityGroups: securityGroups });
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
     if (props.clientRoutingPolicy) {
       this.setAttribute('dns_record.client_routing_policy', props.clientRoutingPolicy);
