@@ -592,12 +592,16 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_11_10 = MariaDbEngineVersion.of('10.11.10', '10.11');
   /** Version "10.11.11". */
   public static readonly VER_10_11_11 = MariaDbEngineVersion.of('10.11.11', '10.11');
+  /** Version "10.11.13". */
+  public static readonly VER_10_11_13 = MariaDbEngineVersion.of('10.11.13', '10.11');
   /** Version "11.4.3". */
   public static readonly VER_11_4_3 = MariaDbEngineVersion.of('11.4.3', '11.4');
   /** Version "11.4.4". */
   public static readonly VER_11_4_4 = MariaDbEngineVersion.of('11.4.4', '11.4');
   /** Version "11.4.5". */
   public static readonly VER_11_4_5 = MariaDbEngineVersion.of('11.4.5', '11.4');
+  /** Version "11.4.7". */
+  public static readonly VER_11_4_7 = MariaDbEngineVersion.of('11.4.7', '11.4');
 
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
