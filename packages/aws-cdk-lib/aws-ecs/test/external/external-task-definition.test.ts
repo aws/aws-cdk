@@ -148,7 +148,7 @@ describe('external task definition', () => {
       });
 
       // THEN
-      expect(taskDefinition.taskRole).toBeUndefined();
+      expect(() => taskDefinition.taskRole).toThrow(/TaskDefinition.taskRole is undefined/);
       Template.fromStack(stack).hasResource('AWS::ECS::TaskDefinition', {
         Properties: {
           TaskRoleArn: Match.absent(),

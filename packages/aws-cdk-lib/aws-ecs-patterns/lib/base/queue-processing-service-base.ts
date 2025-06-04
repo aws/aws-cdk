@@ -430,12 +430,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
    * @param service the ECS/Fargate service to which to grant SQS permissions
    */
   protected grantPermissionsToService(service: BaseService) {
-    // Grant permissions only if taskRole exists
-    if (service.taskDefinition.taskRole) {
-      this.sqsQueue.grantConsumeMessages(service.taskDefinition.taskRole);
-    } else {
-      throw new ValidationError('Task does not have a task role. Use createTaskRole: true to create one, or provide a custom task role that can access the SQS queue. Queue processing services require IAM permissions to consume messages.', this);
-    }
+    this.sqsQueue.grantConsumeMessages(service.taskDefinition.taskRole);
   }
 
   /**

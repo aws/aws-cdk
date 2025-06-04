@@ -382,13 +382,10 @@ export class EcsTask implements events.IRuleTarget {
 
     // For Fargate task we need permission to pass the task role.
     if (this.taskDefinition.isFargateCompatible) {
-      // Add policy statement for task role only if it exists
-      if (this.taskDefinition.taskRole) {
-        policyStatements.push(new iam.PolicyStatement({
-          actions: ['iam:PassRole'],
-          resources: [this.taskDefinition.taskRole.roleArn],
-        }));
-      }
+      policyStatements.push(new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [this.taskDefinition.taskRole.roleArn],
+      }));
     }
 
     return policyStatements;

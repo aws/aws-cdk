@@ -180,11 +180,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
   private taskExecutionRoles(): iam.IRole[] {
     // Need to be able to pass both Task and Execution role, apparently
     const ret = new Array<iam.IRole>();
-
-    // Add taskRole if it exists
-    if (this.props.taskDefinition.taskRole) {
-      ret.push(this.props.taskDefinition.taskRole);
-    }
+    ret.push(this.props.taskDefinition.taskRole);
 
     if (this.props.taskDefinition.executionRole) {
       ret.push(this.props.taskDefinition.executionRole);

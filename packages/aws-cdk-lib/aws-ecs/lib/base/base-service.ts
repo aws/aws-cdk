@@ -717,8 +717,7 @@ export abstract class BaseService extends Resource
       ...additionalProps,
     });
 
-    // Add dependency on taskRole if it exists
-    if (this.taskDefinition.taskRole) {
+    if (this.taskDefinition.hasTaskRole) {
       this.node.addDependency(this.taskDefinition.taskRole);
     }
 

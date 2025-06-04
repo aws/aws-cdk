@@ -1025,9 +1025,8 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      // taskRole should not be undefined when we explicitly set it
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        TaskRoleArn: stack.resolve(taskDefinition.taskRole!.roleArn),
+        TaskRoleArn: stack.resolve(taskDefinition.taskRole.roleArn),
       });
     });
 
@@ -1037,9 +1036,8 @@ describe('ec2 task definition', () => {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
-      // taskRole should not be undefined by default
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        TaskRoleArn: stack.resolve(taskDefinition.taskRole!.roleArn),
+        TaskRoleArn: stack.resolve(taskDefinition.taskRole.roleArn),
       });
     });
 
@@ -1051,7 +1049,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(taskDefinition.taskRole).toBeUndefined();
+      expect(() => taskDefinition.taskRole).toThrow(/TaskDefinition.taskRole is undefined/);
       Template.fromStack(stack).hasResource('AWS::ECS::TaskDefinition', {
         Properties: {
           TaskRoleArn: Match.absent(),

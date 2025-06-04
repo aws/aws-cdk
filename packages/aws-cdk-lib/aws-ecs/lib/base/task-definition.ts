@@ -388,6 +388,13 @@ export class TaskDefinition extends TaskDefinitionBase {
   }
 
   /**
+   * Indicates whether a task role is associated with this task definition.
+   */
+  public get hasTaskRole(): boolean {
+    return this._taskRole !== undefined;
+  }
+
+  /**
    * The networking mode to use for the containers in the task.
    */
   public readonly networkMode: NetworkMode;
