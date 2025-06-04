@@ -3,6 +3,7 @@ import * as path from 'path';
 import { ISynthesisSession } from './types';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { FileAssetSource, FileAssetPackaging, DockerImageAssetSource } from '../assets';
+import { UnscopedValidationError } from '../errors';
 import { resolvedOr } from '../helpers-internal/string-specializer';
 import { Stack } from '../stack';
 import { Token } from '../token';
@@ -284,25 +285,25 @@ export interface RoleOptions {
 
 function validateFileAssetSource(asset: FileAssetSource) {
   if (!!asset.executable === !!asset.fileName) {
-    throw new Error(`Exactly one of 'fileName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
+    throw new UnscopedValidationError(`Exactly one of 'fileName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
   }
 
   if (!!asset.packaging !== !!asset.fileName) {
-    throw new Error(`'packaging' is expected in combination with 'fileName', got: ${JSON.stringify(asset)}`);
+    throw new UnscopedValidationError(`'packaging' is expected in combination with 'fileName', got: ${JSON.stringify(asset)}`);
   }
 
   if (Token.isUnresolved(asset.displayName)) {
-    throw new Error(`'displayName' may not contain a Token, got: ${JSON.stringify(asset.displayName)}`);
+    throw new UnscopedValidationError(`'displayName' may not contain a Token, got: ${JSON.stringify(asset.displayName)}`);
   }
 }
 
 function validateDockerImageAssetSource(asset: DockerImageAssetSource) {
   if (!!asset.executable === !!asset.directoryName) {
-    throw new Error(`Exactly one of 'directoryName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
+    throw new UnscopedValidationError(`Exactly one of 'directoryName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
   }
 
   if (Token.isUnresolved(asset.displayName)) {
-    throw new Error(`'displayName' may not contain a Token, got: ${JSON.stringify(asset.displayName)}`);
+    throw new UnscopedValidationError(`'displayName' may not contain a Token, got: ${JSON.stringify(asset.displayName)}`);
   }
 
   check('dockerBuildArgs');
@@ -312,7 +313,7 @@ function validateDockerImageAssetSource(asset: DockerImageAssetSource) {
 
   function check<K extends keyof DockerImageAssetSource>(key: K) {
     if (asset[key] && !asset.directoryName) {
-      throw new Error(`'${key}' is only allowed in combination with 'directoryName', got: ${JSON.stringify(asset)}`);
+      throw new UnscopedValidationError(`'${key}' is only allowed in combination with 'directoryName', got: ${JSON.stringify(asset)}`);
     }
   }
 }

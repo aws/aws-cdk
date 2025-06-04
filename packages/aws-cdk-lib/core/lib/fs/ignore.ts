@@ -2,6 +2,7 @@ import * as path from 'path';
 import dockerIgnore, * as DockerIgnore from '@balena/dockerignore';
 import gitIgnore, * as GitIgnore from 'ignore';
 import { CopyOptions, IgnoreMode } from './options';
+import { UnscopedValidationError } from '../errors';
 
 // Must be a 'require' to not run afoul of ESM module import rules
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -90,7 +91,7 @@ export class GlobIgnoreStrategy extends IgnoreStrategy {
     super();
 
     if (!path.isAbsolute(absoluteRootPath)) {
-      throw new Error('GlobIgnoreStrategy expects an absolute file path');
+      throw new UnscopedValidationError('GlobIgnoreStrategy expects an absolute file path');
     }
 
     this.absoluteRootPath = absoluteRootPath;
@@ -113,7 +114,7 @@ export class GlobIgnoreStrategy extends IgnoreStrategy {
    */
   public ignores(absoluteFilePath: string): boolean {
     if (!path.isAbsolute(absoluteFilePath)) {
-      throw new Error('GlobIgnoreStrategy.ignores() expects an absolute path');
+      throw new UnscopedValidationError('GlobIgnoreStrategy.ignores() expects an absolute path');
     }
 
     let relativePath = path.relative(this.absoluteRootPath, absoluteFilePath);
@@ -147,7 +148,7 @@ export class GitIgnoreStrategy extends IgnoreStrategy {
     super();
 
     if (!path.isAbsolute(absoluteRootPath)) {
-      throw new Error('GitIgnoreStrategy expects an absolute file path');
+      throw new UnscopedValidationError('GitIgnoreStrategy expects an absolute file path');
     }
 
     this.absoluteRootPath = absoluteRootPath;
@@ -170,7 +171,7 @@ export class GitIgnoreStrategy extends IgnoreStrategy {
    */
   public ignores(absoluteFilePath: string): boolean {
     if (!path.isAbsolute(absoluteFilePath)) {
-      throw new Error('GitIgnoreStrategy.ignores() expects an absolute path');
+      throw new UnscopedValidationError('GitIgnoreStrategy.ignores() expects an absolute path');
     }
 
     let relativePath = path.relative(this.absoluteRootPath, absoluteFilePath);
@@ -190,7 +191,7 @@ export class DockerIgnoreStrategy extends IgnoreStrategy {
     super();
 
     if (!path.isAbsolute(absoluteRootPath)) {
-      throw new Error('DockerIgnoreStrategy expects an absolute file path');
+      throw new UnscopedValidationError('DockerIgnoreStrategy expects an absolute file path');
     }
 
     this.absoluteRootPath = absoluteRootPath;
@@ -213,7 +214,7 @@ export class DockerIgnoreStrategy extends IgnoreStrategy {
    */
   public ignores(absoluteFilePath: string): boolean {
     if (!path.isAbsolute(absoluteFilePath)) {
-      throw new Error('DockerIgnoreStrategy.ignores() expects an absolute path');
+      throw new UnscopedValidationError('DockerIgnoreStrategy.ignores() expects an absolute path');
     }
 
     let relativePath = path.relative(this.absoluteRootPath, absoluteFilePath);

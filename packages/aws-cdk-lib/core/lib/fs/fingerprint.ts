@@ -4,6 +4,7 @@ import * as path from 'path';
 import { IgnoreStrategy } from './ignore';
 import { FingerprintOptions, IgnoreMode, SymlinkFollowMode } from './options';
 import { shouldFollow } from './utils';
+import { UnscopedValidationError } from '../errors';
 import { Cache } from '../private/cache';
 
 const BUFFER_SIZE = 8 * 1024;
@@ -90,7 +91,7 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
         _processFileOrDirectory(path.join(symbolicPath, item), false, path.join(realPath, item));
       }
     } else {
-      throw new Error(`Unable to hash ${symbolicPath}: it is neither a file nor a directory`);
+      throw new UnscopedValidationError(`Unable to hash ${symbolicPath}: it is neither a file nor a directory`);
     }
   }
 }
