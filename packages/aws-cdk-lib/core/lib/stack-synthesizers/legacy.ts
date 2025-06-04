@@ -6,6 +6,7 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import * as cxapi from '../../../cx-api';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
+import { UnscopedValidationError } from '../errors';
 import { FileAssetParameters } from '../private/asset-parameters';
 import { Stack } from '../stack';
 
@@ -132,7 +133,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer implements IReusabl
     // only add every image (identified by source hash) once for each stack that uses it.
     if (!this.addedImageAssets.has(assetId)) {
       if (!asset.directoryName) {
-        throw new Error(`LegacyStackSynthesizer does not support this type of file asset: ${JSON.stringify(asset)}`);
+        throw new UnscopedValidationError(`LegacyStackSynthesizer does not support this type of file asset: ${JSON.stringify(asset)}`);
       }
 
       const metadata: cxschema.ContainerImageAssetMetadataEntry = {
@@ -171,7 +172,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer implements IReusabl
       params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
 
       if (!asset.fileName || !asset.packaging) {
-        throw new Error(`LegacyStackSynthesizer does not support this type of file asset: ${JSON.stringify(asset)}`);
+        throw new UnscopedValidationError(`LegacyStackSynthesizer does not support this type of file asset: ${JSON.stringify(asset)}`);
       }
 
       const metadata: cxschema.FileAssetMetadataEntry = {
