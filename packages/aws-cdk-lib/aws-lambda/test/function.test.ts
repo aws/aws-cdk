@@ -5036,6 +5036,25 @@ describe('tag propagation to logGroup on FF USE_CDK_MANAGED_LAMBDA_LOGGROUP enab
   });
 });
 
+describe('USE_CDK_MANAGED_LAMBDA_LOGGROUP defaults to false when not specified', () => {
+  it('does not create a managed log group when context flag is not specified', () => {
+    // GIVEN
+    const app = new cdk.App(); // No context provided
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    new lambda.Function(stack, 'Function', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Logs::LogGroup', 0); // No log group should be created
+  });
+});
+
 describe('Lambda Function log group behavior', () => {
   it('throws if both logRetention and logGroup are set', () => {
     const app = new cdk.App();
