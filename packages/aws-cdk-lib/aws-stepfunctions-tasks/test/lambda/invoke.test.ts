@@ -1,6 +1,8 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as sfn from '../../../aws-stepfunctions';
+import * as cdk from '../../../core';
 import { Stack } from '../../../core';
 import { LambdaInvocationType, LambdaInvoke } from '../../lib';
 
@@ -369,6 +371,64 @@ describe('LambdaInvoke', () => {
         'Payload.$': '$',
       },
     });
+  });
+
+  test('with feature flag enabled, grants permissions to all versions of the Lambda function', () => {
+    const flags = { isEnabled: () => true };
+    jest.spyOn(cdk.FeatureFlags, 'of').mockImplementation(() => flags as any);
+
+    const versionedFunction = lambda.Version.fromVersionArn(
+      stack,
+      'Version',
+      `${lambdaFunction.functionArn}:42`,
+    );
+
+    const task = new LambdaInvoke(stack, 'VersionedTask', {
+      lambdaFunction: versionedFunction,
+    });
+
+    const policies = (task as any).taskPolicies as iam.PolicyStatement[];
+    const resources = policies[0].resources;
+
+    expect(resources).toContain(`${lambdaFunction.functionArn}:42`);
+    expect(resources).toContain(`${lambdaFunction.functionArn}:*`);
+  });
+
+  test('with feature flag disabled, grants permissions only to the specific version', () => {
+    const flags = { isEnabled: () => false };
+    jest.spyOn(cdk.FeatureFlags, 'of').mockImplementation(() => flags as any);
+
+    const versionedFunction = lambda.Version.fromVersionArn(
+      stack,
+      'Version',
+      `${lambdaFunction.functionArn}:42`,
+    );
+
+    const task = new LambdaInvoke(stack, 'VersionedTaskNoFlag', {
+      lambdaFunction: versionedFunction,
+    });
+
+    const policies = (task as any).taskPolicies as iam.PolicyStatement[];
+    const resources = policies[0].resources;
+
+    expect(resources).toContain(`${lambdaFunction.functionArn}:42`);
+    expect(resources).not.toContain(`${lambdaFunction.functionArn}:*`);
+    expect(resources.length).toBe(1);
+  });
+
+  test('with feature flag enabled, grants permissions to all versions when using non-versioned Lambda function', () => {
+    const flags = { isEnabled: () => true };
+    jest.spyOn(cdk.FeatureFlags, 'of').mockImplementation(() => flags as any);
+
+    const task = new LambdaInvoke(stack, 'RegularTask', {
+      lambdaFunction: lambdaFunction,
+    });
+
+    const policies = (task as any).taskPolicies as iam.PolicyStatement[];
+    const resources = policies[0].resources;
+
+    expect(resources).toContain(lambdaFunction.functionArn);
+    expect(resources).toContain(`${lambdaFunction.functionArn}:*`);
   });
 
   test('fails when integrationPattern used with payloadResponseOnly', () => {
