@@ -507,7 +507,10 @@ export interface CommonClusterOptions {
   /**
    * Determines whether a CloudFormation output with the `aws eks
    * update-kubeconfig` command will be synthesized. This command will include
-   * the cluster name and, if applicable, the ARN of the masters IAM role.
+   * the cluster name and the ARN of the masters IAM role.
+   *
+   * Note: If mastersRole is not specified, this property will be ignored and no config command will be emitted.
+   * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_eks-readme.html#masters-role
    *
    * @default true
    */
@@ -1860,6 +1863,10 @@ export class Cluster extends ClusterBase {
 
       this.defaultNodegroup = props.defaultCapacityType !== DefaultCapacityType.EC2 ?
         this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity }) : undefined;
+    }
+
+    if (props.outputConfigCommand && !props.mastersRole) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:clusterMastersroleNotSpecified', '\'outputConfigCommand\' will be ignored as \'mastersRole\' has not been specified.');
     }
 
     const outputConfigCommand = (props.outputConfigCommand ?? true) && props.mastersRole;
