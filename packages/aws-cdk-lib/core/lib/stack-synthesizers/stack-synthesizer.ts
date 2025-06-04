@@ -8,6 +8,7 @@ import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, Fi
 import { Fn } from '../cfn-fn';
 import { CfnParameter } from '../cfn-parameter';
 import { CfnRule } from '../cfn-rule';
+import { UnscopedValidationError, ValidationError } from '../errors';
 import { resolvedOr } from '../helpers-internal/string-specializer';
 import { Stack } from '../stack';
 
@@ -43,7 +44,7 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    */
   public bind(stack: Stack): void {
     if (this._boundStack !== undefined) {
-      throw new Error('A StackSynthesizer can only be used for one Stack: create a new instance to use with a different Stack');
+      throw new ValidationError('A StackSynthesizer can only be used for one Stack: create a new instance to use with a different Stack', stack);
     }
 
     this._boundStack = stack;
@@ -153,7 +154,7 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    */
   protected get boundStack(): Stack {
     if (!this._boundStack) {
-      throw new Error('The StackSynthesizer must be bound to a Stack first before boundStack() can be called');
+      throw new UnscopedValidationError('The StackSynthesizer must be bound to a Stack first before boundStack() can be called');
     }
     return this._boundStack;
   }
@@ -301,7 +302,7 @@ function stackTemplateFileAsset(stack: Stack, session: ISynthesisSession): FileA
   const templatePath = path.join(session.assembly.outdir, stack.templateFile);
 
   if (!fs.existsSync(templatePath)) {
-    throw new Error(`Stack template ${stack.stackName} not written yet: ${templatePath}`);
+    throw new ValidationError(`Stack template ${stack.stackName} not written yet: ${templatePath}`, stack);
   }
 
   const template = fs.readFileSync(templatePath, { encoding: 'utf-8' });

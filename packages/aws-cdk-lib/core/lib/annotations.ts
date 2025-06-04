@@ -1,5 +1,6 @@
 import { IConstruct, MetadataEntry } from 'constructs';
 import { App } from './app';
+import { UnscopedValidationError } from './errors';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
 
@@ -127,7 +128,7 @@ export class Annotations {
 
     // throw if CDK_BLOCK_DEPRECATIONS is set
     if (process.env.CDK_BLOCK_DEPRECATIONS) {
-      throw new Error(`${this.scope.node.path}: ${text}`);
+      throw new UnscopedValidationError(`${this.scope.node.path}: ${text}`);
     }
 
     this.addWarningV2(`Deprecated:${api}`, text);
