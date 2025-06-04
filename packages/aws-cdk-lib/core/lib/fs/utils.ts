@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { SymlinkFollowMode } from './options';
+import { UnscopedValidationError } from '../errors';
 
 /**
  * Determines whether a symlink should be followed or not, based on a FollowMode.
@@ -22,7 +23,7 @@ export function shouldFollow(mode: SymlinkFollowMode, sourceRoot: string, realPa
     case SymlinkFollowMode.NEVER:
       return false;
     default:
-      throw new Error(`Unsupported FollowMode: ${mode}`);
+      throw new UnscopedValidationError(`Unsupported FollowMode: ${mode}`);
   }
 
   function _isInternal(): boolean {
