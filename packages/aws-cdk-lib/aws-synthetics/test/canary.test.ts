@@ -359,6 +359,7 @@ test.each([
   synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1,
   synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1,
   synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0,
+  synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0,
 ])('throws when activeTracing is enabled with an unsupported runtime', (runtime) => {
   // GIVEN
   const stack = new Stack();

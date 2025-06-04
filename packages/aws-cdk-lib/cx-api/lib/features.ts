@@ -1641,7 +1641,7 @@ export const FLAGS: Record<string, FlagInfo> = {
         Refer aws-lambda/README.md for more details on Customizing Log Group creation.
       `,
     introducedIn: { v2: 'V2_NEXT' },
-    defaults: { v2: true },
+    defaults: { v2: false },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
   },
