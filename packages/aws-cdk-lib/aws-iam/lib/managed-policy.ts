@@ -344,7 +344,11 @@ class ManagedPolicyGrantPrincipal implements IPrincipal {
     // The ARN is referenced to add policy statements as a resource-based policy.
     // We should fail to synth because a managed policy cannot be used as a principal of a policy document.
     // cf. https://github.com/aws/aws-cdk/issues/32980
-    const arn = Lazy.string({ produce: () => { throw new ValidationError(this.principalError(), _managedPolicy); } });
+    const arn = Lazy.string({
+      produce: () => {
+        throw new ValidationError('This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a ManagedPolicy.', _managedPolicy);
+      },
+    });
     this.policyFragment = new ArnPrincipal(arn).policyFragment;
     this.principalAccount = _managedPolicy.env.account;
   }
@@ -353,7 +357,7 @@ class ManagedPolicyGrantPrincipal implements IPrincipal {
     // This property is referenced to add policy statements as a trust policy.
     // We should fail because a managed policy cannot be used as a principal of a policy document.
     // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
-    throw new ValidationError(this.principalError(), this._managedPolicy);
+    throw new ValidationError('This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a ManagedPolicy.', this._managedPolicy);
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
@@ -367,9 +371,5 @@ class ManagedPolicyGrantPrincipal implements IPrincipal {
 
   public toString(): string {
     return `ManagedPolicy(${this._managedPolicy.node.path})`;
-  }
-
-  private principalError() {
-    return `This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a ManagedPolicy '${this._managedPolicy.node.path}'.`;
   }
 }
