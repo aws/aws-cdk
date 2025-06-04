@@ -436,7 +436,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
   }
 
   private validateDryRunAndUpdate(runtime: Runtime, dryRunAndUpdate?: boolean) {
-    if (dryRunAndUpdate === undefined) {
+    if (dryRunAndUpdate !== true) {
       return;
     }
 
