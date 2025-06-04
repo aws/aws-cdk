@@ -399,6 +399,9 @@
   "s3tables": {
     "UnreferencedFileRemovalStatus": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.ts"
+    },
+    "TableBucketEncryption": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.ts"
     }
   },
   "sagemaker": {
@@ -1526,6 +1529,9 @@
   "ses": {
     "EmailSendingEvent": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set-event-destination.ts"
+    },
+    "HttpsPolicy": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set.ts"
     },
     "SuppressionReasons": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set.ts"

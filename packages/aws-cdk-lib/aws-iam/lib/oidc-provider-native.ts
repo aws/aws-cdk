@@ -1,6 +1,8 @@
 import { Construct } from 'constructs';
 import { CfnOIDCProvider } from './iam.generated';
 import { Arn, IResource, Resource, Token, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an IAM OpenID Connect provider.
@@ -108,7 +110,11 @@ export interface OidcProviderNativeProps {
  *
  * @resource AWS::IAM::OIDCProvider
  */
+@propertyInjectable
 export class OidcProviderNative extends Resource implements IOidcProvider {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.OidcProviderNative';
+
   /**
    * Imports an Open ID connect provider from an ARN.
    * @param scope The definition scope
@@ -168,6 +174,8 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
     super(scope, id, {
       physicalName: props.oidcProviderName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!props.url.startsWith('https://')) {
       throw new ValidationError(
