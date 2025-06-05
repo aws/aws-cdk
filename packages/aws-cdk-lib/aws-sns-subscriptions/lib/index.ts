@@ -4,3 +4,4 @@ export * from './lambda';
 export * from './sqs';
 export * from './url';
 export * from './sms';
+export * from './firehose';
