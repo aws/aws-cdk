@@ -198,9 +198,7 @@ If you would like to test your code changes against a CDK App, create the App an
 $ mkdir cdkApp # in parent dir of aws-cdk
 $ cd cdkApp
 $ npx cdk init app --language typescript
-$ npx cdk --version # shows the latest CDK version e.g. 2.155.0 (build 34dcc5a)
 $ ../aws-cdk/link-all.sh # link the aws-cdk repo with your cdkApp
-$ npx cdk --version # verify linked cdk version 0.0.0
 # Define the resource that uses your aws-cdk changes in cdkApp lib folder
 $ npx cdk deploy # deploy successfully
 ```
@@ -1391,18 +1389,27 @@ Adding a new flag looks as follows:
 See [release.md](./docs/release.md) for details on how CDK versions are maintained and how
 to trigger a new release
 
-## Troubleshooting
+## Common Issues
 
-Most build issues can be solved by doing a full clean rebuild:
+### Import errors
 
-```shell
-$ git clean -fqdx .
-$ yarn install
-$ yarn build
+An error similar to the below can happen while trying to consume the changed library in the example (or production) CDK app:
+
+```ts
+node_modules/ts-node/src/index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+
+aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/aws-api.ts:7:27 - error TS2732: Cannot find module '../../custom-resources/lib/helpers-internal/sdk-v3-metadata.json'. Consider using '--resolveJsonModule' to import module with '.json' extension.
+
+7 import * as metadata from '../../custom-resources/lib/helpers-internal/sdk-v3-metadata.json';
 ```
 
-However, this will be time consuming. In this section we'll describe some common issues you may encounter and some more
-targeted commands you can run to resolve your issue.
+This is most probably caused by the fact that your CDK app is using `--prefer-ts-exts` option (which is the [default in new CDK TS-based apps]([url](https://github.com/aws/aws-cdk/issues/7475))). To fix this, try one of the following:
+- Don't compile aws-cdk-lib. You can do this by removing `--prefer-ts-exts` from your app command in `cdk.json` - this means you will have to run a build in the lib repo every time you make a change (or use `npm run watch / yarn watch`).
+- Update your `tsconfig.json`. In this case it's going to be adding `"resolveJsonModule": true` as suggested by the error to the `"compilerOptions"` section. If you change the test app, different or more errors might come up that will have a similar resolution.
+
 
 #### The compiler is throwing errors on files that I renamed/it's running old tests that I meant to remove/code coverage is low and I didn't change anything.
 
