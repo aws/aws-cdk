@@ -1456,7 +1456,14 @@ describe('record set', () => {
     { multiValueAnswer: true, region: 'us-east-1' },
     { multiValueAnswer: true, weight: 20 },
     { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1', multiValueAnswer: true },
-  ])('throw error for the simultaneous definition of weight, geoLocation and region', (props) => {
+    {
+      weight: 20,
+      cidrRoutingConfig: route53.CidrRoutingConfig.create({
+        collectionId: '12345678-1234-1234-1234-123456789012',
+        locationName: 'test_location',
+      }),
+    },
+  ])('throw error for the simultaneous definition of weight, geoLocation, region, multiValueAnswer and cidrRoutingConfig', (props) => {
     // GIVEN
     const stack = new Stack();
 
@@ -1470,7 +1477,7 @@ describe('record set', () => {
       target: route53.RecordTarget.fromValues('zzz'),
       setIdentifier: 'uniqueId',
       ...props,
-    })).toThrow('Only one of region, weight, multiValueAnswer or geoLocation can be defined');
+    })).toThrow('Only one of region, weight, multiValueAnswer, geoLocation or cidrRoutingConfig can be defined');
   });
 
   test('throw error for the definition of setIdentifier without weight, geoLocation or region', () => {

@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "43.0.0",
   "artifacts": {
     "EnableLocalWriteForwardingClusterStack.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "EnableLocalWriteForwardingClusterStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/da3d793672a3694b89d65ddb67cceda5a164d94127c21488abff49f99c682f0a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5698841eac1bd481ff550f5836636093f7ae302b57e85c507d90026b0d3aec2a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -35,10 +34,52 @@
         "EnableLocalWriteForwardingClusterStack.assets"
       ],
       "metadata": {
+        "/EnableLocalWriteForwardingClusterStack/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/EnableLocalWriteForwardingClusterStack/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/EnableLocalWriteForwardingClusterStack/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/EnableLocalWriteForwardingClusterStack/VPC/PublicSubnet1/Subnet": [
@@ -77,6 +118,42 @@
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
+        "/EnableLocalWriteForwardingClusterStack/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/EnableLocalWriteForwardingClusterStack/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -113,6 +190,34 @@
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
+        "/EnableLocalWriteForwardingClusterStack/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/EnableLocalWriteForwardingClusterStack/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -135,6 +240,34 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/EnableLocalWriteForwardingClusterStack/VPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/EnableLocalWriteForwardingClusterStack/VPC/PrivateSubnet2/Subnet": [
@@ -173,6 +306,12 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
+        "/EnableLocalWriteForwardingClusterStack/VPC/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/EnableLocalWriteForwardingClusterStack/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -205,8 +344,40 @@
         ],
         "/EnableLocalWriteForwardingClusterStack/DatabaseCluster": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "engine": {
+                "engineType": "*",
+                "singleUserRotationApplication": "*",
+                "engineVersion": {
+                  "fullVersion": "*",
+                  "majorVersion": "*"
+                },
+                "parameterGroupFamily": "*",
+                "engineFamily": "*",
+                "supportedLogTypes": "*",
+                "combineImportAndExportRoles": true
+              },
+              "writer": "*",
+              "readers": "*",
+              "vpc": "*",
+              "enableLocalWriteForwarding": true
+            }
+          },
+          {
             "type": "aws:cdk:warning",
             "data": "Cluster DatabaseCluster only has serverless readers and no reader is in promotion tier 0-1.Serverless readers in promotion tiers >= 2 will NOT scale with the writer, which can lead to availability issues if a failover event occurs. It is recommended that at least one reader has `scaleWithWriter` set to true [ack: @aws-cdk/aws-rds:noFailoverServerlessReaders]"
+          }
+        ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseCluster/Subnets": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "removalPolicy": "*"
+            }
           }
         ],
         "/EnableLocalWriteForwardingClusterStack/DatabaseCluster/Subnets/Default": [
@@ -215,16 +386,55 @@
             "data": "DatabaseClusterSubnets7FAE1846"
           }
         ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseCluster/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
+          }
+        ],
         "/EnableLocalWriteForwardingClusterStack/DatabaseCluster/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseClusterSecurityGroupCBE34284"
           }
         ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseCluster/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryptionKey": "*",
+              "secretName": "*",
+              "replicaRegions": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "username": "*",
+              "secretName": "*",
+              "encryptionKey": "*",
+              "excludeCharacters": "*",
+              "replaceOnPasswordCriteriaChanges": "*",
+              "replicaRegions": "*"
+            }
+          }
+        ],
         "/EnableLocalWriteForwardingClusterStack/DatabaseCluster/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseClusterSecret3F333A5B"
+          }
+        ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseCluster/Secret/Attachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "target": "*"
+            }
           }
         ],
         "/EnableLocalWriteForwardingClusterStack/DatabaseCluster/Secret/Attachment/Resource": [
@@ -239,10 +449,22 @@
             "data": "DatabaseCluster68FC2945"
           }
         ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseCluster/writerInstance": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/EnableLocalWriteForwardingClusterStack/DatabaseCluster/writerInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseClusterwriterInstance282FDC84"
+          }
+        ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseCluster/readerInstance1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/EnableLocalWriteForwardingClusterStack/DatabaseCluster/readerInstance1/Resource": [
@@ -253,8 +475,40 @@
         ],
         "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "engine": {
+                "engineType": "*",
+                "singleUserRotationApplication": "*",
+                "engineVersion": {
+                  "fullVersion": "*",
+                  "majorVersion": "*"
+                },
+                "parameterGroupFamily": "*",
+                "engineFamily": "*",
+                "defaultUsername": "*",
+                "supportedLogTypes": "*"
+              },
+              "writer": "*",
+              "readers": "*",
+              "vpc": "*",
+              "enableLocalWriteForwarding": true
+            }
+          },
+          {
             "type": "aws:cdk:warning",
             "data": "Cluster DatabaseClusterPostgresql only has serverless readers and no reader is in promotion tier 0-1.Serverless readers in promotion tiers >= 2 will NOT scale with the writer, which can lead to availability issues if a failover event occurs. It is recommended that at least one reader has `scaleWithWriter` set to true [ack: @aws-cdk/aws-rds:noFailoverServerlessReaders]"
+          }
+        ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/Subnets": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "removalPolicy": "*"
+            }
           }
         ],
         "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/Subnets/Default": [
@@ -263,16 +517,55 @@
             "data": "DatabaseClusterPostgresqlSubnetsE0173DAA"
           }
         ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
+          }
+        ],
         "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseClusterPostgresqlSecurityGroupEF4103D2"
           }
         ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryptionKey": "*",
+              "secretName": "*",
+              "replicaRegions": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "username": "*",
+              "secretName": "*",
+              "encryptionKey": "*",
+              "excludeCharacters": "*",
+              "replaceOnPasswordCriteriaChanges": "*",
+              "replicaRegions": "*"
+            }
+          }
+        ],
         "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseClusterPostgresqlSecretD2D9C157"
+          }
+        ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/Secret/Attachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "target": "*"
+            }
           }
         ],
         "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/Secret/Attachment/Resource": [
@@ -287,10 +580,22 @@
             "data": "DatabaseClusterPostgresql0775776E"
           }
         ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/writerInstance": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/writerInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseClusterPostgresqlwriterInstanceB16652DD"
+          }
+        ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/readerInstance1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/readerInstance1/Resource": [
@@ -329,7 +634,6 @@
         "templateFile": "EnableLocalWriteForwardingClusterStackIntegDefaultTestDeployAssertFA53AD26.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
@@ -369,5 +673,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

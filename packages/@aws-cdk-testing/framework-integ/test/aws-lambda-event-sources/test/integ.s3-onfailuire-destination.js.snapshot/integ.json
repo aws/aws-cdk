@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "testCases": {
     "LambdaEventSourceS3OnFailureDestinationInteg/DefaultTest": {
       "stacks": [
@@ -10,5 +10,6 @@
       "assertionStack": "LambdaEventSourceS3OnFailureDestinationInteg/DefaultTest/DeployAssert",
       "assertionStackName": "LambdaEventSourceS3OnFailureDestinationIntegDefaultTestDeployAssert62366951"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

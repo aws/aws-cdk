@@ -249,7 +249,7 @@ test('Python runtime can be specified', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_4_0,
+    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_0,
     test: synthetics.Test.custom({
       handler: 'index.handler',
       code: synthetics.Code.fromInline('# Synthetics handler code'),
@@ -258,7 +258,7 @@ test('Python runtime can be specified', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    RuntimeVersion: 'syn-python-selenium-4.0',
+    RuntimeVersion: 'syn-python-selenium-5.0',
   });
 });
 
@@ -323,7 +323,9 @@ test('throw error for enabling both cleanup and provisionedResourceCleanup', () 
 
 test.each([
   synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1,
+  synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1,
   synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0,
+  synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0,
 ])('throws when activeTracing is enabled with an unsupported runtime', (runtime) => {
   // GIVEN
   const stack = new Stack();

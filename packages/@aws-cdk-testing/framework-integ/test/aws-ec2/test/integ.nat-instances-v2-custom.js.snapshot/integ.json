@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "testCases": {
     "nat-instance-v2-custom-integ-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "nat-instance-v2-custom-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "natinstancev2customintegtestDefaultTestDeployAssertEFDD468A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

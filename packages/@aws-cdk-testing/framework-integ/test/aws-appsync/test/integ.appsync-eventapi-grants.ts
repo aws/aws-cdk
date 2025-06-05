@@ -63,7 +63,11 @@ class EventApiApiGrantStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new EventApiApiGrantStack(app, 'EventApiApiGrantStack');
 
 const integ = new IntegTest(app, 'appsync-event-api-grants', {
@@ -113,7 +117,9 @@ integ.assertions.invokeFunction({
     statusCode: 200,
     msg: 'subscribe_success',
     pubStatusCode: 200,
-    pubMsg: 'Hello World!',
+    pubMsg: [{
+      message: 'Hello World!',
+    }],
   }),
 }));
 
@@ -160,7 +166,9 @@ integ.assertions.invokeFunction({
     statusCode: 200,
     msg: 'subscribe_success',
     pubStatusCode: 200,
-    pubMsg: 'Hello World!',
+    pubMsg: [{
+      message: 'Hello World!',
+    }],
   }),
 }));
 

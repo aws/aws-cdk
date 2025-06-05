@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "43.0.0",
   "artifacts": {
     "LimitlessClusterStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a1b034f072d45790cc4b2634ac753a81b6f7d02e4fa17e05ecd957b9ddab7b72.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c73b6e301711f6cfba493ad81877e758aa1a1cffe852cab8fa0074dcdafdd706.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,52 @@
         "LimitlessClusterStack.assets"
       ],
       "metadata": {
+        "/LimitlessClusterStack/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/LimitlessClusterStack/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
+          }
+        ],
+        "/LimitlessClusterStack/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/LimitlessClusterStack/Vpc/PublicSubnet1/Subnet": [
@@ -76,6 +118,42 @@
             "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
+        "/LimitlessClusterStack/Vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/LimitlessClusterStack/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -112,6 +190,34 @@
             "data": "VpcPublicSubnet2NATGateway9182C01D"
           }
         ],
+        "/LimitlessClusterStack/Vpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/LimitlessClusterStack/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -134,6 +240,34 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/LimitlessClusterStack/Vpc/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/LimitlessClusterStack/Vpc/PrivateSubnet2/Subnet": [
@@ -172,6 +306,12 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
+        "/LimitlessClusterStack/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/LimitlessClusterStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -202,40 +342,276 @@
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster/Subnets/Default": [
+        "/LimitlessClusterStack/DatabaseCluster16.4-limitless": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseClusterSubnets7FAE1846"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "engine": {
+                "engineType": "*",
+                "singleUserRotationApplication": "*",
+                "engineVersion": {
+                  "fullVersion": "*",
+                  "majorVersion": "*"
+                },
+                "parameterGroupFamily": "*",
+                "engineFamily": "*",
+                "defaultUsername": "*",
+                "supportedLogTypes": "*"
+              },
+              "vpc": "*",
+              "clusterScalabilityType": "limitless",
+              "enablePerformanceInsights": true,
+              "performanceInsightRetention": 31,
+              "monitoringInterval": "*",
+              "enableClusterLevelEnhancedMonitoring": true,
+              "storageType": "aurora-iopt1",
+              "cloudwatchLogsExports": "*",
+              "removalPolicy": "destroy"
+            }
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster/SecurityGroup/Resource": [
+        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/Subnets": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseClusterSecurityGroupCBE34284"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "removalPolicy": "*"
+            }
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster/MonitoringRole/Resource": [
+        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseClusterMonitoringRole1D41A121"
+            "data": "DatabaseCluster164limitlessSubnets4B1674FF"
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster/Secret/Resource": [
+        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/SecurityGroup": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseClusterSecret3F333A5B"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster/Secret/Attachment/Resource": [
+        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseClusterSecretAttachmentB8BF2F7B"
+            "data": "DatabaseCluster164limitlessSecurityGroupE3B3792F"
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster/Resource": [
+        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/MonitoringRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/MonitoringRole/ImportMonitoringRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/MonitoringRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster68FC2945"
+            "data": "DatabaseCluster164limitlessMonitoringRoleAD5ED7BA"
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryptionKey": "*",
+              "secretName": "*",
+              "replicaRegions": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "username": "*",
+              "secretName": "*",
+              "encryptionKey": "*",
+              "excludeCharacters": "*",
+              "replaceOnPasswordCriteriaChanges": "*",
+              "replicaRegions": "*"
+            }
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster164limitlessSecret8EB4E753"
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/Secret/Attachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster164limitlessSecretAttachment5C6ACA6C"
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster164limitless2DB21F68"
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.8-limitless": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "engine": {
+                "engineType": "*",
+                "singleUserRotationApplication": "*",
+                "engineVersion": {
+                  "fullVersion": "*",
+                  "majorVersion": "*"
+                },
+                "parameterGroupFamily": "*",
+                "engineFamily": "*",
+                "defaultUsername": "*",
+                "supportedLogTypes": "*"
+              },
+              "vpc": "*",
+              "clusterScalabilityType": "limitless",
+              "enablePerformanceInsights": true,
+              "performanceInsightRetention": 31,
+              "monitoringInterval": "*",
+              "enableClusterLevelEnhancedMonitoring": true,
+              "storageType": "aurora-iopt1",
+              "cloudwatchLogsExports": "*",
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/Subnets": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "removalPolicy": "*"
+            }
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/Subnets/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster168limitlessSubnets30AC1262"
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster168limitlessSecurityGroupF99FFC3A"
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/MonitoringRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/MonitoringRole/ImportMonitoringRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/MonitoringRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster168limitlessMonitoringRoleB9251B2E"
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryptionKey": "*",
+              "secretName": "*",
+              "replicaRegions": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "username": "*",
+              "secretName": "*",
+              "encryptionKey": "*",
+              "excludeCharacters": "*",
+              "replaceOnPasswordCriteriaChanges": "*",
+              "replicaRegions": "*"
+            }
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster168limitlessSecret13E5F591"
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/Secret/Attachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster168limitlessSecretAttachment62201C99"
+          }
+        ],
+        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster168limitless05206D79"
           }
         ],
         "/LimitlessClusterStack/BootstrapVersion": [
@@ -307,5 +683,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

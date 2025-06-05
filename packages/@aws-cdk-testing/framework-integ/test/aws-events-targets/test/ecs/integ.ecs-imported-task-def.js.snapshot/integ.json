@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "41.0.0",
   "testCases": {
     "IntegTest-EcsImportedTaskDefinition/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "IntegTest-EcsImportedTaskDefinition/DefaultTest/DeployAssert",
       "assertionStackName": "IntegTestEcsImportedTaskDefinitionDefaultTestDeployAssert69FA1335"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -14,6 +14,7 @@
   - [VPC Link](#vpc-link)
   - [Private Integration](#private-integration)
   - [Generating ARN for Execute API](#generating-arn-for-execute-api)
+  - [Access Logging](#access-logging)
 - [WebSocket API](#websocket-api)
   - [Manage Connections Permission](#manage-connections-permission)
   - [Managing access to WebSocket APIs](#managing-access-to-websocket-apis)
@@ -193,6 +194,22 @@ const api = new apigwv2.HttpApi(this, 'HttpProxyProdApi', {
 });
 ```
 
+The IP address type for the domain name can be configured by using the `ipAddressType`
+property. Valid values are `IPV4` (default) and `DUAL_STACK`.
+
+```ts
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+
+declare const certificate: acm.ICertificate;
+declare const domainName: string;
+
+const dn = new apigwv2.DomainName(this, 'DN', {
+  domainName: domainName,
+  certificate: certificate,
+  ipAddressType: apigwv2.IpAddressType.DUAL_STACK,
+});
+```
+
 To migrate a domain endpoint from one type to another, you can add a new endpoint configuration via `addEndpoint()`
 and then configure DNS records to route traffic to the new endpoint. After that, you can remove the previous endpoint configuration.
 Learn more at [Migrating a custom domain name](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-regional-api-custom-domain-migrate.html)
@@ -356,6 +373,65 @@ const arn = api.arnForExecuteApi('GET', '/myApiPath', 'dev');
 - Ensure that the path parameter, if provided, starts with '/'.
 - The 'ANY' method can be used for matching any HTTP methods not explicitly defined.
 - The function gracefully handles undefined parameters by using wildcards, making it flexible for various API configurations.
+
+## Access Logging
+
+You can turn on logging to write logs to CloudWatch Logs.
+Read more at [Configure logging for HTTP APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-logging.html)
+
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+declare const api: apigwv2.HttpApi;
+declare const logGroup: logs.LogGroup;
+
+const stage = new apigwv2.HttpStage(this, 'Stage', {
+  httpApi: api,
+  accessLogSettings: {
+    destination: new apigwv2.LogGroupLogDestination(logGroup),
+  },
+});
+```
+
+The following code will generate the access log in the [CLF format](https://en.wikipedia.org/wiki/Common_Log_Format).
+
+```ts
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+declare const api: apigwv2.HttpApi;
+declare const logGroup: logs.LogGroup;
+
+const stage = new apigwv2.HttpStage(this, 'Stage', {
+  httpApi: api,
+  accessLogSettings: {
+    destination: new apigwv2.LogGroupLogDestination(logGroup),
+    format: apigw.AccessLogFormat.clf(),
+  },
+});
+```
+
+You can also configure your own access log format by using the `AccessLogFormat.custom()` API.
+`AccessLogField` provides commonly used fields. The following code configures access log to contain.
+
+```ts
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+declare const api: apigwv2.HttpApi;
+declare const logGroup: logs.LogGroup;
+
+const stage = new apigwv2.HttpStage(this, 'Stage', {
+  httpApi: api,
+  accessLogSettings: {
+    destination: new apigwv2.LogGroupLogDestination(logGroup),
+    format: apigw.AccessLogFormat.custom(
+      `${apigw.AccessLogField.contextRequestId()} ${apigw.AccessLogField.contextErrorMessage()} ${apigw.AccessLogField.contextErrorMessageString()}
+      ${apigw.AccessLogField.contextAuthorizerError()} ${apigw.AccessLogField.contextAuthorizerIntegrationStatus()}`
+    ),
+  },
+});
+```
 
 ## WebSocket API
 

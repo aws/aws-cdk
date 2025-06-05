@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { FargateTaskDefinition } from '../../../aws-ecs';
 import { EcsTask } from '../../../aws-events-targets';
-import { Annotations } from '../../../core';
+import { Annotations, ValidationError } from '../../../core';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
 import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
 
@@ -68,7 +68,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
     super(scope, id, props);
 
     if (props.scheduledFargateTaskDefinitionOptions && props.scheduledFargateTaskImageOptions) {
-      throw new Error('You must specify either a scheduledFargateTaskDefinitionOptions or scheduledFargateTaskOptions, not both.');
+      throw new ValidationError('You must specify either a scheduledFargateTaskDefinitionOptions or scheduledFargateTaskOptions, not both.', this);
     } else if (props.scheduledFargateTaskDefinitionOptions) {
       this.taskDefinition = props.scheduledFargateTaskDefinitionOptions.taskDefinition;
     } else if (props.scheduledFargateTaskImageOptions) {
@@ -87,7 +87,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
         logging: taskImageOptions.logDriver ?? this.createAWSLogDriver(this.node.id),
       });
     } else {
-      throw new Error('You must specify one of: taskDefinition or image');
+      throw new ValidationError('You must specify one of: taskDefinition or image', this);
     }
 
     if (props.taskDefinition) {

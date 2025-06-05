@@ -124,7 +124,11 @@ class DynamoWithS3OnFailureDestinationStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new S3OnFailureDestinationStack(app, 'lambda-event-source-s3ofd');
 const stack2 = new KinesisWithS3OnFailureDestinationStack(app, 'kinesis-with-s3ofd');
 const stack3 = new DynamoWithS3OnFailureDestinationStack(app, 'dynamo-with-s3ofd');
