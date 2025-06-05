@@ -22,7 +22,7 @@ export class LoadBalancerTarget implements route53.IAliasRecordTarget {
       // IPv4-only NLB - no dualstack prefix needed
       return this.loadBalancer.loadBalancerDnsName;
     }
-    
+
     // For ALBs and dual-stack NLBs, use dualstack prefix for backward compatibility
     return `dualstack.${this.loadBalancer.loadBalancerDnsName}`;
   }
@@ -31,7 +31,7 @@ export class LoadBalancerTarget implements route53.IAliasRecordTarget {
     // Check if this has the NLB-specific properties/methods
     // NLBs have addListener method that returns NetworkListener, ALBs return ApplicationListener
     // We'll use a duck-typing approach by checking the constructor name
-    return this.loadBalancer.constructor.name === 'NetworkLoadBalancer' || 
+    return this.loadBalancer.constructor.name === 'NetworkLoadBalancer' ||
            this.loadBalancer.constructor.name === 'LookedUpNetworkLoadBalancer';
   }
 
