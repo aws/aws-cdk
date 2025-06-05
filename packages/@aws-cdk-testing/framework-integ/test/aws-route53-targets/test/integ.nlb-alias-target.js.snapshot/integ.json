@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "nlb-alias-target/DefaultTest": {
+      "stacks": [
+        "aws-cdk-nlb-integ"
+      ],
+      "assertionStack": "nlb-alias-target/DefaultTest/DeployAssert",
+      "assertionStackName": "nlbaliastargetDefaultTestDeployAssertD3875D6D"
+    }
+  }
+}

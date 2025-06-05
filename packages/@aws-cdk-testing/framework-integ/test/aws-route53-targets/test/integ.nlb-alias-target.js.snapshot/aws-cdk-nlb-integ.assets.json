@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "9031aa9c241894d83d3aa2ad6318b25b18b255dc877b9cb9aee3b450f6affac2": {
+      "displayName": "aws-cdk-nlb-integ Template",
+      "source": {
+        "path": "aws-cdk-nlb-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9031aa9c241894d83d3aa2ad6318b25b18b255dc877b9cb9aee3b450f6affac2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
