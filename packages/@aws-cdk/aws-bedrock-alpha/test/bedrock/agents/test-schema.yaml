@@ -1,0 +1,20 @@
+openapi: 3.0.3
+info:
+  title: Asset API Schema
+  version: 1.0.0
+paths:
+  /asset:
+    get:
+      operationId: assetHelloWorld
+      summary: Say hello from asset
+      description: Returns a greeting message from asset-stored schema
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
