@@ -103,6 +103,23 @@ export class CustomDataIdentifier implements IDataIdentifier {
         'Custom data identifier name can only contain alphanumeric characters, underscores, and hyphens',
       );
     }
+
+    // Validate regex characters
+    const validRegexPattern = /^[a-zA-Z0-9_#=@\/;,\- ^$?\[\]{}\|\\*+.]+$/;
+    if (!validRegexPattern.test(this.regex)) {
+      throw new UnscopedValidationError(
+        'Custom data identifier regex can only contain alphanumeric characters and specific symbols (_, #, =, @, /, ;, ,, -, space) or regex special characters (^, $, ?, [, ], {, }, |, \\, *, +, .)',
+      );
+    }
+
+    // Validate that custom identifier name doesn't conflict with managed data identifiers
+    const managedIdPattern =
+      /^(Address|EmailAddress|Name|VehicleIdentificationNumber|PhoneNumber-|DriversLicense-|PassportNumber-|Ssn-|AwsSecretKey|PgpPrivateKey|PkcsPrivateKey|OpenSshPrivateKey|PuttyPrivateKey|IpAddress|CreditCardNumber|CreditCardExpiration|CreditCardSecurityCode|BankAccountNumber-|HealthInsuranceCardNumber-|HealthInsuranceNumber-|HealthcareProcedureCode-|NationalProviderId-|MedicareBeneficiaryNumber-|NationalDrugCode-|DrugEnforcementAgencyNumber-|HealthInsuranceClaimNumber-|NationalInsuranceNumber-|NhsNumber-|PersonalHealthNumber-)/;
+    if (managedIdPattern.test(this.name)) {
+      throw new UnscopedValidationError(
+        'Custom data identifier name cannot match a managed data identifier name',
+      );
+    }
   }
 
   /**
@@ -674,14 +691,12 @@ export class DataProtectionPolicy {
     this.statements = props.statements;
 
     // Collect custom data identifiers from statements
-    this.customDataIdentifiers = [];
-    for (const statement of this.statements) {
-      for (const dataIdentifier of statement.dataIdentifiers) {
-        if (dataIdentifier instanceof CustomDataIdentifier) {
-          this.customDataIdentifiers.push(dataIdentifier);
-        }
-      }
-    }
+    this.customDataIdentifiers = this.statements
+      .flatMap((statement) => statement.dataIdentifiers)
+      .filter(
+        (dataIdentifier): dataIdentifier is CustomDataIdentifier =>
+          dataIdentifier instanceof CustomDataIdentifier,
+      );
 
     // Validate audit statement count
     const auditStatements = this.statements.filter(
