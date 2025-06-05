@@ -1,0 +1,147 @@
+{
+ "Resources": {
+  "DataProtectionLogGroup833D047D": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/vendedlogs/sns-data-protection",
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ProtectedTopic275DD48D": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DataProtectionPolicy": {
+     "Name": "ComprehensiveProtectionPolicy",
+     "Version": "2021-06-01",
+     "Statement": [
+      {
+       "DataDirection": "Inbound",
+       "Principal": [
+        "*"
+       ],
+       "DataIdentifier": [
+        "arn:aws:dataprotection::aws:data-identifier/Name",
+        "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
+        "arn:aws:dataprotection::aws:data-identifier/Address"
+       ],
+       "Operation": {
+        "Audit": {
+         "SampleRate": "99",
+         "FindingsDestination": {
+          "CloudWatchLogs": {
+           "LogGroup": {
+            "Ref": "DataProtectionLogGroup833D047D"
+           }
+          }
+         }
+        }
+       },
+       "Sid": "AuditPII"
+      },
+      {
+       "DataDirection": "Inbound",
+       "Principal": [
+        "*"
+       ],
+       "DataIdentifier": [
+        "arn:aws:dataprotection::aws:data-identifier/CreditCardNumber",
+        "arn:aws:dataprotection::aws:data-identifier/CreditCardExpiration",
+        "arn:aws:dataprotection::aws:data-identifier/CreditCardSecurityCode"
+       ],
+       "Operation": {
+        "Deidentify": {
+         "MaskConfig": {
+          "MaskWithCharacter": "#"
+         }
+        }
+       },
+       "Sid": "MaskFinancialData"
+      },
+      {
+       "DataDirection": "Inbound",
+       "Principal": [
+        "*"
+       ],
+       "DataIdentifier": [
+        "EmployeeID",
+        "CustomerID"
+       ],
+       "Operation": {
+        "Deidentify": {
+         "RedactConfig": {}
+        }
+       },
+       "Sid": "RedactCustomPatterns"
+      },
+      {
+       "DataDirection": "Inbound",
+       "Principal": [
+        "*"
+       ],
+       "DataIdentifier": [
+        "arn:aws:dataprotection::aws:data-identifier/AwsSecretKey",
+        "arn:aws:dataprotection::aws:data-identifier/PkcsPrivateKey"
+       ],
+       "Operation": {
+        "Deny": {}
+       },
+       "Sid": "BlockCredentials"
+      }
+     ],
+     "Description": "SNS data protection policy integration test",
+     "Configuration": {
+      "CustomDataIdentifier": [
+       {
+        "Name": "EmployeeID",
+        "Regex": "EMP-[0-9]{6}"
+       },
+       {
+        "Name": "CustomerID",
+        "Regex": "CUST-[0-9]{8}"
+       }
+      ]
+     }
+    },
+    "TopicName": "topic-data-protection"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "SNSDataProtectionTest/DefaultTest": {
+      "stacks": [
+        "SNSDataProtectionInteg"
+      ],
+      "assertionStack": "SNSDataProtectionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SNSDataProtectionTestDefaultTestDeployAssertFE9E7674"
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}

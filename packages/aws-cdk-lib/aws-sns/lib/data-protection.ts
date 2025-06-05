@@ -1,4 +1,4 @@
-import { UnscopedValidationError } from '../../core';
+import { Token, UnscopedValidationError } from '../../core';
 
 /**
  * Represents the data direction in a data protection policy statement.
@@ -249,23 +249,25 @@ export class AuditOperation {
       );
     }
 
-    // Validate CloudWatch log group name pattern if specified
-    if (
-      this.findingsDestination?.cloudWatchLogs &&
-      !this.findingsDestination.cloudWatchLogs.logGroup.startsWith(
-        '/aws/vendedlogs/',
-      )
-    ) {
-      throw new UnscopedValidationError(
-        'CloudWatch Logs log group name must start with "/aws/vendedlogs/"',
-      );
-    }
+    // Validate CloudWatch log group names if specified
+    this.validateLogGroupName(
+      this.findingsDestination?.cloudWatchLogs?.logGroup,
+    );
+    this.validateLogGroupName(
+      this.noFindingsDestination?.cloudWatchLogs?.logGroup,
+    );
+  }
 
+  /**
+   * Validates that a CloudWatch log group name starts with '/aws/vendedlogs/' if it's a concrete string
+   * For token values (references), validation is deferred to deployment time
+   */
+  private validateLogGroupName(logGroupName?: string): void {
     if (
-      this.noFindingsDestination?.cloudWatchLogs &&
-      !this.noFindingsDestination.cloudWatchLogs.logGroup.startsWith(
-        '/aws/vendedlogs/',
-      )
+      logGroupName !== undefined &&
+      typeof logGroupName === 'string' &&
+      !Token.isUnresolved(logGroupName) &&
+      !logGroupName.startsWith('/aws/vendedlogs/')
     ) {
       throw new UnscopedValidationError(
         'CloudWatch Logs log group name must start with "/aws/vendedlogs/"',
@@ -349,7 +351,7 @@ export interface MaskOperationProps {
 }
 
 /**
- * Represents the mask operation for deidentifying sensitive data.
+ * Represents the mask operation for de-identifying sensitive data.
  */
 export class MaskOperation {
   /**
