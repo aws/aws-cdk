@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { Annotations } from './annotations';
 import { CfnResource } from './cfn-resource';
 import { Duration } from './duration';
+import { ValidationError } from './errors';
 import { addConstructMetadata, MethodMetadata } from './metadata-resource';
 import { propertyInjectable } from './prop-injectable';
 import { RemovalPolicy } from './removal-policy';
@@ -167,7 +168,7 @@ export class CustomResource extends Resource {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const type = renderResourceType(props.resourceType);
+    const type = renderResourceType(this, props.resourceType);
     const pascalCaseProperties = props.pascalCaseProperties ?? false;
     const properties = pascalCaseProperties ? uppercaseProperties(props.properties || {}) : (props.properties || {});
 
@@ -175,7 +176,7 @@ export class CustomResource extends Resource {
       const serviceTimeoutSeconds = props.serviceTimeout.toSeconds();
 
       if (serviceTimeoutSeconds < 1 || serviceTimeoutSeconds > 3600) {
-        throw new Error(`serviceTimeout must either be between 1 and 3600 seconds, got ${serviceTimeoutSeconds}`);
+        throw new ValidationError(`serviceTimeout must either be between 1 and 3600 seconds, got ${serviceTimeoutSeconds}`, this);
       }
     }
 
@@ -254,22 +255,22 @@ function uppercaseProperties(props: { [key: string]: any }) {
   return ret;
 }
 
-function renderResourceType(resourceType?: string) {
+function renderResourceType(scope: Construct, resourceType?: string) {
   if (!resourceType) {
     return 'AWS::CloudFormation::CustomResource';
   }
 
   if (!resourceType.startsWith('Custom::')) {
-    throw new Error(`Custom resource type must begin with "Custom::" (${resourceType})`);
+    throw new ValidationError(`Custom resource type must begin with "Custom::" (${resourceType})`, scope);
   }
 
   if (resourceType.length > 60) {
-    throw new Error(`Custom resource type length > 60 (${resourceType})`);
+    throw new ValidationError(`Custom resource type length > 60 (${resourceType})`, scope);
   }
 
   const typeName = resourceType.slice(resourceType.indexOf('::') + 2);
   if (!/^[a-z0-9_@-]+$/i.test(typeName)) {
-    throw new Error(`Custom resource type name can only include alphanumeric characters and _@- (${typeName})`);
+    throw new ValidationError(`Custom resource type name can only include alphanumeric characters and _@- (${typeName})`, scope);
   }
 
   return resourceType;
