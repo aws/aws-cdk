@@ -793,6 +793,8 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
 Log Insights QL is the default query language. You may specify an [alternate query language: OpenSearch PPL or SQL](https://aws.amazon.com/blogs/aws/new-amazon-cloudwatch-and-amazon-opensearch-service-launch-an-integrated-analytics-experience/), if desired:
 
 ```ts
+declare const dashboard: cloudwatch.Dashboard;
+
 dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   logGroupNames: ['my-log-group'],
   view: cloudwatch.LogQueryVisualizationType.TABLE,
