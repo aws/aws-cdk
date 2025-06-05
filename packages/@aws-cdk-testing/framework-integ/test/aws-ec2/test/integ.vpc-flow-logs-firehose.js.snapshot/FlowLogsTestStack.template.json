@@ -87,42 +87,6 @@
     "VPCVPCGW99B986DC"
    ]
   },
-  "VPCPublicSubnet1EIP6AD938E8": {
-   "Type": "AWS::EC2::EIP",
-   "Properties": {
-    "Domain": "vpc",
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PublicSubnet1"
-     }
-    ]
-   }
-  },
-  "VPCPublicSubnet1NATGatewayE0556630": {
-   "Type": "AWS::EC2::NatGateway",
-   "Properties": {
-    "AllocationId": {
-     "Fn::GetAtt": [
-      "VPCPublicSubnet1EIP6AD938E8",
-      "AllocationId"
-     ]
-    },
-    "SubnetId": {
-     "Ref": "VPCPublicSubnet1SubnetB4246D30"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PublicSubnet1"
-     }
-    ]
-   },
-   "DependsOn": [
-    "VPCPublicSubnet1DefaultRoute91CEF279",
-    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
-   ]
-  },
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
@@ -195,7 +159,7 @@
     "VPCVPCGW99B986DC"
    ]
   },
-  "VPCPrivateSubnet1Subnet8BCA10E0": {
+  "VPCIsolatedSubnet1SubnetEBD00FC6": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
@@ -211,15 +175,15 @@
     "Tags": [
      {
       "Key": "aws-cdk:subnet-name",
-      "Value": "Private"
+      "Value": "Isolated"
      },
      {
       "Key": "aws-cdk:subnet-type",
-      "Value": "Private"
+      "Value": "Isolated"
      },
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PrivateSubnet1"
+      "Value": "FlowLogsTestStack/VPC/IsolatedSubnet1"
      }
     ],
     "VpcId": {
@@ -227,13 +191,13 @@
     }
    }
   },
-  "VPCPrivateSubnet1RouteTableBE8A6027": {
+  "VPCIsolatedSubnet1RouteTableEB156210": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PrivateSubnet1"
+      "Value": "FlowLogsTestStack/VPC/IsolatedSubnet1"
      }
     ],
     "VpcId": {
@@ -241,30 +205,18 @@
     }
    }
   },
-  "VPCPrivateSubnet1RouteTableAssociation347902D1": {
+  "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+     "Ref": "VPCIsolatedSubnet1RouteTableEB156210"
     },
     "SubnetId": {
-     "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
     }
    }
   },
-  "VPCPrivateSubnet1DefaultRouteAE1D6490": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "NatGatewayId": {
-     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
-    },
-    "RouteTableId": {
-     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
-    }
-   }
-  },
-  "VPCPrivateSubnet2SubnetCFCDAA7A": {
+  "VPCIsolatedSubnet2Subnet4B1C8CAA": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
@@ -280,15 +232,15 @@
     "Tags": [
      {
       "Key": "aws-cdk:subnet-name",
-      "Value": "Private"
+      "Value": "Isolated"
      },
      {
       "Key": "aws-cdk:subnet-type",
-      "Value": "Private"
+      "Value": "Isolated"
      },
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PrivateSubnet2"
+      "Value": "FlowLogsTestStack/VPC/IsolatedSubnet2"
      }
     ],
     "VpcId": {
@@ -296,13 +248,13 @@
     }
    }
   },
-  "VPCPrivateSubnet2RouteTable0A19E10E": {
+  "VPCIsolatedSubnet2RouteTable9B4F78DC": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/PrivateSubnet2"
+      "Value": "FlowLogsTestStack/VPC/IsolatedSubnet2"
      }
     ],
     "VpcId": {
@@ -310,26 +262,14 @@
     }
    }
   },
-  "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
+  "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+     "Ref": "VPCIsolatedSubnet2RouteTable9B4F78DC"
     },
     "SubnetId": {
-     "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
-    }
-   }
-  },
-  "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "NatGatewayId": {
-     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
-    },
-    "RouteTableId": {
-     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+     "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
     }
    }
   },
@@ -355,34 +295,12 @@
     }
    }
   },
-  "VPCRestrictDefaultSecurityGroupCustomResource59474679": {
-   "Type": "Custom::VpcRestrictDefaultSG",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
-      "Arn"
-     ]
-    },
-    "DefaultSecurityGroupId": {
-     "Fn::GetAtt": [
-      "VPCB9E5F0B4",
-      "DefaultSecurityGroup"
-     ]
-    },
-    "Account": {
-     "Ref": "AWS::AccountId"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "VPCFlowLogsKinesisDataFirehoseFlowLog41C8928A": {
+  "VPCFlowLogsFirehoseFlowLogA2070211": {
    "Type": "AWS::EC2::FlowLog",
    "Properties": {
     "LogDestination": {
      "Fn::GetAtt": [
-      "DeliveryStream",
+      "DeliveryStream58CF96DB",
       "Arn"
      ]
     },
@@ -394,113 +312,11 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC/FlowLogsKinesisDataFirehose"
+      "Value": "FlowLogsTestStack/VPC/FlowLogsFirehose"
      }
     ],
     "TrafficType": "ALL"
    }
-  },
-  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-     }
-    ],
-    "Policies": [
-     {
-      "PolicyName": "Inline",
-      "PolicyDocument": {
-       "Version": "2012-10-17",
-       "Statement": [
-        {
-         "Effect": "Allow",
-         "Action": [
-          "ec2:AuthorizeSecurityGroupIngress",
-          "ec2:AuthorizeSecurityGroupEgress",
-          "ec2:RevokeSecurityGroupIngress",
-          "ec2:RevokeSecurityGroupEgress"
-         ],
-         "Resource": [
-          {
-           "Fn::Join": [
-            "",
-            [
-             "arn:",
-             {
-              "Ref": "AWS::Partition"
-             },
-             ":ec2:",
-             {
-              "Ref": "AWS::Region"
-             },
-             ":",
-             {
-              "Ref": "AWS::AccountId"
-             },
-             ":security-group/",
-             {
-              "Fn::GetAtt": [
-               "VPCB9E5F0B4",
-               "DefaultSecurityGroup"
-              ]
-             }
-            ]
-           ]
-          }
-         ]
-        }
-       ]
-      }
-     }
-    ]
-   }
-  },
-  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
-    },
-    "Timeout": 900,
-    "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
-      "Arn"
-     ]
-    },
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
-    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
-   },
-   "DependsOn": [
-    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-   ]
   },
   "FlowLogsCWIAMRole017AD736": {
    "Type": "AWS::IAM::Role",
@@ -755,7 +571,7 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "Role1ABCC5F0": {
+  "DeliveryStreamS3DestinationRoleD96B8345": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -772,7 +588,7 @@
     }
    }
   },
-  "RoleDefaultPolicy5FFB7DAB": {
+  "DeliveryStreamS3DestinationRoleDefaultPolicyF652AD65": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -813,32 +629,23 @@
          ]
         }
        ]
-      },
-      {
-       "Action": [
-        "kinesis:DescribeStream",
-        "kinesis:GetRecords",
-        "kinesis:GetShardIterator",
-        "kinesis:ListShards"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "RoleDefaultPolicy5FFB7DAB",
+    "PolicyName": "DeliveryStreamS3DestinationRoleDefaultPolicyF652AD65",
     "Roles": [
      {
-      "Ref": "Role1ABCC5F0"
+      "Ref": "DeliveryStreamS3DestinationRoleD96B8345"
      }
     ]
    }
   },
-  "DeliveryStream": {
+  "DeliveryStream58CF96DB": {
    "Type": "AWS::KinesisFirehose::DeliveryStream",
    "Properties": {
-    "S3DestinationConfiguration": {
+    "DeliveryStreamType": "DirectPut",
+    "ExtendedS3DestinationConfiguration": {
      "BucketARN": {
       "Fn::GetAtt": [
        "Bucket83908E77",
@@ -847,12 +654,15 @@
      },
      "RoleARN": {
       "Fn::GetAtt": [
-       "Role1ABCC5F0",
+       "DeliveryStreamS3DestinationRoleD96B8345",
        "Arn"
       ]
      }
     }
-   }
+   },
+   "DependsOn": [
+    "DeliveryStreamS3DestinationRoleDefaultPolicyF652AD65"
+   ]
   }
  },
  "Mappings": {
@@ -982,6 +792,113 @@
    },
    "us-west-2": {
     "value": "nodejs22.x"
+   }
+  },
+  "awscdkawskinesisfirehoseCidrBlocks": {
+   "af-south-1": {
+    "FirehoseCidrBlock": "13.244.121.224/27"
+   },
+   "ap-east-1": {
+    "FirehoseCidrBlock": "18.162.221.32/27"
+   },
+   "ap-northeast-1": {
+    "FirehoseCidrBlock": "13.113.196.224/27"
+   },
+   "ap-northeast-2": {
+    "FirehoseCidrBlock": "13.209.1.64/27"
+   },
+   "ap-northeast-3": {
+    "FirehoseCidrBlock": "13.208.177.192/27"
+   },
+   "ap-south-1": {
+    "FirehoseCidrBlock": "13.232.67.32/27"
+   },
+   "ap-south-2": {
+    "FirehoseCidrBlock": "18.60.192.128/27"
+   },
+   "ap-southeast-1": {
+    "FirehoseCidrBlock": "13.228.64.192/27"
+   },
+   "ap-southeast-2": {
+    "FirehoseCidrBlock": "13.210.67.224/27"
+   },
+   "ap-southeast-3": {
+    "FirehoseCidrBlock": "108.136.221.64/27"
+   },
+   "ap-southeast-4": {
+    "FirehoseCidrBlock": "16.50.161.128/27"
+   },
+   "ap-southeast-5": {
+    "FirehoseCidrBlock": "43.216.58.0/27"
+   },
+   "ap-southeast-7": {
+    "FirehoseCidrBlock": "43.208.112.96/27"
+   },
+   "ca-central-1": {
+    "FirehoseCidrBlock": "35.183.92.128/27"
+   },
+   "ca-west-1": {
+    "FirehoseCidrBlock": "40.176.98.192/27"
+   },
+   "cn-north-1": {
+    "FirehoseCidrBlock": "52.81.151.32/27"
+   },
+   "cn-northwest-1": {
+    "FirehoseCidrBlock": "161.189.23.64/27"
+   },
+   "eu-central-1": {
+    "FirehoseCidrBlock": "35.158.127.160/27"
+   },
+   "eu-central-2": {
+    "FirehoseCidrBlock": "16.62.183.32/27"
+   },
+   "eu-north-1": {
+    "FirehoseCidrBlock": "13.53.63.224/27"
+   },
+   "eu-south-1": {
+    "FirehoseCidrBlock": "15.161.135.128/27"
+   },
+   "eu-south-2": {
+    "FirehoseCidrBlock": "18.100.71.96/27"
+   },
+   "eu-west-1": {
+    "FirehoseCidrBlock": "52.19.239.192/27"
+   },
+   "eu-west-2": {
+    "FirehoseCidrBlock": "18.130.1.96/27"
+   },
+   "eu-west-3": {
+    "FirehoseCidrBlock": "35.180.1.96/27"
+   },
+   "il-central-1": {
+    "FirehoseCidrBlock": "51.16.102.0/27"
+   },
+   "me-central-1": {
+    "FirehoseCidrBlock": "3.28.159.32/27"
+   },
+   "me-south-1": {
+    "FirehoseCidrBlock": "15.185.91.0/27"
+   },
+   "sa-east-1": {
+    "FirehoseCidrBlock": "18.228.1.128/27"
+   },
+   "us-east-1": {
+    "FirehoseCidrBlock": "52.70.63.192/27"
+   },
+   "us-east-2": {
+    "FirehoseCidrBlock": "13.58.135.96/27"
+   },
+   "us-gov-east-1": {
+    "FirehoseCidrBlock": "18.253.138.96/27"
+   },
+   "us-gov-west-1": {
+    "FirehoseCidrBlock": "52.61.204.160/27"
+   },
+   "us-west-1": {
+    "FirehoseCidrBlock": "13.57.135.192/27"
+   },
+   "us-west-2": {
+    "FirehoseCidrBlock": "52.89.255.224/27"
    }
   }
  },
