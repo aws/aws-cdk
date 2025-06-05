@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "8e22484e104d03bb8c381c662bca5f9251022e01bbb67e62d371b418eac0e88d": {
+      "displayName": "aws-cdk-bedrock-orchestration-1 Template",
+      "source": {
+        "path": "aws-cdk-bedrock-orchestration-1.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8e22484e104d03bb8c381c662bca5f9251022e01bbb67e62d371b418eac0e88d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
