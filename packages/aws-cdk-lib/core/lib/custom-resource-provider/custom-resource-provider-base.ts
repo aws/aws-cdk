@@ -7,6 +7,7 @@ import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
 import { CfnResource } from '../cfn-resource';
 import { Duration } from '../duration';
+import { ValidationError } from '../errors';
 import { FileSystem } from '../fs';
 import { PolicySynthesizer, getPrecreatedRoleConfig } from '../helpers-internal';
 import { Lazy } from '../lazy';
@@ -43,7 +44,7 @@ export abstract class CustomResourceProviderBase extends Construct {
    */
   public get codeHash(): string {
     if (!this._codeHash) {
-      throw new Error('This custom resource uses inlineCode: true and does not have a codeHash');
+      throw new ValidationError('This custom resource uses inlineCode: true and does not have a codeHash', this);
     }
     return this._codeHash;
   }
@@ -70,7 +71,7 @@ export abstract class CustomResourceProviderBase extends Construct {
 
     // verify we have an index file there
     if (!fs.existsSync(path.join(props.codeDirectory, 'index.js'))) {
-      throw new Error(`cannot find ${props.codeDirectory}/index.js`);
+      throw new ValidationError(`cannot find ${props.codeDirectory}/index.js`, this);
     }
 
     if (props.policyStatements) {
