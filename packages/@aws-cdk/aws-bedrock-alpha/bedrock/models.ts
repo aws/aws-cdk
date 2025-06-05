@@ -37,7 +37,7 @@ export enum VectorType {
  * run the `Invoke` API. This can be a Foundational Model,
  * a Custom Model, or an Inference Profile.
  */
-export interface IInvokable {
+export interface IBedrockInvokable {
   /**
    * The ARN of the Bedrock invokable abstraction.
    */
@@ -118,7 +118,7 @@ export interface BedrockFoundationModelProps {
  * If you need to use a model name that doesn't exist as a static member, you
  * can instantiate a `BedrockFoundationModel` object, e.g: `new BedrockFoundationModel('my-model')`.
  */
-export class BedrockFoundationModel implements IInvokable {
+export class BedrockFoundationModel implements IBedrockInvokable {
   /****************************************************************************
    *                            AI21
    ***************************************************************************/

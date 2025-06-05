@@ -8,11 +8,11 @@ import {
   PromptOrchestrationConfigCustomParser,
   PromptPostProcessingConfigCustomParser,
 } from '../../../bedrock/agents/prompt-override';
-import { IInvokable } from '../../../bedrock/models';
+import { IBedrockInvokable } from '../../../bedrock/models';
 
 describe('PromptOverrideConfiguration', () => {
   let stack: Stack;
-  let mockFoundationModel: IInvokable;
+  let mockFoundationModel: IBedrockInvokable;
 
   beforeEach(() => {
     stack = new Stack();
@@ -314,10 +314,10 @@ describe('PromptOverrideConfiguration', () => {
         PromptOverrideConfiguration.fromSteps([
           {
             stepType: AgentStepType.ROUTING_CLASSIFIER,
-            foundationModel: {} as IInvokable,
+            foundationModel: {} as IBedrockInvokable,
           } as PromptRoutingClassifierConfigCustomParser,
         ]);
-      }).toThrow('Foundation model must be a valid IInvokable with an invokableArn');
+      }).toThrow('Foundation model must be a valid IBedrockInvokable with an invokableArn');
     });
   });
 

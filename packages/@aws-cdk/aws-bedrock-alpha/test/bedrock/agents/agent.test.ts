@@ -8,7 +8,7 @@ import * as bedrock from '../../../bedrock';
 
 describe('Agent', () => {
   let stack: core.Stack;
-  let foundationModel: bedrock.IInvokable;
+  let foundationModel: bedrock.IBedrockInvokable;
 
   beforeEach(() => {
     const app = new App();

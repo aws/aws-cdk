@@ -6,7 +6,7 @@ import * as bedrock from '../../../lib';
 
 describe('AgentActionGroup', () => {
   let stack: core.Stack;
-  let foundationModel: bedrock.IInvokable;
+  let foundationModel: bedrock.IBedrockInvokable;
 
   beforeEach(() => {
     const app = new App();

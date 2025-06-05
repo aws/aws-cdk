@@ -1,7 +1,7 @@
 import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import * as validation from './validation-helpers';
-import { IInvokable } from '../models';
+import { IBedrockInvokable } from '../models';
 
 /**
  * The step in the agent sequence that this prompt configuration applies to.
@@ -164,7 +164,7 @@ export interface PromptRoutingClassifierConfigCustomParser extends PromptStepCon
    * The foundation model to use for the routing classifier step.
    * This is required for the routing classifier step.
    */
-  readonly foundationModel: IInvokable;
+  readonly foundationModel: IBedrockInvokable;
 }
 
 /**
@@ -444,7 +444,7 @@ export class PromptOverrideConfiguration {
     // Validate routing classifier's foundation model if provided
     if (props.routingClassifierStep?.foundationModel) {
       if (!props.routingClassifierStep.foundationModel.invokableArn) {
-        errors.push('Foundation model must be a valid IInvokable with an invokableArn');
+        errors.push('Foundation model must be a valid IBedrockInvokable with an invokableArn');
       }
     }
 

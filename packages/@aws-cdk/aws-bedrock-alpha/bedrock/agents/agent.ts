@@ -15,7 +15,7 @@ import { AgentCollaboration } from './agent-collaboration';
 import { PromptOverrideConfiguration } from './prompt-override';
 import { AssetApiSchema, S3ApiSchema } from './api-schema';
 import * as validation from './validation-helpers';
-import { IInvokable } from '.././models';
+import { IBedrockInvokable } from '.././models';
 import { Memory } from './memory';
 import { CustomOrchestrationExecutor, OrchestrationType } from './orchestration-executor';
 
@@ -198,7 +198,7 @@ export interface AgentProps {
   /**
    * The foundation model used for orchestration by the agent.
    */
-  readonly foundationModel: IInvokable;
+  readonly foundationModel: IBedrockInvokable;
   /**
    * An existing IAM Role to associate with this agent.
    * Use this property when you want to reuse an existing IAM role rather than create a new one.
@@ -416,7 +416,7 @@ export class Agent extends AgentBase implements IAgent {
   private readonly ROLE_NAME_SUFFIX = '-bedrockagent';
   private readonly MAXLENGTH_FOR_ROLE_NAME = 64;
   private readonly idleSessionTTL: Duration;
-  private readonly foundationModel: IInvokable;
+  private readonly foundationModel: IBedrockInvokable;
   private readonly userInputEnabled: boolean;
   private readonly codeInterpreterEnabled: boolean;
   private readonly agentCollaboration?: AgentCollaboration;
