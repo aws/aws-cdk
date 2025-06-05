@@ -5,7 +5,6 @@
       "stacks": [
         "FlowLogsTestStack"
       ],
-      "diffAssets": true,
       "assertionStack": "FlowLogs/DefaultTest/DeployAssert",
       "assertionStackName": "FlowLogsDefaultTestDeployAssert6AFD1854"
     }
