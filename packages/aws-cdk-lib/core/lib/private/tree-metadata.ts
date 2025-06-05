@@ -9,6 +9,7 @@ import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers';
 import { IInspectable, TreeInspector } from '../tree';
 import { iterateBfs } from './construct-iteration';
+import { AssumptionError } from '../errors';
 
 const FILE_PATH = 'tree.json';
 
@@ -191,7 +192,7 @@ class FragmentedTreeWriter {
 
     if (parent === undefined) {
       if (this.forest.length > 0) {
-        throw new Error('Can only add exactly one node without a parent');
+        throw new AssumptionError('Can only add exactly one node without a parent');
       }
 
       this.addNewTree(node, this.rootFilename);
@@ -236,7 +237,7 @@ class FragmentedTreeWriter {
       // parent node in the original tree to a subtreereference.
       const grandParent = this.parent.get(parent);
       if (!grandParent) {
-        throw new Error(`Could not find parent of ${JSON.stringify(parent)}`);
+        throw new AssumptionError(`Could not find parent of ${JSON.stringify(parent)}`);
       }
 
       tree = this.addNewTree(parent, `tree-${this.subtreeCtr++}.json`);
@@ -285,7 +286,7 @@ class FragmentedTreeWriter {
     if (tree) {
       return tree;
     }
-    throw new Error(`Could not find tree for node: ${JSON.stringify(node)}, tried ${tried}, ${Array.from(this.subtreeRoots).map(([k, v]) => `${k.path} => ${v.filename}`)}`);
+    throw new AssumptionError(`Could not find tree for node: ${JSON.stringify(node)}, tried ${tried}, ${Array.from(this.subtreeRoots).map(([k, v]) => `${k.path} => ${v.filename}`)}`);
   }
 }
 

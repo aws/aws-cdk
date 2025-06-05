@@ -83,6 +83,7 @@ export class AmazonLinux2023ImageSsmParameter extends AmazonLinuxImageSsmParamet
     super({
       parameterName: AmazonLinux2023ImageSsmParameter.ssmParameterName(props),
       cachedInContext: props.cachedInContext,
+      additionalCacheKey: props.additionalCacheKey,
       userData: props.userData,
     });
   }
