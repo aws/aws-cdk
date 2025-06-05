@@ -364,3 +364,127 @@ const topic = new sns.Topic(this, 'MyTopic', {
 ```
 
 **Note**: The `fifoThroughputScope` property is only available for FIFO topics.
+
+## Message Data Protection
+
+Amazon SNS Message Data Protection allows you to define policies to detect and handle sensitive data in your SNS messages. You can configure policies to:
+
+- **Audit**: Log sensitive data detections to CloudWatch Logs, S3, or Firehose
+- **Mask**: Replace sensitive data with specified characters (e.g., '*' or '#')
+- **Redact**: Remove sensitive data completely
+- **Deny**: Block messages containing sensitive data
+
+### Creating a Data Protection Policy
+
+You can attach a data protection policy to your topic:
+
+```ts
+import {
+  DataProtectionPolicy,
+  DataProtectionPolicyStatement,
+  DataDirection,
+  MaskOperation,
+  AuditOperation,
+  PersonalIdentifiers,
+  FinancialIdentifiers,
+  CustomDataIdentifier,
+} from 'aws-cdk-lib/aws-sns';
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+// Create a CloudWatch log group for audit findings
+const logGroup = new logs.LogGroup(this, 'DataProtectionLogGroup', {
+  logGroupName: '/aws/vendedlogs/sns-data-protection',
+});
+
+// Create custom data identifiers
+const employeeIdPattern = new CustomDataIdentifier({
+  name: 'EmployeeID',
+  regex: 'EMP-[0-9]{6}',
+});
+
+// Create an SNS topic with data protection policy
+const topic = new sns.Topic(this, 'ProtectedTopic', {
+  dataProtectionPolicy: new DataProtectionPolicy({
+    name: 'SensitiveDataProtectionPolicy',
+    description: 'Policy to detect and handle sensitive data in messages',
+    statements: [
+      // Audit statement for PII data
+      new DataProtectionPolicyStatement({
+        sid: 'AuditPII',
+        dataDirection: DataDirection.INBOUND,
+        dataIdentifiers: [
+          PersonalIdentifiers.NAME,
+          PersonalIdentifiers.EMAIL_ADDRESS,
+          PersonalIdentifiers.ADDRESS,
+        ],
+        operation: new AuditOperation({
+          sampleRate: 99,
+          findingsDestination: {
+            cloudWatchLogs: {
+              logGroup: logGroup.logGroupName,
+            },
+          },
+        }),
+      }),
+      
+      // Mask financial information
+      new DataProtectionPolicyStatement({
+        sid: 'MaskFinancialData',
+        dataDirection: DataDirection.INBOUND,
+        dataIdentifiers: [
+          FinancialIdentifiers.CREDIT_CARD_NUMBER,
+          FinancialIdentifiers.CREDIT_CARD_EXPIRATION,
+        ],
+        operation: new MaskOperation({
+          maskWithCharacter: '#',
+        }),
+      }),
+    ],
+  }),
+});
+```
+
+### AWS Managed Data Identifiers
+
+AWS provides many built-in managed data identifiers for common sensitive data patterns:
+
+```ts
+// Personal information identifiers
+PersonalIdentifiers.NAME                    // Full names
+PersonalIdentifiers.EMAIL_ADDRESS           // Email addresses
+PersonalIdentifiers.ADDRESS                 // Postal addresses
+PersonalIdentifiers.phoneNumber('US')       // Phone numbers (country-specific)
+PersonalIdentifiers.driversLicense('US')    // Driver's license numbers
+PersonalIdentifiers.passportNumber('US')    // Passport numbers
+PersonalIdentifiers.ssn('US')               // Social Security Numbers
+
+// Financial information identifiers
+FinancialIdentifiers.CREDIT_CARD_NUMBER     // Credit card numbers
+FinancialIdentifiers.CREDIT_CARD_EXPIRATION // Expiration dates
+FinancialIdentifiers.CREDIT_CARD_CVV        // Security codes (CVV)
+FinancialIdentifiers.bankAccountNumber('US') // Bank account numbers
+
+// Credentials identifiers
+CredentialsIdentifiers.AWS_SECRET_KEY       // AWS secret access keys
+CredentialsIdentifiers.PRIVATE_KEY          // Private keys
+```
+
+### Custom Data Identifiers
+
+You can define custom data identifiers using regular expressions:
+
+```ts
+// Custom pattern for employee IDs
+const employeeIdPattern = new CustomDataIdentifier({
+  name: 'EmployeeID',
+  regex: 'EMP-[0-9]{6}',
+});
+
+// Custom pattern for internal project codes
+const projectCodePattern = new CustomDataIdentifier({
+  name: 'ProjectCode',
+  regex: 'PROJ-[A-Z]{3}-[0-9]{4}',
+});
+```
+
+For more information about SNS Message Data Protection, see [the AWS documentation](https://docs.aws.amazon.com/sns/latest/dg/message-data-protection.html).
