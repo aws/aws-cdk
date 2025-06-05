@@ -434,6 +434,7 @@ describe('cluster', () => {
           },
         },
         Handler: 'index.lambda_handler',
+        Runtime: 'python3.13',
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -604,6 +605,7 @@ describe('cluster', () => {
           },
         },
         Handler: 'index.lambda_handler',
+        Runtime: 'python3.13',
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
