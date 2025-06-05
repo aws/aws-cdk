@@ -118,11 +118,6 @@ export class ClusterResourceHandler extends ResourceHandler {
     // deleted by cloudformation upon success.
     if (updates.replaceName || updates.replaceRole ||
           updates.updateBootstrapClusterCreatorAdminPermissions || updates.updateBootstrapSelfManagedAddons) {
-      if ((this.oldProps.bootstrapSelfManagedAddons === undefined && this.newProps.bootstrapSelfManagedAddons === true) ||
-           (this.oldProps.bootstrapSelfManagedAddons === true && this.newProps.bootstrapSelfManagedAddons === undefined)) {
-        console.log('default value for bootstrapSelfManagedAddons is true, skipping update');
-        return;
-      }
       // if we are replacing this cluster and the cluster has an explicit
       // physical name, the creation of the new cluster will fail with "there is
       // already a cluster with that name". this is a common behavior for
@@ -412,6 +407,12 @@ function parseProps(props: any): EKS.CreateClusterCommandInput {
     }
   }
 
+  if (parsed.accessConfig?.bootstrapClusterCreatorAdminPermissions) {
+    if (typeof (parsed.accessConfig.bootstrapClusterCreatorAdminPermissions) === 'string') {
+      parsed.accessConfig.bootstrapClusterCreatorAdminPermissions = parsed.accessConfig.bootstrapClusterCreatorAdminPermissions === 'true';
+    }
+  }
+
   return parsed;
 }
 
@@ -444,6 +445,15 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
   const newAccessConfig = newProps.accessConfig || {};
   const oldAccessConfig = oldProps.accessConfig || {};
 
+  // Helper function to compare values where undefined and true are considered equal
+  const compareUndefinedOrTrue = (val1: boolean | undefined, val2: boolean | undefined): boolean => {
+    // If both are undefined or true, or one is undefined and the other is true, consider them equal
+    if ((val1 === undefined && val2 === true) || (val1 === true && val2 === undefined) || val1 === val2) {
+      return true;
+    }
+    return false;
+  };
+
   return {
     replaceName: newProps.name !== oldProps.name,
     updateVpc:
@@ -458,10 +468,15 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
     updateEncryption: JSON.stringify(newEnc) !== JSON.stringify(oldEnc),
     updateLogging: JSON.stringify(newProps.logging) !== JSON.stringify(oldProps.logging),
     updateAuthMode: JSON.stringify(newAccessConfig.authenticationMode) !== JSON.stringify(oldAccessConfig.authenticationMode),
-    updateBootstrapClusterCreatorAdminPermissions: JSON.stringify(newAccessConfig.bootstrapClusterCreatorAdminPermissions) !==
-      JSON.stringify(oldAccessConfig.bootstrapClusterCreatorAdminPermissions),
+    updateBootstrapClusterCreatorAdminPermissions: !compareUndefinedOrTrue(
+      newAccessConfig.bootstrapClusterCreatorAdminPermissions,
+      oldAccessConfig.bootstrapClusterCreatorAdminPermissions,
+    ),
     updateTags: JSON.stringify(newProps.tags) !== JSON.stringify(oldProps.tags),
-    updateBootstrapSelfManagedAddons: newProps.bootstrapSelfManagedAddons !== oldProps.bootstrapSelfManagedAddons,
+    updateBootstrapSelfManagedAddons: !compareUndefinedOrTrue(
+      newProps.bootstrapSelfManagedAddons,
+      oldProps.bootstrapSelfManagedAddons,
+    ),
   };
 }
 
