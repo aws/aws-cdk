@@ -38,7 +38,8 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "natGateways": "*"
+              "natGateways": "*",
+              "restrictDefaultSecurityGroup": false
             }
           }
         ],
@@ -74,14 +75,6 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
           }
         ],
         "/FlowLogsTestStack/VPC/PublicSubnet1/Subnet": [
@@ -106,18 +99,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1DefaultRoute91CEF279"
-          }
-        ],
-        "/FlowLogsTestStack/VPC/PublicSubnet1/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1EIP6AD938E8"
-          }
-        ],
-        "/FlowLogsTestStack/VPC/PublicSubnet1/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
         "/FlowLogsTestStack/VPC/PublicSubnet2": [
@@ -172,7 +153,7 @@
             "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
-        "/FlowLogsTestStack/VPC/PrivateSubnet1": [
+        "/FlowLogsTestStack/VPC/IsolatedSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -194,37 +175,27 @@
               "ipv6CidrBlock": "*",
               "assignIpv6AddressOnCreation": "*"
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
           }
         ],
-        "/FlowLogsTestStack/VPC/PrivateSubnet1/Subnet": [
+        "/FlowLogsTestStack/VPC/IsolatedSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+            "data": "VPCIsolatedSubnet1SubnetEBD00FC6"
           }
         ],
-        "/FlowLogsTestStack/VPC/PrivateSubnet1/RouteTable": [
+        "/FlowLogsTestStack/VPC/IsolatedSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+            "data": "VPCIsolatedSubnet1RouteTableEB156210"
           }
         ],
-        "/FlowLogsTestStack/VPC/PrivateSubnet1/RouteTableAssociation": [
+        "/FlowLogsTestStack/VPC/IsolatedSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+            "data": "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C"
           }
         ],
-        "/FlowLogsTestStack/VPC/PrivateSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
-          }
-        ],
-        "/FlowLogsTestStack/VPC/PrivateSubnet2": [
+        "/FlowLogsTestStack/VPC/IsolatedSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -246,34 +217,24 @@
               "ipv6CidrBlock": "*",
               "assignIpv6AddressOnCreation": "*"
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
           }
         ],
-        "/FlowLogsTestStack/VPC/PrivateSubnet2/Subnet": [
+        "/FlowLogsTestStack/VPC/IsolatedSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+            "data": "VPCIsolatedSubnet2Subnet4B1C8CAA"
           }
         ],
-        "/FlowLogsTestStack/VPC/PrivateSubnet2/RouteTable": [
+        "/FlowLogsTestStack/VPC/IsolatedSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+            "data": "VPCIsolatedSubnet2RouteTable9B4F78DC"
           }
         ],
-        "/FlowLogsTestStack/VPC/PrivateSubnet2/RouteTableAssociation": [
+        "/FlowLogsTestStack/VPC/IsolatedSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
-          }
-        ],
-        "/FlowLogsTestStack/VPC/PrivateSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+            "data": "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB"
           }
         ],
         "/FlowLogsTestStack/VPC/IGW": [
@@ -288,19 +249,7 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/FlowLogsTestStack/VPC/RestrictDefaultSecurityGroupCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/FlowLogsTestStack/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
-          }
-        ],
-        "/FlowLogsTestStack/VPC/FlowLogsKinesisDataFirehose": [
+        "/FlowLogsTestStack/VPC/FlowLogsFirehose": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -309,34 +258,10 @@
             }
           }
         ],
-        "/FlowLogsTestStack/VPC/FlowLogsKinesisDataFirehose/FlowLog": [
+        "/FlowLogsTestStack/VPC/FlowLogsFirehose/FlowLog": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCFlowLogsKinesisDataFirehoseFlowLog41C8928A"
-          }
-        ],
-        "/FlowLogsTestStack/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/FlowLogsTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/FlowLogsTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-          }
-        ],
-        "/FlowLogsTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+            "data": "VPCFlowLogsFirehoseFlowLogA2070211"
           }
         ],
         "/FlowLogsTestStack/FlowLogsCW": [
@@ -507,6 +432,12 @@
             "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
           }
         ],
+        "/FlowLogsTestStack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/FlowLogsTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
@@ -525,7 +456,15 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
-        "/FlowLogsTestStack/Role": [
+        "/FlowLogsTestStack/DeliveryStream": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "destination": "*"
+            }
+          }
+        ],
+        "/FlowLogsTestStack/DeliveryStream/S3 Destination Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -558,37 +497,21 @@
                 "*"
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
           }
         ],
-        "/FlowLogsTestStack/Role/ImportRole": [
+        "/FlowLogsTestStack/DeliveryStream/S3 Destination Role/ImportS3 Destination Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/FlowLogsTestStack/Role/Resource": [
+        "/FlowLogsTestStack/DeliveryStream/S3 Destination Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Role1ABCC5F0"
+            "data": "DeliveryStreamS3DestinationRoleD96B8345"
           }
         ],
-        "/FlowLogsTestStack/Role/DefaultPolicy": [
+        "/FlowLogsTestStack/DeliveryStream/S3 Destination Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -616,26 +539,24 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
-        "/FlowLogsTestStack/Role/DefaultPolicy/Resource": [
+        "/FlowLogsTestStack/DeliveryStream/S3 Destination Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RoleDefaultPolicy5FFB7DAB"
+            "data": "DeliveryStreamS3DestinationRoleDefaultPolicyF652AD65"
           }
         ],
-        "/FlowLogsTestStack/DeliveryStream": [
+        "/FlowLogsTestStack/DeliveryStream/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream"
+            "data": "DeliveryStream58CF96DB"
+          }
+        ],
+        "/FlowLogsTestStack/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdkawskinesisfirehoseCidrBlocks"
           }
         ],
         "/FlowLogsTestStack/BootstrapVersion": [
