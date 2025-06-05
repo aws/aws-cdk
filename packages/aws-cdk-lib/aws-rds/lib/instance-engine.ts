@@ -592,12 +592,16 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_11_10 = MariaDbEngineVersion.of('10.11.10', '10.11');
   /** Version "10.11.11". */
   public static readonly VER_10_11_11 = MariaDbEngineVersion.of('10.11.11', '10.11');
+  /** Version "10.11.13". */
+  public static readonly VER_10_11_13 = MariaDbEngineVersion.of('10.11.13', '10.11');
   /** Version "11.4.3". */
   public static readonly VER_11_4_3 = MariaDbEngineVersion.of('11.4.3', '11.4');
   /** Version "11.4.4". */
   public static readonly VER_11_4_4 = MariaDbEngineVersion.of('11.4.4', '11.4');
   /** Version "11.4.5". */
   public static readonly VER_11_4_5 = MariaDbEngineVersion.of('11.4.5', '11.4');
+  /** Version "11.4.7". */
+  public static readonly VER_11_4_7 = MariaDbEngineVersion.of('11.4.7', '11.4');
 
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
@@ -893,6 +897,8 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_44_RDS_20250103 = MysqlEngineVersion.of('5.7.44-rds.20250103', '5.7');
   /** Version "5.7.44-rds.20250213". */
   public static readonly VER_5_7_44_RDS_20250213 = MysqlEngineVersion.of('5.7.44-rds.20250213', '5.7');
+  /** Version "5.7.44-rds.20250508". */
+  public static readonly VER_5_7_44_RDS_20250508 = MysqlEngineVersion.of('5.7.44-rds.20250508', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
