@@ -69,7 +69,7 @@ class HelmChartLoggingStack extends Stack {
     const chartAsset = new Asset(this, 'ChartAsset', {
       path: path.join(__dirname, 'helm-chart-logging-test'),
     });
-    
+
     cluster.addHelmChart('local-test-chart', {
       chartAsset: chartAsset,
       namespace: 'default',
