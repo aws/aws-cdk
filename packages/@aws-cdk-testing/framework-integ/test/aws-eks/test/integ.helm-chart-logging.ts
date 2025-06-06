@@ -3,7 +3,6 @@ import * as path from 'path';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { App, Stack } from 'aws-cdk-lib';
-import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
@@ -46,21 +45,6 @@ class HelmChartLoggingStack extends Stack {
       version: '1.6.0',
       values: {
         clusterName: cluster.clusterName,
-      },
-    });
-
-    // Also install our local test chart
-    const chartAsset = new Asset(this, 'ChartAsset', {
-      path: path.join(__dirname, 'helm-chart-logging-test'),
-    });
-
-    cluster.addHelmChart('local-test-chart', {
-      chartAsset: chartAsset,
-      namespace: 'default',
-      values: {
-        config: {
-          message: 'Custom message from integration test',
-        },
       },
     });
   }
