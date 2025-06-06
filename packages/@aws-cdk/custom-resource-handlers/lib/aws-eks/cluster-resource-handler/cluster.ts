@@ -447,11 +447,7 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
 
   // Helper function to compare values where undefined and true are considered equal
   const compareUndefinedOrTrue = (val1: boolean | undefined, val2: boolean | undefined): boolean => {
-    // If both are undefined or true, or one is undefined and the other is true, consider them equal
-    if ((val1 === undefined && val2 === true) || (val1 === true && val2 === undefined) || val1 === val2) {
-      return true;
-    }
-    return false;
+    return (val1 ?? true) === (val2 ?? true);
   };
 
   return {
