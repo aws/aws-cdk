@@ -882,7 +882,10 @@ If the security group ID is known and configuration details are unknown, use met
 const sg = ec2.SecurityGroup.fromLookupById(this, 'SecurityGroupLookup', 'sg-1234');
 ```
 
-The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be written to a file called `cdk.context.json`. You must commit this file to source control so that the lookup values are available in non-privileged environments such as CI build steps, and to ensure your template builds are repeatable.
+The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be
+written to a file called `cdk.context.json`. 
+You must commit this file to source control so that the lookup values are available in non-privileged
+environments such as CI build steps, and to ensure your template builds are repeatable.
 
 ### Cross Stack Connections
 
@@ -969,6 +972,13 @@ examples of images you might want to use:
 > `cdk.context.json`, or use the `cdk context` command. For more information, see
 > [Runtime Context](https://docs.aws.amazon.com/cdk/latest/guide/context.html) in the CDK
 > developer guide.
+> 
+> To customize the cache key, use the `additionalCacheKey` parameter.
+> This allows you to have multiple lookups with the same parameters
+> cache their values separately. This can be useful if you want to
+> scope the context variable to a construct (ie, using `additionalCacheKey: this.node.path`),
+> so that if the value in the cache needs to be updated, it does not need to be updated
+> for all constructs at the same time.
 >
 > `MachineImage.genericLinux()`, `MachineImage.genericWindows()` will use `CfnMapping` in
 > an agnostic stack.
@@ -1372,6 +1382,31 @@ new ec2.Instance(this, 'LatestAl2023', {
   // context cache is turned on by default
   machineImage: new ec2.AmazonLinux2023ImageSsmParameter(),
 });
+
+// or
+new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023({
+    cachedInContext: true,
+    // creates a distinct context variable for this image, instead of resolving to the same
+    // value anywhere this lookup is done in your app
+    additionalCacheKey: this.node.path,
+  }),
+});
+
+// or
+new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  // context cache is turned on by default
+  machineImage: new ec2.AmazonLinux2023ImageSsmParameter({
+    // creates a distinct context variable for this image, instead of resolving to the same
+    // value anywhere this lookup is done in your app
+    additionalCacheKey: this.node.path,
+  }),
+});
+
 ```
 
 #### Kernel Versions
@@ -1854,6 +1889,25 @@ new ec2.Volume(this, 'Volume', {
 });
 ```
 
+#### Volume initialization rate
+
+When creating an EBS volume from a snapshot, you can specify the [volume initialization rate](https://docs.aws.amazon.com/ebs/latest/userguide/initalize-volume.html#volume-initialization-rate) at which the snapshot blocks are downloaded from Amazon S3 to the volume.
+Specifying a volume initialization rate ensures that the volume is initialized at a predictable and consistent rate after creation.
+
+```ts
+new ec2.Volume(this, 'Volume', {
+  availabilityZone: 'us-east-1a',
+  size: Size.gibibytes(500),
+  snapshotId: 'snap-1234567890abcdef0',
+  volumeInitializationRate: Size.mebibytes(250),
+});
+```
+
+The `volumeInitializationRate` must be:
+
+* Between 100 and 300 MiB/s
+* Only specified when creating a volume from a snapshot
+
 ### Configuring Instance Metadata Service (IMDS)
 
 #### Toggling IMDSv1
@@ -2287,10 +2341,10 @@ new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 declare const vpc: ec2.Vpc;
-declare const deliveryStream: firehose.CfnDeliveryStream;
+declare const deliveryStream: firehose.IDeliveryStream;
 
-vpc.addFlowLog('FlowLogsKinesisDataFirehose', {
-  destination: ec2.FlowLogDestination.toKinesisDataFirehoseDestination(deliveryStream.attrArn),
+vpc.addFlowLog('FlowLogsFirehose', {
+  destination: ec2.FlowLogDestination.toFirehose(deliveryStream),
 });
 ```
 
