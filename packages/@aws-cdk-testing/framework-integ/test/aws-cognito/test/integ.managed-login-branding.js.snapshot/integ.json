@@ -1,0 +1,17 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "ManagedLoginBrandingTest/DefaultTest": {
+      "stacks": [
+        "IntegManagedLoginBranding"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "diffAssets": true,
+      "assertionStack": "ManagedLoginBrandingTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ManagedLoginBrandingTestDefaultTestDeployAssertF9997DCF"
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}
