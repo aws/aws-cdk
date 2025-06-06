@@ -5,6 +5,7 @@ import { Token } from '../../../core';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { IChainable, INextable, ProcessorMode, QueryLanguage } from '../types';
+import { isValidJsonataExpression } from '../private/jsonata';
 
 /**
  * Base properties for defining a Map state that using JSONPath
@@ -223,6 +224,10 @@ export abstract class MapBase extends State implements INextable {
 
     if (this.itemSelector && this.jsonataItemSelector) {
       errors.push('Provide either `itemSelector` or `jsonataItemSelector`, but not both');
+    }
+
+    if (this.jsonataItemSelector && !isValidJsonataExpression(this.jsonataItemSelector)) {
+      errors.push('The `jsonataItemSelector` property must be a valid JSONata expression')
     }
 
     return errors;

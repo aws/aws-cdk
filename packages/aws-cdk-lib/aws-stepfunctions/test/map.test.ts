@@ -555,6 +555,20 @@ describe('Map State', () => {
     expect(() => app.synth()).toThrow(/Map state cannot have both parameters and an item selector/);
   }),
 
+  test('fails in synthesis if jsonata item selector is not a JSONata expression', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.Map(stack, 'Map State', {
+        maxConcurrency: 1,
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+        jsonataItemSelector: 'Invalid expression',
+      });
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/The `jsonataItemSelector` property must be a valid JSONata expression/);
+  }),
+
   test('fails in synthesis if distributed mode and execution type is not defined', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
