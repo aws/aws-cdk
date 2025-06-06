@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "nlb-alias-target/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "nlb-alias-target/DefaultTest/DeployAssert",
       "assertionStackName": "nlbaliastargetDefaultTestDeployAssertD3875D6D"
     }
-  }
+  },
+  "minimumCliVersion": "2.1017.1"
 }

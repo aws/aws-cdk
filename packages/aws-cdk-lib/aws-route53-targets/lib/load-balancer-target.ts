@@ -28,15 +28,15 @@ export class LoadBalancerTarget implements route53.IAliasRecordTarget {
   }
 
   private isNetworkLoadBalancer(): boolean {
-    // Check if this has the NLB-specific properties/methods
-    // NLBs have addListener method that returns NetworkListener, ALBs return ApplicationListener
-    // We'll use a duck-typing approach by checking the constructor name
+    // We use constructor name checking as a reliable way to detect NLB vs ALB
+    // since both implement ILoadBalancerV2 but have different DNS requirements
     return this.loadBalancer.constructor.name === 'NetworkLoadBalancer' ||
            this.loadBalancer.constructor.name === 'LookedUpNetworkLoadBalancer';
   }
 
   private isIpv4Only(): boolean {
-    const ipAddressType = (this.loadBalancer as any).ipAddressType;
-    return ipAddressType === elbv2.IpAddressType.IPV4 || ipAddressType === undefined;
+    const lb = this.loadBalancer as any;
+    return lb.ipAddressType === elbv2.IpAddressType.IPV4 || 
+           lb.ipAddressType === undefined;
   }
 }

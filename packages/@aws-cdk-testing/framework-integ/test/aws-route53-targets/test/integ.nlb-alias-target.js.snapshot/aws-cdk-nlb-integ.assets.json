@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "9031aa9c241894d83d3aa2ad6318b25b18b255dc877b9cb9aee3b450f6affac2": {
       "displayName": "aws-cdk-nlb-integ Template",
