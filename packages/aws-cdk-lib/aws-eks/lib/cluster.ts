@@ -860,6 +860,17 @@ export interface ClusterProps extends ClusterOptions {
   readonly bootstrapClusterCreatorAdminPermissions?: boolean;
 
   /**
+   * If you set this value to False when creating a cluster, the default networking add-ons will not be installed.
+   * The default networking addons include vpc-cni, coredns, and kube-proxy.
+   * Use this option when you plan to install third-party alternative add-ons or self-manage the default networking add-ons.
+   *
+   * Changing this value after the cluster has been created will result in the cluster being replaced.
+   *
+   * @default true
+   */
+  readonly bootstrapSelfManagedAddons?: boolean;
+
+  /**
    * The tags assigned to the EKS cluster
    *
    * @default - none
@@ -1752,6 +1763,7 @@ export class Cluster extends ClusterBase {
       onEventLayer: this.onEventLayer,
       tags: props.tags,
       logging: this.logging,
+      bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
