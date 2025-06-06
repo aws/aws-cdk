@@ -28,6 +28,13 @@ const defaultNlb = new elbv2.NetworkLoadBalancer(stack, 'DefaultNLB', {
   // ipAddressType not specified - defaults to IPv4
 });
 
+// Dual-stack NLB
+const dualStackNlb = new elbv2.NetworkLoadBalancer(stack, 'DualStackNLB', {
+  vpc,
+  internetFacing: true,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+
 const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
 
 // IPv4-only NLB alias record (should NOT have dualstack prefix)
@@ -42,6 +49,13 @@ new route53.ARecord(zone, 'DefaultNLBAlias', {
   zone,
   recordName: 'default-nlb',
   target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(defaultNlb)),
+});
+
+// Dual-stack NLB alias record (should have dualstack prefix)
+new route53.ARecord(zone, 'DualStackNLBAlias', {
+  zone,
+  recordName: 'dualstack-nlb',
+  target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(dualStackNlb)),
 });
 
 // IPv4-only NLB with health check
