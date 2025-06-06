@@ -22,7 +22,7 @@ export class LoadBalancerTarget implements route53.IAliasRecordTarget {
       // IPv4-only NLB - no dualstack prefix needed
       return this.loadBalancer.loadBalancerDnsName;
     }
-    
+
     // For ALBs and dual-stack NLBs, use dualstack prefix for backward compatibility
     return `dualstack.${this.loadBalancer.loadBalancerDnsName}`;
   }
@@ -36,7 +36,7 @@ export class LoadBalancerTarget implements route53.IAliasRecordTarget {
 
   private isIpv4Only(): boolean {
     const lb = this.loadBalancer as any;
-    return lb.ipAddressType === elbv2.IpAddressType.IPV4 || 
+    return lb.ipAddressType === elbv2.IpAddressType.IPV4 ||
            lb.ipAddressType === undefined;
   }
 }
