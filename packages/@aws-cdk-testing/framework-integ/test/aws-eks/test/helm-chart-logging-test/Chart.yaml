@@ -1,0 +1,6 @@
+apiVersion: v2
+name: helm-chart-logging-test
+description: A simple Helm chart for testing improved error logging
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

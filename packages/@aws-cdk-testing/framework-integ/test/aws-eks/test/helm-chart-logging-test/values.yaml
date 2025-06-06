@@ -1,0 +1,7 @@
+# Default values for helm-chart-logging-test
+# This is a YAML-formatted file.
+
+# Example configuration values
+config:
+  enabled: true
+  message: "Default configuration message"
