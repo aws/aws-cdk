@@ -1,4 +1,4 @@
-packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-signcontent.js"use strict";
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
 const s3 = require("aws-cdk-lib/aws-s3");
