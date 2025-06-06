@@ -1,5 +1,4 @@
 /// !cdk-integ pragma:disable-update-workflow
-import * as path from 'path';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { App, Stack } from 'aws-cdk-lib';
