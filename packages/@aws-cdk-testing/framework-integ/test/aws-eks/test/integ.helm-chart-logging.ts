@@ -49,22 +49,6 @@ class HelmChartLoggingStack extends Stack {
       },
     });
 
-    // Install a chart from ECR Public Gallery
-    // This is the AWS Controllers for Kubernetes (ACK) S3 controller
-    cluster.addHelmChart('ack-s3-controller', {
-      chart: 's3-chart',
-      release: 's3-controller',
-      repository: 'oci://public.ecr.aws/aws-controllers-k8s/s3-chart',
-      version: 'v0.1.0',
-      namespace: 'ack-system',
-      createNamespace: true,
-      values: {
-        aws: {
-          region: this.region,
-        },
-      },
-    });
-
     // Also install our local test chart
     const chartAsset = new Asset(this, 'ChartAsset', {
       path: path.join(__dirname, 'helm-chart-logging-test'),
