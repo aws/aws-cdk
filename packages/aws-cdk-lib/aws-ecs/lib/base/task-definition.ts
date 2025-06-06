@@ -88,6 +88,14 @@ export interface CommonTaskDefinitionProps {
   readonly taskRole?: iam.IRole;
 
   /**
+   * Whether to create a task role automatically.
+   * When set to false, no task role will be created or assigned to the task definition.
+   *
+   * @default true - A task role is automatically created.
+   */
+  readonly createTaskRole?: boolean;
+
+  /**
    * The configuration details for the App Mesh proxy.
    *
    * @default - No proxy configuration.
@@ -365,7 +373,26 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
    */
-  public readonly taskRole: iam.IRole;
+  private readonly _taskRole?: iam.IRole;
+
+  /**
+   * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
+   * If the task definition was imported, this value will be undefined unless a taskRoleArn was provided.
+   * Accessing this property will throw an error if `_taskRole` is undefined.
+   */
+  public get taskRole(): iam.IRole {
+    if (this._taskRole === undefined) {
+      throw new ValidationError("TaskDefinition.taskRole is undefined. This can occur if the Task Definition was imported without a taskRoleArn, or if a taskRole was not explicitly created (e.g., 'createTaskRole: false' was set). If you need to grant permissions or use the taskRole, ensure it is properly defined.", this);
+    }
+    return this._taskRole;
+  }
+
+  /**
+   * Indicates whether a task role is associated with this task definition.
+   */
+  public get hasTaskRole(): boolean {
+    return this._taskRole !== undefined;
+  }
 
   /**
    * The networking mode to use for the containers in the task.
@@ -483,9 +510,9 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     this._executionRole = props.executionRole;
 
-    this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
+    this._taskRole = props.taskRole || (props.createTaskRole !== false ? new iam.Role(this, 'TaskRole', {
       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-    });
+    }) : undefined);
 
     if (props.inferenceAccelerators) {
       props.inferenceAccelerators.forEach(ia => this.addInferenceAccelerator(ia));
@@ -510,7 +537,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       volumes: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
       executionRoleArn: Lazy.string({ produce: () => this.executionRole && this.executionRole.roleArn }),
       family: this.family,
-      taskRoleArn: this.taskRole.roleArn,
+      taskRoleArn: this._taskRole?.roleArn,
       requiresCompatibilities: [
         ...(isEc2Compatible(props.compatibility) ? ['EC2'] : []),
         ...(isFargateCompatible(props.compatibility) ? ['FARGATE'] : []),
@@ -644,6 +671,9 @@ export class TaskDefinition extends TaskDefinitionBase {
    */
   @MethodMetadata()
   public addToTaskRolePolicy(statement: iam.PolicyStatement) {
+    if (!this.taskRole) {
+      throw new ValidationError('Cannot add policy to task role when createTaskRole is set to false. Make sure to set createTaskRole: true or provide a custom task role.', this);
+    }
     this.taskRole.addToPrincipalPolicy(statement);
   }
 
@@ -880,10 +910,22 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private get passRoleStatement() {
     if (!this._passRoleStatement) {
+      if (!this.taskRole && !this.executionRole) {
+        throw new ValidationError('Cannot create a passRoleStatement when neither taskRole nor executionRole is defined. Either set createTaskRole: true, provide a custom task role, or define an execution role.', this);
+      }
+
+      let resources: string[] = [];
+      if (this.taskRole) {
+        resources.push(this.taskRole.roleArn);
+      }
+      if (this.executionRole) {
+        resources.push(this.executionRole.roleArn);
+      }
+
       this._passRoleStatement = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['iam:PassRole'],
-        resources: this.executionRole ? [this.taskRole.roleArn, this.executionRole.roleArn] : [this.taskRole.roleArn],
+        resources,
         conditions: {
           StringLike: { 'iam:PassedToService': 'ecs-tasks.amazonaws.com' },
         },

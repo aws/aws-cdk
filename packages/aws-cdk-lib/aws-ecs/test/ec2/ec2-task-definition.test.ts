@@ -1041,6 +1041,22 @@ describe('ec2 task definition', () => {
       });
     });
 
+    test('does not create task role when createTaskRole is false', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        createTaskRole: false,
+      });
+
+      // THEN
+      expect(() => taskDefinition.taskRole).toThrow(/TaskDefinition.taskRole is undefined/);
+      Template.fromStack(stack).hasResource('AWS::ECS::TaskDefinition', {
+        Properties: {
+          TaskRoleArn: Match.absent(),
+        },
+      });
+    });
+
     test('correctly sets dockerVolumeConfiguration', () => {
       // GIVEN
       const stack = new cdk.Stack();

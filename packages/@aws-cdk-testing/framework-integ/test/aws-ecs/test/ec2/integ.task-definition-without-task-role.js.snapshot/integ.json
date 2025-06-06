@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "EC2TaskDefinitionWithoutTaskRole/DefaultTest": {
+      "stacks": [
+        "aws-ecs-ec2-task-definition-without-task-role"
+      ],
+      "assertionStack": "EC2TaskDefinitionWithoutTaskRole/DefaultTest/DeployAssert",
+      "assertionStackName": "EC2TaskDefinitionWithoutTaskRoleDefaultTestDeployAssertD6211199"
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}
