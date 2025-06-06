@@ -1017,7 +1017,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 4
+    "AttributesRevision": 5
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
@@ -4282,7 +4282,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/0ed253ab32cfbe5d4d7fa1788393791db0fc57fddab549b3c72402e0f96eea17.json"
+       "/a0eaf6e3b2dd4b3bc8505ce47aee67de41ddc86c0414290ea2f1b8c5fa8641a2.json"
       ]
      ]
     }
@@ -4328,7 +4328,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/2e8aa03c271121e923ed38300ef98cc8907982dff7f47862d6e240023877043a.json"
+       "/757a1f91e006ecee6f618c4c599c65f96907e8411b00d24025ab4f95a7e186b0.json"
       ]
      ]
     }
