@@ -17,14 +17,18 @@ logger.setLevel(logging.INFO)
 def sanitize_message(message):
     if not message:
         return message
-
-    # Sanitize the message to prevent log injection and HTTP response splitting
-    sanitized_message = message.replace('\n', '').replace('\r', '')
-
-    # Encode the message to handle special characters
-    encoded_message = urllib.parse.quote(sanitized_message)
-
-    return encoded_message
+    
+    if isinstance(message, bytes):
+        message = message.decode('utf-8', errors='replace')
+    
+    if isinstance(message, list):
+        return [sanitize_message(item) for item in message]
+    
+    if isinstance(message, str):
+        # Replace characters that could be used for log injection
+        return message.replace('\n', ' ').replace('\r', ' ')
+    
+    return message
 
 # these are coming from the kubectl layer
 os.environ['PATH'] = '/opt/helm:/opt/awscli:' + os.environ['PATH']
