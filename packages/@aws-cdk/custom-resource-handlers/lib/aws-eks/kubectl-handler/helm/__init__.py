@@ -209,7 +209,7 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
     cmnd.extend(['--kubeconfig', kubeconfig])
     
     # Log the full helm command for better troubleshooting
-    logger.info("Helm command: %s", sanitize_message(' '.join(cmnd)))
+    logger.info("Running command: %s", sanitize_message(cmnd))
 
     maxAttempts = 3
     retry = maxAttempts
@@ -225,7 +225,7 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
                 logger.info("Broken pipe, retries left: %s" % retry)
             else:
                 error_message = output.decode('utf-8', errors='replace')
-                logger.error("Helm command failed: %s", sanitize_message(' '.join(cmnd)))
+                logger.error("Command failed: %s", sanitize_message(cmnd))
                 logger.error("Error output: %s", sanitize_message(error_message))
                 raise Exception(output)
-    raise Exception(f'Operation failed after {maxAttempts} attempts: {output.decode("utf-8", errors="replace")}')
+    raise Exception(f'Operation failed after {maxAttempts} attempts: {sanitize_message(output.decode("utf-8", errors="replace"))}')

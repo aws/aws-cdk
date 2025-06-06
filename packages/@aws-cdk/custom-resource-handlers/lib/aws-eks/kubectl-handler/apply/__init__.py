@@ -12,6 +12,20 @@ os.environ['PATH'] = '/opt/kubectl:/opt/awscli:' + os.environ['PATH']
 outdir = os.environ.get('TEST_OUTDIR', '/tmp')
 kubeconfig = os.path.join(outdir, 'kubeconfig')
 
+#---------------------------------------------------------------------------------------------------
+# Sanitize the message to mitigate CWE-117 and CWE-93 vulnerabilities
+def sanitize_message(message):
+    if not message:
+        return message
+    if isinstance(message, bytes):
+        message = message.decode('utf-8', errors='replace')
+    if isinstance(message, str):
+        # Replace characters that could be used for log injection
+        return message.replace('\n', ' ').replace('\r', ' ')
+    if isinstance(message, list):
+        return [sanitize_message(item) for item in message]
+    return message
+
 
 def apply_handler(event, context):
     logger.info(json.dumps(dict(event, ResponseURL='...')))
@@ -33,7 +47,7 @@ def apply_handler(event, context):
         '--name', cluster_name,
         '--kubeconfig', kubeconfig
     ]
-    logger.info(f'Running command: {cmd}')
+    logger.info('Running command: %s', sanitize_message(cmd))
     subprocess.check_call(cmd)
 
     if os.path.isfile(kubeconfig):
@@ -80,7 +94,7 @@ def kubectl(verb, file, *opts):
     while retry > 0:
         try:
             cmd = ['kubectl', verb, '--kubeconfig', kubeconfig, '-f', file] + list(opts)
-            logger.info(f'Running command: {cmd}')
+            logger.info('Running command: %s', sanitize_message(cmd))
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as exc:
             output = exc.output
@@ -90,6 +104,6 @@ def kubectl(verb, file, *opts):
             else:
                 raise Exception(output)
         else:
-            logger.info(output)
+            logger.info(sanitize_message(output))
             return
-    raise Exception(f'Operation failed after {maxAttempts} attempts: {output}')
+    raise Exception(f'Operation failed after {maxAttempts} attempts: {sanitize_message(output)}')
