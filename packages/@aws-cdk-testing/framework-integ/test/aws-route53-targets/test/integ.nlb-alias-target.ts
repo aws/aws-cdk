@@ -20,8 +20,8 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
       name: 'Public',
       subnetType: ec2.SubnetType.PUBLIC,
       mapPublicIpOnLaunch: true,
-    }
-  ]
+    },
+  ],
 });
 
 // Add IPv6 CIDRs to public subnets and enable auto-assign
@@ -29,14 +29,13 @@ vpc.publicSubnets.forEach((subnet, index) => {
   const cfnSubnet = subnet.node.defaultChild as ec2.CfnSubnet;
   // Assign IPv6 CIDR block to the subnet
   cfnSubnet.ipv6CidrBlock = cdk.Fn.select(index, cdk.Fn.cidr(
-    cdk.Fn.select(0, vpc.vpcIpv6CidrBlocks), 
+    cdk.Fn.select(0, vpc.vpcIpv6CidrBlocks),
     vpc.publicSubnets.length,
-    '64'
+    '64',
   ));
   // Enable auto-assign IPv6 for the subnet
   cfnSubnet.assignIpv6AddressOnCreation = true;
 });
-
 
 // IPv4-only NLB (default) - explicitly set for clarity
 const ipv4Nlb = new elbv2.NetworkLoadBalancer(stack, 'IPv4NLB', {
@@ -59,7 +58,7 @@ const dualStackNlb = new elbv2.NetworkLoadBalancer(stack, 'DualStackNLB', {
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
   vpcSubnets: {
     subnetType: ec2.SubnetType.PUBLIC,
-  }
+  },
 });
 
 const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
