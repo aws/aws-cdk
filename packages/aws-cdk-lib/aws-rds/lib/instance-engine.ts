@@ -522,6 +522,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_5_27 = MariaDbEngineVersion.of('10.5.27', '10.5');
   /** Version "10.5.28". */
   public static readonly VER_10_5_28 = MariaDbEngineVersion.of('10.5.28', '10.5');
+  /** Version "10.5.29". */
+  public static readonly VER_10_5_29 = MariaDbEngineVersion.of('10.5.29', '10.5');
 
   /** Version "10.6" (only a major version, without a specific minor version). */
   public static readonly VER_10_6 = MariaDbEngineVersion.of('10.6', '10.6');
@@ -573,6 +575,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_6_20 = MariaDbEngineVersion.of('10.6.20', '10.6');
   /** Version "10.6.21". */
   public static readonly VER_10_6_21 = MariaDbEngineVersion.of('10.6.21', '10.6');
+  /** Version "10.6.22". */
+  public static readonly VER_10_6_22 = MariaDbEngineVersion.of('10.6.22', '10.6');
 
   /** Version "10.11" (only a major version, without a specific minor version). */
   public static readonly VER_10_11 = MariaDbEngineVersion.of('10.11', '10.11');
