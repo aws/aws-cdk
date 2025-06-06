@@ -930,6 +930,22 @@ new eks.HelmChart(this, 'NginxIngress', {
 });
 ```
 
+Helm chart can also execute upgrades with the `--take-ownership` flag as long as the cluster's kubectl layer has `helm >=3.17.0`.
+This option is useful if you are using a tool or development pattern where manifests might be added separately via kubectl during
+something like a migration. Without this option set, your helm chart construct will fail to deploy by if it cannot detect the helm-applied annotations on existing manifests.
+
+```ts
+declare const cluster: eks.Cluster;
+// option 1: use a construct
+new eks.HelmChart(this, 'NginxIngress', {
+  cluster,
+  chart: 'nginx-ingress',
+  repository: 'https://helm.nginx.com/stable',
+  namespace: 'kube-system',
+  takeOwnership: true,
+});
+```
+
 ### OCI Charts
 
 OCI charts are also supported.
