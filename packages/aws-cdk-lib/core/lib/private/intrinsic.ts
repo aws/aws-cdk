@@ -1,3 +1,4 @@
+import { UnscopedValidationError } from '../errors';
 import { IResolvable, IResolveContext } from '../resolvable';
 import { captureStackTrace } from '../stack-trace';
 import { Token } from '../token';
@@ -48,7 +49,7 @@ export class Intrinsic implements IResolvable {
 
   constructor(value: any, options: IntrinsicProps = {}) {
     if (isFunction(value)) {
-      throw new Error(`Argument to Intrinsic must be a plain value object, got ${value}`);
+      throw new UnscopedValidationError(`Argument to Intrinsic must be a plain value object, got ${value}`);
     }
 
     this.creationStack = options.stackTrace ?? true ? captureStackTrace() : [];
