@@ -12,7 +12,6 @@ const wildcardOnlyActions = [
   'cloudfront:CreateOriginAccessControl',
   'cloudfront:CreatePublicKey',
   'cloudfront:CreateSavingsPlan',
-  'cloudfront:CreateVpcOrigin',
   'cloudfront:DeleteKeyGroup',
   'cloudfront:DeleteMonitoringSubscription',
   'cloudfront:DeletePublicKey',
