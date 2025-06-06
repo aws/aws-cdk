@@ -1310,7 +1310,7 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
    * - Can't be specified when `clusterSnapshotIdentifier` is specified.
    * - Must be specified when `clusterSnapshotIdentifier` isn't specified.
    *
-   * @default - restore from `clusterSnapshotIdentifier`
+   * @default - None
    */
   readonly snapshotIdentifier?: string;
 
@@ -1327,7 +1327,7 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
    * - Can't be the identifier of an Aurora DB cluster snapshot.
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromMultiAZDBClusterSnapshot.html
-   * @default - restore from `snapshotIdentifier`
+   * @default - None
    */
   readonly clusterSnapshotIdentifier?: string;
 
