@@ -449,27 +449,26 @@ const topic = new sns.Topic(this, 'ProtectedTopic', {
 AWS provides many built-in managed data identifiers for common sensitive data patterns:
 
 ```ts
+import { PersonalIdentifiers, FinancialIdentifiers, CredentialsIdentifiers } from 'aws-cdk-lib/aws-sns';
+
 // Personal information identifiers
-declare const personalIdentifiers: sns.PersonalIdentifiers;
-personalIdentifiers.NAME;                     // Full names
-personalIdentifiers.EMAIL_ADDRESS;            // Email addresses
-personalIdentifiers.ADDRESS;                  // Postal addresses
-personalIdentifiers.phoneNumber('US');        // Phone numbers (country-specific)
-personalIdentifiers.driversLicense('US');     // Driver's license numbers
-personalIdentifiers.passportNumber('US');     // Passport numbers
-personalIdentifiers.ssn('US');                // Social Security Numbers
+PersonalIdentifiers.NAME;                     // Full names
+PersonalIdentifiers.EMAIL_ADDRESS;            // Email addresses
+PersonalIdentifiers.ADDRESS;                  // Postal addresses
+PersonalIdentifiers.phoneNumber('US');        // Phone numbers (country-specific)
+PersonalIdentifiers.driversLicense('US');     // Driver's license numbers
+PersonalIdentifiers.passportNumber('US');     // Passport numbers
+PersonalIdentifiers.ssn('US');                // Social Security Numbers
 
 // Financial information identifiers
-declare const financialIdentifiers: sns.FinancialIdentifiers;
-financialIdentifiers.CREDIT_CARD_NUMBER;      // Credit card numbers
-financialIdentifiers.CREDIT_CARD_EXPIRATION;  // Expiration dates
-financialIdentifiers.CREDIT_CARD_CVV;         // Security codes (CVV)
-financialIdentifiers.bankAccountNumber('US'); // Bank account numbers
+FinancialIdentifiers.CREDIT_CARD_NUMBER;      // Credit card numbers
+FinancialIdentifiers.CREDIT_CARD_EXPIRATION;  // Expiration dates
+FinancialIdentifiers.CREDIT_CARD_CVV;         // Security codes (CVV)
+FinancialIdentifiers.bankAccountNumber('US'); // Bank account numbers
 
 // Credentials identifiers
-declare const credentialsIdentifiers: sns.CredentialsIdentifiers;
-credentialsIdentifiers.AWS_SECRET_KEY;        // AWS secret access keys
-credentialsIdentifiers.PRIVATE_KEY;           // Private keys
+CredentialsIdentifiers.AWS_SECRET_KEY;        // AWS secret access keys
+CredentialsIdentifiers.PRIVATE_KEY;           // Private keys
 ```
 
 ### Custom Data Identifiers
@@ -477,17 +476,12 @@ credentialsIdentifiers.PRIVATE_KEY;           // Private keys
 You can define custom data identifiers using regular expressions:
 
 ```ts
+import { CustomDataIdentifier } from 'aws-cdk-lib/aws-sns';
+
 // Custom pattern for employee IDs
-declare const customDataIdentifier: sns.CustomDataIdentifier;
-const employeeIdPattern = new customDataIdentifier({
+new CustomDataIdentifier({
   name: 'EmployeeID',
   regex: 'EMP-[0-9]{6}',
-});
-
-// Custom pattern for internal project codes
-const projectCodePattern = new customDataIdentifier({
-  name: 'ProjectCode',
-  regex: 'PROJ-[A-Z]{3}-[0-9]{4}',
 });
 ```
 
