@@ -33,11 +33,11 @@ const calico = new eks.HelmChart(stack, 'Calico', {
 
 const cnipatch = new eks.KubernetesPatch(stack, 'cnipatch', {
   cluster,
-  resourceName: "installation/default",
-  applyPatch: [{ "op": "replace", "path": "/spec/cni", "value": { "type": "Calico" } }],
-  restorePatch: [{ "op": "remove", "path": "/spec/cni" }],
+  resourceName: 'installation/default',
+  applyPatch: [{ op: 'replace', path: '/spec/cni', value: { 'type': 'Calico' } }],
+  restorePatch: [{ op: 'remove', path: '/spec/cni' }],
   patchType: eks.PatchType.JSON,
-})
+});
 
 cnipatch.node.addDependency(calico);
 
