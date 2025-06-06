@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9031aa9c241894d83d3aa2ad6318b25b18b255dc877b9cb9aee3b450f6affac2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/da2d1659e0fba9bbb75f78308e950385ec756012405fd368a7dab67f246e0804.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,7 +39,17 @@
             "type": "aws:cdk:analytics:construct",
             "data": {
               "maxAzs": "*",
-              "restrictDefaultSecurityGroup": false
+              "restrictDefaultSecurityGroup": false,
+              "ipProtocol": "Dual_Stack",
+              "ipAddresses": "*",
+              "natGateways": "*",
+              "subnetConfiguration": [
+                {
+                  "name": "*",
+                  "subnetType": "Public",
+                  "mapPublicIpOnLaunch": true
+                }
+              ]
             }
           }
         ],
@@ -47,6 +57,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/aws-cdk-nlb-integ/VPC/ipv6cidr": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCipv6cidr4D5C3141"
           }
         ],
         "/aws-cdk-nlb-integ/VPC/PublicSubnet1": [
@@ -58,7 +74,7 @@
               "cidrBlock": "*",
               "mapPublicIpOnLaunch": true,
               "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
+              "assignIpv6AddressOnCreation": true
             }
           },
           {
@@ -69,8 +85,16 @@
               "cidrBlock": "*",
               "mapPublicIpOnLaunch": true,
               "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
+              "assignIpv6AddressOnCreation": true
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -109,6 +133,12 @@
             "data": "VPCPublicSubnet1DefaultRoute91CEF279"
           }
         ],
+        "/aws-cdk-nlb-integ/VPC/PublicSubnet1/DefaultRoute6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute6AD2A6FA7"
+          }
+        ],
         "/aws-cdk-nlb-integ/VPC/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
@@ -130,7 +160,7 @@
               "cidrBlock": "*",
               "mapPublicIpOnLaunch": true,
               "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
+              "assignIpv6AddressOnCreation": true
             }
           },
           {
@@ -141,7 +171,7 @@
               "cidrBlock": "*",
               "mapPublicIpOnLaunch": true,
               "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
+              "assignIpv6AddressOnCreation": true
             }
           },
           {
@@ -150,11 +180,11 @@
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/aws-cdk-nlb-integ/VPC/PublicSubnet2/Subnet": [
@@ -181,120 +211,10 @@
             "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
-        "/aws-cdk-nlb-integ/VPC/PublicSubnet2/EIP": [
+        "/aws-cdk-nlb-integ/VPC/PublicSubnet2/DefaultRoute6": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2EIP4947BC00"
-          }
-        ],
-        "/aws-cdk-nlb-integ/VPC/PublicSubnet2/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2NATGateway3C070193"
-          }
-        ],
-        "/aws-cdk-nlb-integ/VPC/PrivateSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/aws-cdk-nlb-integ/VPC/PrivateSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
-          }
-        ],
-        "/aws-cdk-nlb-integ/VPC/PrivateSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
-          }
-        ],
-        "/aws-cdk-nlb-integ/VPC/PrivateSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
-          }
-        ],
-        "/aws-cdk-nlb-integ/VPC/PrivateSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
-          }
-        ],
-        "/aws-cdk-nlb-integ/VPC/PrivateSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/aws-cdk-nlb-integ/VPC/PrivateSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
-          }
-        ],
-        "/aws-cdk-nlb-integ/VPC/PrivateSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
-          }
-        ],
-        "/aws-cdk-nlb-integ/VPC/PrivateSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
-          }
-        ],
-        "/aws-cdk-nlb-integ/VPC/PrivateSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+            "data": "VPCPublicSubnet2DefaultRoute622F3CED9"
           }
         ],
         "/aws-cdk-nlb-integ/VPC/IGW": [
@@ -333,6 +253,18 @@
             "data": "DefaultNLB1C5840B5"
           }
         ],
+        "/aws-cdk-nlb-integ/DualStackNLB": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-nlb-integ/DualStackNLB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualStackNLBB6DAF750"
+          }
+        ],
         "/aws-cdk-nlb-integ/HostedZone": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -353,7 +285,7 @@
             "data": "HostedZoneDB99F866"
           }
         ],
-        "/aws-cdk-nlb-integ/HostedZone/IPv4NLBAlias": [
+        "/aws-cdk-nlb-integ/IPv4NLBAlias": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -371,13 +303,13 @@
             }
           }
         ],
-        "/aws-cdk-nlb-integ/HostedZone/IPv4NLBAlias/Resource": [
+        "/aws-cdk-nlb-integ/IPv4NLBAlias/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HostedZoneIPv4NLBAlias4A923F5D"
+            "data": "IPv4NLBAlias555335AB"
           }
         ],
-        "/aws-cdk-nlb-integ/HostedZone/DefaultNLBAlias": [
+        "/aws-cdk-nlb-integ/DefaultNLBAlias": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -395,10 +327,58 @@
             }
           }
         ],
-        "/aws-cdk-nlb-integ/HostedZone/DefaultNLBAlias/Resource": [
+        "/aws-cdk-nlb-integ/DefaultNLBAlias/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HostedZoneDefaultNLBAlias1E81DC24"
+            "data": "DefaultNLBAlias0A1ABDF9"
+          }
+        ],
+        "/aws-cdk-nlb-integ/DualStackNLBAlias": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/aws-cdk-nlb-integ/DualStackNLBAlias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualStackNLBAlias97874AF4"
+          }
+        ],
+        "/aws-cdk-nlb-integ/DualStackNLBIpv6Alias": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/aws-cdk-nlb-integ/DualStackNLBIpv6Alias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualStackNLBIpv6Alias70F79A05"
           }
         ],
         "/aws-cdk-nlb-integ/IPv4NLBAliasWithHealthCheck": [
