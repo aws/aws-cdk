@@ -3,13 +3,14 @@ import * as path from 'path';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { App, Stack } from 'aws-cdk-lib';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
 
 /**
  * Integration test for improved Helm chart error logging
- * 
+ *
  * This test creates a minimal EKS cluster and installs a Helm chart
  * to verify the improved error logging functionality.
  */
@@ -23,9 +24,9 @@ class HelmChartLoggingStack extends Stack {
     });
 
     // Create a minimal VPC with just one NAT gateway
-    const vpc = new ec2.Vpc(this, 'Vpc', { 
-      natGateways: 1, 
-      restrictDefaultSecurityGroup: false 
+    const vpc = new ec2.Vpc(this, 'Vpc', {
+      natGateways: 1,
+      restrictDefaultSecurityGroup: false,
     });
 
     // Create a minimal EKS cluster
@@ -36,9 +37,6 @@ class HelmChartLoggingStack extends Stack {
       ...getClusterVersionConfig(this),
     });
 
-    // Create a minimal test chart
-    const chartDir = path.join(__dirname, 'helm-chart-logging-test');
-    
     // Install a simple Helm chart from a public repository
     // Using the AWS Load Balancer Controller chart as it's commonly used
     cluster.addHelmChart('aws-load-balancer-controller', {
@@ -60,10 +58,25 @@ class HelmChartLoggingStack extends Stack {
       version: 'v0.1.0',
       namespace: 'ack-system',
       createNamespace: true,
-      values: { 
-        aws: { 
-          region: this.region 
-        } 
+      values: {
+        aws: {
+          region: this.region,
+        },
+      },
+    });
+
+    // Also install our local test chart
+    const chartAsset = new Asset(this, 'ChartAsset', {
+      path: path.join(__dirname, 'helm-chart-logging-test'),
+    });
+    
+    cluster.addHelmChart('local-test-chart', {
+      chartAsset: chartAsset,
+      namespace: 'default',
+      values: {
+        config: {
+          message: 'Custom message from integration test',
+        },
       },
     });
   }
