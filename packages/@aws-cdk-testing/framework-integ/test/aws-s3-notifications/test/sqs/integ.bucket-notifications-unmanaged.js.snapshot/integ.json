@@ -16,5 +16,6 @@
       "assertionStack": "SQSBucketNotificationsTest/DefaultTest/DeployAssert",
       "assertionStackName": "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -15,42 +15,17 @@ baseConfig.rules['import/no-extraneous-dependencies'] = [
 
 // no-throw-default-error
 baseConfig.rules['@cdklabs/no-throw-default-error'] = ['error'];
-// not yet supported
-const noThrowDefaultErrorNotYetSupported = [
-  'aws-ecs-patterns',
-  'aws-ecs',
-  'aws-eks',
-  'aws-elasticsearch',
-  'aws-events-targets',
-  'aws-globalaccelerator',
-  'aws-globalaccelerator-endpoints',
-  'aws-iam',
-  'aws-kms',
-  'aws-lambda-destinations',
-  'aws-lambda-event-sources',
-  'aws-lambda-nodejs',
-  'aws-opensearchservice',
-  'aws-scheduler-targets',
-  'aws-scheduler',
-  'aws-secretsmanager',
-  'aws-servicecatalog',
-  'aws-servicediscovery',
-  'aws-sns-subscriptions',
-  'aws-stepfunctions',
-  'aws-stepfunctions-tasks',
-  'core',
-  'custom-resources',
-  'region-info',
-];
 baseConfig.overrides.push({
+  rules: { "@cdklabs/no-throw-default-error": "off" },
   files: [
+    // Build and test files can have whatever error they like
     "./scripts/**",
     "./*/build-tools/**",
     "./*/test/**",
-    ...noThrowDefaultErrorNotYetSupported.map(m => `./${m}/lib/**`)
-  ],
-  rules: { "@cdklabs/no-throw-default-error": "off" },
-});
 
+    // Lambda Runtime code should use regular errors
+    "./custom-resources/lib/provider-framework/runtime/**",
+  ],
+});
 
 module.exports = baseConfig;

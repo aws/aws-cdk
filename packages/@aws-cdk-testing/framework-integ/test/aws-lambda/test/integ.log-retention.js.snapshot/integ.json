@@ -9,5 +9,6 @@
       "assertionStack": "LambdaLogRetentionInteg/DefaultTest/DeployAssert",
       "assertionStackName": "LambdaLogRetentionIntegDefaultTestDeployAssert90E53934"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

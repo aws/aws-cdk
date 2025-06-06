@@ -8,5 +8,6 @@
       "assertionStack": "cdk-integ-synthetics-canary-run-config/DefaultTest/DeployAssert",
       "assertionStackName": "cdkintegsyntheticscanaryrunconfigDefaultTestDeployAssertDF592B72"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

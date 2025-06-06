@@ -8,5 +8,6 @@
       "assertionStack": "integ-test-acu/DefaultTest/DeployAssert",
       "assertionStackName": "integtestacuDefaultTestDeployAssert17F73A1A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

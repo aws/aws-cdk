@@ -4,6 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { RemovalPolicy, Resource } from 'aws-cdk-lib/core';
 import { ITableBucket } from './table-bucket';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Parameters for constructing a TableBucketPolicy
@@ -32,7 +33,10 @@ export interface TableBucketPolicyProps {
  * You will almost never need to use this construct directly.
  * Instead, TableBucket.addToResourcePolicy can be used to add more policies to your bucket directly
  */
+@propertyInjectable
 export class TableBucketPolicy extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-s3tables-alpha.TableBucketPolicy';
   /**
    * The IAM PolicyDocument containing permissions represented by this policy.
    */

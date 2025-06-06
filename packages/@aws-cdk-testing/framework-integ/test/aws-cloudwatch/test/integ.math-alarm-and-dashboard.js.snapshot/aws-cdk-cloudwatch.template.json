@@ -12,7 +12,8 @@
      {
       "Expression": "m1+m2",
       "Id": "expr_1",
-      "Label": "Total Messages"
+      "Label": "Total Messages",
+      "ReturnData": true
      },
      {
       "Id": "m1",

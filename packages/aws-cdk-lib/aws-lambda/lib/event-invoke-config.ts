@@ -5,6 +5,7 @@ import { CfnEventInvokeConfig } from './lambda.generated';
 import { Duration, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Options to add an EventInvokeConfig to a function.
@@ -71,7 +72,11 @@ export interface EventInvokeConfigProps extends EventInvokeConfigOptions {
  * event fails all processing attempts or stays in the asynchronous invocation
  * queue for too long, Lambda discards it.
  */
+@propertyInjectable
 export class EventInvokeConfig extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.EventInvokeConfig';
+
   constructor(scope: Construct, id: string, props: EventInvokeConfigProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry

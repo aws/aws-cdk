@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnTaskDefinition } from './ecs.generated';
 import * as cdk from '../../core';
+import { ValidationError } from '../../core';
 
 /**
  * The properties for defining Linux-specific options that are applied to the container.
@@ -111,7 +112,7 @@ export class LinuxParameters extends Construct {
       props.sharedMemorySize !== undefined &&
       (!Number.isInteger(props.sharedMemorySize) || props.sharedMemorySize < 0)
     ) {
-      throw new Error(`sharedMemorySize: Must be an integer greater than 0; received ${props.sharedMemorySize}.`);
+      throw new ValidationError(`sharedMemorySize: Must be an integer greater than 0; received ${props.sharedMemorySize}.`, this);
     }
 
     if (
@@ -119,7 +120,7 @@ export class LinuxParameters extends Construct {
       props.swappiness !== undefined &&
       (!Number.isInteger(props.swappiness) || props.swappiness < 0 || props.swappiness > 100)
     ) {
-      throw new Error(`swappiness: Must be an integer between 0 and 100; received ${props.swappiness}.`);
+      throw new ValidationError(`swappiness: Must be an integer between 0 and 100; received ${props.swappiness}.`, this);
     }
   }
 

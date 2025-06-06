@@ -725,7 +725,8 @@ see [step function comparison operators](https://docs.aws.amazon.com/step-functi
 ### Parallel
 
 A `Parallel` state executes one or more subworkflows in parallel. It can also
-be used to catch and recover from errors in subworkflows.
+be used to catch and recover from errors in subworkflows. The `parameters` property
+can be used to transform the input that is passed to each branch of the parallel execution.
 
 ```ts
 const parallel = new sfn.Parallel(this, 'Do the work in parallel');
@@ -837,6 +838,27 @@ const definition = choice
     .next(finish);
 
 map.itemProcessor(definition);
+```
+
+When using `JSONata`, the `itemSelector` property in a Map state can be specified in one of two ways. You can provide a valid JSON object containing JSONata expressions for each value:
+
+```ts
+const map = new sfn.Map(this, 'Map State', {
+  maxConcurrency: 1,
+  itemSelector: {
+    id: '{% $states.context.Map.Item.Value.id %}',
+    status: '{% $states.context.Map.Item.Value.status %}',
+  }
+});
+```
+
+Alternatively, you can use the `jsonataItemSelector` field to directly supply a JSONata string that evaluates to a complete JSON object:
+
+```ts
+const map = new sfn.Map(this, 'Map State', {
+  maxConcurrency: 1,
+  jsonataItemSelector: '{% {\"id\": $states.input.id, \"status\": $states.input.status} %}'
+});
 ```
 
 To define a distributed `Map` state set `itemProcessors` mode to `ProcessorMode.DISTRIBUTED`.
@@ -1040,6 +1062,23 @@ const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
 });
 distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
 ```
+
+* If information about `bucket` is only known while starting execution of `StateMachine` (dynamically or at run-time) via JSON state input:
+```ts
+/**
+ * JSON state input:
+ *  {
+ *    "bucketName": "my-bucket"
+ *  }
+ */
+const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
+  resultWriterV2: new sfn.ResultWriterV2({
+    bucketNamePath: sfn.JsonPath.stringAt('$.bucketName'),
+  }),
+});
+distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
+```
+* Both `bucket` and `bucketNamePath` are mutually exclusive.
 
 If you want to specify the execution type for the ItemProcessor in the DistributedMap, you must set the `mapExecutionType` property in the `DistributedMap` class. When using the `DistributedMap` class, the `ProcessorConfig.executionType` property is ignored.
 
@@ -1549,6 +1588,7 @@ Any object that implements the `IGrantable` interface (has an associated princip
 * `stateMachine.grantRead(principal)` - grants the principal read access
 * `stateMachine.grantTaskResponse(principal)` - grants the principal the ability to send task tokens to the state machine
 * `stateMachine.grantExecution(principal, actions)` - grants the principal execution-level permissions for the IAM actions specified
+* `stateMachine.grantRedriveExecution(principal)` - grants the principal permission to redrive the executions of the state machine
 * `stateMachine.grant(principal, actions)` - grants the principal state-machine-level permissions for the IAM actions specified
 
 ### Start Execution Permission
@@ -1629,6 +1669,27 @@ The following read permissions are provided to a service principal by the `grant
 ### Execution-level Permissions
 
 Grant execution-level permissions to a state machine by calling the `grantExecution()` API:
+
+### Redrive Execution Permission
+
+Grant the given identity permission to redrive the execution of the state machine:
+
+```ts
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+declare const definition: sfn.IChainable;
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
+});
+
+// Give role permission to start execution of state machine
+stateMachine.grantStartExecution(role);
+// Give role permission to redrive any executions of the state machine
+stateMachine.grantRedriveExecution(role);
+```
+
 
 ```ts
 const role = new iam.Role(this, 'Role', {

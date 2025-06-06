@@ -8,5 +8,6 @@
       "assertionStack": "ecs-external-service-daemon/ecs-external-service-daemon-test/DefaultTest/DeployAssert",
       "assertionStackName": "ecsexternalservicedaemonecsexternalservicedaemontestDefaultTestDeployAssert31EDBC58"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

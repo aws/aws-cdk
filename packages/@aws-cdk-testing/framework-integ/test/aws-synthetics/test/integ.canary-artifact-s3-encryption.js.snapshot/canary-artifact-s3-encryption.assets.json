@@ -43,7 +43,7 @@
         }
       }
     },
-    "6b2541746043c96086962ea7cca0a8f1abad7af6742e105f5bebf98721efc7b4": {
+    "fcc9239d18c4a3405f0b64d87d48bb21c82cc4c09dbd3fb04f5f62286f0ca26b": {
       "displayName": "canary-artifact-s3-encryption Template",
       "source": {
         "path": "canary-artifact-s3-encryption.template.json",
@@ -52,7 +52,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6b2541746043c96086962ea7cca0a8f1abad7af6742e105f5bebf98721efc7b4.json",
+          "objectKey": "fcc9239d18c4a3405f0b64d87d48bb21c82cc4c09dbd3fb04f5f62286f0ca26b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

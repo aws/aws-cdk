@@ -777,7 +777,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 4
+    "AttributesRevision": 5
    },
    "DependsOn": [
     "DummyVpcIGW6BB373C0",
@@ -939,7 +939,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/be2f25eef91a3cf3d6a44c43cf0391f5a6fb297904cc2f0717d20073a2eb2720.json"
+       "/597959025f60f423972b54c5c04ed5ce7157e2802f6ae52be2c6cee62ebc10bc.json"
       ]
      ]
     }
@@ -989,7 +989,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/042afba41ec87fbe8f346f8d75088e2587ef44b849d9ba18bbc2efc3c141847f.json"
+       "/6c238fc1a4a4d4f2d3cd9bae4a540ef0438abb8838de5993d561e58e24635875.json"
       ]
      ]
     }

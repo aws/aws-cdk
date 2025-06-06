@@ -36,7 +36,7 @@ export class InstanceEndpoint implements ga.IEndpoint {
   public readonly region?: string;
 
   constructor(private readonly instance: ec2.IInstance, private readonly options: InstanceEndpointProps = {}) {
-    validateWeight(options.weight);
+    validateWeight(instance, options.weight);
 
     this.region = instance.env.region;
   }

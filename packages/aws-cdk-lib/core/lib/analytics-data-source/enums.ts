@@ -208,7 +208,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'AMAZON_OPENSEARCH_SERVICE',
     'HTTP',
     'RELATIONAL_DATABASE',
-    'AMAZON_BEDROCK_RUNTIME'
+    'AMAZON_BEDROCK_RUNTIME',
+    'AMAZON_ELASTICSEARCH'
   ],
   'AppSyncFieldLogLevel': [
     'NONE',
@@ -869,11 +870,17 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'nodejs14.x',
     'nodejs16.x',
     'nodejs18.x',
-    'nodejs20.x'
+    'nodejs20.x',
+    'nodejs22.x'
   ],
   'CustomThreatProtectionMode': [
     'ENFORCED',
     'AUDIT'
+  ],
+  'CustomizationType': [
+    'FINE_TUNING',
+    'CONTINUED_PRE_TRAINING',
+    'DISTILLATION'
   ],
   'DBClusterStorageType': [
     'aurora',
@@ -1475,6 +1482,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'http2and3',
     'http3'
   ],
+  'HttpsPolicy': [
+    'REQUIRE',
+    'REQUIRE_OPEN_ONLY',
+    'OPTIONAL'
+  ],
   'IdentityPoolProviderType': [
     'Facebook',
     'Google',
@@ -1713,6 +1725,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'is4gen',
     'storage7-intel-storage-optimized',
     'i7ie',
+    'io7_intel',
+    'i7i',
     'storage8-graviton',
     'i8g',
     'burstable2',
@@ -3333,6 +3347,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     4,
     5,
     6
+  ],
+  'TableBucketEncryption': [
+    'aws:kms',
+    'AES256'
   ],
   'TableClass': [
     'STANDARD',

@@ -50,5 +50,6 @@
       },
       "displayName": "PipelinesFileSystemLocations/Beta/Stack1"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

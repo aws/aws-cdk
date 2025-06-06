@@ -9,5 +9,6 @@
       "assertionStack": "ClusterSnapshotInteg/DefaultTest/DeployAssert",
       "assertionStackName": "ClusterSnapshotIntegDefaultTestDeployAssert647D4685"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

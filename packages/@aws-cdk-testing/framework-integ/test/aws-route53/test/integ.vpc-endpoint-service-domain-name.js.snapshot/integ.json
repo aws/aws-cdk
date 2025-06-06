@@ -9,5 +9,6 @@
       "assertionStack": "AwsCdkVpcEndpointDnsIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "AwsCdkVpcEndpointDnsIntegTestDefaultTestDeployAssertFB27EF1F"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -8,5 +8,6 @@
       "assertionStack": "ScramSecretIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "ScramSecretIntegTestDefaultTestDeployAssert4206AED8"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

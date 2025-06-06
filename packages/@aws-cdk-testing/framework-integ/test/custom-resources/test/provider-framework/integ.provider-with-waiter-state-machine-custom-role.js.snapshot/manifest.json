@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6bf02edad16e4b7f98d868fa73d9248429de9031826cb9d08b8e8c6c84f3ac67.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ad8d1ac1592f03ef142dbbabfd98bbaa24f47ce450944f22f1ca84c1bea00a23.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -732,60 +732,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "MyProviderWithCustomRoleframeworkonEventinlinePolicyAddedToExecutionRole004FDFBE5": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyProviderWithCustomRoleframeworkonEventinlinePolicyAddedToExecutionRole004FDFBE5",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyProviderWithCustomRoleframeworkonEventinlinePolicyAddedToExecutionRole1DFA8A188": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyProviderWithCustomRoleframeworkonEventinlinePolicyAddedToExecutionRole1DFA8A188",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyProviderWithCustomRoleframeworkisCompleteinlinePolicyAddedToExecutionRole0EB28FB28": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyProviderWithCustomRoleframeworkisCompleteinlinePolicyAddedToExecutionRole0EB28FB28",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyProviderWithCustomRoleframeworkisCompleteinlinePolicyAddedToExecutionRole10FC78DA4": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyProviderWithCustomRoleframeworkisCompleteinlinePolicyAddedToExecutionRole10FC78DA4",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyProviderWithCustomRoleframeworkonTimeoutinlinePolicyAddedToExecutionRole0F64E0BFD": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyProviderWithCustomRoleframeworkonTimeoutinlinePolicyAddedToExecutionRole0F64E0BFD",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyProviderWithCustomRoleframeworkonTimeoutinlinePolicyAddedToExecutionRole158451186": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyProviderWithCustomRoleframeworkonTimeoutinlinePolicyAddedToExecutionRole158451186",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "integ-provider-with-waiter-state-machine-custom-role"
@@ -845,5 +791,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1013.0"
+  "minimumCliVersion": "2.1015.0"
 }

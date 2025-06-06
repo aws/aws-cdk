@@ -9,5 +9,6 @@
       "assertionStack": "GlobalAcceleratorInteg/DefaultTest/DeployAssert",
       "assertionStackName": "GlobalAcceleratorIntegDefaultTestDeployAssert748E6B41"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

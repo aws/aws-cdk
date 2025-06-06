@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "5b7ddd1e0b18514d45c25a44b162f82431b091da093fb35e4b814bbba093c506": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "8cd7bcb3114618ca884484ae04be01e0f2cb39cb82ec0329458b778b3a35e79b": {
+    "23e1a9c9e6b0e34bb8783caeef085f1453bab4e8bebb56bdf2b987685327e7cf": {
       "displayName": "IntegCanaryTestDefaultTestDeployAssert3AD5A094 Template",
       "source": {
         "path": "IntegCanaryTestDefaultTestDeployAssert3AD5A094.template.json",
@@ -23,7 +23,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8cd7bcb3114618ca884484ae04be01e0f2cb39cb82ec0329458b778b3a35e79b.json",
+          "objectKey": "23e1a9c9e6b0e34bb8783caeef085f1453bab4e8bebb56bdf2b987685327e7cf.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

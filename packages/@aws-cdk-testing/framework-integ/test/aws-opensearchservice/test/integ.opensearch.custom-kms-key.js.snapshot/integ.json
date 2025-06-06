@@ -9,5 +9,6 @@
       "assertionStack": "OpenSearchCustomKmsInteg/DefaultTest/DeployAssert",
       "assertionStackName": "OpenSearchCustomKmsIntegDefaultTestDeployAssertA1F4FD6B"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

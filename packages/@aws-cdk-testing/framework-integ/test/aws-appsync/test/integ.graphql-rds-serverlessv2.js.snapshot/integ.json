@@ -8,5 +8,6 @@
       "assertionStack": "rds-serverlessV2-stack/DefaultTest/DeployAssert",
       "assertionStackName": "rdsserverlessV2stackDefaultTestDeployAssert877504EC"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

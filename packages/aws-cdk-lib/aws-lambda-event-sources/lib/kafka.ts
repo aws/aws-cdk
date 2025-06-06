@@ -5,7 +5,7 @@ import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { Stack, Names, Annotations } from '../../core';
+import { Stack, Names, Annotations, UnscopedValidationError, ValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 
 /**
@@ -221,7 +221,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
    */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
-      throw new Error('KafkaEventSource is not yet bound to an event source mapping');
+      throw new UnscopedValidationError('KafkaEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingId;
   }
@@ -231,7 +231,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
    */
   public get eventSourceMappingArn(): string {
     if (!this._eventSourceMappingArn) {
-      throw new Error('KafkaEventSource is not yet bound to an event source mapping');
+      throw new UnscopedValidationError('KafkaEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingArn;
   }
@@ -248,28 +248,28 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
     super(props);
     if (props.vpc) {
       if (!props.securityGroup) {
-        throw new Error('securityGroup must be set when providing vpc');
+        throw new UnscopedValidationError('securityGroup must be set when providing vpc');
       }
       if (!props.vpcSubnets) {
-        throw new Error('vpcSubnets must be set when providing vpc');
+        throw new UnscopedValidationError('vpcSubnets must be set when providing vpc');
       }
     } else if (!props.secret) {
-      throw new Error('secret must be set if Kafka brokers accessed over Internet');
+      throw new UnscopedValidationError('secret must be set if Kafka brokers accessed over Internet');
     }
 
     if (props.startingPosition === lambda.StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
-      throw new Error('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
+      throw new UnscopedValidationError('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
     }
 
     if (props.startingPosition !== lambda.StartingPosition.AT_TIMESTAMP && props.startingPositionTimestamp) {
-      throw new Error('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+      throw new UnscopedValidationError('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
     }
 
     this.innerProps = props;
   }
 
   public bind(target: lambda.IFunction) {
-    if (!(Construct.isConstruct(target))) { throw new Error('Function is not a construct. Unexpected error.'); }
+    if (!(Construct.isConstruct(target))) { throw new ValidationError('Function is not a construct. Unexpected error.', target); }
     target.addEventSourceMapping(
       this.mappingId(target),
       this.enrichMappingOptions({

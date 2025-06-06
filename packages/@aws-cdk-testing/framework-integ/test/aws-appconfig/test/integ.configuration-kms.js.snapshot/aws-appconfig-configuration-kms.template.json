@@ -1,0 +1,121 @@
+{
+ "Resources": {
+  "MyKey6AB29FA6": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyAppConfigB4B63E75": {
+   "Type": "AWS::AppConfig::Application",
+   "Properties": {
+    "Name": "AppForConfigTest"
+   }
+  },
+  "MyHostedConfigFromFileDeploymentStrategyCAF37A7C": {
+   "Type": "AWS::AppConfig::DeploymentStrategy",
+   "Properties": {
+    "DeploymentDurationInMinutes": 20,
+    "FinalBakeTimeInMinutes": 10,
+    "GrowthFactor": 10,
+    "GrowthType": "EXPONENTIAL",
+    "Name": "awsappconfigconfigurationkmsFromFile-DeploymentStrategy-4BD2B26C",
+    "ReplicateTo": "NONE"
+   }
+  },
+  "MyHostedConfigFromFileConfigurationProfile32B2D26F": {
+   "Type": "AWS::AppConfig::ConfigurationProfile",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "KmsKeyIdentifier": {
+     "Fn::GetAtt": [
+      "MyKey6AB29FA6",
+      "Arn"
+     ]
+    },
+    "LocationUri": "hosted",
+    "Name": "awsappconfigconfigurationkms-MyHostedConfigFromFile-EF9016BD"
+   }
+  },
+  "MyHostedConfigFromFile943CF9F9": {
+   "Type": "AWS::AppConfig::HostedConfigurationVersion",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyHostedConfigFromFileConfigurationProfile32B2D26F"
+    },
+    "Content": "{\n  \"content\": \"This is the configuration content\"\n}",
+    "ContentType": "application/json"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

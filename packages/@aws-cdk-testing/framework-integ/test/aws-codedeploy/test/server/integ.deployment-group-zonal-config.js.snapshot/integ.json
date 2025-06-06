@@ -8,5 +8,6 @@
       "assertionStack": "ServerDeploymentGroupZonalConfig/DefaultTest/DeployAssert",
       "assertionStackName": "ServerDeploymentGroupZonalConfigDefaultTestDeployAssertEA00EA72"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

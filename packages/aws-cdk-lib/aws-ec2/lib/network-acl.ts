@@ -4,6 +4,7 @@ import { AclCidr, AclTraffic } from './network-acl-types';
 import { ISubnet, IVpc, SubnetSelection } from './vpc';
 import { IResource, Resource, Tags } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Name tag constant
@@ -86,7 +87,11 @@ export interface NetworkAclProps {
  *
  *
  */
+@propertyInjectable
 export class NetworkAcl extends NetworkAclBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.NetworkAcl';
+
   /**
    * Import an existing NetworkAcl into this app.
    */
@@ -271,7 +276,10 @@ export interface NetworkAclEntryProps extends CommonNetworkAclEntryOptions {
  *
  *
  */
+@propertyInjectable
 export class NetworkAclEntry extends NetworkAclEntryBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.NetworkAclEntry';
   public readonly networkAcl: INetworkAcl;
 
   constructor(scope: Construct, id: string, props: NetworkAclEntryProps) {
@@ -345,7 +353,11 @@ export interface SubnetNetworkAclAssociationProps {
 abstract class SubnetNetworkAclAssociationBase extends Resource implements ISubnetNetworkAclAssociation {
   public abstract readonly subnetNetworkAclAssociationAssociationId: string;
 }
+@propertyInjectable
 export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.SubnetNetworkAclAssociation';
+
   public static fromSubnetNetworkAclAssociationAssociationId(
     scope: Construct, id: string,
     subnetNetworkAclAssociationAssociationId: string): ISubnetNetworkAclAssociation {

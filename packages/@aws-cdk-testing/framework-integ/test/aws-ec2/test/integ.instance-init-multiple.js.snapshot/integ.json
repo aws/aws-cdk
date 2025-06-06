@@ -8,5 +8,6 @@
       "assertionStack": "instance-test/DefaultTest/DeployAssert",
       "assertionStackName": "instancetestDefaultTestDeployAssert5516EAF1"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

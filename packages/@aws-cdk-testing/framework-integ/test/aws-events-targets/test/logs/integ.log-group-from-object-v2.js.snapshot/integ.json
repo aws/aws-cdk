@@ -9,5 +9,6 @@
       "assertionStack": "CloudWatchEventBridgeLogsTest/DefaultTest/DeployAssert",
       "assertionStackName": "CloudWatchEventBridgeLogsTestDefaultTestDeployAssertC7AA0EE9"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

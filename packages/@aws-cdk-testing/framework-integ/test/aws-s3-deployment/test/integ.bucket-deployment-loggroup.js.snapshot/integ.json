@@ -9,5 +9,6 @@
       "assertionStack": "integ-test-bucket-deployment-loggroup/DefaultTest/DeployAssert",
       "assertionStackName": "integtestbucketdeploymentloggroupDefaultTestDeployAssertB356FD0A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

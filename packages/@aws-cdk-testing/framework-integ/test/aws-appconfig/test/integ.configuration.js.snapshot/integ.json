@@ -15,5 +15,6 @@
       "assertionStack": "appconfig-configuration/DefaultTest/DeployAssert",
       "assertionStackName": "appconfigconfigurationDefaultTestDeployAssert6752CD38"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -9,5 +9,6 @@
       "assertionStack": "AwsCustomResourceSsmInteg/DefaultTest/DeployAssert",
       "assertionStackName": "AwsCustomResourceSsmIntegDefaultTestDeployAssert6F540A8B"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

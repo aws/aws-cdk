@@ -9,5 +9,6 @@
       "assertionStack": "LambdaEventSourceS3Integ/DefaultTest/DeployAssert",
       "assertionStackName": "LambdaEventSourceS3IntegDefaultTestDeployAssertACE2A452"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

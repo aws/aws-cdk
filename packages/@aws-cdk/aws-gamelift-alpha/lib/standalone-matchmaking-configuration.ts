@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 import * as gamelift from 'aws-cdk-lib/aws-gamelift';
 import { MatchmakingConfigurationProps, MatchmakingConfigurationBase, IMatchmakingConfiguration } from './matchmaking-configuration';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties for a new standalone matchmaking configuration
@@ -20,7 +21,11 @@ export interface StandaloneMatchmakingConfigurationProps extends MatchmakingConf
  *
  * @resource AWS::GameLift::MatchmakingConfiguration
  */
+@propertyInjectable
 export class StandaloneMatchmakingConfiguration extends MatchmakingConfigurationBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-gamelift-alpha.StandaloneMatchmakingConfiguration';
+
   /**
    * Import an existing matchmaking configuration from its name.
    */

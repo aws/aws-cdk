@@ -8,5 +8,6 @@
       "assertionStack": "ReplicationInteg/DefaultTest/DeployAssert",
       "assertionStackName": "ReplicationIntegDefaultTestDeployAssert2C07A074"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

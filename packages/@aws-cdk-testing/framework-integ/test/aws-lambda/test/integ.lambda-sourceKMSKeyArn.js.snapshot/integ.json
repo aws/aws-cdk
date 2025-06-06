@@ -8,5 +8,6 @@
       "assertionStack": "SourceKMSKeyArn/DefaultTest/DeployAssert",
       "assertionStackName": "SourceKMSKeyArnDefaultTestDeployAssertA9940761"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

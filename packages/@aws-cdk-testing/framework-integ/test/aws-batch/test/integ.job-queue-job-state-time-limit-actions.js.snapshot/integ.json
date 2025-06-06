@@ -8,5 +8,6 @@
       "assertionStack": "BatchEcsJobDefinitionTest/DefaultTest/DeployAssert",
       "assertionStackName": "BatchEcsJobDefinitionTestDefaultTestDeployAssertE5BAAC9B"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

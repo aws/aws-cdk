@@ -65,6 +65,10 @@
         },
         "FunctionEventType": {
             "comment": "The origin-X events are only available to Lambda@Edge functions"
+        },
+        "PriceClass": {
+            "values": ["None"],
+            "comment": "NONE is not supported"
         }
     },
     "iot": {

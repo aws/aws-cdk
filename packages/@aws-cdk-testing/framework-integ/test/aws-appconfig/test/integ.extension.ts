@@ -20,7 +20,11 @@ import {
   EventBridgeDestination,
 } from 'aws-cdk-lib/aws-appconfig';
 
-const cdkApp = new App();
+const cdkApp = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new Stack(cdkApp, 'aws-appconfig-extension');
 

@@ -15,7 +15,7 @@
         }
       }
     },
-    "5db7dfacb51ea1eaa46a4c9579528e2c89ab8dc2515c6ddbabdbc3897c896651": {
+    "500a31bda0ef5abe2231ecdd73df19521fac2ec2ea89fe0455772cefd32c710d": {
       "displayName": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution Template",
       "source": {
         "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5db7dfacb51ea1eaa46a4c9579528e2c89ab8dc2515c6ddbabdbc3897c896651.json",
+          "objectKey": "500a31bda0ef5abe2231ecdd73df19521fac2ec2ea89fe0455772cefd32c710d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

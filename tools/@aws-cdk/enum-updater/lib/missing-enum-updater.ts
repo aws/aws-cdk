@@ -2,7 +2,7 @@ import { IndentationText, Project, PropertyDeclaration, QuoteKind, Scope, Syntax
 import * as path from "path";
 import * as fs from "fs";
 import * as tmp from 'tmp';
-import { CDK_ENUMS, CdkEnums, normalizeEnumValues, normalizeValue, SDK_ENUMS, SdkEnums, STATIC_MAPPING, StaticMapping } from "./static-enum-mapping-updater";
+import { CDK_ENUMS, CdkEnums, downloadGithubRawFile, ENUM_LIKE_CLASSES_URL, ENUMS_URL, normalizeEnumValues, normalizeValue, processCdkEnums, SDK_ENUMS, SdkEnums, STATIC_MAPPING, StaticMapping } from "./static-enum-mapping-updater";
 
 const DIRECTORIES_TO_SKIP = [
   "node_modules",
@@ -512,6 +512,17 @@ export class MissingEnumsUpdater {
   }
 
   public async execute() {
+    const downloadedCdkEnumsPath = await downloadGithubRawFile(ENUMS_URL);
+    const downloadedCdkEnumsLikePath = await downloadGithubRawFile(ENUM_LIKE_CLASSES_URL);
+
+    if (!downloadedCdkEnumsPath.path || !downloadedCdkEnumsLikePath.path) {
+      console.error("Error: Missing required files.");
+      return;
+    }
+
+    console.log("CDK enums downloaded successfully.");
+    await processCdkEnums(downloadedCdkEnumsPath.path, downloadedCdkEnumsLikePath.path);
+
     const missingValuesPath = await this.analyzeMissingEnumValues()
     this.updateEnumLikeValues(missingValuesPath);
     this.updateEnumValues(missingValuesPath);

@@ -9,5 +9,6 @@
       "assertionStack": "IamRoleInteg/DefaultTest/DeployAssert",
       "assertionStackName": "IamRoleIntegDefaultTestDeployAssertBEF20992"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

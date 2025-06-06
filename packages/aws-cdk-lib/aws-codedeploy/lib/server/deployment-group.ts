@@ -9,6 +9,7 @@ import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
@@ -57,7 +58,10 @@ export interface ServerDeploymentGroupAttributes {
   readonly deploymentConfig?: IServerDeploymentConfig;
 }
 
+@propertyInjectable
 class ImportedServerDeploymentGroup extends ImportedDeploymentGroupBase implements IServerDeploymentGroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.ImportedServerDeploymentGroup';
   public readonly application: IServerApplication;
   public readonly role?: iam.Role = undefined;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;
@@ -244,7 +248,11 @@ export interface ServerDeploymentGroupProps {
  * A CodeDeploy Deployment Group that deploys to EC2/on-premise instances.
  * @resource AWS::CodeDeploy::DeploymentGroup
  */
+@propertyInjectable
 export class ServerDeploymentGroup extends DeploymentGroupBase implements IServerDeploymentGroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.ServerDeploymentGroup';
+
   /**
    * Import an EC2/on-premise Deployment Group defined either outside the CDK app,
    * or in a different region.

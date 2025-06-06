@@ -7,6 +7,7 @@ import * as iam from '../../../aws-iam';
 import { Aws, Resource } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IRoute } from '../common';
 
 /**
@@ -173,7 +174,13 @@ enum HttpRouteAuthorizationType {
  * Route class that creates the Route for API Gateway HTTP API
  * @resource AWS::ApiGatewayV2::Route
  */
+@propertyInjectable
 export class HttpRoute extends Resource implements IHttpRoute {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.HttpRoute';
+
   public readonly routeId: string;
   public readonly httpApi: IHttpApi;
   public readonly path?: string;

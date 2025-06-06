@@ -1,5 +1,6 @@
 import { TagType } from './cfn-resource';
 import { CfnTag } from './cfn-tag';
+import { UnscopedValidationError } from './errors';
 import { Lazy } from './lazy';
 import { IResolvable } from './resolvable';
 
@@ -67,7 +68,7 @@ interface ITagFormatter {
 class StandardFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
     if (!Array.isArray(cfnPropertyTags)) {
-      throw new Error(`Invalid tag input expected array of {key, value} have ${JSON.stringify(cfnPropertyTags)}`);
+      throw new UnscopedValidationError(`Invalid tag input expected array of {key, value} have ${JSON.stringify(cfnPropertyTags)}`);
     }
 
     const tags: Tag[] = [];
@@ -105,7 +106,7 @@ class StandardFormatter implements ITagFormatter {
 class AsgFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
     if (!Array.isArray(cfnPropertyTags)) {
-      throw new Error(`Invalid tag input expected array of {key, value, propagateAtLaunch} have ${JSON.stringify(cfnPropertyTags)}`);
+      throw new UnscopedValidationError(`Invalid tag input expected array of {key, value, propagateAtLaunch} have ${JSON.stringify(cfnPropertyTags)}`);
     }
 
     const tags: Tag[] = [];
@@ -148,7 +149,7 @@ class AsgFormatter implements ITagFormatter {
 class MapFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
     if (Array.isArray(cfnPropertyTags) || typeof(cfnPropertyTags) !== 'object') {
-      throw new Error(`Invalid tag input expected map of {key: value} have ${JSON.stringify(cfnPropertyTags)}`);
+      throw new UnscopedValidationError(`Invalid tag input expected map of {key: value} have ${JSON.stringify(cfnPropertyTags)}`);
     }
 
     const tags: Tag[] = [];
@@ -387,7 +388,7 @@ export class TagManager {
    */
   public renderTags(combineWithTags?: any): any {
     if (combineWithTags !== undefined && this.didHaveInitialTags) {
-      throw new Error('Specify external tags either during the creation of TagManager, or as a parameter to renderTags(), but not both');
+      throw new UnscopedValidationError('Specify external tags either during the creation of TagManager, or as a parameter to renderTags(), but not both');
     }
     this.parseExternalTags(combineWithTags);
     const formattedTags = this.tagFormatter.formatTags(this.sortedTags);

@@ -1,6 +1,7 @@
 import { Construct, IConstruct } from 'constructs';
 import { Annotations } from './annotations';
 import { IAspect, Aspects, AspectOptions } from './aspect';
+import { UnscopedValidationError } from './errors';
 import { mutatingAspectPrio32333 } from './private/aspect-prio';
 import { ITaggable, ITaggableV2, TagManager } from './tag-manager';
 
@@ -117,7 +118,7 @@ export class Tag extends TagBase {
   constructor(key: string, value: string, props: TagProps = {}) {
     super(key, props);
     if (value === undefined) {
-      throw new Error('Tag must have a value');
+      throw new UnscopedValidationError('Tag must have a value');
     }
     this.value = value;
   }

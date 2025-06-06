@@ -9,5 +9,6 @@
       "assertionStack": "ServerAccessLogsImportTest/DefaultTest/DeployAssert",
       "assertionStackName": "ServerAccessLogsImportTestDefaultTestDeployAssert076DA7F5"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -7,6 +7,7 @@ import {
 import { Duration, Lazy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Construction properties for a LoadBalancer
@@ -236,7 +237,13 @@ export enum LoadBalancingProtocol {
  *
  * Routes to a fleet of of instances in a VPC.
  */
+@propertyInjectable
 export class LoadBalancer extends Resource implements IConnectable {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancing.LoadBalancer';
+
   /**
    * Control all connections from and to this load balancer
    */

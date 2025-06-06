@@ -1,0 +1,813 @@
+{
+  "version": "43.0.0",
+  "artifacts": {
+    "lambda-alarm-multiple-stepscalingpolicy.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambda-alarm-multiple-stepscalingpolicy.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambda-alarm-multiple-stepscalingpolicy": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-alarm-multiple-stepscalingpolicy.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/35a7a60080f6b049183fb91eb6885b7c36daec82adbe16993fe0b53cd1dbf531.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambda-alarm-multiple-stepscalingpolicy.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambda-alarm-multiple-stepscalingpolicy.assets"
+      ],
+      "metadata": {
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaServiceRole4539ECB6"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaCCE802FB"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda/lambdaalarmmultiplestepscalingpolicyFleetMetricScale1LowerAlarm26FCB6BFAlarmPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdalambdaalarmmultiplestepscalingpolicyFleetMetricScale1LowerAlarm26FCB6BFAlarmPermissionAE6E55ED"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda/lambdaalarmmultiplestepscalingpolicyFleetMetricScale2LowerAlarmF7A6FD04AlarmPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdalambdaalarmmultiplestepscalingpolicyFleetMetricScale2LowerAlarmF7A6FD04AlarmPermissionB974C18D"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda/lambdaalarmmultiplestepscalingpolicyFleetMetricScale1UpperAlarmCC4FF656AlarmPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdalambdaalarmmultiplestepscalingpolicyFleetMetricScale1UpperAlarmCC4FF656AlarmPermissionE0CEF090"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda/lambdaalarmmultiplestepscalingpolicyFleetMetricScale2UpperAlarmC5D62FBBAlarmPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdalambdaalarmmultiplestepscalingpolicyFleetMetricScale2UpperAlarmC5D62FBBAlarmPermissionFE0DB2BA"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda2/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda2/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda2/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambda2ServiceRoleD09B370C"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambda2254B54D5"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda2/lambdaalarmmultiplestepscalingpolicyFleetMetricScale1LowerAlarm26FCB6BFAlarmPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambda2lambdaalarmmultiplestepscalingpolicyFleetMetricScale1LowerAlarm26FCB6BFAlarmPermission99EEEE99"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda2/lambdaalarmmultiplestepscalingpolicyFleetMetricScale2LowerAlarmF7A6FD04AlarmPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambda2lambdaalarmmultiplestepscalingpolicyFleetMetricScale2LowerAlarmF7A6FD04AlarmPermission0CB39419"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda2/lambdaalarmmultiplestepscalingpolicyFleetMetricScale1UpperAlarmCC4FF656AlarmPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambda2lambdaalarmmultiplestepscalingpolicyFleetMetricScale1UpperAlarmCC4FF656AlarmPermissionD8DBF034"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda2/lambdaalarmmultiplestepscalingpolicyFleetMetricScale2UpperAlarmC5D62FBBAlarmPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambda2lambdaalarmmultiplestepscalingpolicyFleetMetricScale2UpperAlarmC5D62FBBAlarmPermissionE6127658"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*",
+              "restrictDefaultSecurityGroup": false
+            }
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1SubnetB4246D30"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1EIP6AD938E8"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1NATGatewayE0556630"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2Subnet74179F39"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2EIP4947BC00"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2NATGateway3C070193"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "instanceType": "*",
+              "machineImage": "*"
+            }
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true
+            }
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetInstanceSecurityGroupA8C3D7AD"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/InstanceRole/ImportInstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetInstanceRoleA605DB82"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetInstanceProfileC6192A66"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/LaunchTemplate": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "machineImage": "*",
+              "instanceType": "*",
+              "detailedMonitoring": false,
+              "securityGroup": "*",
+              "userData": "*",
+              "associatePublicIpAddress": "*",
+              "spotOptions": "*",
+              "blockDevices": "*",
+              "instanceProfile": "*",
+              "keyPair": "*"
+            }
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/LaunchTemplate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetLaunchTemplate3FC2FEAE"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetASG3971DFE5"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/MetricScale1/LowerPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetMetricScale1LowerPolicyC377577F"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/MetricScale1/LowerAlarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "metric": {
+                "warnings": "*"
+              },
+              "alarmDescription": "*",
+              "comparisonOperator": "*",
+              "evaluationPeriods": "*",
+              "datapointsToAlarm": "*",
+              "threshold": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/MetricScale1/LowerAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetMetricScale1LowerAlarmE1A421C4"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/MetricScale1/UpperPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetMetricScale1UpperPolicyC55514F0"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/MetricScale1/UpperAlarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "metric": {
+                "warnings": "*"
+              },
+              "alarmDescription": "*",
+              "comparisonOperator": "*",
+              "evaluationPeriods": "*",
+              "datapointsToAlarm": "*",
+              "threshold": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/MetricScale1/UpperAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetMetricScale1UpperAlarmEFEBE133"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/MetricScale2/LowerPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetMetricScale2LowerPolicy62CA5A94"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/MetricScale2/LowerAlarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "metric": {
+                "warnings": "*"
+              },
+              "alarmDescription": "*",
+              "comparisonOperator": "*",
+              "evaluationPeriods": "*",
+              "datapointsToAlarm": "*",
+              "threshold": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/MetricScale2/LowerAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetMetricScale2LowerAlarm2AB38D04"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/MetricScale2/UpperPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetMetricScale2UpperPolicy0F8B3659"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/MetricScale2/UpperAlarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "metric": {
+                "warnings": "*"
+              },
+              "alarmDescription": "*",
+              "comparisonOperator": "*",
+              "evaluationPeriods": "*",
+              "datapointsToAlarm": "*",
+              "threshold": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/Fleet/MetricScale2/UpperAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetMetricScale2UpperAlarm79F1092E"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-alarm-multiple-stepscalingpolicy"
+    },
+    "lambdaalarmmultiplestepscalingpolicytestDefaultTestDeployAssertD4E8CDE5.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambdaalarmmultiplestepscalingpolicytestDefaultTestDeployAssertD4E8CDE5.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambdaalarmmultiplestepscalingpolicytestDefaultTestDeployAssertD4E8CDE5": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambdaalarmmultiplestepscalingpolicytestDefaultTestDeployAssertD4E8CDE5.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambdaalarmmultiplestepscalingpolicytestDefaultTestDeployAssertD4E8CDE5.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambdaalarmmultiplestepscalingpolicytestDefaultTestDeployAssertD4E8CDE5.assets"
+      ],
+      "metadata": {
+        "/lambda-alarm-multiple-stepscalingpolicy-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-alarm-multiple-stepscalingpolicy-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1014.0"
+}

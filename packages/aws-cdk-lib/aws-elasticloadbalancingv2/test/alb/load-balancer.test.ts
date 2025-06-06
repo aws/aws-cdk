@@ -28,7 +28,7 @@ describe('tests', () => {
     });
   });
 
-  test.each([-1, 99, 100.5, 1501])('throw error for invalid range minimum capacity unit', (minimumCapacityUnit) => {
+  test.each([-1, 99, 100.5])('throw error for invalid range minimum capacity unit', (minimumCapacityUnit) => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -40,7 +40,7 @@ describe('tests', () => {
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
         minimumCapacityUnit,
       });
-    }).toThrow(`'minimumCapacityUnit' must be a positive integer between 100 and 1500 for Application Load Balancer, got: ${minimumCapacityUnit}.`);
+    }).toThrow(`'minimumCapacityUnit' must be a positive integer greater than or equal to 100 for Application Load Balancer, got: ${minimumCapacityUnit}.`);
   });
 
   test('Trivial construction: internet facing', () => {

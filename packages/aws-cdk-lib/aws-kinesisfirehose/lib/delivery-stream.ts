@@ -5,11 +5,13 @@ import { FirehoseMetrics } from './kinesisfirehose-canned-metrics.generated';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
 import { ISource } from './source';
 import * as cloudwatch from '../../aws-cloudwatch';
-import * as ec2 from '../../aws-ec2';
+import { Connections, IConnectable } from '../../aws-ec2/lib/connections';
+import { Peer } from '../../aws-ec2/lib/peer';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { RegionInfo } from '../../region-info';
 
 const PUT_RECORD_ACTIONS = [
@@ -20,7 +22,7 @@ const PUT_RECORD_ACTIONS = [
 /**
  * Represents an Amazon Data Firehose delivery stream.
  */
-export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable {
+export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, IConnectable {
   /**
    * The ARN of the delivery stream.
    *
@@ -101,7 +103,7 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
   /**
    * Network connections between Amazon Data Firehose and other resources, i.e. Redshift cluster.
    */
-  public readonly connections: ec2.Connections;
+  public readonly connections: Connections;
 
   constructor(scope: Construct, id: string, props: cdk.ResourceProps = {}) {
     super(scope, id, props);
@@ -257,7 +259,11 @@ export interface DeliveryStreamAttributes {
  *
  * @resource AWS::KinesisFirehose::DeliveryStream
  */
+@propertyInjectable
 export class DeliveryStream extends DeliveryStreamBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kinesisfirehose.DeliveryStream';
+
   /**
    * Import an existing delivery stream from its name.
    */
@@ -409,7 +415,7 @@ function setConnections(scope: Construct) {
 
   const cidrBlock = cfnMapping.findInMap(stack.region, 'FirehoseCidrBlock');
 
-  return new ec2.Connections({
-    peer: ec2.Peer.ipv4(cidrBlock),
+  return new Connections({
+    peer: Peer.ipv4(cidrBlock),
   });
 }

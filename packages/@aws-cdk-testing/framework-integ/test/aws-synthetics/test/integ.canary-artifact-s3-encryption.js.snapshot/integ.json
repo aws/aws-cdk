@@ -8,5 +8,6 @@
       "assertionStack": "IntegCanaryTest/DefaultTest/DeployAssert",
       "assertionStackName": "IntegCanaryTestDefaultTestDeployAssert3AD5A094"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

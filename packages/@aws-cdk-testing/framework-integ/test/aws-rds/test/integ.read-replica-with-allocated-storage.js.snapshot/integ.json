@@ -8,5 +8,6 @@
       "assertionStack": "aws-cdk-rds-read-replica-with-allocated-storage-test/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkrdsreadreplicawithallocatedstoragetestDefaultTestDeployAssertAFB26D39"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

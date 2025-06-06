@@ -6,6 +6,7 @@ import { Runtime } from './runtime';
 import { IResource, RemovalPolicy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Non runtime options
@@ -148,7 +149,11 @@ export interface LayerVersionAttributes {
 /**
  * Defines a new Lambda Layer version.
  */
+@propertyInjectable
 export class LayerVersion extends LayerVersionBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.LayerVersion';
+
   /**
    * Imports a layer version by ARN. Assumes it is compatible with all Lambda runtimes.
    */

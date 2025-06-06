@@ -9,5 +9,6 @@
       "assertionStack": "integ-user-pool-client-secret-test/DefaultTest/DeployAssert",
       "assertionStackName": "integuserpoolclientsecrettestDefaultTestDeployAssert4FDD1661"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

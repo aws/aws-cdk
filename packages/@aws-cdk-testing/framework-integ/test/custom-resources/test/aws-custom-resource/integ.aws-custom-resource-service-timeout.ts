@@ -10,7 +10,11 @@ import { Construct } from 'constructs';
  * - Verify that `ServiceTimeout` is set to 60 in the CloudWatch Logs for the Lambda function that creates custom resources.
  */
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 class CreateParameterStack extends Stack {
   public readonly parameterName: string;

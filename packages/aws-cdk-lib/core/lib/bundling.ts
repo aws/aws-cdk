@@ -2,6 +2,7 @@ import { spawnSync } from 'child_process';
 import * as crypto from 'crypto';
 import { isAbsolute, join } from 'path';
 import { DockerCacheOption } from './assets';
+import { ExecutionError, UnscopedValidationError } from './errors';
 import { FileSystem } from './fs';
 import { dockerExec } from './private/asset-staging';
 import { quiet, reset } from './private/jsii-deprecated';
@@ -312,7 +313,7 @@ export class BundlingDockerImage {
     const { stdout } = dockerExec(['create', this.image], {}); // Empty options to avoid stdout redirect here
     const match = stdout.toString().match(/([0-9a-f]{16,})/);
     if (!match) {
-      throw new Error('Failed to extract container ID from Docker create output');
+      throw new ExecutionError('Failed to extract container ID from Docker create output');
     }
 
     const containerId = match[1];
@@ -322,7 +323,7 @@ export class BundlingDockerImage {
       dockerExec(['cp', containerPath, destPath]);
       return destPath;
     } catch (err) {
-      throw new Error(`Failed to copy files from ${containerPath} to ${destPath}: ${err}`);
+      throw new ExecutionError(`Failed to copy files from ${containerPath} to ${destPath}: ${err}`);
     } finally {
       dockerExec(['rm', '-v', containerId]);
     }
@@ -343,7 +344,7 @@ export class DockerImage extends BundlingDockerImage {
     const buildArgs = options.buildArgs || {};
 
     if (options.file && isAbsolute(options.file)) {
-      throw new Error(`"file" must be relative to the docker build directory. Got ${options.file}`);
+      throw new UnscopedValidationError(`"file" must be relative to the docker build directory. Got ${options.file}`);
     }
 
     // Image tag derived from path and build options

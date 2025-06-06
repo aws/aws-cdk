@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { CfnDetectorModel } from 'aws-cdk-lib/aws-iotevents';
 import { State } from './state';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents an AWS IoT Events detector model.
@@ -93,7 +94,11 @@ export interface DetectorModelProps {
 /**
  * Defines an AWS IoT Events detector model in this stack.
  */
+@propertyInjectable
 export class DetectorModel extends Resource implements IDetectorModel {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-iotevents-alpha.DetectorModel';
+
   /**
    * Import an existing detector model.
    */

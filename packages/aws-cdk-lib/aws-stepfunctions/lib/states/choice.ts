@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
 import { AssignableStateOptions, ChoiceTransitionOptions, JsonataCommonOptions, JsonPathCommonOptions, State, StateBaseProps } from './state';
+import { UnscopedValidationError } from '../../../core';
 import { Chain } from '../chain';
 import { Condition } from '../condition';
 import { IChainable, INextable, QueryLanguage } from '../types';
@@ -81,7 +82,7 @@ export class Choice extends State {
   public afterwards(options: AfterwardsOptions = {}): Chain {
     const endStates = State.filterNextables(State.findReachableEndStates(this, { includeErrorHandlers: options.includeErrorHandlers }));
     if (options.includeOtherwise && this.defaultChoice) {
-      throw new Error(`'includeOtherwise' set but Choice state ${this.stateId} already has an 'otherwise' transition`);
+      throw new UnscopedValidationError(`'includeOtherwise' set but Choice state ${this.stateId} already has an 'otherwise' transition`);
     }
     if (options.includeOtherwise) {
       endStates.push(new DefaultAsNext(this));

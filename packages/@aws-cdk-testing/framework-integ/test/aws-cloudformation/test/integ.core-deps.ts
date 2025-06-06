@@ -64,7 +64,11 @@ class TestNestedStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new TestStack(app, 'replace-depends-on-test');
 const nestedStack = new TestNestedStack(app, 'nested-stack-depends-test');
 

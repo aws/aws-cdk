@@ -65,5 +65,6 @@
       },
       "displayName": "CdkPipelineInvestigationStack/Prod/ProdStack"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

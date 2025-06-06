@@ -5,7 +5,11 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { TestFunction } from './test-function';
 import { KinesisEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new Stack(app, 'lambda-event-source-kinesis-at-timestamp');
 

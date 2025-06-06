@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "AlbTargetGroupIpAddressTypeTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4c82a8fdb208dcd82c38a9e1a9529620eb2a7e68e38008b86e71341b1fd24438.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a5f349d2012910564f6a7d7e399ca3df85383900eef82fe77a7386711c466ba1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -533,12 +533,6 @@
             "data": "DualstackVpcVPCGWBFA6CC4A"
           }
         ],
-        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/EIGW6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcEIGW61425E04A"
-          }
-        ],
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/RestrictDefaultSecurityGroupCustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -573,6 +567,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "DualstackVpcEIGW61425E04A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcEIGW61425E04A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -633,5 +636,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1016.1"
 }

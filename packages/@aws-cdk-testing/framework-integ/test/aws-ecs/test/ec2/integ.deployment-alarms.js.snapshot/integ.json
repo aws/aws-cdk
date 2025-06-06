@@ -8,5 +8,6 @@
       "assertionStack": "DeploymentAlarms/DefaultTest/DeployAssert",
       "assertionStackName": "DeploymentAlarmsDefaultTestDeployAssertAFB973D1"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

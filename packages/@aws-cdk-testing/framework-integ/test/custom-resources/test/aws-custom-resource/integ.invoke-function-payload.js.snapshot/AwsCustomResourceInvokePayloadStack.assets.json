@@ -15,7 +15,7 @@
         }
       }
     },
-    "5beb860e86784f8f88d61ee811d10f7b306e8d7f23b00c4b6e9d48e8649c027c": {
+    "183d5d3678f28c96992e815fb764a3289a7cc959497e79273501318014cd169a": {
       "displayName": "AwsCustomResourceInvokePayloadStack Template",
       "source": {
         "path": "AwsCustomResourceInvokePayloadStack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5beb860e86784f8f88d61ee811d10f7b306e8d7f23b00c4b6e9d48e8649c027c.json",
+          "objectKey": "183d5d3678f28c96992e815fb764a3289a7cc959497e79273501318014cd169a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

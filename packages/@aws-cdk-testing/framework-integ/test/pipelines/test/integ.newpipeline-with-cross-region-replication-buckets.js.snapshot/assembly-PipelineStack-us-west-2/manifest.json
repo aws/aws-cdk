@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "artifacts": {
     "PipelineStackuswest2Queue1C1AD8043.assets": {
       "type": "cdk:asset-manifest",
@@ -35,6 +35,12 @@
         "PipelineStackuswest2Queue1C1AD8043.assets"
       ],
       "metadata": {
+        "/PipelineStack/us-west-2/Queue1/Queue": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/PipelineStack/us-west-2/Queue1/Queue/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -56,5 +62,6 @@
       },
       "displayName": "PipelineStack/us-west-2/Queue1"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "41.0.0",
   "testCases": {
     "ReplicationInteg/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "ReplicationInteg/DefaultTest/DeployAssert",
       "assertionStackName": "ReplicationIntegDefaultTestDeployAssert2C07A074"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

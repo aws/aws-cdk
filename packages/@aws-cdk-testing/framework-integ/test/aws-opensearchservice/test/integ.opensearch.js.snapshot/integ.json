@@ -9,5 +9,6 @@
       "assertionStack": "OpenSearchInteg/DefaultTest/DeployAssert",
       "assertionStackName": "OpenSearchIntegDefaultTestDeployAssertFAE78D8A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

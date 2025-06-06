@@ -8,5 +8,6 @@
       "assertionStack": "test-aurora-pub-sn-cluster/DefaultTest/DeployAssert",
       "assertionStackName": "testaurorapubsnclusterDefaultTestDeployAssert6E7F54F3"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

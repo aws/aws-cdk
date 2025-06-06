@@ -6,6 +6,7 @@ import { ICertificate } from '../../aws-certificatemanager';
 import { IResource, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, AwsSdkCall, PhysicalResourceId } from '../../custom-resources';
 
 /**
@@ -106,7 +107,11 @@ export interface UserPoolDomainProps extends UserPoolDomainOptions {
 /**
  * Define a user pool domain
  */
+@propertyInjectable
 export class UserPoolDomain extends Resource implements IUserPoolDomain {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito.UserPoolDomain';
+
   /**
    * Import a UserPoolDomain given its domain name
    */

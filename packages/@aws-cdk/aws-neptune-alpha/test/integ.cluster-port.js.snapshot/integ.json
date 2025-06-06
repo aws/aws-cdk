@@ -8,5 +8,6 @@
       "assertionStack": "NeptuneClusterPortTest/DefaultTest/DeployAssert",
       "assertionStackName": "NeptuneClusterPortTestDefaultTestDeployAssert7A0847B4"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

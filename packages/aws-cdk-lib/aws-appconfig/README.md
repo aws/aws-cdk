@@ -96,25 +96,6 @@ const user = new iam.User(this, 'MyUser');
 env.grantReadConfig(user);
 ```
 
-### Deletion Protection Check
-
-You can enable [deletion protection](https://docs.aws.amazon.com/appconfig/latest/userguide/deletion-protection.html) on the environment by setting the `deletionProtectionCheck` property.
-
-- ACCOUNT_DEFAULT: The default setting, which uses account-level deletion protection. To configure account-level deletion protection, use the UpdateAccountSettings API.
-- APPLY: Instructs the deletion protection check to run, even if deletion protection is disabled at the account level. APPLY also forces the deletion protection check to run against resources created in the past hour, which are normally excluded from deletion protection checks.
-- BYPASS: Instructs AWS AppConfig to bypass the deletion protection check and delete an environment even if deletion protection would have otherwise prevented it.
-
-```ts
-declare const application: appconfig.Application;
-declare const alarm: cloudwatch.Alarm;
-declare const compositeAlarm: cloudwatch.CompositeAlarm;
-
-new appconfig.Environment(this, 'MyEnvironment', {
-  application,
-  deletionProtectionCheck: appconfig.DeletionProtectionCheck.APPLY,
-});
-```
-
 ## Deployment Strategy
 
 [AWS AppConfig Deployment Strategy Documentation](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-deployment-strategy.html)
@@ -393,6 +374,20 @@ The declaration order will be respected regardless of the approach used.
 > [!IMPORTANT]
 > If none of these options are utilized, there will not be any deployments.
 
+You can use customer managed key to encrypt a hosted configuration. For mora information, see [Data encryption at rest for AWS AppConfig](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-security.html#appconfig-security-data-encryption).
+
+```ts
+declare const application: appconfig.Application;
+declare const kmsKey: kms.Key;
+
+new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
+  application,
+  content: appconfig.ConfigurationContent.fromInlineText('This is my configuration content.'),
+  type: appconfig.ConfigurationType.FEATURE_FLAGS,
+  kmsKey, // set customer managed key
+});
+```
+
 ### SourcedConfiguration
 
 A sourced configuration represents configuration stored in any of the following:
@@ -548,6 +543,40 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
       finalBakeTime: Duration.minutes(15),
     }),
   }),
+});
+```
+
+## Deletion Protection Check
+
+You can enable [deletion protection](https://docs.aws.amazon.com/appconfig/latest/userguide/deletion-protection.html) on the environment and configuration profile by setting the `deletionProtectionCheck` property.
+
+- ACCOUNT_DEFAULT: The default setting, which uses account-level deletion protection. To configure account-level deletion protection, use the UpdateAccountSettings API.
+- APPLY: Instructs the deletion protection check to run, even if deletion protection is disabled at the account level. APPLY also forces the deletion protection check to run against resources created in the past hour, which are normally excluded from deletion protection checks.
+- BYPASS: Instructs AWS AppConfig to bypass the deletion protection check and delete an environment even if deletion protection would have otherwise prevented it.
+
+```ts
+declare const application: appconfig.Application;
+declare const alarm: cloudwatch.Alarm;
+declare const compositeAlarm: cloudwatch.CompositeAlarm;
+declare const bucket: s3.Bucket;
+
+// Environment deletion protection check
+new appconfig.Environment(this, 'MyEnvironment', {
+  application,
+  deletionProtectionCheck: appconfig.DeletionProtectionCheck.APPLY,
+});
+
+// configuration profile with deletion protection check
+new appconfig.HostedConfiguration(this, 'MyHostedConfigFromFile', {
+  application,
+  content: appconfig.ConfigurationContent.fromFile('config.json'),
+  deletionProtectionCheck: appconfig.DeletionProtectionCheck.BYPASS,
+});
+
+new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
+  application,
+  location: appconfig.ConfigurationSource.fromBucket(bucket, 'path/to/file.json'),
+  deletionProtectionCheck: appconfig.DeletionProtectionCheck.ACCOUNT_DEFAULT,
 });
 ```
 

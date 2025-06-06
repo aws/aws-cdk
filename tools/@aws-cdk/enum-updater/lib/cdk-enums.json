@@ -117,7 +117,8 @@
         "PHP_81",
         "PYTHON_3",
         "PYTHON_311",
-        "RUBY_31"
+        "RUBY_31",
+        "NODEJS_22"
       ]
     }
   },
@@ -326,6 +327,8 @@
         "r7a",
         "memory8-graviton",
         "r8g",
+        "memory8-graviton4-nvme-drive",
+        "r8gd",
         "compute3",
         "c3",
         "compute4",
@@ -358,6 +361,8 @@
         "c6gd",
         "compute7-graviton3-nvme-drive",
         "c7gd",
+        "compute8-graviton4-nvme-drive",
+        "c8gd",
         "compute6-graviton2-high-network-bandwidth",
         "c6gn",
         "compute7-graviton3-high-network-bandwidth",
@@ -398,6 +403,8 @@
         "is4gen",
         "storage7-intel-storage-optimized",
         "i7ie",
+        "io7_intel",
+        "i7i",
         "storage8-graviton",
         "i8g",
         "burstable2",
@@ -484,6 +491,8 @@
         "m8g",
         "standard7-graviton3-nvme-drive",
         "m7gd",
+        "standard8-graviton4-nvme-drive",
+        "m8gd",
         "standard7-intel",
         "m7i",
         "standard7-intel-flex",
@@ -1620,6 +1629,7 @@
         "DIRECTORY_SERVICE_DATA",
         "DYNAMODB",
         "DYNAMODB_FIPS",
+        "DYNAMODB_STREAMS",
         "EBS_DIRECT",
         "EC2",
         "EC2_MESSAGES",
@@ -2810,6 +2820,41 @@
     }
   },
   "location": {
+    "AllowMapsAction": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/api-key.ts",
+      "enumLike": false,
+      "values": [
+        "geo-maps:GetStaticMap",
+        "geo-maps:GetTile",
+        "geo-maps:*"
+      ]
+    },
+    "AllowPlacesAction": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/api-key.ts",
+      "enumLike": false,
+      "values": [
+        "geo-places:Autocomplete",
+        "geo-places:Geocode",
+        "geo-places:GetPlace",
+        "geo-places:ReverseGeocode",
+        "geo-places:SearchNearby",
+        "geo-places:SearchText",
+        "geo-places:Suggest",
+        "geo-places:*"
+      ]
+    },
+    "AllowRoutesAction": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/api-key.ts",
+      "enumLike": false,
+      "values": [
+        "geo-routes:CalculateIsolines",
+        "geo-routes:CalculateRoutes",
+        "geo-routes:CalculateRouteMatrix",
+        "geo-routes:OptimizeWaypoints",
+        "geo-routes:SnapToRoads",
+        "geo-routes:*"
+      ]
+    },
     "CustomLayer": {
       "path": "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/map.ts",
       "enumLike": false,
@@ -2933,7 +2978,9 @@
         "V3_7_X",
         "V3_7_X_KRAFT",
         "V3_8_X",
-        "V3_8_X_KRAFT"
+        "V3_8_X_KRAFT",
+        "V3_9_X",
+        "V3_9_X_KRAFT"
       ]
     }
   },
@@ -3150,6 +3197,14 @@
       "values": [
         "Enabled",
         "Disabled"
+      ]
+    },
+    "TableBucketEncryption": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.ts",
+      "enumLike": false,
+      "values": [
+        "aws:kms",
+        "AES256"
       ]
     }
   },
@@ -3439,6 +3494,14 @@
         "AWS_IAM",
         "CUSTOM",
         "COGNITO_USER_POOLS"
+      ]
+    },
+    "IpAddressType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts",
+      "enumLike": false,
+      "values": [
+        "ipv4",
+        "dualstack"
       ]
     },
     "ApiKeySourceType": {
@@ -4034,7 +4097,8 @@
         "AMAZON_OPENSEARCH_SERVICE",
         "HTTP",
         "RELATIONAL_DATABASE",
-        "AMAZON_BEDROCK_RUNTIME"
+        "AMAZON_BEDROCK_RUNTIME",
+        "AMAZON_ELASTICSEARCH"
       ]
     },
     "LambdaInvokeType": {
@@ -8302,7 +8366,8 @@
         "OPENSEARCH_2_11",
         "OPENSEARCH_2_13",
         "OPENSEARCH_2_15",
-        "OPENSEARCH_2_17"
+        "OPENSEARCH_2_17",
+        "OPENSEARCH_2_19"
       ]
     }
   },
@@ -8549,11 +8614,13 @@
         "VER_2_11_3",
         "VER_2_11_4",
         "VER_2_11_5",
+        "VER_2_11_6",
         "VER_2_12_0",
         "VER_2_12_1",
         "VER_2_12_2",
         "VER_2_12_3",
         "VER_2_12_4",
+        "VER_2_12_5",
         "VER_3_01_0",
         "VER_3_01_1",
         "VER_3_02_0",
@@ -8568,6 +8635,7 @@
         "VER_3_04_1",
         "VER_3_04_2",
         "VER_3_04_3",
+        "VER_3_04_4",
         "VER_3_05_0",
         "VER_3_05_1",
         "VER_3_05_2",
@@ -8692,8 +8760,10 @@
         "VER_16_6",
         "VER_16_6_LIMITLESS",
         "VER_16_8",
+        "VER_16_8_LIMITLESS",
         "VER_17_1",
-        "VER_17_2"
+        "VER_17_2",
+        "VER_17_4"
       ]
     },
     "DatabaseClusterEngine": {
@@ -8896,8 +8966,10 @@
         "VER_8_0_39",
         "VER_8_0_40",
         "VER_8_0_41",
+        "VER_8_0_42",
         "VER_8_4_3",
-        "VER_8_4_4"
+        "VER_8_4_4",
+        "VER_8_4_5"
       ]
     },
     "PostgresEngineVersion": {
@@ -9037,6 +9109,7 @@
         "VER_13_18",
         "VER_13_19",
         "VER_13_20",
+        "VER_13_21",
         "VER_14",
         "VER_14_1",
         "VER_14_2",
@@ -9055,6 +9128,7 @@
         "VER_14_15",
         "VER_14_16",
         "VER_14_17",
+        "VER_14_18",
         "VER_15",
         "VER_15_2",
         "VER_15_3",
@@ -9067,6 +9141,7 @@
         "VER_15_10",
         "VER_15_11",
         "VER_15_12",
+        "VER_15_13",
         "VER_16",
         "VER_16_1",
         "VER_16_2",
@@ -9076,11 +9151,13 @@
         "VER_16_6",
         "VER_16_7",
         "VER_16_8",
+        "VER_16_9",
         "VER_17",
         "VER_17_1",
         "VER_17_2",
         "VER_17_3",
-        "VER_17_4"
+        "VER_17_4",
+        "VER_17_5"
       ]
     },
     "OracleLegacyEngineVersion": {
@@ -9598,7 +9675,8 @@
       "enumLike": true,
       "values": [
         "BLOCK_ALL",
-        "BLOCK_ACLS"
+        "BLOCK_ACLS",
+        "BLOCK_ACLS_ONLY"
       ]
     },
     "ReplicationTimeValue": {
@@ -9795,6 +9873,15 @@
       "enumLike": false,
       "values": [
         "REQUIRE",
+        "OPTIONAL"
+      ]
+    },
+    "HttpsPolicy": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set.ts",
+      "enumLike": false,
+      "values": [
+        "REQUIRE",
+        "REQUIRE_OPEN_ONLY",
         "OPTIONAL"
       ]
     },
@@ -10501,7 +10588,9 @@
         "SYNTHETICS_PYTHON_SELENIUM_2_1",
         "SYNTHETICS_PYTHON_SELENIUM_3_0",
         "SYNTHETICS_PYTHON_SELENIUM_4_0",
-        "SYNTHETICS_PYTHON_SELENIUM_4_1"
+        "SYNTHETICS_PYTHON_SELENIUM_4_1",
+        "SYNTHETICS_PYTHON_SELENIUM_5_0",
+        "SYNTHETICS_PYTHON_SELENIUM_5_1"
       ]
     }
   },
@@ -10619,7 +10708,8 @@
         "nodejs14.x",
         "nodejs16.x",
         "nodejs18.x",
-        "nodejs20.x"
+        "nodejs20.x",
+        "nodejs22.x"
       ]
     },
     "DependencyOperation": {
@@ -11232,7 +11322,8 @@
       "enumLike": false,
       "values": [
         "nodejs18.x",
-        "nodejs20.x"
+        "nodejs20.x",
+        "nodejs22.x"
       ]
     }
   },
@@ -11440,6 +11531,7 @@
         "AMAZON_NOVA_REEL_V1_0",
         "AMAZON_NOVA_REEL_V1_1",
         "AMAZON_NOVA_SONIC_V1_0",
+        "AMAZON_NOVA_PREMIER_V1_0",
         "AI21_J2_MID",
         "AI21_LABS_JURASSIC_2_MID_V1",
         "AI21_J2_ULTRA",
@@ -11512,6 +11604,8 @@
         "META_LLAMA_3_2_11B_INSTRUCT_V1",
         "META_LLAMA_3_2_90B_INSTRUCT_V1",
         "META_LLAMA_3_3_70B_INSTRUCT_V1",
+        "META_LLAMA_4_MAVERICK_17B_INSTRUCT_V1_0",
+        "META_LLAMA_4_SCOUT_17B_INSTRUCT_V1_0",
         "MISTRAL_MISTRAL_7B_INSTRUCT_V0_2",
         "MISTRAL_MIXTRAL_8X7B_INSTRUCT_V0_1",
         "MISTRAL_LARGE_V0_1",
@@ -11527,7 +11621,9 @@
         "STABILITY_STABLE_IMAGE_ULTRA_V1_0",
         "STABILITY_STABLE_IMAGE_ULTRA_V1_1",
         "STABILITY_STABLE_IMAGE_CORE_V1_0",
-        "STABILITY_STABLE_IMAGE_CORE_V1_1"
+        "STABILITY_STABLE_IMAGE_CORE_V1_1",
+        "WRITER_PALMYRA_X4_V1_0",
+        "WRITER_PALMYRA_X5_V1_0"
       ]
     }
   },

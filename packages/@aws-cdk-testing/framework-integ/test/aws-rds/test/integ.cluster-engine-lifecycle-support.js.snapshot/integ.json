@@ -8,5 +8,6 @@
       "assertionStack": "RdsClusterEngineLifecycleSupportInteg/DefaultTest/DeployAssert",
       "assertionStackName": "RdsClusterEngineLifecycleSupportIntegDefaultTestDeployAssert6F5E7AEF"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

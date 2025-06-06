@@ -9,5 +9,6 @@
       "assertionStack": "aws-cdk-cluster-alb-controller-integ/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkclusteralbcontrollerintegDefaultTestDeployAssert5A4A7C6A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

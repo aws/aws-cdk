@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { ScalableTaskCount } from './scalable-task-count';
 import { ServiceManagedVolume } from './service-managed-volume';
 import * as appscaling from '../../../aws-applicationautoscaling';
@@ -22,6 +22,7 @@ import {
   Token,
   Arn,
   Fn,
+  ValidationError,
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { RegionInfo } from '../../../region-info';
@@ -561,7 +562,7 @@ export abstract class BaseService extends Resource
     } else {
       const resourceNameParts = resourceName.split('/');
       if (resourceNameParts.length !== 2) {
-        throw new Error(`resource name ${resourceName} from service ARN: ${serviceArn} is not using the ARN cluster format`);
+        throw new ValidationError(`resource name ${resourceName} from service ARN: ${serviceArn} is not using the ARN cluster format`, scope);
       }
       clusterName = resourceNameParts[0];
       serviceName = resourceNameParts[1];
@@ -676,7 +677,7 @@ export abstract class BaseService extends Resource
     });
 
     if (props.propagateTags && props.propagateTaskTagsFrom) {
-      throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
+      throw new ValidationError('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank', this);
     }
 
     this.taskDefinition = taskDefinition;
@@ -731,7 +732,7 @@ export abstract class BaseService extends Resource
     if (props.deploymentAlarms
       && deploymentController
       && deploymentController.type !== DeploymentControllerType.ECS) {
-      throw new Error('Deployment alarms requires the ECS deployment controller.');
+      throw new ValidationError('Deployment alarms requires the ECS deployment controller.', this);
     }
 
     if (
@@ -739,7 +740,7 @@ export abstract class BaseService extends Resource
       && props.taskDefinitionRevision
       && props.taskDefinitionRevision !== TaskDefinitionRevision.LATEST
     ) {
-      throw new Error('CODE_DEPLOY deploymentController can only be used with the `latest` task definition revision');
+      throw new ValidationError('CODE_DEPLOY deploymentController can only be used with the `latest` task definition revision', this);
     }
 
     if (props.minHealthyPercent === undefined) {
@@ -796,7 +797,7 @@ export abstract class BaseService extends Resource
 
     if (props.deploymentAlarms) {
       if (props.deploymentAlarms.alarmNames.length === 0) {
-        throw new Error('at least one alarm name is required when specifying deploymentAlarms, received empty array');
+        throw new ValidationError('at least one alarm name is required when specifying deploymentAlarms, received empty array', this);
       }
       this.deploymentAlarms = {
         alarmNames: props.deploymentAlarms.alarmNames,
@@ -828,7 +829,7 @@ export abstract class BaseService extends Resource
 
   private renderVolumes(): CfnService.ServiceVolumeConfigurationProperty[] {
     if (this.volumes.length > 1) {
-      throw new Error(`Only one EBS volume can be specified for 'volumeConfigurations', got: ${this.volumes.length}`);
+      throw new ValidationError(`Only one EBS volume can be specified for 'volumeConfigurations', got: ${this.volumes.length}`, this);
     }
     return this.volumes.map(renderVolume);
     function renderVolume(spec: ServiceManagedVolume): CfnService.ServiceVolumeConfigurationProperty {
@@ -879,7 +880,7 @@ export abstract class BaseService extends Resource
    */
   public enableDeploymentAlarms(alarmNames: string[], options?: DeploymentAlarmOptions) {
     if (alarmNames.length === 0 ) {
-      throw new Error('at least one alarm name is required when calling enableDeploymentAlarms(), received empty array');
+      throw new ValidationError('at least one alarm name is required when calling enableDeploymentAlarms(), received empty array', this);
     }
 
     alarmNames.forEach(alarmName => {
@@ -895,7 +896,7 @@ export abstract class BaseService extends Resource
         (AlarmBehavior.ROLLBACK_ON_ALARM === options.behavior && !this.deploymentAlarms.rollback) ||
         (AlarmBehavior.FAIL_ON_ALARM === options.behavior && this.deploymentAlarms.rollback)
       ) {
-        throw new Error(`all deployment alarms on an ECS service must have the same AlarmBehavior. Attempted to enable deployment alarms with ${options.behavior}, but alarms were previously enabled with ${this.deploymentAlarms.rollback ? AlarmBehavior.ROLLBACK_ON_ALARM : AlarmBehavior.FAIL_ON_ALARM}`);
+        throw new ValidationError(`all deployment alarms on an ECS service must have the same AlarmBehavior. Attempted to enable deployment alarms with ${options.behavior}, but alarms were previously enabled with ${this.deploymentAlarms.rollback ? AlarmBehavior.ROLLBACK_ON_ALARM : AlarmBehavior.FAIL_ON_ALARM}`, this);
       }
     }
 
@@ -917,7 +918,7 @@ export abstract class BaseService extends Resource
    */
   public enableServiceConnect(config?: ServiceConnectProps) {
     if (this._serviceConnectConfig) {
-      throw new Error('Service connect configuration cannot be specified more than once.');
+      throw new ValidationError('Service connect configuration cannot be specified more than once.', this);
     }
 
     this.validateServiceConnectConfiguration(config);
@@ -947,7 +948,7 @@ export abstract class BaseService extends Resource
     const services = cfg.services?.map(svc => {
       const containerPort = this.taskDefinition.findPortMappingByName(svc.portMappingName)?.containerPort;
       if (!containerPort) {
-        throw new Error(`Port mapping with name ${svc.portMappingName} does not exist.`);
+        throw new ValidationError(`Port mapping with name ${svc.portMappingName} does not exist.`, this);
       }
       const alias = {
         port: svc.port || containerPort,
@@ -992,12 +993,12 @@ export abstract class BaseService extends Resource
    */
   private validateServiceConnectConfiguration(config?: ServiceConnectProps) {
     if (!this.taskDefinition.defaultContainer) {
-      throw new Error('Task definition must have at least one container to enable service connect.');
+      throw new ValidationError('Task definition must have at least one container to enable service connect.', this);
     }
 
     // Check the implicit enable case; when config isn't specified or namespace isn't specified, we need to check that there is a namespace on the cluster.
     if ((!config || !config.namespace) && !this.cluster.defaultCloudMapNamespace) {
-      throw new Error('Namespace must be defined either in serviceConnectConfig or cluster.defaultCloudMapNamespace');
+      throw new ValidationError('Namespace must be defined either in serviceConnectConfig or cluster.defaultCloudMapNamespace', this);
     }
 
     // When config isn't specified, return.
@@ -1012,13 +1013,13 @@ export abstract class BaseService extends Resource
     config.services.forEach(serviceConnectService => {
       // port must exist on the task definition
       if (!this.taskDefinition.findPortMappingByName(serviceConnectService.portMappingName)) {
-        throw new Error(`Port Mapping '${serviceConnectService.portMappingName}' does not exist on the task definition.`);
+        throw new ValidationError(`Port Mapping '${serviceConnectService.portMappingName}' does not exist on the task definition.`, this);
       }
 
       // Check that no two service connect services use the same discovery name.
       const discoveryName = serviceConnectService.discoveryName || serviceConnectService.portMappingName;
       if (portNames.get(serviceConnectService.portMappingName)?.includes(discoveryName)) {
-        throw new Error(`Cannot create multiple services with the discoveryName '${discoveryName}'.`);
+        throw new ValidationError(`Cannot create multiple services with the discoveryName '${discoveryName}'.`, this);
       }
 
       let currentDiscoveries = portNames.get(serviceConnectService.portMappingName);
@@ -1031,19 +1032,19 @@ export abstract class BaseService extends Resource
 
       // IngressPortOverride should be within the valid port range if it exists.
       if (serviceConnectService.ingressPortOverride && !this.isValidPort(serviceConnectService.ingressPortOverride)) {
-        throw new Error(`ingressPortOverride ${serviceConnectService.ingressPortOverride} is not valid.`);
+        throw new ValidationError(`ingressPortOverride ${serviceConnectService.ingressPortOverride} is not valid.`, this);
       }
 
       // clientAlias.port should be within the valid port range
       if (serviceConnectService.port &&
         !this.isValidPort(serviceConnectService.port)) {
-        throw new Error(`Client Alias port ${serviceConnectService.port} is not valid.`);
+        throw new ValidationError(`Client Alias port ${serviceConnectService.port} is not valid.`, this);
       }
 
       // tls.awsPcaAuthorityArn should be an ARN
       const awsPcaAuthorityArn = serviceConnectService.tls?.awsPcaAuthorityArn;
       if (awsPcaAuthorityArn && !Token.isUnresolved(awsPcaAuthorityArn) && !awsPcaAuthorityArn.startsWith('arn:')) {
-        throw new Error(`awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received ${awsPcaAuthorityArn}`);
+        throw new ValidationError(`awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received ${awsPcaAuthorityArn}`, this);
       }
     });
   }
@@ -1278,7 +1279,7 @@ export abstract class BaseService extends Resource
    */
   public autoScaleTaskCount(props: appscaling.EnableScalingProps) {
     if (this.scalableTaskCount) {
-      throw new Error('AutoScaling of task count already enabled for this service');
+      throw new ValidationError('AutoScaling of task count already enabled for this service', this);
     }
 
     return this.scalableTaskCount = new ScalableTaskCount(this, 'TaskCount', {
@@ -1298,17 +1299,17 @@ export abstract class BaseService extends Resource
   public enableCloudMap(options: CloudMapOptions): cloudmap.Service {
     const sdNamespace = options.cloudMapNamespace ?? this.cluster.defaultCloudMapNamespace;
     if (sdNamespace === undefined) {
-      throw new Error('Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.');
+      throw new ValidationError('Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.', this);
     }
 
     if (sdNamespace.type === cloudmap.NamespaceType.HTTP) {
-      throw new Error('Cannot enable DNS service discovery for HTTP Cloudmap Namespace.');
+      throw new ValidationError('Cannot enable DNS service discovery for HTTP Cloudmap Namespace.', this);
     }
 
     // Determine DNS type based on network mode
     const networkMode = this.taskDefinition.networkMode;
     if (networkMode === NetworkMode.NONE) {
-      throw new Error('Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.');
+      throw new ValidationError('Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.', this);
     }
 
     // Bridge or host network mode requires SRV records
@@ -1319,7 +1320,7 @@ export abstract class BaseService extends Resource
         dnsRecordType = cloudmap.DnsRecordType.SRV;
       }
       if (dnsRecordType !== cloudmap.DnsRecordType.SRV) {
-        throw new Error('SRV records must be used when network mode is Bridge or Host.');
+        throw new ValidationError('SRV records must be used when network mode is Bridge or Host.', this);
       }
     }
 
@@ -1330,7 +1331,7 @@ export abstract class BaseService extends Resource
       }
     }
 
-    const { containerName, containerPort } = determineContainerNameAndPort({
+    const { containerName, containerPort } = determineContainerNameAndPort(this, {
       taskDefinition: this.taskDefinition,
       dnsRecordType: dnsRecordType!,
       container: options.container,
@@ -1365,7 +1366,7 @@ export abstract class BaseService extends Resource
   public associateCloudMapService(options: AssociateCloudMapServiceOptions): void {
     const service = options.service;
 
-    const { containerName, containerPort } = determineContainerNameAndPort({
+    const { containerName, containerPort } = determineContainerNameAndPort(this, {
       taskDefinition: this.taskDefinition,
       dnsRecordType: service.dnsRecordType,
       container: options.container,
@@ -1469,10 +1470,10 @@ export abstract class BaseService extends Resource
    */
   private attachToELB(loadBalancer: elb.LoadBalancer, containerName: string, containerPort: number): void {
     if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
-      throw new Error('Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead.');
+      throw new ValidationError('Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead.', this);
     }
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new Error('Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.');
+      throw new ValidationError('Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.', this);
     }
 
     this.loadBalancers.push({
@@ -1487,7 +1488,7 @@ export abstract class BaseService extends Resource
    */
   private attachToELBv2(targetGroup: elbv2.ITargetGroup, containerName: string, containerPort: number): elbv2.LoadBalancerTargetProps {
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new Error('Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.');
+      throw new ValidationError('Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.', this);
     }
 
     this.loadBalancers.push({
@@ -1528,7 +1529,7 @@ export abstract class BaseService extends Resource
    */
   private addServiceRegistry(registry: ServiceRegistry) {
     if (this.serviceRegistries.length >= 1) {
-      throw new Error('Cannot associate with the given service discovery registry. ECS supports at most one service registry per service.');
+      throw new ValidationError('Cannot associate with the given service discovery registry. ECS supports at most one service registry per service.', this);
     }
 
     const sr = this.renderServiceRegistry(registry);
@@ -1569,10 +1570,10 @@ export abstract class BaseService extends Resource
   private renderTimeout(idleTimeout?: Duration, perRequestTimeout?: Duration): CfnService.TimeoutConfigurationProperty | undefined {
     if (!idleTimeout && !perRequestTimeout) return undefined;
     if (idleTimeout && idleTimeout.toMilliseconds() > 0 && idleTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
-      throw new Error(`idleTimeout must be at least 1 second or 0 to disable it, got ${idleTimeout.toMilliseconds()}ms.`);
+      throw new ValidationError(`idleTimeout must be at least 1 second or 0 to disable it, got ${idleTimeout.toMilliseconds()}ms.`, this);
     }
     if (perRequestTimeout && perRequestTimeout.toMilliseconds() > 0 && perRequestTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
-      throw new Error(`perRequestTimeout must be at least 1 second or 0 to disable it, got ${perRequestTimeout.toMilliseconds()}ms.`);
+      throw new ValidationError(`perRequestTimeout must be at least 1 second or 0 to disable it, got ${perRequestTimeout.toMilliseconds()}ms.`, this);
     }
     return {
       idleTimeoutSeconds: idleTimeout?.toSeconds(),
@@ -1758,21 +1759,21 @@ interface DetermineContainerNameAndPortOptions {
 /**
  * Determine the name of the container and port to target for the service registry.
  */
-function determineContainerNameAndPort(options: DetermineContainerNameAndPortOptions) {
+function determineContainerNameAndPort(scope: IConstruct, options: DetermineContainerNameAndPortOptions) {
   // If the record type is SRV, then provide the containerName and containerPort to target.
   // We use the name of the default container and the default port of the default container
   // unless the user specifies otherwise.
   if (options.dnsRecordType === cloudmap.DnsRecordType.SRV) {
     // Ensure the user-provided container is from the right task definition.
     if (options.container && options.container.taskDefinition != options.taskDefinition) {
-      throw new Error('Cannot add discovery for a container from another task definition');
+      throw new ValidationError('Cannot add discovery for a container from another task definition', scope);
     }
 
     const container = options.container ?? options.taskDefinition.defaultContainer!;
 
     // Ensure that any port given by the user is mapped.
     if (options.containerPort && !container.portMappings.some(mapping => mapping.containerPort === options.containerPort)) {
-      throw new Error('Cannot add discovery for a container port that has not been mapped');
+      throw new ValidationError('Cannot add discovery for a container port that has not been mapped', scope);
     }
 
     return {

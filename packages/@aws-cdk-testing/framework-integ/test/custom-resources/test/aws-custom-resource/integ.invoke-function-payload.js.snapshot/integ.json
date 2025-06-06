@@ -8,5 +8,6 @@
       "assertionStack": "AwsCustomResourceInvokePayloadInteg/DefaultTest/DeployAssert",
       "assertionStackName": "AwsCustomResourceInvokePayloadIntegDefaultTestDeployAssertB4B64337"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

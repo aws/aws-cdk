@@ -8,5 +8,6 @@
       "assertionStack": "enable-execute-command-test/DefaultTest/DeployAssert",
       "assertionStackName": "enableexecutecommandtestDefaultTestDeployAssertDF06DF37"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

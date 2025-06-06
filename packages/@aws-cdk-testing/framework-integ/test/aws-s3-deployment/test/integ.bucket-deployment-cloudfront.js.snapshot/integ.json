@@ -9,5 +9,6 @@
       "assertionStack": "TestBucketDeploymentInteg/DefaultTest/DeployAssert",
       "assertionStackName": "TestBucketDeploymentIntegDefaultTestDeployAssert08D70206"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

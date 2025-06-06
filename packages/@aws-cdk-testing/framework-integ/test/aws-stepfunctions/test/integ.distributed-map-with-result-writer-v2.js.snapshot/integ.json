@@ -8,5 +8,6 @@
       "assertionStack": "DistributedMap/DefaultTest/DeployAssert",
       "assertionStackName": "DistributedMapDefaultTestDeployAssertFD6CBCC4"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

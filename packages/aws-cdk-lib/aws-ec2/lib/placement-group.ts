@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnPlacementGroup } from './ec2.generated';
 import { IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Determines where your instances are placed on the underlying hardware according to the specified PlacementGroupStrategy
@@ -148,7 +149,11 @@ export enum PlacementGroupStrategy {
  * Defines a placement group. Placement groups give you fine-grained control over
  * where your instances are provisioned.
  */
+@propertyInjectable
 export class PlacementGroup extends Resource implements IPlacementGroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.PlacementGroup';
+
   /**
    * Import a PlacementGroup by its arn
    */

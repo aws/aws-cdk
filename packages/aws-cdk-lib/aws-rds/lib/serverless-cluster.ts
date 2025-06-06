@@ -15,6 +15,7 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack, Lazy, FeatureFlags, ArnFormat } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -534,7 +535,13 @@ export interface ServerlessClusterProps extends ServerlessClusterNewProps {
  * @resource AWS::RDS::DBCluster
  *
  */
+@propertyInjectable
 export class ServerlessCluster extends ServerlessClusterNew {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ServerlessCluster';
+
   /**
    * Import an existing DatabaseCluster from properties
    */
@@ -648,7 +655,10 @@ export class ServerlessCluster extends ServerlessClusterNew {
 /**
  * Represents an imported database cluster.
  */
+@propertyInjectable
 class ImportedServerlessCluster extends ServerlessClusterBase implements IServerlessCluster {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ImportedServerlessCluster';
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
 
@@ -720,7 +730,13 @@ export interface ServerlessClusterFromSnapshotProps extends ServerlessClusterNew
  *
  * @resource AWS::RDS::DBCluster
  */
+@propertyInjectable
 export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ServerlessClusterFromSnapshot';
+
   public readonly clusterIdentifier: string;
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;

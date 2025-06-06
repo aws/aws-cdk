@@ -62,5 +62,6 @@
       },
       "displayName": "PreparelessPipelineStack/MyStage/Stack/MyApp/Stack"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

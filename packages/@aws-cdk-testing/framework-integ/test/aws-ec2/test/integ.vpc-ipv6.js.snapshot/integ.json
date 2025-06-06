@@ -8,5 +8,6 @@
       "assertionStack": "Ipv6Testing/DefaultTest/DeployAssert",
       "assertionStackName": "Ipv6TestingDefaultTestDeployAssertE9056115"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

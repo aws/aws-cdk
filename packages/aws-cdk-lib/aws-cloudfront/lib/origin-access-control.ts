@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnOriginAccessControl } from './cloudfront.generated';
 import { IResource, Resource, Names } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a CloudFront Origin Access Control
@@ -184,7 +185,11 @@ export abstract class OriginAccessControlBase extends Resource implements IOrigi
  * @resource AWS::CloudFront::OriginAccessControl
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-originaccesscontrol.html
  */
+@propertyInjectable
 export class S3OriginAccessControl extends OriginAccessControlBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.S3OriginAccessControl';
+
   /**
    * Imports an S3 origin access control from its id.
    */
@@ -228,7 +233,11 @@ export class S3OriginAccessControl extends OriginAccessControlBase {
  * @resource AWS::CloudFront::OriginAccessControl
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-originaccesscontrol.html
  */
+@propertyInjectable
 export class FunctionUrlOriginAccessControl extends OriginAccessControlBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.FunctionUrlOriginAccessControl';
+
   /**
    * Imports a Lambda Function URL origin access control from its id.
    */

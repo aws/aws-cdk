@@ -1,7 +1,8 @@
 {
-  "version": "38.0.1",
+  "version": "41.0.0",
   "files": {
     "d52e1c3d375f46df22b906b239166a2ef777ed4e2082697d16c42c76587dc36f": {
+      "displayName": "child-stack Template",
       "source": {
         "path": "child-stack.template.json",
         "packaging": "file"

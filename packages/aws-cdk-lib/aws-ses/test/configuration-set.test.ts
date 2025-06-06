@@ -1,6 +1,6 @@
 import { Template, Match } from '../../assertions';
 import { Duration, Stack } from '../../core';
-import { ConfigurationSet, ConfigurationSetTlsPolicy, DedicatedIpPool, SuppressionReasons } from '../lib';
+import { ConfigurationSet, ConfigurationSetTlsPolicy, DedicatedIpPool, HttpsPolicy, SuppressionReasons } from '../lib';
 
 let stack: Stack;
 beforeEach(() => {
@@ -40,6 +40,31 @@ test('configuration set with options', () => {
     TrackingOptions: {
       CustomRedirectDomain: 'track.cdk.dev',
     },
+  });
+});
+
+describe('custom tracking domain', () => {
+  test('configuration set with custom tracking domain', () => {
+    new ConfigurationSet(stack, 'ConfigurationSet', {
+      customTrackingRedirectDomain: 'track.cdk.dev',
+      customTrackingHttpsPolicy: HttpsPolicy.REQUIRE,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      TrackingOptions: {
+        CustomRedirectDomain: 'track.cdk.dev',
+        HttpsPolicy: 'REQUIRE',
+      },
+    });
+  });
+
+  test.each([undefined, ''])('throw error for specifying custom tracking https policy without custom tracking domain %s', (customTrackingRedirectDomain) => {
+    expect(() => {
+      new ConfigurationSet(stack, 'ConfigurationSet', {
+        customTrackingRedirectDomain,
+        customTrackingHttpsPolicy: HttpsPolicy.REQUIRE,
+      });
+    }).toThrow('customTrackingHttpsPolicy can only be set when customTrackingRedirectDomain is also set.');
   });
 });
 

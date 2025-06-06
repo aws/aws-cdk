@@ -8,5 +8,6 @@
       "assertionStack": "AwsSdkJsonataTest/DefaultTest/DeployAssert",
       "assertionStackName": "AwsSdkJsonataTestDefaultTestDeployAssert03FB1EE5"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

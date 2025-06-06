@@ -8,5 +8,6 @@
       "assertionStack": "integtest-pipes-logs/DefaultTest/DeployAssert",
       "assertionStackName": "integtestpipeslogsDefaultTestDeployAssert461F2E1A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -16,6 +16,7 @@ import { Construct } from 'constructs';
 import { CfnWaitCondition, CfnWaitConditionHandle, Fn, IResource, RemovalPolicy, Resource, Stack, Token } from 'aws-cdk-lib/core';
 import { exampleResourceArnComponents } from './private/example-resource-common';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * The interface that represents the ExampleResource resource.
@@ -200,7 +201,11 @@ abstract class ExampleResourceBase extends Resource implements IExampleResource 
    * as it simplifies the implementation code (less branching).
    */
   public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
+    const rule = new events.Rule(this, id, {
+      description: options.description,
+      ruleName: options.ruleName,
+      crossStackScope: options.crossStackScope,
+    });
     rule.addTarget(options.target);
     rule.addEventPattern({
       // obviously, you would put your resource-specific values here
@@ -339,7 +344,11 @@ export interface ExampleResourceProps {
  *
  * @resource AWS::CloudFormation::WaitConditionHandle
  */
+@propertyInjectable
 export class ExampleResource extends ExampleResourceBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.example-construct-library.ExampleResource';
+
   /**
    * Reference an existing ExampleResource,
    * defined outside of the CDK code, by name.

@@ -5,8 +5,9 @@ import { CfnSchedule } from './scheduler.generated';
 import { IScheduleTarget } from './target';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as kms from '../../aws-kms';
-import { Arn, ArnFormat, Duration, IResource, Resource, Token } from '../../core';
+import { Arn, ArnFormat, Duration, IResource, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface representing a created or an imported `Schedule`.
@@ -46,7 +47,7 @@ export class TimeWindow {
    */
   public static flexible(maxWindow: Duration): TimeWindow {
     if (maxWindow.toMinutes() < 1 || maxWindow.toMinutes() > 1440) {
-      throw new Error(`The provided duration must be between 1 minute and 1440 minutes, got ${maxWindow.toMinutes()}`);
+      throw new UnscopedValidationError(`The provided duration must be between 1 minute and 1440 minutes, got ${maxWindow.toMinutes()}`);
     }
     return new TimeWindow('FLEXIBLE', maxWindow);
   }
@@ -152,7 +153,11 @@ export interface ScheduleProps {
 /**
  * An EventBridge Schedule
  */
+@propertyInjectable
 export class Schedule extends Resource implements ISchedule {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-scheduler.Schedule';
+
   /**
    * Return the given named metric for all schedules.
    *
@@ -304,7 +309,7 @@ export class Schedule extends Resource implements ISchedule {
 
     this.validateTimeFrame(props.start, props.end);
     if (props.scheduleName && !Token.isUnresolved(props.scheduleName) && props.scheduleName.length > 64) {
-      throw new Error(`scheduleName cannot be longer than 64 characters, got: ${props.scheduleName.length}`);
+      throw new ValidationError(`scheduleName cannot be longer than 64 characters, got: ${props.scheduleName.length}`, this);
     }
 
     const resource = new CfnSchedule(this, 'Resource', {
@@ -349,10 +354,10 @@ export class Schedule extends Resource implements ISchedule {
     };
 
     if (policy.maximumEventAgeInSeconds && (policy.maximumEventAgeInSeconds < 60 || policy.maximumEventAgeInSeconds > 86400)) {
-      throw new Error(`maximumEventAgeInSeconds must be between 60 and 86400, got ${policy.maximumEventAgeInSeconds}`);
+      throw new ValidationError(`maximumEventAgeInSeconds must be between 60 and 86400, got ${policy.maximumEventAgeInSeconds}`, this);
     }
     if (policy.maximumRetryAttempts && (policy.maximumRetryAttempts < 0 || policy.maximumRetryAttempts > 185)) {
-      throw new Error(`maximumRetryAttempts must be between 0 and 185, got ${policy.maximumRetryAttempts}`);
+      throw new ValidationError(`maximumRetryAttempts must be between 0 and 185, got ${policy.maximumRetryAttempts}`, this);
     }
 
     const isEmptyPolicy = Object.values(policy).every(value => value === undefined);
@@ -361,7 +366,7 @@ export class Schedule extends Resource implements ISchedule {
 
   private validateTimeFrame(start?: Date, end?: Date) {
     if (start && end && start >= end) {
-      throw new Error(`start must precede end, got start: ${start.toISOString()}, end: ${end.toISOString()}`);
+      throw new ValidationError(`start must precede end, got start: ${start.toISOString()}, end: ${end.toISOString()}`, this);
     }
   }
 }

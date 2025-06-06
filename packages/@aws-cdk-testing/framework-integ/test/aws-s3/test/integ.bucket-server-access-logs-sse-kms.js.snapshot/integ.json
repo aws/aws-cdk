@@ -9,5 +9,6 @@
       "assertionStack": "ServerAccessLogsSseKmsTest/DefaultTest/DeployAssert",
       "assertionStackName": "ServerAccessLogsSseKmsTestDefaultTestDeployAssertB937C102"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

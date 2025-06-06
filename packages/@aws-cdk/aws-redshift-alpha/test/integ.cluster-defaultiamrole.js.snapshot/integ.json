@@ -8,5 +8,6 @@
       "assertionStack": "DefaultIamRoleInteg/DefaultTest/DeployAssert",
       "assertionStackName": "DefaultIamRoleIntegDefaultTestDeployAssert161B8D72"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }
