@@ -1,4 +1,4 @@
-"use strict";
+packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-signcontent.js"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
 const s3 = require("aws-cdk-lib/aws-s3");
@@ -40,11 +40,7 @@ class TestBucketDeployment extends cdk.Stack {
         deployment.node.addDependency(policyResult.policyDependable);
     }
 }
-const app = new cdk.App({
-    postCliContext: {
-        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
-    },
-});
+const app = new cdk.App();
 const testCase = new TestBucketDeployment(app, 'test-bucket-deployment-signobject');
 new integ.IntegTest(app, 'integ-test-bucket-deployments', {
     testCases: [testCase],
