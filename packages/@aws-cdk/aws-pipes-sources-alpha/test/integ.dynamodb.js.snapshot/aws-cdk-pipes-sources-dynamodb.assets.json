@@ -1,7 +1,8 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "files": {
-    "4547fc993636711e376302e9e35771dcedd667483f94107cc9445d876c1972d8": {
+    "a2eab95a05ce7495b510632524d3787d9ca76962865604a663b2e4dcb53aecf6": {
+      "displayName": "aws-cdk-pipes-sources-dynamodb Template",
       "source": {
         "path": "aws-cdk-pipes-sources-dynamodb.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4547fc993636711e376302e9e35771dcedd667483f94107cc9445d876c1972d8.json",
+          "objectKey": "a2eab95a05ce7495b510632524d3787d9ca76962865604a663b2e4dcb53aecf6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

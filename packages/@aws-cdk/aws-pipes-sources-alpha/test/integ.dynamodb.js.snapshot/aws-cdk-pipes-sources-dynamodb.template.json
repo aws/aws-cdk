@@ -63,11 +63,15 @@
     "PolicyDocument": {
      "Statement": [
       {
+       "Action": "dynamodb:ListStreams",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
        "Action": [
         "dynamodb:DescribeStream",
         "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
-        "dynamodb:ListStreams"
+        "dynamodb:GetShardIterator"
        ],
        "Effect": "Allow",
        "Resource": {

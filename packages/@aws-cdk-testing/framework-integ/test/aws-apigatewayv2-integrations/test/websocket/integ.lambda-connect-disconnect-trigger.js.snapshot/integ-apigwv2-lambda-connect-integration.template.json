@@ -44,8 +44,6 @@
         "dynamodb:DeleteItem",
         "dynamodb:DescribeTable",
         "dynamodb:GetItem",
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
         "dynamodb:PutItem",
         "dynamodb:Query",
         "dynamodb:Scan",
@@ -97,7 +95,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs22.x",
     "Timeout": 5
    },
    "DependsOn": [
@@ -149,8 +147,6 @@
         "dynamodb:DeleteItem",
         "dynamodb:DescribeTable",
         "dynamodb:GetItem",
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
         "dynamodb:PutItem",
         "dynamodb:Query",
         "dynamodb:Scan",
@@ -202,7 +198,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs22.x",
     "Timeout": 5
    },
    "DependsOn": [
