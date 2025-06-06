@@ -2,7 +2,7 @@ import { IDistribution } from '..';
 import * as iam from '../../../aws-iam';
 import { Stack } from '../../../core';
 
-// List of CloudFront actions supporting resource-level permissions
+// List of CloudFront actions not supporting resource-level permissions
 // https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazoncloudfront.html#amazoncloudfront-actions-as-permissions
 const wildcardOnlyActions = [
   'cloudfront:CreateFieldLevelEncryptionConfig',
