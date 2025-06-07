@@ -38,7 +38,7 @@ def helm_handler(event, context):
     sanitized_event = dict(event)
     if 'ResponseURL' in sanitized_event:
         sanitized_event['ResponseURL'] = '...'
-    logger.info("Handling event: %s", sanitize_message(json.dumps(sanitized_event)))
+    logger.info("Handling event: %s", json.dumps(sanitized_event))
 
     request_type = event['RequestType']
     props = event['ResourceProperties']
@@ -101,7 +101,7 @@ def helm_handler(event, context):
         try:
             helm('uninstall', release, namespace=namespace, wait=wait, timeout=timeout)
         except Exception as e:
-            logger.error("Delete error: %s", sanitize_message(str(e)))
+            logger.error("Delete error: %s", str(e))
 
 
 def get_oci_cmd(repository, version):
@@ -146,9 +146,9 @@ def get_chart_from_oci(tmpdir, repository = None, version = None):
     retry = maxAttempts
     while retry > 0:
         try:
-            logger.info("OCI command: %s", sanitize_message(str(cmnd)))
+            logger.info("OCI command: %s", str(cmnd))
             output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=tmpdir, shell=True)
-            logger.info(sanitize_message(output.decode('utf-8', errors='replace')))
+            logger.info(output.decode('utf-8', errors='replace'))
 
             # effectively returns "$tmpDir/$lastPartOfOCIUrl", because this is how helm pull saves OCI artifact.
             # Eg. if we have oci://9999999999.dkr.ecr.us-east-1.amazonaws.com/foo/bar/pet-service repository, helm saves artifact under $tmpDir/pet-service
@@ -160,8 +160,8 @@ def get_chart_from_oci(tmpdir, repository = None, version = None):
                 logger.info("Broken pipe, retries left: %s" % retry)
             else:
                 error_message = output.decode('utf-8', errors='replace')
-                logger.error("OCI command failed: %s", sanitize_message(str(cmnd)))
-                logger.error("Error output: %s", sanitize_message(error_message))
+                logger.error("OCI command failed: %s", str(cmnd))
+                logger.error("Error output: %s", error_message)
                 raise Exception(output)
     raise Exception(f'Operation failed after {maxAttempts} attempts: {output.decode("utf-8", errors="replace")}')
 
