@@ -7,7 +7,6 @@ import shutil
 import tempfile
 import zipfile
 import boto3
-import urllib.parse
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -34,11 +33,11 @@ def is_ecr_public_available(region):
     return s.get_partition_for_region(region) == 'aws'
 
 def helm_handler(event, context):
-    # Sanitize the event before logging
-    sanitized_event = dict(event)
-    if 'ResponseURL' in sanitized_event:
-        sanitized_event['ResponseURL'] = '...'
-    logger.info("Handling event: %s", json.dumps(sanitized_event))
+    # Hide sensitive information before logging
+    event_copy = dict(event)
+    if 'ResponseURL' in event_copy:
+        event_copy['ResponseURL'] = '...'
+    logger.info("Handling event: %s", json.dumps(event_copy))
 
     request_type = event['RequestType']
     props = event['ResourceProperties']
