@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "testCases": {
     "MinimumCapacityUnitAlbInteg/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "MinimumCapacityUnitAlbInteg/DefaultTest/DeployAssert",
       "assertionStackName": "MinimumCapacityUnitAlbIntegDefaultTestDeployAssertD00E6A61"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

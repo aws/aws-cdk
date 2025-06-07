@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "testCases": {
     "pipeline-with-codestarnotifications-test/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "pipeline-with-codestarnotifications-test/DefaultTest/DeployAssert",
       "assertionStackName": "pipelinewithcodestarnotificationstestDefaultTestDeployAssertDA0A4181"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "41.0.0",
   "testCases": {
     "SQSBucketNotificationsTest/DefaultTest": {
       "stacks": [
@@ -16,5 +16,6 @@
       "assertionStack": "SQSBucketNotificationsTest/DefaultTest/DeployAssert",
       "assertionStackName": "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

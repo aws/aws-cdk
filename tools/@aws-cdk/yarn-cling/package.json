@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@yarnpkg/lockfile": "^1.1.0",
-    "semver": "^7.7.1"
+    "semver": "^7.7.2"
   },
   "keywords": [
     "aws",

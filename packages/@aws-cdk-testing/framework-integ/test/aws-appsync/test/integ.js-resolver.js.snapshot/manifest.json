@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "AppSyncJsResolverTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3b324c55ad1dfd1bfc93a517c2bd026b60bbf6180ca74d5d51fc2fb0074fada9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3285dd653e886ccd8c34f36e8d8c026eb7647eb98edb3ffa2e84b71026cb6a6a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,56 @@
         "AppSyncJsResolverTestStack.assets"
       ],
       "metadata": {
+        "/AppSyncJsResolverTestStack/JsResolverApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "name": "*",
+              "schema": "*",
+              "logConfig": {
+                "retention": 7
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addSchemaDependency": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addSchemaDependency": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/AppSyncJsResolverTestStack/JsResolverApi/ApiLogsRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/AppSyncJsResolverTestStack/JsResolverApi/ApiLogsRole/ImportApiLogsRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/AppSyncJsResolverTestStack/JsResolverApi/ApiLogsRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -64,10 +114,81 @@
             "data": "JsResolverApiLogRetention66DE3830"
           }
         ],
+        "/AppSyncJsResolverTestStack/JsResolverApi/DynamoDataSource/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/AppSyncJsResolverTestStack/JsResolverApi/DynamoDataSource/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/AppSyncJsResolverTestStack/JsResolverApi/DynamoDataSource/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "JsResolverApiDynamoDataSourceServiceRole6406F7E8"
+          }
+        ],
+        "/AppSyncJsResolverTestStack/JsResolverApi/DynamoDataSource/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/AppSyncJsResolverTestStack/JsResolverApi/DynamoDataSource/ServiceRole/DefaultPolicy/Resource": [
@@ -82,16 +203,104 @@
             "data": "JsResolverApiDynamoDataSource58CF75DE"
           }
         ],
+        "/AppSyncJsResolverTestStack/JsResolverApi/AddTestFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "api": "*",
+              "dataSource": "*",
+              "name": "*",
+              "runtime": "*",
+              "code": "*"
+            }
+          }
+        ],
         "/AppSyncJsResolverTestStack/JsResolverApi/AddTestFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "JsResolverApiAddTestFunction76B4557F"
           }
         ],
+        "/AppSyncJsResolverTestStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/AppSyncJsResolverTestStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/AppSyncJsResolverTestStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/AppSyncJsResolverTestStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/AppSyncJsResolverTestStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
@@ -112,16 +321,66 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/AppSyncJsResolverTestStack/DynamoTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/AppSyncJsResolverTestStack/DynamoTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DynamoTableB2B22E15"
           }
         ],
+        "/AppSyncJsResolverTestStack/DynamoTable/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/AppSyncJsResolverTestStack/AddTestResolver/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AddTestResolver8AF95A30"
+          }
+        ],
+        "/AppSyncJsResolverTestStack/InvokeApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/AppSyncJsResolverTestStack/InvokeApi/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/AppSyncJsResolverTestStack/InvokeApi/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/AppSyncJsResolverTestStack/InvokeApi/ServiceRole/Resource": [
@@ -192,7 +451,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1b15d63dff9f802f1d00de7f76c1404c1c713affed87789e9ae3cf78035094ac.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/908b5f635cc31bafebb5f51042e60088b0f9092424dac78459a11a1e712a33fc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -209,6 +468,28 @@
         "JsResolverIntegTestDefaultTestDeployAssert57AD8D20.assets"
       ],
       "metadata": {
+        "/JsResolverIntegTest/DefaultTest/DeployAssert/LambdaInvokeb55e453397dded0a19101717f7183064/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/JsResolverIntegTest/DefaultTest/DeployAssert/LambdaInvokeb55e453397dded0a19101717f7183064/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -245,6 +526,20 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/JsResolverIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem3bcce89c3400f7c98ac0aa1a95192cda/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/JsResolverIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem3bcce89c3400f7c98ac0aa1a95192cda/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -278,5 +573,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

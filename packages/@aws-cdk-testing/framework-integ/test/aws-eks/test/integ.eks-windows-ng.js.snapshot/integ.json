@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "44.0.0",
   "testCases": {
     "aws-cdk-eks-cluster-windows-ng/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "aws-cdk-eks-cluster-windows-ng/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksclusterwindowsngDefaultTestDeployAssert22077693"
     }
-  }
+  },
+  "minimumCliVersion": "2.1017.1"
 }

@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "44.0.0",
   "testCases": {
     "IntegCanaryTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "IntegCanaryTest/DefaultTest/DeployAssert",
       "assertionStackName": "IntegCanaryTestDefaultTestDeployAssert3AD5A094"
     }
-  }
+  },
+  "minimumCliVersion": "2.1017.1"
 }

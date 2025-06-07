@@ -2,6 +2,7 @@ import { CfnIPAM, CfnIPAMPool, CfnIPAMPoolCidr, CfnIPAMScope } from 'aws-cdk-lib
 import { Construct } from 'constructs';
 import { Lazy, Names, Resource, Stack, Tags } from 'aws-cdk-lib';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents the address family for IP addresses in an IPAM pool.
@@ -311,7 +312,10 @@ export interface IIpamScopeBase {
  * @resource AWS::EC2::IPAMPool
  * @internal
  */
+@propertyInjectable
 class IpamPool extends Resource implements IIpamPool {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.IpamPool';
   /**
    * Pool ID to be passed to the VPC construct
    * @attribute IpamPoolId
@@ -390,7 +394,10 @@ class IpamPool extends Resource implements IIpamPool {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
  * @resource AWS::EC2::IPAMScope
  */
+@propertyInjectable
 class IpamScope extends Resource implements IIpamScopeBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.IpamScope';
   /**
    * Stores the reference to newly created Resource
    */
@@ -472,7 +479,10 @@ class IpamScopeBase implements IIpamScopeBase {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
  * @resource AWS::EC2::IPAM
  */
+@propertyInjectable
 export class Ipam extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.Ipam';
   /**
    * Provides access to default public IPAM scope through add pool method.
    * Usage: To add an Ipam Pool to a default public scope
@@ -573,13 +583,17 @@ function createIpamPool(
   poolOptions: PoolOptions,
   scopeId: string,
 ): IpamPool {
-  const isLocaleInOperatingRegions = scopeOptions.ipamOperatingRegions
-    ? scopeOptions.ipamOperatingRegions.map(region => ({ regionName: region }))
-      .some(region => region.regionName === poolOptions.locale)
-    : false;
+  // Only check locale if it's provided since it's an optional field
+  if (poolOptions.locale) {
+    const isLocaleInOperatingRegions = scopeOptions.ipamOperatingRegions
+      ? scopeOptions.ipamOperatingRegions.map(region => ({ regionName: region }))
+        .some(region => region.regionName === poolOptions.locale)
+      : false;
 
-  if (!isLocaleInOperatingRegions) {
-    throw new Error(`The provided locale '${poolOptions.locale}' is not in the operating regions.`);
+    if (!isLocaleInOperatingRegions) {
+      throw new Error(`The provided locale '${poolOptions.locale}' is not in the operating regions (${scopeOptions.ipamOperatingRegions}). ` +
+        'If specified, locale must be configured as an operating region for the IPAM.');
+    }
   }
 
   return new IpamPool(scope, id, {
@@ -592,4 +606,3 @@ function createIpamPool(
     awsService: poolOptions.awsService,
   });
 }
-

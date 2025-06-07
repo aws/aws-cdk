@@ -33,7 +33,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "SharedRouteTableIGW"
+      "Value": "SharedRouteTableVPC"
      }
     ]
    }
@@ -129,17 +129,16 @@
   "PublicSubnet1Subnet03067927": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.1.1.0/24",
     "Tags": [
      {
-      "Key": "Name",
+      "Key": "aws-cdk:subnet-name",
       "Value": "PublicSubnet1"
      },
      {
-      "Key": "VpcName",
-      "Value": "SharedRouteTableVPC"
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
      }
     ],
     "VpcId": {
@@ -173,17 +172,16 @@
   "PublicSubnet2Subnet78B4B4BD": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2b",
     "CidrBlock": "10.1.2.0/24",
     "Tags": [
      {
-      "Key": "Name",
+      "Key": "aws-cdk:subnet-name",
       "Value": "PublicSubnet2"
      },
      {
-      "Key": "VpcName",
-      "Value": "SharedRouteTableVPC"
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
      }
     ],
     "VpcId": {

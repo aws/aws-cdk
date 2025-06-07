@@ -402,9 +402,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c475180f5b1bbabac165414da13a9b843b111cd3b6d5fae9c954c006640c4064.zip"
+     "S3Key": "6094cb0ff874f89ab5ab24fb6b9417df0fdeb6966645f90c88ec1d7e28130112.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.24; /opt/helm/helm 3.9",
+    "Description": "/opt/kubectl/kubectl 1.32.3; /opt/helm/helm 3.17.2",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -786,7 +786,7 @@
      ]
     },
     "Config": {
-     "version": "1.24",
+     "version": "1.32",
      "roleArn": {
       "Fn::GetAtt": [
        "ClusterRoleFA261979",
@@ -830,7 +830,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 4
+    "AttributesRevision": 5
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
@@ -1464,7 +1464,7 @@
       }
      },
      "ImageId": {
-      "Ref": "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
      },
      "InstanceType": "inf1.2xlarge",
      "Monitoring": {
@@ -1916,7 +1916,7 @@
       }
      },
      "ImageId": {
-      "Ref": "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
      },
      "InstanceType": "inf2.xlarge",
      "Monitoring": {
@@ -2118,7 +2118,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/01ad4c2d7ff4f5f78dfef8523054928ee8a2a190224663957801930619bc5635.json"
+       "/3ede6f0aca82da558ef6a5fbf41cf54acd5a2069e44695b204db7d3bf073c030.json"
       ]
      ]
     }
@@ -2168,7 +2168,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/29a23f0c7ee0862fdfb707327f59bbf23250cfad8ab763673e669a924ba980e2.json"
+       "/5e50a8ae1e17bb55bdb398018fa684af7b7f05c8ece8a68bd4a0fe8bb157f4d4.json"
       ]
      ]
     }
@@ -2977,109 +2977,112 @@
  "Mappings": {
   "LatestNodeRuntimeMap": {
    "af-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
+   },
+   "ap-east-2": {
+    "value": "nodejs22.x"
    },
    "ap-northeast-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-northeast-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-northeast-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-south-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-4": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-5": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-7": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ca-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ca-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "cn-north-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-central-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-isoe-west-1": {
     "value": "nodejs18.x"
    },
    "eu-north-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-south-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "il-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "me-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "me-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "mx-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "sa-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-east-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"
@@ -3090,18 +3093,21 @@
    "us-isob-east-1": {
     "value": "nodejs18.x"
    },
+   "us-isob-west-1": {
+    "value": "nodejs18.x"
+   },
    "us-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-west-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    }
   }
  },
  "Parameters": {
-  "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/aws/service/eks/optimized-ami/1.24/amazon-linux-2-gpu/recommended/image_id"
+   "Default": "/aws/service/eks/optimized-ami/1.32/amazon-linux-2-gpu/recommended/image_id"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

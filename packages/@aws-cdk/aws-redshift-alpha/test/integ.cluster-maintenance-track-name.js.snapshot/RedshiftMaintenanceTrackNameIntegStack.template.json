@@ -648,30 +648,6 @@
     "TargetType": "AWS::Redshift::Cluster"
    }
   },
-  "UserHandlerinlinePolicyAddedToExecutionRole0A8003C00": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "redshift-data:DescribeStatement",
-        "redshift-data:ExecuteStatement"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "UserHandlerinlinePolicyAddedToExecutionRole0A8003C00",
-    "Roles": [
-     {
-      "Ref": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRole0A90D717"
-     }
-    ]
-   }
-  },
   "UserProviderframeworkonEvent4EC32885": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -714,32 +690,6 @@
     "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRoleDefaultPolicy2BD7CC05",
     "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRole900F47C9"
    ]
-  },
-  "UserProviderframeworkonEventinlinePolicyAddedToExecutionRole06E62E28D": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "UserProviderframeworkonEventinlinePolicyAddedToExecutionRole06E62E28D",
-    "Roles": [
-     {
-      "Ref": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRole900F47C9"
-     }
-    ]
-   }
   },
   "UserFDDCDD17": {
    "Type": "Custom::RedshiftDatabaseQuery",
@@ -802,6 +752,14 @@
    "Properties": {
     "PolicyDocument": {
      "Statement": [
+      {
+       "Action": [
+        "redshift-data:DescribeStatement",
+        "redshift-data:ExecuteStatement"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
       {
        "Action": [
         "secretsmanager:DescribeSecret",
@@ -921,6 +879,16 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -937,109 +905,112 @@
  "Mappings": {
   "LatestNodeRuntimeMap": {
    "af-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
+   },
+   "ap-east-2": {
+    "value": "nodejs22.x"
    },
    "ap-northeast-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-northeast-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-northeast-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-south-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-4": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-5": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-7": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ca-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ca-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "cn-north-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-central-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-isoe-west-1": {
     "value": "nodejs18.x"
    },
    "eu-north-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-south-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "il-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "me-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "me-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "mx-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "sa-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-east-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"
@@ -1050,11 +1021,14 @@
    "us-isob-east-1": {
     "value": "nodejs18.x"
    },
+   "us-isob-west-1": {
+    "value": "nodejs18.x"
+   },
    "us-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-west-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    }
   }
  },
