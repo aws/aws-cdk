@@ -338,17 +338,13 @@ Balancers:
 ```ts
 declare const vpc: ec2.Vpc;
 declare const asg: autoscaling.AutoScalingGroup;
-declare const sg1: ec2.ISecurityGroup;
-declare const sg2: ec2.ISecurityGroup;
 
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.
 const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   vpc,
   internetFacing: true,
-  securityGroups: [sg1],
 });
-lb.addSecurityGroup(sg2);
 
 // Add a listener on a particular port.
 const listener = lb.addListener('Listener', {
@@ -360,6 +356,37 @@ listener.addTargets('AppFleet', {
   port: 443,
   targets: [asg]
 });
+```
+
+### Security Groups for Network Load Balancer
+
+By default, Network Load Balancers (NLB) have a security group associated with them.
+This is controlled by the feature flag `@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault`.
+When this flag is enabled (the default for new projects), a security group will be automatically created and attached to the NLB unless you explicitly provide your own security groups via the `securityGroups` property.
+
+If you wish to create an NLB without any security groups, you can set the `disableSecurityGroups` property to `true`. When this property is set, no security group will be associated with the NLB, regardless of the feature flag.
+
+```ts
+const nlb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  // To disable security groups for this NLB
+  disableSecurityGroups: true,
+});
+```
+
+If you want to use your own security groups, provide them via the `securityGroups` property:
+
+```ts
+declare const sg1: ec2.ISecurityGroup;
+declare const sg2: ec2.ISecurityGroup;
+
+const nlb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  // Provide your own security groups
+  securityGroups: [sg1],
+});
+// Add another security group to the NLB
+nlb.addSecurityGroup(sg2);
 ```
 
 ### Enforce security group inbound rules on PrivateLink traffic for a Network Load Balancer
