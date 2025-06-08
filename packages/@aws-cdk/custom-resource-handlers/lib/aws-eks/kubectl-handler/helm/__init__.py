@@ -33,11 +33,7 @@ def is_ecr_public_available(region):
     return s.get_partition_for_region(region) == 'aws'
 
 def helm_handler(event, context):
-    # Hide sensitive information before logging
-    event_copy = dict(event)
-    if 'ResponseURL' in event_copy:
-        event_copy['ResponseURL'] = '...'
-    logger.info("Handling event: %s", json.dumps(event_copy))
+    logger.info(json.dumps(dict(event, ResponseURL='...')))
 
     request_type = event['RequestType']
     props = event['ResourceProperties']
