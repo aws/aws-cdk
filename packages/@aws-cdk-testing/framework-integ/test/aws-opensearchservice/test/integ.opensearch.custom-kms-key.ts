@@ -24,7 +24,13 @@ class TestStack extends Stack {
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           actions: ['es:ESHttp*'],
-          principals: [new iam.AccountRootPrincipal()],
+          principals: [
+            // avoid using account root principal otherwise security guardian will flag this
+            new iam.ServicePrincipal('lambda.amazonaws.com'), // Example: If Lambda needs access
+            new iam.Role(this, 'OpenSearchAccessRole', {
+              assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'), // Example: If EC2 needs access
+            }),
+          ],
           resources: ['*'],
         }),
       ],

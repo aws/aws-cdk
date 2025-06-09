@@ -1,7 +1,8 @@
 {
-  "version": "20.0.0",
+  "version": "44.0.0",
   "files": {
-    "522e09487c90fcc860287ca2bc02423c66b430f2ada1fc7a5595e16f4ea8cf3d": {
+    "6eb9aa336250118b54c89734597d9c46823bbd6c6cb44a7a0b39ecfbaf83c53e": {
+      "displayName": "cdk-integ-opensearch-advancedsecurity Template",
       "source": {
         "path": "cdk-integ-opensearch-advancedsecurity.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "522e09487c90fcc860287ca2bc02423c66b430f2ada1fc7a5595e16f4ea8cf3d.json",
+          "objectKey": "6eb9aa336250118b54c89734597d9c46823bbd6c6cb44a7a0b39ecfbaf83c53e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
