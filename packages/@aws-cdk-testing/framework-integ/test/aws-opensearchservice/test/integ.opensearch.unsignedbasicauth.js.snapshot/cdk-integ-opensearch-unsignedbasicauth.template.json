@@ -42,7 +42,8 @@
      "ZoneAwarenessEnabled": false
     },
     "DomainEndpointOptions": {
-     "EnforceHTTPS": true
+     "EnforceHTTPS": true,
+     "TLSSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
     },
     "EBSOptions": {
      "EBSEnabled": true,
@@ -89,7 +90,7 @@
        {
         "Ref": "Domain66AC69E0"
        },
-       "AccessPolicy\"},\"logApiResponseData\":true}"
+       "AccessPolicy\"}}"
       ]
      ]
     },
@@ -112,7 +113,7 @@
        {
         "Ref": "Domain66AC69E0"
        },
-       "AccessPolicy\"},\"logApiResponseData\":true}"
+       "AccessPolicy\"}}"
       ]
      ]
     },
