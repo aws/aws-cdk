@@ -26,8 +26,7 @@
      "ZoneAwarenessEnabled": true
     },
     "DomainEndpointOptions": {
-     "EnforceHTTPS": false,
-     "TLSSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+     "EnforceHTTPS": false
     },
     "EBSOptions": {
      "EBSEnabled": true,
