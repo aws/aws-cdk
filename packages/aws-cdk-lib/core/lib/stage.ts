@@ -1,5 +1,6 @@
 import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
+import { ValidationError } from './errors';
 import { FeatureFlags } from './feature-flags';
 import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
@@ -185,7 +186,7 @@ export class Stage extends Construct {
     super(scope, id);
 
     if (id !== '' && !/^[a-z][a-z0-9\-\_\.]*$/i.test(id)) {
-      throw new Error(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`);
+      throw new ValidationError(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`, this);
     }
 
     if (props.propertyInjectors) {
@@ -260,7 +261,7 @@ export class Stage extends Construct {
     if (!this.constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
       const errorMessage = 'Synthesis has been called multiple times and the construct tree was modified after the first synthesis.';
       if (options.errorOnDuplicateSynth ?? true) {
-        throw new Error(errorMessage + ' This is not allowed. Remove multple synth() calls and do not modify the construct tree after the first synth().');
+        throw new ValidationError(errorMessage + ' This is not allowed. Remove multple synth() calls and do not modify the construct tree after the first synth().', this);
       } else {
         // eslint-disable-next-line no-console
         console.error(errorMessage + ' Only the results of the first synth() call are used, and modifications done after it are ignored. Avoid construct tree mutations after synth() has been called unless this is intentional.');
@@ -302,7 +303,7 @@ export class Stage extends Construct {
   private createBuilder(outdir?: string) {
     // cannot specify "outdir" if we are a nested stage
     if (this.parentStage && outdir) {
-      throw new Error('"outdir" cannot be specified for nested stages');
+      throw new ValidationError('"outdir" cannot be specified for nested stages', this);
     }
 
     // Need to determine fixed output directory already, because we must know where

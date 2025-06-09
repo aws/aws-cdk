@@ -18,7 +18,7 @@ const role2 = new iam.Role(stack, 'Role2', {
   assumedBy: new iam.AccountRootPrincipal(),
 });
 distribution.grantCreateInvalidation(role1);
-distribution.grant(role2, 'cloudfront:ListInvalidations');
+distribution.grant(role2, 'cloudfront:ListInvalidations', 'cloudfront:ListDistributions');
 
 new IntegTest(stack, 'distribution-basic-test', {
   testCases: [stack],

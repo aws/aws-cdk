@@ -7,7 +7,7 @@ import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
-import { formatDistributionArn } from './private/utils';
+import { formatDistributionArn, grant } from './private/utils';
 import { IRealtimeLogConfig } from './realtime-log-config';
 import { IResponseHeadersPolicy } from './response-headers-policy';
 import * as acm from '../../aws-certificatemanager';
@@ -309,7 +309,7 @@ export class Distribution extends Resource implements IDistribution {
         return formatDistributionArn(this);
       }
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-        return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [formatDistributionArn(this)] });
+        return grant(this, grantee, ...actions);
       }
       public grantCreateInvalidation(grantee: iam.IGrantable): iam.Grant {
         return this.grant(grantee, 'cloudfront:CreateInvalidation');
@@ -640,7 +640,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   @MethodMetadata()
   public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({ grantee: identity, actions, resourceArns: [formatDistributionArn(this)] });
+    return grant(this, identity, ...actions);
   }
 
   /**

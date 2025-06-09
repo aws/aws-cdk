@@ -596,6 +596,35 @@ describe('instance', () => {
         },
       });
     });
+
+    test('create an instance from clusterSnapshotIdentifier', () => {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        clusterSnapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+        vpc,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterSnapshotIdentifier: 'my-snapshot',
+      });
+    });
+
+    test('throws when both snapshotIdentifier and clusterSnapshotIdentifier specified', () => {
+      expect(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        clusterSnapshotIdentifier: 'my-cluster-snapshot',
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+      })).toThrow(/You cannot specify both `snapshotIdentifier` and `clusterSnapshotIdentifier`/);
+    });
+
+    test('throws when none of snapshotIdentifier or clusterSnapshotIdentifier specified', () => {
+      expect(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+      })).toThrow(/You must specify `snapshotIdentifier` or `clusterSnapshotIdentifier`/);
+    });
   });
 
   test('create a read replica in the same region - with the subnet group name', () => {

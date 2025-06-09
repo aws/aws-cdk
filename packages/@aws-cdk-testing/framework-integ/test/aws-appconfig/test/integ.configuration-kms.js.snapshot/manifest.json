@@ -1,0 +1,162 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "aws-appconfig-configuration-kms.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-appconfig-configuration-kms.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-appconfig-configuration-kms": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-appconfig-configuration-kms.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/576959e6fcdfa5040b2b11959fc18318bfdaa7e4a215655138108db3423077ae.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-appconfig-configuration-kms.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-appconfig-configuration-kms.assets"
+      ],
+      "metadata": {
+        "/aws-appconfig-configuration-kms/MyKey": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/aws-appconfig-configuration-kms/MyKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyKey6AB29FA6"
+          }
+        ],
+        "/aws-appconfig-configuration-kms/MyAppConfig": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "applicationName": "*"
+            }
+          }
+        ],
+        "/aws-appconfig-configuration-kms/MyAppConfig/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAppConfigB4B63E75"
+          }
+        ],
+        "/aws-appconfig-configuration-kms/MyHostedConfigFromFile/DeploymentStrategy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "rolloutStrategy": "*"
+            }
+          }
+        ],
+        "/aws-appconfig-configuration-kms/MyHostedConfigFromFile/DeploymentStrategy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromFileDeploymentStrategyCAF37A7C"
+          }
+        ],
+        "/aws-appconfig-configuration-kms/MyHostedConfigFromFile/ConfigurationProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromFileConfigurationProfile32B2D26F"
+          }
+        ],
+        "/aws-appconfig-configuration-kms/MyHostedConfigFromFile/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromFile943CF9F9"
+          }
+        ],
+        "/aws-appconfig-configuration-kms/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-appconfig-configuration-kms/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-appconfig-configuration-kms"
+    },
+    "appconfigconfigurationkmsDefaultTestDeployAssert53559CF7.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "appconfigconfigurationkmsDefaultTestDeployAssert53559CF7.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "appconfigconfigurationkmsDefaultTestDeployAssert53559CF7": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "appconfigconfigurationkmsDefaultTestDeployAssert53559CF7.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "appconfigconfigurationkmsDefaultTestDeployAssert53559CF7.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "appconfigconfigurationkmsDefaultTestDeployAssert53559CF7.assets"
+      ],
+      "metadata": {
+        "/appconfig-configuration-kms/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/appconfig-configuration-kms/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "appconfig-configuration-kms/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}

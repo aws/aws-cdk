@@ -840,6 +840,27 @@ const definition = choice
 map.itemProcessor(definition);
 ```
 
+When using `JSONata`, the `itemSelector` property in a Map state can be specified in one of two ways. You can provide a valid JSON object containing JSONata expressions for each value:
+
+```ts
+const map = new sfn.Map(this, 'Map State', {
+  maxConcurrency: 1,
+  itemSelector: {
+    id: '{% $states.context.Map.Item.Value.id %}',
+    status: '{% $states.context.Map.Item.Value.status %}',
+  }
+});
+```
+
+Alternatively, you can use the `jsonataItemSelector` field to directly supply a JSONata string that evaluates to a complete JSON object:
+
+```ts
+const map = new sfn.Map(this, 'Map State', {
+  maxConcurrency: 1,
+  jsonataItemSelector: '{% {\"id\": $states.input.id, \"status\": $states.input.status} %}'
+});
+```
+
 To define a distributed `Map` state set `itemProcessors` mode to `ProcessorMode.DISTRIBUTED`.
 An `executionType` must be specified for the distributed `Map` workflow.
 
@@ -1567,6 +1588,7 @@ Any object that implements the `IGrantable` interface (has an associated princip
 * `stateMachine.grantRead(principal)` - grants the principal read access
 * `stateMachine.grantTaskResponse(principal)` - grants the principal the ability to send task tokens to the state machine
 * `stateMachine.grantExecution(principal, actions)` - grants the principal execution-level permissions for the IAM actions specified
+* `stateMachine.grantRedriveExecution(principal)` - grants the principal permission to redrive the executions of the state machine
 * `stateMachine.grant(principal, actions)` - grants the principal state-machine-level permissions for the IAM actions specified
 
 ### Start Execution Permission
@@ -1647,6 +1669,27 @@ The following read permissions are provided to a service principal by the `grant
 ### Execution-level Permissions
 
 Grant execution-level permissions to a state machine by calling the `grantExecution()` API:
+
+### Redrive Execution Permission
+
+Grant the given identity permission to redrive the execution of the state machine:
+
+```ts
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+declare const definition: sfn.IChainable;
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
+});
+
+// Give role permission to start execution of state machine
+stateMachine.grantStartExecution(role);
+// Give role permission to redrive any executions of the state machine
+stateMachine.grantRedriveExecution(role);
+```
+
 
 ```ts
 const role = new iam.Role(this, 'Role', {

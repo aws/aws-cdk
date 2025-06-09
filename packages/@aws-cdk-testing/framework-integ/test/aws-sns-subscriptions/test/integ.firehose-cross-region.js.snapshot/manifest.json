@@ -1,0 +1,438 @@
+{
+  "version": "43.0.0",
+  "artifacts": {
+    "aws-cdk-sns-firehose-topicstack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-sns-firehose-topicstack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-sns-firehose-topicstack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "aws-cdk-sns-firehose-topicstack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/60a679f02ac3fad224765bbb6b1d228260c417f64a26b379ddee1e7c419c7496.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-sns-firehose-topicstack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-sns-firehose-topicstack.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-sns-firehose-topicstack/MyTopic": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "topicName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-sns-firehose-topicstack/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434"
+          }
+        ],
+        "/aws-cdk-sns-firehose-topicstack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-sns-firehose-topicstack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-sns-firehose-topicstack"
+    },
+    "aws-cdk-sns-firehose-firehosestack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-sns-firehose-firehosestack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-sns-firehose-firehosestack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-2",
+      "properties": {
+        "templateFile": "aws-cdk-sns-firehose-firehosestack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/acfd4cdd135df40604572825ab147da8188353f63e8584141f18dfe0fa06740e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-sns-firehose-firehosestack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-sns-firehose-topicstack",
+        "aws-cdk-sns-firehose-firehosestack.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-sns-firehose-firehosestack/Bucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "autoDeleteObjects": true,
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/Bucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/Bucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketPolicyE9A3008A"
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/Bucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/Bucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/DeliveryStream": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "destination": "*"
+            }
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/DeliveryStream/S3 Destination Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/DeliveryStream/S3 Destination Role/ImportS3 Destination Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/DeliveryStream/S3 Destination Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamS3DestinationRoleD96B8345"
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/DeliveryStream/S3 Destination Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/DeliveryStream/S3 Destination Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamS3DestinationRoleDefaultPolicyF652AD65"
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/DeliveryStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStream58CF96DB"
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/DeliveryStream/TopicSubscriptionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/DeliveryStream/TopicSubscriptionRole/ImportTopicSubscriptionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/DeliveryStream/TopicSubscriptionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamTopicSubscriptionRole4964AFE6"
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/DeliveryStream/TopicSubscriptionRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/DeliveryStream/TopicSubscriptionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamTopicSubscriptionRoleDefaultPolicy7B1E3A87"
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/DeliveryStream/awscdksnsfirehosetopicstackMyTopic20B70ED0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "topic": "*",
+              "endpoint": "*",
+              "protocol": "firehose",
+              "filterPolicy": "*",
+              "filterPolicyWithMessageBody": "*",
+              "rawMessageDelivery": "*",
+              "region": "*",
+              "deadLetterQueue": "*",
+              "subscriptionRoleArn": "*"
+            }
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/DeliveryStream/awscdksnsfirehosetopicstackMyTopic20B70ED0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamawscdksnsfirehosetopicstackMyTopic20B70ED07AAF6F8C"
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdkawskinesisfirehoseCidrBlocks"
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-sns-firehose-firehosestack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-sns-firehose-firehosestack"
+    },
+    "snsfirehoseintegDefaultTestDeployAssert15062DA5.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "snsfirehoseintegDefaultTestDeployAssert15062DA5.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "snsfirehoseintegDefaultTestDeployAssert15062DA5": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "snsfirehoseintegDefaultTestDeployAssert15062DA5.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "snsfirehoseintegDefaultTestDeployAssert15062DA5.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "snsfirehoseintegDefaultTestDeployAssert15062DA5.assets"
+      ],
+      "metadata": {
+        "/sns-firehose-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/sns-firehose-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "sns-firehose-integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1015.0"
+}
