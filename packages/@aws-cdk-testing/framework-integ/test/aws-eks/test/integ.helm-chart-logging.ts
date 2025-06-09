@@ -1,6 +1,5 @@
 /// !cdk-integ pragma:disable-update-workflow
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
@@ -16,11 +15,6 @@ class HelmChartLoggingStack extends Stack {
   constructor(scope: App, id: string) {
     super(scope, id);
 
-    // Allow all account users to assume this role to admin the cluster
-    const mastersRole = new iam.Role(this, 'AdminRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
-
     // Create a minimal VPC with just one NAT gateway
     const vpc = new ec2.Vpc(this, 'Vpc', {
       natGateways: 1,
@@ -30,7 +24,6 @@ class HelmChartLoggingStack extends Stack {
     // Create a minimal EKS cluster
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
-      mastersRole,
       defaultCapacity: 1,
       ...getClusterVersionConfig(this),
     });

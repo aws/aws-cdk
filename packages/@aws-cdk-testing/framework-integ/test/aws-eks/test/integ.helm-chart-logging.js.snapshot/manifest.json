@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f8590a03d358441b4161b814b8ba8d8ff638b6b976731d90412850651ff74d26.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6c49c89496c15eaeddfc6a1a22b8bfab90150b5c9dd799e02e48da90ce016b57.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,29 +34,6 @@
         "aws-cdk-eks-helm-logging-test.assets"
       ],
       "metadata": {
-        "/aws-cdk-eks-helm-logging-test/AdminRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/aws-cdk-eks-helm-logging-test/AdminRole/ImportAdminRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-helm-logging-test/AdminRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AdminRole38563C57"
-          }
-        ],
         "/aws-cdk-eks-helm-logging-test/Vpc": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -329,7 +306,6 @@
             "type": "aws:cdk:analytics:construct",
             "data": {
               "vpc": "*",
-              "mastersRole": "*",
               "defaultCapacity": "*",
               "version": "*",
               "kubectlLayer": "*"
@@ -794,18 +770,6 @@
             "data": "ClusterHasEcrPublic8EE1114E"
           }
         ],
-        "/aws-cdk-eks-helm-logging-test/Cluster/AwsAuth/manifest/Resource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-helm-logging-test/Cluster/AwsAuth/manifest/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterAwsAuthmanifestFE51F8AE"
-          }
-        ],
         "/aws-cdk-eks-helm-logging-test/Cluster/NodegroupDefaultCapacity": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -875,16 +839,16 @@
             "data": "ClusterNodegroupDefaultCapacityDA0920A3"
           }
         ],
-        "/aws-cdk-eks-helm-logging-test/Cluster/ConfigCommand": [
+        "/aws-cdk-eks-helm-logging-test/Cluster/AwsAuth/manifest/Resource": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterConfigCommand43AAE40F"
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
-        "/aws-cdk-eks-helm-logging-test/Cluster/GetTokenCommand": [
+        "/aws-cdk-eks-helm-logging-test/Cluster/AwsAuth/manifest/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterGetTokenCommand06AE992E"
+            "data": "ClusterAwsAuthmanifestFE51F8AE"
           }
         ],
         "/aws-cdk-eks-helm-logging-test/Cluster/chart-aws-load-balancer-controller/Resource": [

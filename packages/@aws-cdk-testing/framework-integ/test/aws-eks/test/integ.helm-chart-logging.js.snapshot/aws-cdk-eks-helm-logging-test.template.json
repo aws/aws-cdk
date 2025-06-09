@@ -1,37 +1,5 @@
 {
  "Resources": {
-  "AdminRole38563C57": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
   "Vpc8378EB38": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
@@ -841,62 +809,6 @@
     "Cluster9EE0221C"
    ]
   },
-  "ClusterAwsAuthmanifestFE51F8AE": {
-   "Type": "Custom::AWSCDK-EKS-KubernetesResource",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-      "Outputs.awscdkekshelmloggingtestawscdkawseksKubectlProviderframeworkonEvent52632707Arn"
-     ]
-    },
-    "Manifest": {
-     "Fn::Join": [
-      "",
-      [
-       "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\",\"labels\":{\"aws.cdk.eks/prune-c886367281041f7b27d3e642951af752eb589d369f\":\"\"}},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
-       {
-        "Fn::GetAtt": [
-         "AdminRole38563C57",
-         "Arn"
-        ]
-       },
-       "\\\",\\\"username\\\":\\\"",
-       {
-        "Fn::GetAtt": [
-         "AdminRole38563C57",
-         "Arn"
-        ]
-       },
-       "\\\",\\\"groups\\\":[\\\"system:masters\\\"]},{\\\"rolearn\\\":\\\"",
-       {
-        "Fn::GetAtt": [
-         "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
-         "Arn"
-        ]
-       },
-       "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
-      ]
-     ]
-    },
-    "ClusterName": {
-     "Ref": "Cluster9EE0221C"
-    },
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
-      "Arn"
-     ]
-    },
-    "PruneLabel": "aws.cdk.eks/prune-c886367281041f7b27d3e642951af752eb589d369f",
-    "Overwrite": true
-   },
-   "DependsOn": [
-    "ClusterKubectlReadyBarrier200052AF"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -983,6 +895,48 @@
      }
     ]
    }
+  },
+  "ClusterAwsAuthmanifestFE51F8AE": {
+   "Type": "Custom::AWSCDK-EKS-KubernetesResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+      "Outputs.awscdkekshelmloggingtestawscdkawseksKubectlProviderframeworkonEvent52632707Arn"
+     ]
+    },
+    "Manifest": {
+     "Fn::Join": [
+      "",
+      [
+       "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\",\"labels\":{\"aws.cdk.eks/prune-c886367281041f7b27d3e642951af752eb589d369f\":\"\"}},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
+       {
+        "Fn::GetAtt": [
+         "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
+         "Arn"
+        ]
+       },
+       "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
+      ]
+     ]
+    },
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "ClusterCreationRole360249B6",
+      "Arn"
+     ]
+    },
+    "PruneLabel": "aws.cdk.eks/prune-c886367281041f7b27d3e642951af752eb589d369f",
+    "Overwrite": true
+   },
+   "DependsOn": [
+    "ClusterKubectlReadyBarrier200052AF"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "Clusterchartawsloadbalancercontroller9E1FDE79": {
    "Type": "Custom::AWSCDK-EKS-HelmChart",
@@ -1121,56 +1075,6 @@
     },
     "aws"
    ]
-  }
- },
- "Outputs": {
-  "ClusterConfigCommand43AAE40F": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "aws eks update-kubeconfig --name ",
-      {
-       "Ref": "Cluster9EE0221C"
-      },
-      " --region ",
-      {
-       "Ref": "AWS::Region"
-      },
-      " --role-arn ",
-      {
-       "Fn::GetAtt": [
-        "AdminRole38563C57",
-        "Arn"
-       ]
-      }
-     ]
-    ]
-   }
-  },
-  "ClusterGetTokenCommand06AE992E": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "aws eks get-token --cluster-name ",
-      {
-       "Ref": "Cluster9EE0221C"
-      },
-      " --region ",
-      {
-       "Ref": "AWS::Region"
-      },
-      " --role-arn ",
-      {
-       "Fn::GetAtt": [
-        "AdminRole38563C57",
-        "Arn"
-       ]
-      }
-     ]
-    ]
-   }
   }
  },
  "Parameters": {
