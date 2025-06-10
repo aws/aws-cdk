@@ -7,6 +7,7 @@ import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 import * as path from 'path';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { Key } from 'aws-cdk-lib/aws-kms';
 
 const app = new cdk.App({
   postCliContext: {
@@ -41,8 +42,13 @@ const sourceAction = new cpactions.S3SourceAction({
 
 const commandsOutput = new codepipeline.Artifact('CommandsArtifact', ['my-dir/**/*']);
 
+const kmsKey = new Key(stack, 'Key', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
 const secret = new Secret(stack, 'Secret', {
   secretStringValue: cdk.SecretValue.unsafePlainText('This is the content stored in secrets manager'),
+  encryptionKey: kmsKey,
 });
 const secretEnvVar = codepipeline.EnvironmentVariable.fromSecretsManager({
   variableName: 'MY_SECRET',
