@@ -914,8 +914,6 @@ There are two types of environment variables: plaintext environment variables an
 You can use `EnvironmentVariable.fromPlaintext()` method to specify plaintext environment variables for `actionEnvironmentVariables` in the action.
 
 ```ts
-import * as codepipeline_actions from 'aws-cdk-lib/aws-codepipeline-actions';
-
 declare const sourceOutput: codepipeline.Artifact;
 
 const envVar = codepipeline.EnvironmentVariable.fromPlaintext({
@@ -941,7 +939,6 @@ This feature is currently only supported for `CommandsAction`:
 
 ```ts
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import * as codepipeline_actions from 'aws-cdk-lib/aws-codepipeline-actions';
 
 declare const sourceOutput: codepipeline.Artifact;
 declare const secret: secretsmanager.ISecret;
