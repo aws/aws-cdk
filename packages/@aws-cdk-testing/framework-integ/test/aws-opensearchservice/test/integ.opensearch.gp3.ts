@@ -25,12 +25,7 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App({
-  context: {
-    // deploy will fail if this is not set to false unless zone awareness is enabled
-    '@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby': false,
-  },
-});
+const app = new App();
 const stack = new TestStack(app, 'cdk-integ-opensearch-gp3');
 
 new IntegTest(app, 'Integ', { testCases: [stack] });

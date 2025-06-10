@@ -11,26 +11,7 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // Create a custom policy document without the account root principal
-    const customPolicy = new iam.PolicyDocument({
-      statements: [
-        new iam.PolicyStatement({
-          actions: ['kms:*'],
-          resources: ['*'],
-          principals: [
-            // Add only the specific principals you want to have access
-            // For example, a specific IAM role:
-            new iam.ArnPrincipal('arn:aws:iam::123456789012:role/YourSpecificRole'),
-            // Or a service principal:
-            new iam.ServicePrincipal('lambda.amazonaws.com'),
-          ],
-        }),
-      ],
-    });
-
-    const key = new kms.Key(this, 'Key', {
-      policy: customPolicy,
-    });
+    const key = new kms.Key(this, 'Key');
 
     const domainProps: opensearch.DomainProps = {
       removalPolicy: RemovalPolicy.DESTROY,
@@ -43,13 +24,7 @@ class TestStack extends Stack {
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           actions: ['es:ESHttp*'],
-          principals: [
-            // avoid using account root principal otherwise security guardian will flag this
-            new iam.ServicePrincipal('lambda.amazonaws.com'), // Example: If Lambda needs access
-            new iam.Role(this, 'OpenSearchAccessRole', {
-              assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'), // Example: If EC2 needs access
-            }),
-          ],
+          principals: [new iam.AccountRootPrincipal()],
           resources: ['*'],
         }),
       ],
