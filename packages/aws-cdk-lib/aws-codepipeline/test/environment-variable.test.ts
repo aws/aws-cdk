@@ -2,6 +2,7 @@ import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 import { Match, Template } from '../../assertions';
 import { CommandsAction } from '../../aws-codepipeline-actions';
+import { Key } from '../../aws-kms';
 import { Secret } from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import * as codepipeline from '../lib';
@@ -305,7 +306,7 @@ describe('environment variables', () => {
     });
   });
 
-  test('grants read access to the secret to the pipeline role', () => {
+  test('can get secret value from secrets', () => {
     const stack = new cdk.Stack();
     const sourceOutput = new codepipeline.Artifact();
     const fakeSourceAction = new FakeSourceAction({
@@ -347,10 +348,7 @@ describe('environment variables', () => {
         'Statement': Match.arrayWith([
           {
             'Effect': 'Allow',
-            'Action': [
-              'secretsmanager:GetSecretValue',
-              'secretsmanager:DescribeSecret',
-            ],
+            'Action': 'secretsmanager:GetSecretValue',
             'Resource': {
               'Ref': 'SecretA720EF05',
             },
@@ -363,6 +361,277 @@ describe('environment variables', () => {
           'Ref': 'PipelineBuildCommandsCodePipelineActionRoleCF89A175',
         },
       ],
+    });
+  });
+
+  test('can get secret value from KMS encrypted secrets', () => {
+    const stack = new cdk.Stack();
+    const sourceOutput = new codepipeline.Artifact();
+    const fakeSourceAction = new FakeSourceAction({
+      actionName: 'Source',
+      output: sourceOutput,
+    });
+
+    const kmsKey = new Key(stack, 'MyKey');
+    const secret = new Secret(stack, 'Secret', {
+      secretStringValue: cdk.SecretValue.unsafePlainText('my-secret-value'),
+      encryptionKey: kmsKey,
+    });
+
+    new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [fakeSourceAction],
+        },
+        {
+          stageName: 'Build',
+          actions: [new CommandsAction({
+            actionName: 'Commands',
+            input: sourceOutput,
+            commands: [
+              'echo "MY_ENV_VAR:$MY_ENV_VAR"',
+            ],
+            actionEnvironmentVariables: [
+              codepipeline.EnvironmentVariable.fromSecretsManager({
+                variableName: 'MY_ENV_VAR',
+                secret: secret,
+              }),
+            ],
+          })],
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': Match.arrayWith([
+          {
+            'Effect': 'Allow',
+            'Action': 'secretsmanager:GetSecretValue',
+            'Resource': {
+              'Ref': 'SecretA720EF05',
+            },
+          },
+        ]),
+      },
+      'PolicyName': 'PipelineBuildCommandsCodePipelineActionRoleDefaultPolicyEEF67069',
+      'Roles': [
+        {
+          'Ref': 'PipelineBuildCommandsCodePipelineActionRoleCF89A175',
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      'KeyPolicy': {
+        'Statement': Match.arrayWith([
+          {
+            'Effect': 'Allow',
+            'Action': 'kms:Decrypt',
+            'Condition': {
+              'StringEquals': {
+                'kms:ViaService': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'secretsmanager.',
+                      {
+                        'Ref': 'AWS::Region',
+                      },
+                      '.amazonaws.com',
+                    ],
+                  ],
+                },
+              },
+            },
+            'Principal': {
+              'AWS': {
+                'Fn::GetAtt': [
+                  'PipelineBuildCommandsCodePipelineActionRoleCF89A175',
+                  'Arn',
+                ],
+              },
+            },
+            'Resource': '*',
+          },
+        ]),
+      },
+    });
+  });
+
+  test('can get secret value from imported secrets', () => {
+    const stack = new cdk.Stack();
+    const sourceOutput = new codepipeline.Artifact();
+    const fakeSourceAction = new FakeSourceAction({
+      actionName: 'Source',
+      output: sourceOutput,
+    });
+
+    const secret = Secret.fromSecretCompleteArn(
+      stack,
+      'ImportedSecret',
+      'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-secret-AbCdEf',
+    );
+
+    new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [fakeSourceAction],
+        },
+        {
+          stageName: 'Build',
+          actions: [new CommandsAction({
+            actionName: 'Commands',
+            input: sourceOutput,
+            commands: [
+              'echo "MY_ENV_VAR:$MY_ENV_VAR"',
+            ],
+            actionEnvironmentVariables: [
+              codepipeline.EnvironmentVariable.fromSecretsManager({
+                variableName: 'MY_ENV_VAR',
+                secret: secret,
+              }),
+            ],
+          })],
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': Match.arrayWith([
+          {
+            'Effect': 'Allow',
+            'Action': 'secretsmanager:GetSecretValue',
+            'Resource': 'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-secret-AbCdEf',
+          },
+        ]),
+      },
+    });
+  });
+
+  test('can get secret value from imported secrets with partial ARN', () => {
+    const stack = new cdk.Stack();
+    const sourceOutput = new codepipeline.Artifact();
+    const fakeSourceAction = new FakeSourceAction({
+      actionName: 'Source',
+      output: sourceOutput,
+    });
+
+    const secret = Secret.fromSecretPartialArn(
+      stack,
+      'ImportedSecret',
+      'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-secret',
+    );
+
+    new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [fakeSourceAction],
+        },
+        {
+          stageName: 'Build',
+          actions: [new CommandsAction({
+            actionName: 'Commands',
+            input: sourceOutput,
+            commands: [
+              'echo "MY_ENV_VAR:$MY_ENV_VAR"',
+            ],
+            actionEnvironmentVariables: [
+              codepipeline.EnvironmentVariable.fromSecretsManager({
+                variableName: 'MY_ENV_VAR',
+                secret: secret,
+              }),
+            ],
+          })],
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': Match.arrayWith([
+          {
+            'Effect': 'Allow',
+            'Action': 'secretsmanager:GetSecretValue',
+            'Resource': 'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-secret-??????',
+          },
+        ]),
+      },
+    });
+  });
+
+  test('can get secret value from imported secrets with name', () => {
+    const stack = new cdk.Stack();
+    const sourceOutput = new codepipeline.Artifact();
+    const fakeSourceAction = new FakeSourceAction({
+      actionName: 'Source',
+      output: sourceOutput,
+    });
+
+    const secret = Secret.fromSecretNameV2(
+      stack,
+      'ImportedSecret',
+      'my-secret-name',
+    );
+
+    new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [fakeSourceAction],
+        },
+        {
+          stageName: 'Build',
+          actions: [new CommandsAction({
+            actionName: 'Commands',
+            input: sourceOutput,
+            commands: [
+              'echo "MY_ENV_VAR:$MY_ENV_VAR"',
+            ],
+            actionEnvironmentVariables: [
+              codepipeline.EnvironmentVariable.fromSecretsManager({
+                variableName: 'MY_ENV_VAR',
+                secret: secret,
+              }),
+            ],
+          })],
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': Match.arrayWith([
+          {
+            'Effect': 'Allow',
+            'Action': 'secretsmanager:GetSecretValue',
+            'Resource': {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition',
+                  },
+                  ':secretsmanager:',
+                  {
+                    'Ref': 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    'Ref': 'AWS::AccountId',
+                  },
+                  ':secret:my-secret-name-??????',
+                ],
+              ],
+            },
+          },
+        ]),
+      },
     });
   });
 

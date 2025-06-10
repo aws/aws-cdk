@@ -355,9 +355,125 @@
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
    ]
   },
+  "Key961B73FD": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:CreateGrant",
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "kms:ViaService": {
+          "Fn::Join": [
+           "",
+           [
+            "secretsmanager.",
+            {
+             "Ref": "AWS::Region"
+            },
+            ".amazonaws.com"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": "kms:Decrypt",
+       "Condition": {
+        "StringEquals": {
+         "kms:ViaService": {
+          "Fn::Join": [
+           "",
+           [
+            "secretsmanager.",
+            {
+             "Ref": "AWS::Region"
+            },
+            ".amazonaws.com"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "PipelineComputeCommandsCodePipelineActionRole992CFF18",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "SecretA720EF05": {
    "Type": "AWS::SecretsManager::Secret",
    "Properties": {
+    "KmsKeyId": {
+     "Fn::GetAtt": [
+      "Key961B73FD",
+      "Arn"
+     ]
+    },
     "SecretString": "This is the content stored in secrets manager"
    },
    "UpdateReplacePolicy": "Delete",
@@ -993,10 +1109,7 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "secretsmanager:DescribeSecret",
-        "secretsmanager:GetSecretValue"
-       ],
+       "Action": "secretsmanager:GetSecretValue",
        "Effect": "Allow",
        "Resource": {
         "Ref": "SecretA720EF05"
