@@ -903,6 +903,64 @@ new codepipeline.Pipeline(this, 'Pipeline', {
 });
 ```
 
+## Environment Variables
+
+You can use environment variables for the action.
+
+There are two types of environment variables: plaintext environment variables and Secrets Manager environment variables.
+
+### Plaintext Environment Variables
+
+You can use `EnvironmentVariable.fromPlaintext()` method to specify plaintext environment variables for `actionEnvironmentVariables` in the action.
+
+```ts
+import * as codepipeline_actions from 'aws-cdk-lib/aws-codepipeline-actions';
+
+declare const sourceOutput: codepipeline.Artifact;
+
+const envVar = codepipeline.EnvironmentVariable.fromPlaintext({
+  name: 'MY_ENV_VAR',
+  value: 'production',
+});
+
+new codepipeline_actions.CommandsAction({
+  actionName: 'Commands',
+  input: sourceOutput,
+  commands: [
+    `echo "Environment:$${envVar.name}"`,
+  ],
+  actionEnvironmentVariables: [envVar],
+});
+```
+
+### Secrets Manager Environment Variables
+
+You can use `EnvironmentVariable.fromSecretsManager()` method to specify Secrets Manager environment variables for `actionEnvironmentVariables` in the action.
+
+This feature is currently only supported for `CommandsAction`:
+
+```ts
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as codepipeline_actions from 'aws-cdk-lib/aws-codepipeline-actions';
+
+declare const sourceOutput: codepipeline.Artifact;
+declare const secret: secretsmanager.ISecret;
+
+const envVar = codepipeline.EnvironmentVariable.fromSecretsManager({
+  name: 'MY_SECRET',
+  secret: secret,
+});
+
+new codepipeline_actions.CommandsAction({
+  actionName: 'Commands',
+  input: sourceOutput,
+  commands: [
+    `echo "Environment:$${envVar.name}"`,
+  ],
+  actionEnvironmentVariables: [envVar],
+});
+```
+
 ## Use pipeline service role as default action role in pipeline
 
 You could enable this field to use pipeline service role as default action role in Codepipeline by set `usePipelineServiceRoleForActions` as true if no action role provided.
