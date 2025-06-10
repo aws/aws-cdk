@@ -1,0 +1,14 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "aws-cdk-codepipeline-environment-variables-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-codepipeline-environment-variables"
+      ],
+      "diffAssets": true,
+      "assertionStack": "aws-cdk-codepipeline-environment-variables-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkcodepipelineenvironmentvariablestestDefaultTestDeployAssert305A982C"
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}
