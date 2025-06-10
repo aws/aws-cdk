@@ -121,13 +121,13 @@ else
     fi
 fi
 
-# [.NET >= 8.0.x]
+# [.NET >= 6.0.x]
 app="dotnet"
-app_min="8.0.100"
+app_min="6.0.100"
 check_which $app $app_min
 app_v=$(${app} --list-sdks)
 echo -e "Checking dotnet version... \c"
-if [ $(echo $app_v | grep -c -E "[89]\.[0-9]+\.[0-9]+") -eq 1 ]
+if [ $(echo $app_v | grep -c -E "[6789]\.[0-9]+\.[0-9]+") -eq 1 ]
 then
     echo "Ok"
 else
