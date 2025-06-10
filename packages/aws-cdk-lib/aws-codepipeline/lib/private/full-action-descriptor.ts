@@ -1,8 +1,8 @@
 import * as iam from '../../../aws-iam';
 import { Duration } from '../../../core';
 import { ActionArtifactBounds, ActionCategory, ActionConfig, IAction } from '../action';
-import { EnvironmentVariable } from '../environment-variable';
 import { Artifact } from '../artifact';
+import { EnvironmentVariable } from '../environment-variable';
 
 export interface FullActionDescriptorProps {
   readonly action: IAction;
