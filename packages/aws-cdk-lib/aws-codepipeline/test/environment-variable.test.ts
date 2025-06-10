@@ -489,5 +489,71 @@ describe('environment variables', () => {
         });
       }).toThrow(/The length of \`environmentVariables\` in action 'Commands' must be less than or equal to 10, got: 11/);
     });
+
+    test('throw error when specifying an environment variable with a name that is too long', () => {
+      const stack = new cdk.Stack();
+      const sourceOutput = new codepipeline.Artifact();
+      const fakeSourceAction = new FakeSourceAction({
+        actionName: 'Source',
+        output: sourceOutput,
+      });
+
+      expect(() => {
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [fakeSourceAction],
+            },
+            {
+              stageName: 'Build',
+              actions: [new FakeBuildAction({
+                actionName: 'Build',
+                input: sourceOutput,
+                actionEnvironmentVariables: [
+                  codepipeline.EnvironmentVariable.fromPlaintext({
+                    name: 'a'.repeat(129),
+                    value: 'my-value',
+                  }),
+                ],
+              })],
+            },
+          ],
+        });
+      }).toThrow(/The length of \`name\` for \`actionEnvironmentVariables\` must be less than or equal to 128, got: 129/);
+    });
+
+    test('throw error when specifying an environment variable with a name that does not match the regular expression', () => {
+      const stack = new cdk.Stack();
+      const sourceOutput = new codepipeline.Artifact();
+      const fakeSourceAction = new FakeSourceAction({
+        actionName: 'Source',
+        output: sourceOutput,
+      });
+
+      expect(() => {
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [fakeSourceAction],
+            },
+            {
+              stageName: 'Build',
+              actions: [new FakeBuildAction({
+                actionName: 'Build',
+                input: sourceOutput,
+                actionEnvironmentVariables: [
+                  codepipeline.EnvironmentVariable.fromPlaintext({
+                    name: 'a-b',
+                    value: 'my-value',
+                  }),
+                ],
+              })],
+            },
+          ],
+        });
+      }).toThrow(/The \`name\` for \`actionEnvironmentVariables\` must match the regular expression: \`\[A-Za-z0-9_\]\+\`, got: a-b/);
+    });
   });
 });
