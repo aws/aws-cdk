@@ -15,7 +15,7 @@
         }
       }
     },
-    "1bf9298673fbaf9546acec03a9094735b8a549039a5878d5946fe9a3bb1e3715": {
+    "8ea7f7bd1b9d0f8979ce0cb6e0a1dfcc2057e98b57dcae385eb553feffb3542f": {
       "displayName": "aws-iot-opensearch-integ-stack Template",
       "source": {
         "path": "aws-iot-opensearch-integ-stack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1bf9298673fbaf9546acec03a9094735b8a549039a5878d5946fe9a3bb1e3715.json",
+          "objectKey": "8ea7f7bd1b9d0f8979ce0cb6e0a1dfcc2057e98b57dcae385eb553feffb3542f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
