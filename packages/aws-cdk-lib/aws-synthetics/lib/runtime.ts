@@ -432,6 +432,16 @@ export class Runtime {
   public static readonly SYNTHETICS_PYTHON_SELENIUM_5_1 = new Runtime('syn-python-selenium-5.1', RuntimeFamily.PYTHON);
 
   /**
+   * `syn-python-selenium-6.0` includes the following:
+   * - Lambda runtime Python 3.11
+   * - Selenium version 4.21.0
+   * - Chromium version 131.0.6778.264
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-6.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_6_0 = new Runtime('syn-python-selenium-6.0', RuntimeFamily.PYTHON);
+
+  /**
    * @param name The name of the runtime version
    * @param family The Lambda runtime family
    */
