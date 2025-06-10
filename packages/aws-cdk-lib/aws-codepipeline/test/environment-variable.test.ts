@@ -29,8 +29,8 @@ describe('environment variables', () => {
             input: sourceOutput,
             actionEnvironmentVariables: [
               codepipeline.EnvironmentVariable.fromPlaintext({
-                name: 'MY_ENV_VAR',
-                value: 'my-value',
+                variableName: 'MY_ENV_VAR',
+                variableValue: 'my-value',
               }),
             ],
           })],
@@ -90,7 +90,7 @@ describe('environment variables', () => {
             ],
             actionEnvironmentVariables: [
               codepipeline.EnvironmentVariable.fromSecretsManager({
-                name: 'MY_ENV_VAR',
+                variableName: 'MY_ENV_VAR',
                 secret: secret,
               }),
             ],
@@ -207,11 +207,11 @@ describe('environment variables', () => {
             ],
             actionEnvironmentVariables: [
               codepipeline.EnvironmentVariable.fromPlaintext({
-                name: 'MY_ENV_VAR',
-                value: 'my-value',
+                variableName: 'MY_ENV_VAR',
+                variableValue: 'my-value',
               }),
               codepipeline.EnvironmentVariable.fromSecretsManager({
-                name: 'MY_SECRET_ENV_VAR',
+                variableName: 'MY_SECRET_ENV_VAR',
                 secret: secret,
               }),
             ],
@@ -333,7 +333,7 @@ describe('environment variables', () => {
             ],
             actionEnvironmentVariables: [
               codepipeline.EnvironmentVariable.fromSecretsManager({
-                name: 'MY_ENV_VAR',
+                variableName: 'MY_ENV_VAR',
                 secret: secret,
               }),
             ],
@@ -435,7 +435,7 @@ describe('environment variables', () => {
               input: sourceOutput,
               actionEnvironmentVariables: [
                 codepipeline.EnvironmentVariable.fromSecretsManager({
-                  name: 'MY_ENV_VAR',
+                  variableName: 'MY_ENV_VAR',
                   secret: secret,
                 }),
               ],
@@ -457,8 +457,8 @@ describe('environment variables', () => {
     const envVars: codepipeline.EnvironmentVariable[] = [];
     for (let i = 0; i < 11; i++) {
       envVars.push(codepipeline.EnvironmentVariable.fromPlaintext({
-        name: `MY_ENV_VAR_${i}`,
-        value: `my-value-${i}`,
+        variableName: `MY_ENV_VAR_${i}`,
+        variableValue: `my-value-${i}`,
       }));
     }
 
@@ -485,35 +485,21 @@ describe('environment variables', () => {
     }).toThrow(/The length of \`environmentVariables\` in action 'Commands' must be less than or equal to 10, got: 11/);
   });
 
-  test('throw error when specifying an environment variable with a name that is too long', () => {
-    const stack = new cdk.Stack();
-    const sourceOutput = new codepipeline.Artifact();
-    const fakeSourceAction = new FakeSourceAction({
-      actionName: 'Source',
-      output: sourceOutput,
-    });
-
+  test('throw error when specifying an environment variable with a variableName that is too long', () => {
     expect(() => {
       codepipeline.EnvironmentVariable.fromPlaintext({
-        name: 'a'.repeat(129),
-        value: 'my-value',
+        variableName: 'a'.repeat(129),
+        variableValue: 'my-value',
       });
-    }).toThrow(/The length of \`name\` for \`actionEnvironmentVariables\` must be less than or equal to 128, got: 129/);
+    }).toThrow(/The length of \`variableName\` for \`actionEnvironmentVariables\` must be less than or equal to 128, got: 129/);
   });
 
-  test('throw error when specifying an environment variable with a name that does not match the regular expression', () => {
-    const stack = new cdk.Stack();
-    const sourceOutput = new codepipeline.Artifact();
-    const fakeSourceAction = new FakeSourceAction({
-      actionName: 'Source',
-      output: sourceOutput,
-    });
-
+  test('throw error when specifying an environment variable with a variableName that does not match the regular expression', () => {
     expect(() => {
       codepipeline.EnvironmentVariable.fromPlaintext({
-        name: 'a-b',
-        value: 'my-value',
+        variableName: 'a-b',
+        variableValue: 'my-value',
       });
-    }).toThrow(/The \`name\` for \`actionEnvironmentVariables\` must match the regular expression: \`\[A-Za-z0-9_\]\+\`, got: a-b/);
+    }).toThrow(/The \`variableName\` for \`actionEnvironmentVariables\` must match the regular expression: \`\[A-Za-z0-9_\]\+\`, got: a-b/);
   });
 });

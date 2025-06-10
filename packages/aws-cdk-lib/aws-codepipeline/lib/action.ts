@@ -453,7 +453,7 @@ export abstract class Action implements IAction {
     envVars?.forEach(envVar => {
       if (envVar instanceof SecretsManagerEnvironmentVariable) {
         if (this.actionProperties.provider !== 'Commands') {
-          throw new UnscopedValidationError(`Secrets Manager environment variable ('${envVar.name}') in action '${this.actionProperties.actionName}' can only be used with the Commands action, got: ${this.actionProperties.provider} action`);
+          throw new UnscopedValidationError(`Secrets Manager environment variable ('${envVar.variableName}') in action '${this.actionProperties.actionName}' can only be used with the Commands action, got: ${this.actionProperties.provider} action`);
         }
         envVar.secret.grantRead(options.role);
       }

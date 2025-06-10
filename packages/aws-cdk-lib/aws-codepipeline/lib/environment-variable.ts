@@ -13,7 +13,7 @@ export interface CommonEnvironmentVariableProps {
    *
    * The name must match the regular expression: `[A-Za-z0-9_]+`.
    */
-  readonly name: string;
+  readonly variableName: string;
 }
 
 /**
@@ -23,7 +23,7 @@ export interface PlaintextEnvironmentVariableProps extends CommonEnvironmentVari
   /**
    * The environment variable value in the key-value pair.
    */
-  readonly value: string;
+  readonly variableValue: string;
 }
 
 /**
@@ -57,22 +57,22 @@ export abstract class EnvironmentVariable {
   /**
    * The environment variable name.
    */
-  public readonly name: string;
+  public readonly variableName: string;
 
   /**
    * Create a new environment variable.
    */
   protected constructor(props: CommonEnvironmentVariableProps) {
-    if (!Token.isUnresolved(props.name)) {
-      if (props.name.length > 128) {
-        throw new UnscopedValidationError('The length of `name` for `actionEnvironmentVariables` must be less than or equal to 128, got: ' + props.name.length);
+    if (!Token.isUnresolved(props.variableName)) {
+      if (props.variableName.length > 128) {
+        throw new UnscopedValidationError('The length of `variableName` for `actionEnvironmentVariables` must be less than or equal to 128, got: ' + props.variableName.length);
       }
-      if (!/^[A-Za-z0-9_]+$/.test(props.name)) {
-        throw new UnscopedValidationError('The `name` for `actionEnvironmentVariables` must match the regular expression: `[A-Za-z0-9_]+`, got: ' + props.name);
+      if (!/^[A-Za-z0-9_]+$/.test(props.variableName)) {
+        throw new UnscopedValidationError('The `variableName` for `actionEnvironmentVariables` must match the regular expression: `[A-Za-z0-9_]+`, got: ' + props.variableName);
       }
     }
 
-    this.name = props.name;
+    this.variableName = props.variableName;
   }
 
   /**
@@ -81,32 +81,32 @@ export abstract class EnvironmentVariable {
    */
   public _render(): CfnPipeline.EnvironmentVariableProperty {
     return {
-      name: this.name,
-      value: this.value,
-      type: this.type,
+      name: this.variableName,
+      value: this.variableValue,
+      type: this.variableType,
     };
   }
 
-  protected abstract get value(): string;
-  protected abstract get type(): string;
+  protected abstract get variableValue(): string;
+  protected abstract get variableType(): string;
 }
 
 /**
  * A plaintext environment variable.
  */
 export class PlaintextEnvironmentVariable extends EnvironmentVariable {
-  private readonly _value: string;
+  private readonly _variableValue: string;
 
   constructor(props: PlaintextEnvironmentVariableProps) {
     super(props);
-    this._value = props.value;
+    this._variableValue = props.variableValue;
   }
 
-  protected get value(): string {
-    return this._value;
+  protected get variableValue(): string {
+    return this._variableValue;
   }
 
-  protected get type(): string {
+  protected get variableType(): string {
     return 'PLAINTEXT';
   }
 }
@@ -125,11 +125,11 @@ export class SecretsManagerEnvironmentVariable extends EnvironmentVariable {
     this.secret = props.secret;
   }
 
-  protected get value(): string {
+  protected get variableValue(): string {
     return this.secret.secretName;
   }
 
-  protected get type(): string {
+  protected get variableType(): string {
     return 'SECRETS_MANAGER';
   }
 }

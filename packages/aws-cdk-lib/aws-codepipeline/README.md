@@ -917,15 +917,15 @@ You can use `EnvironmentVariable.fromPlaintext()` method to specify plaintext en
 declare const sourceOutput: codepipeline.Artifact;
 
 const envVar = codepipeline.EnvironmentVariable.fromPlaintext({
-  name: 'MY_ENV_VAR',
-  value: 'production',
+  variableName: 'MY_ENV_VAR',
+  variableValue: 'production',
 });
 
 new codepipeline_actions.CommandsAction({
   actionName: 'Commands',
   input: sourceOutput,
   commands: [
-    `echo "Environment:$${envVar.name}"`,
+    `echo "Environment:$${envVar.variableName}"`,
   ],
   actionEnvironmentVariables: [envVar],
 });
@@ -944,7 +944,7 @@ declare const sourceOutput: codepipeline.Artifact;
 declare const secret: secretsmanager.ISecret;
 
 const envVar = codepipeline.EnvironmentVariable.fromSecretsManager({
-  name: 'MY_SECRET',
+  variableName: 'MY_SECRET',
   secret: secret,
 });
 
@@ -952,7 +952,7 @@ new codepipeline_actions.CommandsAction({
   actionName: 'Commands',
   input: sourceOutput,
   commands: [
-    `echo "Environment:$${envVar.name}"`,
+    `echo "Environment:$${envVar.variableName}"`,
   ],
   actionEnvironmentVariables: [envVar],
 });

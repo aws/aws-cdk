@@ -45,27 +45,27 @@ const secret = new Secret(stack, 'Secret', {
   secretStringValue: cdk.SecretValue.unsafePlainText('This is the content stored in secrets manager'),
 });
 const secretEnvVar = codepipeline.EnvironmentVariable.fromSecretsManager({
-  name: 'MY_SECRET',
+  variableName: 'MY_SECRET',
   secret: secret,
 });
 
 const plaintextValue = 'my-plaintext';
 const plaintextEnvVar = codepipeline.EnvironmentVariable.fromPlaintext({
-  name: 'MY_PLAINTEXT',
-  value: plaintextValue,
+  variableName: 'MY_PLAINTEXT',
+  variableValue: plaintextValue,
 });
 
 const commandsAction = new cpactions.CommandsAction({
   actionName: 'Commands',
   commands: [
-    `echo "MY_SECRET:$${secretEnvVar.name}"`,
-    `echo "MY_PLAINTEXT:$${plaintextEnvVar.name}"`,
+    `echo "MY_SECRET:$${secretEnvVar.variableName}"`,
+    `echo "MY_PLAINTEXT:$${plaintextEnvVar.variableName}"`,
     'mkdir -p my-dir',
     'echo "HelloWorld" > my-dir/file.txt',
   ],
   input: sourceOutput,
   output: commandsOutput,
-  outputVariables: [plaintextEnvVar.name],
+  outputVariables: [plaintextEnvVar.variableName],
   actionEnvironmentVariables: [
     secretEnvVar,
     plaintextEnvVar,
@@ -81,7 +81,7 @@ const deployAction = new cpactions.S3DeployAction({
   extract: true,
   input: commandsOutput,
   bucket: deployBucket,
-  objectKey: commandsAction.variable(plaintextEnvVar.name),
+  objectKey: commandsAction.variable(plaintextEnvVar.variableName),
 });
 
 const pipelineBucket = new s3.Bucket(stack, 'PipelineBucket', {
