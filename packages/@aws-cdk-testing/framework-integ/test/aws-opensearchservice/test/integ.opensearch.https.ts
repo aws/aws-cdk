@@ -1,7 +1,7 @@
 import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { AssertionResult, ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 
 /**
  * After deploying this test, you can verify that the OpenSearch domain using:
@@ -14,6 +14,8 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
  */
 
 class TestStack extends Stack {
+  public readonly domain: opensearch.Domain;
+
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
@@ -27,11 +29,26 @@ class TestStack extends Stack {
       enforceHttps: true,
     };
 
-    new opensearch.Domain(this, 'domain', domainProps);
+    this.domain = new opensearch.Domain(this, 'domain', domainProps);
   }
 }
 
 const app = new App();
 const stack = new TestStack(app, 'cdk-integ-opensearch-https');
 
-new IntegTest(app, 'integ-openseach-https', { testCases: [stack] });
+const integ = new IntegTest(app, 'integ-openseach-https', { testCases: [stack] });
+
+// Assert TLS security policy using AwsApiCall
+const describeResponse = integ.assertions.awsApiCall('OpenSearch', 'describeDomain', {
+  DomainName: stack.domain.domainName,
+});
+
+// Verify domain endpoint configuration
+describeResponse.expect(ExpectedResult.objectLike({
+  DomainStatus: {
+    DomainEndpointOptions: {
+      EnforceHTTPS: true,
+      TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
+    },
+  },
+}));
