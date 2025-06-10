@@ -1248,12 +1248,12 @@ new cloudfront.KeyGroup(this, 'MyKeyGroup', {
 });
 ```
 
-Cloudfront doesn't allow the `encodedKey` and the `publicKeyName` to be updated (see [API Reference](https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_UpdatePublicKey.html)), the only field that can be updated is the `comment`. If you try to update any other field, you will get:
+When using a CloudFront PublicKey, only the `comment` field can be updated after creation. Fields such as `encodedKey` and `publicKeyName` are immutable, as outlined in the [API Reference](https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_UpdatePublicKey.html). Attempting to modify these fields will result in an error:
 ```
 Resource handler returned message: "Invalid request provided: AWS::CloudFront::PublicKey"
 ```
 
-If you need to change the `encodedKey` value, you can change the `id` of the public key, on the next deployment, a new `cloudfront.PublicKey` will be created and the old one will be deleted.
+To update the `encodedKey`, you must change the logical ID of the public key resource in your template. This causes CloudFormation to create a new `cloudfront.PublicKey` resource and delete the old one during the next deployment.
 
 
 See:
