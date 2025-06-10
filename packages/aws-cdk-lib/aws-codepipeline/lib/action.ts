@@ -5,6 +5,7 @@ import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import { Duration, IResource, Lazy, UnscopedValidationError } from '../../core';
+import { EnvironmentVariable, SecretsManagerEnvironmentVariable } from './environment-variable';
 
 export enum ActionCategory {
   SOURCE = 'Source',
@@ -132,6 +133,13 @@ export interface ActionProperties {
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/limits.html
    */
   readonly timeout?: Duration;
+
+  /**
+   * The environment variables for the action.
+   *
+   * @default - no environment variables
+   */
+  readonly actionEnvironmentVariables?: EnvironmentVariable[];
 }
 
 export interface ActionBindOptions {
@@ -351,6 +359,13 @@ export interface CommonActionProps {
    *   no namespace will be set
    */
   readonly variablesNamespace?: string;
+
+  /**
+   * The environment variables for the action.
+   *
+   * @default - no environment variables
+   */
+  readonly actionEnvironmentVariables?: EnvironmentVariable[];
 }
 
 /**
@@ -433,6 +448,20 @@ export abstract class Action implements IAction {
       // default a namespace name, based on the stage and action names
       ? `${stage.stageName}_${this.actionProperties.actionName}_NS`
       : this._customerProvidedNamespace;
+
+    const envVars = this.actionProperties.actionEnvironmentVariables;
+    envVars?.forEach(envVar => {
+      if (envVar instanceof SecretsManagerEnvironmentVariable) {
+        if (this.actionProperties.actionName !== 'Commands') {
+          throw new UnscopedValidationError(`Secrets Manager environment variables are only supported for the Commands action, got: ${this.actionProperties.actionName}`);
+        }
+        envVar.secret.grantRead(options.role);
+      }
+    });
+
+    if (envVars && envVars.length > 10) {
+      throw new UnscopedValidationError(`The length of \`environmentVariables\` in action '${this.actionProperties.actionName}' must be less than or equal to 10, got: ${envVars.length}`);
+    }
 
     return this.bound(scope, stage, options);
   }
