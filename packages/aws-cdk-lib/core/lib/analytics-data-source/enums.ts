@@ -870,11 +870,17 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'nodejs14.x',
     'nodejs16.x',
     'nodejs18.x',
-    'nodejs20.x'
+    'nodejs20.x',
+    'nodejs22.x'
   ],
   'CustomThreatProtectionMode': [
     'ENFORCED',
     'AUDIT'
+  ],
+  'CustomizationType': [
+    'FINE_TUNING',
+    'CONTINUED_PRE_TRAINING',
+    'DISTILLATION'
   ],
   'DBClusterStorageType': [
     'aurora',
@@ -1719,6 +1725,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'is4gen',
     'storage7-intel-storage-optimized',
     'i7ie',
+    'io7_intel',
+    'i7i',
     'storage8-graviton',
     'i8g',
     'burstable2',

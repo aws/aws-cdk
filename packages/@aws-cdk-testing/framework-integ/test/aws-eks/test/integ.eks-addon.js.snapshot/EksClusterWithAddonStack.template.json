@@ -526,9 +526,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9953ad4c3e84d120643ece4b2e51caf43fd9850063641b4d78bf30fbe6b4d381.zip"
+     "S3Key": "6094cb0ff874f89ab5ab24fb6b9417df0fdeb6966645f90c88ec1d7e28130112.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.30; /opt/helm/helm 3.17.1",
+    "Description": "/opt/kubectl/kubectl 1.32.3; /opt/helm/helm 3.17.2",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -849,7 +849,7 @@
      ]
     },
     "Config": {
-     "version": "1.30",
+     "version": "1.32",
      "roleArn": {
       "Fn::GetAtt": [
        "ClusterRoleFA261979",
@@ -893,7 +893,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 4
+    "AttributesRevision": 5
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
@@ -1084,7 +1084,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/a09deafabf3707fa17bec806fa9188549f9fc28095f76903c5d8456565e06e6b.json"
+       "/c8fe4509f678dbf8a9d792f5121691f7d2b9ca9a3ac15cb8edc3e7b01fe30191.json"
       ]
      ]
     }
@@ -1134,7 +1134,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/d2f80b40dd229270b2d28dba5fad8ff6cf4410e9d51fd5a4b747e7585d06ea4c.json"
+       "/40477bcaf79e1500444decc3d7d6ed48e2b09a0158beb5a1c5ddf2b42a19af3c.json"
       ]
      ]
     }
@@ -1157,6 +1157,7 @@
     "ClusterName": {
      "Ref": "Cluster9EE0221C"
     },
+    "ConfigurationValues": "{\"replicaCount\":2}",
     "PreserveOnDelete": true
    }
   }
