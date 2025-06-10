@@ -1,6 +1,6 @@
 import { CfnPipeline } from './codepipeline.generated';
 import { ISecret } from '../../aws-secretsmanager';
-import { UnscopedValidationError } from '../../core';
+import { Token, UnscopedValidationError } from '../../core';
 
 /**
  * Properties for an environment variable.
@@ -63,11 +63,13 @@ export abstract class EnvironmentVariable {
    * Create a new environment variable.
    */
   protected constructor(props: CommonEnvironmentVariableProps) {
-    if (props.name.length > 128) {
-      throw new UnscopedValidationError('The length of `name` for `actionEnvironmentVariables` must be less than or equal to 128, got: ' + props.name.length);
-    }
-    if (!/^[A-Za-z0-9_]+$/.test(props.name)) {
-      throw new UnscopedValidationError('The `name` for `actionEnvironmentVariables` must match the regular expression: `[A-Za-z0-9_]+`, got: ' + props.name);
+    if (!Token.isUnresolved(props.name)) {
+      if (props.name.length > 128) {
+        throw new UnscopedValidationError('The length of `name` for `actionEnvironmentVariables` must be less than or equal to 128, got: ' + props.name.length);
+      }
+      if (!/^[A-Za-z0-9_]+$/.test(props.name)) {
+        throw new UnscopedValidationError('The `name` for `actionEnvironmentVariables` must match the regular expression: `[A-Za-z0-9_]+`, got: ' + props.name);
+      }
     }
 
     this.name = props.name;
