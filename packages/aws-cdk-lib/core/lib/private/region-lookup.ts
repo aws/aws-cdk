@@ -2,6 +2,7 @@ import * as cxapi from '../../../cx-api';
 import { RegionInfo } from '../../../region-info';
 import { CfnMapping } from '../cfn-mapping';
 import { Aws } from '../cfn-pseudo';
+import { UnscopedValidationError } from '../errors';
 import { Stack } from '../stack';
 
 /**
@@ -13,7 +14,7 @@ export function deployTimeLookup(stack: Stack, factName: string, lookupMap: Reco
   // If there are no lookups, just return the default
   if (Object.values(lookupMap).length === 0) {
     if (defaultValue === undefined) {
-      throw new Error(`region-info: don't have any information for ${factName}. Use 'Fact.register' to provide values, or add partitions to the '${cxapi.TARGET_PARTITIONS}' context value.`);
+      throw new UnscopedValidationError(`region-info: don't have any information for ${factName}. Use 'Fact.register' to provide values, or add partitions to the '${cxapi.TARGET_PARTITIONS}' context value.`);
     }
     return defaultValue;
   }
