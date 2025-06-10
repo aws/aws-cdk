@@ -165,6 +165,27 @@ describe('cluster new api', () => {
         // THEN
       }).toThrow(errorMessage);
     });
+
+    test.each([
+      [cdk.Duration.seconds(299)],
+      [cdk.Duration.seconds(86401)],
+    ])('when serverlessV2 auto-pause duration is incorrect', (serverlessV2AutoPauseDuration) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_08_0 }),
+          vpc,
+          vpcSubnets: vpc.selectSubnets( { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } ),
+          serverlessV2AutoPauseDuration,
+          iamAuthentication: true,
+        });
+        // THEN
+      }).toThrow('serverlessV2AutoPause must be between 300 seconds (5 minutes) and 86,400 seconds (24 hours)');
+    });
   });
 
   describe('cluster options', () => {
@@ -504,6 +525,59 @@ describe('cluster new api', () => {
           { Ref: 'VPCPrivateSubnet3Subnet3EDCD457' },
         ],
       });
+    });
+
+    test.each([
+      ['MySQL', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_08_0 })],
+      ['PostgreSQL', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_17_4 })],
+    ])('with serverlessV2 auto-pause configuration for Aurora %s', (type: string, engine: IClusterEngine) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, type, {
+        engine,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        serverlessV2AutoPauseDuration: cdk.Duration.hours(1),
+        iamAuthentication: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        ServerlessV2ScalingConfiguration: {
+          SecondsUntilAutoPause: 3600,
+        },
+      });
+    });
+
+    test.each([
+      // For prerequisites of engine version, see
+      // https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html#auto-pause-prereqs
+      ['MySQL 2.12.5', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_12_5 })],
+      ['MySQL 3.07.0', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_0 })],
+      ['PostgreSQL 12.22', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_12_22 })],
+      ['PostgreSQL 13.14', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_13_14 })],
+      ['PostgreSQL 14.11', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_11 })],
+      ['PostgreSQL 15.6', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_15_6 })],
+      ['PostgreSQL 16.2', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_2 })],
+    ])('throws when serverlessV2 auto-pause is not supported for Aurora %s', (type: string, engine: IClusterEngine) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // THEN
+      expect(() => {
+        new DatabaseCluster(stack, type, {
+          engine,
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+          serverlessV2AutoPauseDuration: cdk.Duration.hours(1),
+          iamAuthentication: true,
+        });
+      }).toThrow('serverlessV2 auto-pause feature is not supported');
     });
 
     test.each([
