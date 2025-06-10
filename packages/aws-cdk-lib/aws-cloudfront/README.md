@@ -1232,6 +1232,7 @@ openssl rsa -pubout -in private_key.pem -out public_key.pem
 
 Note: Don't forget to copy/paste the contents of `public_key.pem` file including `-----BEGIN PUBLIC KEY-----` and `-----END PUBLIC KEY-----` lines into `encodedKey` parameter when creating a `PublicKey`.
 
+
 Example:
 
 ```ts
@@ -1246,6 +1247,14 @@ new cloudfront.KeyGroup(this, 'MyKeyGroup', {
   // comment: 'Key group containing public keys ...',
 });
 ```
+
+Cloudfront doesn't allow the `encodedKey` and the `publicKeyName` to be updated (see [API Reference](https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_UpdatePublicKey.html)), the only field that can be updated is the `comment`. If you try to update any other field, you will get:
+```
+Resource handler returned message: "Invalid request provided: AWS::CloudFront::PublicKey"
+```
+
+If you need to change the `encodedKey` value, you can change the `id` of the public key, on the next deployment, a new `cloudfront.PublicKey` will be created and the old one will be deleted.
+
 
 See:
 
