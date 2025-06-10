@@ -265,6 +265,20 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_1_0 = new Runtime('syn-nodejs-playwright-1.0', RuntimeFamily.NODEJS);
 
   /**
+   * `syn-nodejs-playwright-2.0` includes the following:
+   * - Lambda runtime Node.js 20.x
+   * - Playwright version 1.49.1
+   * - Chromium version 131.0.6778.264
+   *
+   * New Features:
+   * - The mismatch between total duration and sum of timings for a given request in HAR file is fixed.
+   * - Supports dry runs for the canary which allows for adhoc executions or performing a safe canary update.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-2.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_2_0 = new Runtime('syn-nodejs-playwright-2.0', RuntimeFamily.NODEJS);
+
+  /**
    * `syn-python-selenium-1.0` includes the following:
    * - Lambda runtime Python 3.8
    * - Selenium version 3.141.0
@@ -416,6 +430,16 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-5.1
    */
   public static readonly SYNTHETICS_PYTHON_SELENIUM_5_1 = new Runtime('syn-python-selenium-5.1', RuntimeFamily.PYTHON);
+
+  /**
+   * `syn-python-selenium-6.0` includes the following:
+   * - Lambda runtime Python 3.11
+   * - Selenium version 4.21.0
+   * - Chromium version 131.0.6778.264
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-6.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_6_0 = new Runtime('syn-python-selenium-6.0', RuntimeFamily.PYTHON);
 
   /**
    * @param name The name of the runtime version
