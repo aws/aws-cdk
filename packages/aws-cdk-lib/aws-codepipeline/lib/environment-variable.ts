@@ -4,7 +4,7 @@ import { ISecret } from '../../aws-secretsmanager';
 /**
  * Properties for an environment variable.
  */
-interface CommonEnvironmentVariableProps {
+export interface CommonEnvironmentVariableProps {
   /**
    * The environment variable name in the key-value pair.
    */
