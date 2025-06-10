@@ -3,7 +3,7 @@ import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Lazy, Names, Resource, Token } from '../../../core';
+import { FeatureFlags, Lazy, Names, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -333,7 +333,10 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     this.isSecurityGroupsPropertyDefined = !!props.securityGroups;
 
     let securityGroups: ec2.ISecurityGroup[] | undefined;
-    if (cxapi.NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT && !props.disableSecurityGroups) {
+    if (props.securityGroups && props.disableSecurityGroups) {
+      throw new ValidationError('Cannot specify both `securityGroups` and `disableSecurityGroups` properties.', this);
+    }
+    if (FeatureFlags.of(this).isEnabled(cxapi.NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT) && !props.disableSecurityGroups) {
       securityGroups = props.securityGroups ?? [new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
         description: `Automatically created Security Group for ELB ${Names.uniqueId(this)}`,
