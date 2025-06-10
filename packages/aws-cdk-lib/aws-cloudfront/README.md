@@ -1232,7 +1232,6 @@ openssl rsa -pubout -in private_key.pem -out public_key.pem
 
 Note: Don't forget to copy/paste the contents of `public_key.pem` file including `-----BEGIN PUBLIC KEY-----` and `-----END PUBLIC KEY-----` lines into `encodedKey` parameter when creating a `PublicKey`.
 
-
 Example:
 
 ```ts
