@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "29580ff3632143bf0335562f6d1b427bc4d07338f2e0a2286abeaa96de2fc932": {
+      "displayName": "aws-cdk-expose-metric-with-dimensions-integ Template",
+      "source": {
+        "path": "aws-cdk-expose-metric-with-dimensions-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "29580ff3632143bf0335562f6d1b427bc4d07338f2e0a2286abeaa96de2fc932.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
