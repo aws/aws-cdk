@@ -499,26 +499,9 @@ describe('environment variables', () => {
       });
 
       expect(() => {
-        new codepipeline.Pipeline(stack, 'Pipeline', {
-          stages: [
-            {
-              stageName: 'Source',
-              actions: [fakeSourceAction],
-            },
-            {
-              stageName: 'Build',
-              actions: [new FakeBuildAction({
-                actionName: 'Build',
-                input: sourceOutput,
-                actionEnvironmentVariables: [
-                  codepipeline.EnvironmentVariable.fromPlaintext({
-                    name: 'a'.repeat(129),
-                    value: 'my-value',
-                  }),
-                ],
-              })],
-            },
-          ],
+        codepipeline.EnvironmentVariable.fromPlaintext({
+          name: 'a'.repeat(129),
+          value: 'my-value',
         });
       }).toThrow(/The length of \`name\` for \`actionEnvironmentVariables\` must be less than or equal to 128, got: 129/);
     });
@@ -532,26 +515,9 @@ describe('environment variables', () => {
       });
 
       expect(() => {
-        new codepipeline.Pipeline(stack, 'Pipeline', {
-          stages: [
-            {
-              stageName: 'Source',
-              actions: [fakeSourceAction],
-            },
-            {
-              stageName: 'Build',
-              actions: [new FakeBuildAction({
-                actionName: 'Build',
-                input: sourceOutput,
-                actionEnvironmentVariables: [
-                  codepipeline.EnvironmentVariable.fromPlaintext({
-                    name: 'a-b',
-                    value: 'my-value',
-                  }),
-                ],
-              })],
-            },
-          ],
+        codepipeline.EnvironmentVariable.fromPlaintext({
+          name: 'a-b',
+          value: 'my-value',
         });
       }).toThrow(/The \`name\` for \`actionEnvironmentVariables\` must match the regular expression: \`\[A-Za-z0-9_\]\+\`, got: a-b/);
     });
