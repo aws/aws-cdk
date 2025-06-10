@@ -1,29 +1,30 @@
 {
   "version": "44.0.0",
   "files": {
-    "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895": {
+    "5178413cfe8db00b2d5dcfa9be417e934c64601d0da3031d88c145c8293bc27f": {
+      "displayName": "DryRunCanary/Code",
       "source": {
-        "path": "asset.97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.bundle",
+        "path": "asset.5178413cfe8db00b2d5dcfa9be417e934c64601d0da3031d88c145c8293bc27f",
         "packaging": "zip"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip",
+          "objectKey": "5178413cfe8db00b2d5dcfa9be417e934c64601d0da3031d88c145c8293bc27f.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "f3b7c2c756456801e99dc59eb99e4666897b1c35179c80e9fed2237cf831e87d": {
-      "displayName": "IntegCanaryTestDefaultTestDeployAssert3AD5A094 Template",
+    "ae7c6a4e014d2b1e3ee1ad38e7664f6c4606a0327578b49d5170f3754e3ed020": {
+      "displayName": "SyntheticsCanaryDryRunAndUpdateStack Template",
       "source": {
-        "path": "IntegCanaryTestDefaultTestDeployAssert3AD5A094.template.json",
+        "path": "SyntheticsCanaryDryRunAndUpdateStack.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f3b7c2c756456801e99dc59eb99e4666897b1c35179c80e9fed2237cf831e87d.json",
+          "objectKey": "ae7c6a4e014d2b1e3ee1ad38e7664f6c4606a0327578b49d5170f3754e3ed020.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
