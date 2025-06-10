@@ -1,7 +1,7 @@
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 import { Match, Template } from '../../assertions';
-import { CommandsAction } from '../../aws-codepipeline-actions/lib';
+import { CommandsAction } from '../../aws-codepipeline-actions';
 import { Secret } from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import * as codepipeline from '../lib';
