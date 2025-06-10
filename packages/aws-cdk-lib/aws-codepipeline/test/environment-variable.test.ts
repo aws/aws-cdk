@@ -443,7 +443,7 @@ describe('environment variables', () => {
           },
         ],
       });
-    }).toThrow(/Secrets Manager environment variables are only supported for the Commands action, got: Build/);
+    }).toThrow(/Secrets Manager environment variables are only supported for the Commands action, got: Fake/);
   });
 
   test('throw error when specifying more than 10 environment variables', () => {
