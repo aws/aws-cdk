@@ -408,6 +408,49 @@ describe('environment variables', () => {
       });
     });
 
+    test('can accept empty environment variables as undefined', () => {
+      const stack = new cdk.Stack();
+      const sourceOutput = new codepipeline.Artifact();
+      const fakeSourceAction = new FakeSourceAction({
+        actionName: 'Source',
+        output: sourceOutput,
+      });
+
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [fakeSourceAction],
+          },
+          {
+            stageName: 'Build',
+            actions: [new FakeBuildAction({
+              actionName: 'Build',
+              input: sourceOutput,
+              actionEnvironmentVariables: [],
+            })],
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        'Stages': [
+          {
+            'Name': 'Source',
+          },
+          {
+            'Name': 'Build',
+            'Actions': [
+              {
+                'Name': 'Build',
+                'EnvironmentVariables': Match.absent(),
+              },
+            ],
+          },
+        ],
+      });
+    });
+
     test('throw error when specifying more than 10 environment variables', () => {
       const stack = new cdk.Stack();
       const sourceOutput = new codepipeline.Artifact();
