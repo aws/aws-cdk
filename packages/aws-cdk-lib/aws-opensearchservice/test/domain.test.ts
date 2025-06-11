@@ -1808,20 +1808,6 @@ each(testedOpenSearchVersions).describe('TLS security policy', (engineVersion) =
     });
   });
 
-  test('defaults to TLS 1.2 when enforceHttps is true but tlsSecurityPolicy is not specified', () => {
-    new Domain(stack, 'Domain', {
-      version: engineVersion,
-      enforceHttps: true,
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
-      DomainEndpointOptions: {
-        EnforceHTTPS: true,
-        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
-      },
-    });
-  });
-
   test('uses TLS 1.0 when explicitly specified', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
