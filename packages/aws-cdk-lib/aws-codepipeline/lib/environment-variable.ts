@@ -1,6 +1,10 @@
+import { Construct } from 'constructs';
+import { ActionBindOptions, ActionProperties } from './action';
 import { CfnPipeline } from './codepipeline.generated';
+import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import { ISecret } from '../../aws-secretsmanager';
-import { Token, UnscopedValidationError } from '../../core';
+import { Stack, Token, UnscopedValidationError } from '../../core';
 
 /**
  * Properties for an environment variable.
@@ -131,5 +135,30 @@ export class SecretsManagerEnvironmentVariable extends EnvironmentVariable {
 
   protected get variableType(): string {
     return 'SECRETS_MANAGER';
+  }
+
+  /**
+   * Bind the environment variable to the action.
+   * @internal
+   */
+  public _bind(scope: Construct, actionProperties: ActionProperties, options: ActionBindOptions) {
+    if (actionProperties.provider !== 'Commands') {
+      throw new UnscopedValidationError(`Secrets Manager environment variable ('${this.variableName}') in action '${actionProperties.actionName}' can only be used with the Commands action, got: ${actionProperties.provider} action`);
+    }
+
+    const secretArn = this.secret.secretFullArn ? this.secret.secretFullArn : `${this.secret.secretArn}-??????`;
+
+    // Don't use `grantRead` method for the secret because `secretsmanager:DescribeSecret` is not required.
+    // See https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-Commands.html#action-reference-Commands-envvars
+    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['secretsmanager:GetSecretValue'],
+      resources: [secretArn],
+    }));
+
+    if (this.secret.encryptionKey) {
+      this.secret.encryptionKey.grantDecrypt(
+        new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(scope).region}.amazonaws.com`, options.role.grantPrincipal),
+      );
+    }
   }
 }

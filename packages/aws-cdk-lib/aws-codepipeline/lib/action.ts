@@ -4,10 +4,8 @@ import { EnvironmentVariable, SecretsManagerEnvironmentVariable } from './enviro
 import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { Duration, IResource, Lazy, Stack, UnscopedValidationError } from '../../core';
+import { Duration, IResource, Lazy, UnscopedValidationError } from '../../core';
 
 export enum ActionCategory {
   SOURCE = 'Source',
@@ -452,19 +450,14 @@ export abstract class Action implements IAction {
       : this._customerProvidedNamespace;
 
     const envVars = this.actionProperties.actionEnvironmentVariables;
-    envVars?.forEach(envVar => {
-      if (envVar instanceof SecretsManagerEnvironmentVariable) {
-        if (this.actionProperties.provider !== 'Commands') {
-          throw new UnscopedValidationError(`Secrets Manager environment variable ('${envVar.variableName}') in action '${this.actionProperties.actionName}' can only be used with the Commands action, got: ${this.actionProperties.provider} action`);
-        }
-
-        this.grantSecretsManagerPermissions(scope, envVar.secret, options.role);
-      }
-    });
-
     if (envVars && envVars.length > 10) {
       throw new UnscopedValidationError(`The length of \`environmentVariables\` in action '${this.actionProperties.actionName}' must be less than or equal to 10, got: ${envVars.length}`);
     }
+    envVars?.forEach(envVar => {
+      if (envVar instanceof SecretsManagerEnvironmentVariable) {
+        envVar._bind(scope, this.actionProperties, options);
+      }
+    });
 
     return this.bound(scope, stage, options);
   }
@@ -520,23 +513,6 @@ export abstract class Action implements IAction {
       return this.__scope;
     } else {
       throw new UnscopedValidationError('Action must be added to a stage that is part of a pipeline first');
-    }
-  }
-
-  private grantSecretsManagerPermissions(scope: Construct, secret: secretsmanager.ISecret, role: iam.IRole) {
-    const secretArn = secret.secretFullArn ? secret.secretFullArn : `${secret.secretArn}-??????`;
-
-    // Don't use `grantRead` method for the secret because `secretsmanager:DescribeSecret` is not required.
-    // See https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-Commands.html#action-reference-Commands-envvars
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['secretsmanager:GetSecretValue'],
-      resources: [secretArn],
-    }));
-
-    if (secret.encryptionKey) {
-      secret.encryptionKey.grantDecrypt(
-        new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(scope).region}.amazonaws.com`, role.grantPrincipal),
-      );
     }
   }
 }
