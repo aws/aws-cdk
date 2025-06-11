@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Artifact } from './artifact';
-import { EnvironmentVariable, SecretsManagerEnvironmentVariable } from './environment-variable';
+import { EnvironmentVariable } from './environment-variable';
 import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
