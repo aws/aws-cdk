@@ -2005,7 +2005,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         : undefined,
       domainEndpointOptions: {
         enforceHttps,
-        tlsSecurityPolicy: props.tlsSecurityPolicy,
+        tlsSecurityPolicy: props.tlsSecurityPolicy ?? TLSSecurityPolicy.TLS_1_2,
         ...props.customEndpoint && {
           customEndpointEnabled: true,
           customEndpoint: props.customEndpoint.domainName,
