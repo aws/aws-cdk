@@ -121,7 +121,7 @@
   "dependencies": {
     "@aws-cdk/asset-awscli-v1": "2.2.237",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.0",
-    "@aws-cdk/cloud-assembly-schema": "^44.1.0",
+    "@aws-cdk/cloud-assembly-schema": "^44.2.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.3.0",
@@ -169,7 +169,7 @@
     "@aws-cdk/lazify": "0.0.0",
     "aws-sdk-client-mock": "4.1.0",
     "aws-sdk-client-mock-jest": "4.1.0",
-    "cdk8s": "2.69.72",
+    "cdk8s": "2.69.73",
     "constructs": "^10.0.0",
     "delay": "5.0.0",
     "esbuild": "^0.25.5",
