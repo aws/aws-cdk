@@ -121,7 +121,7 @@ else
     fi
 fi
 
-# [.NET == 6.0.x]
+# [.NET >= 6.0.x]
 app="dotnet"
 app_min="6.0.100"
 check_which $app $app_min
