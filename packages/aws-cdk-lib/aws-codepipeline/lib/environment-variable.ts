@@ -119,10 +119,7 @@ export class PlaintextEnvironmentVariable extends EnvironmentVariable {
  * A Secrets Manager environment variable.
  */
 export class SecretsManagerEnvironmentVariable extends EnvironmentVariable {
-  /**
-   * The Secret that this environment variable references.
-   */
-  public readonly secret: ISecret;
+  private readonly secret: ISecret;
 
   constructor(props: SecretsManagerEnvironmentVariableProps) {
     super(props);
