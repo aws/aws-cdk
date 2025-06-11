@@ -737,6 +737,55 @@ describe('restapi', () => {
     });
   });
 
+  test('addModel supports additionalItems as boolean and object', () => {
+    const api = new apigw.RestApi(stack, 'myapi-additionalitems');
+    api.root.addMethod('OPTIONS');
+
+    // WHEN: additionalItems as boolean
+    api.addModel('modelWithAdditionalItemsTrue', {
+      schema: {
+        schema: apigw.JsonSchemaVersion.DRAFT4,
+        title: 'test-true',
+        type: apigw.JsonSchemaType.ARRAY,
+        items: { type: apigw.JsonSchemaType.STRING },
+        additionalItems: true,
+      },
+    });
+
+    // WHEN: additionalItems as object
+    api.addModel('modelWithAdditionalItemsObject', {
+      schema: {
+        schema: apigw.JsonSchemaVersion.DRAFT4,
+        title: 'test-object',
+        type: apigw.JsonSchemaType.ARRAY,
+        items: { type: apigw.JsonSchemaType.STRING },
+        additionalItems: { type: apigw.JsonSchemaType.NUMBER },
+      },
+    });
+
+    // THEN: boolean case
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Model', {
+      Schema: {
+        $schema: 'http://json-schema.org/draft-04/schema#',
+        title: 'test-true',
+        type: 'array',
+        items: { type: 'string' },
+        additionalItems: true,
+      },
+    });
+
+    // THEN: object case
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Model', {
+      Schema: {
+        $schema: 'http://json-schema.org/draft-04/schema#',
+        title: 'test-object',
+        type: 'array',
+        items: { type: 'string' },
+        additionalItems: { type: 'number' },
+      },
+    });
+  });
+
   test('addRequestValidator is supported', () => {
     const api = new apigw.RestApi(stack, 'myapi');
     api.root.addMethod('OPTIONS');
