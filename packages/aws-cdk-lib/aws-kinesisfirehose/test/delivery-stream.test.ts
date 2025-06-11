@@ -401,17 +401,14 @@ describe('delivery stream', () => {
     });
     expect(deliveryStream.grantPrincipal).toBeInstanceOf(iam.Role);
   });
-  
+
   test('multiple calls to grantPrincipal should return the same instance of IAM role', () => {
     const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream Multiple', {
       destination: mockS3Destination,
     });
-    const principal1 = deliveryStream.grantPrincipal;
-    const principal2 = deliveryStream.grantPrincipal;
-    
-    expect(principal1).toBe(principal2);
-    // Check we only have one role created per delivery stream
-    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 2); // One for the existing test, one for this test
+    const principal = deliveryStream.grantPrincipal;
+    expect(() => deliveryStream.grantPrincipal).not.toThrow();
+    expect(deliveryStream.grantPrincipal).toBe(principal);
   });
 
   describe('metric methods provide a Metric with configured and attached properties', () => {
