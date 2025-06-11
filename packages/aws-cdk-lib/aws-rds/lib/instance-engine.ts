@@ -522,6 +522,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_5_27 = MariaDbEngineVersion.of('10.5.27', '10.5');
   /** Version "10.5.28". */
   public static readonly VER_10_5_28 = MariaDbEngineVersion.of('10.5.28', '10.5');
+  /** Version "10.5.29". */
+  public static readonly VER_10_5_29 = MariaDbEngineVersion.of('10.5.29', '10.5');
 
   /** Version "10.6" (only a major version, without a specific minor version). */
   public static readonly VER_10_6 = MariaDbEngineVersion.of('10.6', '10.6');
@@ -573,6 +575,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_6_20 = MariaDbEngineVersion.of('10.6.20', '10.6');
   /** Version "10.6.21". */
   public static readonly VER_10_6_21 = MariaDbEngineVersion.of('10.6.21', '10.6');
+  /** Version "10.6.22". */
+  public static readonly VER_10_6_22 = MariaDbEngineVersion.of('10.6.22', '10.6');
 
   /** Version "10.11" (only a major version, without a specific minor version). */
   public static readonly VER_10_11 = MariaDbEngineVersion.of('10.11', '10.11');
@@ -1527,6 +1531,10 @@ export class PostgresEngineVersion {
    * Version "11.22-RDS.20241121"
    */
   public static readonly VER_11_22_RDS_20241121 = PostgresEngineVersion.of('11.22-RDS.20241121', '11', { s3Import: true, s3Export: true });
+  /**
+   * Version "11.22-rds.20250508"
+   */
+  public static readonly VER_11_22_RDS_20250508 = PostgresEngineVersion.of('11.22-rds.20250508', '11', { s3Import: true, s3Export: true });
 
   /** Version "12" (only a major version, without a specific minor version). */
   public static readonly VER_12 = PostgresEngineVersion.of('12', '12', { s3Import: true });
@@ -1632,6 +1640,8 @@ export class PostgresEngineVersion {
   public static readonly VER_12_21 = PostgresEngineVersion.of('12.21', '12', { s3Import: true, s3Export: true });
   /** Version "12.22". */
   public static readonly VER_12_22 = PostgresEngineVersion.of('12.22', '12', { s3Import: true, s3Export: true });
+  /** Version "12.22-rds.20250508". */
+  public static readonly VER_12_22_RDS_20250508 = PostgresEngineVersion.of('12.22-rds.20250508', '12', { s3Import: true, s3Export: true });
 
   /** Version "13" (only a major version, without a specific minor version). */
   public static readonly VER_13 = PostgresEngineVersion.of('13', '13', { s3Import: true, s3Export: true });
