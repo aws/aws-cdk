@@ -1324,7 +1324,6 @@ each(testedOpenSearchVersions).describe('advanced security options', (engineVers
       },
       DomainEndpointOptions: {
         EnforceHTTPS: true,
-        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
       },
     });
   });
@@ -1360,7 +1359,6 @@ each(testedOpenSearchVersions).describe('advanced security options', (engineVers
       },
       DomainEndpointOptions: {
         EnforceHTTPS: true,
-        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
       },
     });
   });
@@ -1406,7 +1404,6 @@ each(testedOpenSearchVersions).describe('advanced security options', (engineVers
       },
       DomainEndpointOptions: {
         EnforceHTTPS: true,
-        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
       },
     });
 
@@ -1681,7 +1678,6 @@ each(testedOpenSearchVersions).describe('custom endpoints', (engineVersion) => {
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       DomainEndpointOptions: {
         EnforceHTTPS: true,
-        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
         CustomEndpointEnabled: true,
         CustomEndpoint: customDomainName,
         CustomEndpointCertificateArn: {
@@ -1710,7 +1706,6 @@ each(testedOpenSearchVersions).describe('custom endpoints', (engineVersion) => {
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       DomainEndpointOptions: {
         EnforceHTTPS: true,
-        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
         CustomEndpointEnabled: true,
         CustomEndpoint: customDomainName,
         CustomEndpointCertificateArn: {
@@ -1769,7 +1764,6 @@ each(testedOpenSearchVersions).describe('custom endpoints', (engineVersion) => {
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       DomainEndpointOptions: {
         EnforceHTTPS: true,
-        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
         CustomEndpointEnabled: true,
         CustomEndpoint: customDomainName,
         CustomEndpointCertificateArn: {
@@ -1808,7 +1802,7 @@ each(testedOpenSearchVersions).describe('TLS security policy', (engineVersion) =
     });
   });
 
-  test('uses TLS 1.0 when explicitly specified', () => {
+test('uses TLS 1.0 when explicitly specified', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
       tlsSecurityPolicy: TLSSecurityPolicy.TLS_1_0,
@@ -1846,6 +1840,7 @@ each(testedOpenSearchVersions).describe('TLS security policy', (engineVersion) =
       },
     });
   });
+});
 
 each(testedOpenSearchVersions).describe('custom error responses', (engineVersion) => {
   test('error when availabilityZoneCount does not match vpcOptions.subnets length', () => {
@@ -2241,7 +2236,6 @@ each(testedOpenSearchVersions).describe('unsigned basic auth', (engineVersion) =
       },
       DomainEndpointOptions: {
         EnforceHTTPS: true,
-        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
       },
     });
   });
@@ -2273,7 +2267,6 @@ each(testedOpenSearchVersions).describe('unsigned basic auth', (engineVersion) =
       },
       DomainEndpointOptions: {
         EnforceHTTPS: true,
-        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
       },
     });
   });
@@ -2309,7 +2302,6 @@ each(testedOpenSearchVersions).describe('unsigned basic auth', (engineVersion) =
       },
       DomainEndpointOptions: {
         EnforceHTTPS: true,
-        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
       },
     });
   });
