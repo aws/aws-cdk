@@ -1655,7 +1655,6 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, Network Load Balancer will be created with a security group by default.
     `,
     introducedIn: { v2: 'V2NEXT' },
-    defaults: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to create Network Load Balancer without a security group by default.',
   },
