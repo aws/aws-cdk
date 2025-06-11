@@ -79,6 +79,9 @@ export abstract class EnvironmentVariable {
     this.variableName = props.variableName;
   }
 
+  protected abstract get variableValue(): string;
+  protected abstract get variableType(): string;
+
   /**
    * Render the environment variable to a CloudFormation resource.
    * @internal
@@ -91,8 +94,11 @@ export abstract class EnvironmentVariable {
     };
   }
 
-  protected abstract get variableValue(): string;
-  protected abstract get variableType(): string;
+  /**
+   * Bind the environment variable to the action.
+   * @internal
+   */
+  public abstract _bind(scope: Construct, actionProperties: ActionProperties, options: ActionBindOptions): void;
 }
 
 /**
@@ -112,6 +118,14 @@ export class PlaintextEnvironmentVariable extends EnvironmentVariable {
 
   protected get variableType(): string {
     return 'PLAINTEXT';
+  }
+
+  /**
+   * Bind the environment variable to the action.
+   * @internal
+   */
+  public _bind(_scope: Construct, _actionProperties: ActionProperties, _options: ActionBindOptions) {
+    // no-op
   }
 }
 

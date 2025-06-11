@@ -454,9 +454,7 @@ export abstract class Action implements IAction {
       throw new UnscopedValidationError(`The length of \`environmentVariables\` in action '${this.actionProperties.actionName}' must be less than or equal to 10, got: ${envVars.length}`);
     }
     envVars?.forEach(envVar => {
-      if (envVar instanceof SecretsManagerEnvironmentVariable) {
-        envVar._bind(scope, this.actionProperties, options);
-      }
+      envVar._bind(scope, this.actionProperties, options);
     });
 
     return this.bound(scope, stage, options);
