@@ -633,7 +633,7 @@ export interface DomainProps {
   /**
    * The minimum TLS version required for traffic to the domain.
    *
-   * @default - no TLS security policy set, allowing the service to use its default policy
+   * @default - TLSSecurityPolicy.TLS_1_2
    */
   readonly tlsSecurityPolicy?: TLSSecurityPolicy;
 

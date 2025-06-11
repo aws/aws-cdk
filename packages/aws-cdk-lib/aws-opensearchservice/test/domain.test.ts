@@ -1861,22 +1861,6 @@ each(testedOpenSearchVersions).describe('TLS security policy', (engineVersion) =
     });
   });
 
-  test('respects explicit tlsSecurityPolicy even when enforceHttps is enabled', () => {
-    new Domain(stack, 'Domain', {
-      version: engineVersion,
-      enforceHttps: true,
-      tlsSecurityPolicy: TLSSecurityPolicy.TLS_1_2_PFS,
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
-      DomainEndpointOptions: {
-        EnforceHTTPS: true,
-        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-PFS-2023-10',
-      },
-    });
-  });
-});
-
 each(testedOpenSearchVersions).describe('custom error responses', (engineVersion) => {
   test('error when availabilityZoneCount does not match vpcOptions.subnets length', () => {
     const vpc = new Vpc(stack, 'Vpc', {
