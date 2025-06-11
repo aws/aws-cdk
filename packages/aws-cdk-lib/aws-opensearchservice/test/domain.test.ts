@@ -1802,7 +1802,7 @@ each(testedOpenSearchVersions).describe('TLS security policy', (engineVersion) =
     });
   });
 
-test('uses TLS 1.0 when explicitly specified', () => {
+  test('uses TLS 1.0 when explicitly specified', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
       tlsSecurityPolicy: TLSSecurityPolicy.TLS_1_0,
