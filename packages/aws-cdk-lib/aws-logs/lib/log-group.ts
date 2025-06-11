@@ -635,13 +635,8 @@ export class LogGroup extends LogGroupBase {
 
     let logGroupClass = props.logGroupClass;
     const stack = Stack.of(scope);
-    const logGroupClassUnsupportedRegions = [
-      'us-iso-west-1', // APA
-      'us-iso-east-1', // DCA
-      'us-isob-east-1', // LCK
-    ];
-    if (logGroupClass !== undefined && !Token.isUnresolved(stack.region) && logGroupClassUnsupportedRegions.includes(stack.region)) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-logs:propertyNotSupported', `The LogGroupClass property is not supported in the following regions: ${logGroupClassUnsupportedRegions}`);
+    if (logGroupClass !== undefined && !Token.isUnresolved(stack.region)) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-logs:propertyNotSupported', 'The LogGroupClass property might not be supported in this region');
     }
 
     const dataProtectionPolicy = props.dataProtectionPolicy?._bind(this);
