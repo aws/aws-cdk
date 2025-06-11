@@ -293,6 +293,21 @@ export interface CanaryProps {
    * @default - no kms key if `artifactS3EncryptionMode` is set to `S3_MANAGED`. A key will be created if one is not provided and `artifactS3EncryptionMode` is set to `KMS`.
    */
   readonly artifactS3KmsKey?: kms.IKey;
+
+  /**
+   * Specifies whether to perform a dry run before updating the canary.
+   *
+   * If set to true, CDK will execute a dry run to validate the changes before applying them to the canary.
+   * If the dry run succeeds, the canary will be updated with the changes.
+   * If the dry run fails, the CloudFormation deployment will fail with the dry run’s failure reason.
+   *
+   * If set to false or omitted, the canary will be updated directly without first performing a dry run.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/performing-safe-canary-upgrades.html
+   *
+   * @default undefined - AWS CloudWatch default is false
+   */
+  readonly dryRunAndUpdate?: boolean;
 }
 
 /**
@@ -387,6 +402,8 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       this._connections = new ec2.Connections({});
     }
 
+    this.validateDryRunAndUpdate(props.runtime, props.dryRunAndUpdate);
+
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
       artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
       executionRoleArn: this.role.roleArn,
@@ -405,6 +422,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
           ? 'AUTOMATIC'
           : 'OFF'
         : undefined,
+      dryRunAndUpdate: props.dryRunAndUpdate,
     });
     this._resource = resource;
 
@@ -414,6 +432,26 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
     if (props.cleanup === Cleanup.LAMBDA) {
       this.cleanupUnderlyingResources();
+    }
+  }
+
+  private validateDryRunAndUpdate(runtime: Runtime, dryRunAndUpdate?: boolean) {
+    const runtimeName = runtime.name;
+    if (dryRunAndUpdate !== true || cdk.Token.isUnresolved(runtimeName)) {
+      return;
+    }
+
+    const RUNTIME_REGEX = /^syn-(nodejs-puppeteer|nodejs-playwright|python-selenium)-(\d+\.\d+)$/;
+    const MIN_SUPPORTED_VERSIONS: { [family: string]: number } = {
+      'nodejs-puppeteer': 10.0,
+      'nodejs-playwright': 2.0,
+      'python-selenium': 5.1,
+    };
+
+    const match = runtimeName.match(RUNTIME_REGEX);
+
+    if (!match || match.length < 3 || MIN_SUPPORTED_VERSIONS[match[1]] === undefined || parseFloat(match[2]) < MIN_SUPPORTED_VERSIONS[match[1]]) {
+      throw new ValidationError(`dryRunAndUpdate is only supported for canary runtime versions 'syn-nodejs-puppeteer-10.0+', 'syn-nodejs-playwright-2.0+', or 'syn-python-selenium-5.1+', got: ${runtimeName}`, this);
     }
   }
 

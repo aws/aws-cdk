@@ -1106,6 +1106,12 @@ new eks.Cluster(this, 'Cluster', {
 });
 ```
 
+### Self-Managed Add-ons
+
+Amazon EKS automatically installs self-managed add-ons such as the Amazon VPC CNI plugin for Kubernetes, kube-proxy, and CoreDNS for every cluster. You can change the default configuration of the add-ons and update them when desired. If you wish to create a cluster without the default add-ons, set `bootstrapSelfManagedAddons` as `false`. When this is set to false, make sure to install the necessary alternatives which provide functionality that enables pod and service operations for your EKS cluster.
+
+> Changing the value of `bootstrapSelfManagedAddons` after the EKS cluster creation will result in a replacement of the cluster.
+
 ## Permissions and Security
 
 Amazon EKS provides several mechanism of securing the cluster and granting permissions to specific IAM users and roles.
