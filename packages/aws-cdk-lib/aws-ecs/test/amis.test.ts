@@ -1,4 +1,4 @@
-import { Match, Template } from '../../assertions';
+import { Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as ecs from '../lib';
 
