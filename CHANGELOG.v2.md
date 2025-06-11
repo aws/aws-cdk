@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.200.2](https://github.com/aws/aws-cdk/compare/v2.200.1...v2.200.2) (2025-06-11)
+
+
+### Bug Fixes
+
+* export errors to make it available in region-info/lib/fact.ts ([#34691](https://github.com/aws/aws-cdk/issues/34691)) ([4a75032](https://github.com/aws/aws-cdk/commit/4a7503208e9c4b7a245aca6ef6013a54a4b252a6)), closes [#34690](https://github.com/aws/aws-cdk/issues/34690) [#34690](https://github.com/aws/aws-cdk/issues/34690) [#33384](https://github.com/aws/aws-cdk/issues/33384)
+
 ## [2.200.1](https://github.com/aws/aws-cdk/compare/v2.200.0...v2.200.1) (2025-06-03)
 
 
