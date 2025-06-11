@@ -37,6 +37,9 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * 16384 (16 vCPU) - Available memory values: Between 32768 (32 GB) and 122880 (120 GB) in increments of 8192 (8 GB)
    *
+   * Note: For windows platforms, this field is not enforced at runtime. However, it is still required as it is used to determine
+   * the instance type and size that tasks run on.
+   *
    * @default 256
    */
   readonly cpu?: number;
@@ -58,6 +61,9 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    * Between 16384 (16 GB) and 61440 (60 GB) in increments of 4096 (4 GB) - Available cpu values: 8192 (8 vCPU)
    *
    * Between 32768 (32 GB) and 122880 (120 GB) in increments of 8192 (8 GB) - Available cpu values: 16384 (16 vCPU)
+   *
+   * Note: For windows platforms, this field is not enforced at runtime. However, it is still required as it is used to determine
+   * the instance type and size that tasks run on.
    *
    * @default 512
    */
