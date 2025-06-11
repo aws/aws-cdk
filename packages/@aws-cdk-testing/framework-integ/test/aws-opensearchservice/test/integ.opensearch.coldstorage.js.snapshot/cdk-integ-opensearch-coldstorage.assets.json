@@ -1,7 +1,7 @@
 {
   "version": "44.0.0",
   "files": {
-    "d48182934c3d1686535967fba0f000a47db9fb73c4f4f572411dc9eb5ec73fb6": {
+    "9d0ea55129520ddfaf8bdb1f4b89611007c03eaedc02505f72ec7b233fed9dec": {
       "displayName": "cdk-integ-opensearch-coldstorage Template",
       "source": {
         "path": "cdk-integ-opensearch-coldstorage.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d48182934c3d1686535967fba0f000a47db9fb73c4f4f572411dc9eb5ec73fb6.json",
+          "objectKey": "9d0ea55129520ddfaf8bdb1f4b89611007c03eaedc02505f72ec7b233fed9dec.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
