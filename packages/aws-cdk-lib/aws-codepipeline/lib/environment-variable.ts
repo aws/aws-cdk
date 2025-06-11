@@ -83,6 +83,12 @@ export abstract class EnvironmentVariable {
   protected abstract get variableType(): string;
 
   /**
+   * Bind the environment variable to the action.
+   * @internal
+   */
+  public abstract _bind(scope: Construct, actionProperties: ActionProperties, options: ActionBindOptions): void;
+
+  /**
    * Render the environment variable to a CloudFormation resource.
    * @internal
    */
@@ -93,12 +99,6 @@ export abstract class EnvironmentVariable {
       type: this.variableType,
     };
   }
-
-  /**
-   * Bind the environment variable to the action.
-   * @internal
-   */
-  public abstract _bind(scope: Construct, actionProperties: ActionProperties, options: ActionBindOptions): void;
 }
 
 /**
