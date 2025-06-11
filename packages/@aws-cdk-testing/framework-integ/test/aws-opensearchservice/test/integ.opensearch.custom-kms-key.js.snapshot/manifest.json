@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b83ff1d47bd9ed0b0a7b3a02a514624364b83e9cc33b65fbbc17c2a149ff1e34.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e938add9938ca4d30ec3511b7b51fd0f8a5fcf084c952ed3b289ce32237fe929.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,38 +37,13 @@
         "/cdk-integ-opensearch-custom-kms-key/Key": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "policy": "*"
-            }
+            "data": "*"
           }
         ],
         "/cdk-integ-opensearch-custom-kms-key/Key/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Key961B73FD"
-          }
-        ],
-        "/cdk-integ-opensearch-custom-kms-key/OpenSearchAccessRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/cdk-integ-opensearch-custom-kms-key/OpenSearchAccessRole/ImportOpenSearchAccessRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/cdk-integ-opensearch-custom-kms-key/OpenSearchAccessRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OpenSearchAccessRole4BBF2670"
           }
         ],
         "/cdk-integ-opensearch-custom-kms-key/Domain": [
@@ -360,7 +335,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/16e4aa4b8f3075833833bc0e4d3057a15ca0f9fdca3689075f851d44d884bdf0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d19003f13d443cb7af35b992fce819ccd323969f4e28c885057711d1da544bf8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

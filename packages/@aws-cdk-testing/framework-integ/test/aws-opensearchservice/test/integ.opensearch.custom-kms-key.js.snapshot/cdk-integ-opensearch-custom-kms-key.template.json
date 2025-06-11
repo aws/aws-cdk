@@ -9,8 +9,22 @@
        "Action": "kms:*",
        "Effect": "Allow",
        "Principal": {
-        "AWS": "arn:aws:iam::123456789012:role/YourSpecificRole",
-        "Service": "lambda.amazonaws.com"
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
        },
        "Resource": "*"
       }
@@ -20,23 +34,6 @@
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
-  },
-  "OpenSearchAccessRole4BBF2670": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "ec2.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
   },
   "Domain66AC69E0": {
    "Type": "AWS::OpenSearchService::Domain",
@@ -88,14 +85,15 @@
        {
         "Ref": "Domain66AC69E0"
        },
-       "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:ESHttp*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"lambda.amazonaws.com\\\",\\\"AWS\\\":\\\"",
+       "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:ESHttp*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"AWS\\\":\\\"arn:",
        {
-        "Fn::GetAtt": [
-         "OpenSearchAccessRole4BBF2670",
-         "Arn"
-        ]
+        "Ref": "AWS::Partition"
        },
-       "\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPaths\":[\"DomainConfig.AccessPolicies\"],\"physicalResourceId\":{\"id\":\"",
+       ":iam::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":root\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPaths\":[\"DomainConfig.AccessPolicies\"],\"physicalResourceId\":{\"id\":\"",
        {
         "Ref": "Domain66AC69E0"
        },
@@ -111,14 +109,15 @@
        {
         "Ref": "Domain66AC69E0"
        },
-       "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:ESHttp*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"lambda.amazonaws.com\\\",\\\"AWS\\\":\\\"",
+       "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:ESHttp*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"AWS\\\":\\\"arn:",
        {
-        "Fn::GetAtt": [
-         "OpenSearchAccessRole4BBF2670",
-         "Arn"
-        ]
+        "Ref": "AWS::Partition"
        },
-       "\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPaths\":[\"DomainConfig.AccessPolicies\"],\"physicalResourceId\":{\"id\":\"",
+       ":iam::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":root\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPaths\":[\"DomainConfig.AccessPolicies\"],\"physicalResourceId\":{\"id\":\"",
        {
         "Ref": "Domain66AC69E0"
        },
