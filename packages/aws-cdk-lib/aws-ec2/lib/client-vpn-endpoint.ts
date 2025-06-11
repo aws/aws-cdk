@@ -178,7 +178,7 @@ export interface ClientVpnEndpointOptions {
    *
    * @see https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-cre.html
    *
-   * @default undefine - AWS EC2 default is false
+   * @default undefined - AWS Client VPN default setting is false
    */
   readonly enableClientRouteEnforcement?: boolean;
 }
