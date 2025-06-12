@@ -72,8 +72,6 @@
         "dynamodb:DeleteItem",
         "dynamodb:DescribeTable",
         "dynamodb:GetItem",
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
         "dynamodb:PutItem",
         "dynamodb:Query",
         "dynamodb:Scan",

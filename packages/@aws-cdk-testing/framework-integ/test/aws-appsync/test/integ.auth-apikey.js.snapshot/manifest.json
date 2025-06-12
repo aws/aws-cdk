@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "aws-appsync-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-appsync-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/de7d932209c6d07c0ba0e631387676246a8182018b2b7423dc18b52baec3e984.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3aad07d268831b23e5f2bf073e5595cd183508ba4141ffaa805e91d9dc61b9b7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,39 @@
         "aws-appsync-integ.assets"
       ],
       "metadata": {
+        "/aws-appsync-integ/Api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "name": "*",
+              "schema": "*",
+              "authorizationConfig": {
+                "defaultAuthorization": {
+                  "authorizationType": "API_KEY",
+                  "apiKeyConfig": {
+                    "expires": "*"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addSchemaDependency": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addSchemaDependency": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/aws-appsync-integ/Api/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -51,10 +85,81 @@
             "data": "ApiDefaultApiKeyF991C37B"
           }
         ],
+        "/aws-appsync-integ/Api/testDataSource/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-appsync-integ/Api/testDataSource/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-appsync-integ/Api/testDataSource/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ApitestDataSourceServiceRoleACBC3F3D"
+          }
+        ],
+        "/aws-appsync-integ/Api/testDataSource/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-appsync-integ/Api/testDataSource/ServiceRole/DefaultPolicy/Resource": [
@@ -81,10 +186,29 @@
             "data": "ApiMutationAddTestBF148084"
           }
         ],
+        "/aws-appsync-integ/TestTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "billingMode": "PAY_PER_REQUEST",
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/aws-appsync-integ/TestTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestTable5769773A"
+          }
+        ],
+        "/aws-appsync-integ/TestTable/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-appsync-integ/BootstrapVersion": [
@@ -98,24 +222,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "ApitestDataSourceQuerygetTestsResolverA3BBB672": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ApitestDataSourceQuerygetTestsResolverA3BBB672",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ApitestDataSourceMutationaddTestResolver36203D6B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ApitestDataSourceMutationaddTestResolver36203D6B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-appsync-integ"
@@ -126,5 +232,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1016.1"
 }

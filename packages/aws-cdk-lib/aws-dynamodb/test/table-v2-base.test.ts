@@ -104,8 +104,6 @@ describe('grants', () => {
           {
             Action: [
               'dynamodb:BatchGetItem',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
@@ -173,8 +171,6 @@ describe('grants', () => {
           {
             Action: [
               'dynamodb:BatchGetItem',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
@@ -341,8 +337,6 @@ describe('grants', () => {
           {
             Action: [
               'dynamodb:BatchGetItem',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
@@ -417,8 +411,6 @@ describe('grants', () => {
           {
             Action: [
               'dynamodb:BatchGetItem',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
@@ -583,8 +575,6 @@ describe('grants', () => {
           {
             Action: [
               'dynamodb:BatchGetItem',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
@@ -692,12 +682,7 @@ describe('grants', () => {
           {
             Action: 'dynamodb:ListStreams',
             Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'StreamArn',
-              ],
-            },
+            Resource: '*',
           },
           {
             Action: [
@@ -747,12 +732,7 @@ describe('grants', () => {
           {
             Action: 'dynamodb:ListStreams',
             Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'StreamArn',
-              ],
-            },
+            Resource: '*',
           },
           {
             Action: [
@@ -810,12 +790,7 @@ describe('grants', () => {
           {
             Action: 'dynamodb:ListStreams',
             Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'StreamArn',
-              ],
-            },
+            Resource: '*',
           },
         ],
         Version: '2012-10-17',
@@ -857,26 +832,7 @@ describe('grants', () => {
           {
             Action: 'dynamodb:ListStreams',
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':dynamodb:us-east-1:',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':table/',
-                  {
-                    Ref: 'GlobalTable89F068B2',
-                  },
-                  '/stream/*',
-                ],
-              ],
-            },
+            Resource: '*',
           },
           {
             Action: [
@@ -963,8 +919,6 @@ describe('grants', () => {
           {
             Action: [
               'dynamodb:BatchGetItem',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
@@ -1049,8 +1003,6 @@ describe('grants', () => {
           {
             Action: [
               'dynamodb:BatchGetItem',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
@@ -1099,8 +1051,6 @@ describe('grants', () => {
           {
             Action: [
               'dynamodb:BatchGetItem',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
@@ -1157,8 +1107,6 @@ describe('grants', () => {
           {
             Action: [
               'dynamodb:BatchGetItem',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
@@ -1213,8 +1161,6 @@ describe('grants', () => {
           {
             Action: [
               'dynamodb:BatchGetItem',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
@@ -1255,8 +1201,6 @@ describe('grants', () => {
           {
             Action: [
               'dynamodb:BatchGetItem',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
@@ -1300,8 +1244,6 @@ describe('grants', () => {
           {
             Action: [
               'dynamodb:BatchGetItem',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',

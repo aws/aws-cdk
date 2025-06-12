@@ -31,12 +31,7 @@ exports[`dynamodb source should grant pipe role read access to source 2`] = `
           {
             "Action": "dynamodb:ListStreams",
             "Effect": "Allow",
-            "Resource": {
-              "Fn::GetAtt": [
-                "MyTable794EDED1",
-                "StreamArn",
-              ],
-            },
+            "Resource": "*",
           },
           {
             "Action": [
