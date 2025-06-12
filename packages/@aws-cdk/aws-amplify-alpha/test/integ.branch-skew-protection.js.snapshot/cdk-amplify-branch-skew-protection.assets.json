@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "f7b03393f375d1b83938bc7ab2304627e3fecd733d12d2d93e67428e049f58ee": {
+      "displayName": "cdk-amplify-branch-skew-protection Template",
+      "source": {
+        "path": "cdk-amplify-branch-skew-protection.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f7b03393f375d1b83938bc7ab2304627e3fecd733d12d2d93e67428e049f58ee.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

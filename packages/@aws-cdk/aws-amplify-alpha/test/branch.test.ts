@@ -142,3 +142,15 @@ test('with performance mode', () => {
     EnablePerformanceMode: true,
   });
 });
+
+test('with skew protection', () => {
+  // WHEN
+  app.addBranch('dev', {
+    skewProtection: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Branch', {
+    EnableSkewProtection: true,
+  });
+});
