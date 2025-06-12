@@ -2330,10 +2330,10 @@ new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 declare const vpc: ec2.Vpc;
-declare const deliveryStream: firehose.IDeliveryStream;
+declare const deliveryStream: firehose.CfnDeliveryStream;
 
-vpc.addFlowLog('FlowLogsFirehose', {
-  destination: ec2.FlowLogDestination.toFirehose(deliveryStream),
+vpc.addFlowLog('FlowLogsKinesisDataFirehose', {
+  destination: ec2.FlowLogDestination.toKinesisDataFirehoseDestination(deliveryStream.attrArn),
 });
 ```
 
