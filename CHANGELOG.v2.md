@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.201.0](https://github.com/aws/aws-cdk/compare/v2.200.2...v2.201.0) (2025-06-12)
+
+
+### Features
+
+* **opensearch:** update default TLS security policy to TLS 1.2 for OpenSearch domains ([#34660](https://github.com/aws/aws-cdk/issues/34660)) ([3cc2dc2](https://github.com/aws/aws-cdk/commit/3cc2dc24159425b60a63c22db9ec992810e6c0d1)), closes [#34658](https://github.com/aws/aws-cdk/issues/34658)
+* update L1 CloudFormation resource definitions ([#34659](https://github.com/aws/aws-cdk/issues/34659)) ([ef02724](https://github.com/aws/aws-cdk/commit/ef0272442d415ff7c6d5943b15b5833e0ae2e1bd))
+* update L1 CloudFormation resource definitions ([#34687](https://github.com/aws/aws-cdk/issues/34687)) ([025c82e](https://github.com/aws/aws-cdk/commit/025c82ea6e93a4cfa1c400c6b0512a21d3da91ab))
+* **appconfig:** support customer managed key for hosted configuration ([#34256](https://github.com/aws/aws-cdk/issues/34256)) ([484719e](https://github.com/aws/aws-cdk/commit/484719eb601bf2e11ce55b8966d78a8fa51eb234))
+* **codepipeline-actions:** native Amazon EC2 deployment support ([#33604](https://github.com/aws/aws-cdk/issues/33604)) ([9d39db7](https://github.com/aws/aws-cdk/commit/9d39db7ae1124c25408d65119d054f4ac5f1d937)), closes [#33584](https://github.com/aws/aws-cdk/issues/33584) [/docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-EC2Deploy.html#action-reference-EC2](https://github.com/aws//docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-EC2Deploy.html/issues/action-reference-EC2)
+* **core:** support adding additional cache key to cdk context values ([#31586](https://github.com/aws/aws-cdk/issues/31586)) ([8848134](https://github.com/aws/aws-cdk/commit/8848134530af4755e5558472619fdb364b1890f8)), closes [#26982](https://github.com/aws/aws-cdk/issues/26982)
+* **core:** throw typed Errors ([#34587](https://github.com/aws/aws-cdk/issues/34587)) ([4e63b1a](https://github.com/aws/aws-cdk/commit/4e63b1afde1bf2aaaa01dace9b53f9bdbafe9340)), closes [#32569](https://github.com/aws/aws-cdk/issues/32569)
+* **eks:** added support for `bootstrapSelfManagedAddons` ([#33597](https://github.com/aws/aws-cdk/issues/33597)) ([cedc1b0](https://github.com/aws/aws-cdk/commit/cedc1b065bfbbc59920098028edfa929ed1f25ce)), closes [#30792](https://github.com/aws/aws-cdk/issues/30792)
+* **rds:** `DatabaseInstanceFromSnapshot` support `clusterSnapshotIdentifier` ([#33982](https://github.com/aws/aws-cdk/issues/33982)) ([48d30b6](https://github.com/aws/aws-cdk/commit/48d30b611e624773ac081eb6594c3b9f59e053c2)), closes [#33889](https://github.com/aws/aws-cdk/issues/33889)
+* **rds:** support auto-pause configuration for Aurora Serverless v2 ([#34173](https://github.com/aws/aws-cdk/issues/34173)) ([2c55c28](https://github.com/aws/aws-cdk/commit/2c55c287016fed75428d8723d04facf08fb5896a)), closes [#32280](https://github.com/aws/aws-cdk/issues/32280) [#32563](https://github.com/aws/aws-cdk/issues/32563)
+* **stepfunctions:** add support for Jsonata expressions to Map.ItemSelector ([#34625](https://github.com/aws/aws-cdk/issues/34625)) ([dc30faa](https://github.com/aws/aws-cdk/commit/dc30faa3d7506537ce4c56f291874b20d2c61334)), closes [#34538](https://github.com/aws/aws-cdk/issues/34538) [/github.com/aws/aws-cdk/blob/ed08f3f0b8ecd79a2fa5e804acc73a9ff23eab80/packages/aws-cdk-lib/aws-stepfunctions/lib/states/map-base.ts#L60-L77](https://github.com/aws//github.com/aws/aws-cdk/blob/ed08f3f0b8ecd79a2fa5e804acc73a9ff23eab80/packages/aws-cdk-lib/aws-stepfunctions/lib/states/map-base.ts/issues/L60-L77)
+* **synthetics:** playwright 2.0 runtime ([#34609](https://github.com/aws/aws-cdk/issues/34609)) ([1418204](https://github.com/aws/aws-cdk/commit/1418204c40cdea59ced042768ae7f57b1f47eeb6))
+* **synthetics:** safe canary update ([#34608](https://github.com/aws/aws-cdk/issues/34608)) ([89c5350](https://github.com/aws/aws-cdk/commit/89c5350f16cc5132b6eebab1859948c69d0c5719))
+
+
+### Bug Fixes
+
+* export errors to make it available in region-info/lib/fact.ts ([#34691](https://github.com/aws/aws-cdk/issues/34691)) ([5c8f50c](https://github.com/aws/aws-cdk/commit/5c8f50c904fee3033ecd2bc151324cd897f931da)), closes [#34690](https://github.com/aws/aws-cdk/issues/34690) [#34690](https://github.com/aws/aws-cdk/issues/34690) [#33384](https://github.com/aws/aws-cdk/issues/33384)
+* **apigateway:** correct `JsonSchema.additionalItems` property type ([#33879](https://github.com/aws/aws-cdk/issues/33879)) ([464d521](https://github.com/aws/aws-cdk/commit/464d52155f00ffa083cac7ba569a06640574cef1)), closes [#33878](https://github.com/aws/aws-cdk/issues/33878) [#33878](https://github.com/aws/aws-cdk/issues/33878)
+* **cloudfront:** use wildcard when grant some cloudfront permission ([#33802](https://github.com/aws/aws-cdk/issues/33802)) ([452a5e1](https://github.com/aws/aws-cdk/commit/452a5e13f73046d1e58e5a92d33ae1e896c3251b)), closes [#33249](https://github.com/aws/aws-cdk/issues/33249)
+* **lambda:** disable aws-lambda:useCdkManagedLogGroup feature flag when not set ([#34613](https://github.com/aws/aws-cdk/issues/34613)) ([d696688](https://github.com/aws/aws-cdk/commit/d6966888924e08e153297b9616ec6d4c15d92c73)), closes [#34612](https://github.com/aws/aws-cdk/issues/34612) [#34612](https://github.com/aws/aws-cdk/issues/34612)
+* **logs:** exposed metric from the metric filter will now include the dimension map ([#34648](https://github.com/aws/aws-cdk/issues/34648)) ([892b013](https://github.com/aws/aws-cdk/commit/892b013157fe4d3a8793a833cebf3e7bd4916348)), closes [#34643](https://github.com/aws/aws-cdk/issues/34643)
+* **opensearch:** opensearchservice: existing integ test is failing ([#34680](https://github.com/aws/aws-cdk/issues/34680)) ([be21625](https://github.com/aws/aws-cdk/commit/be216256072da04a9d08e2f833cffd9ff08334df)), closes [1#L59](https://github.com/aws/1/issues/L59)
+* typo in jsdoc of noncurrentVersionTransitions property ([#34620](https://github.com/aws/aws-cdk/issues/34620)) ([ed08f3f](https://github.com/aws/aws-cdk/commit/ed08f3f0b8ecd79a2fa5e804acc73a9ff23eab80))
+
 ## [2.200.2](https://github.com/aws/aws-cdk/compare/v2.200.1...v2.200.2) (2025-06-11)
 
 
