@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a": {
       "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "7ccea902591bccd4780aaeb445aeb5123e5a19da44bd1ffdac8be15bf1e6ef5c": {
+    "fa1f75c1717173d75aeb4fc061f4d52133b2cf09c9161d75408ebee39f5c6eaf": {
       "displayName": "cdk-integ-opensearch-unsignedbasicauth Template",
       "source": {
         "path": "cdk-integ-opensearch-unsignedbasicauth.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7ccea902591bccd4780aaeb445aeb5123e5a19da44bd1ffdac8be15bf1e6ef5c.json",
+          "objectKey": "fa1f75c1717173d75aeb4fc061f4d52133b2cf09c9161d75408ebee39f5c6eaf.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

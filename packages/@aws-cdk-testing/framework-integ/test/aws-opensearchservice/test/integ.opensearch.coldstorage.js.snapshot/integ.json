@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "testCases": {
     "OpenSearchColdStorageInteg/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "OpenSearchColdStorageInteg/DefaultTest/DeployAssert",
       "assertionStackName": "OpenSearchColdStorageIntegDefaultTestDeployAssert73848187"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
