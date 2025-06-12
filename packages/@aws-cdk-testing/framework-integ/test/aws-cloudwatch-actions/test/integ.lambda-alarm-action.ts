@@ -68,7 +68,11 @@ class LambdaAlarmActionIntegrationTestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new LambdaAlarmActionIntegrationTestStack(app, 'LambdaAlarmActionIntegrationTestStack');
 new integ.IntegTest(app, 'LambdaAlarmActionIntegrationTest', {
   testCases: [stack],
@@ -76,7 +80,10 @@ new integ.IntegTest(app, 'LambdaAlarmActionIntegrationTest', {
 app.synth();
 
 const appWithFeatureFlag = new App({
-  context: { [LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION]: true },
+  context: {
+    [LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION]: true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
 });
 const stackWithFeatureFlag = new LambdaAlarmActionIntegrationTestStack(appWithFeatureFlag, 'LambdaAlarmActionIntegrationTestStackWithFeatureFlag');
 new integ.IntegTest(appWithFeatureFlag, 'LambdaAlarmActionIntegrationTestWithFeatureFlag', {

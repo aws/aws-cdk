@@ -55,7 +55,7 @@ export class PolicyDocument implements cdk.IResolvable {
     const newPolicyDocument = new PolicyDocument();
     const statement = obj.Statement ?? [];
     if (statement && !Array.isArray(statement)) {
-      throw new Error('Statement must be an array');
+      throw new cdk.UnscopedValidationError('Statement must be an array');
     }
     newPolicyDocument.addStatements(...obj.Statement.map((s: any) => PolicyStatement.fromJson(s)));
     return newPolicyDocument;

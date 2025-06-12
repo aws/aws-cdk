@@ -14,7 +14,11 @@ describe('when a singleton-backed custom resource does not have logging defined'
   test('addLogRetentionLifetime creates a new log group with the correct retention period if one does not already exist', () => {
     // GIVEN
     const customResourceLogRetention = logs.RetentionDays.TEN_YEARS;
-    const app = new cdk.App();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
     const stack = new cdk.Stack(app);
     let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
     new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
@@ -44,7 +48,11 @@ describe('when a singleton-backed custom resource does not have logging defined'
     // GIVEN
     const customResourceLogRetention = logs.RetentionDays.TEN_YEARS;
     const nonCustomResourceLogRetention = logs.RetentionDays.TWO_YEARS;
-    const app = new cdk.App();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
     const stack = new cdk.Stack(app);
     new logs.LogGroup(stack, 'ignored', {});
     let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
@@ -72,7 +80,11 @@ describe('when a singleton-backed custom resource logRetention is specified', ()
   test('addLogRetentionLifetime overrides log retention', () => {
     // GIVEN
     const customResourceLogRetention = logs.RetentionDays.TEN_YEARS;
-    const app = new cdk.App();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
     const stack = new cdk.Stack(app);
     const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
     new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
@@ -100,7 +112,11 @@ describe('when a singleton-backed custom resource log group is specified', () =>
   test('addLogRetentionLifetime modifies the retention period of a singleton-backed custom resource log group.', () => {
     // GIVEN
     const customResourceLogRetention = logs.RetentionDays.TEN_YEARS;
-    const app = new cdk.App();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
     const stack = new cdk.Stack(app);
     const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
     new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
@@ -126,7 +142,11 @@ describe('when a singleton-backed custom resource log group is specified', () =>
 test('addLogRetentionLifetime modifies the retention period of the custom resources in two top-level stacks', () => {
   // GIVEN
   const customResourceLogRetention = logs.RetentionDays.TEN_YEARS;
-  const app = new cdk.App();
+  const app = new cdk.App({
+    postCliContext: {
+      '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    },
+  });
   const stack1 = new cdk.Stack(app, 'stack1');
   let websiteBucket1 = new s3.Bucket(stack1, 'WebsiteBucket1', {});
   new s3deploy.BucketDeployment(stack1, 'BucketDeployment1', {
@@ -167,7 +187,11 @@ test('addLogRetentionLifetime modifies the retention period of the custom resour
 test('addLogRetentionLifetime modifies the retention period of the custom resources in the nested stack', () => {
   // GIVEN
   const customResourceLogRetention = logs.RetentionDays.TEN_YEARS;
-  const app = new cdk.App();
+  const app = new cdk.App({
+    postCliContext: {
+      '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    },
+  });
   const stack = new cdk.Stack(app, 'Stack');
   const nestedStack1 = new cdk.NestedStack(stack, 'nestedStack1');
   let websiteBucketA = new s3.Bucket(nestedStack1, 'WebsiteBucketA', {});
@@ -210,7 +234,11 @@ describe('when custom resource logGroup removalPolicy is Retain', () => {
   test('addRemovalPolicy modifies custom resource logGroup to Delete', () => {
     // GIVEN
     const customResourceRemovalPolicy = cdk.RemovalPolicy.DESTROY;
-    const app = new cdk.App();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
     const stack = new cdk.Stack(app);
     const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
     new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
@@ -237,7 +265,11 @@ describe('when custom resource logGroup removalPolicy is Retain', () => {
     // GIVEN
     const customResourceLogRetention = logs.RetentionDays.TEN_YEARS;
     const customResourceRemovalPolicy = cdk.RemovalPolicy.DESTROY;
-    const app = new cdk.App();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
     const stack = new cdk.Stack(app);
     const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
     new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
@@ -261,7 +293,11 @@ describe('when custom resource logGroup removalPolicy is Retain', () => {
   test("addRemovalPolicy can set a custom resource logGroup's removal policy to Retain", () => {
     // GIVEN
     const customResourceRemovalPolicy = cdk.RemovalPolicy.RETAIN;
-    const app = new cdk.App();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
     const stack = new cdk.Stack(app);
     const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
     new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
@@ -285,7 +321,11 @@ describe('when custom resource logGroup removalPolicy is Retain', () => {
   test('addRemovalPolicy only affects custom resource log groups', () => {
     // GIVEN
     const customResourceRemovalPolicy = cdk.RemovalPolicy.DESTROY;
-    const app = new cdk.App();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
     const stack = new cdk.Stack(app);
     const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
     new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
@@ -320,7 +360,11 @@ describe('when custom resource lambda runtime is set by addLambdaRuntime', () =>
   test('addLambdaRuntime sets custom resource lambda runtime to python3.12', () => {
     // GIVEN
     const customResourceRuntime = lambda.Runtime.PYTHON_3_12;
-    const app = new cdk.App();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
     const stack = new cdk.Stack(app);
     const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
     new s3deploy.BucketDeployment(stack, 'BucketDeployment', { // BucketDeployment uses python3.9
@@ -341,7 +385,11 @@ describe('when custom resource lambda runtime is set by addLambdaRuntime', () =>
   test('addLambdaRuntime sets custom resource lambda runtime and does not modify non custom resource lambda', () => {
     // GIVEN
     const customResourceRuntime = lambda.Runtime.PYTHON_3_12;
-    const app = new cdk.App();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
     const stack = new cdk.Stack(app);
     const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
     new s3deploy.BucketDeployment(stack, 'BucketDeployment', { // python3.9
@@ -371,7 +419,11 @@ describe('when custom resource lambda runtime is set by addLambdaRuntime', () =>
   test('addLambdaRuntime does not set custom resource lambda runtime in a different runtime family', () => {
     // GIVEN
     const customResourceRuntime = lambda.Runtime.NODEJS_20_X;
-    const app = new cdk.App();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
     const stack = new cdk.Stack(app);
     const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
     new s3deploy.BucketDeployment(stack, 'BucketDeployment', { // BucketDeployment uses Python3.9, not node
@@ -392,7 +444,11 @@ describe('when custom resource lambda runtime is set by addLambdaRuntime', () =>
   test('addLambdaRuntime sets custom resource lambda runtime to nodejs18.x', () => {
     // GIVEN
     const customResourceRuntime = lambda.Runtime.NODEJS_18_X;
-    const app = new cdk.App();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
     const stack = new cdk.Stack(app);
     const table = new dynamodb.Table(stack, 'Table', {
       partitionKey: {
@@ -424,7 +480,11 @@ describe('when custom resource lambda runtime is set by addLambdaRuntime', () =>
     // GIVEN
     const dynamodbReplicaCustomResourceRuntime = lambda.Runtime.NODEJS_18_X;
     const s3BucketDeploymentCustomResourceRuntime = lambda.Runtime.PYTHON_3_12;
-    const app = new cdk.App();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
     const stack = new cdk.Stack(app);
     const table = new dynamodb.Table(stack, 'Table', {
       partitionKey: {

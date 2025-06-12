@@ -30,7 +30,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const integTest = new IntegTest(app, 'aws-cdk-global-table-replica-integ', {
   testCases: [new TestStack(app, 'BarStack', { env: { region: 'us-east-1' } })],
