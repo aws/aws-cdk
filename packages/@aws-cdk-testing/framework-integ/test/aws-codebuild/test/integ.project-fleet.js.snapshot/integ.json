@@ -1,12 +1,15 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "testCases": {
     "FleetIntegTest/DefaultTest": {
       "stacks": [
-        "aws-cdk-project-fleet"
+        "FleetIntegStack0",
+        "FleetIntegStack1",
+        "FleetIntegStack2"
       ],
       "assertionStack": "FleetIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "FleetIntegTestDefaultTestDeployAssertEA68B6D9"
     }
-  }
+  },
+  "minimumCliVersion": "2.1025.0"
 }
