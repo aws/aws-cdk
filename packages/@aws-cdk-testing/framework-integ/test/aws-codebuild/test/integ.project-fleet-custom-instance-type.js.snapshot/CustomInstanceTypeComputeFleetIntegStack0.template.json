@@ -5,12 +5,9 @@
    "Properties": {
     "BaseCapacity": 1,
     "ComputeConfiguration": {
-     "disk": 0,
-     "machineType": "GENERAL",
-     "memory": 0,
-     "vCpu": 0
+     "instanceType": "t3.medium"
     },
-    "ComputeType": "ATTRIBUTE_BASED_COMPUTE",
+    "ComputeType": "CUSTOM_INSTANCE_TYPE",
     "EnvironmentType": "LINUX_CONTAINER"
    }
   },
@@ -182,7 +179,7 @@
     "Ref": "MyProject39F7B0AE"
    },
    "Export": {
-    "Name": "AttributeBasedComputeFleetIntegStack0:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+    "Name": "CustomInstanceTypeComputeFleetIntegStack0:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
    }
   }
  },

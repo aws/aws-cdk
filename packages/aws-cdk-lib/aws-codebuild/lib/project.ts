@@ -28,7 +28,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization, UnscopedValidationError, ValidationError } from '../../core';
+import { Annotations, ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -1476,6 +1476,15 @@ export class Project extends ProjectBase {
     }
 
     if (!props.vpc) { return undefined; }
+
+    if (props.environment?.fleet) {
+      // Should throw a ValidationError, but we are only warning, to preserve
+      // backward compatibility.
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-codebuild:noUselessProjectVpc',
+        'Project \'vpc\' does nothing when using a Fleet. Configure the VPC on the fleet instead.',
+      );
+    }
 
     if ((props.securityGroups && props.securityGroups.length > 0) && props.allowAllOutbound !== undefined) {
       throw new ValidationError('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.', this);
