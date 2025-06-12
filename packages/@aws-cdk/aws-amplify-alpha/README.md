@@ -293,3 +293,17 @@ declare const asset: assets.Asset;
 declare const amplifyApp: amplify.App;
 const branch = amplifyApp.addBranch("dev", { asset: asset });
 ```
+
+## Skew protection for Amplify Deployments
+
+Deployment skew protection is available to Amplify applications to eliminate version skew issues between client and servers in web applications.
+When you apply skew protection to an Amplify application, you can ensure that your clients always interact with the correct version of server-side assets, regardless of when a deployment occurs.
+
+For more information, see [Skew protection for Amplify deployments](https://docs.aws.amazon.com/amplify/latest/userguide/skew-protection.html).
+
+To enable skew protection, set the `skewProtection` property to `true`:
+
+```ts
+declare const amplifyApp: amplify.App;
+const branch = amplifyApp.addBranch("dev", { skewProtection: true });
+```
