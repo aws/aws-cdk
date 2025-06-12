@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "44.0.0",
   "testCases": {
     "Integ/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "Integ/DefaultTest/DeployAssert",
       "assertionStackName": "IntegDefaultTestDeployAssert4E6713E1"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

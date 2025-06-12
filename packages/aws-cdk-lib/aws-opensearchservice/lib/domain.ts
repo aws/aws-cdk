@@ -633,7 +633,7 @@ export interface DomainProps {
   /**
    * The minimum TLS version required for traffic to the domain.
    *
-   * @default - TLSSecurityPolicy.TLS_1_0
+   * @default - TLSSecurityPolicy.TLS_1_2
    */
   readonly tlsSecurityPolicy?: TLSSecurityPolicy;
 
@@ -2005,7 +2005,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         : undefined,
       domainEndpointOptions: {
         enforceHttps,
-        tlsSecurityPolicy: props.tlsSecurityPolicy ?? TLSSecurityPolicy.TLS_1_0,
+        tlsSecurityPolicy: props.tlsSecurityPolicy ?? TLSSecurityPolicy.TLS_1_2,
         ...props.customEndpoint && {
           customEndpointEnabled: true,
           customEndpoint: props.customEndpoint.domainName,
