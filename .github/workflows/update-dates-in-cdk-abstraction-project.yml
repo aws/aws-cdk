@@ -1,0 +1,107 @@
+name: Update Project Issue Creation Date
+
+on:
+  issues:
+    types: [opened, reopened]
+  workflow_dispatch:  # Allows manual triggering for existing issues
+
+jobs:
+  update_project_field:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update project field
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue = context.payload.issue;
+            if (!issue) return;
+
+            // Get the project data
+            const projectNumber = 302; // Replace with your project number
+            const organization = 'aws'; // Replace with your org or username
+
+            // Query to get project ID
+            const projectQuery = `
+              query($org: String!, $number: Int!) {
+                organization(login: $org) {
+                  projectV2(number: $number) {
+                    id
+                    field(name: "Creation Date") {
+                      ... on ProjectV2Field {
+                        id
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            // Get project and field IDs
+            const projectData = await github.graphql(projectQuery, {
+              org: organization,
+              number: projectNumber
+            });
+
+            const projectId = projectData.organization.projectV2.id;
+            const fieldId = projectData.organization.projectV2.field.id;
+
+            // Find the item ID for this issue in the project
+            const itemQuery = `
+              query($projectId: ID!, $issueNumber: Int!, $repo: String!, $owner: String!) {
+                organization(login: $owner) {
+                  projectV2(id: $projectId) {
+                    items(first: 1, filter: {fieldValueContains: "#$issueNumber"}) {
+                      nodes {
+                        id
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            const itemData = await github.graphql(itemQuery, {
+              projectId: projectId,
+              issueNumber: issue.number,
+              repo: context.repo.repo,
+              owner: organization
+            });
+
+            const itemId = itemData.organization.projectV2.items.nodes[0]?.id;
+            if (!itemId) {
+              console.log(`Issue #${issue.number} not found in project`);
+              return;
+            }
+
+            // Update the date field with the issue creation date
+            const createdAt = issue.created_at;
+
+            const updateMutation = `
+              mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $date: Date!) {
+                updateProjectV2ItemFieldValue(
+                  input: {
+                    projectId: $projectId
+                    itemId: $itemId
+                    fieldId: $fieldId
+                    value: {
+                      date: $date
+                    }
+                  }
+                ) {
+                  projectV2Item {
+                    id
+                  }
+                }
+              }
+            `;
+
+            await github.graphql(updateMutation, {
+              projectId: projectId,
+              itemId: itemId,
+              fieldId: fieldId,
+              date: createdAt.split('T')[0] // Format as YYYY-MM-DD
+            });
+
+            console.log(`Updated creation date for issue #${issue.number}`);
