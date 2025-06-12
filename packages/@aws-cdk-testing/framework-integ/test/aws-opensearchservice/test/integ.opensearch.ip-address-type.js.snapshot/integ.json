@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "testCases": {
     "OpenSearchIpAddressTypeInteg/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "OpenSearchIpAddressTypeInteg/DefaultTest/DeployAssert",
       "assertionStackName": "OpenSearchIpAddressTypeIntegDefaultTestDeployAssertE117ADBF"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
