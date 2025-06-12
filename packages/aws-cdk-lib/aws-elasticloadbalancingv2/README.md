@@ -367,6 +367,8 @@ When this flag is enabled (the default for new projects), a security group will 
 If you wish to create an NLB without any security groups, you can set the `disableSecurityGroups` property to `true`. When this property is set, no security group will be associated with the NLB, regardless of the feature flag.
 
 ```ts
+declare const vpc: ec2.IVpc;
+
 const nlb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   vpc,
   // To disable security groups for this NLB
@@ -377,6 +379,7 @@ const nlb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 If you want to use your own security groups, provide them via the `securityGroups` property:
 
 ```ts
+declare const vpc: ec2.IVpc;
 declare const sg1: ec2.ISecurityGroup;
 declare const sg2: ec2.ISecurityGroup;
 
