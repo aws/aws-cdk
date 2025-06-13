@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "appconfig-configuration-kms/DefaultTest": {
+      "stacks": [
+        "aws-appconfig-configuration-kms"
+      ],
+      "assertionStack": "appconfig-configuration-kms/DefaultTest/DeployAssert",
+      "assertionStackName": "appconfigconfigurationkmsDefaultTestDeployAssert53559CF7"
+    }
+  }
+}

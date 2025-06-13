@@ -290,6 +290,9 @@
   "aws-evidently": [
     "AWS::Evidently"
   ],
+  "aws-evs": [
+    "AWS::EVS"
+  ],
   "aws-finspace": [
     "AWS::FinSpace"
   ],

@@ -10,7 +10,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Domain, DomainProps, EngineVersion, IpAddressType, NodeOptions } from '../lib';
+import { Domain, DomainProps, EngineVersion, IpAddressType, NodeOptions, TLSSecurityPolicy } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -1785,6 +1785,59 @@ each(testedOpenSearchVersions).describe('custom endpoints', (engineVersion) => {
           ],
         },
       ],
+    });
+  });
+});
+
+each(testedOpenSearchVersions).describe('TLS security policy', (engineVersion) => {
+  test('defaults to TLS 1.2 when tlsSecurityPolicy is not specified', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      DomainEndpointOptions: {
+        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
+      },
+    });
+  });
+
+  test('uses TLS 1.0 when explicitly specified', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      tlsSecurityPolicy: TLSSecurityPolicy.TLS_1_0,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      DomainEndpointOptions: {
+        TLSSecurityPolicy: 'Policy-Min-TLS-1-0-2019-07',
+      },
+    });
+  });
+
+  test('uses TLS 1.2 when explicitly specified', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      tlsSecurityPolicy: TLSSecurityPolicy.TLS_1_2,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      DomainEndpointOptions: {
+        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
+      },
+    });
+  });
+
+  test('uses TLS 1.2 PFS when explicitly specified', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      tlsSecurityPolicy: TLSSecurityPolicy.TLS_1_2_PFS,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      DomainEndpointOptions: {
+        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-PFS-2023-10',
+      },
     });
   });
 });

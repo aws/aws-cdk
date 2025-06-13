@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "cdk-integ-opensearch-coldstorage.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7e6878d5f7b4ebd9d43019b5cc477889a4c2650e5094c35aca78e0131f9e7120.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9d0ea55129520ddfaf8bdb1f4b89611007c03eaedc02505f72ec7b233fed9dec.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,21 @@
         "cdk-integ-opensearch-coldstorage.assets"
       ],
       "metadata": {
+        "/cdk-integ-opensearch-coldstorage/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "version": "*",
+              "capacity": {
+                "masterNodes": "*",
+                "warmNodes": "*",
+                "multiAzWithStandbyEnabled": false
+              },
+              "coldStorageEnabled": true
+            }
+          }
+        ],
         "/cdk-integ-opensearch-coldstorage/Domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -109,5 +124,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
