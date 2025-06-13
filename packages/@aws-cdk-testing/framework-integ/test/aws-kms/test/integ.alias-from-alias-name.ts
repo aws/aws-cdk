@@ -11,7 +11,7 @@ const stack = new Stack(app, 'aws-cdk-kms');
 const alias = Alias.fromAliasName(stack, 'alias', 'alias/MyKey');
 
 const role = new Role(stack, 'Role', {
-  assumedBy: new AccountRootPrincipal(),
+  assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
 });
 
 alias.grantVerifyMac(role);
