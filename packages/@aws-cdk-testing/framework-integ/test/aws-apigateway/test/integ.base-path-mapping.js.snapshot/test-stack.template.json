@@ -9,23 +9,26 @@
   "ApiDeploymentB17BE62Df672ad8455f9678e4a3db5854bdb8d73": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "ApiF70053CD"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "ApiGET9257B917"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "ApiDeploymentStageprod3EB9684E": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "ApiF70053CD"
-    },
     "DeploymentId": {
      "Ref": "ApiDeploymentB17BE62Df672ad8455f9678e4a3db5854bdb8d73"
+    },
+    "RestApiId": {
+     "Ref": "ApiF70053CD"
     },
     "StageName": "prod"
    }
@@ -33,7 +36,11 @@
   "ApiGET9257B917": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
+    "AuthorizationType": "NONE",
     "HttpMethod": "GET",
+    "Integration": {
+     "Type": "MOCK"
+    },
     "ResourceId": {
      "Fn::GetAtt": [
       "ApiF70053CD",
@@ -42,10 +49,6 @@
     },
     "RestApiId": {
      "Ref": "ApiF70053CD"
-    },
-    "AuthorizationType": "NONE",
-    "Integration": {
-     "Type": "MOCK"
     }
    }
   },
@@ -64,8 +67,8 @@
   "MappingTwo551C79ED": {
    "Type": "AWS::ApiGateway::BasePathMapping",
    "Properties": {
-    "DomainName": "domainName",
     "BasePath": "path",
+    "DomainName": "domainName",
     "RestApiId": {
      "Ref": "ApiF70053CD"
     }
@@ -74,8 +77,8 @@
   "MappingThree36BBA1B6": {
    "Type": "AWS::ApiGateway::BasePathMapping",
    "Properties": {
-    "DomainName": "domainName",
     "BasePath": "api/v1/multi-level-path",
+    "DomainName": "domainName",
     "RestApiId": {
      "Ref": "ApiF70053CD"
     }
