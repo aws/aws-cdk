@@ -927,6 +927,40 @@ Here's an example:
 
 [example ECS pipeline for an application in a separate source code repository](test/integ.pipeline-ecs-separate-source.lit.ts)
 
+### Amazon EC2
+
+To deploy application code to Amazon EC2 Linux instances or Linux SSM-managed nodes:
+
+> **Note**
+> This action is only supported for V2 type pipelines.
+
+```ts
+const sourceOutput = new codepipeline.Artifact();
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
+  pipelineType: codepipeline.PipelineType.V2,
+});
+const deployAction = new codepipeline_actions.Ec2DeployAction({
+  actionName: 'Ec2Deploy',
+  input: sourceOutput,
+  instanceType: codepipeline_actions.Ec2InstanceType.EC2,
+  instanceTagKey: 'Name',
+  instanceTagValue: 'MyInstance',
+  deploySpecifications: codepipeline_actions.Ec2DeploySpecifications.inline({
+    targetDirectory: '/home/ec2-user/deploy',
+    preScript: 'scripts/pre-deploy.sh',
+    postScript: 'scripts/post-deploy.sh',
+  }),
+});
+const deployStage = pipeline.addStage({
+  stageName: 'Deploy',
+  actions: [deployAction],
+});
+```
+
+To learn more about using the EC2 deploy action in your pipeline, visit [tutorial](https://docs.aws.amazon.com/codepipeline/latest/userguide/tutorials-ec2-deploy.html) and [documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-EC2Deploy.html).
+
+
 ### AWS S3 Deployment
 
 To use an S3 Bucket as a deployment target in CodePipeline:
