@@ -7,9 +7,9 @@ import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { App, CfnOutput, Duration, Token, Fn, Stack, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-27';
+import * as kplus from 'cdk8s-plus-32';
 import * as constructs from 'constructs';
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import * as hello from './hello-k8s';
 import * as eks from '../lib';
 import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
@@ -41,10 +41,11 @@ class EksClusterStack extends Stack {
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
       vpcSubnets,
+      serviceIpv4Cidr: '172.20.0.0/16',
       mastersRole,
       defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 2,
-      version: eks.KubernetesVersion.V1_32,
+      version: eks.KubernetesVersion.V1_33,
       secretsEncryptionKey,
       tags: {
         foo: 'bar',
@@ -55,7 +56,7 @@ class EksClusterStack extends Stack {
         eks.ClusterLoggingTypes.SCHEDULER,
       ],
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),
       },
     });
 
@@ -215,6 +216,7 @@ class EksClusterStack extends Stack {
     // add a extra nodegroup
     this.cluster.addNodegroupCapacity('extra-ng', {
       instanceTypes: [new ec2.InstanceType('t3.small')],
+      amiType: eks.NodegroupAmiType.AL2023_X86_64_STANDARD,
       minSize: 1,
       maxSize: 4,
       maxUnavailable: 3,
@@ -230,6 +232,7 @@ class EksClusterStack extends Stack {
         new ec2.InstanceType('c5a.large'),
         new ec2.InstanceType('m7i-flex.large'),
       ],
+      amiType: eks.NodegroupAmiType.AL2023_X86_64_STANDARD,
       minSize: 3,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
@@ -238,18 +241,23 @@ class EksClusterStack extends Stack {
   }
   private assertNodeGroupCustomAmi() {
     // add a extra nodegroup
-    const userData = ec2.UserData.forLinux();
-    userData.addCommands(
-      'set -o xtrace',
-      `/etc/eks/bootstrap.sh ${this.cluster.clusterName}`,
-    );
+    const userData = `---
+apiVersion: node.eks.aws/v1alpha1
+kind: NodeConfig
+spec:
+  cluster:
+    name: ${this.cluster.clusterName}
+    apiServerEndpoint: ${this.cluster.clusterEndpoint}
+    certificateAuthority: ${this.cluster.clusterCertificateAuthorityData}
+    cidr: ${this.cluster.serviceIpv4Cidr}
+    `;
     const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
       launchTemplateData: {
-        imageId: new eks.EksOptimizedImage({
-          kubernetesVersion: eks.KubernetesVersion.V1_25.version,
+        imageId: new eks.Eks2023OptimizedImage({
+          kubernetesVersion: eks.KubernetesVersion.V1_33.version,
         }).getImage(this).imageId,
         instanceType: new ec2.InstanceType('t3.small').toString(),
-        userData: Fn.base64(userData.render()),
+        userData: Fn.base64(userData),
       },
     });
     this.cluster.addNodegroupCapacity('extra-ng2', {
@@ -266,6 +274,7 @@ class EksClusterStack extends Stack {
     // add a extra nodegroup
     this.cluster.addNodegroupCapacity('extra-ng-arm', {
       instanceTypes: [new ec2.InstanceType('m6g.medium')],
+      amiType: eks.NodegroupAmiType.AL2023_ARM_64_STANDARD,
       minSize: 1,
       maxUnavailablePercentage: 33,
       // reusing the default capacity nodegroup instance role when available
@@ -276,6 +285,7 @@ class EksClusterStack extends Stack {
     // add a Graviton3 nodegroup
     this.cluster.addNodegroupCapacity('extra-ng-arm3', {
       instanceTypes: [new ec2.InstanceType('c7g.large')],
+      amiType: eks.NodegroupAmiType.AL2023_ARM_64_STANDARD,
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
@@ -285,10 +295,10 @@ class EksClusterStack extends Stack {
     // add a GPU nodegroup
     this.cluster.addNodegroupCapacity('extra-ng-gpu', {
       instanceTypes: [
-        new ec2.InstanceType('p2.xlarge'),
         new ec2.InstanceType('g5.xlarge'),
         new ec2.InstanceType('g6e.xlarge'),
       ],
+      amiType: eks.NodegroupAmiType.AL2023_X86_64_NVIDIA,
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
@@ -296,40 +306,44 @@ class EksClusterStack extends Stack {
   }
   private assertSpotCapacity() {
     // spot instances (up to 10)
-    this.cluster.addAutoScalingGroupCapacity('spot', {
+    const asg = this.cluster.addAutoScalingGroupCapacity('spot', {
       spotPrice: '0.1094',
       instanceType: new ec2.InstanceType('t3.large'),
       maxCapacity: 10,
-      bootstrapOptions: {
-        kubeletExtraArgs: '--node-labels foo=bar,goo=far',
-        awsApiRetryAttempts: 5,
-      },
+      machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
     });
+
+    this.cluster.grantClusterAdmin('SpotAccess', asg.role.roleArn);
   }
   private assertBottlerocket() {
     // add bottlerocket nodes
-    this.cluster.addAutoScalingGroupCapacity('BottlerocketNodes', {
+    const asg = this.cluster.addAutoScalingGroupCapacity('BottlerocketNodes', {
       instanceType: new ec2.InstanceType('t3.small'),
       minCapacity: 2,
       machineImageType: eks.MachineImageType.BOTTLEROCKET,
     });
+
+    this.cluster.grantClusterAdmin('BottleRocketAccess', asg.role.roleArn);
   }
   private assertCapacityX86() {
-    // add some x86_64 capacity to the cluster. The IAM instance role will
-    // automatically be mapped via aws-auth to allow nodes to join the cluster.
-    this.cluster.addAutoScalingGroupCapacity('Nodes', {
+    const asg = this.cluster.addAutoScalingGroupCapacity('Nodes', {
       instanceType: new ec2.InstanceType('t2.medium'),
       minCapacity: 3,
+      machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
     });
+
+    this.cluster.grantClusterAdmin('x86Access', asg.role.roleArn);
   }
 
   private assertCapacityArm() {
-    // add some arm64 capacity to the cluster. The IAM instance role will
-    // automatically be mapped via aws-auth to allow nodes to join the cluster.
-    this.cluster.addAutoScalingGroupCapacity('NodesArm', {
+    const asg = this.cluster.addAutoScalingGroupCapacity('NodesArm', {
       instanceType: new ec2.InstanceType('m6g.medium'),
       minCapacity: 1,
+      machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
+      ssmSessionPermissions: true,
     });
+
+    this.cluster.grantClusterAdmin('ArmAccess', asg.role.roleArn);
   }
 
   private assertFargateProfile() {

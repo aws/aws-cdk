@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as cdk8s from 'cdk8s';
 import { Construct } from 'constructs';
 import * as YAML from 'yaml';
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import { testFixture, testFixtureNoVpc } from './util';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as asg from 'aws-cdk-lib/aws-autoscaling';
@@ -19,7 +19,7 @@ import { BottleRocketImage } from '../lib/private/bottlerocket';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_32;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_33;
 const commonProps = {
   version: CLUSTER_VERSION,
   defaultCapacity: 0,
@@ -36,7 +36,7 @@ describe('cluster', () => {
         version: eks.AlbControllerVersion.V2_4_1,
       },
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
       },
     });
 
@@ -241,7 +241,7 @@ describe('cluster', () => {
       ...commonProps,
       prune: false,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
       },
     });
 
@@ -336,7 +336,7 @@ describe('cluster', () => {
           ...commonProps,
           prune: false,
           kubectlProviderOptions: {
-            kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+            kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),
           },
         });
       }
@@ -388,7 +388,7 @@ describe('cluster', () => {
           version: CLUSTER_VERSION,
           prune: false,
           kubectlProviderOptions: {
-            kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+            kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),
           },
         });
       }
@@ -431,7 +431,7 @@ describe('cluster', () => {
           version: CLUSTER_VERSION,
           prune: false,
           kubectlProviderOptions: {
-            kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+            kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),
           },
         });
       }
@@ -464,7 +464,7 @@ describe('cluster', () => {
           version: CLUSTER_VERSION,
           prune: false,
           kubectlProviderOptions: {
-            kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+            kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),
           },
         });
       }
@@ -751,6 +751,21 @@ describe('cluster', () => {
     })).toThrow(/bootstrapOptions is not supported for Bottlerocket/);
   });
 
+  test('adding Amazon Linux 2023 capacity with bootstrapOptions throws error', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      ...commonProps,
+    });
+
+    expect(() => cluster.addAutoScalingGroupCapacity('AmazonLinux2023', {
+      instanceType: new ec2.InstanceType('t2.medium'),
+      machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
+      bootstrapOptions: {},
+    })).toThrow(/bootstrapOptions is not supported for Bottlerocket and Amazon Linux 2023/);
+  });
+
   test('import cluster with existing kubectl provider function', () => {
     const { stack } = testFixture();
 
@@ -931,7 +946,7 @@ describe('cluster', () => {
       ...commonProps,
       prune: false,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
       },
     });
 
@@ -956,7 +971,7 @@ describe('cluster', () => {
       version: CLUSTER_VERSION,
       prune: false,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
       },
     }); // cluster is under stack2
 
@@ -1072,7 +1087,7 @@ describe('cluster', () => {
             ...commonProps,
             prune: false,
             kubectlProviderOptions: {
-              kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+              kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
             },
           });
 
@@ -1143,7 +1158,48 @@ describe('cluster', () => {
       )).toEqual(true);
       expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('/1.32/'),
+          (v as any).Default.includes('/1.33/'),
+      )).toEqual(true);
+    });
+
+    test('Eks2023OptimizedImage() with no nodeType always uses STANDARD with LATEST_KUBERNETES_VERSION', () => {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+      const LATEST_KUBERNETES_VERSION = '1.24';
+
+      // WHEN
+      new eks.Eks2023OptimizedImage().getImage(stack);
+
+      // THEN
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      expect(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('/amazon-linux-2023/'),
+      )).toEqual(true);
+      expect(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes(LATEST_KUBERNETES_VERSION),
+      )).toEqual(true);
+    });
+
+    test('Eks2023OptimizedImage() with specific kubernetesVersion return correct AMI', () => {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Eks2023OptimizedImage({ kubernetesVersion: CLUSTER_VERSION.version }).getImage(stack);
+
+      // THEN
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      expect(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('/amazon-linux-2023/'),
+      )).toEqual(true);
+      expect(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('/1.33/'),
       )).toEqual(true);
     });
 
@@ -1162,7 +1218,39 @@ describe('cluster', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
-        AmiType: 'AL2_ARM_64',
+        AmiType: 'AL2023_ARM_64_STANDARD',
+      });
+    });
+
+    test('default capacity use AL2 for version < 1.33', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+        version: eks.KubernetesVersion.V1_32,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+        AmiType: 'AL2_x86_64',
+      });
+    });
+
+    test('default cluster capacity use AL2023 for version > 1.32', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+        version: eks.KubernetesVersion.V1_33,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+        AmiType: 'AL2023_x86_64_STANDARD',
       });
     });
 
@@ -1305,6 +1393,28 @@ describe('cluster', () => {
       )).toEqual(true);
     });
 
+    test('EKS-Optimized 2023 AMI with ARM64 when addAutoScalingGroupCapacity', () => {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        ...commonProps,
+        prune: false,
+        serviceIpv4Cidr: '10.0.0.0/16',
+      }).addAutoScalingGroupCapacity('ARMCapacity', {
+        instanceType: new ec2.InstanceType('m6g.medium'),
+        machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
+      });
+
+      // THEN
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      expect(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('/amazon-linux-2023\/arm64/'),
+      )).toEqual(true);
+    });
+
     test('BottleRocketImage() with specific kubernetesVersion return correct AMI', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
@@ -1321,7 +1431,7 @@ describe('cluster', () => {
       )).toEqual(true);
       expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
-          (v as any).Default.includes('/aws-k8s-1.32/'),
+          (v as any).Default.includes('/aws-k8s-1.33/'),
       )).toEqual(true);
     });
 
@@ -1335,7 +1445,7 @@ describe('cluster', () => {
         version: CLUSTER_VERSION,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1389,7 +1499,7 @@ describe('cluster', () => {
         ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1413,7 +1523,7 @@ describe('cluster', () => {
         ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1437,7 +1547,7 @@ describe('cluster', () => {
         ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1461,7 +1571,7 @@ describe('cluster', () => {
         ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1486,7 +1596,7 @@ describe('cluster', () => {
         ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1509,7 +1619,7 @@ describe('cluster', () => {
         ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1533,7 +1643,7 @@ describe('cluster', () => {
         version: CLUSTER_VERSION,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1583,7 +1693,7 @@ describe('cluster', () => {
         version: CLUSTER_VERSION,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1677,7 +1787,7 @@ describe('cluster', () => {
       prune: false,
       endpointAccess: eks.EndpointAccess.PRIVATE,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         environment: {
           Foo: 'Bar',
         },
@@ -1699,7 +1809,7 @@ describe('cluster', () => {
       prune: false,
       endpointAccess: eks.EndpointAccess.PRIVATE,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         environment: {
           Foo: 'Bar',
         },
@@ -1740,7 +1850,7 @@ describe('cluster', () => {
         prune: false,
         endpointAccess: eks.EndpointAccess.PRIVATE,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
           role: kubectlRole,
         },
       });
@@ -1810,7 +1920,7 @@ describe('cluster', () => {
         endpointAccess: eks.EndpointAccess.PUBLIC,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1828,7 +1938,7 @@ describe('cluster', () => {
         version: CLUSTER_VERSION,
         endpointAccess: eks.EndpointAccess.PUBLIC,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1860,7 +1970,7 @@ describe('cluster', () => {
         prune: false,
         endpointAccess: eks.EndpointAccess.PRIVATE,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1878,7 +1988,7 @@ describe('cluster', () => {
         endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1897,7 +2007,7 @@ describe('cluster', () => {
         prune: false,
         endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1928,7 +2038,7 @@ describe('cluster', () => {
         prune: false,
         endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom('1.2.3.4/32'),
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1988,7 +2098,7 @@ describe('cluster', () => {
         prune: false,
         endpointAccess: eks.EndpointAccess.PRIVATE,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2055,7 +2165,7 @@ describe('cluster', () => {
           ],
         }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2082,7 +2192,7 @@ describe('cluster', () => {
           ],
         }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2110,7 +2220,7 @@ describe('cluster', () => {
           })],
         }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2154,7 +2264,7 @@ describe('cluster', () => {
         endpointAccess: eks.EndpointAccess.PRIVATE,
         vpc,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2219,7 +2329,7 @@ describe('cluster', () => {
         vpc: vpc2,
         vpcSubnets: [{ subnetGroupName: 'Private1' }, { subnetGroupName: 'Private2' }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2300,7 +2410,7 @@ describe('cluster', () => {
       version: CLUSTER_VERSION,
       prune: false,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
       },
     });
 
@@ -2373,7 +2483,7 @@ describe('cluster', () => {
       prune: false,
       kubectlProviderOptions: {
         awscliLayer: layer,
-        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
       },
     });
 
