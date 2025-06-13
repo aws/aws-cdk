@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "PipelineStackSinglePublisherBetaStack14FCF5B0A.assets": {
       "type": "cdk:asset-manifest",
@@ -63,5 +63,5 @@
       "displayName": "PipelineStackSinglePublisher/Beta/Stack1"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1018.0"
 }
