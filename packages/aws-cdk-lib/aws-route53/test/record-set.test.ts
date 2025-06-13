@@ -1242,6 +1242,165 @@ describe('record set', () => {
     }
   });
 
+  test('SVCB record, AliasMode', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.SvcbRecord(stack, 'SVCB', {
+      zone,
+      recordName: '_8443._foo',
+      values: [route53.SvcbRecordValue.alias('service.example.com')],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: '_8443._foo.myzone.',
+      Type: 'SVCB',
+      HostedZoneId: { Ref: 'HostedZoneDB99F866' },
+      ResourceRecords: ['0 service.example.com'],
+      TTL: '1800',
+    });
+  });
+
+  test('SVCB record, service mode', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.SvcbRecord(stack, 'SVCB', {
+      zone,
+      recordName: '_8443._foo',
+      values: [route53.SvcbRecordValue.service()],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: '_8443._foo.myzone.',
+      Type: 'SVCB',
+      HostedZoneId: { Ref: 'HostedZoneDB99F866' },
+      ResourceRecords: ['1 .'],
+      TTL: '1800',
+    });
+  });
+
+  test('SVCB record, service mode, additional parameters', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.SvcbRecord(stack, 'SVCB', {
+      zone,
+      recordName: '_8443._foo',
+      values: [route53.SvcbRecordValue.service({
+        priority: 2,
+        targetName: 'service.example.com',
+        mandatory: ['alpn'],
+        alpn: [route53.Alpn.H3, route53.Alpn.H2, route53.Alpn.of('h3-29')],
+        noDefaultAlpn: true,
+        port: 8443,
+        ipv4hint: ['127.0.0.1'],
+        ipv6hint: ['::1'],
+      })],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: '_8443._foo.myzone.',
+      Type: 'SVCB',
+      HostedZoneId: { Ref: 'HostedZoneDB99F866' },
+      ResourceRecords: ['2 service.example.com mandatory="alpn" alpn="h3,h2,h3-29" no-default-alpn port=8443 ipv4hint="127.0.0.1" ipv6hint="::1"'],
+      TTL: '1800',
+    });
+  });
+
+  test('HTTPS record, AliasMode', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.HttpsRecord(stack, 'HTTPS', {
+      zone,
+      values: [route53.HttpsRecordValue.alias('service.example.com')],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'myzone.',
+      Type: 'HTTPS',
+      HostedZoneId: { Ref: 'HostedZoneDB99F866' },
+      ResourceRecords: ['0 service.example.com'],
+      TTL: '1800',
+    });
+  });
+
+  test('HTTPS record, service mode', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.HttpsRecord(stack, 'HTTPS', {
+      zone,
+      values: [route53.HttpsRecordValue.service()],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'myzone.',
+      Type: 'HTTPS',
+      HostedZoneId: { Ref: 'HostedZoneDB99F866' },
+      ResourceRecords: ['1 .'],
+      TTL: '1800',
+    });
+  });
+
+  test('HTTPS record, service mode, additional parameters', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.HttpsRecord(stack, 'HTTPS', {
+      zone,
+      values: [route53.HttpsRecordValue.service({
+        priority: 2,
+        targetName: 'service.example.com',
+        mandatory: ['alpn'],
+        alpn: [route53.Alpn.H3, route53.Alpn.H2, route53.Alpn.of('h3-29')],
+        noDefaultAlpn: true,
+        port: 8443,
+        ipv4hint: ['127.0.0.1'],
+        ipv6hint: ['::1'],
+      })],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'myzone.',
+      Type: 'HTTPS',
+      HostedZoneId: { Ref: 'HostedZoneDB99F866' },
+      ResourceRecords: ['2 service.example.com mandatory="alpn" alpn="h3,h2,h3-29" no-default-alpn port=8443 ipv4hint="127.0.0.1" ipv6hint="::1"'],
+      TTL: '1800',
+    });
+  });
+
   test('Delete existing record', () => {
     // GIVEN
     const stack = new Stack();
