@@ -1,7 +1,7 @@
 import { App, Stack } from 'aws-cdk-lib';
 import { Alias } from 'aws-cdk-lib/aws-kms';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
+import { ServicePrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 
 const app = new App({
