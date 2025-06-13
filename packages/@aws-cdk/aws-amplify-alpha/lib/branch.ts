@@ -137,6 +137,16 @@ export interface BranchOptions {
    * @default None - Default setting is no skew protection.
    */
   readonly skewProtection?: boolean;
+
+  /**
+   * The IAM role to assign to a branch of an SSR app.
+   * The SSR Compute role allows the Amplify Hosting compute service to securely access specific AWS resources based on the role's permissions.
+   *
+   * This role overrides the app-level compute role.
+   *
+   * @default undefined - no specific role for the branch.
+   */
+  readonly computeRole?: iam.IRole;
 }
 
 /**
@@ -199,6 +209,7 @@ export class Branch extends Resource implements IBranch {
       stage: props.stage,
       enablePerformanceMode: props.performanceMode,
       enableSkewProtection: props.skewProtection,
+      computeRoleArn: props.computeRole?.roleArn,
     });
 
     this.arn = branch.attrArn;
