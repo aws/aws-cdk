@@ -175,7 +175,7 @@ test('handling of verbose output via flag explicitly set', () => {
   });
 });
 
-test('handling on less verbose output', () => {
+test('handling of less verbose output', () => {
   const domainArn = 'test:arn';
 
   new OpenSearchAccessPolicy(stack, 'OpenSearchAccessPolicy', {

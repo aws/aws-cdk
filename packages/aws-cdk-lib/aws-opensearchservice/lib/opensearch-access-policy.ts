@@ -24,6 +24,7 @@ export interface OpenSearchAccessPolicyProps {
 
   /**
    * Flag to control verbosity of policy statement changes
+   * If verbose output is actively disabled it will only output specific fields
    * @default true
    */
   readonly verboseOutput?: boolean;
@@ -54,7 +55,7 @@ export class OpenSearchAccessPolicy extends cr.AwsCustomResource {
         },
         // this is needed to limit the response body, otherwise it exceeds the CFN 4k limit
         // If verbose output is actively disabled it will only output specific fields
-        outputPaths: (props.verboseOutput == undefined || props.verboseOutput) ? ['DomainConfig.AccessPolicies'] : ['DomainConfig.AccessPolicies.Status.State', 'DomainConfig.AccessPolicies.Status.UpdateVersion'],
+        outputPaths: (props.verboseOutput === undefined || props.verboseOutput) ? ['DomainConfig.AccessPolicies'] : ['DomainConfig.AccessPolicies.Status.State', 'DomainConfig.AccessPolicies.Status.UpdateVersion'],
         physicalResourceId: cr.PhysicalResourceId.of(`${props.domainName}AccessPolicy`),
       },
       policy: cr.AwsCustomResourcePolicy.fromStatements([new iam.PolicyStatement({ actions: ['es:UpdateDomainConfig'], resources: [props.domainArn] })]),
