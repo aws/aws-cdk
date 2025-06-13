@@ -4,6 +4,7 @@ import * as ccommit from '../../../aws-codecommit';
 import { Pipeline, PipelineType } from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
+import * as sns from '../../../aws-sns';
 import * as sqs from '../../../aws-sqs';
 import * as cdk from '../../../core';
 import { Stack } from '../../../core';
@@ -729,6 +730,77 @@ test('throws when deploy role session tags are used', () => {
       },
     });
   }).toThrow('Deployment of stack SampleStage-123456789012-us-east-1-SampleStack requires assuming the role arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1 with session tags, but assuming roles with session tags is not supported by CodePipeline.');
+});
+
+test('test add external link for manual approval', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    crossAccountKeys: true,
+  });
+
+  const stage = new TwoStackApp(app, 'TheApp', { withDependency: false });
+
+  const approval = new cdkp.ManualApprovalStep('Approval', {
+    comment: 'Please approve',
+    reviewUrl: 'https://approve-confirm.com',
+  });
+
+  pipeline.addStage(stage, {
+    pre: [approval],
+  });
+
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'TheApp',
+      Actions: Match.arrayWith([
+        Match.objectLike({
+          Name: 'Approval',
+          RunOrder: 1,
+          Configuration: Match.objectLike({
+            ExternalEntityLink: 'https://approve-confirm.com',
+          }),
+        }),
+      ]),
+    }]),
+  });
+});
+
+test('sns topic for manual approval', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    crossAccountKeys: true,
+  });
+  const topic = new sns.Topic(pipelineStack, 'Topic', {
+    topicName: 'MyTopic',
+  });
+  const approval = new cdkp.ManualApprovalStep('Approval', {
+    comment: 'Please approve',
+    notificationTopic: topic,
+  });
+  const stage = new TwoStackApp(app, 'TheApp', { withDependency: false });
+  pipeline.addStage(stage, {
+    pre: [approval],
+  });
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'TheApp',
+      Actions: Match.arrayWith([
+        Match.objectLike({
+          Name: 'Approval',
+          RunOrder: 1,
+          Configuration: Match.objectLike({
+            NotificationArn: { Ref: 'TopicBFC7AF6E' },
+          }),
+        }),
+      ]),
+    }]),
+  });
+  template.hasResourceProperties('AWS::SNS::Topic', {
+    TopicName: 'MyTopic',
+  });
 });
 
 interface ReuseCodePipelineStackProps extends cdk.StackProps {
