@@ -539,7 +539,10 @@
     "myapiv1toysA55FCBC4"
    ],
    "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "myapiDeploymentStagebeta96434BEB": {
    "Type": "AWS::ApiGateway::Stage",
