@@ -1,7 +1,8 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "files": {
     "edb7466707eb899fbaee22c1e67f9443e9edcc2eeda0b58d8448f7c4157746b3": {
+      "displayName": "Handler/Code",
       "source": {
         "path": "asset.edb7466707eb899fbaee22c1e67f9443e9edcc2eeda0b58d8448f7c4157746b3",
         "packaging": "zip"
@@ -15,6 +16,7 @@
       }
     },
     "87da351d4c9de5eead78cb80dde66bcbb6c42c418c3368747f32a4e9c013a2e1": {
+      "displayName": "PreHook/Code",
       "source": {
         "path": "asset.87da351d4c9de5eead78cb80dde66bcbb6c42c418c3368747f32a4e9c013a2e1",
         "packaging": "zip"
@@ -28,6 +30,7 @@
       }
     },
     "93dbd8c02dbfca9077c9d83cb6d3a94659988c7d143988da4a554033a58f963c": {
+      "displayName": "PostHook/Code",
       "source": {
         "path": "asset.93dbd8c02dbfca9077c9d83cb6d3a94659988c7d143988da4a554033a58f963c",
         "packaging": "zip"
@@ -40,7 +43,8 @@
         }
       }
     },
-    "65305c61e1aca727f106c284b6b259b0d7cab3627a034743bf5a33934707247f": {
+    "38788bf5689ae1e5f4ef55f8cda9588aae002341ccc2522c1ea6a21ac58b4a1c": {
+      "displayName": "aws-cdk-codedeploy-lambda Template",
       "source": {
         "path": "aws-cdk-codedeploy-lambda.template.json",
         "packaging": "file"
@@ -48,7 +52,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "65305c61e1aca727f106c284b6b259b0d7cab3627a034743bf5a33934707247f.json",
+          "objectKey": "38788bf5689ae1e5f4ef55f8cda9588aae002341ccc2522c1ea6a21ac58b4a1c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

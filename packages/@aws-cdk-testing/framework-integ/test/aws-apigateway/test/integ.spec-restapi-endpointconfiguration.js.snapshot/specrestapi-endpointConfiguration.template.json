@@ -24,6 +24,9 @@
     "RestApiId": {
      "Ref": "myapi4C7BF186"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "myapiDeploymentStageprod298F01AF": {
