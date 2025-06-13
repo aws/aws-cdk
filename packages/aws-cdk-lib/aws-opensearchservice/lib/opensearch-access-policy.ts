@@ -23,8 +23,9 @@ export interface OpenSearchAccessPolicyProps {
   readonly accessPolicies: iam.PolicyStatement[];
 
   /**
-   * Flag to control verbosity of policy statement changes
+   * Flag to control verbosity of OpenSearch policy custom resource result
    * If verbose output is actively disabled it will only output specific fields
+   * This is can be used to limit the response body of the custom resource, in cases it exceeds the CFN 4k limit
    * @default true
    */
   readonly verboseOutput?: boolean;
