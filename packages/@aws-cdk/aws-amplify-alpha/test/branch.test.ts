@@ -3,6 +3,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { SecretValue, Stack } from 'aws-cdk-lib';
 import * as amplify from '../lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 let stack: Stack;
 let app: amplify.App;
@@ -152,5 +153,23 @@ test('with skew protection', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Branch', {
     EnableSkewProtection: true,
+  });
+});
+
+test('with compute role', () => {
+  // WHEN
+  const computeRole = new iam.Role(stack, 'ComputeRole', {
+    assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
+  });
+
+  const ssrApp = new amplify.App(stack, 'SsrApp', {
+    platform: amplify.Platform.WEB_COMPUTE,
+  });
+
+  ssrApp.addBranch('main', { computeRole });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Branch', {
+    ComputeRoleArn: stack.resolve(computeRole.roleArn),
   });
 });

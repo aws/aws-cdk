@@ -268,6 +268,15 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
 });
 ```
 
+Also you can override the compute role for a specific branch by setting `computeRole` in `Branch`:
+
+```ts
+declare const computeRole: iam.Role;
+declare const app: amplify.App
+
+const branch = amplifyApp.addBranch("dev", { computeRole });
+```
+
 ## Cache Config
 
 Amplify uses Amazon CloudFront to manage the caching configuration for your hosted applications. A cache configuration is applied to each app to optimize for the best performance.
