@@ -594,7 +594,7 @@ test('action name does not reflect display names if publishAssetsInParallel is f
       Name: 'Assets',
       Actions: [
         Match.objectLike({
-          Name: 'FileAsset',
+          Name: 'FileAssets',
         }),
       ],
     }]),

@@ -436,8 +436,8 @@ function findUniqueName(parent: Graph<any>, parts: string[]): string {
 function getDisplayNameForSinglePublishStep(type: AssetType) {
   switch (type) {
     case AssetType.FILE:
-      return 'FileAsset';
+      return 'FileAssets';
     case AssetType.DOCKER_IMAGE:
-      return 'DockerAsset';
+      return 'DockerAssets';
   }
 }
