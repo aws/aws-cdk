@@ -18,6 +18,7 @@ import { BasicAuth } from './basic-auth';
 import { renderEnvironmentVariables } from './utils';
 import { AssetDeploymentIsCompleteFunction, AssetDeploymentOnEventFunction } from '../custom-resource-handlers/dist/aws-amplify-alpha/asset-deployment-provider.generated';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * A branch
@@ -124,6 +125,18 @@ export interface BranchOptions {
    * @default false
    */
   readonly performanceMode?: boolean;
+
+  /**
+   * Specifies whether the skew protection feature is enabled for the branch.
+   *
+   * Deployment skew protection is available to Amplify applications to eliminate version skew issues
+   * between client and servers in web applications.
+   * When you apply skew protection to a branch, you can ensure that your clients always interact
+   * with the correct version of server-side assets, regardless of when a deployment occurs.
+   *
+   * @default None - Default setting is no skew protection.
+   */
+  readonly skewProtection?: boolean;
 }
 
 /**
@@ -139,7 +152,11 @@ export interface BranchProps extends BranchOptions {
 /**
  * An Amplify Console branch
  */
+@propertyInjectable
 export class Branch extends Resource implements IBranch {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-amplify-alpha.Branch';
+
   /**
    * Import an existing branch
    */
@@ -181,6 +198,7 @@ export class Branch extends Resource implements IBranch {
       pullRequestEnvironmentName: props.pullRequestEnvironmentName,
       stage: props.stage,
       enablePerformanceMode: props.performanceMode,
+      enableSkewProtection: props.skewProtection,
     });
 
     this.arn = branch.attrArn;

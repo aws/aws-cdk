@@ -373,7 +373,6 @@ export class CodePipeline extends PipelineBase {
    * Whether SelfMutation is enabled for this CDK Pipeline
    */
   public readonly selfMutationEnabled: boolean;
-
   /**
    * Allow pipeline service role used for actions if no action role configured
    * instead of creating a new role for each action

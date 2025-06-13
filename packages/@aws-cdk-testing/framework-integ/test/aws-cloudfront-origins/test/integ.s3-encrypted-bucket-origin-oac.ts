@@ -7,7 +7,11 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as path from 'path';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'cloudfront-s3-encrypted-bucket-origin-oac');
 const kmsKey = new kms.Key(stack, 'myKey', { removalPolicy: cdk.RemovalPolicy.DESTROY });

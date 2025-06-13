@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "cdk-synthetics-canary-run-config.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2419aea0c8a75517961151282103f80d51914702e8458f09e1b5afc1762710de.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fc7d4417366a35f023b3d85652c9f57cdb893f343549579b702837b069a0e3b4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,67 @@
         "cdk-synthetics-canary-run-config.assets"
       ],
       "metadata": {
+        "/cdk-synthetics-canary-run-config/Canary": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "canaryName": "*",
+              "runtime": "*",
+              "test": "*",
+              "cleanup": "lambda",
+              "activeTracing": true,
+              "memory": "*",
+              "timeout": "*"
+            }
+          }
+        ],
+        "/cdk-synthetics-canary-run-config/Canary/ArtifactsBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryption": "KMS_MANAGED",
+              "enforceSSL": true,
+              "lifecycleRules": "*"
+            }
+          }
+        ],
         "/cdk-synthetics-canary-run-config/Canary/ArtifactsBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CanaryArtifactsBucket4A60D32B"
           }
         ],
+        "/cdk-synthetics-canary-run-config/Canary/ArtifactsBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/cdk-synthetics-canary-run-config/Canary/ArtifactsBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CanaryArtifactsBucketPolicy63096C41"
+          }
+        ],
+        "/cdk-synthetics-canary-run-config/Canary/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
+          }
+        ],
+        "/cdk-synthetics-canary-run-config/Canary/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cdk-synthetics-canary-run-config/Canary/ServiceRole/Resource": [
@@ -58,6 +109,12 @@
             "data": "Canary11957FE2"
           }
         ],
+        "/cdk-synthetics-canary-run-config/Canary/AutoDeleteUnderlyingResourcesCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-synthetics-canary-run-config/Canary/AutoDeleteUnderlyingResourcesCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -68,6 +125,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/cdk-synthetics-canary-run-config/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/cdk-synthetics-canary-run-config/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Role": [
@@ -151,5 +214,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

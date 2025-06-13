@@ -461,6 +461,16 @@ export enum InstanceClass {
   R8G = 'r8g',
 
   /**
+   * Memory optimized instances, 8th generation with Graviton4 processors and local NVME drive
+   */
+  MEMORY8_GRAVITON4_NVME_DRIVE = 'memory8-graviton4-nvme-drive',
+
+  /**
+   * Memory optimized instances, 8th generation with Graviton4 processors and local NVME drive
+   */
+  R8GD = 'r8gd',
+
+  /**
    * Compute optimized instances, 3rd generation
    */
   COMPUTE3 = 'compute3',
@@ -629,6 +639,16 @@ export enum InstanceClass {
    * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
    */
   C7GD = 'c7gd',
+
+  /**
+   * Compute optimized instances for high performance computing, 8th generation with Graviton4 processors and local NVME drive
+   */
+  COMPUTE8_GRAVITON4_NVME_DRIVE = 'compute8-graviton4-nvme-drive',
+
+  /**
+   * Compute optimized instances for high performance computing, 8th generation with Graviton4 processors and local NVME drive
+   */
+  C8GD = 'c8gd',
 
   /**
    * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
@@ -837,6 +857,16 @@ export enum InstanceClass {
    * Storage optimized instances powered by 5th generation Intel Xeon Scalable processors, 7th generation
    */
   I7IE = 'i7ie',
+
+  /**
+   * I/O-optimized instances with local NVME drive powered by 5th generation Intel Xeon Scalable processors, 7th generation
+   */
+  IO7_INTEL = 'io7_intel',
+
+  /**
+   * I/O-optimized instances with local NVME drive powered by 5th generation Intel Xeon Scalable processors, 7th generation
+   */
+  I7I = 'i7i',
 
   /**
    * Storage optimized instances powered by Graviton4 processor, 8th generation
@@ -1286,6 +1316,16 @@ export enum InstanceClass {
    * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
    */
   M7GD = 'm7gd',
+
+  /**
+   * Standard instances, 8th generation with Graviton4 processors and local NVME drive
+   */
+  STANDARD8_GRAVITON4_NVME_DRIVE = 'standard8-graviton4-nvme-drive',
+
+  /**
+   * Standard instances, 8th generation with Graviton4 processors and local NVME drive
+   */
+  M8GD = 'm8gd',
 
   /**
    * Standard instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
@@ -1741,6 +1781,8 @@ export class InstanceType {
       [InstanceClass.R7A]: 'r7a',
       [InstanceClass.MEMORY8_GRAVITON]: 'r8g',
       [InstanceClass.R8G]: 'r8g',
+      [InstanceClass.MEMORY8_GRAVITON4_NVME_DRIVE]: 'r8gd',
+      [InstanceClass.R8GD]: 'r8gd',
       [InstanceClass.COMPUTE3]: 'c3',
       [InstanceClass.C3]: 'c3',
       [InstanceClass.COMPUTE4]: 'c4',
@@ -1783,6 +1825,8 @@ export class InstanceType {
       [InstanceClass.C7A]: 'c7a',
       [InstanceClass.COMPUTE8_GRAVITON4]: 'c8g',
       [InstanceClass.C8G]: 'c8g',
+      [InstanceClass.COMPUTE8_GRAVITON4_NVME_DRIVE]: 'c8gd',
+      [InstanceClass.C8GD]: 'c8gd',
       [InstanceClass.STORAGE2]: 'd2',
       [InstanceClass.D2]: 'd2',
       [InstanceClass.STORAGE3]: 'd3',
@@ -1811,6 +1855,8 @@ export class InstanceType {
       [InstanceClass.IS4GEN]: 'is4gen',
       [InstanceClass.STORAGE7_INTEL_STORAGE_OPTIMIZED]: 'i7ie',
       [InstanceClass.I7IE]: 'i7ie',
+      [InstanceClass.IO7_INTEL]: 'i7i',
+      [InstanceClass.I7I]: 'i7i',
       [InstanceClass.STORAGE8_GRAVITON]: 'i8g',
       [InstanceClass.I8G]: 'i8g',
       [InstanceClass.BURSTABLE2]: 't2',
@@ -1889,6 +1935,8 @@ export class InstanceType {
       [InstanceClass.M8G]: 'm8g',
       [InstanceClass.STANDARD7_GRAVITON3_NVME_DRIVE]: 'm7gd',
       [InstanceClass.M7GD]: 'm7gd',
+      [InstanceClass.STANDARD8_GRAVITON4_NVME_DRIVE]: 'm8gd',
+      [InstanceClass.M8GD]: 'm8gd',
       [InstanceClass.STANDARD7_INTEL]: 'm7i',
       [InstanceClass.M7I]: 'm7i',
       [InstanceClass.STANDARD7_INTEL_FLEX]: 'm7i-flex',

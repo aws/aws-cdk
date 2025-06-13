@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "aws-cdk-codepipeline-elastic-beanstalk-deploy.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0ba85701431ff9aedcb2dcbc6b127949e450e2301372e6e819bce57a265c6054.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/74afabae0a308cb1977ee5019c9ed5a208bf5e7eebc581d295c956410405ed5a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -109,7 +109,10 @@
         "/aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeployAppAwsCliLayerAEF99B2F"
+            "data": "DeployAppAwsCliLayerAEF99B2F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/CustomResourceHandler": [
@@ -451,7 +454,8 @@
               "assumedBy": {
                 "principalAccount": "*",
                 "assumeRoleAction": "*"
-              }
+              },
+              "roleName": "*"
             }
           },
           {
@@ -861,5 +865,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1015.0"
 }

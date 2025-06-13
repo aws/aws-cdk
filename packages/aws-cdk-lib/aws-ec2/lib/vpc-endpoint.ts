@@ -10,6 +10,7 @@ import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A VPC endpoint.
@@ -239,7 +240,11 @@ export interface GatewayVpcEndpointProps extends GatewayVpcEndpointOptions {
  * A gateway VPC endpoint.
  * @resource AWS::EC2::VPCEndpoint
  */
+@propertyInjectable
 export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoint {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.GatewayVpcEndpoint';
+
   public static fromGatewayVpcEndpointId(scope: Construct, id: string, gatewayVpcEndpointId: string): IGatewayVpcEndpoint {
     class Import extends VpcEndpoint {
       public vpcEndpointId = gatewayVpcEndpointId;
@@ -473,8 +478,15 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly DEVOPS_GURU = new InterfaceVpcEndpointAwsService('devops-guru');
   public static readonly DIRECTORY_SERVICE = new InterfaceVpcEndpointAwsService('ds');
   public static readonly DIRECTORY_SERVICE_DATA = new InterfaceVpcEndpointAwsService('ds-data');
+  /**
+    The management endpoint for DSQL.
+    For the Connection endpoint, use `new InterfaceVpcEndpointService(cfnCluster.attrVpcEndpointServiceName)`.
+    See https://docs.aws.amazon.com/aurora-dsql/latest/userguide/privatelink-managing-clusters.html#endpoint-types-dsql for details
+   */
+  public static readonly DSQL_MANAGEMENT = new InterfaceVpcEndpointAwsService('dsql');
   public static readonly DYNAMODB = new InterfaceVpcEndpointAwsService('dynamodb');
   public static readonly DYNAMODB_FIPS = new InterfaceVpcEndpointAwsService('dynamodb-fips');
+  public static readonly DYNAMODB_STREAMS = new InterfaceVpcEndpointAwsService('dynamodb-streams');
   public static readonly EBS_DIRECT = new InterfaceVpcEndpointAwsService('ebs');
   public static readonly EC2 = new InterfaceVpcEndpointAwsService('ec2');
   public static readonly EC2_MESSAGES = new InterfaceVpcEndpointAwsService('ec2messages');
@@ -935,7 +947,13 @@ export interface IInterfaceVpcEndpoint extends IVpcEndpoint, IConnectable {
  * A interface VPC endpoint.
  * @resource AWS::EC2::VPCEndpoint
  */
+@propertyInjectable
 export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEndpoint {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.InterfaceVpcEndpoint';
+
   /**
    * Imports an existing interface VPC endpoint.
    */

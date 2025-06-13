@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "09991086e1c6f29d046bcfb16280236795490ff34a18ec6a59a7bd81b7c5177a": {
+    "0d3aa2f88d3550c5aa5fd619b463bbc4f21bfe3edb84a70e334252a83978b098": {
       "displayName": "OpenSearchCustomKmsIntegDefaultTestDeployAssertA1F4FD6B Template",
       "source": {
         "path": "OpenSearchCustomKmsIntegDefaultTestDeployAssertA1F4FD6B.template.json",
@@ -23,7 +23,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "09991086e1c6f29d046bcfb16280236795490ff34a18ec6a59a7bd81b7c5177a.json",
+          "objectKey": "0d3aa2f88d3550c5aa5fd619b463bbc4f21bfe3edb84a70e334252a83978b098.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -7,7 +7,7 @@ import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
-import { formatDistributionArn } from './private/utils';
+import { formatDistributionArn, grant } from './private/utils';
 import { IRealtimeLogConfig } from './realtime-log-config';
 import { IResponseHeadersPolicy } from './response-headers-policy';
 import * as acm from '../../aws-certificatemanager';
@@ -17,6 +17,7 @@ import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
 
 /**
@@ -281,7 +282,13 @@ export interface DistributionProps {
 /**
  * A CloudFront distribution with associated origin(s) and caching behavior(s).
  */
+@propertyInjectable
 export class Distribution extends Resource implements IDistribution {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.Distribution';
+
   /**
    * Creates a Distribution construct that represents an external (imported) distribution.
    */
@@ -302,7 +309,7 @@ export class Distribution extends Resource implements IDistribution {
         return formatDistributionArn(this);
       }
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-        return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [formatDistributionArn(this)] });
+        return grant(this, grantee, ...actions);
       }
       public grantCreateInvalidation(grantee: iam.IGrantable): iam.Grant {
         return this.grant(grantee, 'cloudfront:CreateInvalidation');
@@ -633,7 +640,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   @MethodMetadata()
   public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({ grantee: identity, actions, resourceArns: [formatDistributionArn(this)] });
+    return grant(this, identity, ...actions);
   }
 
   /**

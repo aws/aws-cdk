@@ -1,7 +1,8 @@
 {
-  "version": "40.0.0",
+  "version": "41.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
+      "displayName": "NlbSubnetMappingStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
       "source": {
         "path": "asset.a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c",
         "packaging": "zip"
@@ -14,7 +15,8 @@
         }
       }
     },
-    "774010726a95f5ba293b241629028567047dc383ec8f406ec589bfa81eb37576": {
+    "16d566b110f4aaf93b456bfa872f3c44070d04225e2968a34bbdc995c39c37bd": {
+      "displayName": "NlbSubnetMappingStack Template",
       "source": {
         "path": "NlbSubnetMappingStack.template.json",
         "packaging": "file"
@@ -22,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "774010726a95f5ba293b241629028567047dc383ec8f406ec589bfa81eb37576.json",
+          "objectKey": "16d566b110f4aaf93b456bfa872f3c44070d04225e2968a34bbdc995c39c37bd.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

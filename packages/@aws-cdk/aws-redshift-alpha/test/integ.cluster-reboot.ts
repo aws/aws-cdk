@@ -16,7 +16,7 @@ import * as redshift from '../lib';
 
 const app = new cdk.App({
   postCliContext: {
-    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
 });
 
@@ -124,5 +124,3 @@ describeEngineDefaultParams.expect(integ.ExpectedResult.objectLike({
     Match.objectLike({ ParameterName: 'wlm_json_configuration', ParameterValue: '[{"auto_wlm":true}]' }),
   ]),
 }));
-
-app.synth();

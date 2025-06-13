@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "EventApiChannelNamespaceStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3bc1560eaa5c9c92068e8af834c4a3de2b9772797d50465d25cc22e6d6f28e46.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/577c2acd89693ba0153c64e211ea5a26a2fee6424a303c361360ae0e0cf22976.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,38 @@
         "EventApiChannelNamespaceStack.assets"
       ],
       "metadata": {
+        "/EventApiChannelNamespaceStack/AuthorizerFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "code": "*",
+              "handler": "*"
+            }
+          }
+        ],
+        "/EventApiChannelNamespaceStack/AuthorizerFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/EventApiChannelNamespaceStack/AuthorizerFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/EventApiChannelNamespaceStack/AuthorizerFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -50,6 +82,53 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AuthorizerFunctionEventApiappsyncE4B8E11D"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/EventApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "apiName": "*",
+              "ownerContact": "*",
+              "authorizationConfig": {
+                "authProviders": [
+                  {
+                    "authorizationType": "AWS_LAMBDA",
+                    "lambdaAuthorizerConfig": {
+                      "handler": "*"
+                    }
+                  },
+                  {
+                    "authorizationType": "AWS_IAM"
+                  }
+                ]
+              },
+              "logConfig": {
+                "fieldLogLevel": "ERROR"
+              }
+            }
+          }
+        ],
+        "/EventApiChannelNamespaceStack/EventApi/ApiLogsRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/EventApiChannelNamespaceStack/EventApi/ApiLogsRole/ImportApiLogsRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/EventApiChannelNamespaceStack/EventApi/ApiLogsRole/Resource": [
@@ -70,16 +149,102 @@
             "data": "EventApiLogRetention68604E65"
           }
         ],
+        "/EventApiChannelNamespaceStack/EventApi/AnotherChannelNamespace": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "api": "*",
+              "channelNamespaceName": "*",
+              "code": "*"
+            }
+          }
+        ],
         "/EventApiChannelNamespaceStack/EventApi/AnotherChannelNamespace/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EventApiAnotherChannelNamespace5BC7F3A5"
           }
         ],
+        "/EventApiChannelNamespaceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/EventApiChannelNamespaceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/EventApiChannelNamespaceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/EventApiChannelNamespaceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
@@ -98,6 +263,23 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/ChannelNamespace": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "api": "*",
+              "authorizationConfig": {
+                "publishAuthModeTypes": [
+                  "AWS_LAMBDA"
+                ],
+                "subscribeAuthModeTypes": [
+                  "AWS_LAMBDA"
+                ]
+              },
+              "code": "*"
+            }
           }
         ],
         "/EventApiChannelNamespaceStack/ChannelNamespace/Resource": [
@@ -187,5 +369,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }
