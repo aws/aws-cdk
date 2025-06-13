@@ -26,6 +26,9 @@ class SnsToSqsStack extends cdk.Stack {
           lessThan: 1000,
           betweenStrict: { start: 2000, stop: 3000 },
         })),
+        store: sns.Filter.filter(sns.SubscriptionFilter.existsFilter(true)),
+        event: sns.Filter.filter(sns.SubscriptionFilter.existsFilter(false)),
+        interests: sns.Filter.filter(sns.SubscriptionFilter.existsFilter()),
       },
     }));
   }
@@ -39,7 +42,7 @@ const integTest = new IntegTest(app, 'SNS Subscriptions', {
   ],
 });
 integTest.assertions.awsApiCall('SNS', 'publish', {
-  Message: '{ background: { color: \'green\' }, price: 200 }',
+  Message: '{ background: { color: \'green\' }, price: 200, store: \'fans\', interests: [] }',
   TopicArn: stack.topic.topicArn,
 });
 const message = integTest.assertions.awsApiCall('SQS', 'receiveMessage', {
@@ -47,6 +50,6 @@ const message = integTest.assertions.awsApiCall('SQS', 'receiveMessage', {
   WaitTimeSeconds: 20,
 });
 message.expect(ExpectedResult.objectLike({
-  Messages: [{ Body: '{color: "green", price: 200}' }],
+  Messages: [{ Body: '{color: "green", price: 200, store: "fans", interests: []}' }],
 }));
 app.synth();
