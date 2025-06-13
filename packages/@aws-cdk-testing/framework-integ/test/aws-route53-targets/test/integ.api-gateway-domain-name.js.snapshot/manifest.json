@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-apigw-alias-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-apigw-alias-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/569efe9b3f24dd5d61b06f7900f3e84a27196c27497c9eb1cca136cd670b0cf2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fb3fa5d51a7006850b23bbec64113f398d64cf5705c8d9f3180db28138b4aa02.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,38 @@
         "aws-cdk-apigw-alias-integ.assets"
       ],
       "metadata": {
+        "/aws-cdk-apigw-alias-integ/Handler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "runtime": "*",
+              "handler": "*"
+            }
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/Handler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/Handler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-apigw-alias-integ/Handler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -45,10 +78,67 @@
             "data": "Handler886CB40B"
           }
         ],
+        "/aws-cdk-apigw-alias-integ/api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "defaultIntegration": "*",
+              "cloudWatchRole": true,
+              "handler": "*",
+              "domainName": {
+                "certificate": "*",
+                "domainName": "*",
+                "endpointType": "REGIONAL"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cloudWatchRole": true,
+              "handler": "*",
+              "domainName": {
+                "certificate": "*",
+                "domainName": "*",
+                "endpointType": "REGIONAL"
+              }
+            }
+          }
+        ],
         "/aws-cdk-apigw-alias-integ/api/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "apiC8550315"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "retain"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-apigw-alias-integ/api/CloudWatchRole/Resource": [
@@ -63,10 +153,52 @@
             "data": "apiAccount57E28B43"
           }
         ],
+        "/aws-cdk-apigw-alias-integ/api/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/aws-cdk-apigw-alias-integ/api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "apiDeployment149F1294891f10d69bae7c4d19bdee7af013a950"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/aws-cdk-apigw-alias-integ/api/DeploymentStage.prod/Resource": [
@@ -81,10 +213,42 @@
             "data": "apiEndpoint9349E63C"
           }
         ],
+        "/aws-cdk-apigw-alias-integ/api/CustomDomain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "certificate": "*",
+              "domainName": "*",
+              "endpointType": "REGIONAL",
+              "mapping": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addBasePathMapping": [
+                "*",
+                {
+                  "basePath": "*"
+                }
+              ]
+            }
+          }
+        ],
         "/aws-cdk-apigw-alias-integ/api/CustomDomain/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "apiCustomDomain64773C4F"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/CustomDomain/Map:--=>awscdkapigwaliasintegapiF4DF08AC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "domainName": "*",
+              "restApi": "*",
+              "basePath": "*"
+            }
           }
         ],
         "/aws-cdk-apigw-alias-integ/api/CustomDomain/Map:--=>awscdkapigwaliasintegapiF4DF08AC/Resource": [
@@ -93,10 +257,51 @@
             "data": "apiCustomDomainMapawscdkapigwaliasintegapiF4DF08ACCF365F22"
           }
         ],
+        "/aws-cdk-apigw-alias-integ/api/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/Default/{proxy+}": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "defaultIntegration": "*",
+              "defaultMethodOptions": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethod": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/aws-cdk-apigw-alias-integ/api/Default/{proxy+}/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "apiproxy4EA44110"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/api/Default/{proxy+}/ANY": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/aws-cdk-apigw-alias-integ/api/Default/{proxy+}/ANY/ApiPermission.awscdkapigwaliasintegapiF4DF08AC.ANY..{proxy+}": [
@@ -117,6 +322,17 @@
             "data": "apiproxyANY7F13F09C"
           }
         ],
+        "/aws-cdk-apigw-alias-integ/api/Default/ANY": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          }
+        ],
         "/aws-cdk-apigw-alias-integ/api/Default/ANY/ApiPermission.awscdkapigwaliasintegapiF4DF08AC.ANY..": [
           {
             "type": "aws:cdk:logicalId",
@@ -133,6 +349,22 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "apiANYB3DF8C3C"
+          }
+        ],
+        "/aws-cdk-apigw-alias-integ/Alias": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "target": "*"
+            }
           }
         ],
         "/aws-cdk-apigw-alias-integ/Alias/Resource": [
@@ -169,6 +401,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "apigatewaydomainnameDefaultTestDeployAssertC8336909.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -209,5 +442,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
