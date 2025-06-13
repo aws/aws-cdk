@@ -56,6 +56,9 @@
     "FunctionName": {
      "Ref": "Fn9270CBC0"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "VersionEventInvokeConfig19A99EDA": {

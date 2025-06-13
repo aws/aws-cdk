@@ -78,7 +78,10 @@
     "myapiv1toysA55FCBC4"
    ],
    "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "myapiDeploymentStagebeta96434BEB": {
    "Type": "AWS::ApiGateway::Stage",
@@ -688,7 +691,10 @@
     "myapiv1toysGET7348114D",
     "myapiv1toysPOST55128058",
     "myapiv1toysPUT59AFBBC2"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "TestStage3097EB68": {
    "Type": "AWS::ApiGateway::Stage",

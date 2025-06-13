@@ -1,11 +1,13 @@
 {
-  "version": "20.0.0",
+  "version": "44.0.0",
   "testCases": {
     "cloudwatch-logs-disabled/DefaultTest": {
       "stacks": [
         "default-api"
       ],
-      "assertionStack": "cloudwatch-logs-disabled/DefaultTest/DeployAssert"
+      "assertionStack": "cloudwatch-logs-disabled/DefaultTest/DeployAssert",
+      "assertionStackName": "cloudwatchlogsdisabledDefaultTestDeployAssert6C87D47C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

@@ -14,25 +14,28 @@
   "IntegApi1IntegApi201DeploymentF1012E35e3d8f8929b682e11ef294dd954cc0999": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "IntegApi1IntegApi2018FAD77E9"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "IntegApi1IntegApi201GET725FD00E",
     "IntegApi1IntegApi201itemsGET28ED9C03",
     "IntegApi1IntegApi201itemsE127EEB1"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "IntegApi1IntegApi201DeploymentStageprod42C7F5CE": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "IntegApi1IntegApi2018FAD77E9"
-    },
     "DeploymentId": {
      "Ref": "IntegApi1IntegApi201DeploymentF1012E35e3d8f8929b682e11ef294dd954cc0999"
+    },
+    "RestApiId": {
+     "Ref": "IntegApi1IntegApi2018FAD77E9"
     },
     "StageName": "prod"
    }
@@ -55,14 +58,8 @@
   "IntegApi1IntegApi201itemsGET28ED9C03": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "GET",
-    "ResourceId": {
-     "Ref": "IntegApi1IntegApi201itemsE127EEB1"
-    },
-    "RestApiId": {
-     "Ref": "IntegApi1IntegApi2018FAD77E9"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
     "Integration": {
      "IntegrationResponses": [
       {
@@ -81,13 +78,39 @@
      {
       "StatusCode": "201"
      }
-    ]
+    ],
+    "ResourceId": {
+     "Ref": "IntegApi1IntegApi201itemsE127EEB1"
+    },
+    "RestApiId": {
+     "Ref": "IntegApi1IntegApi2018FAD77E9"
+    }
    }
   },
   "IntegApi1IntegApi201GET725FD00E": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
+    "AuthorizationType": "NONE",
     "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseTemplates": {
+        "application/json": "{\"message\":\"Hello, world\"}"
+       },
+       "StatusCode": "201"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 201 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "StatusCode": "201"
+     }
+    ],
     "ResourceId": {
      "Fn::GetAtt": [
       "IntegApi1IntegApi2018FAD77E9",
@@ -96,27 +119,7 @@
     },
     "RestApiId": {
      "Ref": "IntegApi1IntegApi2018FAD77E9"
-    },
-    "AuthorizationType": "NONE",
-    "Integration": {
-     "IntegrationResponses": [
-      {
-       "ResponseTemplates": {
-        "application/json": "{\"message\":\"Hello, world\"}"
-       },
-       "StatusCode": "201"
-      }
-     ],
-     "RequestTemplates": {
-      "application/json": "{ statusCode: 201 }"
-     },
-     "Type": "MOCK"
-    },
-    "MethodResponses": [
-     {
-      "StatusCode": "201"
-     }
-    ]
+    }
    }
   },
   "IntegApi2IntegApi202F39817F4": {
@@ -133,25 +136,28 @@
   "IntegApi2IntegApi202Deployment16A1A56Af8137e7222475e5a9ac210201aa96737": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "IntegApi2IntegApi202F39817F4"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "IntegApi2IntegApi202GETA6A9E1FD",
     "IntegApi2IntegApi202itemsGET3C1B2802",
     "IntegApi2IntegApi202items6625F7BA"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "IntegApi2IntegApi202DeploymentStageprod9500285C": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "IntegApi2IntegApi202F39817F4"
-    },
     "DeploymentId": {
      "Ref": "IntegApi2IntegApi202Deployment16A1A56Af8137e7222475e5a9ac210201aa96737"
+    },
+    "RestApiId": {
+     "Ref": "IntegApi2IntegApi202F39817F4"
     },
     "StageName": "prod"
    }
@@ -174,14 +180,8 @@
   "IntegApi2IntegApi202itemsGET3C1B2802": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "GET",
-    "ResourceId": {
-     "Ref": "IntegApi2IntegApi202items6625F7BA"
-    },
-    "RestApiId": {
-     "Ref": "IntegApi2IntegApi202F39817F4"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
     "Integration": {
      "IntegrationResponses": [
       {
@@ -200,13 +200,39 @@
      {
       "StatusCode": "202"
      }
-    ]
+    ],
+    "ResourceId": {
+     "Ref": "IntegApi2IntegApi202items6625F7BA"
+    },
+    "RestApiId": {
+     "Ref": "IntegApi2IntegApi202F39817F4"
+    }
    }
   },
   "IntegApi2IntegApi202GETA6A9E1FD": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
+    "AuthorizationType": "NONE",
     "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseTemplates": {
+        "application/json": "{\"message\":\"Hello, world\"}"
+       },
+       "StatusCode": "202"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 202 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "StatusCode": "202"
+     }
+    ],
     "ResourceId": {
      "Fn::GetAtt": [
       "IntegApi2IntegApi202F39817F4",
@@ -215,27 +241,7 @@
     },
     "RestApiId": {
      "Ref": "IntegApi2IntegApi202F39817F4"
-    },
-    "AuthorizationType": "NONE",
-    "Integration": {
-     "IntegrationResponses": [
-      {
-       "ResponseTemplates": {
-        "application/json": "{\"message\":\"Hello, world\"}"
-       },
-       "StatusCode": "202"
-      }
-     ],
-     "RequestTemplates": {
-      "application/json": "{ statusCode: 202 }"
-     },
-     "Type": "MOCK"
-    },
-    "MethodResponses": [
-     {
-      "StatusCode": "202"
-     }
-    ]
+    }
    }
   },
   "IntegDomain624DF323": {
@@ -268,10 +274,10 @@
   "IntegDomainMapordersintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3E1F08DBEE": {
    "Type": "AWS::ApiGateway::BasePathMapping",
    "Properties": {
+    "BasePath": "orders",
     "DomainName": {
      "Ref": "IntegDomain624DF323"
     },
-    "BasePath": "orders",
     "RestApiId": {
      "Ref": "IntegApi1IntegApi2018FAD77E9"
     },
@@ -286,13 +292,13 @@
     "ApiId": {
      "Ref": "IntegApi2IntegApi202F39817F4"
     },
+    "ApiMappingKey": "orders/v2",
     "DomainName": {
      "Ref": "IntegDomain624DF323"
     },
     "Stage": {
      "Ref": "IntegApi2IntegApi202DeploymentStageprod9500285C"
-    },
-    "ApiMappingKey": "orders/v2"
+    }
    }
   },
   "IntegDomainMapordersv1integapigwdomainnamemappingIntegApi1IntegApi201DeploymentStageprod556D59765598DA9A": {
@@ -301,20 +307,18 @@
     "ApiId": {
      "Ref": "IntegApi1IntegApi2018FAD77E9"
     },
+    "ApiMappingKey": "orders/v1",
     "DomainName": {
      "Ref": "IntegDomain624DF323"
     },
     "Stage": {
      "Ref": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
-    },
-    "ApiMappingKey": "orders/v1"
+    }
    }
   },
   "IntegDomainRecord": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
-    "Name": "*.example.com",
-    "Type": "A",
     "AliasTarget": {
      "DNSName": {
       "Fn::GetAtt": [
@@ -329,7 +333,9 @@
       ]
      }
     },
-    "HostedZoneId": "Z23ABC4XYZL05B"
+    "HostedZoneId": "Z23ABC4XYZL05B",
+    "Name": "*.example.com",
+    "Type": "A"
    }
   },
   "Integ2Domain70CCEA68": {
@@ -348,10 +354,10 @@
   "Integ2DomainMapordersintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3E604CCBD9": {
    "Type": "AWS::ApiGateway::BasePathMapping",
    "Properties": {
+    "BasePath": "orders",
     "DomainName": {
      "Ref": "Integ2Domain70CCEA68"
     },
-    "BasePath": "orders",
     "RestApiId": {
      "Ref": "IntegApi1IntegApi2018FAD77E9"
     },
@@ -366,20 +372,18 @@
     "ApiId": {
      "Ref": "IntegApi2IntegApi202F39817F4"
     },
+    "ApiMappingKey": "orders/v2",
     "DomainName": {
      "Ref": "Integ2Domain70CCEA68"
     },
     "Stage": {
      "Ref": "IntegApi2IntegApi202DeploymentStageprod9500285C"
-    },
-    "ApiMappingKey": "orders/v2"
+    }
    }
   },
   "Integ2DomainRecord": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
-    "Name": "another-*.example.com",
-    "Type": "A",
     "AliasTarget": {
      "DNSName": {
       "Fn::GetAtt": [
@@ -394,7 +398,9 @@
       ]
      }
     },
-    "HostedZoneId": "Z23ABC4XYZL05B"
+    "HostedZoneId": "Z23ABC4XYZL05B",
+    "Name": "another-*.example.com",
+    "Type": "A"
    }
   },
   "Integ3DomainE531FBAB": {
@@ -427,10 +433,10 @@
   "Integ3DomainMapv2integapigwdomainnamemappingIntegApi2IntegApi20289438F2BD839069D": {
    "Type": "AWS::ApiGateway::BasePathMapping",
    "Properties": {
+    "BasePath": "v2",
     "DomainName": {
      "Ref": "Integ3DomainE531FBAB"
     },
-    "BasePath": "v2",
     "RestApiId": {
      "Ref": "IntegApi2IntegApi202F39817F4"
     },
@@ -442,8 +448,6 @@
   "Integ3DomainRecord": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
-    "Name": "yet-another-*.example.com",
-    "Type": "A",
     "AliasTarget": {
      "DNSName": {
       "Fn::GetAtt": [
@@ -458,7 +462,9 @@
       ]
      }
     },
-    "HostedZoneId": "Z23ABC4XYZL05B"
+    "HostedZoneId": "Z23ABC4XYZL05B",
+    "Name": "yet-another-*.example.com",
+    "Type": "A"
    }
   }
  },

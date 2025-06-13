@@ -226,6 +226,9 @@
     "FunctionName": {
      "Ref": "MyLambdaCCE802FB"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   }
  },

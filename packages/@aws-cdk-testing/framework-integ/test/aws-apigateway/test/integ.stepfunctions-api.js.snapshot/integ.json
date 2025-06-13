@@ -1,5 +1,5 @@
 {
-  "version": "30.0.0",
+  "version": "44.0.0",
   "testCases": {
     "step-functions-restapi/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "step-functions-restapi/DefaultTest/DeployAssert",
       "assertionStackName": "stepfunctionsrestapiDefaultTestDeployAssert53C3797F"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

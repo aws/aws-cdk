@@ -1,3 +1,4 @@
+import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
 import { Construct } from 'constructs';
 import { CfnDeployment } from './apigateway.generated';
 import { Method } from './method';
@@ -97,6 +98,7 @@ export class Deployment extends Resource {
       restApi: props.api,
       stageName: props.stageName,
     });
+    this.resource.addMetadata(ArtifactMetadataEntryType.DO_NOT_REFACTOR, true);
 
     if (props.retainDeployments) {
       this.resource.applyRemovalPolicy(RemovalPolicy.RETAIN);

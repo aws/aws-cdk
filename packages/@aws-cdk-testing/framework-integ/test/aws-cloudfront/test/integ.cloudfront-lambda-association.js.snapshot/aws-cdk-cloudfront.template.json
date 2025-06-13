@@ -64,6 +64,9 @@
     "FunctionName": {
      "Ref": "LambdaD247545B"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "MyDistributionCFDistributionDE147309": {
