@@ -1,7 +1,8 @@
 {
-  "version": "38.0.1",
+  "version": "44.0.0",
   "files": {
-    "f692d0500df97f81556e1e1627880690167cd1d83aecfb1f9c16ed86c73797f9": {
+    "d23f2f4ebbc5c369641a666bffd6b7b281434d750e1115d2aa6c10edf7b4b6f7": {
+      "displayName": "integ-customize-roles-restapi Template",
       "source": {
         "path": "integ-customize-roles-restapi.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f692d0500df97f81556e1e1627880690167cd1d83aecfb1f9c16ed86c73797f9.json",
+          "objectKey": "d23f2f4ebbc5c369641a666bffd6b7b281434d750e1115d2aa6c10edf7b4b6f7.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

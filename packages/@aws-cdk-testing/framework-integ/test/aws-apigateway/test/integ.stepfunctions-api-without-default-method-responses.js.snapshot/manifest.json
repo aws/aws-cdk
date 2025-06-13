@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "SfnRestApiWithoutDefaultMethodResponses.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c620c2b41560455e78429a8f5815c6e31bfc885931c79997531b8eaefcb3a767.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/be7579fcee3d43a5509f2053dde36067624f434771c914a4c7841c2281c0fc1b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,32 @@
         "SfnRestApiWithoutDefaultMethodResponses.assets"
       ],
       "metadata": {
+        "/SfnRestApiWithoutDefaultMethodResponses/StateMachine": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "definition": "*",
+              "stateMachineType": "EXPRESS"
+            }
+          }
+        ],
+        "/SfnRestApiWithoutDefaultMethodResponses/StateMachine/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/SfnRestApiWithoutDefaultMethodResponses/StateMachine/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/SfnRestApiWithoutDefaultMethodResponses/StateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -46,16 +72,58 @@
             "data": "StateMachine2E01A3A5"
           }
         ],
+        "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "stateMachine": "*",
+              "useDefaultMethodResponses": false
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "stateMachine": "*",
+              "useDefaultMethodResponses": false
+            }
+          }
+        ],
         "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StepFunctionsRestApiC6E3E883"
           }
         ],
+        "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StepFunctionsRestApiDeployment8FF8D52A481e2c6fad35132b46721c49969398fb"
+          }
+        ],
+        "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/DeploymentStage.prod/Resource": [
@@ -70,10 +138,98 @@
             "data": "StepFunctionsRestApiEndpoint0DD66FCB"
           }
         ],
+        "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/Default/ANY": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          }
+        ],
+        "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/Default/ANY/StartSyncExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/Default/ANY/StartSyncExecutionRole/ImportStartSyncExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/Default/ANY/StartSyncExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StepFunctionsRestApiANYStartSyncExecutionRole425C03BB"
+          }
+        ],
+        "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/Default/ANY/StartSyncExecutionRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/Default/ANY/StartSyncExecutionRole/DefaultPolicy/Resource": [
@@ -163,5 +319,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

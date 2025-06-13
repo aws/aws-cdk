@@ -53,6 +53,9 @@
     "RestApiId": {
      "Ref": "MySpecRestApiFB7DB2AB"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "MySpecRestApiDeploymentStageprod8522A503": {

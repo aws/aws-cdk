@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "44.0.0",
   "testCases": {
     "integ.current-version": {
       "stacks": [
@@ -10,5 +10,6 @@
     }
   },
   "synthContext": {},
-  "enableLookups": false
+  "enableLookups": false,
+  "minimumCliVersion": "2.1018.0"
 }

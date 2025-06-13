@@ -95,7 +95,10 @@
     "RestApibooksfictionGETE32E77E7",
     "RestApibooksfictionA7F01220",
     "RestApibooksA2500ABD"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "RestApiDeploymentStageprod3855DE66": {
    "Type": "AWS::ApiGateway::Stage",

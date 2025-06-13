@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "integtest-restapi-with-authorizer-and-proxy.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c4f42381397a6248d2aa072f909f526fe197fd78e8fcda7b8ba12c3c86ee4502.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/762aba1cbee123ad0ed7732f4b45fc43ccdc60bd05263614cd42bc1faef2c326.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,22 @@
         "integtest-restapi-with-authorizer-and-proxy.assets"
       ],
       "metadata": {
+        "/integtest-restapi-with-authorizer-and-proxy/UserPool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integtest-restapi-with-authorizer-and-proxy/UserPool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "UserPool6BA7E5F2"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Authorizer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integtest-restapi-with-authorizer-and-proxy/Authorizer/Resource": [
@@ -46,16 +58,93 @@
             "data": "AuthorizerBD825682"
           }
         ],
+        "/integtest-restapi-with-authorizer-and-proxy/CdkTestStack": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "defaultMethodOptions": {
+                "authorizer": "*",
+                "authorizationScopes": "*"
+              }
+            }
+          }
+        ],
         "/integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkTestStack0AE13CA5"
           }
         ],
+        "/integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkTestStackDeployment201712E9c8d53ab4e4cdcaa7ab0f70bb7f6ce970"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/CdkTestStack/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/integtest-restapi-with-authorizer-and-proxy/CdkTestStack/DeploymentStage.prod/Resource": [
@@ -70,10 +159,36 @@
             "data": "CdkTestStackEndpoint7DDDB759"
           }
         ],
+        "/integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default/user": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
+          }
+        ],
         "/integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default/user/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkTestStackuser7876F2D4"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default/user/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default/user/GET/Resource": [
@@ -82,10 +197,32 @@
             "data": "CdkTestStackuserGET1317379E"
           }
         ],
+        "/integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default/other": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
+          }
+        ],
         "/integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default/other/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkTestStackother6044D106"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default/other/POST": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "authorizationScopes": "*"
+              }
+            }
           }
         ],
         "/integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default/other/POST/Resource": [
@@ -163,5 +300,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

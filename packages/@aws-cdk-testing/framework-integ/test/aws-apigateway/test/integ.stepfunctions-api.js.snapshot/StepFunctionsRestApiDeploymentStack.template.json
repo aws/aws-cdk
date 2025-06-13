@@ -20,13 +20,13 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
+    "DefinitionString": "{\"StartAt\":\"PassTask\",\"States\":{\"PassTask\":{\"Type\":\"Pass\",\"Result\":\"Hello\",\"End\":true}}}",
     "RoleArn": {
      "Fn::GetAtt": [
       "StateMachineRoleB840431D",
       "Arn"
      ]
     },
-    "DefinitionString": "{\"StartAt\":\"PassTask\",\"States\":{\"PassTask\":{\"Type\":\"Pass\",\"Result\":\"Hello\",\"End\":true}}}",
     "StateMachineType": "EXPRESS"
    },
    "DependsOn": [
@@ -133,17 +133,8 @@
   "StepFunctionsRestApiANY7699CA92": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "ANY",
-    "ResourceId": {
-     "Fn::GetAtt": [
-      "StepFunctionsRestApiC6E3E883",
-      "RootResourceId"
-     ]
-    },
-    "RestApiId": {
-     "Ref": "StepFunctionsRestApiC6E3E883"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
     "Integration": {
      "Credentials": {
       "Fn::GetAtt": [
@@ -226,7 +217,16 @@
       },
       "StatusCode": "500"
      }
-    ]
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "StepFunctionsRestApiC6E3E883",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "StepFunctionsRestApiC6E3E883"
+    }
    }
   },
   "deployment33381975b5dafda9a97138f301ea25da405640e8": {
@@ -238,16 +238,19 @@
    },
    "DependsOn": [
     "StepFunctionsRestApiANY7699CA92"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "stage0661E4AC": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "StepFunctionsRestApiC6E3E883"
-    },
     "DeploymentId": {
      "Ref": "deployment33381975b5dafda9a97138f301ea25da405640e8"
+    },
+    "RestApiId": {
+     "Ref": "StepFunctionsRestApiC6E3E883"
     },
     "StageName": "prod"
    },

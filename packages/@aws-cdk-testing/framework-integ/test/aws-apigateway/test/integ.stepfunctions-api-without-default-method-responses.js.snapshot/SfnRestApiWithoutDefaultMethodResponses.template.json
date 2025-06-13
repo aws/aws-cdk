@@ -51,7 +51,10 @@
    },
    "DependsOn": [
     "StepFunctionsRestApiANY7699CA92"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "StepFunctionsRestApiDeploymentStageprodE1E3545E": {
    "Type": "AWS::ApiGateway::Stage",

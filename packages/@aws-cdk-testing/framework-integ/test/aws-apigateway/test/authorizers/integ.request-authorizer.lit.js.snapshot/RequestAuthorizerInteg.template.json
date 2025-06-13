@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "32958f9442f31389bed730b768bd21f066c7343a5d0e87b9cad92b365e9d3c37.zip"
+     "S3Key": "97aa803a04c812199731bb7640e5bd53e895f702200e9f6f2e65ed793f0e02fe.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -202,7 +202,10 @@
     "MyRestApiauthANY12A3CAB7",
     "MyRestApiauth918A22B9",
     "MySecondAuthorizer25A69B96"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "MyRestApiDeploymentStageprodC33B8E5F": {
    "Type": "AWS::ApiGateway::Stage",

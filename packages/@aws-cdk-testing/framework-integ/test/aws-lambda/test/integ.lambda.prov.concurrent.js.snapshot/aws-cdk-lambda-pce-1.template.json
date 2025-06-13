@@ -79,6 +79,9 @@
     "FunctionName": {
      "Ref": "MyLambdaAliasPCED0B8D751"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "Alias325C5727": {
@@ -191,6 +194,9 @@
     "ProvisionedConcurrencyConfig": {
      "ProvisionedConcurrentExecutions": 5
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "Alias29455D932": {

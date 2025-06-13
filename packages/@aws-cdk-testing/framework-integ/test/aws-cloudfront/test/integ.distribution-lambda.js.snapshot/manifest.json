@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "integ-distribution-lambda.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/us-east-1",
       "properties": {
         "templateFile": "integ-distribution-lambda.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/3479f31cafdeabdfef19e8c510db3393a4f726d8f9bd285808047e53c7a051e6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/b344cff20ddc7206aa2fafc6eca162caa7db76d6471d1fb9d336efc5f834d792.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,38 @@
         "integ-distribution-lambda.assets"
       ],
       "metadata": {
+        "/integ-distribution-lambda/Lambda": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/integ-distribution-lambda/Lambda/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-distribution-lambda/Lambda/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-distribution-lambda/Lambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -45,10 +78,37 @@
             "data": "LambdaD247545B"
           }
         ],
+        "/integ-distribution-lambda/Lambda/CurrentVersion": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "lambda": "*"
+            }
+          }
+        ],
         "/integ-distribution-lambda/Lambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05"
+          }
+        ],
+        "/integ-distribution-lambda/Dist": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "defaultBehavior": {
+                "origin": "*",
+                "cachePolicy": {
+                  "cachePolicyId": "*"
+                },
+                "edgeLambdas": [
+                  {
+                    "functionVersion": "*",
+                    "eventType": "origin-request"
+                  }
+                ]
+              }
+            }
           }
         ],
         "/integ-distribution-lambda/Dist/Resource": [
@@ -68,15 +128,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "LambdaCurrentVersionDF706F6A4a4114aafbc0b051484aa55344a7be37": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaCurrentVersionDF706F6A4a4114aafbc0b051484aa55344a7be37",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "integ-distribution-lambda"
@@ -87,5 +138,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

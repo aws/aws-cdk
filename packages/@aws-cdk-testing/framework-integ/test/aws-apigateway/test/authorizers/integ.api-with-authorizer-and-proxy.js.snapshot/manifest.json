@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "integtest-restapi-with-authorizer-and-proxy.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e00a1a9e901bbc68cea042ffc2c9166791d0859b52adda8cf66c7feed6974f3f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d4c346ade68300fe2cf7e1c962dc40ed3feed98e7e0b27434b58f6f483b3bbf3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,27 @@
         "integtest-restapi-with-authorizer-and-proxy.assets"
       ],
       "metadata": {
+        "/integtest-restapi-with-authorizer-and-proxy/UserPool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "selfSignUpEnabled": true,
+              "signInAliases": {
+                "email": true
+              }
+            }
+          }
+        ],
         "/integtest-restapi-with-authorizer-and-proxy/UserPool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "UserPool6BA7E5F2"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Authorizer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integtest-restapi-with-authorizer-and-proxy/Authorizer/Resource": [
@@ -46,16 +63,101 @@
             "data": "AuthorizerBD825682"
           }
         ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "defaultCorsPreflightOptions": {
+                "allowOrigins": "*",
+                "maxAge": "*"
+              }
+            }
+          }
+        ],
         "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ActionsApiGatewayF80386B7"
           }
         ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ActionsApiGatewayDeployment50B6E6A6b044ca25daae592efce60035930152bc"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/DeploymentStage.prod/Resource": [
@@ -70,10 +172,60 @@
             "data": "ActionsApiGatewayEndpoint261B645B"
           }
         ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/OPTIONS": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "authorizer": {
+                  "authorizerId": "*",
+                  "authorizationType": "*"
+                },
+                "apiKeyRequired": false,
+                "authorizationType": "*",
+                "methodResponses": [
+                  {
+                    "statusCode": "*",
+                    "responseParameters": "*"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*",
+                  "responseParameters": "*"
+                }
+              ]
+            }
+          }
+        ],
         "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/OPTIONS/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ActionsApiGatewayOPTIONS8EA1F997"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
           }
         ],
         "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/Resource": [
@@ -82,10 +234,105 @@
             "data": "ActionsApiGatewayInitiateActionA216DA07"
           }
         ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/OPTIONS": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "authorizer": {
+                  "authorizerId": "*",
+                  "authorizationType": "*"
+                },
+                "apiKeyRequired": false,
+                "authorizationType": "*",
+                "methodResponses": [
+                  {
+                    "statusCode": "*",
+                    "responseParameters": "*"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*",
+                  "responseParameters": "*"
+                }
+              ]
+            }
+          }
+        ],
         "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/OPTIONS/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ActionsApiGatewayInitiateActionOPTIONS675242EA"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "defaultIntegration": "*",
+              "defaultMethodOptions": {
+                "authorizer": "*",
+                "authorizationScopes": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethod": [
+                "*",
+                {},
+                {
+                  "authorizer": {
+                    "authorizerId": "*",
+                    "authorizationType": "*"
+                  },
+                  "apiKeyRequired": false,
+                  "authorizationType": "*",
+                  "methodResponses": [
+                    {
+                      "statusCode": "*",
+                      "responseParameters": "*"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "defaultIntegration": "*",
+              "anyMethod": true,
+              "defaultMethodOptions": {
+                "authorizer": "*",
+                "authorizationScopes": "*"
+              },
+              "defaultCorsPreflightOptions": {
+                "allowOrigins": "*",
+                "allowMethods": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethod": [
+                "*"
+              ]
+            }
           }
         ],
         "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/Resource": [
@@ -94,10 +341,60 @@
             "data": "ActionsApiGatewayInitiateActionproxyDD433460"
           }
         ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/OPTIONS": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "authorizer": {
+                  "authorizerId": "*",
+                  "authorizationType": "*"
+                },
+                "apiKeyRequired": false,
+                "authorizationType": "*",
+                "methodResponses": [
+                  {
+                    "statusCode": "*",
+                    "responseParameters": "*"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "'AuthorizationScopes' can only be set when 'AuthorizationType' sets 'COGNITO_USER_POOLS'. Default to ignore the values set in 'AuthorizationScopes'. [ack: @aws-cdk/aws-apigateway:invalidAuthScope]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*",
+                  "responseParameters": "*"
+                }
+              ]
+            }
+          }
+        ],
         "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/OPTIONS/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ActionsApiGatewayInitiateActionproxyOPTIONS041B022A"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/ANY": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/ANY/ApiPermission.integtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065.ANY..InitiateAction.{proxy+}": [
@@ -116,6 +413,38 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ActionsApiGatewayInitiateActionproxyANY14A167E2"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/lambda-s3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/lambda-s3/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/lambda-s3/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integtest-restapi-with-authorizer-and-proxy/lambda-s3/ServiceRole/Resource": [
@@ -199,5 +528,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

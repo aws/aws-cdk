@@ -58,23 +58,26 @@
   "myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "myapi4C7BF186"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "myapiGETF990CE3C"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "myapiDeploymentStageprod298F01AF": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "myapi4C7BF186"
-    },
     "DeploymentId": {
      "Ref": "myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a"
+    },
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
     },
     "StageName": "prod"
    },
@@ -85,7 +88,11 @@
   "myapiGETF990CE3C": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
+    "AuthorizationType": "NONE",
     "HttpMethod": "GET",
+    "Integration": {
+     "Type": "MOCK"
+    },
     "ResourceId": {
      "Fn::GetAtt": [
       "myapi4C7BF186",
@@ -94,10 +101,6 @@
     },
     "RestApiId": {
      "Ref": "myapi4C7BF186"
-    },
-    "AuthorizationType": "NONE",
-    "Integration": {
-     "Type": "MOCK"
     }
    }
   }

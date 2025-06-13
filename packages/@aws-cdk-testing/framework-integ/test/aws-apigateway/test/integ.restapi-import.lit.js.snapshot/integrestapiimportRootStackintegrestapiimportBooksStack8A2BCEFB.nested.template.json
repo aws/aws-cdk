@@ -15,14 +15,8 @@
   "RestApibooksGET46F66C0A": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "GET",
-    "ResourceId": {
-     "Ref": "RestApibooksA2500ABD"
-    },
-    "RestApiId": {
-     "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
     "Integration": {
      "IntegrationResponses": [
       {
@@ -39,7 +33,13 @@
      {
       "StatusCode": "200"
      }
-    ]
+    ],
+    "ResourceId": {
+     "Ref": "RestApibooksA2500ABD"
+    },
+    "RestApiId": {
+     "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
+    }
    }
   }
  },
