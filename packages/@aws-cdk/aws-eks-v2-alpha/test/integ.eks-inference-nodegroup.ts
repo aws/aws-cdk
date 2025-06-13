@@ -3,7 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as eks from '../lib';
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 class EksClusterInferenceStack extends Stack {
@@ -15,9 +15,9 @@ class EksClusterInferenceStack extends Stack {
 
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
-      version: eks.KubernetesVersion.V1_32,
+      version: eks.KubernetesVersion.V1_33,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),
       },
       albController: {
         version: eks.AlbControllerVersion.V2_8_2,
@@ -27,10 +27,14 @@ class EksClusterInferenceStack extends Stack {
 
     cluster.addNodegroupCapacity('InferenceInstances', {
       instanceTypes: [new ec2.InstanceType('inf1.2xlarge')],
+      amiType: eks.NodegroupAmiType.AL2023_X86_64_NEURON,
+      minSize: 1,
     });
 
     cluster.addNodegroupCapacity('Inference2Instances', {
       instanceTypes: [new ec2.InstanceType('inf2.xlarge')],
+      amiType: eks.NodegroupAmiType.AL2023_X86_64_NEURON,
+      minSize: 1,
     });
   }
 }
