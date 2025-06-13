@@ -60,6 +60,9 @@
     "RestApiId": {
      "Ref": "RestApi0C43BF4B"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "RestApiDeploymentStageprod3855DE66": {

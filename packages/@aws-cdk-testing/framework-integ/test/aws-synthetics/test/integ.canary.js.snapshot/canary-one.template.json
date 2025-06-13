@@ -166,7 +166,10 @@
    },
    "DependsOn": [
     "ApiGatewayGET25EBFEA3"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "ApiGatewayDeploymentStageprod1C6D5CD6": {
    "Type": "AWS::ApiGateway::Stage",
