@@ -110,18 +110,37 @@ interface Node {
 
 export interface TreeFile {
   version: 'tree-0.1';
+  /**
+   * The tree in this file
+   */
   tree: TreeNode;
+}
+
+export interface ForestFileActual {
+  version: 'forest-0.1';
+
+  /**
+   * Map of trees in the forest file
+   *
+   * The key is the tree ID, and the value is the tree node.
+   */
+  forest: Record<string, TreeNode>;
 }
 
 type TreeNode = Node | SubTreeReference;
 
 /**
- * A reference to a node that is stored in an entirely different tree.json file
+ * A reference to a node that is stored in a different tree.json file
  */
 interface SubTreeReference {
   readonly id: string;
   readonly path: string;
   readonly fileName: string;
+  /**
+   * The ID of the tree within the forest file
+   * If not provided, refers to the main tree in the file (backward compatibility)
+   */
+  readonly treeId?: string;
 }
 
 /**
@@ -149,6 +168,9 @@ interface SubTreeReference {
  * file (490 bytes/node). We'll estimate the size of a node to be 1000 bytes.
  */
 class FragmentedTreeWriter {
+  /**
+   * All trees in the forest
+   */
   private readonly forest = new Array<Tree>();
 
   /**
@@ -166,21 +188,60 @@ class FragmentedTreeWriter {
    */
   private readonly parent = new Map<Node, Node>();
 
+  /**
+   * Map of filename to ForestFile
+   *
+   * Each ForestFile can contain multiple trees
+   */
+  private readonly forestFiles = new Map<string, ForestFile>();
+
   private readonly maxNodes: number;
 
   private subtreeCtr = 1;
+  private treeIdCtr = 1;
 
   constructor(private readonly outdir: string, private readonly rootFilename: string, options?: FragmentedTreeWriterOptions) {
     this.maxNodes = options?.maxNodesPerTree ?? 500_000;
+
+    // Initialize the root forest file
+    this.forestFiles.set(this.rootFilename, {
+      filename: this.rootFilename,
+      trees: new Map(),
+      totalNodes: 0,
+    });
   }
 
   /**
    * Write the forest to disk, return the root file name
    */
   public writeForest(): string {
-    for (const tree of this.forest) {
-      const treeFile: TreeFile = { version: 'tree-0.1', tree: tree.root };
-      fs.writeFileSync(path.join(this.outdir, tree.filename), JSON.stringify(treeFile), { encoding: 'utf-8' });
+    // Write each forest file
+    for (const forestFile of this.forestFiles.values()) {
+      // The first tree in each file is the main tree for backward compatibility
+      const mainTree = forestFile.trees.values().next().value?.root;
+
+      // Create the forest file structure
+      const treeFile: TreeFile = {
+        version: 'tree-0.1',
+        tree: mainTree || { id: 'empty', path: '' }, // Fallback for empty files
+      };
+
+      // Add additional trees to the forest property if there are any
+      if (forestFile.trees.size > 1) {
+        treeFile.forest = {};
+
+        // Skip the first tree (already in the 'tree' property)
+        let isFirst = true;
+        for (const [treeId, tree] of forestFile.trees.entries()) {
+          if (isFirst) {
+            isFirst = false;
+            continue;
+          }
+          treeFile.forest[treeId] = tree.root;
+        }
+      }
+
+      fs.writeFileSync(path.join(this.outdir, forestFile.filename), JSON.stringify(treeFile), { encoding: 'utf-8' });
     }
 
     return this.rootFilename;
@@ -214,11 +275,43 @@ class FragmentedTreeWriter {
    * Add a new tree with the given Node as root
    */
   private addNewTree(root: Node, filename: string): Tree {
+    const nodeSize = nodeCount(root);
+    const treeId = `tree-${this.treeIdCtr++}`;
+
+    // Get or create the forest file
+    let forestFile = this.forestFiles.get(filename);
+    if (!forestFile) {
+      forestFile = {
+        filename,
+        trees: new Map(),
+        totalNodes: 0,
+      };
+      this.forestFiles.set(filename, forestFile);
+    }
+
+    // If this forest file would exceed the max nodes, create a new one
+    if (forestFile.totalNodes + nodeSize > this.maxNodes && forestFile.trees.size > 0) {
+      const newFilename = `tree-${this.subtreeCtr++}.json`;
+      forestFile = {
+        filename: newFilename,
+        trees: new Map(),
+        totalNodes: 0,
+      };
+      this.forestFiles.set(newFilename, forestFile);
+      filename = newFilename;
+    }
+
+    // Create the tree
     const tree: Tree = {
       root,
       filename,
-      nodes: nodeCount(root),
+      treeId: forestFile.trees.size === 0 ? undefined : treeId, // First tree in file doesn't need ID
+      nodes: nodeSize,
     };
+
+    // Add to forest file and update node count
+    forestFile.trees.set(tree.treeId || 'main', tree);
+    forestFile.totalNodes += nodeSize;
 
     this.forest.push(tree);
     this.subtreeRoots.set(root, tree);
@@ -237,16 +330,36 @@ class FragmentedTreeWriter {
       // parent node in the original tree to a subtreereference.
       const grandParent = this.parent.get(parent);
       if (!grandParent) {
+        // Special case for the root node - we can't split it further
+        if (parent.id === 'App' && parent.path === '') {
+          // Just add the node to the existing tree even though it's full
+          setChild(parent, node);
+          this.parent.set(node, parent);
+          tree.nodes += 1;
+
+          // Update the forest file's total node count
+          const forestFile = this.forestFiles.get(tree.filename);
+          if (forestFile) {
+            forestFile.totalNodes += 1;
+          }
+          return;
+        }
         throw new AssumptionError(`Could not find parent of ${JSON.stringify(parent)}`);
       }
 
+      // Find a forest file that can accommodate this subtree
+      // or create a new one if necessary
       tree = this.addNewTree(parent, `tree-${this.subtreeCtr++}.json`);
 
-      setChild(grandParent, {
+      // Create a reference to the subtree
+      const reference: SubTreeReference = {
         id: parent.id,
         path: parent.path,
         fileName: tree.filename,
-      } satisfies SubTreeReference);
+        ...(tree.treeId ? { treeId: tree.treeId } : {}),
+      };
+
+      setChild(grandParent, reference);
 
       // To be strictly correct we should decrease the original tree's nodeCount here, because
       // we may have moved away any number of children as well. We don't do that; the tree
@@ -260,6 +373,12 @@ class FragmentedTreeWriter {
     setChild(parent, node);
     this.parent.set(node, parent);
     tree.nodes += 1;
+
+    // Update the forest file's total node count
+    const forestFile = this.forestFiles.get(tree.filename);
+    if (forestFile) {
+      forestFile.totalNodes += 1;
+    }
   }
 
   /**
@@ -288,6 +407,27 @@ class FragmentedTreeWriter {
     }
     throw new AssumptionError(`Could not find tree for node: ${JSON.stringify(node)}, tried ${tried}, ${Array.from(this.subtreeRoots).map(([k, v]) => `${k.path} => ${v.filename}`)}`);
   }
+}
+
+/**
+ * A forest file containing multiple trees
+ */
+interface ForestFile {
+  /**
+   * The filename of this forest file
+   */
+  filename: string;
+
+  /**
+   * Map of tree ID to Tree
+   * The first tree in the map is the main tree (for backward compatibility)
+   */
+  trees: Map<string, Tree>;
+
+  /**
+   * Total number of nodes across all trees in this forest file
+   */
+  totalNodes: number;
 }
 
 function nodeCount(root: Node) {
@@ -335,12 +475,32 @@ interface Tree {
   filename: string;
 
   /**
+   * The ID of this tree within the forest file
+   * Undefined for the main tree in a file (for backward compatibility)
+   */
+  treeId?: string;
+
+  /**
    * How many nodes are in this tree already
    */
   nodes: number;
 }
 
-export function isSubtreeReference(x: TreeFile['tree']): x is Extract<TreeFile['tree'], { fileName: string }> {
+export function isSubtreeReference(x: TreeFile['tree'] | TreeNode): x is Extract<TreeFile['tree'], { fileName: string }> {
   return !!(x as any).fileName;
+}
+
+/**
+ * Get a tree node from a forest file
+ * @param file The forest file
+ * @param treeId Optional tree ID within the forest
+ * @returns The tree node
+ */
+export function getTreeFromForest(file: ForestFileActual, treeId: string): TreeNode {
+  if (file.forest[treeId]) {
+    return file.forest[treeId];
+  }
+
+  throw new Error(`Tree with ID ${treeId} not found in forest file`);
 }
 
