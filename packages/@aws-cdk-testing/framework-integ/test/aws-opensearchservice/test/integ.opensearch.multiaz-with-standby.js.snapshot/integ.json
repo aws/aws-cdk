@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "44.0.0",
   "testCases": {
     "IntegOpenSearchMultiAzWithStandby/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "IntegOpenSearchMultiAzWithStandby/DefaultTest/DeployAssert",
       "assertionStackName": "IntegOpenSearchMultiAzWithStandbyDefaultTestDeployAssertFD2E7982"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
