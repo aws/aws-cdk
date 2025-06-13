@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-lambda-autoscaling.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9c2179d2e5c42d020f87609a967c82735790da815f911970ac273617d34e0df2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b5cd4061f9f1fdab8a90e980a826e770ca41bc8521961ed977ed17acd2623cfa.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,38 @@
         "aws-lambda-autoscaling.assets"
       ],
       "metadata": {
+        "/aws-lambda-autoscaling/MyLambda": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/aws-lambda-autoscaling/MyLambda/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-lambda-autoscaling/MyLambda/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-lambda-autoscaling/MyLambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -46,16 +78,112 @@
             "data": "MyLambdaCCE802FB"
           }
         ],
+        "/aws-lambda-autoscaling/MyLambda/CurrentVersion": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "lambda": "*"
+            }
+          }
+        ],
         "/aws-lambda-autoscaling/MyLambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdaCurrentVersionE7A382CCe371c9697d7882d1bd7bf42e0dece697"
           }
         ],
+        "/aws-lambda-autoscaling/Alias": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "aliasName": "*",
+              "version": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAutoScaling": [
+                {
+                  "minCapacity": "*",
+                  "maxCapacity": "*"
+                }
+              ]
+            }
+          }
+        ],
         "/aws-lambda-autoscaling/Alias/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Alias325C5727"
+          }
+        ],
+        "/aws-lambda-autoscaling/Alias/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-lambda-autoscaling/Alias/AliasScaling/Target": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "serviceNamespace": "lambda",
+              "scalableDimension": "*",
+              "resourceId": "*",
+              "role": "*",
+              "minCapacity": "*",
+              "maxCapacity": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "scaleToTrackMetric": [
+                "*",
+                {
+                  "targetValue": "*",
+                  "predefinedMetric": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "scaleOnSchedule": [
+                "*",
+                {
+                  "schedule": "*",
+                  "minCapacity": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "scaleOnSchedule": [
+                "*",
+                {
+                  "schedule": "*",
+                  "maxCapacity": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "scaleOnSchedule": [
+                "*",
+                {
+                  "schedule": "*",
+                  "startTime": "*",
+                  "maxCapacity": "*"
+                }
+              ]
+            }
           }
         ],
         "/aws-lambda-autoscaling/Alias/AliasScaling/Target/Resource": [
@@ -97,5 +225,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
