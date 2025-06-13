@@ -157,6 +157,13 @@ interface SubTreeReference {
  *     leaves in-place to a different node type will (probably) minimally change
  *     the size of the tree, whereas adding C more children that will all become
  *     references to substrees will add an unpredictable size to the tree.
+ * - Because doing this will end up with a lot of subtrees (as many as there are leaf nodes
+ *   in the trees, which is degree ^ depth), writing those all to individual files creates
+ *   A LOT of files which is undesirable for people looking at the directory. We will
+ *   accumulate subtrees into "forest" files which each hold a set of trees, identified
+ *   by a filename and a tree ID. We allocate them by first building the individual trees,
+ *   then accumulating subtrees up to a node count into forests, and then writing the
+ *   name of the forest file and the tree ID into the node that points to the subtree.
  *
  * Here's a sense of the numbers: a project with 277k nodes leads to an 136M JSON
  * file (490 bytes/node). We'll estimate the size of a node to be 1000 bytes.
