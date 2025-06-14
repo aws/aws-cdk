@@ -1,0 +1,278 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "SubnetIpamTest.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SubnetIpamTest.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SubnetIpamTest": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SubnetIpamTest.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/da9f2a0df5a0064563942052711c38151325932d5d04ce3494f86096fca6a71a.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SubnetIpamTest.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SubnetIpamTest.assets"
+      ],
+      "metadata": {
+        "/SubnetIpamTest/SubnetWithIpv4": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpcId": "*",
+              "availabilityZone": "*",
+              "cidrBlock": "*"
+            }
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpv4/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithIpv4Subnet6A3CF916"
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpv4/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithIpv4RouteTable4BEFC5CB"
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpv4/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithIpv4RouteTableAssociation6C036027"
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpv6": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpcId": "*",
+              "availabilityZone": "*",
+              "cidrBlock": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": true
+            }
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpv6/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithIpv6SubnetE6FB717A"
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpv6/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithIpv6RouteTable8155E30C"
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpv6/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithIpv6RouteTableAssociation9AE66EB7"
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpv4IpamAllocation": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpcId": "*",
+              "availabilityZone": "*"
+            }
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpv4IpamAllocation/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithIpv4IpamAllocationSubnetE344B6F8"
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpv4IpamAllocation/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithIpv4IpamAllocationRouteTable7BF0AC14"
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpv4IpamAllocation/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithIpv4IpamAllocationRouteTableAssociation52618172"
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpv6IpamAllocation": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpcId": "*",
+              "availabilityZone": "*",
+              "cidrBlock": "*",
+              "assignIpv6AddressOnCreation": true
+            }
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpv6IpamAllocation/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithIpv6IpamAllocationSubnetEBB3F93B"
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpv6IpamAllocation/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithIpv6IpamAllocationRouteTable53B4DEF0"
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpv6IpamAllocation/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithIpv6IpamAllocationRouteTableAssociation7C60B249"
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithBothIpamAllocations": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpcId": "*",
+              "availabilityZone": "*",
+              "assignIpv6AddressOnCreation": true
+            }
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithBothIpamAllocations/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithBothIpamAllocationsSubnetDE856C7E"
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithBothIpamAllocations/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithBothIpamAllocationsRouteTable68A44080"
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithBothIpamAllocations/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithBothIpamAllocationsRouteTableAssociationA03EAF59"
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpamAllocationsWithoutNetmask": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpcId": "*",
+              "availabilityZone": "*",
+              "assignIpv6AddressOnCreation": true
+            }
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpamAllocationsWithoutNetmask/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithIpamAllocationsWithoutNetmaskSubnetAA3B6850"
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpamAllocationsWithoutNetmask/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithIpamAllocationsWithoutNetmaskRouteTable4408F490"
+          }
+        ],
+        "/SubnetIpamTest/SubnetWithIpamAllocationsWithoutNetmask/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetWithIpamAllocationsWithoutNetmaskRouteTableAssociation765FABEA"
+          }
+        ],
+        "/SubnetIpamTest/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SubnetIpamTest/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SubnetIpamTest"
+    },
+    "IntegTestDefaultTestDeployAssertE3E7D2A4.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "IntegTestDefaultTestDeployAssertE3E7D2A4.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "IntegTestDefaultTestDeployAssertE3E7D2A4": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IntegTestDefaultTestDeployAssertE3E7D2A4.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "IntegTestDefaultTestDeployAssertE3E7D2A4.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "IntegTestDefaultTestDeployAssertE3E7D2A4.assets"
+      ],
+      "metadata": {
+        "/IntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/IntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "IntegTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}
