@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "44.0.0",
   "testCases": {
     "ses-configuration-set-firehose-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "ses-configuration-set-firehose-test/DefaultTest/DeployAssert",
       "assertionStackName": "sesconfigurationsetfirehosetestDefaultTestDeployAssert7BAF6085"
     }
-  }
+  },
+  "minimumCliVersion": "2.1017.1"
 }
