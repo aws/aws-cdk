@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "71d72fba66cc57b089cc87dc89b9218e8f17d9f53423c792d2126b46af25ce9c": {
+      "displayName": "cdk-instance-engine-lifecycle-support Template",
+      "source": {
+        "path": "cdk-instance-engine-lifecycle-support.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "71d72fba66cc57b089cc87dc89b9218e8f17d9f53423c792d2126b46af25ce9c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
