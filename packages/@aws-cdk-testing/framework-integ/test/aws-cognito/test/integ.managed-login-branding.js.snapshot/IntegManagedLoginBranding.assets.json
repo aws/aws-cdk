@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "0f256039451080fe117d39f17b6db245e60659fafad2de1d939f47cf22916959": {
+      "displayName": "IntegManagedLoginBranding Template",
+      "source": {
+        "path": "IntegManagedLoginBranding.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0f256039451080fe117d39f17b6db245e60659fafad2de1d939f47cf22916959.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
