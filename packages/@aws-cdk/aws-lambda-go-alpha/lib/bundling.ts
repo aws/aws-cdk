@@ -148,6 +148,7 @@ export class Bundling implements cdk.BundlingOptions {
           IMAGE: Runtime.GO_1_X.bundlingImage.image, // always use the GO_1_X build image
         },
         platform: props.architecture.dockerPlatform,
+        network: props.network,
       })
       : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
 

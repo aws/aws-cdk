@@ -3,15 +3,15 @@
   "SharedDACC02AA": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
+    "CompatibleRuntimes": [
+     "python3.13"
+    ],
     "Content": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "33674c5088a855fbd87f051a085794b3bd1bd41823d88091874d5f4f1b8ad884.zip"
-    },
-    "CompatibleRuntimes": [
-     "python3.9"
-    ]
+     "S3Key": "47b73e4768b1d0def976a8491024814dbf62a59a303acfad0c72f66317d6a44c.zip"
+    }
    }
   },
   "myhandlerServiceRole77891068": {
@@ -52,13 +52,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "708ad240e424cc18dd8b85017f9e1173ac983ddd3b387b9f4df3577ea60e4a65.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "myhandlerServiceRole77891068",
-      "Arn"
-     ]
+     "S3Key": "680ec1382df99fb7fe345ad64b6f1d8eb256c1c878e925fb94fcb730a48e3549.zip"
     },
     "Handler": "index.handler",
     "Layers": [
@@ -66,7 +60,13 @@
       "Ref": "SharedDACC02AA"
      }
     ],
-    "Runtime": "python3.9"
+    "Role": {
+     "Fn::GetAtt": [
+      "myhandlerServiceRole77891068",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.13"
    },
    "DependsOn": [
     "myhandlerServiceRole77891068"

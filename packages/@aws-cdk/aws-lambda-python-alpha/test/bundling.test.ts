@@ -31,6 +31,7 @@ test('Bundling a function without dependencies', () => {
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     architecture: Architecture.X86_64,
+    network: 'host',
   });
 
   // Correctly bundles
@@ -48,6 +49,7 @@ test('Bundling a function without dependencies', () => {
       IMAGE: expect.stringMatching(/build-python/),
     }),
     platform: 'linux/amd64',
+    network: 'host',
   }));
 
   const files = fs.readdirSync(assetCode.path);
@@ -426,7 +428,6 @@ test('Bundling with volumes from other container', () => {
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     volumesFrom: ['777f7dc92da7'],
-
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
@@ -442,7 +443,6 @@ test('Bundling with custom volume paths', () => {
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
-
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
@@ -474,7 +474,6 @@ test('Bundling with custom user', () => {
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     user: 'user:group',
-
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
@@ -490,7 +489,6 @@ test('Bundling with custom securityOpt', () => {
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     securityOpt: 'no-new-privileges',
-
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
@@ -506,7 +504,6 @@ test('Bundling with custom network', () => {
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     network: 'host',
-
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
@@ -522,7 +519,6 @@ test('Bundling with docker copy variant', () => {
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
-
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({

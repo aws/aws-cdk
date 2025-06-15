@@ -39,6 +39,7 @@ test('bundling', () => {
     environment: {
       KEY: 'value',
     },
+    network: 'host',
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(moduleDir), {
@@ -65,6 +66,7 @@ test('bundling', () => {
       IMAGE: expect.stringMatching(/build-go/),
     }),
     platform: 'linux/amd64',
+    network: 'host',
   }));
 });
 

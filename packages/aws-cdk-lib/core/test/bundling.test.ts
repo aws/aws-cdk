@@ -241,6 +241,42 @@ describe('bundling', () => {
     ])).toEqual(true);
   });
 
+  test('bundling with image from asset with network', () => {
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    const imageHash = '123456abcdef';
+    const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
+    fingerprintStub.callsFake(() => imageHash);
+    const network = 'host';
+
+    const image = DockerImage.fromBuild('docker-path', { network });
+    image.run();
+
+    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
+      path: 'docker-path',
+      network,
+    })).digest('hex');
+    const tag = `cdk-${tagHash}`;
+
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
+      'build', '-t', tag,
+      '--network', network,
+      'docker-path',
+    ])).toEqual(true);
+
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
+      'run', '--rm',
+      tag,
+    ])).toEqual(true);
+  });
+
   test('throws in case of spawnSync error', () => {
     sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
