@@ -1,0 +1,8 @@
+name: Check all requires files are in LFS
+on:
+  pull_request: {}
+
+jobs:
+  check-lfs:
+    steps:
+      - uses: MPLew-is/lfs-check-action@1.0.0
