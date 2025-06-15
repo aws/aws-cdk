@@ -1,7 +1,7 @@
 {
-  "version": "43.0.0",
+  "version": "44.0.0",
   "files": {
-    "466c40ced82d0cef4f96bcc6b029e9a5b09e17d2e2752f8eb9dbc8170130278f": {
+    "3f26856cb3340525422c0d8f0d4ff5cb7dc992a74296a2cf30c02955820bfca3": {
       "displayName": "loggroup-tag-inherit Template",
       "source": {
         "path": "loggroup-tag-inherit.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "466c40ced82d0cef4f96bcc6b029e9a5b09e17d2e2752f8eb9dbc8170130278f.json",
+          "objectKey": "3f26856cb3340525422c0d8f0d4ff5cb7dc992a74296a2cf30c02955820bfca3.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

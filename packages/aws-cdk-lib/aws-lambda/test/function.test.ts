@@ -2265,6 +2265,7 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS,
       logRetention: logs.RetentionDays.ONE_MONTH,
+      logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     // THEN
@@ -2281,6 +2282,7 @@ describe('function', () => {
         ],
       },
       RetentionInDays: 30,
+      RemovalPolicy: 'destroy',
     });
   });
 
@@ -5020,6 +5022,7 @@ describe('tag propagation to logGroup on FF USE_CDK_MANAGED_LAMBDA_LOGGROUP enab
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_20_X,
+      logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     cdk.Tags.of(fn).add('Environment', 'Test');
@@ -5027,11 +5030,15 @@ describe('tag propagation to logGroup on FF USE_CDK_MANAGED_LAMBDA_LOGGROUP enab
 
     const template = Template.fromStack(stack);
 
-    template.hasResourceProperties('AWS::Logs::LogGroup', {
-      Tags: Match.arrayWith([
-        Match.objectLike({ Key: 'Environment', Value: 'Test' }),
-        Match.objectLike({ Key: 'Owner', Value: 'CDKTeam' }),
-      ]),
+    template.hasResource('AWS::Logs::LogGroup', {
+      Properties: {
+        Tags: Match.arrayWith([
+          Match.objectLike({ Key: 'Environment', Value: 'Test' }),
+          Match.objectLike({ Key: 'Owner', Value: 'CDKTeam' }),
+        ]),
+      },
+      UpdateReplacePolicy: 'Delete',
+      DeletionPolicy: 'Delete',
     });
   });
 });

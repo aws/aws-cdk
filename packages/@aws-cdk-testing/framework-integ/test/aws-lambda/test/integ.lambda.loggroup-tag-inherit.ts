@@ -16,6 +16,7 @@ const fn = new lambda.Function(stack, 'TaggedLmbdaFunction', {
   code: lambda.Code.fromInline('exports.handler = async () => {};'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_20_X,
+  logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 // Tag the function
