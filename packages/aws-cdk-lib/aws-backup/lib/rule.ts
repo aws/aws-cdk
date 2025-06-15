@@ -45,6 +45,13 @@ export interface BackupPlanRuleProps {
   readonly scheduleExpression?: events.Schedule;
 
   /**
+   * The timezone in which the schedule expression is set.
+   *
+   * @default - UTC
+   */
+  readonly scheduleExpressionTimezone?: string;
+
+  /**
    * The duration after a backup is scheduled before a job is canceled if it doesn't start successfully.
    *
    * @default - 8 hours
