@@ -2,7 +2,7 @@ import { testFixtureCluster } from './util';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Cluster } from '../lib/cluster';
-import { renderAmazonLinuxUserData } from '../lib/user-data';
+import { renderAmazonLinux2023UserData, renderAmazonLinuxUserData } from '../lib/user-data';
 
 /* eslint-disable max-len */
 
@@ -414,6 +414,84 @@ describe('user data', () => {
         ],
       },
     );
+  });
+});
+
+describe('Amazon Linux 2023 user data', () => {
+  test('default user data', () => {
+    // GIVEN
+    const { asg, stack } = newFixtures();
+    const { cluster } = testFixtureCluster({
+      serviceIpv4Cidr: '172.20.0.0/16',
+    });
+
+    // WHEN
+    const userData = stack.resolve(renderAmazonLinux2023UserData(cluster, asg));
+
+    // THEN
+    expect(userData).toEqual([
+      {
+        'Fn::Join': [
+          '',
+          [
+            `---
+apiVersion: node.eks.aws/v1alpha1
+kind: NodeConfig
+spec:
+  cluster:
+    name: `, { Ref: 'ClusterEB0386A7' },
+            `
+    apiServerEndpoint: `, { 'Fn::GetAtt': ['ClusterEB0386A7', 'Endpoint'] },
+            `
+    certificateAuthority: `, { 'Fn::GetAtt': ['ClusterEB0386A7', 'CertificateAuthorityData'] },
+            `
+    cidr: 172.20.0.0/16
+  kubelet:
+    flags:
+    - "--node-labels=lifecycle=OnDemand"
+  `,
+          ],
+        ],
+      },
+    ]);
+  });
+
+  test('if asg has spot instances, the correct label and taint is used', () => {
+    // GIVEN
+    const { asg, stack } = newFixtures(true);
+    const { cluster } = testFixtureCluster({
+      serviceIpv4Cidr: '172.20.0.0/16',
+    });
+
+    // WHEN
+    const userData = stack.resolve(renderAmazonLinux2023UserData(cluster, asg));
+
+    // THEN
+    expect(userData).toEqual([
+      {
+        'Fn::Join': [
+          '',
+          [
+            `---
+apiVersion: node.eks.aws/v1alpha1
+kind: NodeConfig
+spec:
+  cluster:
+    name: `, { Ref: 'ClusterEB0386A7' },
+            `
+    apiServerEndpoint: `, { 'Fn::GetAtt': ['ClusterEB0386A7', 'Endpoint'] },
+            `
+    certificateAuthority: `, { 'Fn::GetAtt': ['ClusterEB0386A7', 'CertificateAuthorityData'] },
+            `
+    cidr: 172.20.0.0/16
+  kubelet:
+    flags:
+    - "--node-labels=lifecycle=Ec2Spot"
+  `,
+          ],
+        ],
+      },
+    ]);
   });
 });
 
