@@ -7,7 +7,7 @@ import { NetworkType } from './instance';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
 import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials } from './private/util';
-import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials } from './props';
+import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials, EngineLifecycleSupport } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -498,21 +498,6 @@ interface DatabaseClusterBaseProps {
    * @default undefined - AWS RDS default setting is `EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT`
    */
   readonly engineLifecycleSupport?: EngineLifecycleSupport;
-}
-
-/**
- * Engine lifecycle support for Amazon RDS and Amazon Aurora
- */
-export enum EngineLifecycleSupport {
-  /**
-   * Using Amazon RDS extended support
-   */
-  OPEN_SOURCE_RDS_EXTENDED_SUPPORT = 'open-source-rds-extended-support',
-
-  /**
-   * Not using Amazon RDS extended support
-   */
-  OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED = 'open-source-rds-extended-support-disabled',
 }
 
 /**
