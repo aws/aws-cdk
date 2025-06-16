@@ -158,9 +158,8 @@ from the bucket.
 
 ### Understanding "grant" Methods
 
-The S3 construct library provides three grant methods for the `Bucket` resource that have a special behavior. All three accept an `objectsKeyPattern` parameter to restrict granted permissions to specific resources:
+The S3 construct library provides several grant methods for the `Bucket` resource, but two of them have a special behavior. All three accept an `objectsKeyPattern` parameter to restrict granted permissions to specific resources:
 - `grantRead`
-- `grantWrite`
 - `grantReadWrite`
 
 When examining the synthesized policy, you'll notice it includes both your specified object key patterns and the bucket itself.
