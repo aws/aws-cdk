@@ -812,6 +812,7 @@ export interface DatabaseInstanceNewProps {
 
   /**
    * The life cycle type for this DB instance.
+   * This setting applies only to RDS for MySQL and RDS for PostgreSQL.
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support.html
    *
@@ -1089,6 +1090,11 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     this.engine = props.engine;
 
     const engineType = props.engine.engineType;
+
+    if (props.engineLifecycleSupport && !['mysql', 'postgres'].includes(engineType)) {
+      throw new ValidationError(`Engine '${engineType}' does not support engine lifecycle support`, this);
+    }
+
     // only Oracle and SQL Server require the import and export Roles to be the same
     const combineRoles = engineType.startsWith('oracle-') || engineType.startsWith('sqlserver-');
     let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, combineRoles);
@@ -1500,6 +1506,10 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
         && !props.sourceDatabaseInstance.engine.supportsReadReplicaBackups
         && props.backupRetention) {
       throw new ValidationError(`Cannot set 'backupRetention', as engine '${engineDescription(props.sourceDatabaseInstance.engine)}' does not support automatic backups for read replicas`, this);
+    }
+
+    if (props.sourceDatabaseInstance.engine?.engineType && props.engineLifecycleSupport && !['mysql', 'postgres'].includes(props.sourceDatabaseInstance.engine.engineType)) {
+      throw new ValidationError(`Engine '${props.sourceDatabaseInstance.engine.engineType}' does not support engine lifecycle support`, this);
     }
 
     // The read replica instance always uses the same engine as the source instance
