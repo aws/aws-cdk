@@ -10,7 +10,7 @@ test('.metricXxx() methods can be used to obtain Metrics for the canary', () => 
       handler: 'index.handler',
       code: synthetics.Code.fromInline('foo'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
   });
 
   // WHEN
@@ -50,7 +50,7 @@ test('Metric can specify statistic', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('foo'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
   });
 
   // WHEN
