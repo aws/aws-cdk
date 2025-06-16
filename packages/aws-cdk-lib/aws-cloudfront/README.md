@@ -548,7 +548,7 @@ const functionVersion = lambda.Version.fromVersionArn(this, 'Version', 'arn:aws:
 
 new cloudfront.Distribution(this, 'distro', {
   defaultBehavior: {
-    origin: new origins.S3Origin(s3Bucket),
+    origin: origins.S3BucketOrigin.withOriginAccessControl(s3Bucket),
     edgeLambdas: [
       {
         functionVersion,
