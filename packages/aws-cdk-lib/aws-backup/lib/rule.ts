@@ -84,6 +84,14 @@ export interface BackupPlanRuleProps {
    * @default - no recovery point tags.
    */
   readonly recoveryPointTags?: { [key: string]: string };
+
+  /**
+   * To help search your backups, you can enable Backup indexes by assigning index actions.
+   * Currently, you can only have up to a single index action per BackupRule.
+   *
+   * @default - no index actions.
+   */
+  readonly indexActions?: BackupPlanIndexActionProps[];
 }
 
 /**
@@ -109,6 +117,34 @@ export interface BackupPlanCopyActionProps {
    * @default - recovery point is never moved to cold storage
    */
   readonly moveToColdStorageAfter?: Duration;
+}
+
+/**
+ * Properties for a BackupPlanIndexAction
+ */
+export interface BackupPlanIndexActionProps {
+  /**
+   * Specifies the resource types to include in the index action.
+   *
+   * @default - no resource types are specified
+   */
+  readonly resourceTypes?: IndexActionResourceType[];
+}
+
+/**
+ * The resource type to index.
+ *
+ * @see https://docs.aws.amazon.com/aws-backup/latest/devguide/API_IndexAction.html
+ */
+export enum IndexActionResourceType {
+  /**
+   * Simple Storage Service (S3)
+   */
+  S3 = 'S3',
+  /**
+   * Elastic Block Store (EBS)
+   */
+  EBS = 'EBS',
 }
 
 /**
