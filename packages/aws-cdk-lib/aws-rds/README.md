@@ -1565,7 +1565,8 @@ new rds.DatabaseCluster(this, 'Cluster', {
 
 ## Extended Support
 
-With Amazon RDS Extended Support, you can continue running your database on a major engine version past the RDS end of standard support date for an additional cost. To configure the life cycle type, use the `engineLifecycleSupport` property:
+With Amazon RDS Extended Support, you can continue running your database on a major engine version past the RDS end of
+standard support date for an additional cost. To configure the life cycle type, use the `engineLifecycleSupport` property:
 
 ```ts
 declare const vpc: ec2.IVpc;
