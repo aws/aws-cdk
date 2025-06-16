@@ -158,6 +158,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
       enableExecuteCommand: props.enableExecuteCommand,
       minHealthyPercent: props.minHealthyPercent,
       maxHealthyPercent: props.maxHealthyPercent,
+      availabilityZoneRebalancing: props.availabilityZoneRebalancing,
     });
   }
 }

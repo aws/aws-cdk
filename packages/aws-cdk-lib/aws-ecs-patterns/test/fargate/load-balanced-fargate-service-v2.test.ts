@@ -170,6 +170,7 @@ describe('Application Load Balancer', () => {
             },
           },
         ],
+        AvailabilityZoneRebalancing: Match.absent(),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
@@ -269,6 +270,7 @@ describe('Application Load Balancer', () => {
             protocol: ecs.Protocol.TCP,
           },
         ],
+        availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
       });
 
       // THEN - stack contains a load balancer and a service
@@ -317,6 +319,7 @@ describe('Application Load Balancer', () => {
         PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,
         PropagateTags: 'SERVICE',
         ServiceName: 'myService',
+        AvailabilityZoneRebalancing: 'ENABLED',
       });
 
       // ECS Exec
@@ -820,6 +823,7 @@ describe('Network Load Balancer', () => {
             },
           },
         ],
+        AvailabilityZoneRebalancing: Match.absent(),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
@@ -915,6 +919,7 @@ describe('Network Load Balancer', () => {
             containerPort: 90,
           },
         ],
+        availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
       });
 
       // THEN - stack contains a load balancer and a service
@@ -962,6 +967,7 @@ describe('Network Load Balancer', () => {
         },
         PropagateTags: 'SERVICE',
         ServiceName: 'myService',
+        AvailabilityZoneRebalancing: 'ENABLED',
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
