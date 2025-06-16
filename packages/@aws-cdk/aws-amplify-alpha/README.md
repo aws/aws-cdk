@@ -268,7 +268,7 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
 });
 ```
 
-Also you can override the compute role for a specific branch by setting `computeRole` in `Branch`:
+It is also possible to override the compute role for a specific branch by setting `computeRole` in `Branch`:
 
 ```ts
 declare const computeRole: iam.Role;

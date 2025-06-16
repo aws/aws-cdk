@@ -144,7 +144,7 @@ export interface BranchOptions {
    *
    * This role overrides the app-level compute role.
    *
-   * @default undefined - no specific role for the branch.
+   * @default undefined - No specific role for the branch. If the app has a compute role, it will be inherited.
    */
   readonly computeRole?: iam.IRole;
 }
