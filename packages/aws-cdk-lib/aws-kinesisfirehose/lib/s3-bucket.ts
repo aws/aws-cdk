@@ -3,23 +3,56 @@ import { BackupMode, CommonDestinationProps, CommonDestinationS3Props } from './
 import { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
-import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
-import { Token, UnscopedValidationError, ValidationError } from '../../core';
+import { createBackupConfig, createBufferingHints, createDynamicPartitioningConfiguration, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
+import { Duration, Token, UnscopedValidationError, ValidationError } from '../../core';
 
 /**
  * Props for defining an S3 destination of an Amazon Data Firehose delivery stream.
  */
 export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinationProps {
-  /**
-   * Specify a file extension.
-   * It will override the default file extension appended by Data Format Conversion or S3 compression features such as `.parquet` or `.gz`.
-   *
-   * File extension must start with a period (`.`) and can contain allowed characters: `0-9a-z!-_.*'()`.
-   *
-   * @see https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html#create-destination-s3
-   * @default - The default file extension appended by Data Format Conversion or S3 compression features
-   */
+  /*
+  * Specify a file extension.
+  * It will override the default file extension appended by Data Format Conversion or S3 compression features such as `.parquet` or `.gz`.
+  *
+  * File extension must start with a period (`.`) and can contain allowed characters: `0-9a-z!-_.*'()`.
+  *
+  * @see https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html#create-destination-s3
+  * @default - The default file extension appended by Data Format Conversion or S3 compression features
+  */
   readonly fileExtension?: string;
+
+  /**
+   * Specify dynamic partitioning.
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html
+   * @default - Dynamic partitioning is disabled.
+   */
+  readonly dynamicPartitioning?: DynamicPartitioningProps;
+}
+
+/**
+ * Props for defining dynamic partitioning.
+ * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html
+ */
+export interface DynamicPartitioningProps {
+  /**
+   * Whether to enable the dynamic partitioning.
+   *
+   * You can enable dynamic partitioning only when you create a new Firehose stream.
+   * You cannot enable dynamic partitioning for an existing Firehose stream that does not have dynamic partitioning already enabled.
+   *
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-enable.html
+   */
+  readonly enabled: boolean;
+
+  /**
+   * The total amount of time that Data Firehose spends on retries.
+   *
+   * Minimum: 0 seconds.
+   * Maximum: 7200 seconds.
+   *
+   * @default - 300 seconds
+   */
+  readonly retryDuration?: Duration;
 }
 
 /**
@@ -64,13 +97,15 @@ export class S3Bucket implements IDestination {
         roleArn: role.roleArn,
         s3BackupConfiguration: backupConfig,
         s3BackupMode: this.getS3BackupMode(),
-        bufferingHints: createBufferingHints(scope, this.props.bufferingInterval, this.props.bufferingSize),
+        bufferingHints: createBufferingHints(scope, this.props.bufferingInterval, this.props.bufferingSize, this.props.dynamicPartitioning?.enabled),
         bucketArn: this.bucket.bucketArn,
         compressionFormat: this.props.compression?.value,
         encryptionConfiguration: createEncryptionConfig(role, this.props.encryptionKey),
         errorOutputPrefix: this.props.errorOutputPrefix,
         prefix: this.props.dataOutputPrefix,
         fileExtension: this.props.fileExtension,
+        customTimeZone: this.props.timeZone?.timezoneName,
+        dynamicPartitioningConfiguration: createDynamicPartitioningConfiguration(scope, this.props.dynamicPartitioning),
       },
       dependables: [bucketGrant, ...(loggingDependables ?? []), ...(backupDependables ?? [])],
     };
