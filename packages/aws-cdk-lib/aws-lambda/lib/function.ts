@@ -461,7 +461,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly logRetention?: logs.RetentionDays;
 
   /**
-   * Determine the removal policy of log group.
+   * Determine the removal policy of the log group that is auto-created by this construct.
    *
    * Normally you want to retain the log group so you can diagnose issues
    * from logs even after a deployment that no longer includes the log group.
