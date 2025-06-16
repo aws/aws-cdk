@@ -16,16 +16,16 @@
         }
       }
     },
-    "b8ab94266984268614c3fb2824a1c3a55395746c48b28c003b08bc1d08688f3e": {
+    "1b2c92f2cd21c170884393633bd4c732676df6290562199b6e3ca5e2a1be7d18": {
       "displayName": "BucketDeployment/AwsCliLayer/Code",
       "source": {
-        "path": "asset.b8ab94266984268614c3fb2824a1c3a55395746c48b28c003b08bc1d08688f3e.zip",
+        "path": "asset.1b2c92f2cd21c170884393633bd4c732676df6290562199b6e3ca5e2a1be7d18.zip",
         "packaging": "file"
       },
       "destinations": {
         "12345678-test-region": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "b8ab94266984268614c3fb2824a1c3a55395746c48b28c003b08bc1d08688f3e.zip",
+          "objectKey": "1b2c92f2cd21c170884393633bd4c732676df6290562199b6e3ca5e2a1be7d18.zip",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }
