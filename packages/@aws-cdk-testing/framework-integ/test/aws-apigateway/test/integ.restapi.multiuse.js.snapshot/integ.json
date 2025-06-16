@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "testCases": {
     "restapi-multiuse/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "restapi-multiuse/DefaultTest/DeployAssert",
       "assertionStackName": "restapimultiuseDefaultTestDeployAssert47DF66CC"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

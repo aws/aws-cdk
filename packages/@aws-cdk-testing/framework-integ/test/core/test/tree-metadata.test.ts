@@ -5,8 +5,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
-import { App, CfnParameter, CfnResource, Lazy, Stack, TreeInspector } from 'aws-cdk-lib';
-import { TreeFile } from 'aws-cdk-lib/core/lib/private/tree-metadata';
+import { App, AssumptionError, CfnParameter, CfnResource, Lazy, Stack, TreeInspector } from 'aws-cdk-lib';
+import { ForestFile, TreeFile } from 'aws-cdk-lib/core/lib/private/tree-metadata';
 
 abstract class AbstractCfnResource extends CfnResource {
   constructor(scope: Construct, id: string) {
@@ -219,16 +219,31 @@ describe('tree metadata', () => {
       expect(treeArtifact).toBeDefined();
 
       // THEN - does not explode, and file sizes are correctly limited
-      const sizes: Record<string, number> = {};
-      recurseVisit(assembly.directory, treeArtifact!.file, sizes);
+      const treeSizes: Record<string, number> = {};
+      recurseVisit(assembly.directory, treeArtifact!.file, undefined, treeSizes);
 
-      for (const size of Object.values(sizes)) {
+      // `treeSizes` has keys of the form `<file>#<tree id>`. Combine them.
+      const fileSizes: Record<string, number> = {};
+      for (const [treeName, count] of Object.entries(treeSizes)) {
+        const fileName = treeName.split('#')[0];
+        if (fileName in fileSizes) {
+          fileSizes[fileName] += count;
+        } else {
+          fileSizes[fileName ] = count;
+        }
+      }
+
+      for (const size of Object.values(treeSizes)) {
+        expect(size).toBeLessThanOrEqual(MAX_NODES);
+      }
+      for (const size of Object.values(fileSizes)) {
         expect(size).toBeLessThanOrEqual(MAX_NODES);
       }
 
-      expect(Object.keys(sizes).length).toBeGreaterThan(1);
+      expect(Object.keys(treeSizes).length).toBeGreaterThan(1);
+      expect(Object.keys(fileSizes).length).toBeLessThan(Object.keys(treeSizes).length);
 
-      const foundNodes = sum(Object.values(sizes));
+      const foundNodes = sum(Object.values(treeSizes));
       expect(foundNodes).toEqual(addedNodes + 2); // App, Tree
     } finally {
       fs.rmSync(assembly.directory, { force: true, recursive: true });
@@ -253,16 +268,29 @@ describe('tree metadata', () => {
       return ret;
     }
 
-    function recurseVisit(directory: string, fileName: string, files: Record<string, number>) {
-      let nodes = 0;
-      const treeJson: TreeFile = readJson(directory, fileName);
-      rec(treeJson.tree);
-      files[fileName] = nodes;
+    function recurseVisit(directory: string, fileName: string, treeId: string | undefined, files: Record<string, number>) {
+      let nodes: number;
+
+      if (treeId) {
+        // Assume a forest file
+        const treeJson: ForestFile = readJson(directory, fileName);
+        for (const [tid, tree] of Object.entries(treeJson.forest)) {
+          nodes = 0;
+          rec(tree);
+          files[`${fileName}#${tid}`] = nodes;
+        }
+      } else {
+        // Assume a tree file
+        const treeJson: TreeFile = readJson(directory, fileName);
+        nodes = 0;
+        rec(treeJson.tree);
+        files[fileName] = nodes;
+      }
 
       function rec(x: TreeFile['tree']) {
         if (isSubtreeReference(x)) {
           // We'll count this node as part of our visit to the "real" node
-          recurseVisit(directory, x.fileName, files);
+          recurseVisit(directory, x.fileName, x.treeId, files);
         } else {
           nodes += 1;
           for (const child of Object.values(x.children ?? {})) {
@@ -437,7 +465,7 @@ describe('tree metadata', () => {
   test('failing nodes', () => {
     class MyCfnResource extends CfnResource {
       public inspect(_: TreeInspector) {
-        throw new Error('Forcing an inspect error');
+        throw new AssumptionError('Forcing an inspect error');
       }
     }
 

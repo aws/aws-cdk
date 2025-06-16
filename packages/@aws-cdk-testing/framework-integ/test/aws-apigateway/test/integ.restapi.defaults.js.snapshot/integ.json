@@ -1,11 +1,13 @@
 {
-  "version": "20.0.0",
+  "version": "44.0.0",
   "testCases": {
     "apigateway-restapi-defaults/DefaultTest": {
       "stacks": [
         "test-apigateway-restapi-defaults"
       ],
-      "assertionStack": "apigateway-restapi-defaults/DefaultTest/DeployAssert"
+      "assertionStack": "apigateway-restapi-defaults/DefaultTest/DeployAssert",
+      "assertionStackName": "apigatewayrestapidefaultsDefaultTestDeployAssertF892D174"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

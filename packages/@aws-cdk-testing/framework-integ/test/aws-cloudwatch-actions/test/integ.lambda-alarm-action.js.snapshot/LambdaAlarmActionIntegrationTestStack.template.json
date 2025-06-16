@@ -172,6 +172,9 @@
     "FunctionName": {
      "Ref": "alarmLambdaFeatureD560800F"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "alarmLambdaFeatureCurrentVersionAlarmAlarmPermissionA0D80E66": {

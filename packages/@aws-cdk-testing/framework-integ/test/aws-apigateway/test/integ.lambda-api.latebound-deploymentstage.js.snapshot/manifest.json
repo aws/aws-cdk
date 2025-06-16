@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "LateBoundDeploymentStageStack.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "LateBoundDeploymentStageStack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/efbbf700841fdd5cbef28ac7349a0431f05257ded081b9872c769c3bf1c14d31.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/78cc229e03089baaf3a077eec860257b6f25c65bb9d947b34726938edb330b20.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,38 @@
         "LateBoundDeploymentStageStack.assets"
       ],
       "metadata": {
+        "/LateBoundDeploymentStageStack/myfn": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "runtime": "*",
+              "handler": "*"
+            }
+          }
+        ],
+        "/LateBoundDeploymentStageStack/myfn/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/LateBoundDeploymentStageStack/myfn/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/LateBoundDeploymentStageStack/myfn/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -45,10 +78,59 @@
             "data": "myfn8C66D016"
           }
         ],
+        "/LateBoundDeploymentStageStack/lambdarestapi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "defaultIntegration": "*",
+              "cloudWatchRole": true,
+              "deploy": false,
+              "handler": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cloudWatchRole": true,
+              "deploy": false,
+              "handler": "*"
+            }
+          }
+        ],
         "/LateBoundDeploymentStageStack/lambdarestapi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "lambdarestapiF559E4F2"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/lambdarestapi/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "retain"
+              ]
+            }
+          }
+        ],
+        "/LateBoundDeploymentStageStack/lambdarestapi/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/LateBoundDeploymentStageStack/lambdarestapi/CloudWatchRole/Resource": [
@@ -63,10 +145,51 @@
             "data": "lambdarestapiAccount856938D8"
           }
         ],
+        "/LateBoundDeploymentStageStack/lambdarestapi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/lambdarestapi/Default/{proxy+}": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "defaultIntegration": "*",
+              "defaultMethodOptions": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethod": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/LateBoundDeploymentStageStack/lambdarestapi/Default/{proxy+}/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "lambdarestapiproxyB0E963B7"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/lambdarestapi/Default/{proxy+}/ANY": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/LateBoundDeploymentStageStack/lambdarestapi/Default/{proxy+}/ANY/ApiPermission.LateBoundDeploymentStageStacklambdarestapiCE6017F6.ANY..{proxy+}": [
@@ -87,6 +210,17 @@
             "data": "lambdarestapiproxyANYC900233F"
           }
         ],
+        "/LateBoundDeploymentStageStack/lambdarestapi/Default/ANY": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          }
+        ],
         "/LateBoundDeploymentStageStack/lambdarestapi/Default/ANY/ApiPermission.LateBoundDeploymentStageStacklambdarestapiCE6017F6.ANY..": [
           {
             "type": "aws:cdk:logicalId",
@@ -105,10 +239,26 @@
             "data": "lambdarestapiANYB9BB3FB2"
           }
         ],
+        "/LateBoundDeploymentStageStack/deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "api": "*"
+            }
+          }
+        ],
         "/LateBoundDeploymentStageStack/deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "deployment3338197541aef5f15bf9a60b10e06fdbe72854f4"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/stage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/LateBoundDeploymentStageStack/stage/Resource": [
@@ -145,6 +295,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "lambdaapilatebounddeploymentstageDefaultTestDeployAssert678919C4.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -185,5 +336,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

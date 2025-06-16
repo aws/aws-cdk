@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "TokenAuthorizerIAMRoleInteg.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "TokenAuthorizerIAMRoleInteg.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1700f94824f0c5de41fa729800151d6296945b6e5fa1536c384e04b7a1377f4c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/79899d113a0cef4f696acfa96b0ddab855e2e35ecc3beac796b937c4aedba3f3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,38 @@
         "TokenAuthorizerIAMRoleInteg.assets"
       ],
       "metadata": {
+        "/TokenAuthorizerIAMRoleInteg/MyAuthorizerFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/TokenAuthorizerIAMRoleInteg/MyAuthorizerFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/TokenAuthorizerIAMRoleInteg/MyAuthorizerFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/TokenAuthorizerIAMRoleInteg/MyAuthorizerFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -45,10 +78,49 @@
             "data": "MyAuthorizerFunction70F1223E"
           }
         ],
+        "/TokenAuthorizerIAMRoleInteg/authorizerRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/TokenAuthorizerIAMRoleInteg/authorizerRole/ImportauthorizerRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/TokenAuthorizerIAMRoleInteg/authorizerRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "authorizerRole06E70703"
+          }
+        ],
+        "/TokenAuthorizerIAMRoleInteg/MyAuthorizer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/TokenAuthorizerIAMRoleInteg/MyAuthorizer/Resource": [
@@ -57,16 +129,86 @@
             "data": "MyAuthorizer6575980E"
           }
         ],
+        "/TokenAuthorizerIAMRoleInteg/MyAuthorizer/authorizerInvokePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/TokenAuthorizerIAMRoleInteg/MyAuthorizer/authorizerInvokePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyAuthorizerauthorizerInvokePolicy0F88B8E1"
           }
         ],
+        "/TokenAuthorizerIAMRoleInteg/MyRestApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cloudWatchRole": true
+            }
+          }
+        ],
         "/TokenAuthorizerIAMRoleInteg/MyRestApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyRestApi2D1F47A9"
+          }
+        ],
+        "/TokenAuthorizerIAMRoleInteg/MyRestApi/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "retain"
+              ]
+            }
+          }
+        ],
+        "/TokenAuthorizerIAMRoleInteg/MyRestApi/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/TokenAuthorizerIAMRoleInteg/MyRestApi/CloudWatchRole/Resource": [
@@ -81,10 +223,44 @@
             "data": "MyRestApiAccount2FB6DB7A"
           }
         ],
+        "/TokenAuthorizerIAMRoleInteg/MyRestApi/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/TokenAuthorizerIAMRoleInteg/MyRestApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyRestApiDeploymentB555B582694e8eb3fdb7b5f988ba347d35601979"
+            "data": "MyRestApiDeploymentB555B58259401a546b13c99de2d05e5e255a9ede"
+          }
+        ],
+        "/TokenAuthorizerIAMRoleInteg/MyRestApi/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/TokenAuthorizerIAMRoleInteg/MyRestApi/DeploymentStage.prod/Resource": [
@@ -97,6 +273,41 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyRestApiEndpoint4C55E4CB"
+          }
+        ],
+        "/TokenAuthorizerIAMRoleInteg/MyRestApi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/TokenAuthorizerIAMRoleInteg/MyRestApi/Default/ANY": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "methodResponses": [
+                  {
+                    "statusCode": "*"
+                  }
+                ],
+                "authorizer": "*",
+                "authorizationType": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*"
+                }
+              ]
+            }
           }
         ],
         "/TokenAuthorizerIAMRoleInteg/MyRestApi/Default/ANY/Resource": [
@@ -133,6 +344,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "iamtokenauthorizerDefaultTestDeployAssert87D47FBB.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -173,5 +385,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

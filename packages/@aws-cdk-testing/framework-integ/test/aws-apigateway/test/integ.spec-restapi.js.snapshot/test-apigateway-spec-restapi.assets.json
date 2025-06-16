@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb": {
       "displayName": "my-api/APIDefinition",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "5ad2f9597f2cb5f0fea7242dcb36cf87a6314bc8c3d860324b4d428bf428f286": {
+    "e91a55b212d6c61a7de6cee809a2dc05eefd57c6a49e4314283cd42db2a26b90": {
       "displayName": "test-apigateway-spec-restapi Template",
       "source": {
         "path": "test-apigateway-spec-restapi.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5ad2f9597f2cb5f0fea7242dcb36cf87a6314bc8c3d860324b4d428bf428f286.json",
+          "objectKey": "e91a55b212d6c61a7de6cee809a2dc05eefd57c6a49e4314283cd42db2a26b90.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

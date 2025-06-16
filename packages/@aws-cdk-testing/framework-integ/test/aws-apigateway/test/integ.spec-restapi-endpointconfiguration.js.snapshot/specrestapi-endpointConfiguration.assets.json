@@ -1,7 +1,8 @@
 {
-  "version": "39.0.0",
+  "version": "44.0.0",
   "files": {
     "68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb": {
+      "displayName": "my-api/APIDefinition",
       "source": {
         "path": "asset.68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb.yaml",
         "packaging": "file"
@@ -14,7 +15,8 @@
         }
       }
     },
-    "49bc236813153541d1c03dbc546dd3a0c1c13433d4cd22504d825b027457c6f8": {
+    "63b39f31c55ca40efc338bf3dd73a93aad61022b0cdca7b94168d92b16afd713": {
+      "displayName": "specrestapi-endpointConfiguration Template",
       "source": {
         "path": "specrestapi-endpointConfiguration.template.json",
         "packaging": "file"
@@ -22,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "49bc236813153541d1c03dbc546dd3a0c1c13433d4cd22504d825b027457c6f8.json",
+          "objectKey": "63b39f31c55ca40efc338bf3dd73a93aad61022b0cdca7b94168d92b16afd713.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

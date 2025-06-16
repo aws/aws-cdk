@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "testCases": {
     "lambda-api-latebound-deploymentstage/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "lambda-api-latebound-deploymentstage/DefaultTest/DeployAssert",
       "assertionStackName": "lambdaapilatebounddeploymentstageDefaultTestDeployAssert678919C4"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

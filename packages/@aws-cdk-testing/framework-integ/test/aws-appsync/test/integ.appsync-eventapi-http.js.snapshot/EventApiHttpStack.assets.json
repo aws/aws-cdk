@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "07d8f4e69597eb1f36b7146e8c501bb1af1a56b12a30552f86727887e63a17de": {
       "displayName": "EventApiHttp/chat/Code",
@@ -29,7 +29,7 @@
         }
       }
     },
-    "4c4b78cbd462112c54d7414b644ca7414fd9e12cf858ebd465a6d296b734dc38": {
+    "75a5590ce3ffae4a02a95f890056e77d183a16696c7ed189dd983b0f76bbaac4": {
       "displayName": "EventApiHttpStack Template",
       "source": {
         "path": "EventApiHttpStack.template.json",
@@ -38,7 +38,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4c4b78cbd462112c54d7414b644ca7414fd9e12cf858ebd465a6d296b734dc38.json",
+          "objectKey": "75a5590ce3ffae4a02a95f890056e77d183a16696c7ed189dd983b0f76bbaac4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

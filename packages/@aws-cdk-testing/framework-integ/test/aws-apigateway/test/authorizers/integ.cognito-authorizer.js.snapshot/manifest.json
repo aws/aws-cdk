@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "CognitoUserPoolsAuthorizerInteg.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "CognitoUserPoolsAuthorizerInteg.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/81ccfaff55790eb0a0ba90c4ede5ca2168072939afb21004c5dcb5ca74295b40.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4b88a2829fc0dc11a698ce3464bf4f84b1751eb447c99ef20bf76472d495c5a0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,10 +34,22 @@
         "CognitoUserPoolsAuthorizerInteg.assets"
       ],
       "metadata": {
+        "/CognitoUserPoolsAuthorizerInteg/UserPool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/CognitoUserPoolsAuthorizerInteg/UserPool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "UserPool6BA7E5F2"
+          }
+        ],
+        "/CognitoUserPoolsAuthorizerInteg/myauthorizer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/CognitoUserPoolsAuthorizerInteg/myauthorizer/Resource": [
@@ -45,10 +58,48 @@
             "data": "myauthorizer23CB99DD"
           }
         ],
+        "/CognitoUserPoolsAuthorizerInteg/myrestapi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cloudWatchRole": true
+            }
+          }
+        ],
         "/CognitoUserPoolsAuthorizerInteg/myrestapi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myrestapi551C8392"
+          }
+        ],
+        "/CognitoUserPoolsAuthorizerInteg/myrestapi/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "retain"
+              ]
+            }
+          }
+        ],
+        "/CognitoUserPoolsAuthorizerInteg/myrestapi/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/CognitoUserPoolsAuthorizerInteg/myrestapi/CloudWatchRole/Resource": [
@@ -63,10 +114,44 @@
             "data": "myrestapiAccountA49A05BE"
           }
         ],
+        "/CognitoUserPoolsAuthorizerInteg/myrestapi/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/CognitoUserPoolsAuthorizerInteg/myrestapi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myrestapiDeployment419B1464d5146a3a0aa3a9f79024a52930571dc6"
+          }
+        ],
+        "/CognitoUserPoolsAuthorizerInteg/myrestapi/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/CognitoUserPoolsAuthorizerInteg/myrestapi/DeploymentStage.prod/Resource": [
@@ -79,6 +164,41 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myrestapiEndpointE06F9D98"
+          }
+        ],
+        "/CognitoUserPoolsAuthorizerInteg/myrestapi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/CognitoUserPoolsAuthorizerInteg/myrestapi/Default/ANY": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "methodResponses": [
+                  {
+                    "statusCode": "*"
+                  }
+                ],
+                "authorizer": "*",
+                "authorizationType": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*"
+                }
+              ]
+            }
           }
         ],
         "/CognitoUserPoolsAuthorizerInteg/myrestapi/Default/ANY/Resource": [
@@ -98,15 +218,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "myrestapiDeployment419B1464b903292b53d7532ca4296973bcb95b1a": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myrestapiDeployment419B1464b903292b53d7532ca4296973bcb95b1a",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "CognitoUserPoolsAuthorizerInteg"
@@ -124,6 +235,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cognitoauthorizerDefaultTestDeployAssert4551574C.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -164,5 +276,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
