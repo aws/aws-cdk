@@ -91,6 +91,13 @@ export interface HelmChartOptions {
    * @default - CRDs are installed if not already present
    */
   readonly skipCrds?: boolean;
+
+  /**
+   * if set, the --take-ownership flag provided since helm >=v3.17.0 will be set.
+   * Helm will ignore the check for helm annotations and take ownership of the existing resources.
+   * @default false
+   */
+  readonly takeOwnership?: boolean;
 }
 
 /**
@@ -161,6 +168,8 @@ export class HelmChart extends Construct {
     const skipCrds = props.skipCrds ?? false;
     // default to set atomic as false
     const atomic = props.atomic ?? false;
+    // default to set take-ownership as false
+    const takeOwnership = props.takeOwnership ?? false;
 
     this.chartAsset?.grantRead(provider.role!);
 
@@ -181,6 +190,7 @@ export class HelmChart extends Construct {
         CreateNamespace: createNamespace || undefined,
         SkipCrds: skipCrds || undefined,
         Atomic: atomic || undefined, // props are stringified so we encode “false” as undefined
+        TakeOwnership: takeOwnership || undefined,
       },
     });
   }
