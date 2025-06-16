@@ -117,6 +117,11 @@
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v32/-/lambda-layer-kubectl-v32-2.1.0.tgz#6b9beb4b6b09af74ec48f0c778e50732d7bbb54b"
   integrity sha512-a+zvCLapTg8R0P/Nrecc8mKV+ZgAwvkndn4/zlb43e14zRlc4/ozvmeghUT2eoyyaWJv+PwqgWohEXXec3kpSw==
 
+"@aws-cdk/lambda-layer-kubectl-v33@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v33/-/lambda-layer-kubectl-v33-2.0.0.tgz#0c521ad987bb3ac597a4b4ebeece8fd2721ca000"
+  integrity sha512-osA3wkwWK2OfpymTcCZKhgaKSca9PQSr+7xi+UevKFRHtMdxHgygC345hdDpCtZlMmX9pKjtFpRUxeRrbGHMEw==
+
 "@aws-cdk/service-spec-importers@^0.0.82":
   version "0.0.82"
   resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.82.tgz#b304cb5bf0e374624ead53341db1f6b84ffa4960"
