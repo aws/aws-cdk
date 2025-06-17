@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "integ-apigwv2-lambda-connect-integration.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8d51b7c174041dae18b57745e88660ee14de05b2ac0e42fb860dca1ff5677b71.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ef7ada62b51f1992b55f8611db5ebf392df8941199d7c36cfec42d486dfff332.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,108 @@
         "integ-apigwv2-lambda-connect-integration.assets"
       ],
       "metadata": {
+        "/integ-apigwv2-lambda-connect-integration/Connect Function": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "runtime": "*",
+              "handler": "*",
+              "code": "*",
+              "timeout": "*",
+              "environment": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-apigwv2-lambda-connect-integration/Connect Function/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-apigwv2-lambda-connect-integration/Connect Function/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-apigwv2-lambda-connect-integration/Connect Function/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ConnectFunctionServiceRoleDD1EAA8C"
+          }
+        ],
+        "/integ-apigwv2-lambda-connect-integration/Connect Function/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/integ-apigwv2-lambda-connect-integration/Connect Function/ServiceRole/DefaultPolicy/Resource": [
@@ -52,10 +150,108 @@
             "data": "ConnectFunction4D4B4BB5"
           }
         ],
+        "/integ-apigwv2-lambda-connect-integration/Disconnect Function": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "runtime": "*",
+              "handler": "*",
+              "code": "*",
+              "timeout": "*",
+              "environment": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-apigwv2-lambda-connect-integration/Disconnect Function/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-apigwv2-lambda-connect-integration/Disconnect Function/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-apigwv2-lambda-connect-integration/Disconnect Function/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DisconnectFunctionServiceRole49DB60AC"
+          }
+        ],
+        "/integ-apigwv2-lambda-connect-integration/Disconnect Function/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/integ-apigwv2-lambda-connect-integration/Disconnect Function/ServiceRole/DefaultPolicy/Resource": [
@@ -72,6 +268,17 @@
         ],
         "/integ-apigwv2-lambda-connect-integration/WebSocket Log Table": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "tableName": "*",
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "removalPolicy": "destroy"
+            }
+          },
+          {
             "type": "aws:cdk:hasPhysicalName",
             "data": {
               "Ref": "WebSocketLogTable7F74AAC5"
@@ -84,19 +291,48 @@
             "data": "WebSocketLogTable7F74AAC5"
           }
         ],
+        "/integ-apigwv2-lambda-connect-integration/WebSocket Log Table/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-apigwv2-lambda-connect-integration/WebSocket API": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-apigwv2-lambda-connect-integration/WebSocket API/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "WebSocketAPIDA75128A"
           }
         ],
+        "/integ-apigwv2-lambda-connect-integration/WebSocket API/$connect-Route": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-apigwv2-lambda-connect-integration/WebSocket API/$connect-Route/ConnectIntegration-Permission": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WebSocketAPIconnectRouteConnectIntegrationPermission1FECDE58",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "WebSocketAPIconnectRouteConnectIntegrationPermission1FECDE58"
+          }
+        ],
+        "/integ-apigwv2-lambda-connect-integration/WebSocket API/$connect-Route/ConnectIntegration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-apigwv2-lambda-connect-integration/WebSocket API/$connect-Route/ConnectIntegration/Resource": [
@@ -111,13 +347,22 @@
             "data": "WebSocketAPIconnectRoute4BD84FCF"
           }
         ],
+        "/integ-apigwv2-lambda-connect-integration/WebSocket API/$disconnect-Route": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-apigwv2-lambda-connect-integration/WebSocket API/$disconnect-Route/DisconnectIntegration-Permission": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WebSocketAPIdisconnectRouteDisconnectIntegrationPermission909CCDD8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "WebSocketAPIdisconnectRouteDisconnectIntegrationPermission909CCDD8"
+          }
+        ],
+        "/integ-apigwv2-lambda-connect-integration/WebSocket API/$disconnect-Route/DisconnectIntegration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-apigwv2-lambda-connect-integration/WebSocket API/$disconnect-Route/DisconnectIntegration/Resource": [
@@ -130,6 +375,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "WebSocketAPIdisconnectRouteBC1A3C36"
+          }
+        ],
+        "/integ-apigwv2-lambda-connect-integration/Production Stage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-apigwv2-lambda-connect-integration/Production Stage/Resource": [
@@ -207,5 +458,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1016.1"
 }

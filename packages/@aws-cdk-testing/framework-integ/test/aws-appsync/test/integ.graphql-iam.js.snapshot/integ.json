@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "43.0.0",
   "testCases": {
     "integ.graphql-iam": {
       "stacks": [
@@ -10,5 +10,6 @@
     }
   },
   "synthContext": {},
-  "enableLookups": false
+  "enableLookups": false,
+  "minimumCliVersion": "2.1016.1"
 }

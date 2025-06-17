@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4948a13344692038c88ac0446a02aa09dcb2a9da6fb234b23745e001926a28bc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/149b7f975aa871511f265e2eca755fd48f3b3c8272b36a520edbc9c1f2d6eb60.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -36,6 +36,17 @@
       "metadata": {
         "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/SdkCallee": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "tableName": "*",
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "removalPolicy": "destroy"
+            }
+          },
+          {
             "type": "aws:cdk:hasPhysicalName",
             "data": {
               "Ref": "SdkCallee1DA14178"
@@ -48,10 +59,110 @@
             "data": "SdkCallee1DA14178"
           }
         ],
+        "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/external-sdk-v3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "entry": "*",
+              "runtime": "*",
+              "environment": "*",
+              "code": "*",
+              "handler": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "entry": "*",
+              "runtime": "*",
+              "environment": "*"
+            }
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/external-sdk-v3/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/external-sdk-v3/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/external-sdk-v3/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "externalsdkv3ServiceRole9C835365"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/external-sdk-v3/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/external-sdk-v3/ServiceRole/DefaultPolicy/Resource": [
@@ -104,7 +215,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/efb1d00e9add4ec99e81594f73d18dbde57ec55d9ff56e0bf47e2cd60d31b7a1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c0eb77734185a60d1fe0f84853945ab3186903b2198ce649d526704955f79cca.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -122,6 +233,17 @@
       "metadata": {
         "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3-bundled/SdkCallee": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "tableName": "*",
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "removalPolicy": "destroy"
+            }
+          },
+          {
             "type": "aws:cdk:hasPhysicalName",
             "data": {
               "Ref": "SdkCallee1DA14178"
@@ -134,10 +256,116 @@
             "data": "SdkCallee1DA14178"
           }
         ],
+        "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3-bundled/bundle-sdk": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "entry": "*",
+              "runtime": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "environment": "*",
+              "code": "*",
+              "handler": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "entry": "*",
+              "runtime": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "environment": "*"
+            }
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3-bundled/bundle-sdk/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3-bundled/bundle-sdk/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3-bundled/bundle-sdk/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "bundlesdkServiceRoleAD25F2C9"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3-bundled/bundle-sdk/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3-bundled/bundle-sdk/ServiceRole/DefaultPolicy/Resource": [
@@ -190,7 +418,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/14102128d3eaf990a021c5a074de780b6557e7be06ae13354927f28ab6643474.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f5b775b2bcbd6cb24929322c3edfbef6f6601376c40a53aaaa7d11237024bbb3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -208,6 +436,20 @@
         "LambdaDependenciesDefaultTestDeployAssert259C940B.assets"
       ],
       "metadata": {
+        "/LambdaDependencies/DefaultTest/DeployAssert/LambdaInvoke7d0602e4b9f40ae057f935d874b5f971/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/LambdaDependencies/DefaultTest/DeployAssert/LambdaInvoke7d0602e4b9f40ae057f935d874b5f971/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -242,6 +484,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/LambdaDependencies/DefaultTest/DeployAssert/LambdaInvokee35a5227846e334cb95a90bacfbfb877/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/LambdaDependencies/DefaultTest/DeployAssert/LambdaInvokee35a5227846e334cb95a90bacfbfb877/Default/Default": [
@@ -283,5 +539,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1016.1"
 }

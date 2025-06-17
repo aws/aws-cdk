@@ -1,7 +1,8 @@
 {
-  "version": "34.0.0",
+  "version": "41.0.0",
   "files": {
     "2748a200bf25c8ee2c2898271226a9f7bdc386b8ce9669528731eb36c5ed9e28": {
+      "displayName": "Connect Function/Code",
       "source": {
         "path": "asset.2748a200bf25c8ee2c2898271226a9f7bdc386b8ce9669528731eb36c5ed9e28",
         "packaging": "zip"
@@ -15,6 +16,7 @@
       }
     },
     "e593848af17fee558eece2cd2719347804c0c141cff4f8ea1fb8556cf986b5a0": {
+      "displayName": "Disconnect Function/Code",
       "source": {
         "path": "asset.e593848af17fee558eece2cd2719347804c0c141cff4f8ea1fb8556cf986b5a0",
         "packaging": "zip"
@@ -27,7 +29,8 @@
         }
       }
     },
-    "8d51b7c174041dae18b57745e88660ee14de05b2ac0e42fb860dca1ff5677b71": {
+    "ef7ada62b51f1992b55f8611db5ebf392df8941199d7c36cfec42d486dfff332": {
+      "displayName": "integ-apigwv2-lambda-connect-integration Template",
       "source": {
         "path": "integ-apigwv2-lambda-connect-integration.template.json",
         "packaging": "file"
@@ -35,7 +38,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8d51b7c174041dae18b57745e88660ee14de05b2ac0e42fb860dca1ff5677b71.json",
+          "objectKey": "ef7ada62b51f1992b55f8611db5ebf392df8941199d7c36cfec42d486dfff332.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
