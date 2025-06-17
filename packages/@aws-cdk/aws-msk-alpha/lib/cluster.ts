@@ -511,7 +511,7 @@ export class Cluster extends ClusterBase {
     }
 
     const instanceType = props.instanceType
-      ? this.mskInstanceType(props.instanceType)
+      ? this.mskInstanceType(props.instanceType, props.express)
       : this.mskInstanceType(
         ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
       );

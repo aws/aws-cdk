@@ -980,4 +980,23 @@ describe('MSK Cluster', () => {
       });
     });
   });
+
+  describe("with express broker ", () => {
+    test("create a cluster with express broker", () => {
+      new msk.Cluster(stack, "ExpressCluster", {
+        clusterName: "express-cluster",
+        kafkaVersion: msk.KafkaVersion.V3_8_X,
+        vpc,
+        instanceType: ec2.InstanceType.of(
+          ec2.InstanceClass.M7G,
+          ec2.InstanceSize.XLARGE
+        ),
+        express: true,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
+        BrokerNodeGroupInfo: { InstanceType: 'express.m7g.xlarge' },
+      });
+    });
+  });
 });
