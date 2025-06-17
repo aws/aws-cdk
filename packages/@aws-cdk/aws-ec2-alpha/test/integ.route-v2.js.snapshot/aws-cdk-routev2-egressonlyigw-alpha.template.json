@@ -64,6 +64,12 @@
    "Properties": {
     "AvailabilityZone": "us-east-1a",
     "CidrBlock": "10.0.0.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "eigwC0F094EF",

@@ -33,6 +33,13 @@ export interface ResultWriterV2Props {
   readonly bucket?: IBucket;
 
   /**
+   * S3 bucket name in which to save Map Run results, as JsonPath
+   *
+   * @default - no bucket path
+   */
+  readonly bucketNamePath?: string;
+
+  /**
    * S3 prefix in which to save Map Run results
    *
    * @default - No prefix
@@ -122,15 +129,15 @@ export class WriterConfig {
 /**
  * Generate policy statements to allow S3PutObject on the bucket
  */
-function buildS3PutObjectPolicyStatements(bucketName: string): iam.PolicyStatement[] {
-  const resource = Arn.format({
+function buildS3PutObjectPolicyStatements(bucketName?: string): iam.PolicyStatement[] {
+  const resource = bucketName ? Arn.format({
     region: '',
     account: '',
     partition: Aws.PARTITION,
     service: 's3',
     resource: bucketName,
     resourceName: '*',
-  });
+  }) : '*';
 
   return [
     new iam.PolicyStatement({
@@ -222,6 +229,11 @@ export class ResultWriterV2 {
   readonly bucket?: IBucket;
 
   /**
+   * S3 bucket name in which to save Map Run results, as JsonPath
+   */
+  readonly bucketNamePath?: string;
+
+  /**
    * S3 prefix in which to save Map Run results
    *
    * @default - No prefix
@@ -235,6 +247,7 @@ export class ResultWriterV2 {
 
   constructor(props: ResultWriterV2Props) {
     this.bucket = props.bucket;
+    this.bucketNamePath = props.bucketNamePath;
     this.prefix = props.prefix;
     this.writerConfig = props.writerConfig;
   }
@@ -244,9 +257,10 @@ export class ResultWriterV2 {
    */
   public render(queryLanguage?: QueryLanguage): any {
     // Resource and Parameters are only applicable if the bucket is defined, otherwise they shouldn't be rendered.
-    const shouldRenderResourceAndParameters = !!this.bucket;
+    const shouldRenderResourceAndParameters = !!(this.bucket || this.bucketNamePath);
     const argumentOrParameter = shouldRenderResourceAndParameters ? {
-      Bucket: this.bucket?.bucketName,
+      ...(this.bucket && { Bucket: this.bucket.bucketName }),
+      ...(this.bucketNamePath && { Bucket: this.bucketNamePath }),
       ...(this.prefix && { Prefix: this.prefix }),
     }: undefined;
 
@@ -270,6 +284,22 @@ export class ResultWriterV2 {
    * Compile policy statements to provide relevent permissions to the state machine
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
-    return this.bucket?.bucketName ? buildS3PutObjectPolicyStatements(this.bucket?.bucketName) : [];
+    if (!this.bucket?.bucketName && !this.bucketNamePath) {
+      return [];
+    } else if (this.bucketNamePath) {
+      return buildS3PutObjectPolicyStatements();
+    }
+    return buildS3PutObjectPolicyStatements(this.bucket?.bucketName);
+  }
+
+  /**
+   * Validate that ResultWriter contains exactly either @see bucket or @see bucketNamePath
+   */
+  public validateResultWriter(): string[] {
+    const errors: string[] = [];
+    if (this.bucket && this.bucketNamePath) {
+      errors.push('Provide either `bucket` or `bucketNamePath`, but not both');
+    }
+    return errors;
   }
 }

@@ -26,6 +26,7 @@ import {
   ValidationError,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -250,7 +251,7 @@ export interface LaunchTemplateProps {
   readonly machineImage?: IMachineImage;
 
   /**
-   * The AMI that will be used by instances.
+   * The user data to make available to the instance.
    *
    * @default - This Launch Template creates a UserData based on the type of provided
    * machineImage; no UserData is created if a machineImage is not provided
@@ -505,7 +506,13 @@ export interface LaunchTemplateAttributes {
  *
  * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html
  */
+@propertyInjectable
 export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGrantable, IConnectable {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.LaunchTemplate';
+
   /**
    * Import an existing LaunchTemplate.
    */

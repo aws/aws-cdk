@@ -541,6 +541,39 @@ describe('restapi', () => {
     })).toThrow(/Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed/);
   });
 
+  test.each([
+    apigw.IpAddressType.IPV4,
+    apigw.IpAddressType.DUAL_STACK,
+  ])('configure ip address type', (ipAddressType) => {
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {
+      endpointConfiguration: {
+        types: [apigw.EndpointType.EDGE],
+        ipAddressType,
+      },
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      EndpointConfiguration: {
+        Types: ['EDGE'],
+        IpAddressType: ipAddressType,
+      },
+    });
+  });
+
+  test('throw error for configuring IPv4 for private endpoint', () => {
+    // THEN
+    expect(() => new apigw.RestApi(stack, 'api', {
+      endpointConfiguration: {
+        types: [apigw.EndpointType.PRIVATE],
+        ipAddressType: apigw.IpAddressType.IPV4,
+      },
+    })).toThrow('Private APIs can only have a dualstack IP address type.');
+  });
+
   test('"cloneFrom" can be used to clone an existing API', () => {
     const cloneFrom = apigw.RestApi.fromRestApiId(stack, 'RestApi', 'foobar');
 
@@ -700,6 +733,55 @@ describe('restapi', () => {
         title: 'test',
         type: 'object',
         properties: { message: { type: 'string' } },
+      },
+    });
+  });
+
+  test('addModel supports additionalItems as boolean and object', () => {
+    const api = new apigw.RestApi(stack, 'myapi-additionalitems');
+    api.root.addMethod('OPTIONS');
+
+    // WHEN: additionalItems as boolean
+    api.addModel('modelWithAdditionalItemsTrue', {
+      schema: {
+        schema: apigw.JsonSchemaVersion.DRAFT4,
+        title: 'test-true',
+        type: apigw.JsonSchemaType.ARRAY,
+        items: { type: apigw.JsonSchemaType.STRING },
+        additionalItems: true,
+      },
+    });
+
+    // WHEN: additionalItems as object
+    api.addModel('modelWithAdditionalItemsObject', {
+      schema: {
+        schema: apigw.JsonSchemaVersion.DRAFT4,
+        title: 'test-object',
+        type: apigw.JsonSchemaType.ARRAY,
+        items: { type: apigw.JsonSchemaType.STRING },
+        additionalItems: { type: apigw.JsonSchemaType.NUMBER },
+      },
+    });
+
+    // THEN: boolean case
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Model', {
+      Schema: {
+        $schema: 'http://json-schema.org/draft-04/schema#',
+        title: 'test-true',
+        type: 'array',
+        items: { type: 'string' },
+        additionalItems: true,
+      },
+    });
+
+    // THEN: object case
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Model', {
+      Schema: {
+        $schema: 'http://json-schema.org/draft-04/schema#',
+        title: 'test-object',
+        type: 'array',
+        items: { type: 'string' },
+        additionalItems: { type: 'number' },
       },
     });
   });

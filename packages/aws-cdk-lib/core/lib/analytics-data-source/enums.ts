@@ -127,6 +127,29 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'SPOT_CAPACITY_OPTIMIZED',
     'SPOT_PRICE_CAPACITY_OPTIMIZED'
   ],
+  'AllowMapsAction': [
+    'geo-maps:GetStaticMap',
+    'geo-maps:GetTile',
+    'geo-maps:*'
+  ],
+  'AllowPlacesAction': [
+    'geo-places:Autocomplete',
+    'geo-places:Geocode',
+    'geo-places:GetPlace',
+    'geo-places:ReverseGeocode',
+    'geo-places:SearchNearby',
+    'geo-places:SearchText',
+    'geo-places:Suggest',
+    'geo-places:*'
+  ],
+  'AllowRoutesAction': [
+    'geo-routes:CalculateIsolines',
+    'geo-routes:CalculateRoutes',
+    'geo-routes:CalculateRouteMatrix',
+    'geo-routes:OptimizeWaypoints',
+    'geo-routes:SnapToRoads',
+    'geo-routes:*'
+  ],
   'AlpnPolicy': [
     'HTTP1Only',
     'HTTP2Only',
@@ -185,7 +208,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'AMAZON_OPENSEARCH_SERVICE',
     'HTTP',
     'RELATIONAL_DATABASE',
-    'AMAZON_BEDROCK_RUNTIME'
+    'AMAZON_BEDROCK_RUNTIME',
+    'AMAZON_ELASTICSEARCH'
   ],
   'AppSyncFieldLogLevel': [
     'NONE',
@@ -846,11 +870,17 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'nodejs14.x',
     'nodejs16.x',
     'nodejs18.x',
-    'nodejs20.x'
+    'nodejs20.x',
+    'nodejs22.x'
   ],
   'CustomThreatProtectionMode': [
     'ENFORCED',
     'AUDIT'
+  ],
+  'CustomizationType': [
+    'FINE_TUNING',
+    'CONTINUED_PRE_TRAINING',
+    'DISTILLATION'
   ],
   'DBClusterStorageType': [
     'aurora',
@@ -1452,6 +1482,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'http2and3',
     'http3'
   ],
+  'HttpsPolicy': [
+    'REQUIRE',
+    'REQUIRE_OPEN_ONLY',
+    'OPTIONAL'
+  ],
   'IdentityPoolProviderType': [
     'Facebook',
     'Google',
@@ -1614,6 +1649,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'r7a',
     'memory8-graviton',
     'r8g',
+    'memory8-graviton4-nvme-drive',
+    'r8gd',
     'compute3',
     'c3',
     'compute4',
@@ -1646,6 +1683,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'c6gd',
     'compute7-graviton3-nvme-drive',
     'c7gd',
+    'compute8-graviton4-nvme-drive',
+    'c8gd',
     'compute6-graviton2-high-network-bandwidth',
     'c6gn',
     'compute7-graviton3-high-network-bandwidth',
@@ -1686,6 +1725,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'is4gen',
     'storage7-intel-storage-optimized',
     'i7ie',
+    'io7_intel',
+    'i7i',
     'storage8-graviton',
     'i8g',
     'burstable2',
@@ -1772,6 +1813,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'm8g',
     'standard7-graviton3-nvme-drive',
     'm7gd',
+    'standard8-graviton4-nvme-drive',
+    'm8gd',
     'standard7-intel',
     'm7i',
     'standard7-intel-flex',
@@ -3304,6 +3347,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     4,
     5,
     6
+  ],
+  'TableBucketEncryption': [
+    'aws:kms',
+    'AES256'
   ],
   'TableClass': [
     'STANDARD',

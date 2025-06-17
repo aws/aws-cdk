@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnHealthCheck } from './route53.generated';
 import { Duration, IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Imported or created health check
@@ -232,7 +233,13 @@ export interface HealthCheckProps {
  * - The CloudWatch alarm that you specify,
  * - The status of an Amazon Route 53 routing control.
  */
+@propertyInjectable
 export class HealthCheck extends Resource implements IHealthCheck {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.HealthCheck';
+
   /**
    * Import an existing health check into this CDK app.
    *
@@ -314,6 +321,7 @@ function getDefaultMeasureLatencyForType(type: HealthCheckType): boolean | undef
   switch (type) {
     case HealthCheckType.CALCULATED:
     case HealthCheckType.CLOUDWATCH_METRIC:
+    case HealthCheckType.RECOVERY_CONTROL:
       return undefined;
     default:
       return false;
@@ -332,6 +340,7 @@ function getDefaultFailureThresholdForType(type: HealthCheckType): number | unde
   switch (type) {
     case HealthCheckType.CALCULATED:
     case HealthCheckType.CLOUDWATCH_METRIC:
+    case HealthCheckType.RECOVERY_CONTROL:
       return undefined;
     default:
       return 3;
@@ -342,6 +351,7 @@ function getDefaultRequestIntervalForType(type: HealthCheckType): Duration | und
   switch (type) {
     case HealthCheckType.CALCULATED:
     case HealthCheckType.CLOUDWATCH_METRIC:
+    case HealthCheckType.RECOVERY_CONTROL:
       return undefined;
     default:
       return Duration.seconds(30);

@@ -21,6 +21,7 @@ import * as cxschema from '../../cloud-assembly-schema';
 import { ArnComponents, ArnFormat, ContextProvider, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -1246,7 +1247,13 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
  *
  * @resource AWS::RDS::DBInstance
  */
+@propertyInjectable
 export class DatabaseInstance extends DatabaseInstanceSource implements IDatabaseInstance {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstance';
+
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
@@ -1298,8 +1305,31 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
    * The name or Amazon Resource Name (ARN) of the DB snapshot that's used to
    * restore the DB instance. If you're restoring from a shared manual DB
    * snapshot, you must specify the ARN of the snapshot.
+   * Constraints:
+   *
+   * - Can't be specified when `clusterSnapshotIdentifier` is specified.
+   * - Must be specified when `clusterSnapshotIdentifier` isn't specified.
+   *
+   * @default - None
    */
-  readonly snapshotIdentifier: string;
+  readonly snapshotIdentifier?: string;
+
+  /**
+   * The identifier for the Multi-AZ DB cluster snapshot to restore from.
+   *
+   * For more information on Multi-AZ DB clusters, see [Multi-AZ DB cluster deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/multi-az-db-clusters-concepts.html) in the *Amazon RDS User Guide* .
+   *
+   * Constraints:
+   *
+   * - Can't be specified when `snapshotIdentifier` is specified.
+   * - Must be specified when `snapshotIdentifier` isn't specified.
+   * - If you are restoring from a shared manual Multi-AZ DB cluster snapshot, the `clusterSnapshotIdentifier` must be the ARN of the shared snapshot.
+   * - Can't be the identifier of an Aurora DB cluster snapshot.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromMultiAZDBClusterSnapshot.html
+   * @default - None
+   */
+  readonly clusterSnapshotIdentifier?: string;
 
   /**
    * Master user credentials.
@@ -1317,7 +1347,13 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
  *
  * @resource AWS::RDS::DBInstance
  */
+@propertyInjectable
 export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource implements IDatabaseInstance {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstanceFromSnapshot';
+
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
@@ -1329,6 +1365,13 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    if (!props.snapshotIdentifier && !props.clusterSnapshotIdentifier) {
+      throw new ValidationError('You must specify `snapshotIdentifier` or `clusterSnapshotIdentifier`', this);
+    }
+    if (props.snapshotIdentifier && props.clusterSnapshotIdentifier) {
+      throw new ValidationError('You cannot specify both `snapshotIdentifier` and `clusterSnapshotIdentifier`', this);
+    }
 
     let credentials = props.credentials;
     let secret = credentials?.secret;
@@ -1349,6 +1392,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       dbSnapshotIdentifier: props.snapshotIdentifier,
+      dbClusterSnapshotIdentifier: props.clusterSnapshotIdentifier,
       masterUserPassword: secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
@@ -1415,7 +1459,13 @@ export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceNewPro
  *
  * @resource AWS::RDS::DBInstance
  */
+@propertyInjectable
 export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements IDatabaseInstance {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstanceReadReplica';
+
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;

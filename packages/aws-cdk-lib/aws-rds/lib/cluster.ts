@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IAuroraClusterInstance, IClusterInstance, InstanceType } from './aurora-cluster-instance';
-import { IClusterEngine } from './cluster-engine';
+import { ClusterEngineConfig, IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { Endpoint } from './endpoint';
 import { NetworkType } from './instance';
@@ -23,6 +23,7 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import { Annotations, ArnFormat, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -90,6 +91,17 @@ interface DatabaseClusterBaseProps {
    * @default 0.5
    */
   readonly serverlessV2MinCapacity?: number;
+
+  /**
+   * Specifies the duration an Aurora Serverless v2 DB instance must be idle before Aurora attempts to automatically pause it.
+   *
+   * The duration must be between 300 seconds (5 minutes) and 86,400 seconds (24 hours).
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html
+   *
+   * @default - The default is 300 seconds (5 minutes).
+   */
+  readonly serverlessV2AutoPauseDuration?: Duration;
 
   /**
    * What subnets to run the RDS instances in.
@@ -364,7 +376,7 @@ interface DatabaseClusterBaseProps {
   /**
    * The storage type to be associated with the DB cluster.
    *
-   * @default - DBClusterStorageType.AURORA_IOPT1
+   * @default - DBClusterStorageType.AURORA
    */
   readonly storageType?: DBClusterStorageType;
 
@@ -781,6 +793,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   protected readonly serverlessV2MinCapacity: number;
   protected readonly serverlessV2MaxCapacity: number;
+  protected readonly serverlessV2AutoPauseDuration?: Duration;
 
   protected hasServerlessInstance?: boolean;
   protected enableDataApi?: boolean;
@@ -808,7 +821,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     this.serverlessV2MaxCapacity = props.serverlessV2MaxCapacity ?? 2;
     this.serverlessV2MinCapacity = props.serverlessV2MinCapacity ?? 0.5;
-    this.validateServerlessScalingConfig();
+    this.serverlessV2AutoPauseDuration = props.serverlessV2AutoPauseDuration;
 
     this.enableDataApi = props.enableDataApi;
 
@@ -888,6 +901,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     }
 
     validateDatabaseClusterProps(this, props);
+    this.validateServerlessScalingConfig(clusterEngineBindConfig);
 
     const enablePerformanceInsights = props.enablePerformanceInsights
       || props.performanceInsightRetention !== undefined
@@ -941,7 +955,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
             return {
               minCapacity: this.serverlessV2MinCapacity,
               maxCapacity: this.serverlessV2MaxCapacity,
-            };
+              secondsUntilAutoPause: this.serverlessV2AutoPauseDuration?.toSeconds(),
+            } satisfies CfnDBCluster.ServerlessV2ScalingConfigurationProperty;
           }
           return undefined;
         },
@@ -1145,7 +1160,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     return this.metric('ACUUtilization', { statistic: 'Average', ...props });
   }
 
-  private validateServerlessScalingConfig(): void {
+  private validateServerlessScalingConfig(config: ClusterEngineConfig): void {
     if (this.serverlessV2MaxCapacity > 256 || this.serverlessV2MaxCapacity < 1) {
       throw new ValidationError('serverlessV2MaxCapacity must be >= 1 & <= 256', this);
     }
@@ -1162,6 +1177,18 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     if (!regexp.test(this.serverlessV2MaxCapacity.toString()) || !regexp.test(this.serverlessV2MinCapacity.toString())) {
       throw new ValidationError('serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments, received '+
       `min: ${this.serverlessV2MaxCapacity}, max: ${this.serverlessV2MaxCapacity}`, this);
+    }
+
+    if (this.serverlessV2AutoPauseDuration) {
+      if (!config.features?.serverlessV2AutoPauseSupported) {
+        throw new ValidationError(`serverlessV2 auto-pause feature is not supported by ${this.engine?.engineType} ${this.engine?.engineVersion?.fullVersion}.`, this);
+      }
+      if (
+        !this.serverlessV2AutoPauseDuration.isUnresolved() &&
+        (this.serverlessV2AutoPauseDuration.toSeconds() < 300 || this.serverlessV2AutoPauseDuration.toSeconds() > 86400)
+      ) {
+        throw new ValidationError(`serverlessV2AutoPause must be between 300 seconds (5 minutes) and 86,400 seconds (24 hours), received ${this.serverlessV2AutoPauseDuration.toSeconds()} seconds`, this);
+      }
     }
   }
 
@@ -1212,7 +1239,10 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 /**
  * Represents an imported database cluster.
  */
+@propertyInjectable
 class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ImportedDatabaseCluster';
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
   public readonly engine?: IClusterEngine;
@@ -1313,7 +1343,13 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
  *
  * @resource AWS::RDS::DBCluster
  */
+@propertyInjectable
 export class DatabaseCluster extends DatabaseClusterNew {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseCluster';
+
   /**
    * Import an existing DatabaseCluster from properties
    */
@@ -1507,7 +1543,13 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
  *
  * @resource AWS::RDS::DBCluster
  */
+@propertyInjectable
 export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseClusterFromSnapshot';
+
   public readonly clusterIdentifier: string;
   public readonly clusterResourceIdentifier: string;
   public readonly clusterEndpoint: Endpoint;

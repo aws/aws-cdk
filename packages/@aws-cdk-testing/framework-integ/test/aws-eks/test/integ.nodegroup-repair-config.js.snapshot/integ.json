@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "aws-cdk-eks-nodegroup-repair-config/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "aws-cdk-eks-nodegroup-repair-config/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksnodegrouprepairconfigDefaultTestDeployAssert9E10A247"
     }
-  }
+  },
+  "minimumCliVersion": "2.1017.1"
 }

@@ -91,6 +91,7 @@ export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDef
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
 export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
+export const KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL = '@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal';
 export const EFS_DENY_ANONYMOUS_ACCESS = '@aws-cdk/aws-efs:denyAnonymousAccess';
 export const EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID = '@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId';
 export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE = '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
@@ -136,6 +137,11 @@ export const ASPECT_PRIORITIES_MUTATING = '@aws-cdk/core:aspectPrioritiesMutatin
 export const DYNAMODB_TABLE_RETAIN_TABLE_REPLICA = '@aws-cdk/aws-dynamodb:retainTableReplica';
 export const LOG_USER_POOL_CLIENT_SECRET_VALUE = '@aws-cdk/cognito:logUserPoolClientSecretValue';
 export const PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope';
+export const S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS = '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions';
+export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway';
+export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
+export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
+export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -838,6 +844,20 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.83.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL]: {
+    type: FlagType.BugFix,
+    summary: 'Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition',
+    detailsMd: `
+      This flag enables the grant methods (grant, grantDecrypt, grantEncrypt, etc.) on Aliases imported
+      by name to grant permissions based on the 'kms:ResourceAliases' condition rather than no-op grants.
+      When disabled, grant calls on imported aliases will be dropped (no-op) to maintain compatibility.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Remove calls to the grant* methods on the aliases referenced by name',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -1550,6 +1570,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
 
+  //////////////////////////////////////////////////////////////////////
   [STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2]: {
     type: FlagType.ApiDefault,
     summary: 'When enabled, the resultWriterV2 property of DistributedMap will be used insted of resultWriter',
@@ -1560,6 +1581,84 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.188.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag and set resultWriter in DistributedMap',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS]: {
+    type: FlagType.BugFix,
+    summary: 'Add an S3 trust policy to a KMS key resource policy for SNS subscriptions.',
+    detailsMd: `
+      When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
+          `,
+    introducedIn: { v2: '2.195.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC.',
+    detailsMd: `
+      When this feature flag is enabled, EgressOnlyGateway resource will not be created when you create a vpc with only public subnets.
+          `,
+    introducedIn: { v2: '2.196.0' },
+    recommendedValue: true,
+  },
+
+  /// ///////////////////////////////////////////////////////////////////
+  [USE_RESOURCEID_FOR_VPCV2_MIGRATION]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, use resource IDs for VPC V2 migration',
+    detailsMd: `
+        When this feature flag is enabled, the VPC V2 migration will use resource IDs instead of getAtt references
+        for migrating resources from VPC V1 to VPC V2. This helps ensure a smoother migration path between
+        the two versions.
+      `,
+    introducedIn: { v2: 'V2_NEXT' },
+    recommendedValue: false,
+    defaults: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to use getAtt references for VPC V2 migration',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined.',
+    detailsMd: `
+      When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console. 
+      The previous behavior in cdk before this feature was; if only some of the BlockPublicAccessOptions were set (not all 4), then the ones undefined would default to false.
+      This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
+      The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
+    `,
+    introducedIn: { v2: '2.196.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, CDK creates and manages loggroup for the lambda function',
+    detailsMd: `
+        When this feature flag is enabled, CDK will create a loggroup for lambda function with default properties
+        which supports CDK features Tag propagation, Property Injectors, Aspects
+        if the cdk app doesnt pass a 'logRetention' or 'logGroup' explicitly. 
+        LogGroups created via 'logRetention' do not support Tag propagation, Property Injectors, Aspects.
+        LogGroups created via 'logGroup' created in CDK support Tag propagation, Property Injectors, Aspects.
+        
+        When this feature flag is disabled, a loggroup is created by Lambda service on first invocation 
+        of the function (existing behavior). 
+        LogGroups created in this way do not support Tag propagation, Property Injectors, Aspects.
+
+        DO NOT ENABLE: If you have and existing app defining a lambda function and 
+        have not supplied a logGroup or logRetention prop and your lambda function has 
+        executed at least once, the logGroup has been already created with the same name 
+        so your deployment will start failing.
+        Refer aws-lambda/README.md for more details on Customizing Log Group creation.
+      `,
+    introducedIn: { v2: 'V2_NEXT' },
+    defaults: { v2: false },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
   },
 };
 

@@ -7,6 +7,8 @@ const CONSTRUCT_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.SynthesisError');
 const VALIDATION_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.ValidationError');
 const ASSERTION_ERROR_SYMBOL = Symbol.for('@aws-cdk/assertions.AssertionError');
 const ASSEMBLY_ERROR_SYMBOL = Symbol.for('@aws-cdk/cx-api.CloudAssemblyError');
+const ASSUMPTION_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.AssumptionError');
+const EXECUTION_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.ExecutionError');
 
 /**
  * Helper to check if an error is of a certain type.
@@ -48,6 +50,25 @@ export class Errors {
    */
   public static isCloudAssemblyError(x: any): x is CloudAssemblyError {
     return x !== null && typeof(x) === 'object' && ASSEMBLY_ERROR_SYMBOL in x;
+  }
+
+  /**
+   * Test whether the given error is an ExecutionError.
+   *
+   * An ExecutionError is thrown if an externally executed script or code failed.
+   */
+  public static isExecutionError(x: any): x is ExecutionError {
+    return x !== null && typeof(x) === 'object' && EXECUTION_ERROR_SYMBOL in x;
+  }
+
+  /**
+   * Test whether the given error is an AssumptionError.
+   *
+   * An AssumptionError is thrown when a construct made an assumption somewhere that doesn't hold true.
+   * This error always indicates a bug in the construct.
+   */
+  public static isAssumptionError(x: any): x is AssumptionError {
+    return x !== null && typeof(x) === 'object' && ASSUMPTION_ERROR_SYMBOL in x;
   }
 }
 
@@ -198,5 +219,42 @@ export class UnscopedValidationError extends ConstructError {
     super(msg, undefined, ValidationError.name);
     Object.setPrototypeOf(this, UnscopedValidationError.prototype);
     Object.defineProperty(this, VALIDATION_ERROR_SYMBOL, { value: true });
+  }
+}
+
+/**
+ * Some construct code made an assumption somewhere that doesn't hold true
+ *
+ * This error always indicates a bug in the construct.
+ *
+ * @internal
+ */
+export class AssumptionError extends ConstructError {
+  public get type(): 'assumption' {
+    return 'assumption';
+  }
+
+  constructor(msg: string) {
+    super(msg, undefined, AssumptionError.name);
+    Object.setPrototypeOf(this, AssumptionError.prototype);
+    Object.defineProperty(this, ASSUMPTION_ERROR_SYMBOL, { value: true });
+  }
+}
+
+/**
+ * A CDK app may execute external code or shell scripts. If such an execution fails, an ExecutionError is thrown.
+ * The output log and error message will provide more details on the actual failure.
+ *
+ * @internal
+ */
+export class ExecutionError extends ConstructError {
+  public get type(): 'exec' {
+    return 'exec';
+  }
+
+  constructor(msg: string) {
+    super(msg, undefined, ExecutionError.name);
+    Object.setPrototypeOf(this, ExecutionError.prototype);
+    Object.defineProperty(this, EXECUTION_ERROR_SYMBOL, { value: true });
   }
 }

@@ -102,12 +102,14 @@ Auto build and pull request preview are enabled by default.
 Add custom rules for redirection:
 
 ```ts
+import { CustomRule } from '@aws-cdk/aws-amplify-alpha';
+
 declare const amplifyApp: amplify.App;
-amplifyApp.addCustomRule({
+amplifyApp.addCustomRule(new CustomRule({
   source: '/docs/specific-filename.html',
   target: '/documents/different-filename.html',
   status: amplify.RedirectStatus.TEMPORARY_REDIRECT,
-});
+}));
 ```
 
 When working with a single page application (SPA), use the
@@ -246,6 +248,26 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
 });
 ```
 
+## Compute role
+
+This integration, enables you to assign an IAM role to the Amplify SSR Compute service to allow your server-side rendered (SSR) application to securely access specific AWS resources based on the role's permissions.
+
+For example, you can allow your app's SSR compute functions to securely access other AWS services or resources, such as Amazon Bedrock or an Amazon S3 bucket, based on the permissions defined in the assigned IAM role.
+
+For more information, see [Adding an SSR Compute role to allow access to AWS resources](https://docs.aws.amazon.com/amplify/latest/userguide/amplify-SSR-compute-role.html).
+
+By default, a new role is created when `platform` is `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.
+If you want to assign an IAM role to the APP, set `compute` to the role:
+
+```ts
+declare const computeRole: iam.Role;
+
+const amplifyApp = new amplify.App(this, 'MyApp', {
+  platform: amplify.Platform.WEB_COMPUTE,
+  computeRole,
+});
+```
+
 ## Cache Config
 
 Amplify uses Amazon CloudFront to manage the caching configuration for your hosted applications. A cache configuration is applied to each app to optimize for the best performance.
@@ -270,4 +292,18 @@ import * as assets from 'aws-cdk-lib/aws-s3-assets';
 declare const asset: assets.Asset;
 declare const amplifyApp: amplify.App;
 const branch = amplifyApp.addBranch("dev", { asset: asset });
+```
+
+## Skew protection for Amplify Deployments
+
+Deployment skew protection is available to Amplify applications to eliminate version skew issues between client and servers in web applications.
+When you apply skew protection to an Amplify application, you can ensure that your clients always interact with the correct version of server-side assets, regardless of when a deployment occurs.
+
+For more information, see [Skew protection for Amplify deployments](https://docs.aws.amazon.com/amplify/latest/userguide/skew-protection.html).
+
+To enable skew protection, set the `skewProtection` property to `true`:
+
+```ts
+declare const amplifyApp: amplify.App;
+const branch = amplifyApp.addBranch("dev", { skewProtection: true });
 ```
