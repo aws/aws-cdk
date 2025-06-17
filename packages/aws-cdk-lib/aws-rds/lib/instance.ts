@@ -1092,7 +1092,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     const engineType = props.engine.engineType;
 
     if (props.engineLifecycleSupport && !['mysql', 'postgres'].includes(engineType)) {
-      throw new ValidationError(`Engine '${engineType}' does not support engine lifecycle support`, this);
+      throw new ValidationError(`'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
     }
 
     // only Oracle and SQL Server require the import and export Roles to be the same
@@ -1508,8 +1508,9 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       throw new ValidationError(`Cannot set 'backupRetention', as engine '${engineDescription(props.sourceDatabaseInstance.engine)}' does not support automatic backups for read replicas`, this);
     }
 
-    if (props.sourceDatabaseInstance.engine?.engineType && props.engineLifecycleSupport && !['mysql', 'postgres'].includes(props.sourceDatabaseInstance.engine.engineType)) {
-      throw new ValidationError(`Engine '${props.sourceDatabaseInstance.engine.engineType}' does not support engine lifecycle support`, this);
+    const engineType = props.sourceDatabaseInstance.engine?.engineType;
+    if (engineType && props.engineLifecycleSupport && !['mysql', 'postgres'].includes(engineType)) {
+      throw new ValidationError(`'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
     }
 
     // The read replica instance always uses the same engine as the source instance

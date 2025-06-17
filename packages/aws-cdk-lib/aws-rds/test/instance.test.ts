@@ -2335,7 +2335,7 @@ describe('instance', () => {
       engine,
       vpc,
       engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
-    })).toThrow(/does not support engine lifecycle support/);
+    })).toThrow(/'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL/);
   });
 
   test.each([
@@ -2348,7 +2348,7 @@ describe('instance', () => {
       engine,
       vpc,
       engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
-    })).toThrow(/does not support engine lifecycle support/);
+    })).toThrow(/'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL/);
   });
 
   test.each([
@@ -2367,7 +2367,7 @@ describe('instance', () => {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
       vpc,
       engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
-    })).toThrow(/does not support engine lifecycle support/);
+    })).toThrow(/'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL/);
   });
 
   test.each([

@@ -2,43 +2,46 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { InstanceSnapshoter } from './snapshoter';
 
-/*
- * For simplicity, this integration test uses a public snapshot.
- * By the time you rerun, the snapshot might already be deleted.
- *
- * How to get another compatible public snapshot:
- * * aws rds describe-db-snapshots --include-public --snapshot-type public --query "DBSnapshots[?Engine=='mysql' && EngineVersion=='8.4.5']" --output table
- *
- * Or find one in AWS Console > RDS > Snapshots > Public
- */
-const SNAPSHOT_IDENTIFIER = 'arn:aws:rds:us-east-1:484907511898:snapshot:vuln-test-db-snapshot-prod';
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 
-const app = new App();
 const stack = new Stack(app, 'cdk-instance-engine-lifecycle-support');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
 
+const engine = rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 });
+const instanceType = ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL);
+
 const sourceInstance = new rds.DatabaseInstance(stack, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+  engine,
+  instanceType,
   vpc,
   removalPolicy: RemovalPolicy.DESTROY,
   engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
 });
 
-new rds.DatabaseInstanceFromSnapshot(stack, 'FromSnapshot', {
-  snapshotIdentifier: SNAPSHOT_IDENTIFIER,
-  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_41 }),
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+const snapshoter = new InstanceSnapshoter(stack, 'Snapshoter', {
+  instance: sourceInstance,
+  snapshotIdentifier: 'cdk-instance-engine-lifecycle-support-snapshot',
+});
+
+const restoredInstance = new rds.DatabaseInstanceFromSnapshot(stack, 'FromSnapshot', {
+  snapshotIdentifier: snapshoter.snapshotArn,
+  engine,
+  instanceType,
   vpc,
   removalPolicy: RemovalPolicy.DESTROY,
   engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
 });
 
 new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
-  sourceDatabaseInstance: sourceInstance,
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+  sourceDatabaseInstance: restoredInstance,
+  instanceType,
   vpc,
   removalPolicy: RemovalPolicy.DESTROY,
   engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
