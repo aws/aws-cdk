@@ -1,8 +1,8 @@
 export class Github {
-    token: string
+  token: string;
 
     constructor(token: string) {
-        this.token = token
+    this.token = token;
     }
 
     async authGraphQL(query: string) {
@@ -12,11 +12,11 @@ export class Github {
                 'Authorization': `token ${this.token}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ query })
+      body: JSON.stringify({ query }),
         });
         
         if (!response.ok) {
-            throw new Error(`GitHub GraphQL request failed: ${response.statusText}`);
+      throw new Error(`GitHub GraphQL request failed: ${response.statusText}`, this);
         }
         
         return response.json();
@@ -66,7 +66,7 @@ export class Github {
                     }
                 }
             }
-        `)
+  `);
     }
 
     getIssue(issue: string) {
@@ -143,39 +143,23 @@ export class Github {
                     }
                 }
             }
-        `)
+    `);
     }
 
     async setProjectItem(projectId: string, itemId: string, fields: Record<
         string,
         {date: Date} | {text: string} | {number: number} | {singleSelectOptionId: string} | {iterationId: string}
     >) {
-        const results = []
+    const results = [];
         for (const [key, value] of Object.entries(fields)) {
-            console.log(`
+      results.push(await this.authGraphQL(`
                 mutation {
                     updateProjectV2ItemFieldValue(
                         input: {
                             projectId: "${projectId}",
                             itemId: "${itemId}",
                             fieldId: "${key}",
-                            value: {${Object.entries(value).map(([key, value]) => `${key}: ${JSON.stringify(value)}`).join(',')}}
-                        }
-                    ) {
-                        projectV2Item {
-                            id
-                        }
-                    }
-                }
-            `);
-            results.push(this.authGraphQL(`
-                mutation {
-                    updateProjectV2ItemFieldValue(
-                        input: {
-                            projectId: "${projectId}",
-                            itemId: "${itemId}",
-                            fieldId: "${key}",
-                            value: {${Object.entries(value).map(([key, value]) => `${key}: ${JSON.stringify(value)}`).join(',')}}
+              value: {${Object.entries(value).map(([fieldKey, fieldValue]) => `${fieldKey}: ${JSON.stringify(fieldValue)}`).join(',')}}
                         }
                     ) {
                         projectV2Item {
@@ -185,6 +169,6 @@ export class Github {
                 }
             `));
         }
-        return Promise.all(results)
+    return results;
     }
 }

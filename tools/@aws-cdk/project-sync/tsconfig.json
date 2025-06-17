@@ -15,7 +15,8 @@
     "resolveJsonModule": true,
     "composite": true,
     "incremental": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "types": ["node"]
   },
   "include": ["**/*.ts"],
   "exclude": ["**/*.d.ts"]

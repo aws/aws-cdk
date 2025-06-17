@@ -1,93 +1,92 @@
-import {Github} from './github.js'
+import { Github } from './github.js';
 
 export const getGithubClient = () => {
-    if (!process.env.GITHUB_TOKEN) {
-        throw new Error('GITHUB_TOKEN is not set')
-    }
-    return new Github(process.env.GITHUB_TOKEN)
-} 
+  if (!process.env.GITHUB_TOKEN) {
+    throw new Error('GITHUB_TOKEN is not set');
+  }
+  return new Github(process.env.GITHUB_TOKEN);
+};
 
 export const PROJECT_ID = process.env.PROJECT_ID || '302';
 
 export const syncIssue = async (issue: string) => {
-    const github = getGithubClient()
+  const github = getGithubClient();
 
-    // 1. Fetch the issue details
-    const issueData = await github.getIssue(issue) as Record<any, any>;
+  // 1. Fetch the issue details
+  const issueData = await github.getIssue(issue) as Record<any, any>;
 
-    // Extract repository data
-    const repoData = issueData?.data?.repository;
-    if (!repoData || !repoData.issue) {
-        throw new Error(`Issue ${issue} not found`);
+  // Extract repository data
+  const repoData = issueData?.data?.repository;
+  if (!repoData || !repoData.issue) {
+    throw new Error(`Issue ${issue} not found`);
+  }
+
+  const issueDetails = repoData.issue;
+
+  // If issue is part of the project, set the issue's project properties
+  let projectItemId = undefined;
+  if (issueDetails.projectItems?.nodes) {
+    for (const node of issueDetails.projectItems.nodes) {
+      if (`${node.project?.number}` === PROJECT_ID) {
+        projectItemId = node.id;
+        break;
+      }
     }
+  }
 
-    const issueDetails = repoData.issue;
+  if (projectItemId === undefined) {
+    console.log('Issue is not included in project, skipping.');
+    return;
+  }
 
-    // If issue is part of the project, set the issue's project properties
-    let projectItemId = undefined;
-    if (issueDetails.projectItems?.nodes) {
-        for (const node of issueDetails.projectItems.nodes) {
-            if (`${node.project?.number}` === PROJECT_ID) {
-                projectItemId = node.id;
-                break;
-            }
-        }
+  const projectInfo = await github.getProjectInfo(PROJECT_ID);
+  const projectId = projectInfo.data.repository.projectV2.id!;
+
+  let creationFieldId = undefined;
+  let updateFieldId = undefined;
+  for (const field of projectInfo.data.repository.projectV2.fields.nodes) {
+    if (field.name === 'Creation date') {
+      creationFieldId = field.id;
     }
-
-    if(projectItemId === undefined){
-        console.log('Issue is not included in project, skipping.')
-        return;
+    if (field.name === 'Update date') {
+      updateFieldId = field.id;
     }
+  }
 
-    const projectInfo = await github.getProjectInfo(PROJECT_ID);
-    const projectId = projectInfo.data.repository.projectV2.id!
-    
-    let creationFieldId = undefined;
-    let updateFieldId = undefined;
-    for(const field of projectInfo.data.repository.projectV2.fields.nodes){
-        if(field.name === 'Creation date'){
-            creationFieldId = field.id
-        }
-        if(field.name === 'Update date'){
-            updateFieldId = field.id
-        }
+  if (creationFieldId === undefined) {
+    throw new Error('Project field "Creation date" not found');
+  }
+
+  if (updateFieldId === undefined) {
+    throw new Error('Project field "Update date" not found');
+  }
+
+  // Get timeline items to determine the last update date (excluding github-actions)
+  const timelineItems = issueDetails.timelineItems?.nodes ?? [];
+
+  // Get creation date from the first reaction or use current date
+  const creationDate = new Date(issueDetails.createdAt);
+
+  // Get update date from the last timeline item or use creation date
+  let updateDate = creationDate;
+
+  for (let index = 0; index < timelineItems.length; index++) {
+    const item = timelineItems[timelineItems.length-index-1];
+    if (item?.createdAt !== undefined && item.author?.login !== 'github-actions' && item.actor?.login !== 'github-actions') {
+      updateDate = new Date(item.createdAt);
+      break;
     }
+  }
 
-    if(creationFieldId === undefined){
-        throw new Error('Project field "Creation date" not found')
-    }
+  if (issueDetails.reactions.nodes.length > 0) {
+    const reactionDate = new Date(issueDetails.reactions.nodes[0].createdAt);
+    if (reactionDate > updateDate) {updateDate = reactionDate;}
+  }
 
-    if(updateFieldId === undefined){
-        throw new Error('Project field "Update date" not found')
-    }
-
-    // Get timeline items to determine the last update date (excluding github-actions)
-    const timelineItems = issueDetails.timelineItems?.nodes ?? [];
-
-    // Get creation date from the first reaction or use current date
-    const creationDate = new Date(issueDetails.createdAt)
-
-    // Get update date from the last timeline item or use creation date
-    let updateDate = creationDate;
-
-    for(let index = 0; index < timelineItems.length; index++){
-        const item = timelineItems[timelineItems.length-index-1]
-        if(item?.createdAt !== undefined && item.author?.login !== 'github-actions' && item.actor?.login !== 'github-actions'){
-            updateDate = new Date(item.createdAt)
-            break
-        }
-    }
-
-    if(issueDetails.reactions.nodes.length > 0) {
-        const reactionDate = new Date(issueDetails.reactions.nodes[0].createdAt)
-        if(reactionDate > updateDate)
-            updateDate = reactionDate
-    }
-
-    const result = await github.setProjectItem(projectId, projectItemId, {
-        [creationFieldId]: { date: creationDate },
-        [updateFieldId]: { date: updateDate }
-    });
-    console.log('Result from mutation request: ')
-    console.dir(JSON.stringify(result))
-}
+  const result = await github.setProjectItem(projectId, projectItemId, {
+    [creationFieldId]: { date: creationDate },
+    [updateFieldId]: { date: updateDate },
+  });
+  console.log('Result from mutation request: ');
+  console.dir(JSON.stringify(result));
+};
