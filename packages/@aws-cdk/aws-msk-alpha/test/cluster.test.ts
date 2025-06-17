@@ -998,5 +998,16 @@ describe('MSK Cluster', () => {
         BrokerNodeGroupInfo: { InstanceType: 'express.m7g.xlarge' },
       });
     });
+
+    test("fails when express is true but instanceType is not specified", () => {
+      expect(() => {
+        new msk.Cluster(stack, "ExpressClusterNoInstanceType", {
+          clusterName: "express-cluster-no-instance-type",
+          kafkaVersion: msk.KafkaVersion.V3_8_X,
+          vpc,
+          express: true,
+        });
+      }).toThrow('When express is set to true, instanceType must also be specified');
+    });
   });
 });

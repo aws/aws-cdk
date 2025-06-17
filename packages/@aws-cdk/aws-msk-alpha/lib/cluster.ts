@@ -101,6 +101,7 @@ export interface ClusterProps {
   /**
    * Whether to use an Express Broker.
    * When set to true, the cluster will be created with Express Brokers.
+   * When this is set to true, instanceType must also be specified.
    *
    * @default false
    */
@@ -508,6 +509,10 @@ export class Cluster extends ClusterBase {
     // Minimum: 1 GiB, maximum: 16384 GiB
     if (volumeSize < 1 || volumeSize > 16384) {
       throw new core.ValidationError('EBS volume size should be in the range 1-16384', this);
+    }
+
+    if (props.express && !props.instanceType) {
+      throw new core.ValidationError('When express is set to true, instanceType must also be specified', this);
     }
 
     const instanceType = props.instanceType
