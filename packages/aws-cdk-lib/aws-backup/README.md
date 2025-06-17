@@ -93,7 +93,7 @@ plan.addRule(new backup.BackupPlanRule({
     hour: '3',
     minute: '30',
   }),
-  scheduleExpressionTimezone: 'UTC',
+  scheduleExpressionTimezone: TimeZone.ETC_UTC,
   moveToColdStorageAfter: Duration.days(30),
 }));
 ```

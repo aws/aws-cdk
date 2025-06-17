@@ -1,6 +1,6 @@
 import { IBackupVault } from './vault';
 import * as events from '../../aws-events';
-import { Duration, Token, UnscopedValidationError } from '../../core';
+import { Duration, TimeZone, Token, UnscopedValidationError } from '../../core';
 
 /**
  * Properties for a BackupPlanRule
@@ -49,7 +49,7 @@ export interface BackupPlanRuleProps {
    *
    * @default - UTC
    */
-  readonly scheduleExpressionTimezone?: string;
+  readonly scheduleExpressionTimezone?: TimeZone;
 
   /**
    * The duration after a backup is scheduled before a job is canceled if it doesn't start successfully.
