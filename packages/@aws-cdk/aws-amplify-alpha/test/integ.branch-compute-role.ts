@@ -14,6 +14,7 @@ class TestStack extends Stack {
 
     const amplifyApp = new amplify.App(this, 'App', {
       cacheConfigType: amplify.CacheConfigType.AMPLIFY_MANAGED_NO_COOKIES,
+      platform: amplify.Platform.WEB_COMPUTE,
     });
 
     amplifyApp.addBranch('main', { computeRole });

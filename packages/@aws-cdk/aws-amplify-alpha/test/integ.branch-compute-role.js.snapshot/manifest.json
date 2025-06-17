@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0222f188c0b7068864c2972ab88876368a0322900ddf95130d0838a3b50783f2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f36fc6222700fa77a2a49b0330ff2709209927219fcb5052339ae7e3f927d592.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -88,6 +88,29 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AppRole1AF9B530"
+          }
+        ],
+        "/cdk-amplify-branch-compute-role/App/ComputeRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/cdk-amplify-branch-compute-role/App/ComputeRole/ImportComputeRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cdk-amplify-branch-compute-role/App/ComputeRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppComputeRole426920E4"
           }
         ],
         "/cdk-amplify-branch-compute-role/App/Resource": [

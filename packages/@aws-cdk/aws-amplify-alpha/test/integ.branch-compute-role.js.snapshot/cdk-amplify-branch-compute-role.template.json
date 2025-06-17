@@ -34,6 +34,23 @@
     }
    }
   },
+  "AppComputeRole426920E4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "amplify.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
   "AppF1B96344": {
    "Type": "AWS::Amplify::App",
    "Properties": {
@@ -43,6 +60,12 @@
     "CacheConfig": {
      "Type": "AMPLIFY_MANAGED_NO_COOKIES"
     },
+    "ComputeRoleArn": {
+     "Fn::GetAtt": [
+      "AppComputeRole426920E4",
+      "Arn"
+     ]
+    },
     "IAMServiceRole": {
      "Fn::GetAtt": [
       "AppRole1AF9B530",
@@ -50,7 +73,7 @@
      ]
     },
     "Name": "App",
-    "Platform": "WEB"
+    "Platform": "WEB_COMPUTE"
    }
   },
   "AppmainF505BAED": {
