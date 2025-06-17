@@ -173,3 +173,19 @@ test('with compute role', () => {
     ComputeRoleArn: stack.resolve(computeRole.roleArn),
   });
 });
+
+test('throws error when compute role provided for WEB platform', () => {
+  // WHEN
+  const computeRole = new iam.Role(stack, 'ComputeRoleWeb', {
+    assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
+  });
+
+  const webApp = new amplify.App(stack, 'WebApp', {
+    platform: amplify.Platform.WEB,
+  });
+
+  // THEN
+  expect(() => {
+    webApp.addBranch('main', { computeRole });
+  }).toThrow(/`computeRole` can only be specified for branches of apps with `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`./);
+});

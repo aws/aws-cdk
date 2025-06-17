@@ -20,6 +20,11 @@ export interface IApp extends IResource {
    * @attribute
    */
   readonly appId: string;
+
+  /**
+   * The platform of the app
+   */
+  readonly platform?: Platform;
 }
 
 /**
@@ -237,6 +242,11 @@ export class App extends Resource implements IApp, iam.IGrantable {
    */
   public readonly computeRole?: iam.IRole;
 
+  /**
+   * The platform of the app
+   */
+  public readonly platform?: Platform;
+
   private readonly customRules: CustomRule[];
   private readonly environmentVariables: { [name: string]: string };
   private readonly autoBranchEnvironmentVariables: { [name: string]: string };
@@ -256,7 +266,8 @@ export class App extends Resource implements IApp, iam.IGrantable {
     this.grantPrincipal = role;
 
     let computedRole: iam.IRole | undefined;
-    const isSSR = props.platform === Platform.WEB_COMPUTE || props.platform === Platform.WEB_DYNAMIC;
+    const appPlatform = props.platform || Platform.WEB;
+    const isSSR = appPlatform === Platform.WEB_COMPUTE || appPlatform === Platform.WEB_DYNAMIC;
 
     if (props.computeRole) {
       if (!isSSR) {
@@ -271,6 +282,8 @@ export class App extends Resource implements IApp, iam.IGrantable {
     this.computeRole = computedRole;
 
     const sourceCodeProviderOptions = props.sourceCodeProvider?.bind(this);
+
+    this.platform = appPlatform;
 
     const app = new CfnApp(this, 'Resource', {
       accessToken: sourceCodeProviderOptions?.accessToken?.unsafeUnwrap(), // Safe usage
@@ -302,7 +315,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
       oauthToken: sourceCodeProviderOptions?.oauthToken?.unsafeUnwrap(), // Safe usage
       repository: sourceCodeProviderOptions?.repository,
       customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders) : undefined,
-      platform: props.platform || Platform.WEB,
+      platform: appPlatform,
     });
 
     this.appId = app.attrAppId;
