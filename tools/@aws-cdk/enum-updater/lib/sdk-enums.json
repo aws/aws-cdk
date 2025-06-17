@@ -117,6 +117,11 @@
       "HTTP_PROXY",
       "MOCK"
     ],
+    "RoutingMode": [
+      "BASE_PATH_MAPPING_ONLY",
+      "ROUTING_RULE_THEN_BASE_PATH_MAPPING",
+      "ROUTING_RULE_ONLY"
+    ],
     "AccessAssociationSourceType": [
       "VPCE"
     ],
@@ -164,7 +169,13 @@
       "API_KEY"
     ]
   },
-  "apigatewayv2": {},
+  "apigatewayv2": {
+    "RoutingMode": [
+      "API_MAPPING_ONLY",
+      "ROUTING_RULE_THEN_API_MAPPING",
+      "ROUTING_RULE_ONLY"
+    ]
+  },
   "appconfig": {
     "DeletionProtectionCheck": [
       "ACCOUNT_DEFAULT",
@@ -1125,6 +1136,7 @@
     "CpuManufacturers": [
       "amazon-web-services",
       "amd",
+      "apple",
       "intel"
     ],
     "InstanceGenerations": [
@@ -1886,6 +1898,11 @@
       "Object",
       "Array"
     ],
+    "FlowNodeInputCategory": [
+      "LoopCondition",
+      "ReturnValueToLoopStart",
+      "ExitLoop"
+    ],
     "FlowNodeType": [
       "Input",
       "Output",
@@ -1898,7 +1915,11 @@
       "Iterator",
       "Collector",
       "Storage",
-      "Retrieval"
+      "Retrieval",
+      "InlineCode",
+      "Loop",
+      "LoopInput",
+      "LoopController"
     ],
     "FlowStatus": [
       "Failed",
@@ -1906,9 +1927,27 @@
       "Preparing",
       "NotPrepared"
     ],
+    "PerformanceConfigurationLatency": [
+      "standard",
+      "optimized"
+    ],
     "PromptTemplateType": [
       "TEXT",
       "CHAT"
+    ],
+    "RerankingMetadataSelectionMode": [
+      "SELECTIVE",
+      "ALL"
+    ],
+    "SupportedLanguages": [
+      "Python_3"
+    ],
+    "VectorSearchRerankingConfigurationType": [
+      "BEDROCK_RERANKING_MODEL"
+    ],
+    "ConcurrencyType": [
+      "Automatic",
+      "Manual"
     ],
     "ContentFilterAction": [
       "BLOCK",
@@ -2871,6 +2910,10 @@
       "EXTENDABLE_RETENTION_PRICING",
       "FIXED_RETENTION_PRICING"
     ],
+    "MaxEventSize": [
+      "Standard",
+      "Large"
+    ],
     "InsightType": [
       "ApiCallRateInsight",
       "ApiErrorRateInsight"
@@ -3510,6 +3553,10 @@
     ]
   },
   "customerprofiles": {
+    "Status": [
+      "HEALTHY",
+      "UNHEALTHY"
+    ],
     "RangeUnit": [
       "DAYS"
     ],
@@ -3545,10 +3592,6 @@
       "THURSDAY",
       "FRIDAY",
       "SATURDAY"
-    ],
-    "Status": [
-      "HEALTHY",
-      "UNHEALTHY"
     ],
     "State": [
       "RUNNING",
@@ -3880,7 +3923,8 @@
       "ARCHIVE"
     ],
     "AzureBlobAuthenticationType": [
-      "SAS"
+      "SAS",
+      "NONE"
     ],
     "AzureBlobType": [
       "BLOCK"
@@ -4191,6 +4235,14 @@
       "PROJECT_CATALOG_CONSUMER",
       "PROJECT_CATALOG_STEWARD"
     ],
+    "DeploymentMode": [
+      "ON_CREATE",
+      "ON_DEMAND"
+    ],
+    "Status": [
+      "ENABLED",
+      "DISABLED"
+    ],
     "UserProfileStatus": [
       "ASSIGNED",
       "NOT_ASSIGNED",
@@ -4245,6 +4297,10 @@
     "ServiceManagedFleetOperatingSystemFamily": [
       "LINUX",
       "WINDOWS"
+    ],
+    "TagPropagationMode": [
+      "NO_PROPAGATION",
+      "PROPAGATE_TAGS_TO_WORKERS_AT_LAUNCH"
     ],
     "LicenseEndpointStatus": [
       "CREATE_IN_PROGRESS",
@@ -4655,6 +4711,8 @@
       "c7gn.medium",
       "c7gn.metal",
       "c7gn.xlarge",
+      "c7i-flex.12xlarge",
+      "c7i-flex.16xlarge",
       "c7i-flex.2xlarge",
       "c7i-flex.4xlarge",
       "c7i-flex.8xlarge",
@@ -4683,6 +4741,18 @@
       "c8g.metal-24xl",
       "c8g.metal-48xl",
       "c8g.xlarge",
+      "c8gd.12xlarge",
+      "c8gd.16xlarge",
+      "c8gd.24xlarge",
+      "c8gd.2xlarge",
+      "c8gd.48xlarge",
+      "c8gd.4xlarge",
+      "c8gd.8xlarge",
+      "c8gd.large",
+      "c8gd.medium",
+      "c8gd.metal-24xl",
+      "c8gd.metal-48xl",
+      "c8gd.xlarge",
       "cc1.4xlarge",
       "cc2.8xlarge",
       "cg1.4xlarge",
@@ -4808,6 +4878,17 @@
       "i4i.large",
       "i4i.metal",
       "i4i.xlarge",
+      "i7i.12xlarge",
+      "i7i.16xlarge",
+      "i7i.24xlarge",
+      "i7i.2xlarge",
+      "i7i.48xlarge",
+      "i7i.4xlarge",
+      "i7i.8xlarge",
+      "i7i.large",
+      "i7i.metal-24xl",
+      "i7i.metal-48xl",
+      "i7i.xlarge",
       "i7ie.12xlarge",
       "i7ie.18xlarge",
       "i7ie.24xlarge",
@@ -4816,11 +4897,14 @@
       "i7ie.48xlarge",
       "i7ie.6xlarge",
       "i7ie.large",
+      "i7ie.metal-24xl",
+      "i7ie.metal-48xl",
       "i7ie.xlarge",
       "i8g.12xlarge",
       "i8g.16xlarge",
       "i8g.24xlarge",
       "i8g.2xlarge",
+      "i8g.48xlarge",
       "i8g.4xlarge",
       "i8g.8xlarge",
       "i8g.large",
@@ -5021,6 +5105,8 @@
       "m7gd.medium",
       "m7gd.metal",
       "m7gd.xlarge",
+      "m7i-flex.12xlarge",
+      "m7i-flex.16xlarge",
       "m7i-flex.2xlarge",
       "m7i-flex.4xlarge",
       "m7i-flex.8xlarge",
@@ -5049,6 +5135,18 @@
       "m8g.metal-24xl",
       "m8g.metal-48xl",
       "m8g.xlarge",
+      "m8gd.12xlarge",
+      "m8gd.16xlarge",
+      "m8gd.24xlarge",
+      "m8gd.2xlarge",
+      "m8gd.48xlarge",
+      "m8gd.4xlarge",
+      "m8gd.8xlarge",
+      "m8gd.large",
+      "m8gd.medium",
+      "m8gd.metal-24xl",
+      "m8gd.metal-48xl",
+      "m8gd.xlarge",
       "mac1.metal",
       "mac2-m1ultra.metal",
       "mac2-m2.metal",
@@ -5066,6 +5164,7 @@
       "p5.48xlarge",
       "p5e.48xlarge",
       "p5en.48xlarge",
+      "p6-b200.48xlarge",
       "r3.2xlarge",
       "r3.4xlarge",
       "r3.8xlarge",
@@ -5270,6 +5369,18 @@
       "r8g.metal-24xl",
       "r8g.metal-48xl",
       "r8g.xlarge",
+      "r8gd.12xlarge",
+      "r8gd.16xlarge",
+      "r8gd.24xlarge",
+      "r8gd.2xlarge",
+      "r8gd.48xlarge",
+      "r8gd.4xlarge",
+      "r8gd.8xlarge",
+      "r8gd.large",
+      "r8gd.medium",
+      "r8gd.metal-24xl",
+      "r8gd.metal-48xl",
+      "r8gd.xlarge",
       "t1.micro",
       "t2.2xlarge",
       "t2.large",
@@ -5526,9 +5637,29 @@
       "stop",
       "terminate"
     ],
+    "HttpEndpoint": [
+      "disabled",
+      "enabled"
+    ],
+    "HttpProtocolIpv6": [
+      "disabled",
+      "enabled"
+    ],
+    "HttpTokens": [
+      "optional",
+      "required"
+    ],
+    "InstanceMetadataTags": [
+      "disabled",
+      "enabled"
+    ],
     "HostnameType": [
       "ip-name",
       "resource-name"
+    ],
+    "MeteredAccount": [
+      "ipam-owner",
+      "resource-owner"
     ],
     "Tier": [
       "free",
@@ -5577,22 +5708,6 @@
     "AutoRecovery": [
       "default",
       "disabled"
-    ],
-    "HttpEndpoint": [
-      "disabled",
-      "enabled"
-    ],
-    "HttpProtocolIpv6": [
-      "disabled",
-      "enabled"
-    ],
-    "HttpTokens": [
-      "optional",
-      "required"
-    ],
-    "InstanceMetadataTags": [
-      "disabled",
-      "enabled"
     ],
     "BandwidthWeighting": [
       "default",
@@ -5990,6 +6105,11 @@
     ],
     "TransitionToPrimaryStorageClass": [
       "AFTER_1_ACCESS"
+    ],
+    "IpAddressType": [
+      "IPV4_ONLY",
+      "IPV6_ONLY",
+      "DUAL_STACK"
     ]
   },
   "eks": {
@@ -6274,6 +6394,33 @@
     "EvaluationStrategy": [
       "ALL_RULES",
       "DEFAULT_VARIATION"
+    ]
+  },
+  "evs": {
+    "VcfVersion": [
+      "VCF-5.2.1"
+    ],
+    "Type": [
+      "KEY_REUSE",
+      "KEY_COVERAGE",
+      "REACHABILITY",
+      "VCF_VERSION",
+      "HOST_COUNT"
+    ],
+    "CheckResult": [
+      "PASSED",
+      "FAILED",
+      "UNKNOWN"
+    ],
+    "EnvironmentState": [
+      "CREATING",
+      "CREATED",
+      "DELETING",
+      "DELETED",
+      "CREATE_FAILED"
+    ],
+    "InstanceType": [
+      "i4i.metal"
     ]
   },
   "finspace": {
@@ -8118,6 +8265,14 @@
       "CLIENT_CERTIFICATE_TLS_AUTH",
       "SERVER_ROOT_CA_CERTIFICATE"
     ],
+    "EventRecordFormat": [
+      "JSON",
+      "SOURCE"
+    ],
+    "Attribute": [
+      "KEY",
+      "VALUE"
+    ],
     "Architectures": [
       "x86_64",
       "arm64"
@@ -9181,7 +9336,6 @@
       "iam"
     ]
   },
-  "mpa": {},
   "msk": {
     "EnhancedMonitoring": [
       "DEFAULT",
@@ -9676,7 +9830,8 @@
     "KeyCheckValueAlgorithm": [
       "CMAC",
       "ANSI_X9_24",
-      "HMAC"
+      "HMAC",
+      "SHA_1"
     ],
     "KeyClass": [
       "SYMMETRIC_KEY",
@@ -11670,6 +11825,7 @@
     "Region": [
       "af-south-1",
       "ap-east-1",
+      "ap-east-2",
       "ap-northeast-1",
       "ap-northeast-2",
       "ap-northeast-3",
@@ -11799,6 +11955,16 @@
     "Direction": [
       "INBOUND",
       "OUTBOUND"
+    ],
+    "Protocols": [
+      "Do53",
+      "DoH",
+      "DoH-FIPS"
+    ],
+    "ResolverEndpointType": [
+      "IPV6",
+      "IPV4",
+      "DUALSTACK"
     ],
     "Error": [
       "NONE",
@@ -11961,6 +12127,20 @@
     ]
   },
   "s3express": {
+    "NetworkOrigin": [
+      "Internet",
+      "VPC"
+    ],
+    "Permissions": [
+      "GetObject",
+      "GetObjectAttributes",
+      "ListMultipartUploadParts",
+      "ListBucket",
+      "ListBucketMultipartUploads",
+      "PutObject",
+      "DeleteObject",
+      "AbortMultipartUpload"
+    ],
     "DataRedundancy": [
       "SingleAvailabilityZone",
       "SingleLocalZone"
@@ -13083,6 +13263,14 @@
       "REPLACE",
       "PRESERVE"
     ],
+    "RuleAddressListEmailAttribute": [
+      "RECIPIENT",
+      "MAIL_FROM",
+      "SENDER",
+      "FROM",
+      "TO",
+      "CC"
+    ],
     "RuleBooleanEmailAttribute": [
       "READ_RECEIPT_REQUESTED",
       "TLS",
@@ -13150,9 +13338,20 @@
       "EQUALS",
       "NOT_EQUALS"
     ],
+    "SnsNotificationEncoding": [
+      "UTF-8",
+      "BASE64"
+    ],
+    "SnsNotificationPayloadType": [
+      "CONTENT",
+      "HEADERS"
+    ],
     "AcceptAction": [
       "ALLOW",
       "DENY"
+    ],
+    "IngressAddressListEmailAttribute": [
+      "RECIPIENT"
     ],
     "IngressBooleanOperator": [
       "IS_TRUE",
@@ -14283,7 +14482,8 @@
       "EXTERNAL",
       "CUSTOM",
       "MESSAGE_TEMPLATES",
-      "MANAGED"
+      "MANAGED",
+      "QUICK_RESPONSES"
     ],
     "ChunkingStrategy": [
       "FIXED_SIZE",
