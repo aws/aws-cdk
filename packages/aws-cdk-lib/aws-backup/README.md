@@ -84,6 +84,7 @@ plan.addSelection('Selection', {
 To add rules to a plan, use `addRule()`:
 
 ```ts
+import { TimeZone } from 'aws-cdk-lib';
 declare const plan: backup.BackupPlan;
 plan.addRule(new backup.BackupPlanRule({
   completionWindow: Duration.hours(2),
