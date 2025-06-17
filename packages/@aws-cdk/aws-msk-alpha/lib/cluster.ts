@@ -99,6 +99,14 @@ export interface ClusterProps {
   readonly instanceType?: ec2.InstanceType;
 
   /**
+   * Whether to use an Express Broker.
+   * When set to true, the cluster will be created with Express Brokers.
+   *
+   * @default false
+   */
+  readonly express?: boolean;
+
+  /**
    * The AWS security groups to associate with the elastic network interfaces in order to specify who can
    * connect to and communicate with the Amazon MSK cluster.
    *
@@ -706,8 +714,9 @@ export class Cluster extends ClusterBase {
     });
   }
 
-  private mskInstanceType(instanceType: ec2.InstanceType): string {
-    return `kafka.${instanceType.toString()}`;
+  private mskInstanceType(instanceType: ec2.InstanceType, express?:boolean): string {
+    const prefix = express ? 'express.' : 'kafka.';
+    return `${prefix}${instanceType.toString()}`;
   }
 
   /**
