@@ -431,6 +431,7 @@
      "Ref": "InstanceSubnetGroupF2CBA54F"
     },
     "Engine": "mysql",
+    "EngineLifecycleSupport": "open-source-rds-extended-support",
     "EngineVersion": "8.4.5",
     "MasterUserPassword": {
      "Fn::Join": [
@@ -1534,6 +1535,7 @@
      "Ref": "FromSnapshotSubnetGroupDEC72E9D"
     },
     "Engine": "mysql",
+    "EngineLifecycleSupport": "open-source-rds-extended-support-disabled",
     "EngineVersion": "8.4.5",
     "StorageType": "gp2",
     "VPCSecurityGroups": [
@@ -1586,6 +1588,7 @@
     "DBSubnetGroupName": {
      "Ref": "ReadReplicaSubnetGroup680C605C"
     },
+    "EngineLifecycleSupport": "open-source-rds-extended-support-disabled",
     "SourceDBInstanceIdentifier": {
      "Fn::Join": [
       "",
