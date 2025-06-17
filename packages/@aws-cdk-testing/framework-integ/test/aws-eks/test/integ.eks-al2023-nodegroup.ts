@@ -27,7 +27,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 0,
-      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_32),
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_33),
     });
 
     // create nodegroup with AL2023_X86_64_STANDARD
@@ -65,4 +65,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-cluster-al2023-nodegroup', {
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });
-app.synth();
