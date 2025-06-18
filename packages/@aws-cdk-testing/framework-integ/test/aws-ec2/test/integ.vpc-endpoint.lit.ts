@@ -57,6 +57,11 @@ class VpcEndpointStack extends cdk.Stack {
       privateDnsEnabled: false,
     });
 
+    // Add an interface with a non-standard port
+    vpc.addInterfaceEndpoint('SESEndpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.EMAIL_SMTP,
+    });
+
     // Add an interface endpoint with ipAddressType and dnsRecordIpType
     vpc.addInterfaceEndpoint('CloudwatchLogsEndpoint', {
       service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,

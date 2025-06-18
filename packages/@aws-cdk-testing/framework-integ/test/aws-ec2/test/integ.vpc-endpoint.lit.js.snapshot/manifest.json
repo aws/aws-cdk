@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "version": "50.0.0",
+=======
+  "version": "48.0.0",
+>>>>>>> 853ccd8772 (fix: set the correct port for the SES SMTP service endpoint)
   "artifacts": {
     "aws-cdk-ec2-vpc-endpoint.assets": {
       "type": "cdk:asset-manifest",
@@ -11,21 +15,27 @@
     },
     "aws-cdk-ec2-vpc-endpoint": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
+      "environment": "aws://unknown-account/us-west-2",
       "properties": {
         "templateFile": "aws-cdk-ec2-vpc-endpoint.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+<<<<<<< HEAD
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/05b7e415f2cab0f7be8af5a40d8c7044290fd56e8f9e1e9f16c9c5386a9521bc.json",
+=======
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/a56e902e51d10aaeb38279fdd6b4312c0077fc00f68ed9e1665f9e8e442fdae0.json",
+>>>>>>> 853ccd8772 (fix: set the correct port for the SES SMTP service endpoint)
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "aws-cdk-ec2-vpc-endpoint.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-west-2",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -387,7 +397,10 @@
         "/aws-cdk-ec2-vpc-endpoint/MyVpc/EcrDockerEndpoint/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcEcrDockerEndpoint0385050C"
+            "data": "MyVpcEcrDockerEndpoint0385050C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-ec2-vpc-endpoint/MyVpc/DynamoDbInterfaceEndpoint": [
@@ -436,7 +449,58 @@
         "/aws-cdk-ec2-vpc-endpoint/MyVpc/DynamoDbInterfaceEndpoint/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcDynamoDbInterfaceEndpointA97B3149"
+            "data": "MyVpcDynamoDbInterfaceEndpointA97B3149",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/SESEndpoint": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "service": {
+                "privateDnsDefault": true,
+                "name": "*",
+                "port": "*"
+              }
+            }
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/SESEndpoint/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/SESEndpoint/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcSESEndpointSecurityGroup06F927CE"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/SESEndpoint/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcSESEndpointA308E10A"
           }
         ],
         "/aws-cdk-ec2-vpc-endpoint/MyVpc/CloudwatchLogsEndpoint": [
@@ -486,6 +550,7 @@
         "/aws-cdk-ec2-vpc-endpoint/MyVpc/CloudwatchLogsEndpoint/Resource": [
           {
             "type": "aws:cdk:logicalId",
+<<<<<<< HEAD
             "data": "MyVpcCloudwatchLogsEndpointB1C11ADC"
           }
         ],
@@ -536,6 +601,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcCrossRegionEndpoint9A9ABB87"
+=======
+            "data": "MyVpcCloudwatchLogsEndpointB1C11ADC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+>>>>>>> 853ccd8772 (fix: set the correct port for the SES SMTP service endpoint)
           }
         ],
         "/aws-cdk-ec2-vpc-endpoint/BootstrapVersion": [
@@ -550,10 +621,29 @@
             "data": "CheckBootstrapVersion"
           }
         ],
+<<<<<<< HEAD
         "/aws-cdk-ec2-vpc-endpoint/MyVpc/S3DualstackEndpoint/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcS3DualstackEndpoint72DA66B2"
+=======
+        "MyVpcCrossRegionEndpointSecurityGroup371BDCEC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcCrossRegionEndpointSecurityGroup371BDCEC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyVpcCrossRegionEndpoint9A9ABB87": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcCrossRegionEndpoint9A9ABB87",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+>>>>>>> 853ccd8772 (fix: set the correct port for the SES SMTP service endpoint)
           }
         ]
       },
@@ -619,7 +709,10 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+<<<<<<< HEAD
             "userValue": true,
+=======
+>>>>>>> 853ccd8772 (fix: set the correct port for the SES SMTP service endpoint)
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -638,7 +731,10 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+<<<<<<< HEAD
             "userValue": true,
+=======
+>>>>>>> 853ccd8772 (fix: set the correct port for the SES SMTP service endpoint)
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -936,6 +1032,19 @@
             }
           },
           "@aws-cdk/core:explicitStackTags": {
+<<<<<<< HEAD
+=======
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
+          },
+          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
+            "userValue": false,
+            "recommendedValue": false,
+            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
+          },
+          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
+>>>>>>> 853ccd8772 (fix: set the correct port for the SES SMTP service endpoint)
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
@@ -1117,5 +1226,10 @@
       }
     }
   },
+<<<<<<< HEAD
   "minimumCliVersion": "2.1105.0"
 }
+=======
+  "minimumCliVersion": "2.1027.0"
+}
+>>>>>>> 853ccd8772 (fix: set the correct port for the SES SMTP service endpoint)
