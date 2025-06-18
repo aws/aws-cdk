@@ -829,6 +829,34 @@ describe('Graphs', () => {
     }]);
   });
 
+  test('add displayLabelsOnChart to GraphWidget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      view: GraphWidgetView.PIE,
+      displayLabelsOnChart: true,
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'pie',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {},
+        labels: {
+          visible: true,
+        },
+      },
+    }]);
+  });
+
   test('add setPeriodToTimeRange to GraphWidget', () => {
     // GIVEN
     const stack = new Stack();
