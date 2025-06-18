@@ -6,7 +6,7 @@ import { CfnApp } from 'aws-cdk-lib/aws-amplify';
 import { BasicAuth } from './basic-auth';
 import { Branch, BranchOptions } from './branch';
 import { Domain, DomainOptions } from './domain';
-import { renderEnvironmentVariables } from './utils';
+import { renderEnvironmentVariables, isServerSideRendered } from './utils';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
@@ -237,6 +237,11 @@ export class App extends Resource implements IApp, iam.IGrantable {
    */
   public readonly computeRole?: iam.IRole;
 
+  /**
+   * The platform of the app
+   */
+  public readonly platform?: Platform;
+
   private readonly customRules: CustomRule[];
   private readonly environmentVariables: { [name: string]: string };
   private readonly autoBranchEnvironmentVariables: { [name: string]: string };
@@ -256,7 +261,8 @@ export class App extends Resource implements IApp, iam.IGrantable {
     this.grantPrincipal = role;
 
     let computedRole: iam.IRole | undefined;
-    const isSSR = props.platform === Platform.WEB_COMPUTE || props.platform === Platform.WEB_DYNAMIC;
+    const appPlatform = props.platform || Platform.WEB;
+    const isSSR = isServerSideRendered(appPlatform);
 
     if (props.computeRole) {
       if (!isSSR) {
@@ -271,6 +277,8 @@ export class App extends Resource implements IApp, iam.IGrantable {
     this.computeRole = computedRole;
 
     const sourceCodeProviderOptions = props.sourceCodeProvider?.bind(this);
+
+    this.platform = appPlatform;
 
     const app = new CfnApp(this, 'Resource', {
       accessToken: sourceCodeProviderOptions?.accessToken?.unsafeUnwrap(), // Safe usage
@@ -302,7 +310,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
       oauthToken: sourceCodeProviderOptions?.oauthToken?.unsafeUnwrap(), // Safe usage
       repository: sourceCodeProviderOptions?.repository,
       customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders, this) : undefined,
-      platform: props.platform || Platform.WEB,
+      platform: appPlatform,
     });
 
     this.appId = app.attrAppId;
