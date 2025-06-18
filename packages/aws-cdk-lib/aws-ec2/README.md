@@ -1281,14 +1281,16 @@ endpoint.addRoute('Route', {
 
 Use the `connections` object of the endpoint to allow traffic to other security groups.
 
-To enable [client route enforcement](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-cre.html), set the `clientRouteEnforcement` prop to `true`:
+To enable [client route enforcement](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-cre.html), configure the `clientRouteEnforcementOptions.enforced` prop to `true`:
 
 ```ts fixture=client-vpn
 const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
   cidr: '10.100.0.0/16',
   serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
   clientCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/client-certificate-id',
-  enableClientRouteEnforcement: true,
+  clientRouteEnforcementOptions: {
+    enforced: true,
+  },
 });
 ```
 
