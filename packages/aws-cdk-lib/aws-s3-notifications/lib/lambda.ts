@@ -6,10 +6,20 @@ import { CfnResource, Names, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 
 /**
+ * Options that may be provided to LambdaDestination
+ */
+export interface LambdaDestinationOptions {
+  /** Whether or not to add Lambda Permissions.
+   * @default true
+   */
+  readonly addPermissions?: boolean;
+}
+
+/**
  * Use a Lambda function as a bucket notification destination
  */
 export class LambdaDestination implements s3.IBucketNotificationDestination {
-  constructor(private readonly fn: lambda.IFunction) {
+  constructor(private readonly fn: lambda.IFunction, private readonly options: LambdaDestinationOptions = {}) {
   }
 
   public bind(scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
@@ -20,7 +30,7 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
         bucket construct (Bucket ${bucket.bucketName})`, scope);
     }
 
-    if (bucket.node.tryFindChild(permissionId) === undefined) {
+    if (this.options.addPermissions !== false && bucket.node.tryFindChild(permissionId) === undefined) {
       this.fn.addPermission(permissionId, {
         sourceAccount: Stack.of(bucket).account,
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
