@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
+import { ISchemaRegistry } from './schema-registry';
 import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import * as cdk from '../../core';
@@ -309,6 +310,13 @@ export interface EventSourceMappingOptions {
    * @default - Enhanced monitoring is disabled
    */
   readonly metricsConfig?: MetricsConfig;
+
+  /**
+   * Specific configuration settings for a Kafka schema registry.
+   *
+   * @default - none
+   */
+  readonly schemaRegistryConfig?: ISchemaRegistry;
 }
 
 export enum MetricType {
@@ -504,7 +512,6 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     }
 
     let destinationConfig;
-
     if (props.onFailure) {
       destinationConfig = {
         onFailure: props.onFailure.bind(this, props.target),
@@ -516,7 +523,22 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       selfManagedEventSource = { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } };
     }
 
-    let consumerGroupConfig = props.kafkaConsumerGroupId ? { consumerGroupId: props.kafkaConsumerGroupId } : undefined;
+    let kafkaConfig: any;
+    if (props.kafkaConsumerGroupId || props.schemaRegistryConfig) {
+      kafkaConfig = {};
+      if (props.kafkaConsumerGroupId) {
+        kafkaConfig.consumerGroupId = props.kafkaConsumerGroupId;
+      }
+      if (props.schemaRegistryConfig) {
+        const schemaRegistry = props.schemaRegistryConfig.bind(this, props.target);
+        kafkaConfig.schemaRegistryConfig = {
+          schemaRegistryUri: schemaRegistry.schemaRegistryUri,
+          eventRecordFormat: schemaRegistry.eventRecordFormat.value,
+          accessConfigs: schemaRegistry?.accessConfigs?.map((o) => {return { type: o.type.type, uri: o.uri };}),
+          schemaValidationConfigs: schemaRegistry.schemaValidationConfigs?.map((o) => {return { attribute: o.attribute.value };}),
+        };
+      }
+    }
 
     const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
@@ -539,8 +561,8 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       selfManagedEventSource,
       filterCriteria: props.filters ? { filters: props.filters }: undefined,
       kmsKeyArn: props.filterEncryption?.keyArn,
-      selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? consumerGroupConfig : undefined,
-      amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? consumerGroupConfig : undefined,
+      selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? kafkaConfig : undefined,
+      amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? kafkaConfig : undefined,
       provisionedPollerConfig: props.provisionedPollerConfig,
       metricsConfig: props.metricsConfig,
     });
