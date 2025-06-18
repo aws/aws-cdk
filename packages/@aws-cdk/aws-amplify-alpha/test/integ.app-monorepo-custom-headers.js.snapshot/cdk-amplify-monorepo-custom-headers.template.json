@@ -17,6 +17,23 @@
     }
    }
   },
+  "AppComputeRole426920E4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "amplify.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
   "AppF1B96344": {
    "Type": "AWS::Amplify::App",
    "Properties": {
@@ -24,6 +41,12 @@
      "EnableBasicAuth": false
     },
     "BuildSpec": "version: \"1.0\"\napplications:\n  - appRoot: frontend\n    frontend:\n      phases:\n        preBuild:\n          commands:\n            - npm install\n        build:\n          commands:\n            - npm run build\n  - appRoot: backend\n    backend:\n      phases:\n        preBuild:\n          commands:\n            - npm install\n        build:\n          commands:\n            - npm run build\n",
+    "ComputeRoleArn": {
+     "Fn::GetAtt": [
+      "AppComputeRole426920E4",
+      "Arn"
+     ]
+    },
     "CustomHeaders": {
      "Fn::Join": [
       "",
