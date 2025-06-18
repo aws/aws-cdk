@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "44.0.0",
   "testCases": {
     "lambda-alias-url-origin-oac/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "lambda-alias-url-origin-oac/DefaultTest/DeployAssert",
       "assertionStackName": "lambdaaliasurloriginoacDefaultTestDeployAssert249534BF"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
