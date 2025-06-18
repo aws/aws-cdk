@@ -255,19 +255,33 @@ test('client vpn endpoint with custom session timeout', () => {
   });
 });
 
-test.each([true, false])('client vpn endpoint with client route enforcement %s', (enableClientRouteEnforcement) => {
+test.each([true, false])('client vpn endpoint with client route enforcement %s', (enforced) => {
   vpc.addClientVpnEndpoint('Endpoint', {
     cidr: '10.100.0.0/16',
     serverCertificateArn: 'server-certificate-arn',
     clientCertificateArn: 'client-certificate-arn',
-    enableClientRouteEnforcement,
+    clientRouteEnforcementOptions: {
+      enforced,
+    },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnEndpoint', {
     ClientRouteEnforcementOptions: {
-      Enforced: enableClientRouteEnforcement,
+      Enforced: enforced,
     },
   });
+});
+
+test('throw error for client route enforcement with split-tunnel enabled', () => {
+  expect(() => vpc.addClientVpnEndpoint('Endpoint', {
+    cidr: '10.100.0.0/16',
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
+    clientRouteEnforcementOptions: {
+      enforced: true,
+    },
+    splitTunnel: true,
+  })).toThrow('Client Route Enforcement cannot be enabled when splitTunnel is true.');
 });
 
 test('client vpn endpoint with client login banner', () => {
