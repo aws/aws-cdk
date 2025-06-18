@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "a3b05336289676323462d932f8157182992b5a12e2373dddb8571fc2afb90774": {
+      "displayName": "cdk-amplify-monorepo-custom-headers Template",
+      "source": {
+        "path": "cdk-amplify-monorepo-custom-headers.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a3b05336289676323462d932f8157182992b5a12e2373dddb8571fc2afb90774.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
