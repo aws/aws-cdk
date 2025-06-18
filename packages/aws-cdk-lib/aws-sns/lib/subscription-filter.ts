@@ -205,8 +205,15 @@ export class SubscriptionFilter {
   /**
    * Returns a subscription filter for attribute key matching.
    */
-  public static existsFilter(existsCondition: boolean = true) {
-    return new SubscriptionFilter([{ exists: existsCondition }]);
+  public static existsFilter() {
+    return new SubscriptionFilter([{ exists: true }]);
+  }
+
+  /**
+   * Returns a subscription filter for absence of attribute key.
+   */
+  public static notExistsFilter() {
+    return new SubscriptionFilter([{ exists: false }]);
   }
 
   /**
