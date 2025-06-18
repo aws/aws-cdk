@@ -415,6 +415,28 @@ describe('vpc endpoint', () => {
         ],
       });
     });
+    test('security group has correct port for EMAIL_SMTP', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('SESEndpoint', {
+        service: InterfaceVpcEndpointAwsService.EMAIL_SMTP,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+        SecurityGroupIngress: [
+          Match.objectLike({
+            CidrIp: { 'Fn::GetAtt': ['VpcNetworkB258E83A', 'CidrBlock'] },
+            FromPort: 587,
+            IpProtocol: 'tcp',
+            ToPort: 587,
+          }),
+        ],
+      });
+    });
     test('non-AWS service interface endpoint', () => {
       // GIVEN
       const stack = new Stack();
