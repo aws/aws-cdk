@@ -162,67 +162,80 @@ const variableAgentVariant = bedrock.PromptVariant.agent({
   promptVariables: ['request_type', 'user_name'],
 });
 
-// Create prompts with different variant combinations
+// Create prompts with single variants (only one variant supported for now)
 const textVariantsPrompt = new bedrock.Prompt(stack, 'TextVariantsPrompt', {
   promptName: 'text-variants-test',
-  description: 'Testing different text prompt variants',
-  variants: [basicTextVariant, variableTextVariant, configuredTextVariant],
+  description: 'Testing text prompt variant',
+  variants: [variableTextVariant],
   defaultVariant: variableTextVariant,
 });
 
 const chatVariantsPrompt = new bedrock.Prompt(stack, 'ChatVariantsPrompt', {
   promptName: 'chat-variants-test',
-  description: 'Testing different chat prompt variants',
-  variants: [basicChatVariant, systemChatVariant, toolChatVariant, specificToolChatVariant],
+  description: 'Testing chat prompt variant',
+  variants: [systemChatVariant],
   defaultVariant: systemChatVariant,
 });
 
 new bedrock.Prompt(stack, 'AgentVariantsPrompt', {
   promptName: 'agent-variants-test',
-  description: 'Testing different agent prompt variants',
-  variants: [basicAgentVariant, variableAgentVariant],
+  description: 'Testing agent prompt variant',
+  variants: [variableAgentVariant],
   defaultVariant: variableAgentVariant,
 });
 
-// Mixed variants prompt
-new bedrock.Prompt(stack, 'MixedVariantsPrompt', {
-  promptName: 'mixed-variants-test',
-  description: 'Testing mixed prompt variant types in a single prompt',
-  variants: [
-    bedrock.PromptVariant.text({
-      variantName: 'mixed-text',
-      model: anthropicModel,
-      promptText: 'Mixed text variant for {{purpose}}.',
-      promptVariables: ['purpose'],
-    }),
-    bedrock.PromptVariant.chat({
-      variantName: 'mixed-chat',
-      model: anthropicModel,
-      messages: [
-        bedrock.ChatMessage.user('Mixed chat variant for {{purpose}}'),
-      ],
-      promptVariables: ['purpose'],
-    }),
-    bedrock.PromptVariant.agent({
-      variantName: 'mixed-agent',
-      model: anthropicModel,
-      agentAlias: variantTestAgentAlias,
-      promptText: 'Mixed agent variant for {{purpose}}.',
-      promptVariables: ['purpose'],
-    }),
-  ],
-  defaultVariant: bedrock.PromptVariant.text({
-    variantName: 'mixed-text',
-    model: anthropicModel,
-    promptText: 'Mixed text variant for {{purpose}}.',
-    promptVariables: ['purpose'],
-  }),
+// Basic text prompt
+new bedrock.Prompt(stack, 'BasicTextPrompt', {
+  promptName: 'basic-text-test',
+  description: 'Testing basic text prompt variant',
+  variants: [basicTextVariant],
+  defaultVariant: basicTextVariant,
+});
+
+// Configured text prompt
+new bedrock.Prompt(stack, 'ConfiguredTextPrompt', {
+  promptName: 'configured-text-test',
+  description: 'Testing configured text prompt variant',
+  variants: [configuredTextVariant],
+  defaultVariant: configuredTextVariant,
+});
+
+// Basic chat prompt
+new bedrock.Prompt(stack, 'BasicChatPrompt', {
+  promptName: 'basic-chat-test',
+  description: 'Testing basic chat prompt variant',
+  variants: [basicChatVariant],
+  defaultVariant: basicChatVariant,
+});
+
+// Tool chat prompt
+new bedrock.Prompt(stack, 'ToolChatPrompt', {
+  promptName: 'tool-chat-test',
+  description: 'Testing tool chat prompt variant',
+  variants: [toolChatVariant],
+  defaultVariant: toolChatVariant,
+});
+
+// Specific tool chat prompt
+new bedrock.Prompt(stack, 'SpecificToolChatPrompt', {
+  promptName: 'specific-tool-chat-test',
+  description: 'Testing specific tool chat prompt variant',
+  variants: [specificToolChatVariant],
+  defaultVariant: specificToolChatVariant,
+});
+
+// Basic agent prompt
+new bedrock.Prompt(stack, 'BasicAgentPrompt', {
+  promptName: 'basic-agent-test',
+  description: 'Testing basic agent prompt variant',
+  variants: [basicAgentVariant],
+  defaultVariant: basicAgentVariant,
 });
 
 // Test different inference configurations
-new bedrock.Prompt(stack, 'InferenceConfigPrompt', {
-  promptName: 'inference-config-test',
-  description: 'Testing different inference configurations',
+new bedrock.Prompt(stack, 'LowTempPrompt', {
+  promptName: 'low-temp-test',
+  description: 'Testing low temperature inference configuration',
   variants: [
     bedrock.PromptVariant.text({
       variantName: 'low-temp',
@@ -234,6 +247,13 @@ new bedrock.Prompt(stack, 'InferenceConfigPrompt', {
         maxTokens: 100,
       },
     }),
+  ],
+});
+
+new bedrock.Prompt(stack, 'HighTempPrompt', {
+  promptName: 'high-temp-test',
+  description: 'Testing high temperature inference configuration',
+  variants: [
     bedrock.PromptVariant.text({
       variantName: 'high-temp',
       model: anthropicModel,
@@ -245,6 +265,13 @@ new bedrock.Prompt(stack, 'InferenceConfigPrompt', {
         topP: 0.95,
       },
     }),
+  ],
+});
+
+new bedrock.Prompt(stack, 'ChatConfigPrompt', {
+  promptName: 'chat-config-test',
+  description: 'Testing chat inference configuration',
+  variants: [
     bedrock.PromptVariant.chat({
       variantName: 'chat-config',
       model: anthropicModel,
@@ -272,16 +299,6 @@ new bedrock.PromptVersion(stack, 'ChatVariantsVersion', {
   prompt: chatVariantsPrompt,
   description: 'Version 1.0 of chat variants prompt',
 });
-
-// Test adding variants dynamically
-textVariantsPrompt.addVariant(
-  bedrock.PromptVariant.text({
-    variantName: 'dynamic-text',
-    model: titanModel,
-    promptText: 'Dynamically added text variant with {{content}}.',
-    promptVariables: ['content'],
-  }),
-);
 
 new integ.IntegTest(app, 'BedrockPromptVariants', {
   testCases: [stack],

@@ -15,7 +15,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-bedrock-prompt-version-1');
 // Foundation model for testing
 const foundationModel = bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0;
 
-// Create a base prompt for versioning
+// Create a base prompt for versioning (only 1 variant supported)
 const basePrompt = new bedrock.Prompt(stack, 'BasePrompt', {
   promptName: 'versioning-test-prompt',
   description: 'A prompt used for testing versioning capabilities',
@@ -33,7 +33,7 @@ const basePrompt = new bedrock.Prompt(stack, 'BasePrompt', {
   ],
 });
 
-// Create multiple versions of the same prompt
+// Create multiple versions of the same prompt using PromptVersion construct
 new bedrock.PromptVersion(stack, 'Version1', {
   prompt: basePrompt,
   description: 'Version 1.0 - Initial release of the prompt',
@@ -49,19 +49,15 @@ new bedrock.PromptVersion(stack, 'Version3', {
   description: 'Version 2.0 - Major update with enhanced capabilities',
 });
 
-// Create versions using the prompt's createVersion method
-basePrompt.createVersion('Version 2.1 - Created via prompt method');
-basePrompt.createVersion('Version 2.2 - Another method-created version');
-
-// Create a complex prompt with multiple variants for versioning
-const complexPrompt = new bedrock.Prompt(stack, 'ComplexPrompt', {
-  promptName: 'complex-versioning-prompt',
-  description: 'A complex prompt with multiple variants for comprehensive versioning tests',
+// Create a text prompt for versioning
+const textPrompt = new bedrock.Prompt(stack, 'TextPrompt', {
+  promptName: 'text-versioning-prompt',
+  description: 'A text prompt for comprehensive versioning tests',
   variants: [
     bedrock.PromptVariant.text({
       variantName: 'text-variant',
       model: foundationModel,
-      promptText: 'Complex text variant for {{scenario}} with {{parameters}}.',
+      promptText: 'Text variant for {{scenario}} with {{parameters}}.',
       promptVariables: ['scenario', 'parameters'],
       inferenceConfiguration: {
         maxTokens: 300,
@@ -69,6 +65,14 @@ const complexPrompt = new bedrock.Prompt(stack, 'ComplexPrompt', {
         topP: 0.9,
       },
     }),
+  ],
+});
+
+// Create a chat prompt for versioning
+const chatPrompt = new bedrock.Prompt(stack, 'ChatPrompt', {
+  promptName: 'chat-versioning-prompt',
+  description: 'A chat prompt for comprehensive versioning tests',
+  variants: [
     bedrock.PromptVariant.chat({
       variantName: 'chat-variant',
       model: foundationModel,
@@ -85,28 +89,17 @@ const complexPrompt = new bedrock.Prompt(stack, 'ComplexPrompt', {
       },
     }),
   ],
-  defaultVariant: bedrock.PromptVariant.text({
-    variantName: 'text-variant',
-    model: foundationModel,
-    promptText: 'Complex text variant for {{scenario}} with {{parameters}}.',
-    promptVariables: ['scenario', 'parameters'],
-    inferenceConfiguration: {
-      maxTokens: 300,
-      temperature: 0.6,
-      topP: 0.9,
-    },
-  }),
 });
 
-// Create versions of the complex prompt
-new bedrock.PromptVersion(stack, 'ComplexVersion1', {
-  prompt: complexPrompt,
-  description: 'Version 1.0 of complex prompt - Initial multi-variant release',
+// Create versions of the text and chat prompts
+new bedrock.PromptVersion(stack, 'TextVersion1', {
+  prompt: textPrompt,
+  description: 'Version 1.0 of text prompt - Initial text release',
 });
 
-new bedrock.PromptVersion(stack, 'ComplexVersion2', {
-  prompt: complexPrompt,
-  description: 'Version 1.1 of complex prompt - Enhanced chat capabilities',
+new bedrock.PromptVersion(stack, 'ChatVersion1', {
+  prompt: chatPrompt,
+  description: 'Version 1.0 of chat prompt - Initial chat release',
 });
 
 // Create a prompt with KMS encryption for versioning
@@ -242,6 +235,14 @@ new bedrock.PromptVersion(stack, 'ToolVersion2', {
 const edgeCasePrompt = new bedrock.Prompt(stack, 'EdgeCasePrompt', {
   promptName: 'edge-case-versioning-prompt',
   description: 'Testing edge cases in prompt versioning',
+  variants: [
+    bedrock.PromptVariant.text({
+      variantName: 'edge-case-variant',
+      model: foundationModel,
+      promptText: 'Edge case prompt for testing versioning scenarios with {{parameter}}.',
+      promptVariables: ['parameter'],
+    }),
+  ],
 });
 
 // Version with no description
@@ -249,17 +250,17 @@ new bedrock.PromptVersion(stack, 'NoDescriptionVersion', {
   prompt: edgeCasePrompt,
 });
 
-// Version with empty description
-new bedrock.PromptVersion(stack, 'EmptyDescriptionVersion', {
+// Version with minimal description (minimum length is 1)
+new bedrock.PromptVersion(stack, 'MinimalDescriptionVersion', {
   prompt: edgeCasePrompt,
-  description: '',
+  description: 'A',
 });
 
-// Version with very long description
-const longDescription = 'A'.repeat(500) + ' - This is a very long description for testing version description limits and handling.';
-new bedrock.PromptVersion(stack, 'LongDescriptionVersion', {
+// Version with maximum allowed description (maximum length is 200)
+const maxDescription = 'A'.repeat(189) + ' - Max'; // 189 + 7 = 196 characters (within limit)
+new bedrock.PromptVersion(stack, 'MaxDescriptionVersion', {
   prompt: edgeCasePrompt,
-  description: longDescription,
+  description: maxDescription,
 });
 
 // Version with special characters in description
@@ -267,6 +268,37 @@ new bedrock.PromptVersion(stack, 'SpecialCharVersion', {
   prompt: edgeCasePrompt,
   description: 'Version with special chars: !@#$%^&*()_+-=[]{}|;:,.<>? and unicode: 🚀✨🔧',
 });
+
+// Test createVersion method (create separate prompts to avoid duplicate construct names)
+const methodTestPrompt1 = new bedrock.Prompt(stack, 'MethodTestPrompt1', {
+  promptName: 'method-test-prompt-1',
+  description: 'Testing createVersion method - prompt 1',
+  variants: [
+    bedrock.PromptVariant.text({
+      variantName: 'method-variant-1',
+      model: foundationModel,
+      promptText: 'Method test prompt 1 for {{purpose}}.',
+      promptVariables: ['purpose'],
+    }),
+  ],
+});
+
+const methodTestPrompt2 = new bedrock.Prompt(stack, 'MethodTestPrompt2', {
+  promptName: 'method-test-prompt-2',
+  description: 'Testing createVersion method - prompt 2',
+  variants: [
+    bedrock.PromptVariant.text({
+      variantName: 'method-variant-2',
+      model: foundationModel,
+      promptText: 'Method test prompt 2 for {{purpose}}.',
+      promptVariables: ['purpose'],
+    }),
+  ],
+});
+
+// Create versions using the prompt's createVersion method (one per prompt to avoid conflicts)
+methodTestPrompt1.createVersion('Version 2.1 - Created via prompt method');
+methodTestPrompt2.createVersion('Version 2.2 - Another method-created version');
 
 new integ.IntegTest(app, 'BedrockPromptVersion', {
   testCases: [stack],

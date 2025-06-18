@@ -51,27 +51,47 @@ const chatVariant = bedrock.PromptVariant.chat({
   },
 });
 
-// Create a complex prompt with multiple variants
-const complexPrompt = new bedrock.Prompt(stack, 'ComplexPrompt', {
-  promptName: 'complex-test-prompt',
-  description: 'A complex prompt with multiple variants for comprehensive testing',
-  variants: [textVariant, chatVariant],
+// Create separate prompts for text and chat variants (only 1 variant supported currently)
+const textPrompt = new bedrock.Prompt(stack, 'TextPrompt', {
+  promptName: 'text-test-prompt',
+  description: 'A text prompt for comprehensive testing',
+  variants: [textVariant],
   defaultVariant: textVariant,
   tags: {
     Environment: 'test',
     Purpose: 'integration-testing',
     Team: 'bedrock-team',
+    Type: 'text',
   },
 });
 
-// Create a prompt version
-new bedrock.PromptVersion(stack, 'PromptVersion', {
-  prompt: complexPrompt,
-  description: 'Version 1.0 of the complex prompt for production deployment',
+const chatPrompt = new bedrock.Prompt(stack, 'ChatPrompt', {
+  promptName: 'chat-test-prompt',
+  description: 'A chat prompt for comprehensive testing',
+  variants: [chatVariant],
+  defaultVariant: chatVariant,
+  tags: {
+    Environment: 'test',
+    Purpose: 'integration-testing',
+    Team: 'bedrock-team',
+    Type: 'chat',
+  },
+});
+
+// Create prompt versions
+new bedrock.PromptVersion(stack, 'TextPromptVersion', {
+  prompt: textPrompt,
+  description: 'Version 1.0 of the text prompt for production deployment',
+});
+
+new bedrock.PromptVersion(stack, 'ChatPromptVersion', {
+  prompt: chatPrompt,
+  description: 'Version 1.0 of the chat prompt for production deployment',
 });
 
 // Create another version using the prompt's method
-complexPrompt.createVersion('Version 1.1 created via prompt method');
+textPrompt.createVersion('Version 1.1 created via prompt method');
+chatPrompt.createVersion('Version 1.1 created via prompt method');
 
 // Create a prompt with KMS encryption
 const kmsKey = new cdk.aws_kms.Key(stack, 'PromptKey', {
@@ -205,7 +225,8 @@ const testRole = new cdk.aws_iam.Role(stack, 'TestRole', {
   description: 'Role for testing prompt permissions',
 });
 
-complexPrompt.grantGet(testRole);
+textPrompt.grantGet(testRole);
+chatPrompt.grantGet(testRole);
 encryptedPrompt.grantGet(testRole);
 importedPrompt.grantGet(testRole);
 

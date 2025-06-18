@@ -205,7 +205,7 @@ export class Prompt extends PromptBase implements IPrompt {
 
   /**
    * The name of the prompt.
-   * [disable-awslint:attribute-tag]
+   * @attribute
    */
   public readonly promptName: string;
 
