@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "43.0.0",
   "artifacts": {
     "AutoMinorVersionUpgradeInstanceStack.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "AutoMinorVersionUpgradeInstanceStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4743ffcc31c5ca6f2b5f0a1f071b38c357564679fd3defee85a6d72565404bd1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5f5d008e78f11a55800739832e30f293cf367b45f1c11dca838e18578139dab1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -35,10 +34,55 @@
         "AutoMinorVersionUpgradeInstanceStack.assets"
       ],
       "metadata": {
+        "/AutoMinorVersionUpgradeInstanceStack/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*",
+              "natGateways": "*"
+            }
+          }
+        ],
         "/AutoMinorVersionUpgradeInstanceStack/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/AutoMinorVersionUpgradeInstanceStack/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/AutoMinorVersionUpgradeInstanceStack/VPC/PublicSubnet1/Subnet": [
@@ -77,6 +121,34 @@
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
+        "/AutoMinorVersionUpgradeInstanceStack/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/AutoMinorVersionUpgradeInstanceStack/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -101,6 +173,34 @@
             "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
+        "/AutoMinorVersionUpgradeInstanceStack/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/AutoMinorVersionUpgradeInstanceStack/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -123,6 +223,34 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/AutoMinorVersionUpgradeInstanceStack/VPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/AutoMinorVersionUpgradeInstanceStack/VPC/PrivateSubnet2/Subnet": [
@@ -161,6 +289,12 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
+        "/AutoMinorVersionUpgradeInstanceStack/VPC/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/AutoMinorVersionUpgradeInstanceStack/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -191,16 +325,43 @@
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
+        "/AutoMinorVersionUpgradeInstanceStack/Params": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/AutoMinorVersionUpgradeInstanceStack/Params/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ParamsA8366201"
           }
         ],
+        "/AutoMinorVersionUpgradeInstanceStack/Database": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/AutoMinorVersionUpgradeInstanceStack/Database/Subnets": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/AutoMinorVersionUpgradeInstanceStack/Database/Subnets/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseSubnets3C9252C9"
+          }
+        ],
+        "/AutoMinorVersionUpgradeInstanceStack/Database/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
           }
         ],
         "/AutoMinorVersionUpgradeInstanceStack/Database/SecurityGroup/Resource": [
@@ -221,10 +382,22 @@
             "data": "DatabaseInstance1844F58FD"
           }
         ],
+        "/AutoMinorVersionUpgradeInstanceStack/EnabledInstance": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/AutoMinorVersionUpgradeInstanceStack/EnabledInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EnabledInstance16182EFA"
+          }
+        ],
+        "/AutoMinorVersionUpgradeInstanceStack/DisabledInstance": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/AutoMinorVersionUpgradeInstanceStack/DisabledInstance/Resource": [
@@ -263,7 +436,6 @@
         "templateFile": "AutoMinorVersionUpgradeInstanceIntegDefaultTestDeployAssert5F020D27.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
@@ -303,5 +475,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

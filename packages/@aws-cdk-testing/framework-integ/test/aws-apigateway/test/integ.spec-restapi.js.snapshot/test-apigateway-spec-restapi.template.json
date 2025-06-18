@@ -11,6 +11,7 @@
     },
     "DisableExecuteApiEndpoint": true,
     "MinimumCompressionSize": 1024,
+    "Mode": "merge",
     "Name": "my-api"
    }
   },
@@ -517,7 +518,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "myapiDeployment92F2CB492c49d8fa05ada8b5cddee1ce76138bd0": {
+  "myapiDeployment92F2CB491b0e40e722acabc99cc39958c957686d": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "beta stage",
@@ -538,7 +539,10 @@
     "myapiv1toysA55FCBC4"
    ],
    "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "myapiDeploymentStagebeta96434BEB": {
    "Type": "AWS::ApiGateway::Stage",
@@ -546,7 +550,7 @@
     "CacheClusterEnabled": true,
     "CacheClusterSize": "0.5",
     "DeploymentId": {
-     "Ref": "myapiDeployment92F2CB492c49d8fa05ada8b5cddee1ce76138bd0"
+     "Ref": "myapiDeployment92F2CB491b0e40e722acabc99cc39958c957686d"
     },
     "Description": "beta stage",
     "MethodSettings": [

@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "44.0.0",
   "files": {
     "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895": {
       "source": {
@@ -14,7 +14,8 @@
         }
       }
     },
-    "e2ada61ef347b5bdbcba3916aa65084428243c6a8b89fcbac1fa73d34cd51aa2": {
+    "6be48fc4510cc602e094fa7571a55b6da2f7e99c504e93db5e186a2e46af420d": {
+      "displayName": "awscdkcodepipelinecommandstestDefaultTestDeployAssert6662C09B Template",
       "source": {
         "path": "awscdkcodepipelinecommandstestDefaultTestDeployAssert6662C09B.template.json",
         "packaging": "file"
@@ -22,7 +23,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e2ada61ef347b5bdbcba3916aa65084428243c6a8b89fcbac1fa73d34cd51aa2.json",
+          "objectKey": "6be48fc4510cc602e094fa7571a55b6da2f7e99c504e93db5e186a2e46af420d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

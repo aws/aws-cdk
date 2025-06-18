@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "41.0.0",
   "testCases": {
     "integrationtest-sagemaker-start-pipeline-execution/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert",
       "assertionStackName": "integrationtestsagemakerstartpipelineexecutionDefaultTestDeployAssert19EB5121"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

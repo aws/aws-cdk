@@ -1,0 +1,81 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+      "displayName": "CrossAccountSourceStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "234567890123-test-region": {
+          "bucketName": "cdk-hnb659fds-assets-234567890123-test-region",
+          "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-test-region"
+        }
+      }
+    },
+    "1b2c92f2cd21c170884393633bd4c732676df6290562199b6e3ca5e2a1be7d18": {
+      "displayName": "DeploySource/AwsCliLayer/Code",
+      "source": {
+        "path": "asset.1b2c92f2cd21c170884393633bd4c732676df6290562199b6e3ca5e2a1be7d18.zip",
+        "packaging": "file"
+      },
+      "destinations": {
+        "234567890123-test-region": {
+          "bucketName": "cdk-hnb659fds-assets-234567890123-test-region",
+          "objectKey": "1b2c92f2cd21c170884393633bd4c732676df6290562199b6e3ca5e2a1be7d18.zip",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-test-region"
+        }
+      }
+    },
+    "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d": {
+      "displayName": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code",
+      "source": {
+        "path": "asset.9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "234567890123-test-region": {
+          "bucketName": "cdk-hnb659fds-assets-234567890123-test-region",
+          "objectKey": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-test-region"
+        }
+      }
+    },
+    "fbee18a86723a24ee3c75971c14b5bbff255873d741f6bbdde2218433a37a74d": {
+      "displayName": "DeploySource/Asset1",
+      "source": {
+        "path": "asset.fbee18a86723a24ee3c75971c14b5bbff255873d741f6bbdde2218433a37a74d",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "234567890123-test-region": {
+          "bucketName": "cdk-hnb659fds-assets-234567890123-test-region",
+          "objectKey": "fbee18a86723a24ee3c75971c14b5bbff255873d741f6bbdde2218433a37a74d.zip",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-test-region"
+        }
+      }
+    },
+    "a9864aca580b168cd20edd9e5d70b8263208a568278dc5413594ce7450b2a0d8": {
+      "displayName": "CrossAccountSourceStack Template",
+      "source": {
+        "path": "CrossAccountSourceStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "234567890123-test-region": {
+          "bucketName": "cdk-hnb659fds-assets-234567890123-test-region",
+          "objectKey": "a9864aca580b168cd20edd9e5d70b8263208a568278dc5413594ce7450b2a0d8.json",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-test-region"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

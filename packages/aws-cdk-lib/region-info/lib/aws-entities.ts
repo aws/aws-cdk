@@ -67,6 +67,8 @@ export const AWS_REGIONS_AND_RULES: readonly (string | symbol)[] = [
   'ap-southeast-7', // Asia Pacific (Thailand)
   'mx-central-1', // Mexico (Central)
   'eu-isoe-west-1', // EU ISO-E West
+  'us-isob-west-1', // US ISOB West
+  'ap-east-2', // Asia Pacific (Taipei)
 ];
 
 /**
@@ -77,33 +79,6 @@ export const AWS_REGIONS_AND_RULES: readonly (string | symbol)[] = [
 export const AWS_REGIONS = AWS_REGIONS_AND_RULES
   .filter((x) => typeof x === 'string')
   .sort() as readonly string[];
-
-/**
- * Whether or not a region predates a given rule (or region).
- *
- * Unknown region => we have to assume no.
- */
-export function before(region: string, ruleOrRegion: string | symbol) {
-  const ruleIx = AWS_REGIONS_AND_RULES.indexOf(ruleOrRegion);
-  if (ruleIx === -1) {
-    throw new Error(`Unknown rule: ${String(ruleOrRegion)}`);
-  }
-  const regionIx = AWS_REGIONS_AND_RULES.indexOf(region);
-  return regionIx === -1 ? false : regionIx < ruleIx;
-}
-
-/**
- * Return all regions before a given rule was introduced (or region)
- */
-export function regionsBefore(ruleOrRegion: string | symbol): string[] {
-  const ruleIx = AWS_REGIONS_AND_RULES.indexOf(ruleOrRegion);
-  if (ruleIx === -1) {
-    throw new Error(`Unknown rule: ${String(ruleOrRegion)}`);
-  }
-  return AWS_REGIONS_AND_RULES.slice(0, ruleIx)
-    .filter((entry) => typeof entry === 'string')
-    .sort() as string[];
-}
 
 export interface Region { readonly partition: string; readonly domainSuffix: string }
 

@@ -5,6 +5,7 @@ import { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import { Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { StageOptions, IStage, StageAttributes } from '../common';
 import { IApi } from '../common/api';
 import { StageBase } from '../common/base';
@@ -135,7 +136,11 @@ abstract class HttpStageBase extends StageBase implements IHttpStage {
  * Represents a stage where an instance of the API is deployed.
  * @resource AWS::ApiGatewayV2::Stage
  */
+@propertyInjectable
 export class HttpStage extends HttpStageBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.HttpStage';
+
   /**
    * Import an existing stage into this CDK app.
    */
@@ -170,6 +175,7 @@ export class HttpStage extends HttpStageBase {
     new CfnStage(this, 'Resource', {
       apiId: props.httpApi.apiId,
       stageName: this.physicalName,
+      accessLogSettings: this._validateAccessLogSettings(props.accessLogSettings),
       autoDeploy: props.autoDeploy,
       defaultRouteSettings: props.throttle || props.detailedMetricsEnabled ? {
         throttlingBurstLimit: props.throttle?.burstLimit,

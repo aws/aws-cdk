@@ -1,0 +1,14 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "sns-firehose-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sns-firehose-topicstack",
+        "aws-cdk-sns-firehose-firehosestack"
+      ],
+      "assertionStack": "sns-firehose-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "snsfirehoseintegDefaultTestDeployAssert15062DA5"
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}

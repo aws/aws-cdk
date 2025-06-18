@@ -1,0 +1,15 @@
+name: Check all requires files are in LFS
+on:
+  pull_request: {}
+
+jobs:
+  check-lfs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          # We don't actually care about LFS file contents, just their integrity.
+          lfs: false
+      - name: Check LFS pointers
+        run: git lfs fsck --pointers

@@ -1,0 +1,13 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "SnsBucketNotificationsSseInteg/DefaultTest": {
+      "stacks": [
+        "SnsBucketNotificationsStack"
+      ],
+      "assertionStack": "SnsBucketNotificationsSseInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "SnsBucketNotificationsSseIntegDefaultTestDeployAssertDBC1BF57"
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}

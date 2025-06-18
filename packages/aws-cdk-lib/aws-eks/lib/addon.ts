@@ -3,6 +3,7 @@ import { ICluster } from './cluster';
 import { CfnAddon } from './eks.generated';
 import { ArnFormat, IResource, Resource, Stack, Fn } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an Amazon EKS Add-On.
@@ -48,6 +49,13 @@ export interface AddonProps {
    * @default true
    */
   readonly preserveOnDelete?: boolean;
+
+  /**
+   * The configuration values for the Add-on.
+   *
+   * @default - Use default configuration.
+   */
+  readonly configurationValues?: Record<string, any>;
 }
 
 /**
@@ -68,7 +76,11 @@ export interface AddonAttributes {
 /**
  * Represents an Amazon EKS Add-On.
  */
+@propertyInjectable
 export class Addon extends Resource implements IAddon {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.Addon';
+
   /**
    * Creates an `IAddon` instance from the given addon attributes.
    *
@@ -138,6 +150,7 @@ export class Addon extends Resource implements IAddon {
       clusterName: this.clusterName,
       addonVersion: props.addonVersion,
       preserveOnDelete: props.preserveOnDelete,
+      configurationValues: this.stack.toJsonString(props.configurationValues),
     });
 
     this.addonName = this.getResourceNameAttribute(resource.ref);

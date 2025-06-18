@@ -30,7 +30,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 new integ.IntegTest(app, 'EmailIdentityInteg', {
   testCases: [new TestStack(app, 'cdk-ses-email-identity-integ')],

@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-ec2-alpha-gateways.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c53a85dd3bcc1a5e9ae5a014f79b2ae2f8d8c0a5822aa8af10becb72b86e265e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/13fe44c7c32f9f1781638fb9c8bea018d081dc64f2eb4e98109424c13aba06ea.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -36,12 +36,16 @@
       "metadata": {
         "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Subnet testsubnet is not a public subnet. Internet Gateway should be added only to public subnets. [ack: InternetGatewayWarning]"
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           },
           {
             "type": "aws:cdk:warning",
-            "data": "Subnet testsubnet2 is not a public subnet. Internet Gateway should be added only to public subnets. [ack: InternetGatewayWarning]"
+            "data": "Given testsubnet is not a public subnet. Internet Gateway should be added only to public subnets. [ack: InternetGatewayWarning]"
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Given testsubnet2 is not a public subnet. Internet Gateway should be added only to public subnets. [ack: InternetGatewayWarning]"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/Resource": [
@@ -50,10 +54,22 @@
             "data": "VPCintegtestgateway2BE01D01"
           }
         ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/AmazonProvided": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/AmazonProvided/AmazonProvided": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCintegtestgatewayAmazonProvided7EC73953"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/InternetGateway": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/InternetGateway/IGW": [
@@ -68,10 +84,22 @@
             "data": "VPCintegtestgatewayInternetGatewayGWAttachment686DC0B9"
           }
         ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/testsubnet-DefaultRoute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/testsubnet-DefaultRoute/Route": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCintegtestgatewaytestsubnetDefaultRouteBDD38849"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/testsubnet2-DefaultRoute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/testsubnet2-DefaultRoute/Route": [
@@ -80,10 +108,22 @@
             "data": "VPCintegtestgatewaytestsubnet2DefaultRoute3B414B5A"
           }
         ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/EgressOnlyGW": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/EgressOnlyGW/EIGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCintegtestgatewayEgressOnlyGWEIGW686FDB04"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/testsubnet-EgressRoute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/testsubnet-EgressRoute/Route": [
@@ -92,10 +132,58 @@
             "data": "VPCintegtestgatewaytestsubnetEgressRoute19C29FDA"
           }
         ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/testsubnet2-EgressRoute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/testsubnet2-EgressRoute/Route": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCintegtestgatewaytestsubnet2EgressRoute54F6A53E"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/NATGateway-testsubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/NATGateway-testsubnet3/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCintegtestgatewayNATGatewaytestsubnet3EIP396C3DBA"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/NATGateway-testsubnet3/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCintegtestgatewayNATGatewaytestsubnet3NATGateway4198D6F2"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/NATGateway-testsubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/NATGateway-testsubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCintegtestgatewayNATGatewaytestsubnet2EIPC21D31FA"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/NATGateway-testsubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCintegtestgatewayNATGatewaytestsubnet2NATGateway27C66096"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/TestRouteTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/TestRouteTable/RouteTable": [
@@ -104,28 +192,40 @@
             "data": "TestRouteTableC34C2E1C"
           }
         ],
+        "/aws-cdk-ec2-alpha-gateways/testsubnet": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-ec2-alpha-gateways/testsubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsubnetSubnetDD417829",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsubnetSubnetDD417829"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/testsubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsubnetRouteTableAssociationC106676D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsubnetRouteTableAssociationC106676D"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/TestRouteTable2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/TestRouteTable2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestRouteTable2RouteTableB32AE314"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/testsubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/testsubnet2/Subnet": [
@@ -138,6 +238,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "testsubnet2RouteTableAssociation2ABEB97D"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/testsubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/testsubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testsubnet3Subnet09F1B369"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/testsubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testsubnet3RouteTableAssociation97F126C9"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/Exports/Output{\"Fn::GetAtt\":[\"VPCintegtestgatewayInternetGatewayIGWBF8CBB67\",\"InternetGatewayId\"]}": [
@@ -202,7 +320,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ad49622c0677c2629201e4059a242dd1a61e8babd9e0e2e18988c1b158aa1fc3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/12fed6e9ea706fcee44dcdb0c0ff1453dfaf5fd26e8c3c2a1a9c039ba3a3f8d0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -219,6 +337,20 @@
         "VpcSameAccountIntegDefaultTestDeployAssertDA1BF34D.assets"
       ],
       "metadata": {
+        "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeInternetGatewaysCommand3920c7dae7dcf75f3a68a812df0f0ccb/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeInternetGatewaysCommand3920c7dae7dcf75f3a68a812df0f0ccb/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -249,6 +381,20 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeEgressOnlyInternetGatewaysCommandf9b5f48191fd50e5e02ab84f6f8f8a2b/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeEgressOnlyInternetGatewaysCommandf9b5f48191fd50e5e02ab84f6f8f8a2b/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -259,6 +405,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallec2DescribeEgressOnlyInternetGatewaysCommandf9b5f48191fd50e5e02ab84f6f8f8a2b"
+          }
+        ],
+        "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603/Default/Default": [
@@ -294,5 +454,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

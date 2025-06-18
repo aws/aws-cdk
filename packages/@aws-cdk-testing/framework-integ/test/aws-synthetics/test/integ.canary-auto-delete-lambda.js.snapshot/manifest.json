@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "cdk-synthetics-canary-auto-delete.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f9f808e52b7ac4fd71149bece721fc9b05f55aba702b9bd279f50a6019614a37.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/822baf41b4bfdc1ab5bd102071791ab0f9f6d4999df4baa1695e0066230b7960.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,64 @@
         "cdk-synthetics-canary-auto-delete.assets"
       ],
       "metadata": {
+        "/cdk-synthetics-canary-auto-delete/Canary": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "canaryName": "*",
+              "runtime": "*",
+              "test": "*",
+              "cleanup": "lambda"
+            }
+          }
+        ],
+        "/cdk-synthetics-canary-auto-delete/Canary/ArtifactsBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryption": "KMS_MANAGED",
+              "enforceSSL": true,
+              "lifecycleRules": "*"
+            }
+          }
+        ],
         "/cdk-synthetics-canary-auto-delete/Canary/ArtifactsBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CanaryArtifactsBucket4A60D32B"
           }
         ],
+        "/cdk-synthetics-canary-auto-delete/Canary/ArtifactsBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/cdk-synthetics-canary-auto-delete/Canary/ArtifactsBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CanaryArtifactsBucketPolicy63096C41"
+          }
+        ],
+        "/cdk-synthetics-canary-auto-delete/Canary/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
+          }
+        ],
+        "/cdk-synthetics-canary-auto-delete/Canary/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cdk-synthetics-canary-auto-delete/Canary/ServiceRole/Resource": [
@@ -56,6 +104,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Canary11957FE2"
+          }
+        ],
+        "/cdk-synthetics-canary-auto-delete/Canary/AutoDeleteUnderlyingResourcesCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cdk-synthetics-canary-auto-delete/Canary/AutoDeleteUnderlyingResourcesCustomResource/Default": [
@@ -88,16 +142,64 @@
             "data": "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderHandler26776D4E"
           }
         ],
+        "/cdk-synthetics-canary-auto-delete/CanaryRemoved": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "test": "*",
+              "cleanup": "lambda",
+              "startAfterCreation": false
+            }
+          }
+        ],
+        "/cdk-synthetics-canary-auto-delete/CanaryRemoved/ArtifactsBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryption": "KMS_MANAGED",
+              "enforceSSL": true,
+              "lifecycleRules": "*"
+            }
+          }
+        ],
         "/cdk-synthetics-canary-auto-delete/CanaryRemoved/ArtifactsBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CanaryRemovedArtifactsBucket37DF7242"
           }
         ],
+        "/cdk-synthetics-canary-auto-delete/CanaryRemoved/ArtifactsBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/cdk-synthetics-canary-auto-delete/CanaryRemoved/ArtifactsBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CanaryRemovedArtifactsBucketPolicy29BB2D96"
+          }
+        ],
+        "/cdk-synthetics-canary-auto-delete/CanaryRemoved/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
+          }
+        ],
+        "/cdk-synthetics-canary-auto-delete/CanaryRemoved/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cdk-synthetics-canary-auto-delete/CanaryRemoved/ServiceRole/Resource": [
@@ -112,16 +214,97 @@
             "data": "CanaryRemoved24AD6309"
           }
         ],
+        "/cdk-synthetics-canary-auto-delete/CanaryRemoved/AutoDeleteUnderlyingResourcesCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-synthetics-canary-auto-delete/CanaryRemoved/AutoDeleteUnderlyingResourcesCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CanaryRemovedAutoDeleteUnderlyingResourcesCustomResource697450B4"
           }
         ],
+        "/cdk-synthetics-canary-auto-delete/DeleteCanary/Provider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-synthetics-canary-auto-delete/DeleteCanary/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-synthetics-canary-auto-delete/DeleteCanary/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DeleteCanary6ED313B0"
+          }
+        ],
+        "/cdk-synthetics-canary-auto-delete/DeleteCanary/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
         "/cdk-synthetics-canary-auto-delete/DeleteCanary/CustomResourcePolicy/Resource": [
@@ -132,12 +315,57 @@
         ],
         "/cdk-synthetics-canary-auto-delete/AWS679f53fac002430cb0da5b7982bd2287": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
           },
           {
             "type": "aws:cdk:is-custom-resource-handler-runtime-family",
             "data": 0
+          }
+        ],
+        "/cdk-synthetics-canary-auto-delete/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-synthetics-canary-auto-delete/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cdk-synthetics-canary-auto-delete/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -221,5 +449,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1016.1"
 }

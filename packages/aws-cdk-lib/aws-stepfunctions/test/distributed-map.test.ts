@@ -1,6 +1,7 @@
-import { Annotations, Match } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2 } from '../../cx-api';
 import * as stepfunctions from '../lib';
 import { CsvHeaders } from '../lib/states/distributed-map/item-reader';
 
@@ -51,6 +52,46 @@ describe('Distributed Map State', () => {
             'foo': 'foo',
             'bar.$': '$.bar',
           },
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.STANDARD,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemsPath: '$.inputForMap',
+          MaxConcurrency: 1,
+        },
+      },
+    });
+  }),
+
+  test('State Machine With Distributed Map State and jsonata item selector', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+      maxConcurrency: 1,
+      itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      jsonataItemSelector: '{% {\"foo\": \"foo\", \"bar\": $states.input.bar} %}',
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          End: true,
+          ItemSelector: '{% {\"foo\": \"foo\", \"bar\": $states.input.bar} %}',
           ItemProcessor: {
             ProcessorConfig: {
               Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
@@ -237,7 +278,7 @@ describe('Distributed Map State', () => {
     });
   }),
 
-  test('State Machine With Distributed Map State and S3JsonItemReader', () => {
+  test.each([[stepfunctions.S3JsonItemReader, 'JSON'], [stepfunctions.S3JsonLItemReader, 'JSONL']])('State Machine With Distributed Map State and $s', (jsonOrJsonlItemReader, inputType) => {
     // GIVEN
     const stack = new cdk.Stack();
     const readerBucket = new s3.Bucket(stack, 'TestBucket');
@@ -245,7 +286,7 @@ describe('Distributed Map State', () => {
     // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       maxConcurrency: 1,
-      itemReader: new stepfunctions.S3JsonItemReader({
+      itemReader: new jsonOrJsonlItemReader({
         bucket: readerBucket,
         key: 'test.json',
       }),
@@ -292,7 +333,7 @@ describe('Distributed Map State', () => {
               ],
             },
             ReaderConfig: {
-              InputType: 'JSON',
+              InputType: inputType,
             },
             Parameters: {
               Bucket: {
@@ -715,98 +756,554 @@ describe('Distributed Map State', () => {
     });
   }),
 
-  test('State Machine With Distributed Map State and ResultWriter in JSONATA', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const writerBucket = new s3.Bucket(stack, 'TestBucket');
+  describe('ResultWriter and ResultWriterV2', () => {
+    describe.each([
+      ['ResultWriter', false],
+      ['ResultWriterV2', true],
+    ])('when class is %s', (_, isResultWriterV2Enabled) => {
+      test('State Machine With Distributed Map State and ResultWriter in JSONATA', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, isResultWriterV2Enabled);
+        const writerBucket = new s3.Bucket(stack, 'TestBucket');
 
-    // WHEN
-    const map = stepfunctions.DistributedMap.jsonata(stack, 'Map State', {
-      maxConcurrency: 1,
-      itemReader: new stepfunctions.S3CsvItemReader({
-        bucket: writerBucket,
-        key: 'CSV_KEY',
-        csvHeaders: stepfunctions.CsvHeaders.useFirstRow(),
-      }),
-      resultWriter: new stepfunctions.ResultWriter({
-        bucket: writerBucket,
-        prefix: 'test',
-      }),
-    });
-    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+        // WHEN
+        const map = stepfunctions.DistributedMap.jsonata(stack, 'Map State', {
+          maxConcurrency: 1,
+          itemReader: new stepfunctions.S3CsvItemReader({
+            bucket: writerBucket,
+            key: 'CSV_KEY',
+            csvHeaders: stepfunctions.CsvHeaders.useFirstRow(),
+          }),
+          resultWriter: new stepfunctions.ResultWriter({
+            bucket: writerBucket,
+            prefix: 'test',
+          }),
+          resultWriterV2: new stepfunctions.ResultWriterV2({
+            bucket: writerBucket,
+            prefix: 'test',
+          }),
+        });
+        map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    // THEN
-    expect(render(map, stepfunctions.QueryLanguage.JSONATA)).toStrictEqual({
-      StartAt: 'Map State',
-      States: {
-        'Map State': {
-          Type: 'Map',
-          End: true,
-          ItemProcessor: {
-            ProcessorConfig: {
-              Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
-              ExecutionType: stepfunctions.StateMachineType.STANDARD,
-            },
-            StartAt: 'Pass State',
-            States: {
-              'Pass State': {
-                Type: 'Pass',
-                End: true,
-              },
-            },
-          },
-          ItemReader: {
-            Arguments: {
-              Bucket: {
-                Ref: 'TestBucket560B80BC',
-              },
-              Key: 'CSV_KEY',
-            },
-            ReaderConfig: {
-              CSVHeaderLocation: 'FIRST_ROW',
-              InputType: 'CSV',
-            },
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
+        // THEN
+        expect(render(map, stepfunctions.QueryLanguage.JSONATA)).toStrictEqual({
+          StartAt: 'Map State',
+          States: {
+            'Map State': {
+              Type: 'Map',
+              End: true,
+              ItemProcessor: {
+                ProcessorConfig: {
+                  Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+                  ExecutionType: stepfunctions.StateMachineType.STANDARD,
+                },
+                StartAt: 'Pass State',
+                States: {
+                  'Pass State': {
+                    Type: 'Pass',
+                    End: true,
                   },
-                  ':states:::s3:getObject',
-                ],
-              ],
-            },
-          },
-          ResultWriter: {
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':states:::s3:putObject',
-                ],
-              ],
-            },
-            Arguments: {
-              Bucket: {
-                Ref: stack.getLogicalId(writerBucket.node.defaultChild as s3.CfnBucket),
+                },
               },
-              Prefix: 'test',
+              ItemReader: {
+                Arguments: {
+                  Bucket: {
+                    Ref: 'TestBucket560B80BC',
+                  },
+                  Key: 'CSV_KEY',
+                },
+                ReaderConfig: {
+                  CSVHeaderLocation: 'FIRST_ROW',
+                  InputType: 'CSV',
+                },
+                Resource: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':states:::s3:getObject',
+                    ],
+                  ],
+                },
+              },
+              ResultWriter: {
+                Resource: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':states:::s3:putObject',
+                    ],
+                  ],
+                },
+                Arguments: {
+                  Bucket: {
+                    Ref: stack.getLogicalId(writerBucket.node.defaultChild as s3.CfnBucket),
+                  },
+                  Prefix: 'test',
+                },
+              },
+              MaxConcurrency: 1,
             },
           },
-          MaxConcurrency: 1,
-        },
-      },
+        });
+      }),
+
+      test('State Machine With Distributed Map State and ResultWriter containing only Resource and Parameters details', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const writerBucket = new s3.Bucket(stack, 'TestBucket');
+
+        // WHEN
+        const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+          maxConcurrency: 1,
+          itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+          itemSelector: {
+            foo: 'foo',
+            bar: stepfunctions.JsonPath.stringAt('$.bar'),
+          },
+          resultWriter: new stepfunctions.ResultWriter({
+            bucket: writerBucket,
+            prefix: 'test',
+          }),
+        });
+        map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+        // THEN
+        expect(render(map)).toStrictEqual({
+          StartAt: 'Map State',
+          States: {
+            'Map State': {
+              Type: 'Map',
+              End: true,
+              ItemSelector: {
+                'foo': 'foo',
+                'bar.$': '$.bar',
+              },
+              ItemProcessor: {
+                ProcessorConfig: {
+                  Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+                  ExecutionType: stepfunctions.StateMachineType.STANDARD,
+                },
+                StartAt: 'Pass State',
+                States: {
+                  'Pass State': {
+                    Type: 'Pass',
+                    End: true,
+                  },
+                },
+              },
+              ItemsPath: '$.inputForMap',
+              ResultWriter: {
+                Resource: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':states:::s3:putObject',
+                    ],
+                  ],
+                },
+                Parameters: {
+                  Bucket: {
+                    Ref: stack.getLogicalId(writerBucket.node.defaultChild as s3.CfnBucket),
+                  },
+                  Prefix: 'test',
+                },
+              },
+              MaxConcurrency: 1,
+            },
+          },
+        });
+      });
     });
   }),
 
-  test('State Machine With Distributed Map State and ResultWriter', () => {
+  describe('ResultWriterV2', () => {
+    describe.each([stepfunctions.OutputType.JSON, stepfunctions.OutputType.JSONL])('State Machine With Distributed Map State and ResultWriter containing only WriterConfig. OutputType is %s, ', (outputType) => {
+      test.each([stepfunctions.Transformation.NONE, stepfunctions.Transformation.FLATTEN, stepfunctions.Transformation.COMPACT])('and Transformation is %s', (transformation) => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, true);
+        // WHEN
+        const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+          maxConcurrency: 1,
+          itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+          itemSelector: {
+            foo: 'foo',
+            bar: stepfunctions.JsonPath.stringAt('$.bar'),
+          },
+          resultWriterV2: new stepfunctions.ResultWriterV2({
+            writerConfig: new stepfunctions.WriterConfig({
+              outputType,
+              transformation,
+            }),
+          }),
+        });
+        map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+        // THEN
+        expect(render(map)).toStrictEqual({
+          StartAt: 'Map State',
+          States: {
+            'Map State': {
+              Type: 'Map',
+              End: true,
+              ItemSelector: {
+                'foo': 'foo',
+                'bar.$': '$.bar',
+              },
+              ItemProcessor: {
+                ProcessorConfig: {
+                  Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+                  ExecutionType: stepfunctions.StateMachineType.STANDARD,
+                },
+                StartAt: 'Pass State',
+                States: {
+                  'Pass State': {
+                    Type: 'Pass',
+                    End: true,
+                  },
+                },
+              },
+              ItemsPath: '$.inputForMap',
+              ResultWriter: {
+                WriterConfig: {
+                  OutputType: outputType,
+                  Transformation: transformation,
+                },
+              },
+              MaxConcurrency: 1,
+            },
+          },
+        });
+      });
+    }),
+
+    describe.each([stepfunctions.OutputType.JSON, stepfunctions.OutputType.JSONL])('State Machine With Distributed Map State and ResultWriter having Resource, Parameters and WriterConfig. OutputType is %s', (outputType) => {
+      test.each([stepfunctions.Transformation.NONE, stepfunctions.Transformation.FLATTEN, stepfunctions.Transformation.COMPACT])('and transformation is %s', (transformation) => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, true);
+        const writerBucket = new s3.Bucket(stack, 'TestBucket');
+
+        // WHEN
+        const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+          maxConcurrency: 1,
+          itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+          itemSelector: {
+            foo: 'foo',
+            bar: stepfunctions.JsonPath.stringAt('$.bar'),
+          },
+          resultWriterV2: new stepfunctions.ResultWriterV2({
+            bucket: writerBucket,
+            prefix: 'test',
+            writerConfig: new stepfunctions.WriterConfig({
+              outputType,
+              transformation,
+            }),
+          }),
+        });
+        map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+        // THEN
+        expect(render(map)).toStrictEqual({
+          StartAt: 'Map State',
+          States: {
+            'Map State': {
+              Type: 'Map',
+              End: true,
+              ItemSelector: {
+                'foo': 'foo',
+                'bar.$': '$.bar',
+              },
+              ItemProcessor: {
+                ProcessorConfig: {
+                  Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+                  ExecutionType: stepfunctions.StateMachineType.STANDARD,
+                },
+                StartAt: 'Pass State',
+                States: {
+                  'Pass State': {
+                    Type: 'Pass',
+                    End: true,
+                  },
+                },
+              },
+              ItemsPath: '$.inputForMap',
+              ResultWriter: {
+                Resource: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':states:::s3:putObject',
+                    ],
+                  ],
+                },
+                Parameters: {
+                  Bucket: {
+                    Ref: stack.getLogicalId(writerBucket.node.defaultChild as s3.CfnBucket),
+                  },
+                  Prefix: 'test',
+                },
+                WriterConfig: {
+                  OutputType: outputType,
+                  Transformation: transformation,
+                },
+              },
+              MaxConcurrency: 1,
+            },
+          },
+        });
+      });
+    }),
+
+    test('should use resultWriterV2 if feature is enabled and both resultWriter and resultWriterV2 are provided', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, true);
+      const writerBucket = new s3.Bucket(stack, 'TestBucket');
+      // WHEN
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        maxConcurrency: 1,
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+        itemSelector: {
+          foo: 'foo',
+          bar: stepfunctions.JsonPath.stringAt('$.bar'),
+        },
+        resultWriter: new stepfunctions.ResultWriter({
+          bucket: writerBucket,
+        }),
+        resultWriterV2: new stepfunctions.ResultWriterV2({
+          writerConfig: new stepfunctions.WriterConfig({
+            outputType: stepfunctions.OutputType.JSON,
+            transformation: stepfunctions.Transformation.COMPACT,
+          }),
+        }),
+      });
+      map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+      // THEN
+      expect(render(map)).toStrictEqual({
+        StartAt: 'Map State',
+        States: {
+          'Map State': {
+            Type: 'Map',
+            End: true,
+            ItemSelector: {
+              'foo': 'foo',
+              'bar.$': '$.bar',
+            },
+            ItemProcessor: {
+              ProcessorConfig: {
+                Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+                ExecutionType: stepfunctions.StateMachineType.STANDARD,
+              },
+              StartAt: 'Pass State',
+              States: {
+                'Pass State': {
+                  Type: 'Pass',
+                  End: true,
+                },
+              },
+            },
+            ItemsPath: '$.inputForMap',
+            MaxConcurrency: 1,
+            ResultWriter: {
+              WriterConfig: {
+                OutputType: 'JSON',
+                Transformation: 'COMPACT',
+              },
+            },
+          },
+        },
+      });
+    });
+
+    test.each([undefined, false])('does not use resultWriterV2 if feature is not enabled', (feature) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, feature);
+      const writerBucket = new s3.Bucket(stack, 'TestBucket');
+      // WHEN
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        maxConcurrency: 1,
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+        itemSelector: {
+          foo: 'foo',
+          bar: stepfunctions.JsonPath.stringAt('$.bar'),
+        },
+        resultWriterV2: new stepfunctions.ResultWriterV2({
+          writerConfig: new stepfunctions.WriterConfig({
+            outputType: stepfunctions.OutputType.JSON,
+            transformation: stepfunctions.Transformation.COMPACT,
+          }),
+        }),
+      });
+      map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+      // THEN
+      expect(render(map)).toStrictEqual({
+        StartAt: 'Map State',
+        States: {
+          'Map State': {
+            Type: 'Map',
+            End: true,
+            ItemSelector: {
+              'foo': 'foo',
+              'bar.$': '$.bar',
+            },
+            ItemProcessor: {
+              ProcessorConfig: {
+                Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+                ExecutionType: stepfunctions.StateMachineType.STANDARD,
+              },
+              StartAt: 'Pass State',
+              States: {
+                'Pass State': {
+                  Type: 'Pass',
+                  End: true,
+                },
+              },
+            },
+            ItemsPath: '$.inputForMap',
+            MaxConcurrency: 1,
+          },
+        },
+      });
+    });
+
+    test.each([undefined, false])('should use resultWriter if feature is not enabled and resultWriter is provided', (feature) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, feature);
+      const writerBucket = new s3.Bucket(stack, 'TestBucket');
+      // WHEN
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        maxConcurrency: 1,
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+        itemSelector: {
+          foo: 'foo',
+          bar: stepfunctions.JsonPath.stringAt('$.bar'),
+        },
+        resultWriter: new stepfunctions.ResultWriter({
+          bucket: writerBucket,
+          prefix: 'test',
+        }),
+      });
+      map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+      // THEN
+      expect(render(map)).toStrictEqual({
+        StartAt: 'Map State',
+        States: {
+          'Map State': {
+            Type: 'Map',
+            End: true,
+            ItemSelector: {
+              'foo': 'foo',
+              'bar.$': '$.bar',
+            },
+            ItemProcessor: {
+              ProcessorConfig: {
+                Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+                ExecutionType: stepfunctions.StateMachineType.STANDARD,
+              },
+              StartAt: 'Pass State',
+              States: {
+                'Pass State': {
+                  Type: 'Pass',
+                  End: true,
+                },
+              },
+            },
+            ItemsPath: '$.inputForMap',
+            MaxConcurrency: 1,
+            ResultWriter: {
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':states:::s3:putObject',
+                  ],
+                ],
+              },
+              Parameters: {
+                Bucket: {
+                  Ref: stack.getLogicalId(writerBucket.node.defaultChild as s3.CfnBucket),
+                },
+                Prefix: 'test',
+              },
+            },
+          },
+        },
+      });
+    });
+
+    test('adds warning if ResultWriter does not have either S3 details or WriterConfig', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, true);
+      // WHEN
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        maxConcurrency: 1,
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+        itemSelector: {
+          foo: 'foo',
+          bar: stepfunctions.JsonPath.stringAt('$.bar'),
+        },
+        resultWriterV2: new stepfunctions.ResultWriterV2({}),
+      });
+      map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+      // THEN
+      expect(render(map)).toStrictEqual({
+        StartAt: 'Map State',
+        States: {
+          'Map State': {
+            Type: 'Map',
+            End: true,
+            ItemSelector: {
+              'foo': 'foo',
+              'bar.$': '$.bar',
+            },
+            ItemProcessor: {
+              ProcessorConfig: {
+                Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+                ExecutionType: stepfunctions.StateMachineType.STANDARD,
+              },
+              StartAt: 'Pass State',
+              States: {
+                'Pass State': {
+                  Type: 'Pass',
+                  End: true,
+                },
+              },
+            },
+            ItemsPath: '$.inputForMap',
+            MaxConcurrency: 1,
+            ResultWriter: {},
+          },
+        },
+      });
+      Annotations.fromStack(stack).hasWarning('/Default/Map State', Match.stringLikeRegexp('ResultWriter should specify at least the WriterConfig or the Bucket and Prefix'));
+    });
+  }),
+
+  test('State Machine With Distributed Map State, ResultWriter and bucketNamePath', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const writerBucket = new s3.Bucket(stack, 'TestBucket');
+    stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, true);
 
     // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
@@ -816,8 +1313,8 @@ describe('Distributed Map State', () => {
         foo: 'foo',
         bar: stepfunctions.JsonPath.stringAt('$.bar'),
       },
-      resultWriter: new stepfunctions.ResultWriter({
-        bucket: writerBucket,
+      resultWriterV2: new stepfunctions.ResultWriterV2({
+        bucketNamePath: stepfunctions.JsonPath.stringAt('$.bucketName'),
         prefix: 'test',
       }),
     });
@@ -860,15 +1357,108 @@ describe('Distributed Map State', () => {
               ],
             },
             Parameters: {
-              Bucket: {
-                Ref: stack.getLogicalId(writerBucket.node.defaultChild as s3.CfnBucket),
-              },
-              Prefix: 'test',
+              'Bucket.$': '$.bucketName',
+              'Prefix': 'test',
             },
           },
           MaxConcurrency: 1,
         },
       },
+    });
+  }),
+
+  test('State Machine With Distributed Map State, ResultWriter and bucketNamePath generate correct IAM Policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, true);
+
+    // WHEN
+    const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+      resultWriterV2: new stepfunctions.ResultWriterV2({
+        bucketNamePath: stepfunctions.JsonPath.stringAt('$.bucketName'),
+        prefix: 'test',
+      }),
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definition: map,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              's3:PutObject',
+              's3:GetObject',
+              's3:ListMultipartUploadParts',
+              's3:AbortMultipartUpload',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [
+        {
+          Ref: 'StateMachineRoleB840431D',
+        },
+      ],
+    });
+  }),
+
+  test('State Machine With Distributed Map State, ResultWriter and bucket generate correct IAM Policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, true);
+
+    // WHEN
+    const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+      resultWriterV2: new stepfunctions.ResultWriterV2({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        prefix: 'test',
+      }),
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definition: map,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              's3:PutObject',
+              's3:GetObject',
+              's3:ListMultipartUploadParts',
+              's3:AbortMultipartUpload',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':s3:::',
+                  { Ref: 'Bucket83908E77' },
+                  '/*',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [
+        {
+          Ref: 'StateMachineRoleB840431D',
+        },
+      ],
     });
   }),
 
@@ -1082,6 +1672,23 @@ describe('Distributed Map State', () => {
     });
 
     expect(() => app.synth()).toThrow(/Provide either `bucket` or `bucketNamePath`/);
+  }),
+
+  test('fails in synthesis if resultWriter contains both bucket and bucketNamePath', () => {
+    const app = createAppWithMap((stack) => {
+      const writerBucket = new s3.Bucket(stack, 'TestBucket');
+
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        resultWriterV2: new stepfunctions.ResultWriterV2({
+          bucket: writerBucket,
+          bucketNamePath: stepfunctions.JsonPath.stringAt('$.bucketName'),
+        }),
+      });
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/Provide either `bucket` or `bucketNamePath`, but not both/);
   }),
 
   test('does not throw while accessing bucket of itemReader which was initialised with bucket', () => {

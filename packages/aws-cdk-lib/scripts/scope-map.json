@@ -233,6 +233,9 @@
   "aws-docdbelastic": [
     "AWS::DocDBElastic"
   ],
+  "aws-dsql": [
+    "AWS::DSQL"
+  ],
   "aws-dynamodb": [
     "AWS::DynamoDB"
   ],
@@ -286,6 +289,9 @@
   ],
   "aws-evidently": [
     "AWS::Evidently"
+  ],
+  "aws-evs": [
+    "AWS::EVS"
   ],
   "aws-finspace": [
     "AWS::FinSpace"
@@ -701,6 +707,9 @@
   ],
   "aws-ssmcontacts": [
     "AWS::SSMContacts"
+  ],
+  "aws-ssmguiconnect": [
+    "AWS::SSMGuiConnect"
   ],
   "aws-ssmincidents": [
     "AWS::SSMIncidents"

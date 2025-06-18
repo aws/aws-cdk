@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "codepipeline-ecr-image-scan-action-test/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "codepipeline-ecr-image-scan-action-test/DefaultTest/DeployAssert",
       "assertionStackName": "codepipelineecrimagescanactiontestDefaultTestDeployAssertD4D5DC63"
     }
-  }
+  },
+  "minimumCliVersion": "2.1017.1"
 }

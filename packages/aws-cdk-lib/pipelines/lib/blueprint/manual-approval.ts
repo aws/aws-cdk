@@ -1,5 +1,5 @@
 import { Step } from './step';
-
+import { ITopic } from '../../../aws-sns';
 /**
  * Construction properties for a `ManualApprovalStep`
  */
@@ -10,6 +10,20 @@ export interface ManualApprovalStepProps {
    * @default - No comment
    */
   readonly comment?: string;
+
+  /**
+   * The URL for review associated with this manual approval
+   *
+   * @default - No URL
+   */
+  readonly reviewUrl?: string;
+
+  /**
+   * Optional SNS topic to send notifications to when an approval is pending
+   *
+   * @default - No notifications
+   */
+  readonly notificationTopic?: ITopic;
 }
 
 /**
@@ -29,10 +43,26 @@ export class ManualApprovalStep extends Step {
    */
   public readonly comment?: string;
 
+  /**
+   * The URL for review associated with this manual approval
+   *
+   * @default - No URL
+   */
+  public readonly reviewUrl?: string;
+
+  /**
+   * Optional SNS topic to send notifications
+   *
+   * @default - No notifications
+   */
+  public readonly notificationTopic?: ITopic;
+
   constructor(id: string, props: ManualApprovalStepProps = {}) {
     super(id);
 
     this.comment = props.comment;
+    this.reviewUrl = props.reviewUrl;
+    this.notificationTopic = props.notificationTopic;
 
     this.discoverReferencedOutputs(props.comment);
   }

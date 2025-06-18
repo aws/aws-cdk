@@ -6,7 +6,7 @@ import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLi
 import { lookupImage } from './utils';
 import * as ssm from '../../../aws-ssm';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { ContextProvider, CfnMapping, Aws, Stack, Token } from '../../../core';
+import { ContextProvider, CfnMapping, Aws, Stack, Token, UnscopedValidationError, ValidationError } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { UserData } from '../user-data';
 import { WindowsVersion } from '../windows-versions';
@@ -303,6 +303,13 @@ export interface SsmParameterImageOptions {
   readonly cachedInContext?: boolean;
 
   /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
+
+  /**
    * The version of the SSM parameter.
    *
    * @default no version specified.
@@ -328,7 +335,7 @@ class GenericSsmParameterImage implements IMachineImage {
    * Return the image to use in the given context
    */
   public getImage(scope: Construct): MachineImageConfig {
-    const imageId = lookupImage(scope, this.props.cachedInContext, this.parameterName);
+    const imageId = lookupImage(scope, this.props.cachedInContext ?? false, this.parameterName, this.props.additionalCacheKey);
 
     const osType = this.props.os ?? OperatingSystemType.LINUX;
     return {
@@ -459,6 +466,13 @@ export interface AmazonLinuxImageProps {
    * @default false
    */
   readonly cachedInContext?: boolean;
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -486,18 +500,18 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
     if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2022) {
       kernel = AmazonLinuxKernel.KERNEL5_X;
       if (props && props.storage) {
-        throw new Error('Storage parameter does not exist in SSM parameter name for Amazon Linux 2022.');
+        throw new UnscopedValidationError('Storage parameter does not exist in SSM parameter name for Amazon Linux 2022.');
       }
       if (props && props.virtualization) {
-        throw new Error('Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2022.');
+        throw new UnscopedValidationError('Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2022.');
       }
     } else if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2023) {
       kernel = AmazonLinuxKernel.KERNEL6_1;
       if (props && props.storage) {
-        throw new Error('Storage parameter does not exist in SSM parameter name for Amazon Linux 2023.');
+        throw new UnscopedValidationError('Storage parameter does not exist in SSM parameter name for Amazon Linux 2023.');
       }
       if (props && props.virtualization) {
-        throw new Error('Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2023.');
+        throw new UnscopedValidationError('Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2023.');
       }
     } else {
       virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
@@ -529,7 +543,7 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
    * Return the image to use in the given context
    */
   public getImage(scope: Construct): MachineImageConfig {
-    const imageId = lookupImage(scope, this.cachedInContext, this.parameterName);
+    const imageId = lookupImage(scope, this.cachedInContext, this.parameterName, this.props.additionalCacheKey);
 
     const osType = OperatingSystemType.LINUX;
     return {
@@ -608,7 +622,7 @@ export class GenericLinuxImage implements IMachineImage {
     }
     const imageId = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
     if (!imageId) {
-      throw new Error(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`);
+      throw new ValidationError(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`, scope);
     }
     return {
       imageId,
@@ -645,7 +659,7 @@ export class GenericWindowsImage implements IMachineImage {
     }
     const imageId = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
     if (!imageId) {
-      throw new Error(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`);
+      throw new ValidationError(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`, scope);
     }
     return {
       imageId,
@@ -666,11 +680,16 @@ export class GenericWindowsImage implements IMachineImage {
  * will be used on future runs. To refresh the AMI lookup, you will have to
  * evict the value from the cache using the `cdk context` command. See
  * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
+ * If `props.additionalCacheKey` is set, the context key uses that value as a discriminator
+ * rather than the cached value being global across all lookups.
  */
 export class LookupMachineImage implements IMachineImage {
   constructor(private readonly props: LookupMachineImageProps) {
   }
 
+  /**
+   * Return the correct image
+   */
   public getImage(scope: Construct): MachineImageConfig {
     // Need to know 'windows' or not before doing the query to return the right
     // osType for the dummy value, so might as well add it to the filter.
@@ -689,10 +708,11 @@ export class LookupMachineImage implements IMachineImage {
         filters,
       } as cxschema.AmiContextQuery,
       dummyValue: 'ami-1234',
+      additionalCacheKey: this.props.additionalCacheKey,
     }).value as cxapi.AmiContextResponse;
 
     if (typeof value !== 'string') {
-      throw new Error(`Response to AMI lookup invalid, got: ${value}`);
+      throw new ValidationError(`Response to AMI lookup invalid, got: ${value}`, scope);
     }
 
     const osType = this.props.windows ? OperatingSystemType.WINDOWS : OperatingSystemType.LINUX;
@@ -742,5 +762,12 @@ export interface LookupMachineImageProps {
    * @default - Empty user data appropriate for the platform type
    */
   readonly userData?: UserData;
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
 

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "testCases": {
     "EfsPermissionTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "EfsPermissionTest/DefaultTest/DeployAssert",
       "assertionStackName": "EfsPermissionTestDefaultTestDeployAssert4DFC2F97"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

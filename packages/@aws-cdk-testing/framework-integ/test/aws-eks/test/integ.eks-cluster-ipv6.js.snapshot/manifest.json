@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster-ipv6-test.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/3d4c4278aba4cc8c1a9e5c911d1d6c780c785a0cda0c5cf78d11cce08427a672.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/fb4121444fe12dbaab2d13e5e6d1df07adf8623e8fa7129a28eaa7200a653af4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -4883,22 +4883,22 @@
             "data": "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B"
           }
         ],
-        "/aws-cdk-eks-cluster-ipv6-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.24--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-eks-cluster-ipv6-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.32--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-cdk-eks-cluster-ipv6-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.24--amazon-linux-2-arm64--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-eks-cluster-ipv6-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.32--amazon-linux-2-arm64--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-cdk-eks-cluster-ipv6-test/SsmParameterValue:--aws--service--bottlerocket--aws-k8s-1.24--x86_64--latest--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-eks-cluster-ipv6-test/SsmParameterValue:--aws--service--bottlerocket--aws-k8s-1.32--x86_64--latest--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsservicebottlerocketawsk8s124x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsservicebottlerocketawsk8s132x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.25--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
@@ -5066,5 +5066,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1017.1"
 }

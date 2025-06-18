@@ -66,21 +66,21 @@
   "MyApiDeploymentECB0D05E81594d6748b4b291f993111a5070d710": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "MyApi49610EDF"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "MyApiGETD0C7AA0C"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "MyApiDeploymentStageprodE1054AF0": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "MyApi49610EDF"
-    },
     "AccessLogSetting": {
      "DestinationArn": {
       "Fn::GetAtt": [
@@ -93,6 +93,9 @@
     "DeploymentId": {
      "Ref": "MyApiDeploymentECB0D05E81594d6748b4b291f993111a5070d710"
     },
+    "RestApiId": {
+     "Ref": "MyApi49610EDF"
+    },
     "StageName": "prod"
    },
    "DependsOn": [
@@ -102,7 +105,11 @@
   "MyApiGETD0C7AA0C": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
+    "AuthorizationType": "NONE",
     "HttpMethod": "GET",
+    "Integration": {
+     "Type": "MOCK"
+    },
     "ResourceId": {
      "Fn::GetAtt": [
       "MyApi49610EDF",
@@ -111,10 +118,6 @@
     },
     "RestApiId": {
      "Ref": "MyApi49610EDF"
-    },
-    "AuthorizationType": "NONE",
-    "Integration": {
-     "Type": "MOCK"
     }
    }
   }

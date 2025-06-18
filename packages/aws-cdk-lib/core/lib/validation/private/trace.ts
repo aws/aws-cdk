@@ -13,8 +13,8 @@ export class ReportTrace {
   /**
    * Return a JSON representation of the construct trace
    */
-  public formatJson(constructPath?: string): ConstructTrace | undefined {
-    return this.trace(constructPath);
+  public formatJson(constructPath: string): ConstructTrace | undefined {
+    return this.tree.traceFromPath(constructPath);
   }
 
   /**
@@ -35,7 +35,7 @@ export class ReportTrace {
    *                    │ Location: new MyCustomL3Construct (/home/hallcor/tmp/cdk-tmp-app/src/main.ts:9:20)/
    */
   public formatPrettyPrinted(constructPath?: string): string {
-    const trace = this.formatJson(constructPath);
+    const trace = constructPath ? this.formatJson(constructPath) : undefined;
     return this.renderPrettyPrintedTraceInfo(trace);
   }
 
@@ -53,15 +53,5 @@ export class ReportTrace {
       return result.join('\n\t');
     }
     return notAvailableMessage;
-  }
-
-  private trace(constructPath?: string): ConstructTrace | undefined {
-    if (constructPath) {
-      const treeNode = this.tree.getTreeNode(constructPath);
-      if (treeNode) {
-        return this.tree.getTrace(treeNode);
-      }
-    }
-    return;
   }
 }

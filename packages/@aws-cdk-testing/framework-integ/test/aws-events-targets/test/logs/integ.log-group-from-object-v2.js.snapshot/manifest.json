@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "aws-cdk-cloudwatch-eventbridge-logs.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/266525ba6e7b9cc6de0887ede89adcb62ac5080f137b825e168a88a19805032d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/352c1d03a9add55620adedf1c87033080729226b5c0dab8c3d5a112bf701f38c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -81,12 +81,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Rule4C995B7F"
-          }
-        ],
-        "/aws-cdk-cloudwatch-eventbridge-logs/EventsLogGroupPolicyawscdkcloudwatcheventbridgelogsRule939B3D08": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
           }
         ],
         "/aws-cdk-cloudwatch-eventbridge-logs/EventsLogGroupPolicyawscdkcloudwatcheventbridgelogsRule939B3D08/Provider": [
@@ -326,5 +320,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1016.1"
 }
