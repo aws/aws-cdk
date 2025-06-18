@@ -259,7 +259,7 @@ describe('Subscription', () => {
     });
   });
 
-  test.each([true, false])('with %s existsFilter', (existsValue: boolean) => {
+  test('with notExistsFilter', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
@@ -268,7 +268,7 @@ describe('Subscription', () => {
     new sns.Subscription(stack, 'Subscription', {
       endpoint: 'endpoint',
       filterPolicy: {
-        size: sns.SubscriptionFilter.existsFilter(existsValue),
+        size: sns.SubscriptionFilter.notExistsFilter(),
       },
       protocol: sns.SubscriptionProtocol.LAMBDA,
       topic,
@@ -277,7 +277,7 @@ describe('Subscription', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       FilterPolicy: {
-        size: [{ exists: existsValue }],
+        size: [{ exists: false }],
       },
     });
   });
