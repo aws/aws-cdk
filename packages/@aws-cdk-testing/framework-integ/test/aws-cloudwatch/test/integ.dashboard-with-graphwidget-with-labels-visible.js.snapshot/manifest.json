@@ -1,28 +1,28 @@
 {
   "version": "44.0.0",
   "artifacts": {
-    "DashboardWithGraphWidgetWithAnnotationsIntegrationTest.assets": {
+    "DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "DashboardWithGraphWidgetWithAnnotationsIntegrationTest.assets.json",
+        "file": "DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "DashboardWithGraphWidgetWithAnnotationsIntegrationTest": {
+    "DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "DashboardWithGraphWidgetWithAnnotationsIntegrationTest.template.json",
+        "templateFile": "DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4339b5510fb846ee88d9699c00e16a60a5ba1e97dc70d7bd862526687aab927.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/43ef2509afb7ac70f2715cff386c712b86381564c5609baa43a735db65106704.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "DashboardWithGraphWidgetWithAnnotationsIntegrationTest.assets"
+          "DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,10 +31,10 @@
         }
       },
       "dependencies": [
-        "DashboardWithGraphWidgetWithAnnotationsIntegrationTest.assets"
+        "DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest.assets"
       ],
       "metadata": {
-        "/DashboardWithGraphWidgetWithAnnotationsIntegrationTest/Dash": [
+        "/DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest/Dash": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -55,26 +55,26 @@
             }
           }
         ],
-        "/DashboardWithGraphWidgetWithAnnotationsIntegrationTest/Dash/Resource": [
+        "/DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest/Dash/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DashCCD7F836"
           }
         ],
-        "/DashboardWithGraphWidgetWithAnnotationsIntegrationTest/BootstrapVersion": [
+        "/DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/DashboardWithGraphWidgetWithAnnotationsIntegrationTest/CheckBootstrapVersion": [
+        "/DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "DashboardWithGraphWidgetWithAnnotationsIntegrationTest"
+      "displayName": "DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest"
     },
     "cdkintegdashboardwithgraphwidgetwithannotationsDefaultTestDeployAssertCC28F170.assets": {
       "type": "cdk:asset-manifest",
