@@ -2526,10 +2526,26 @@ describe('function', () => {
       handler: 'foo',
       runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('foo'),
+      logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     const logGroup = fn.logGroup;
     expect(logGroup.logGroupName).toBeDefined();
     expect(logGroup.logGroupArn).toBeDefined();
+
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      LogGroupName: {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/lambda/',
+            {
+              Ref: 'fn5FF616E3',
+            },
+          ],
+        ],
+      },
+      RemovalPolicy: 'destroy',
+    });
   });
 
   test('dlq is returned when provided by user and is Queue', () => {

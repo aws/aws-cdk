@@ -921,6 +921,7 @@ export class Function extends FunctionBase {
   public _logRetention?: logs.LogRetention;
 
   private _logGroup?: logs.ILogGroup;
+  private _logRemovalPolicy?: RemovalPolicy;
 
   /**
    * Environment variables for this function
@@ -1103,6 +1104,7 @@ export class Function extends FunctionBase {
     }
 
     this._logGroup = props.logGroup;
+    this._logRemovalPolicy = props.logRemovalPolicy;
 
     resource.node.addDependency(this.role);
 
@@ -1415,6 +1417,7 @@ export class Function extends FunctionBase {
       const logRetention = new logs.LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: logs.RetentionDays.INFINITE,
+        removalPolicy: this._logRemovalPolicy,
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logRetention.logGroupArn);
     }

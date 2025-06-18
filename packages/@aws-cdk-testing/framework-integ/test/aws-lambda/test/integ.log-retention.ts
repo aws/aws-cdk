@@ -32,6 +32,15 @@ new lambda.Function(stack, 'OneYear', {
   logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
+const infiniteLogRetentionFn = new lambda.Function(stack, 'Infinite', {
+  code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
+  handler: 'index.handler',
+  runtime: STANDARD_NODEJS_RUNTIME,
+  logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
+infiniteLogRetentionFn.logGroup;
+
 new IntegTest(app, 'LambdaLogRetentionInteg', {
   testCases: [stack],
   diffAssets: true,
