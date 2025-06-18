@@ -50,6 +50,36 @@
          "Ref": "GlueRootCASecretBD1C20BD"
         }
        ]
+      },
+      {
+       "Action": "glue:GetRegistry",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SchemaRegistry",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "glue:GetSchemaVersion",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "SchemaRegistry",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Sub": [
+          "arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:schema/${registryName}/*",
+          {
+           "registryName": "smk-glue-test-schema-registry"
+          }
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -136,68 +166,6 @@
     "StartingPosition": "TRIM_HORIZON",
     "Topics": [
      "test-topic-smk-glue"
-    ]
-   }
-  },
-  "GlueFunctioninlinePolicyAddedToExecutionRole043C5A5B3": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "glue:GetRegistry",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "SchemaRegistry",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "GlueFunctioninlinePolicyAddedToExecutionRole043C5A5B3",
-    "Roles": [
-     {
-      "Ref": "GlueFunctionServiceRoleD5EDDC4C"
-     }
-    ]
-   }
-  },
-  "GlueFunctioninlinePolicyAddedToExecutionRole14519DF66": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "glue:GetSchemaVersion",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "SchemaRegistry",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Sub": [
-          "arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:schema/${registryName}/*",
-          {
-           "registryName": "smk-glue-test-schema-registry"
-          }
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "GlueFunctioninlinePolicyAddedToExecutionRole14519DF66",
-    "Roles": [
-     {
-      "Ref": "GlueFunctionServiceRoleD5EDDC4C"
-     }
     ]
    }
   },

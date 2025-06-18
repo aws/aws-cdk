@@ -172,7 +172,7 @@ export class SmkConfluentSchemaRegistryStack extends Stack {
 // Create the app and stacks
 const app = new App({
   postCliContext: {
-    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 const glueStack = new SmkGlueSchemaRegistryStack(app, 'lambda-event-source-glue-schema-registry');
