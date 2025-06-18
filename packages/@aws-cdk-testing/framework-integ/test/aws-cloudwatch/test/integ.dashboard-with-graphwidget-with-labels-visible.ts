@@ -88,5 +88,5 @@ class DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest extends Stack {
 
 const app = new App();
 new IntegTest(app, 'cdk-integ-dashboard-with-graph-widget-with-annotations', {
-  testCases: [new DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest(app, 'DashboardWithGraphWidgetWithAnnotationsIntegrationTest')],
+  testCases: [new DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest(app, 'DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest')],
 });
