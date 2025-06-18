@@ -1,8 +1,9 @@
 import { Construct } from 'constructs';
 import { CfnPublicKey } from './cloudfront.generated';
-import { IResource, Names, Resource, Token, ValidationError } from '../../core';
+import { IResource, Names, Resource, Token, ValidationError, FeatureFlags } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as cxapi from '../../cx-api';
 
 /**
  * Represents a Public Key
@@ -68,10 +69,17 @@ export class PublicKey extends Resource implements IPublicKey {
       throw new ValidationError(`Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${props.encodedKey}`, scope);
     }
 
+    // Check if the stable caller reference feature flag is enabled
+    const useStableCallerReference = FeatureFlags.of(this).isEnabled(
+      cxapi.CLOUDFRONT_STABLE_PUBLIC_KEY_CALLER_REFERENCE,
+    );
+
     const resource = new CfnPublicKey(this, 'Resource', {
       publicKeyConfig: {
         name: props.publicKeyName ?? this.generateName(),
-        callerReference: this.node.addr,
+        callerReference: useStableCallerReference
+          ? this.generateStableCallerReference()
+          : this.node.addr, // Keep old behavior for backward compatibility
         encodedKey: props.encodedKey,
         comment: props.comment,
       },
@@ -86,5 +94,17 @@ export class PublicKey extends Resource implements IPublicKey {
       return name.substring(0, 40) + name.substring(name.length - 40);
     }
     return name;
+  }
+
+  private generateStableCallerReference(): string {
+    // Use Names.uniqueId which provides a stable identifier based on the construct path
+    const uniqueId = Names.uniqueId(this);
+
+    // CloudFront caller reference has a maximum length of 128 characters
+    if (uniqueId.length > 128) {
+      return uniqueId.substring(0, 128);
+    }
+
+    return uniqueId;
   }
 }

@@ -103,6 +103,7 @@ Flags come in three types:
 | [@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions](#aws-cdks3-notificationsadds3trustkeypolicyforsnssubscriptions) | Add an S3 trust policy to a KMS key resource policy for SNS subscriptions. | 2.195.0 | fix |
 | [@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway](#aws-cdkaws-ec2requireprivatesubnetsforegressonlyinternetgateway) | When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC. | 2.196.0 | fix |
 | [@aws-cdk/aws-s3:publicAccessBlockedByDefault](#aws-cdkaws-s3publicaccessblockedbydefault) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | 2.196.0 | fix |
+| [@aws-cdk/aws-cloudfront:stablePublicKeyCallerReference](#aws-cdkaws-cloudfrontstablepublickeycallerreference) | Use stable caller reference for CloudFront PublicKey to prevent update failures | V2NEXT | fix |
 | [@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal](#aws-cdkaws-kmsapplyimportedaliaspermissionstoprincipal) | Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition | V2NEXT | fix |
 
 <!-- END table -->
@@ -191,7 +192,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
-    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true
+    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
+    "@aws-cdk/aws-cloudfront:stablePublicKeyCallerReference": true
   }
 }
 ```
@@ -2175,6 +2177,31 @@ The new behavior from this feature will allow a user, for example, to set 1 of t
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.196.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-cloudfront:stablePublicKeyCallerReference
+
+*Use stable caller reference for CloudFront PublicKey to prevent update failures*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, CloudFront PublicKey constructs will use a stable
+caller reference that doesn't change between deployments, preventing the
+"Invalid request provided: AWS::CloudFront::PublicKey" error that occurs when
+the construct tree structure changes.
+
+The previous behavior used 'this.node.addr' which could change when constructs
+are moved or refactored, causing CloudFormation to attempt updating the immutable
+callerReference field and failing.
+
+When enabled, the PublicKey will use a stable reference based on the construct's
+physical name, ensuring consistent deployments.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 ### @aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal

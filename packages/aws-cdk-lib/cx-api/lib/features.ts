@@ -142,6 +142,7 @@ export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-c
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
+export const CLOUDFRONT_STABLE_PUBLIC_KEY_CALLER_REFERENCE = '@aws-cdk/aws-cloudfront:stablePublicKeyCallerReference';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1659,6 +1660,27 @@ export const FLAGS: Record<string, FlagInfo> = {
     defaults: { v2: false },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CLOUDFRONT_STABLE_PUBLIC_KEY_CALLER_REFERENCE]: {
+    type: FlagType.BugFix,
+    summary: 'Use stable caller reference for CloudFront PublicKey to prevent update failures',
+    detailsMd: `
+      When this feature flag is enabled, CloudFront PublicKey constructs will use a stable
+      caller reference that doesn't change between deployments, preventing the
+      "Invalid request provided: AWS::CloudFront::PublicKey" error that occurs when
+      the construct tree structure changes.
+
+      The previous behavior used 'this.node.addr' which could change when constructs
+      are moved or refactored, causing CloudFormation to attempt updating the immutable
+      callerReference field and failing.
+
+      When enabled, the PublicKey will use a stable reference based on the construct's
+      physical name, ensuring consistent deployments.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
   },
 };
 
