@@ -505,7 +505,7 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
     minimumPollers: 1,
     maximumPollers: 3,
   },
-  schemaRegistryConfig: GlueSchemaRegistry({
+  schemaRegistryConfig: new GlueSchemaRegistry({
     schemaRegistry: glueRegistry,
     eventRecordFormat: lambda.EventRecordFormat.JSON,
     schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.KEY }],
