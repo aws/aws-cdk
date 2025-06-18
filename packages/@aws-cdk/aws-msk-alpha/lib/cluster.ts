@@ -611,7 +611,7 @@ export class Cluster extends ClusterBase {
         },
       }));
     }
-    const loggingInfo = {
+    const loggingInfo = props.express ? undefined : {
       brokerLogs: {
         cloudWatchLogs: {
           enabled:
@@ -691,7 +691,7 @@ export class Cluster extends ClusterBase {
         securityGroups: this.connections.securityGroups.map(
           (group) => group.securityGroupId,
         ),
-        storageInfo: {
+        storageInfo: props.express ? undefined : {
           ebsStorageInfo: {
             volumeSize: volumeSize,
           },

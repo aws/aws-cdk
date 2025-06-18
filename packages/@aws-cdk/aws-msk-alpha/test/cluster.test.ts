@@ -981,15 +981,15 @@ describe('MSK Cluster', () => {
     });
   });
 
-  describe("with express broker ", () => {
-    test("create a cluster with express broker", () => {
-      new msk.Cluster(stack, "ExpressCluster", {
-        clusterName: "express-cluster",
+  describe('with express broker ', () => {
+    test('create a cluster with express broker', () => {
+      new msk.Cluster(stack, 'ExpressCluster', {
+        clusterName: 'express-cluster',
         kafkaVersion: msk.KafkaVersion.V3_8_X,
         vpc,
         instanceType: ec2.InstanceType.of(
           ec2.InstanceClass.M7G,
-          ec2.InstanceSize.XLARGE
+          ec2.InstanceSize.XLARGE,
         ),
         express: true,
       });
@@ -999,10 +999,10 @@ describe('MSK Cluster', () => {
       });
     });
 
-    test("fails when express is true but instanceType is not specified", () => {
+    test('fails when express is true but instanceType is not specified', () => {
       expect(() => {
-        new msk.Cluster(stack, "ExpressClusterNoInstanceType", {
-          clusterName: "express-cluster-no-instance-type",
+        new msk.Cluster(stack, 'ExpressClusterNoInstanceType', {
+          clusterName: 'express-cluster-no-instance-type',
           kafkaVersion: msk.KafkaVersion.V3_8_X,
           vpc,
           express: true,

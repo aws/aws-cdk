@@ -9,11 +9,10 @@ class ExpressMskStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
     const vpc = new ec2.Vpc(this, 'VPC', {
-      maxAzs: 2,
+      maxAzs: 3,
       restrictDefaultSecurityGroup: false,
     });
 
-    // Create an express broker MSK cluster
     const expressCluster = new msk.Cluster(this, 'ExpressCluster', {
       clusterName: 'integ-test-express',
       kafkaVersion: msk.KafkaVersion.V3_8_X,
@@ -32,8 +31,14 @@ class ExpressMskStack extends cdk.Stack {
   }
 }
 
-const stack = new ExpressMskStack(app, 'aws-cdk-msk-express-integ');
+const env = {
+  account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
+  region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
+};
 
-new IntegTest(app, 'MskExpressCluster', {
+const stack = new ExpressMskStack(app, 'aws-cdk-msk-express-integ', {env});
+
+new IntegTest(app, "MskExpressCluster", {
   testCases: [stack],
+  enableLookups: true,
 });
