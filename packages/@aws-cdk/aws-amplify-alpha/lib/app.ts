@@ -6,7 +6,7 @@ import { CfnApp } from 'aws-cdk-lib/aws-amplify';
 import { BasicAuth } from './basic-auth';
 import { Branch, BranchOptions } from './branch';
 import { Domain, DomainOptions } from './domain';
-import { renderEnvironmentVariables } from './utils';
+import { renderEnvironmentVariables, isServerSideRendered } from './utils';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
@@ -20,11 +20,6 @@ export interface IApp extends IResource {
    * @attribute
    */
   readonly appId: string;
-
-  /**
-   * The platform of the app
-   */
-  readonly platform?: Platform;
 }
 
 /**
@@ -267,7 +262,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
 
     let computedRole: iam.IRole | undefined;
     const appPlatform = props.platform || Platform.WEB;
-    const isSSR = appPlatform === Platform.WEB_COMPUTE || appPlatform === Platform.WEB_DYNAMIC;
+    const isSSR = isServerSideRendered(appPlatform);
 
     if (props.computeRole) {
       if (!isSSR) {

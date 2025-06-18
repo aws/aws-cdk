@@ -14,9 +14,9 @@ import {
 import { Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { CfnBranch } from 'aws-cdk-lib/aws-amplify';
-import { IApp, Platform } from './app';
+import { App, IApp, Platform } from './app';
 import { BasicAuth } from './basic-auth';
-import { renderEnvironmentVariables } from './utils';
+import { renderEnvironmentVariables, isServerSideRendered } from './utils';
 import { AssetDeploymentIsCompleteFunction, AssetDeploymentOnEventFunction } from '../custom-resource-handlers/dist/aws-amplify-alpha/asset-deployment-provider.generated';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -194,11 +194,13 @@ export class Branch extends Resource implements IBranch {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const platform = props.app.platform;
-    const isSSR = platform === Platform.WEB_COMPUTE || platform === Platform.WEB_DYNAMIC;
+    if (props.app instanceof App) {
+      const platform = props.app.platform;
+      const isSSR = isServerSideRendered(platform);
 
-    if (props.computeRole && !isSSR) {
-      throw new ValidationError('`computeRole` can only be specified for branches of apps with `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.', this);
+      if (props.computeRole && !isSSR) {
+        throw new ValidationError('`computeRole` can only be specified for branches of apps with `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.', this);
+      }
     }
 
     this.environmentVariables = props.environmentVariables || {};
