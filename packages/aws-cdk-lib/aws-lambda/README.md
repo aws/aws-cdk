@@ -282,6 +282,7 @@ cdk.Tags.of(fn).add('env', 'dev'); // the tag is also added to the log group
 ```
 
 ### Log removal policy
+
 Besides from specifying your own Log Group with `logGroup` property, all other methods of creating Log Group support configuring log removal policy:
 
 ```ts
