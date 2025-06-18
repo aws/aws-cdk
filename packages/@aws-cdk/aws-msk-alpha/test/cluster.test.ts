@@ -989,7 +989,7 @@ describe('MSK Cluster', () => {
         vpc,
         instanceType: ec2.InstanceType.of(
           ec2.InstanceClass.M7G,
-          ec2.InstanceSize.XLARGE,
+          ec2.InstanceSize.XLARGE
         ),
         express: true,
       });
@@ -999,15 +999,67 @@ describe('MSK Cluster', () => {
       });
     });
 
-    test('fails when express is true but instanceType is not specified', () => {
+    test('fails when instanceType is not specified', () => {
       expect(() => {
         new msk.Cluster(stack, 'ExpressClusterNoInstanceType', {
-          clusterName: 'express-cluster-no-instance-type',
+          clusterName: 'express-cluster',
           kafkaVersion: msk.KafkaVersion.V3_8_X,
           vpc,
           express: true,
         });
-      }).toThrow('When express is set to true, instanceType must also be specified');
+      }).toThrow(
+        '`instanceType` must also be specified when `express` is true.'
+      );
+    });
+
+    test('fails when ebsStorageInfo is specified', () => {
+      expect(() => {
+        new msk.Cluster(stack, "ExpressClusterWithStorage", {
+          clusterName: "express-cluster",
+          kafkaVersion: msk.KafkaVersion.V3_8_X,
+          vpc,
+          instanceType: ec2.InstanceType.of(
+            ec2.InstanceClass.M7G,
+            ec2.InstanceSize.XLARGE
+          ),
+          express: true,
+          ebsStorageInfo: { volumeSize: 100 },
+        });
+      }).toThrow("`ebsStorageInfo` is not supported when `express` is true.");
+    });
+
+    test('fails when express is true and storageMode is specified', () => {
+      expect(() => {
+        new msk.Cluster(stack, 'ExpressClusterWithStorageMode', {
+          clusterName: 'express-cluster',
+          kafkaVersion: msk.KafkaVersion.V3_8_X,
+          vpc,
+          instanceType: ec2.InstanceType.of(
+            ec2.InstanceClass.M7G,
+            ec2.InstanceSize.XLARGE
+          ),
+          express: true,
+          storageMode: msk.StorageMode.LOCAL,
+        });
+      }).toThrow('`storageMode` is not supported when `express` is true.');
+    });
+
+    test('fails when express is true and logging is specified', () => {
+      expect(() => {
+        new msk.Cluster(stack, 'ExpressClusterWithLogging', {
+          clusterName: 'express-cluster',
+          kafkaVersion: msk.KafkaVersion.V3_8_X,
+          vpc,
+          instanceType: ec2.InstanceType.of(
+            ec2.InstanceClass.M7G,
+            ec2.InstanceSize.XLARGE
+          ),
+          express: true,
+          logging: {
+            cloudwatchLogGroup: new logs.LogGroup(stack, 'LogGroup'),
+          },
+        });
+      }).toThrow('`logging` is not supported when `express` is true.');
     });
   });
 });

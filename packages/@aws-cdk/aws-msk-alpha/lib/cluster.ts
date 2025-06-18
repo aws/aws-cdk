@@ -511,8 +511,19 @@ export class Cluster extends ClusterBase {
       throw new core.ValidationError('EBS volume size should be in the range 1-16384', this);
     }
 
-    if (props.express && !props.instanceType) {
-      throw new core.ValidationError('When express is set to true, instanceType must also be specified', this);
+    if (props.express) {
+      if (!props.instanceType) {
+        throw new core.ValidationError('`instanceType` must also be specified when `express` is true.', this);
+      }
+      if (props.ebsStorageInfo) {
+        throw new core.ValidationError('`ebsStorageInfo` is not supported when `express` is true.', this);
+      }
+      if (props.storageMode) {
+        throw new core.ValidationError('`storageMode` is not supported when `express` is true.', this);
+      }
+      if (props.logging) {
+        throw new core.ValidationError('`logging` is not supported when `express` is true.', this);
+      }
     }
 
     const instanceType = props.instanceType
@@ -704,7 +715,7 @@ export class Cluster extends ClusterBase {
       configurationInfo: props.configurationInfo,
       enhancedMonitoring: props.monitoring?.clusterMonitoringLevel,
       openMonitoring: openMonitoring,
-      storageMode: props.storageMode,
+      storageMode: props.express ? undefined : props.storageMode,
       loggingInfo: loggingInfo,
       clientAuthentication,
     });
