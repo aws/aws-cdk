@@ -1609,26 +1609,54 @@ describe('User Pool Client', () => {
       });
     });
 
-    test.each([
-      5,
-      25,
-      60,
-    ])('validate grace period original refresh token', (retryGracePeriod) => {
+    test('validate grace period original refresh token', () => {
       const stack = new Stack();
       const pool = new UserPool(stack, 'Pool');
 
       // WHEN
-      pool.addClient('Client', {
+      pool.addClient('Client1', {
+        userPoolClientName: 'Client1',
         refreshTokenRotation: {
-          feature: 'ENABLED',
-          retryGracePeriodSeconds: retryGracePeriod,
+          feature: true,
+          retryGracePeriodSeconds: Duration.seconds(5),
+        },
+      });
+      pool.addClient('Client2', {
+        userPoolClientName: 'Client2',
+        refreshTokenRotation: {
+          feature: true,
+          retryGracePeriodSeconds: Duration.seconds(25),
+        },
+      });
+      pool.addClient('Client3', {
+        userPoolClientName: 'Client3',
+        refreshTokenRotation: {
+          feature: true,
+          retryGracePeriodSeconds: Duration.seconds(50),
         },
       });
 
+
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client1',
         RefreshTokenRotation: {
-          RetryGracePeriodSeconds: retryGracePeriod,
+          Feature: 'ENABLED',
+          RetryGracePeriodSeconds: 5,
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client2',
+        RefreshTokenRotation: {
+          Feature: 'ENABLED',
+          RetryGracePeriodSeconds: 25,
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client3',
+        RefreshTokenRotation: {
+          Feature: 'ENABLED',
+          RetryGracePeriodSeconds: 50,
         },
       });
     });
@@ -1639,8 +1667,8 @@ describe('User Pool Client', () => {
 
       expect(() =>pool.addClient('Client1', {
         refreshTokenRotation: {
-          feature: 'ENABLED',
-          retryGracePeriodSeconds: 80,
+          feature: true,
+          retryGracePeriodSeconds: Duration.seconds(80),
         },
       })).toThrow('retryGracePeriodSeconds for refresh token rotation should be between 0 and 60 seconds.');
     });
@@ -1660,8 +1688,8 @@ describe('User Pool Client', () => {
           user: true,
         },
         refreshTokenRotation: {
-          feature: 'ENABLED',
-          retryGracePeriodSeconds: 40,
+          feature: true,
+          retryGracePeriodSeconds: Duration.seconds(40),
         },
       });
 
@@ -1692,8 +1720,8 @@ describe('User Pool Client', () => {
           user: true,
         },
         refreshTokenRotation: {
-          feature: 'DISABLED',
-          retryGracePeriodSeconds: 50,
+          feature: false,
+          retryGracePeriodSeconds: Duration.seconds(50),
         },
       });
 
@@ -1707,6 +1735,47 @@ describe('User Pool Client', () => {
           'ALLOW_USER_AUTH',
           'ALLOW_REFRESH_TOKEN_AUTH',
         ],
+      });
+    });
+
+    test('refreshTokenRotation set to disabled if retryGracePeriod is 0', () => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client1', {
+        refreshTokenRotation: {
+          feature: true,
+          retryGracePeriodSeconds: Duration.seconds(0)
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        RefreshTokenRotation: {
+          Feature: 'DISABLED',
+          RetryGracePeriodSeconds: 0,
+        },
+      });
+    });
+
+    test('refreshTokenRotation set to disabled and retryGracePeriod to 0 if retryGracePeriod is undefined', () => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client1', {
+        refreshTokenRotation: {
+          feature: true,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        RefreshTokenRotation: {
+          Feature: 'DISABLED',
+          RetryGracePeriodSeconds: 0,
+        },
       });
     });
   });
