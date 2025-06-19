@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "ipv4only-alias-target/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ipv4only-lb-integ"
+      ],
+      "assertionStack": "ipv4only-alias-target/DefaultTest/DeployAssert",
+      "assertionStackName": "ipv4onlyaliastargetDefaultTestDeployAssert4265F300"
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}

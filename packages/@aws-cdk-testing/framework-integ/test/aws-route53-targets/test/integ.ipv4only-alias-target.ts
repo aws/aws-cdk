@@ -4,16 +4,18 @@ import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as cdk from 'aws-cdk-lib';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
+import { ROUTE53_TARGETS_LOAD_BALANCER_USE_PLAIN_DNS_FOR_IPV4_ONLY } from 'aws-cdk-lib/cx-api';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-nlb-integ');
+const stack = new cdk.Stack(app, 'aws-cdk-ipv4only-lb-integ');
+
+// Enable the feature flag for IPv4-only load balancer behavior
+stack.node.setContext(ROUTE53_TARGETS_LOAD_BALANCER_USE_PLAIN_DNS_FOR_IPV4_ONLY, true);
 
 const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAzs: 2,
   restrictDefaultSecurityGroup: false,
-  ipProtocol: ec2.IpProtocol.DUAL_STACK,
-  ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
   natGateways: 1,
   subnetConfiguration: [
     {
@@ -24,20 +26,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
   ],
 });
 
-// Add IPv6 CIDRs to public subnets and enable auto-assign
-vpc.publicSubnets.forEach((subnet, index) => {
-  const cfnSubnet = subnet.node.defaultChild as ec2.CfnSubnet;
-  // Assign IPv6 CIDR block to the subnet
-  cfnSubnet.ipv6CidrBlock = cdk.Fn.select(index, cdk.Fn.cidr(
-    cdk.Fn.select(0, vpc.vpcIpv6CidrBlocks),
-    vpc.publicSubnets.length,
-    '64',
-  ));
-  // Enable auto-assign IPv6 for the subnet
-  cfnSubnet.assignIpv6AddressOnCreation = true;
-});
-
-// IPv4-only NLB (default) - explicitly set for clarity
+// IPv4-only NLB (explicitly set)
 const ipv4Nlb = new elbv2.NetworkLoadBalancer(stack, 'IPv4NLB', {
   vpc,
   internetFacing: true,
@@ -51,14 +40,18 @@ const defaultNlb = new elbv2.NetworkLoadBalancer(stack, 'DefaultNLB', {
   // ipAddressType not specified - defaults to IPv4
 });
 
-// Dual-stack NLB in IPv6-enabled subnet
-const dualStackNlb = new elbv2.NetworkLoadBalancer(stack, 'DualStackNLB', {
+// IPv4-only ALB (explicitly set)
+const ipv4Alb = new elbv2.ApplicationLoadBalancer(stack, 'IPv4ALB', {
   vpc,
   internetFacing: true,
-  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
-  vpcSubnets: {
-    subnetType: ec2.SubnetType.PUBLIC,
-  },
+  ipAddressType: elbv2.IpAddressType.IPV4,
+});
+
+// Default ALB (should default to IPv4)
+const defaultAlb = new elbv2.ApplicationLoadBalancer(stack, 'DefaultALB', {
+  vpc,
+  internetFacing: true,
+  // ipAddressType not specified - defaults to IPv4
 });
 
 const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
@@ -77,18 +70,18 @@ new route53.ARecord(stack, 'DefaultNLBAlias', {
   target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(defaultNlb)),
 });
 
-// Dual-stack NLB alias records (IPv4 and IPv6)
-new route53.ARecord(stack, 'DualStackNLBAlias', {
+// IPv4-only ALB alias record (should NOT have dualstack prefix)
+new route53.ARecord(stack, 'IPv4ALBAlias', {
   zone,
-  recordName: 'dualstack-nlb',
-  target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(dualStackNlb)),
+  recordName: 'ipv4-alb',
+  target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(ipv4Alb)),
 });
 
-// IPv6 record for dual-stack NLB
-new route53.AaaaRecord(stack, 'DualStackNLBIpv6Alias', {
+// Default ALB alias record (should NOT have dualstack prefix)
+new route53.ARecord(stack, 'DefaultALBAlias', {
   zone,
-  recordName: 'dualstack-nlb-ipv6',
-  target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(dualStackNlb)),
+  recordName: 'default-alb',
+  target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(defaultAlb)),
 });
 
 // IPv4-only NLB with health check
@@ -102,7 +95,18 @@ new route53.ARecord(stack, 'IPv4NLBAliasWithHealthCheck', {
   ),
 });
 
-new IntegTest(app, 'nlb-alias-target', {
+// IPv4-only ALB with health check
+new route53.ARecord(stack, 'IPv4ALBAliasWithHealthCheck', {
+  zone,
+  recordName: 'ipv4-alb-health',
+  target: route53.RecordTarget.fromAlias(
+    new targets.LoadBalancerTarget(ipv4Alb, {
+      evaluateTargetHealth: true,
+    }),
+  ),
+});
+
+new IntegTest(app, 'ipv4only-alias-target', {
   testCases: [stack],
 });
 

@@ -1,6 +1,8 @@
 import { IAliasRecordTargetProps } from './shared';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as route53 from '../../aws-route53';
+import { FeatureFlags, Stack } from '../../core';
+import { ROUTE53_TARGETS_LOAD_BALANCER_USE_PLAIN_DNS_FOR_IPV4_ONLY } from '../../cx-api';
 
 /**
  * Use an ELBv2 as an alias record target
@@ -17,26 +19,23 @@ export class LoadBalancerTarget implements route53.IAliasRecordTarget {
   }
 
   private getDnsName(): string {
-    // Check if this is a Network Load Balancer with IPv4-only addressing
-    if (this.isNetworkLoadBalancer() && this.isIpv4Only()) {
-      // IPv4-only NLB - no dualstack prefix needed
+    const stack = Stack.of(this.loadBalancer);
+    const useNewBehavior = FeatureFlags.of(stack).isEnabled(
+      ROUTE53_TARGETS_LOAD_BALANCER_USE_PLAIN_DNS_FOR_IPV4_ONLY,
+    );
+
+    if (useNewBehavior && this.isIpv4OnlyLoadBalancer()) {
+      // IPv4-only load balancers - use plain DNS name
       return this.loadBalancer.loadBalancerDnsName;
     }
 
-    // For ALBs and dual-stack NLBs, use dualstack prefix for backward compatibility
+    // Default behavior: use dualstack prefix for all load balancers
     return `dualstack.${this.loadBalancer.loadBalancerDnsName}`;
   }
 
-  private isNetworkLoadBalancer(): boolean {
-    // We use constructor name checking as a reliable way to detect NLB vs ALB
-    // since both implement ILoadBalancerV2 but have different DNS requirements
-    return this.loadBalancer.constructor.name === 'NetworkLoadBalancer' ||
-           this.loadBalancer.constructor.name === 'LookedUpNetworkLoadBalancer';
-  }
-
-  private isIpv4Only(): boolean {
+  private isIpv4OnlyLoadBalancer(): boolean {
     const lb = this.loadBalancer as any;
     return lb.ipAddressType === elbv2.IpAddressType.IPV4 ||
-           lb.ipAddressType === undefined;
+          lb.ipAddressType === undefined;
   }
 }

@@ -141,6 +141,7 @@ export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-c
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
+export const ROUTE53_TARGETS_LOAD_BALANCER_USE_PLAIN_DNS_FOR_IPV4_ONLY = '@aws-cdk/aws-route53-targets:loadBalancerTargetUsePlainDnsForIpv4Only';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1644,6 +1645,28 @@ export const FLAGS: Record<string, FlagInfo> = {
     defaults: { v2: false },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ROUTE53_TARGETS_LOAD_BALANCER_USE_PLAIN_DNS_FOR_IPV4_ONLY]: {
+    type: FlagType.BugFix,
+    summary: 'Use plain DNS name for IPv4-only load balancers instead of dualstack prefix',
+    detailsMd: `
+      When this feature flag is enabled, IPv4-only ALB and NLB will use plain DNS name 
+      (e.g., this.loadBalancer.loadBalancerDnsName) instead of prepending the dualstack prefix.
+      
+      The current behavior unconditionally adds the dualstack prefix to all load balancer DNS names,
+      causing IPv4-only Network Load Balancers to become unreachable via Route53 alias records.
+      
+      When this flag is enabled:
+      - IPv4-only ALB and NLB will use plain DNS name (fixes the broken behavior)
+      - Dual-stack load balancers will continue using dualstack prefix (maintains existing behavior)
+      
+      When this flag is disabled:
+      - All load balancers use dualstack prefix (current behavior)
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
   },
 };
 
