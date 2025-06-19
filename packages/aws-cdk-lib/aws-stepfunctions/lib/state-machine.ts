@@ -306,9 +306,11 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   }
 
   /**
-   * Grant the given identity permission to redrive any map run execution of the state machine
+   * Grant the given identity permission to redrive map run executions of the state machine
+   *
+   * @default If mapLabels is not specified, all maps states of this state machine will be permitted to be redriven.
    */
-  public grantRedriveMapRunExecution(identity: iam.IGrantable, ...mapLabels: string[]) {
+  public grantRedriveMapRunExecution(identity: iam.IGrantable, ...mapLabels: string[]): iam.Grant {
     if (mapLabels.length === 0) mapLabels.push('*');
 
     return iam.Grant.addToPrincipal({
@@ -715,6 +717,22 @@ export interface IStateMachine extends IResource, iam.IGrantable {
    */
   grantExecution(identity: iam.IGrantable, ...actions: string[]): iam.Grant;
 
+  /**
+   * Grant the given identity permission to redrive the execution of the state machine
+   *
+   * @param identity The principal
+   */
+  grantRedriveExecution(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permission to redrive map run executions of the state machine
+   *
+   * @param identity The principal
+   * @param mapLabels The Map labels to grant redrive permissions for.
+   *
+   * @default If mapLabels is not specified, all maps states of this state machine will be permitted to be redriven.
+   */
+  grantRedriveMapRunExecution(identity: iam.IGrantable, ...mapLabels: string[]): iam.Grant;
   /**
    * Grant the given identity custom permissions
    *
