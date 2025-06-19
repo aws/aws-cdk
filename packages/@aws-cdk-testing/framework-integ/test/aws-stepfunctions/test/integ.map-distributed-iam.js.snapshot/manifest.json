@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c408eff370cd34b8f1ac3a5dc446e4a06d29468c1da379f604d3443ab653d2ea.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd37e65892b805b73364ebe4fdf45b7c76aa4bbca77ad0bd2b31f4e724cfc1e1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,10 +43,7 @@
         "/cdk-stepfunctions-map-distributed-stack/StateMachine1": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "definitionBody": "*",
-              "timeout": "*"
-            }
+            "data": "*"
           }
         ],
         "/cdk-stepfunctions-map-distributed-stack/StateMachine1/Role": [
@@ -167,10 +164,7 @@
         "/cdk-stepfunctions-map-distributed-stack/StateMachine2": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "definitionBody": "*",
-              "timeout": "*"
-            }
+            "data": "*"
           }
         ],
         "/cdk-stepfunctions-map-distributed-stack/StateMachine2/Role": [

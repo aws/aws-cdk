@@ -1,13 +1,12 @@
 {
-  "version": "44.0.0",
+  "version": "39.0.0",
   "testCases": {
-    "DistributedMap-JSONATA/DefaultTest": {
+    "DistributedMap-Catch/DefaultTest": {
       "stacks": [
         "aws-stepfunctions-map-with-catch"
       ],
-      "assertionStack": "DistributedMap-JSONATA/DefaultTest/DeployAssert",
-      "assertionStackName": "DistributedMapJSONATADefaultTestDeployAssertF1573CB9"
+      "assertionStack": "DistributedMap-Catch/DefaultTest/DeployAssert",
+      "assertionStackName": "DistributedMapCatchDefaultTestDeployAssert25965E29"
     }
-  },
-  "minimumCliVersion": "2.1018.0"
+  }
 }

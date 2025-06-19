@@ -193,9 +193,14 @@ describe('State Machine', () => {
           {
             Action: 'states:RedriveExecution',
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/*:*'])],
-            },
+            Resource: [
+              {
+                'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, ':*'])],
+              },
+              {
+                'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/*:*'])],
+              },
+            ],
           },
         ],
         Version: '2012-10-17',

@@ -468,126 +468,7 @@ describe('State Machine Resources', () => {
         Statement: Match.arrayWith([Match.objectLike({
           Action: 'states:RedriveExecution',
           Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':states:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':execution:',
-                {
-                  'Fn::Select': [
-                    6,
-                    {
-                      'Fn::Split': [
-                        ':',
-                        {
-                          Ref: 'StateMachine2E01A3A5',
-                        },
-                      ],
-                    },
-                  ],
-                },
-                ':*',
-              ],
-            ],
-          },
-        })]),
-      },
-    });
-  }),
-
-  test('Created state machine can grant redrive access for all map run executions to a role', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new FakeTask(stack, 'Task');
-    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
-    });
-    const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-
-    // WHEN
-    stateMachine.grantRedriveMapRunExecution(role);
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: Match.arrayWith([Match.objectLike({
-          Action: 'states:RedriveExecution',
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':states:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':execution:',
-                {
-                  'Fn::Select': [
-                    6,
-                    {
-                      'Fn::Split': [
-                        ':',
-                        {
-                          Ref: 'StateMachine2E01A3A5',
-                        },
-                      ],
-                    },
-                  ],
-                },
-                '/*:*',
-              ],
-            ],
-          },
-        })]),
-      },
-    });
-  }),
-
-  test('Created state machine can grant redrive access for specific map run labels to a role', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new FakeTask(stack, 'Task');
-    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
-    });
-    const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-
-    const mapRunLabels = ['label1', 'label2'];
-    // WHEN
-    stateMachine.grantRedriveMapRunExecution(role, ...mapRunLabels);
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: Match.arrayWith([Match.objectLike({
-          Action: 'states:RedriveExecution',
-          Effect: 'Allow',
-          Resource: Match.arrayEquals([
+          Resource: [
             {
               'Fn::Join': [
                 '',
@@ -618,7 +499,7 @@ describe('State Machine Resources', () => {
                       },
                     ],
                   },
-                  '/label1:*',
+                  ':*',
                 ],
               ],
             },
@@ -652,11 +533,11 @@ describe('State Machine Resources', () => {
                       },
                     ],
                   },
-                  '/label2:*',
+                  '/*:*',
                 ],
               ],
             },
-          ]),
+          ],
         })]),
       },
     });
