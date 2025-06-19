@@ -5,7 +5,11 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-ecr-integ-stack');
 
 const repo = new ecr.Repository(stack, 'Repo');

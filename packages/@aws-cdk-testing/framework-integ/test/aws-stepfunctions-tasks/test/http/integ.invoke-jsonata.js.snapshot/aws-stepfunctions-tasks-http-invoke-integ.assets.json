@@ -1,7 +1,8 @@
 {
-  "version": "39.0.0",
+  "version": "44.0.0",
   "files": {
     "c071afed018660f87ece6db422ff34407d45f6940181746b4c7f99af8f032a98": {
+      "displayName": "AuthorizerHandler/Code",
       "source": {
         "path": "asset.c071afed018660f87ece6db422ff34407d45f6940181746b4c7f99af8f032a98",
         "packaging": "zip"
@@ -14,7 +15,8 @@
         }
       }
     },
-    "c819c14d8cf2a591a21a9c9ef704b1e3d3d5d538228b446100595e5ad1ce18c3": {
+    "b6050a336892df8971fac6d3b3ac4500041da4f9459ab8c5d5a70b9a6bed4a71": {
+      "displayName": "aws-stepfunctions-tasks-http-invoke-integ Template",
       "source": {
         "path": "aws-stepfunctions-tasks-http-invoke-integ.template.json",
         "packaging": "file"
@@ -22,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c819c14d8cf2a591a21a9c9ef704b1e3d3d5d538228b446100595e5ad1ce18c3.json",
+          "objectKey": "b6050a336892df8971fac6d3b3ac4500041da4f9459ab8c5d5a70b9a6bed4a71.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

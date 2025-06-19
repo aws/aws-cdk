@@ -31,6 +31,7 @@
   "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
   "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
   "@aws-cdk/aws-kms:aliasNameRef": true,
+  "@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal": true,
   "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
   "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
   "@aws-cdk/aws-efs:denyAnonymousAccess": true,
@@ -73,5 +74,6 @@
   "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
   "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
   "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
-  "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true
+  "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
+  "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true
 }

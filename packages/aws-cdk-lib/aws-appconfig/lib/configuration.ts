@@ -397,6 +397,13 @@ export interface HostedConfigurationProps extends ConfigurationProps {
    * @default - None.
    */
   readonly versionLabel?: string;
+
+  /**
+   * The customer managed key to encrypt hosted configuration.
+   *
+   * @default None
+   */
+  readonly kmsKey?: kms.IKey;
 }
 
 /**
@@ -457,6 +464,7 @@ export class HostedConfiguration extends ConfigurationBase {
       type: this.type,
       validators: this.validators,
       deletionProtectionCheck: this.deletionProtectionCheck,
+      kmsKeyIdentifier: props.kmsKey?.keyArn,
     });
     this.configurationProfileId = this._cfnConfigurationProfile.ref;
     this.configurationProfileArn = Stack.of(this).formatArn({

@@ -5,7 +5,11 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'cdk-ecs-fluentd');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1, restrictDefaultSecurityGroup: false });
