@@ -306,6 +306,19 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   }
 
   /**
+   * Grant the given identity permission to redrive any map run execution of the state machine
+   */
+  public grantRedriveMapRunExecution(identity: iam.IGrantable, ...mapLabels: string[]) {
+    if (mapLabels.length === 0) mapLabels.push('*');
+
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: ['states:RedriveExecution'],
+      resourceArns: mapLabels.map(label => `${this.executionArn()}/${label}:*`),
+    });
+  }
+
+  /**
    * Grant the given identity custom permissions
    */
   public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {

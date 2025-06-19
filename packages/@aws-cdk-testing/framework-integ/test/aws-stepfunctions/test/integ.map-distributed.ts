@@ -36,6 +36,7 @@ const sm = new sfn.StateMachine(stack, 'StateMachine', {
 });
 
 sm.grantRedriveExecution(role);
+sm.grantRedriveMapRunExecution(role);
 
 new cdk.CfnOutput(stack, 'StateMachineARN', {
   value: sm.stateMachineArn,
