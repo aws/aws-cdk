@@ -13,3 +13,8 @@ export * from './agents/agent-collaboration';
 export * from './agents/orchestration-executor';
 export * from './models';
 export * from './agents/function-schema';
+// ===================================
+// Guardrails
+// ===================================
+export * from './guardrails/guardrail-filters';
+export * from './guardrails/guardrails';
