@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/26bcfb6b0280103a5e7809a56c6642acf181fd5d251dc5b649d2631786928984.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c3ee97bd77321ba9df232c88f9dfa769b074b6d6ab72c871a9fa1a66db5dfcb4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -126,7 +126,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c08ab5caeb81364714848c5c3cea32f7accb68339f2d2fdc66b30f28a9fde14b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d5f7c26e28d99a503ccfade35c2dc28daa9cc6ce4a6046c67ae02ea969dd9e53.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -143,16 +143,16 @@
         "SNSSubscriptionsDefaultTestDeployAssertD77125EB.assets"
       ],
       "metadata": {
-        "/SNS Subscriptions/DefaultTest/DeployAssert/AwsApiCallSNSpublish1ed44e75b058a4b9f26876a86fe8a97a/Default": [
+        "/SNS Subscriptions/DefaultTest/DeployAssert/AwsApiCallSNSpublisha9ef09f51d38c4f6bf69abf5932e9639/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/SNS Subscriptions/DefaultTest/DeployAssert/AwsApiCallSNSpublish1ed44e75b058a4b9f26876a86fe8a97a/Default/Default": [
+        "/SNS Subscriptions/DefaultTest/DeployAssert/AwsApiCallSNSpublisha9ef09f51d38c4f6bf69abf5932e9639/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSNSpublish1ed44e75b058a4b9f26876a86fe8a97a"
+            "data": "AwsApiCallSNSpublisha9ef09f51d38c4f6bf69abf5932e9639"
           }
         ],
         "/SNS Subscriptions/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
