@@ -1,0 +1,167 @@
+{
+ "Resources": {
+  "MyTopic86869434": {
+   "Type": "AWS::SNS::Topic"
+  },
+  "MyQueueE6CA6235": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyQueuePolicy6BBEDDAC": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": {
+          "Ref": "MyTopic86869434"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sns.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyQueueE6CA6235",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "MyQueueE6CA6235"
+     }
+    ]
+   }
+  },
+  "MyQueueSnsToSqsStackMyTopic3F1182C25E300A0F": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
+    "Endpoint": {
+     "Fn::GetAtt": [
+      "MyQueueE6CA6235",
+      "Arn"
+     ]
+    },
+    "FilterPolicy": {
+     "background": {
+      "color": [
+       "red",
+       "green",
+       {
+        "anything-but": [
+         "white",
+         "orange"
+        ]
+       }
+      ]
+     },
+     "price": [
+      {
+       "numeric": [
+        "=",
+        100
+       ]
+      },
+      {
+       "numeric": [
+        "=",
+        200
+       ]
+      },
+      {
+       "numeric": [
+        ">",
+        500
+       ]
+      },
+      {
+       "numeric": [
+        "<",
+        1000
+       ]
+      },
+      {
+       "numeric": [
+        ">=",
+        300,
+        "<=",
+        350
+       ]
+      },
+      {
+       "numeric": [
+        ">",
+        2000,
+        "<",
+        3000
+       ]
+      }
+     ],
+     "store": [
+      {
+       "exists": true
+      }
+     ],
+     "event": [
+      {
+       "exists": false
+      }
+     ]
+    },
+    "FilterPolicyScope": "MessageBody",
+    "Protocol": "sqs",
+    "RawMessageDelivery": true,
+    "TopicArn": {
+     "Ref": "MyTopic86869434"
+    }
+   },
+   "DependsOn": [
+    "MyQueuePolicy6BBEDDAC"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
