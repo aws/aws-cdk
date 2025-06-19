@@ -1,12 +1,12 @@
 {
   "version": "44.0.0",
   "testCases": {
-    "SNS Subscriptions/DefaultTest": {
+    "SNS Subscription filters/DefaultTest": {
       "stacks": [
-        "SnsToSqsStack"
+        "sns-sqs-subscription-filter"
       ],
-      "assertionStack": "SNS Subscriptions/DefaultTest/DeployAssert",
-      "assertionStackName": "SNSSubscriptionsDefaultTestDeployAssertD77125EB"
+      "assertionStack": "SNS Subscription filters/DefaultTest/DeployAssert",
+      "assertionStackName": "SNSSubscriptionfiltersDefaultTestDeployAssertA2ED6F70"
     }
   },
   "minimumCliVersion": "2.1018.0"
