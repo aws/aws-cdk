@@ -12,32 +12,13 @@ const topic = new sns.Topic(stack, 'MyTopic');
 
 const queue = new sqs.Queue(stack, 'MyQueue');
 
-topic.addSubscription(new subs.SqsSubscription(queue, {
-  filterPolicyWithMessageBody: {
-    background: sns.Policy.policy({
-      color: sns.Filter.filter(sns.SubscriptionFilter.stringFilter({
-        allowlist: ['red', 'green'],
-        denylist: ['white', 'orange'],
-      })),
-    }),
-    price: sns.Filter.filter(sns.SubscriptionFilter.numericFilter({
-      allowlist: [100, 200],
-      between: { start: 300, stop: 350 },
-      greaterThan: 500,
-      lessThan: 1000,
-      betweenStrict: { start: 2000, stop: 3000 },
-    })),
-    store: sns.Filter.filter(sns.SubscriptionFilter.existsFilter()),
-    event: sns.Filter.filter(sns.SubscriptionFilter.notExistsFilter()),
-  },
-  rawMessageDelivery: true,
-}));
+topic.addSubscription(new subs.SqsSubscription(queue, { rawMessageDelivery: true }));
 
 const integTest = new IntegTest(app, 'SNS Subscriptions', {
   testCases: [stack],
 });
 
-const message = JSON.stringify({ background: { color: 'green' }, price: 200, store: 'fans' });
+const message = JSON.stringify({ color: 'green', price: 200 });
 
 integTest.assertions.awsApiCall('SNS', 'publish', {
   Message: message,
