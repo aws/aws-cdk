@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "displayName": "canary-one/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
@@ -57,7 +57,7 @@
         }
       }
     },
-    "5b8222512f4c1016893ec8d314ff4211f5db830984d9624fc7107744055acfd7": {
+    "0cc4cfbb637f4ba82c36b279cfa037361dbf35b205afc7eff870ba2d16a93d3f": {
       "displayName": "canary-one Template",
       "source": {
         "path": "canary-one.template.json",
@@ -66,7 +66,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5b8222512f4c1016893ec8d314ff4211f5db830984d9624fc7107744055acfd7.json",
+          "objectKey": "0cc4cfbb637f4ba82c36b279cfa037361dbf35b205afc7eff870ba2d16a93d3f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

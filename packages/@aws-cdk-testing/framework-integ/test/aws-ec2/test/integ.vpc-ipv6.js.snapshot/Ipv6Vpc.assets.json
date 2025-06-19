@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "Ipv6Vpc/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "c10f6844a9e27b61a68b857fa63022113ca1d4543e1401ca8f52e867469a5266": {
+    "48cc74f6140a2063029530bbb8e6f272417003a24e5db5f343527668ca826cfc": {
       "displayName": "Ipv6Vpc Template",
       "source": {
         "path": "Ipv6Vpc.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c10f6844a9e27b61a68b857fa63022113ca1d4543e1401ca8f52e867469a5266.json",
+          "objectKey": "48cc74f6140a2063029530bbb8e6f272417003a24e5db5f343527668ca826cfc.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -9,5 +9,6 @@
       "assertionStack": "UsePipelineRoleForActionsTest/DefaultTest/DeployAssert",
       "assertionStackName": "UsePipelineRoleForActionsTestDefaultTestDeployAssert16904455"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

@@ -1236,7 +1236,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 4
+    "AttributesRevision": 5
    },
    "DependsOn": [
     "CIDR6",
@@ -4826,7 +4826,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/2d5ad1dbed21a3c49fb0bc3666d18d12803ad769af1b832c8489dc973fd18114.json"
+       "/90b2463c5aa4e4ec8619cabac7b40bbffd1bfb01900bf512607bfe8ba6e0daa3.json"
       ]
      ]
     }
@@ -4872,7 +4872,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/bf415411c3693e31a11c0b68826d3426f0afdf2c2b9589a2cd8d6fd95c42a5df.json"
+       "/d0c409381345544eda56194d912d50222fd039dc4ffa0668e04fc42eb2540ae5.json"
       ]
      ]
     }
@@ -5001,7 +5001,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
@@ -5047,7 +5047,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"

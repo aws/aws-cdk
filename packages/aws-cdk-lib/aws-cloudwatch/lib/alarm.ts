@@ -13,6 +13,7 @@ import { MetricSet } from './private/rendering';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
 import { ArnFormat, Lazy, Stack, Token, Annotations, ValidationError, AssumptionError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for Alarms
@@ -139,7 +140,11 @@ export enum TreatMissingData {
 /**
  * An alarm on a CloudWatch metric
  */
+@propertyInjectable
 export class Alarm extends AlarmBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudwatch.Alarm';
+
   /**
    * Conventional value for the threshold property when creating anomaly detection alarms.
    *
@@ -618,7 +623,11 @@ function isAnomalyDetectionMetric(metric: IMetric): boolean {
  * This alarm type is specifically designed for use with anomaly detection operators
  * like LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD.
  */
+@propertyInjectable
 export class AnomalyDetectionAlarm extends Alarm {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudwatch.AnomalyDetectionAlarm';
+
   constructor(scope: Construct, id: string, props: AnomalyDetectionAlarmProps) {
     super(scope, id, {
       ...props,
@@ -626,6 +635,8 @@ export class AnomalyDetectionAlarm extends Alarm {
       metric: Metric.anomalyDetectionFor(props),
       threshold: Alarm.ANOMALY_DETECTION_NO_THRESHOLD,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.comparisonOperator && !isAnomalyDetectionOperator(props.comparisonOperator)) {
       throw new ValidationError(`Must use one of the anomaly detection operators, got ${props.comparisonOperator}`, this);

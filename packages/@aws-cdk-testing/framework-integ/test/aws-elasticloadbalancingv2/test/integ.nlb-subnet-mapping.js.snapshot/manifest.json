@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "NlbSubnetMappingStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/151558c6a9e9b7e43d0e2b5cc05422b2a9785a07d35664201ff7449b738c692d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/16d566b110f4aaf93b456bfa872f3c44070d04225e2968a34bbdc995c39c37bd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -282,12 +282,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DualStackVpcVPCGW7803C9BB"
-          }
-        ],
-        "/NlbSubnetMappingStack/DualStackVpc/EIGW6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcEIGW64639A9F2"
           }
         ],
         "/NlbSubnetMappingStack/DualStackVpc/RestrictDefaultSecurityGroupCustomResource": [
@@ -676,6 +670,15 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "DualStackVpcEIGW64639A9F2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualStackVpcEIGW64639A9F2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "NlbSubnetMappingStack"
@@ -735,5 +738,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1016.1"
 }

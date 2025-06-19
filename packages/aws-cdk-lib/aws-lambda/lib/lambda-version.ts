@@ -1,3 +1,4 @@
+import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
 import { Construct } from 'constructs';
 import { Alias, AliasOptions } from './alias';
 import { Architecture } from './architecture';
@@ -10,6 +11,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import { Fn, Lazy, RemovalPolicy, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IVersion extends IFunction {
   /**
@@ -113,7 +115,11 @@ export interface VersionAttributes {
  * the right deployment, specify the `codeSha256` property while
  * creating the `Version.
  */
+@propertyInjectable
 export class Version extends QualifiedFunctionBase implements IVersion {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.Version';
+
   /**
    * Construct a Version object from a Version ARN.
    *
@@ -202,6 +208,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       functionName: props.lambda.functionName,
       provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props),
     });
+    version.addMetadata(ArtifactMetadataEntryType.DO_NOT_REFACTOR, true);
 
     if (props.removalPolicy) {
       version.applyRemovalPolicy(props.removalPolicy, {

@@ -4,7 +4,7 @@ import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import * as secretsmanager from './secretsmanager.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Fn, IResolveContext, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretValue, Stack, Token, TokenComparison } from '../../core';
+import { ArnFormat, FeatureFlags, Fn, IResolveContext, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretValue, Stack, Token, TokenComparison, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -289,7 +289,7 @@ export class SecretStringValueBeta1 {
    */
   public static fromToken(secretValueFromToken: string) {
     if (!Token.isUnresolved(secretValueFromToken)) {
-      throw new Error('SecretStringValueBeta1 appears to be plaintext (unsafe) string (or resolved Token); use fromUnsafePlaintext if this is intentional');
+      throw new UnscopedValidationError('SecretStringValueBeta1 appears to be plaintext (unsafe) string (or resolved Token); use fromUnsafePlaintext if this is intentional');
     }
     return new SecretStringValueBeta1(secretValueFromToken);
   }
@@ -391,7 +391,7 @@ abstract class SecretBase extends Resource implements ISecret {
 
     // Throw if secret is not imported and it's shared cross account and no KMS key is provided
     if (this instanceof Secret && result.resourceStatement && (!this.encryptionKey && crossAccount === TokenComparison.DIFFERENT)) {
-      throw new Error('KMS Key must be provided for cross account access to Secret');
+      throw new ValidationError('KMS Key must be provided for cross account access to Secret', this);
     }
 
     return result;
@@ -415,7 +415,7 @@ abstract class SecretBase extends Resource implements ISecret {
 
     // Throw if secret is not imported and it's shared cross account and no KMS key is provided
     if (this instanceof Secret && result.resourceStatement && !this.encryptionKey) {
-      throw new Error('KMS Key must be provided for cross account access to Secret');
+      throw new ValidationError('KMS Key must be provided for cross account access to Secret', this);
     }
 
     return result;
@@ -478,7 +478,7 @@ abstract class SecretBase extends Resource implements ISecret {
     const existing = this.node.tryFindChild(id);
 
     if (existing) {
-      throw new Error('Secret is already attached to a target.');
+      throw new ValidationError('Secret is already attached to a target.', this);
     }
 
     return new SecretTargetAttachment(this, id, {
@@ -587,17 +587,17 @@ export class Secret extends SecretBase {
 
     if (attrs.secretArn) {
       if (attrs.secretCompleteArn || attrs.secretPartialArn) {
-        throw new Error('cannot use `secretArn` with `secretCompleteArn` or `secretPartialArn`');
+        throw new ValidationError('cannot use `secretArn` with `secretCompleteArn` or `secretPartialArn`', scope);
       }
       secretArn = attrs.secretArn;
       secretArnIsPartial = false;
     } else {
       if ((attrs.secretCompleteArn && attrs.secretPartialArn) ||
           (!attrs.secretCompleteArn && !attrs.secretPartialArn)) {
-        throw new Error('must use only one of `secretCompleteArn` or `secretPartialArn`');
+        throw new ValidationError('must use only one of `secretCompleteArn` or `secretPartialArn`', scope);
       }
       if (attrs.secretCompleteArn && !arnIsComplete(attrs.secretCompleteArn)) {
-        throw new Error('`secretCompleteArn` does not appear to be complete; missing 6-character suffix');
+        throw new ValidationError('`secretCompleteArn` does not appear to be complete; missing 6-character suffix', scope);
       }
       [secretArn, secretArnIsPartial] = attrs.secretCompleteArn ? [attrs.secretCompleteArn, false] : [attrs.secretPartialArn!, true];
     }
@@ -636,7 +636,7 @@ export class Secret extends SecretBase {
     if (props.generateSecretString &&
         (props.generateSecretString.secretStringTemplate || props.generateSecretString.generateStringKey) &&
         !(props.generateSecretString.secretStringTemplate && props.generateSecretString.generateStringKey)) {
-      throw new Error('`secretStringTemplate` and `generateStringKey` must be specified together.');
+      throw new ValidationError('`secretStringTemplate` and `generateStringKey` must be specified together.', this);
     }
 
     if ((props.generateSecretString ? 1 : 0)
@@ -644,7 +644,7 @@ export class Secret extends SecretBase {
       + (props.secretStringValue ? 1 : 0)
       + (props.secretObjectValue ? 1 : 0)
       > 1) {
-      throw new Error('Cannot specify more than one of `generateSecretString`, `secretStringValue`, `secretObjectValue`, and `secretStringBeta1`.');
+      throw new ValidationError('Cannot specify more than one of `generateSecretString`, `secretStringValue`, `secretObjectValue`, and `secretStringBeta1`.', this);
     }
 
     const secretString = props.secretObjectValue
@@ -723,7 +723,7 @@ export class Secret extends SecretBase {
   public addReplicaRegion(region: string, encryptionKey?: kms.IKey): void {
     const stack = Stack.of(this);
     if (!Token.isUnresolved(stack.region) && !Token.isUnresolved(region) && region === stack.region) {
-      throw new Error('Cannot add the region where this stack is deployed as a replica region.');
+      throw new ValidationError('Cannot add the region where this stack is deployed as a replica region.', this);
     }
 
     this.replicaRegions.push({
@@ -839,7 +839,11 @@ export interface ISecretTargetAttachment extends ISecret {
 /**
  * An attached secret.
  */
+@propertyInjectable
 export class SecretTargetAttachment extends SecretBase implements ISecretTargetAttachment {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-secretsmanager.SecretTargetAttachment';
+
   public static fromSecretTargetAttachmentSecretArn(scope: Construct, id: string, secretTargetAttachmentSecretArn: string): ISecretTargetAttachment {
     class Import extends SecretBase implements ISecretTargetAttachment {
       public encryptionKey?: kms.IKey | undefined;
@@ -992,7 +996,7 @@ function parseSecretName(construct: IConstruct, secretArn: string) {
     const hasSecretsSuffix = lastHyphenIndex !== -1 && resourceName.slice(lastHyphenIndex + 1).length === 6;
     return hasSecretsSuffix ? resourceName.slice(0, lastHyphenIndex) : resourceName;
   }
-  throw new Error('invalid ARN format; no secret name provided');
+  throw new ValidationError('invalid ARN format; no secret name provided', construct);
 }
 
 /**
@@ -1007,7 +1011,7 @@ function parseSecretName(construct: IConstruct, secretArn: string) {
 function parseSecretNameForOwnedSecret(construct: Construct, secretArn: string, secretName?: string) {
   const resourceName = Stack.of(construct).splitArn(secretArn, ArnFormat.COLON_RESOURCE_NAME).resourceName;
   if (!resourceName) {
-    throw new Error('invalid ARN format; no secret name provided');
+    throw new ValidationError('invalid ARN format; no secret name provided', construct);
   }
 
   // Secret name was explicitly provided, but is unresolved; best option is to use it directly.
