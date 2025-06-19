@@ -18,13 +18,11 @@ import * as filters from './guardrail-filters';
 export interface IGuardrail extends IResource {
   /**
    * The ARN of the guardrail.
-   * @example "arn:aws:bedrock:us-east-1:123456789012:guardrail/yympzo398ipq"
    * @attribute
    */
   readonly guardrailArn: string;
   /**
    * The ID of the guardrail.
-   * @example "yympzo398ipq"
    * @attribute
    */
   readonly guardrailId: string;
@@ -39,8 +37,9 @@ export interface IGuardrail extends IResource {
   /**
    * The version of the guardrail. If no explicit version is created,
    * this will default to "DRAFT"
+   * @attribute
    */
-  guardrailVersion: string;
+  readonly guardrailVersion: string;
 
   /**
    * Grant the given principal identity permissions to perform actions on this guardrail.
@@ -140,28 +139,46 @@ export abstract class GuardrailBase extends Resource implements IGuardrail {
     return this.metricAll('InvocationLatency', props);
   }
 
+  private _version: string = 'DRAFT';
+
   /**
    * The ARN of the guardrail.
+   * @example "arn:aws:bedrock:us-east-1:123456789012:guardrail/yympzo398ipq"
+   * @attribute
    */
   public abstract readonly guardrailArn: string;
+
   /**
    * The ID of the guardrail.
+   * @example "yympzo398ipq"
+   * @attribute
    */
   public abstract readonly guardrailId: string;
+
   /**
-   * The ID of the guardrail.
-   */
-  public abstract guardrailVersion: string;
-  /**
-   * The KMS key of the guardrail if custom encryption is configured.
+   * Optional KMS encryption key associated with this guardrail
    */
   public abstract readonly kmsKey?: IKey;
+
   /**
-   * When this guardrail was last updated
+   * When this guardrail was last updated.
    */
   public abstract readonly lastUpdated?: string;
+
   /**
-   * Grant the given principal identity permissions to perform actions on this agent alias.
+   * The version of the guardrail.
+   * @attribute
+   */
+  public get guardrailVersion(): string {
+    return this._version;
+  }
+
+  protected updateVersion(version: string) {
+    this._version = version;
+  }
+
+  /**
+   * Grant the given principal identity permissions to perform actions on this guardrail.
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
@@ -171,6 +188,7 @@ export abstract class GuardrailBase extends Resource implements IGuardrail {
       scope: this,
     });
   }
+
   /**
    * Grant the given identity permissions to apply the guardrail.
    */
@@ -270,57 +288,62 @@ export abstract class GuardrailBase extends Resource implements IGuardrail {
 export interface GuardrailProps {
   /**
    * The name of the guardrail.
+   * This will be used as the physical name of the guardrail.
    */
-  readonly name: string;
+  readonly guardrailName: string;
   /**
    * The description of the guardrail.
+   * @default - No description
    */
   readonly description?: string;
   /**
    * The message to return when the guardrail blocks a prompt.
-   *
    * @default "Sorry, your query violates our usage policy."
    */
   readonly blockedInputMessaging?: string;
   /**
    * The message to return when the guardrail blocks a model response.
-   *
    * @default "Sorry, I am unable to answer your question because of our usage policy."
    */
   readonly blockedOutputsMessaging?: string;
   /**
    * A custom KMS key to use for encrypting data.
-   *
-   * @default "Your data is encrypted by default with a key that AWS owns and manages for you."
+   * @default - Data is encrypted by default with a key that AWS owns and manages for you
    */
   readonly kmsKey?: IKey;
   /**
    * The content filters to apply to the guardrail.
-   * Note, if one of
+   * @default []
    */
   readonly contentFilters?: filters.ContentFilter[];
   /**
    * Up to 30 denied topics to block user inputs or model responses associated with the topic.
+   * @default []
    */
   readonly deniedTopics?: filters.Topic[];
   /**
    * The word filters to apply to the guardrail.
+   * @default []
    */
   readonly wordFilters?: filters.WordFilter[];
   /**
    * The managed word filters to apply to the guardrail.
+   * @default []
    */
   readonly managedWordListFilters?: filters.ManagedWordFilter[];
   /**
    * The PII filters to apply to the guardrail.
+   * @default []
    */
   readonly piiFilters?: filters.PIIFilter[];
   /**
    * The regular expression (regex) filters to apply to the guardrail.
+   * @default []
    */
   readonly regexFilters?: filters.RegexFilter[];
   /**
    * The contextual grounding filters to apply to the guardrail.
+   * @default []
    */
   readonly contextualGroundingFilters?: filters.ContextualGroundingFilter[];
 }
@@ -363,12 +386,16 @@ export class Guardrail extends GuardrailBase {
     class Import extends GuardrailBase {
       public readonly guardrailArn = attrs.guardrailArn;
       public readonly guardrailId = Arn.split(attrs.guardrailArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
-      public readonly guardrailVersion = attrs.guardrailVersion ?? 'DRAFT';
       public readonly kmsKey = attrs.kmsKey;
       public readonly lastUpdated = undefined;
+
+      constructor() {
+        super(scope, id);
+        this.updateVersion(attrs.guardrailVersion ?? 'DRAFT');
+      }
     }
 
-    return new Import(scope, id);
+    return new Import();
   }
 
   /**
@@ -378,35 +405,34 @@ export class Guardrail extends GuardrailBase {
     return new (class extends GuardrailBase {
       public readonly guardrailArn = cfnGuardrail.attrGuardrailArn;
       public readonly guardrailId = cfnGuardrail.attrGuardrailId;
-      public readonly guardrailVersion = cfnGuardrail.attrVersion;
       public readonly kmsKey = cfnGuardrail.kmsKeyArn
         ? Key.fromKeyArn(this, '@FromCfnGuardrailKey', cfnGuardrail.kmsKeyArn)
         : undefined;
       public readonly lastUpdated = cfnGuardrail.attrUpdatedAt;
-    })(cfnGuardrail, '@FromCfnGuardrail');
+
+      constructor() {
+        super(cfnGuardrail, '@FromCfnGuardrail');
+        this.updateVersion(cfnGuardrail.attrVersion);
+      }
+    })();
   }
 
   /**
    * The ARN of the guardrail.
+   * @example "arn:aws:bedrock:us-east-1:123456789012:guardrail/yympzo398ipq"
+   * @attribute
    */
   public readonly guardrailArn: string;
   /**
    * The ID of the guardrail.
+   * @example "yympzo398ipq"
+   * @attribute
    */
   public readonly guardrailId: string;
   /**
    * The name of the guardrail.
    */
   public readonly name: string;
-  /**
-   * The version of the guardrail.
-   * By default, this value will always be `DRAFT` unless an explicit version is created.
-   * For an explicit version created, this will usually be a number (e.g. for Version 1 just enter "1")
-   *
-   * @example "1"
-   * @default - "DRAFT"
-   */
-  public guardrailVersion: string;
   /**
    * The KMS key used to encrypt data.
    *
@@ -456,7 +482,7 @@ export class Guardrail extends GuardrailBase {
 
   constructor(scope: Construct, id: string, props: GuardrailProps) {
     super(scope, id, {
-      physicalName: props.name,
+      physicalName: props.guardrailName,
     });
 
     // ------------------------------------------------------
@@ -478,7 +504,7 @@ export class Guardrail extends GuardrailBase {
     // CFN Props - With Lazy support
     // ------------------------------------------------------
     let cfnProps: bedrock.CfnGuardrailProps = {
-      name: this.name,
+      name: props.guardrailName,
       description: props.description,
       kmsKeyArn: props.kmsKey?.keyArn,
       blockedInputMessaging: props.blockedInputMessaging ?? defaultBlockedInputMessaging,
@@ -501,7 +527,7 @@ export class Guardrail extends GuardrailBase {
 
     this.guardrailId = this.__resource.attrGuardrailId;
     this.guardrailArn = this.__resource.attrGuardrailArn;
-    this.guardrailVersion = this.__resource.attrVersion;
+    this.updateVersion(this.__resource.attrVersion);
     this.lastUpdated = this.__resource.attrUpdatedAt;
   }
 
@@ -589,7 +615,7 @@ export class Guardrail extends GuardrailBase {
       guardrailIdentifier: this.guardrailId,
     });
 
-    this.guardrailVersion = cfnVersion.attrVersion;
+    this.updateVersion(cfnVersion.attrVersion);
     return this.guardrailVersion;
   }
 

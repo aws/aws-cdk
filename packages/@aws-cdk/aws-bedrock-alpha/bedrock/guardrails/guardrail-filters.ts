@@ -7,9 +7,21 @@
  * of seeing harmful content in your application reduces.
  */
 export enum ContentFilterStrength {
+  /**
+   * No content filtering applied.
+   */
   NONE = 'NONE',
+  /**
+   * Low strength content filtering - minimal filtering of harmful content.
+   */
   LOW = 'LOW',
+  /**
+   * Medium strength content filtering - balanced filtering of harmful content.
+   */
   MEDIUM = 'MEDIUM',
+  /**
+   * High strength content filtering - aggressive filtering of harmful content.
+   */
   HIGH = 'HIGH',
 }
 
@@ -85,18 +97,22 @@ export interface ContentFilter {
   readonly outputStrength: ContentFilterStrength;
   /**
    * The action to take when content is detected in the input.
+   * @default GuardrailAction.BLOCK
    */
   readonly inputAction?: GuardrailAction;
   /**
    * Whether the content filter is enabled for input.
+   * @default true
    */
   readonly inputEnabled?: boolean;
   /**
    * The action to take when content is detected in the output.
+   * @default GuardrailAction.BLOCK
    */
   readonly outputAction?: GuardrailAction;
   /**
    * Whether the content filter is enabled for output.
+   * @default true
    */
   readonly outputEnabled?: boolean;
   /**
@@ -139,26 +155,33 @@ export interface CustomTopicProps {
   readonly examples: string[];
   /**
    * The action to take when a topic is detected in the input.
+   * @default GuardrailAction.BLOCK
    */
   readonly inputAction?: GuardrailAction;
   /**
    * Whether the topic filter is enabled for input.
+   * @default true
    */
   readonly inputEnabled?: boolean;
   /**
    * The action to take when a topic is detected in the output.
+   * @default GuardrailAction.BLOCK
    */
   readonly outputAction?: GuardrailAction;
   /**
    * Whether the topic filter is enabled for output.
+   * @default true
    */
   readonly outputEnabled?: boolean;
 }
 
 /**
- * Defines a topic to deny.
+ * Represents predefined topics that can be used to filter content.
  */
 export class Topic {
+  /**
+   * Filter for financial advice and investment recommendations.
+   */
   public static readonly FINANCIAL_ADVICE = new Topic({
     name: 'Financial_Advice',
     definition:
@@ -172,8 +195,11 @@ export class Topic {
     ],
   });
 
-  public static readonly POLITICAL_ADVICE = new Topic({
-    name: 'Political_Advice',
+  /**
+   * Filter for inappropriate or explicit content.
+   */
+  public static readonly INAPPROPRIATE_CONTENT = new Topic({
+    name: 'Inappropriate_Content',
     definition:
         'Conversations that express views, opinions, or endorsements related to political parties, political ideologies, elections, or political figures.',
     examples: [
@@ -185,8 +211,11 @@ export class Topic {
     ],
   });
 
-  public static readonly MEDICAL_ADVICE = new Topic({
-    name: 'Medical_Advice',
+  /**
+   * Filter for legal advice and recommendations.
+   */
+  public static readonly LEGAL_ADVICE = new Topic({
+    name: 'Legal_Advice',
     definition:
         'Providing recommendations, diagnosis, treatment options, or guidance on medical conditions, symptoms, medications, or health-related issues.',
     examples: [
@@ -198,8 +227,11 @@ export class Topic {
     ],
   });
 
-  public static readonly INAPPROPRIATE_CONTENT = new Topic({
-    name: 'Inappropriate_Content',
+  /**
+   * Filter for medical advice and health recommendations.
+   */
+  public static readonly MEDICAL_ADVICE = new Topic({
+    name: 'Medical_Advice',
     definition:
         'Any discussions or references that include hate speech, discriminatory remarks, sexual content, or explicit language.',
     examples: [
@@ -211,8 +243,11 @@ export class Topic {
     ],
   });
 
-  public static readonly LEGAL_ADVICE = new Topic({
-    name: 'Legal_Advice',
+  /**
+   * Filter for political advice and recommendations.
+   */
+  public static readonly POLITICAL_ADVICE = new Topic({
+    name: 'Political_Advice',
     definition:
         'Offering guidance or suggestions on legal matters, legal actions, interpretation of laws, or legal rights and responsibilities.',
     examples: [
@@ -224,7 +259,11 @@ export class Topic {
     ],
   });
 
-  public static custom(props: CustomTopicProps) {
+  /**
+   * Create a custom topic filter.
+   * @param props Properties for the custom topic filter
+   */
+  public static custom(props: CustomTopicProps): Topic {
     return new Topic(props);
   }
 
@@ -259,22 +298,39 @@ export interface WordFilter {
   readonly text: string;
   /**
    * The action to take when a word is detected in the input.
+   * @default GuardrailAction.BLOCK
    */
   readonly inputAction?: GuardrailAction;
   /**
    * Whether the word filter is enabled for input.
+   * @default true
    */
   readonly inputEnabled?: boolean;
   /**
    * The action to take when a word is detected in the output.
+   * @default GuardrailAction.BLOCK
    */
   readonly outputAction?: GuardrailAction;
   /**
    * Whether the word filter is enabled for output.
+   * @default true
    */
   readonly outputEnabled?: boolean;
 }
 
+/**
+ * Managed word list filter types supported by Amazon Bedrock.
+ */
+export enum ManagedWordFilterType {
+  /**
+   * Filter for profanity and explicit language.
+   */
+  PROFANITY = 'PROFANITY',
+}
+
+/**
+ * Interface for managed word list filters.
+ */
 export interface ManagedWordFilter {
   /**
    * The type of managed word filter.
@@ -282,24 +338,24 @@ export interface ManagedWordFilter {
   readonly type: ManagedWordFilterType;
   /**
    * The action to take when a managed word is detected in the input.
+   * @default GuardrailAction.BLOCK
    */
   readonly inputAction?: GuardrailAction;
   /**
    * Whether the managed word filter is enabled for input.
+   * @default true
    */
   readonly inputEnabled?: boolean;
   /**
    * The action to take when a managed word is detected in the output.
+   * @default GuardrailAction.BLOCK
    */
   readonly outputAction?: GuardrailAction;
   /**
    * Whether the managed word filter is enabled for output.
+   * @default true
    */
   readonly outputEnabled?: boolean;
-}
-
-export enum ManagedWordFilterType {
-  PROFANITY = 'PROFANITY',
 }
 
 /******************************************************************************
@@ -538,18 +594,22 @@ export interface PIIFilter {
   readonly action: GuardrailAction;
   /**
    * The action to take when PII is detected in the input.
+   * @default GuardrailAction.BLOCK
    */
   readonly inputAction?: GuardrailAction;
   /**
    * Whether the PII filter is enabled for input.
+   * @default true
    */
   readonly inputEnabled?: boolean;
   /**
    * The action to take when PII is detected in the output.
+   * @default GuardrailAction.BLOCK
    */
   readonly outputAction?: GuardrailAction;
   /**
    * Whether the PII filter is enabled for output.
+   * @default true
    */
   readonly outputEnabled?: boolean;
 }
@@ -574,6 +634,7 @@ export interface RegexFilter {
   readonly name: string;
   /**
    * The description of the regex filter.
+   * @default - No description
    */
   readonly description?: string;
   /**
@@ -582,18 +643,22 @@ export interface RegexFilter {
   readonly action: GuardrailAction;
   /**
    * The action to take when a regex match is detected in the input.
+   * @default GuardrailAction.BLOCK
    */
   readonly inputAction?: GuardrailAction;
   /**
    * Whether the regex filter is enabled for input.
+   * @default true
    */
   readonly inputEnabled?: boolean;
   /**
    * The action to take when a regex match is detected in the output.
+   * @default GuardrailAction.BLOCK
    */
   readonly outputAction?: GuardrailAction;
   /**
    * Whether the regex filter is enabled for output.
+   * @default true
    */
   readonly outputEnabled?: boolean;
   /**
@@ -635,10 +700,12 @@ export interface ContextualGroundingFilter {
   readonly type: ContextualGroundingFilterType;
   /**
    * The action to take when contextual grounding is detected.
+   * @default GuardrailAction.BLOCK
    */
   readonly action?: GuardrailAction;
   /**
    * Whether the contextual grounding filter is enabled.
+   * @default true
    */
   readonly enabled?: boolean;
   /**
