@@ -3,7 +3,7 @@ import * as elb from 'aws-cdk-lib/aws-elasticloadbalancing';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import { App, Stack, StackProps, Fn } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { ROUTE53_TARGETS_NLB_USE_PLAIN_DNS_NAME } from 'aws-cdk-lib/cx-api';
 
@@ -27,11 +27,14 @@ import { ROUTE53_TARGETS_NLB_USE_PLAIN_DNS_NAME } from 'aws-cdk-lib/cx-api';
  * 1. CLB IPv4-only → uses ClassicLoadBalancerTarget (separate implementation)
  * 2. ALB IPv4-only → should generate 'dualstack.{dns-name}' in Route53 record
  * 3. NLB IPv4-only → should generate '{dns-name}' (plain) in Route53 record
- * 4. Imported NLB → should generate '{dns-name}' (plain) in Route53 record
- * 5. Imported ALB → should generate 'dualstack.{dns-name}' in Route53 record
+ * 4. ALB Dual-stack → should generate 'dualstack.{dns-name}' in Route53 record
+ * 5. NLB Dual-stack → should generate '{dns-name}' (plain) in Route53 record
+ * 6. Imported NLB → should generate '{dns-name}' (plain) in Route53 record
+ * 7. Imported ALB → should generate 'dualstack.{dns-name}' in Route53 record
  *
- * This test focuses on IPv4-only scenarios to avoid IPv6 subnet configuration complexity
- * while still validating the core DNS naming behavior fix.
+ * This comprehensive test validates that our fix works correctly for both IPv4-only
+ * and dual-stack scenarios, confirming that DNS naming is load balancer type-specific,
+ * not IP address type-specific.
  */
 
 export class LoadBalancerTypesAliasTargetStack extends Stack {
@@ -65,10 +68,10 @@ export class LoadBalancerTypesAliasTargetStack extends Stack {
     vpc.publicSubnets.forEach((subnet, index) => {
       const subnetIpv6CidrBlock = new ec2.CfnSubnetCidrBlock(this, `SubnetIpv6CidrBlock${index}`, {
         subnetId: subnet.subnetId,
-        ipv6CidrBlock: cdk.Fn.select(index, cdk.Fn.cidr(
-          cdk.Fn.select(0, vpc.vpcIpv6CidrBlocks),
+        ipv6CidrBlock: Fn.select(index, Fn.cidr(
+          Fn.select(0, vpc.vpcIpv6CidrBlocks),
           4, // Number of subnets
-          '64' // Subnet size
+          '64', // Subnet size
         )),
       });
       subnetIpv6CidrBlock.addDependency(ipv6CidrBlock);
@@ -119,6 +122,52 @@ export class LoadBalancerTypesAliasTargetStack extends Stack {
       zone: hostedZone,
       recordName: 'nlb-ipv4',
       target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(nlbIpv4)),
+    });
+
+    // 4. Application Load Balancer - Dual-stack
+    const albDualStack = new elbv2.ApplicationLoadBalancer(this, 'ALB-DualStack', {
+      vpc,
+      internetFacing: true,
+      ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+    });
+    // Ensure IPv6 subnets are configured before creating dual-stack ALB
+    vpc.publicSubnets.forEach((_, index) => {
+      albDualStack.node.addDependency(this.node.findChild(`SubnetIpv6CidrBlock${index}`));
+    });
+
+    new route53.ARecord(this, 'ALB-DualStack-ARecord', {
+      zone: hostedZone,
+      recordName: 'alb-dualstack',
+      target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(albDualStack)),
+    });
+
+    new route53.AaaaRecord(this, 'ALB-DualStack-AAAARecord', {
+      zone: hostedZone,
+      recordName: 'alb-dualstack',
+      target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(albDualStack)),
+    });
+
+    // 5. Network Load Balancer - Dual-stack
+    const nlbDualStack = new elbv2.NetworkLoadBalancer(this, 'NLB-DualStack', {
+      vpc,
+      internetFacing: true,
+      ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+    });
+    // Ensure IPv6 subnets are configured before creating dual-stack NLB
+    vpc.publicSubnets.forEach((_, index) => {
+      nlbDualStack.node.addDependency(this.node.findChild(`SubnetIpv6CidrBlock${index}`));
+    });
+
+    new route53.ARecord(this, 'NLB-DualStack-ARecord', {
+      zone: hostedZone,
+      recordName: 'nlb-dualstack',
+      target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(nlbDualStack)),
+    });
+
+    new route53.AaaaRecord(this, 'NLB-DualStack-AAAARecord', {
+      zone: hostedZone,
+      recordName: 'nlb-dualstack',
+      target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(nlbDualStack)),
     });
 
     // Test imported load balancers as well
