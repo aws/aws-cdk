@@ -171,7 +171,7 @@ export class StateGraph {
         const distributedMapPolicy = new iam.Policy(stateMachine, 'DistributedMapPolicy');
         stateMachine.grantStartExecution(distributedMapPolicy);
         stateMachine.grantExecution(distributedMapPolicy, 'states:DescribeExecution', 'states:StopExecution');
-        stateMachine.grantRedriveMapRunExecution(distributedMapPolicy);
+        stateMachine.grantRedriveExecution(distributedMapPolicy);
         stateMachine.role.attachInlinePolicy(distributedMapPolicy);
         break;
       }
