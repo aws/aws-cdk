@@ -97,49 +97,6 @@ chatPrompt.createVersion('Version 1.1 created via prompt method');
 const kmsKey = new cdk.aws_kms.Key(stack, 'PromptKey', {
   description: 'KMS key for encrypting Bedrock prompts',
   enableKeyRotation: true,
-  policy: new cdk.aws_iam.PolicyDocument({
-    statements: [
-      new cdk.aws_iam.PolicyStatement({
-        sid: 'Enable IAM User Permissions',
-        effect: cdk.aws_iam.Effect.ALLOW,
-        principals: [new cdk.aws_iam.AccountRootPrincipal()],
-        actions: [
-          'kms:Create*',
-          'kms:Describe*',
-          'kms:Enable*',
-          'kms:List*',
-          'kms:Put*',
-          'kms:Update*',
-          'kms:Revoke*',
-          'kms:Disable*',
-          'kms:Get*',
-          'kms:Delete*',
-          'kms:TagResource',
-          'kms:UntagResource',
-          'kms:ScheduleKeyDeletion',
-          'kms:CancelKeyDeletion',
-        ],
-        resources: ['*'],
-      }),
-      new cdk.aws_iam.PolicyStatement({
-        sid: 'Allow Bedrock Service',
-        effect: cdk.aws_iam.Effect.ALLOW,
-        principals: [new cdk.aws_iam.ServicePrincipal('bedrock.amazonaws.com')],
-        actions: [
-          'kms:Decrypt',
-          'kms:GenerateDataKey',
-          'kms:CreateGrant',
-          'kms:DescribeKey',
-        ],
-        resources: ['*'],
-        conditions: {
-          StringEquals: {
-            'kms:ViaService': `bedrock.${cdk.Stack.of(stack).region}.amazonaws.com`,
-          },
-        },
-      }),
-    ],
-  }),
 });
 
 const encryptedPrompt = new bedrock.Prompt(stack, 'EncryptedPrompt', {
