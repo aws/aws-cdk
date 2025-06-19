@@ -2,7 +2,7 @@ import { IAliasRecordTargetProps } from './shared';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as route53 from '../../aws-route53';
 import { FeatureFlags, Stack } from '../../core';
-import { ROUTE53_TARGETS_LOAD_BALANCER_USE_PLAIN_DNS_FOR_IPV4_ONLY } from '../../cx-api';
+import { ROUTE53_TARGETS_NLB_USE_PLAIN_DNS_NAME } from '../../cx-api';
 
 /**
  * Use an ELBv2 as an alias record target
@@ -20,22 +20,29 @@ export class LoadBalancerTarget implements route53.IAliasRecordTarget {
 
   private getDnsName(): string {
     const stack = Stack.of(this.loadBalancer);
-    const useNewBehavior = FeatureFlags.of(stack).isEnabled(
-      ROUTE53_TARGETS_LOAD_BALANCER_USE_PLAIN_DNS_FOR_IPV4_ONLY,
+    const nlbUsePlainDnsName = FeatureFlags.of(stack).isEnabled(
+      ROUTE53_TARGETS_NLB_USE_PLAIN_DNS_NAME,
     );
 
-    if (useNewBehavior && this.isIpv4OnlyLoadBalancer()) {
-      // IPv4-only load balancers - use plain DNS name
+    if (nlbUsePlainDnsName && this.isNetworkLoadBalancer()) {
+      // NLBs: Use plain DNS name (matches Route53 console behavior)
       return this.loadBalancer.loadBalancerDnsName;
     }
 
-    // Default behavior: use dualstack prefix for all load balancers
+    // CLBs and ALBs: Use dualstack prefix (matches Route53 console behavior)
     return `dualstack.${this.loadBalancer.loadBalancerDnsName}`;
   }
 
-  private isIpv4OnlyLoadBalancer(): boolean {
+  private isNetworkLoadBalancer(): boolean {
+    // Check if it's a Network Load Balancer by constructor name or ARN pattern
+    const constructorName = this.loadBalancer.constructor.name;
+    const hasNetworkInName = constructorName.includes('NetworkLoadBalancer');
+
+    // For imported load balancers, check if they have loadBalancerArn property
     const lb = this.loadBalancer as any;
-    return lb.ipAddressType === elbv2.IpAddressType.IPV4 ||
-          lb.ipAddressType === undefined;
+    const hasNetworkArn = lb.loadBalancerArn && typeof lb.loadBalancerArn === 'string' &&
+                         lb.loadBalancerArn.includes(':loadbalancer/net/');
+
+    return hasNetworkInName || hasNetworkArn;
   }
 }

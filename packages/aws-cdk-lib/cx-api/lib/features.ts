@@ -141,7 +141,7 @@ export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-c
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
-export const ROUTE53_TARGETS_LOAD_BALANCER_USE_PLAIN_DNS_FOR_IPV4_ONLY = '@aws-cdk/aws-route53-targets:loadBalancerTargetUsePlainDnsForIpv4Only';
+export const ROUTE53_TARGETS_NLB_USE_PLAIN_DNS_NAME = '@aws-cdk/aws-route53-targets:nlbUsePlainDnsName';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1648,22 +1648,25 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
-  [ROUTE53_TARGETS_LOAD_BALANCER_USE_PLAIN_DNS_FOR_IPV4_ONLY]: {
+  [ROUTE53_TARGETS_NLB_USE_PLAIN_DNS_NAME]: {
     type: FlagType.BugFix,
-    summary: 'Use plain DNS name for IPv4-only load balancers instead of dualstack prefix',
+    summary: 'Use plain DNS names for Network Load Balancers in Route53 alias records',
     detailsMd: `
-      When this feature flag is enabled, IPv4-only ALB and NLB will use plain DNS name 
-      (e.g., this.loadBalancer.loadBalancerDnsName) instead of prepending the dualstack prefix.
+      When this feature flag is enabled, LoadBalancerTarget will use plain DNS names for 
+      Network Load Balancers instead of adding the dualstack prefix, matching AWS Route53 
+      console behavior.
       
-      The current behavior unconditionally adds the dualstack prefix to all load balancer DNS names,
-      causing IPv4-only Network Load Balancers to become unreachable via Route53 alias records.
+      The previous behavior unconditionally added the dualstack prefix to all load balancer 
+      DNS names, but AWS Route53 console shows that only ALBs and CLBs should use the 
+      dualstack prefix, while NLBs should use plain DNS names.
       
       When this flag is enabled:
-      - IPv4-only ALB and NLB will use plain DNS name (fixes the broken behavior)
-      - Dual-stack load balancers will continue using dualstack prefix (maintains existing behavior)
+      - Network Load Balancers (NLB): Use plain DNS name (matches Route53 console behavior)
+      - Application Load Balancers (ALB): Use dualstack prefix (existing correct behavior)
+      - Classic Load Balancers (CLB): Use dualstack prefix (existing correct behavior)
       
       When this flag is disabled:
-      - All load balancers use dualstack prefix (current behavior)
+      - All load balancers get dualstack prefix added (legacy incorrect behavior for NLBs)
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
