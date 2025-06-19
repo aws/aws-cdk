@@ -168,21 +168,11 @@ export class StateGraph {
   public bind(stateMachine: StateMachine) {
     for (const state of this.allStates) {
       if (DistributedMap.isDistributedMap(state)) {
-        stateMachine.role.attachInlinePolicy(new iam.Policy(stateMachine, 'DistributedMapPolicy', {
-          document: new iam.PolicyDocument({
-            statements: [
-              new iam.PolicyStatement({
-                actions: ['states:StartExecution'],
-                resources: [stateMachine.stateMachineArn],
-              }),
-              new iam.PolicyStatement({
-                actions: ['states:DescribeExecution', 'states:StopExecution'],
-                resources: [`${stateMachine.stateMachineArn}:*`],
-              }),
-            ],
-          }),
-        }));
-
+        const distributedMapPolicy = new iam.Policy(stateMachine, 'DistributedMapPolicy');
+        stateMachine.grantStartExecution(distributedMapPolicy);
+        stateMachine.grantExecution(distributedMapPolicy, 'states:DescribeExecution', 'states:StopExecution');
+        stateMachine.grantRedriveExecution(distributedMapPolicy);
+        stateMachine.role.attachInlinePolicy(distributedMapPolicy);
         break;
       }
     }
