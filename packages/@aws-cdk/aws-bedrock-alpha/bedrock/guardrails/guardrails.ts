@@ -143,14 +143,12 @@ export abstract class GuardrailBase extends Resource implements IGuardrail {
 
   /**
    * The ARN of the guardrail.
-   * @example "arn:aws:bedrock:us-east-1:123456789012:guardrail/yympzo398ipq"
    * @attribute
    */
   public abstract readonly guardrailArn: string;
 
   /**
    * The ID of the guardrail.
-   * @example "yympzo398ipq"
    * @attribute
    */
   public abstract readonly guardrailId: string;
@@ -419,13 +417,11 @@ export class Guardrail extends GuardrailBase {
 
   /**
    * The ARN of the guardrail.
-   * @example "arn:aws:bedrock:us-east-1:123456789012:guardrail/yympzo398ipq"
    * @attribute
    */
   public readonly guardrailArn: string;
   /**
    * The ID of the guardrail.
-   * @example "yympzo398ipq"
    * @attribute
    */
   public readonly guardrailId: string;

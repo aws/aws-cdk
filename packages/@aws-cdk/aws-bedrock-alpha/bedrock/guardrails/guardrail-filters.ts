@@ -620,12 +620,6 @@ export interface PIIFilter {
 /**
  * A Regular expression (regex) filter for sensitive information.
  *
- * @example
- * const regexFilter: RegexFilter = {
- *   name: "my-custom-filter",
- *   action: SensitiveInfoGuardrailAction.BLOCK,
- *   pattern: "\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b",
- * };
  */
 export interface RegexFilter {
   /**
