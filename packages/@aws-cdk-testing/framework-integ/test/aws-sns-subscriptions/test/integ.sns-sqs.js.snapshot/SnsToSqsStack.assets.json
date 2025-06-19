@@ -1,7 +1,7 @@
 {
   "version": "44.0.0",
   "files": {
-    "26bcfb6b0280103a5e7809a56c6642acf181fd5d251dc5b649d2631786928984": {
+    "c3ee97bd77321ba9df232c88f9dfa769b074b6d6ab72c871a9fa1a66db5dfcb4": {
       "displayName": "SnsToSqsStack Template",
       "source": {
         "path": "SnsToSqsStack.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "26bcfb6b0280103a5e7809a56c6642acf181fd5d251dc5b649d2631786928984.json",
+          "objectKey": "c3ee97bd77321ba9df232c88f9dfa769b074b6d6ab72c871a9fa1a66db5dfcb4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
