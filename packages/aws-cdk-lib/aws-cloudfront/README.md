@@ -1252,6 +1252,8 @@ When using a CloudFront PublicKey, only the `comment` field can be updated after
 Resource handler returned message: "Invalid request provided: AWS::CloudFront::PublicKey"
 ```
 
+### Updating Public Keys
+
 To update the `encodedKey`, you must change the ID of the public key resource in your template. This causes CloudFormation to create a new `cloudfront.PublicKey` resource and delete the old one during the next deployment.
 
 Example:
