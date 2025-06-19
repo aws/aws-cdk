@@ -110,6 +110,7 @@ export * as aws_events from './aws-events';
 export * as aws_events_targets from './aws-events-targets';
 export * as aws_eventschemas from './aws-eventschemas';
 export * as aws_evidently from './aws-evidently';
+export * as aws_evs from './aws-evs';
 export * as aws_finspace from './aws-finspace';
 export * as aws_fis from './aws-fis';
 export * as aws_fms from './aws-fms';

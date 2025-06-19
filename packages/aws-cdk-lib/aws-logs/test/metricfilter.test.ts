@@ -112,6 +112,38 @@ describe('metric filter', () => {
     }));
   });
 
+  test('metric filter exposes metric with custom dimensions', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = new LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    const mf = new MetricFilter(stack, 'Subscription', {
+      logGroup,
+      metricNamespace: 'AWS/Test',
+      metricName: 'Latency',
+      metricValue: '$.latency',
+      filterPattern: FilterPattern.exists('$.latency'),
+      dimensions: {
+        Foo: 'Bar',
+        Bar: 'Baz',
+      },
+    });
+
+    const metric = mf.metric();
+
+    // THEN
+    expect(metric).toEqual(new Metric({
+      metricName: 'Latency',
+      namespace: 'AWS/Test',
+      dimensionsMap: {
+        Foo: 'Bar',
+        Bar: 'Baz',
+      },
+      statistic: 'avg',
+    }));
+  });
+
   test('metric filter exposes metric with custom statistic', () => {
     // GIVEN
     const stack = new Stack();
