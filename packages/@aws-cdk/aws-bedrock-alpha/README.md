@@ -637,9 +637,9 @@ You can create a Guardrail with a minimum blockedInputMessaging, blockedOutputsM
 
 #### TypeScript
 
-```ts
+```ts fixture=default
 const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
-  name: 'my-BedrockGuardrails',
+  guardrailName: 'my-BedrockGuardrails',
   description: 'Legal ethical guardrails.',
 });
 ```
@@ -648,7 +648,7 @@ const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| name | string | Yes | The name of the guardrail |
+| guardrailName | string | Yes | The name of the guardrail |
 | description | string | No | The description of the guardrail |
 | blockedInputMessaging | string | No | The message to return when the guardrail blocks a prompt. Default: "Sorry, your query violates our usage policy." |
 | blockedOutputsMessaging | string | No | The message to return when the guardrail blocks a model response. Default: "Sorry, I am unable to answer your question because of our usage policy." |
@@ -669,18 +669,22 @@ Content filters allow you to block input prompts or model responses containing h
 
 ##### Content Filter Configuration
 
-```ts
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+});
+
 guardrail.addContentFilter({
-  type: ContentFilterType.SEXUAL,
-  inputStrength: ContentFilterStrength.HIGH,
-  outputStrength: ContentFilterStrength.MEDIUM,
+  type: bedrock.ContentFilterType.SEXUAL,
+  inputStrength: bedrock.ContentFilterStrength.HIGH,
+  outputStrength: bedrock.ContentFilterStrength.MEDIUM,
   // props below are optional
-  inputAction: GuardrailAction.BLOCK,
+  inputAction: bedrock.GuardrailAction.BLOCK,
   inputEnabled: true,
-  outputAction: GuardrailAction.NONE,
+  outputAction: bedrock.GuardrailAction.NONE,
   outputEnabled: true,
-  inputModalities: [ModalityType.TEXT, ModalityType.IMAGE],
-  outputModalities: [ModalityType.TEXT],
+  inputModalities: [bedrock.ModalityType.TEXT, bedrock.ModalityType.IMAGE],
+  outputModalities: [bedrock.ModalityType.TEXT],
 });
 ```
 
@@ -720,13 +724,17 @@ Denied topics allow you to define a set of topics that are undesirable in the co
 
 ##### Denied Topic Configuration
 
-```ts
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+});
+
 // Use a predefined topic
-guardrail.addDeniedTopicFilter(Topic.FINANCIAL_ADVICE);
+guardrail.addDeniedTopicFilter(bedrock.Topic.FINANCIAL_ADVICE);
 
 // Create a custom topic with input/output actions
 guardrail.addDeniedTopicFilter(
-  Topic.custom({
+  bedrock.Topic.custom({
     name: 'Legal_Advice',
     definition: 'Offering guidance or suggestions on legal matters, legal actions, interpretation of laws, or legal rights and responsibilities.',
     examples: [
@@ -737,9 +745,9 @@ guardrail.addDeniedTopicFilter(
       'Can you explain this law to me?',
     ],
     // props below are optional
-    inputAction: GuardrailAction.BLOCK,
+    inputAction: bedrock.GuardrailAction.BLOCK,
     inputEnabled: true,
-    outputAction: GuardrailAction.NONE,
+    outputAction: bedrock.GuardrailAction.NONE,
     outputEnabled: true,
   })
 );
@@ -751,13 +759,17 @@ Word filters allow you to block specific words, phrases, or profanity in user in
 
 ##### Word Filter Configuration
 
-```ts
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+});
+
 // Add managed word list with input/output actions
 guardrail.addManagedWordListFilter({
-  type: ManagedWordFilterType.PROFANITY,
-  inputAction: GuardrailAction.BLOCK,
+  type: bedrock.ManagedWordFilterType.PROFANITY,
+  inputAction: bedrock.GuardrailAction.BLOCK,
   inputEnabled: true,
-  outputAction: GuardrailAction.NONE,
+  outputAction: bedrock.GuardrailAction.NONE,
   outputEnabled: true,
 });
 
@@ -775,7 +787,10 @@ PII filters allow you to detect and handle personally identifiable information i
 
 ##### PII Filter Configuration
 
-```ts
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+});
 // Add PII filter for addresses with input/output actions
 guardrail.addPIIFilter({
   type: bedrock.PIIType.General.ADDRESS,
@@ -805,7 +820,10 @@ Regex filters allow you to detect and handle custom patterns in user inputs and 
 
 ##### Regex Filter Configuration
 
-```ts
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+});
 // Add regex filter with input/output actions
 guardrail.addRegexFilter({
   name: 'TestRegexFilter',
@@ -813,9 +831,9 @@ guardrail.addRegexFilter({
   action: bedrock.GuardrailAction.ANONYMIZE,
   // below props are optional
   description: 'This is a test regex filter',
-  inputAction: GuardrailAction.BLOCK,
+  inputAction: bedrock.GuardrailAction.BLOCK,
   inputEnabled: true,
-  outputAction: GuardrailAction.ANONYMIZE,
+  outputAction: bedrock.GuardrailAction.ANONYMIZE,
   outputEnabled: true,
 });
 ```
@@ -826,13 +844,16 @@ Contextual grounding filters allow you to ensure that model responses are factua
 
 ##### Contextual Grounding Filter Configuration
 
-```ts
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+});
 // Add contextual grounding filter with action and enabled flag
 guardrail.addContextualGroundingFilter({
-  type: ContextualGroundingFilterType.GROUNDING,
+  type: bedrock.ContextualGroundingFilterType.GROUNDING,
   threshold: 0.8,
   // the properties below are optional
-  action: GuardrailAction.BLOCK,
+  action: bedrock.GuardrailAction.BLOCK,
   enabled: true,
 });
 ```
@@ -864,7 +885,17 @@ Guardrails provide methods to grant permissions to other resources that need to 
 
 #### Permission Examples
 
-```ts
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+});
+
+const lambdaFunction = new lambda.Function(this, 'testLambda', {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, '../lambda/my-code')),
+});
+
 // Grant specific permissions to a Lambda function
 guardrail.grant(lambdaFunction, 'bedrock:GetGuardrail', 'bedrock:ListGuardrails');
 
@@ -878,16 +909,21 @@ Amazon Bedrock provides metrics for your guardrails, allowing you to monitor the
 
 #### Metrics Examples
 
-```ts
+```ts fixture=default
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+});
 // Get a specific metric for this guardrail
-const invocationsMetric = guardrails.metricInvocations({
+const invocationsMetric = guardrail.metricInvocations({
   statistic: 'Sum',
-  period: cdk.Duration.minutes(5),
+  period: Duration.minutes(5),
 });
 
 // Create a CloudWatch alarm for high invocation latency
-new cdk.aws_cloudwatch.Alarm(this, 'HighLatencyAlarm', {
-  metric: guardrails.metricInvocationLatency(),
+new cloudwatch.Alarm(this, 'HighLatencyAlarm', {
+  metric: guardrail.metricInvocationLatency(),
   threshold: 1000, // 1 second
   evaluationPeriods: 3,
 });
@@ -902,16 +938,23 @@ You can import existing guardrails using the `fromGuardrailAttributes` or `fromC
 
 #### Import Configuration
 
-```ts
+```ts fixture=default
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const kmsKey: kms.IKey;
+declare const stack: Stack;
 // Import an existing guardrail by ARN
 const importedGuardrail = bedrock.Guardrail.fromGuardrailAttributes(stack, 'TestGuardrail', {
   guardrailArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail/oygh3o8g7rtl',
   guardrailVersion: '1', //optional
   kmsKey: kmsKey, //optional
 });
+```
 
+```ts fixture=default
+import * as bedrockl1 from 'aws-cdk-lib/aws-bedrock';
 // Import a guardrail created through the L1 CDK CfnGuardrail construct
-const cfnGuardrail = new CfnGuardrail(this, 'MyCfnGuardrail', {
+const l1guardrail = new bedrockl1.CfnGuardrail(this, 'MyCfnGuardrail', {
   blockedInputMessaging: 'blockedInputMessaging',
   blockedOutputsMessaging: 'blockedOutputsMessaging',
   name: 'namemycfnguardrails',
@@ -924,7 +967,7 @@ const cfnGuardrail = new CfnGuardrail(this, 'MyCfnGuardrail', {
   },
 });
 
-const importedGuardrail = bedrock.Guardrail.fromCfnGuardrail(cfnGuardrail);
+const importedGuardrail = bedrock.Guardrail.fromCfnGuardrail(l1guardrail);
 ```
 
 ### Guardrail Versioning
@@ -933,7 +976,10 @@ Guardrails support versioning, allowing you to track changes and maintain multip
 
 #### Version Configuration
 
-```ts
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+});
 // Create a new version of the guardrail
 guardrail.createVersion('testversion');
 ```
