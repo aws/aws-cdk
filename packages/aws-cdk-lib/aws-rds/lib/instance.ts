@@ -1524,7 +1524,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       sourceDbInstanceIdentifier: props.sourceDatabaseInstance.instanceArn,
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
-      engine: shouldPassEngine ? props.sourceDatabaseInstance.engine?.engineType : undefined,
+      engine: shouldPassEngine ? engineType : undefined,
       allocatedStorage: props.allocatedStorage?.toString(),
     });
 
