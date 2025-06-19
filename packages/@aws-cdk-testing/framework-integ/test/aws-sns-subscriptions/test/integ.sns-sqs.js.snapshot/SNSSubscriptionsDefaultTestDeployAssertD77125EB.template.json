@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallSNSpublish1ed44e75b058a4b9f26876a86fe8a97a": {
+  "AwsApiCallSNSpublisha9ef09f51d38c4f6bf69abf5932e9639": {
    "Type": "Custom::DeployAssert@SdkCallSNSpublish",
    "Properties": {
     "ServiceToken": {
@@ -12,7 +12,7 @@
     "service": "SNS",
     "api": "publish",
     "parameters": {
-     "Message": "\"{\\\"background\\\":{\\\"color\\\":\\\"green\\\"},\\\"price\\\":200,\\\"store\\\":\\\"fans\\\"}\"",
+     "Message": "\"{\\\"color\\\":\\\"green\\\",\\\"price\\\":200}\"",
      "TopicArn": {
       "Fn::Join": [
        "",
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1750280017572"
+    "salt": "1750329459376"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -121,7 +121,7 @@
     },
     "service": "SQS",
     "api": "receiveMessage",
-    "expected": "{\"$ObjectLike\":{\"Messages\":[{\"Body\":\"{\\\"background\\\":{\\\"color\\\":\\\"green\\\"},\\\"price\\\":200,\\\"store\\\":\\\"fans\\\"}\"}]}}",
+    "expected": "{\"$ObjectLike\":{\"Messages\":[{\"Body\":\"{\\\"color\\\":\\\"green\\\",\\\"price\\\":200}\"}]}}",
     "parameters": {
      "QueueUrl": {
       "Fn::Join": [
@@ -138,7 +138,7 @@
      "WaitTimeSeconds": "20"
     },
     "flattenResponse": "false",
-    "salt": "1750280017573"
+    "salt": "1750329459377"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
