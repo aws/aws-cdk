@@ -93,16 +93,9 @@ new bedrock.PromptVersion(stack, 'ChatPromptVersion', {
 textPrompt.createVersion('Version 1.1 created via prompt method');
 chatPrompt.createVersion('Version 1.1 created via prompt method');
 
-// Create a prompt with KMS encryption
-const kmsKey = new cdk.aws_kms.Key(stack, 'PromptKey', {
-  description: 'KMS key for encrypting Bedrock prompts',
-  enableKeyRotation: true,
-});
-
 const encryptedPrompt = new bedrock.Prompt(stack, 'EncryptedPrompt', {
   promptName: 'encrypted-test-prompt',
   description: 'A prompt encrypted with customer-managed KMS key',
-  kmsKey,
   variants: [
     bedrock.PromptVariant.text({
       variantName: 'encrypted-variant',
@@ -216,7 +209,6 @@ new bedrock.Prompt(stack, 'AgentPrompt', {
 const importedPrompt = bedrock.Prompt.fromPromptAttributes(stack, 'ImportedPrompt', {
   promptArn: 'arn:aws:bedrock:us-east-1:123456789012:prompt/IMPORTED12345',
   promptVersion: '1',
-  kmsKey,
 });
 
 // Grant permissions to a role
@@ -232,6 +224,19 @@ importedPrompt.grantGet(testRole);
 
 new integ.IntegTest(app, 'BedrockPrompt', {
   testCases: [stack],
+  cdkCommandOptions: {
+    deploy: {
+      args: {
+        rollback: false,
+      },
+    },
+    destroy: {
+      args: {
+        force: true,
+      },
+    },
+  },
+  regions: ['us-east-1'],
 });
 
 app.synth();

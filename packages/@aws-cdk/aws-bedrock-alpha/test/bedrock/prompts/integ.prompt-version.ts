@@ -102,16 +102,9 @@ new bedrock.PromptVersion(stack, 'ChatVersion1', {
   description: 'Version 1.0 of chat prompt - Initial chat release',
 });
 
-// Create a prompt with KMS encryption for versioning
-const kmsKey = new cdk.aws_kms.Key(stack, 'VersioningKey', {
-  description: 'KMS key for encrypted prompt versioning',
-  enableKeyRotation: true,
-});
-
 const encryptedPrompt = new bedrock.Prompt(stack, 'EncryptedPrompt', {
   promptName: 'encrypted-versioning-prompt',
   description: 'An encrypted prompt for testing secure versioning',
-  kmsKey,
   variants: [
     bedrock.PromptVariant.text({
       variantName: 'encrypted-variant',
