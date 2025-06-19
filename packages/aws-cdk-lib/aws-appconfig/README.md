@@ -374,6 +374,20 @@ The declaration order will be respected regardless of the approach used.
 > [!IMPORTANT]
 > If none of these options are utilized, there will not be any deployments.
 
+You can use customer managed key to encrypt a hosted configuration. For mora information, see [Data encryption at rest for AWS AppConfig](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-security.html#appconfig-security-data-encryption).
+
+```ts
+declare const application: appconfig.Application;
+declare const kmsKey: kms.Key;
+
+new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
+  application,
+  content: appconfig.ConfigurationContent.fromInlineText('This is my configuration content.'),
+  type: appconfig.ConfigurationType.FEATURE_FLAGS,
+  kmsKey, // set customer managed key
+});
+```
+
 ### SourcedConfiguration
 
 A sourced configuration represents configuration stored in any of the following:

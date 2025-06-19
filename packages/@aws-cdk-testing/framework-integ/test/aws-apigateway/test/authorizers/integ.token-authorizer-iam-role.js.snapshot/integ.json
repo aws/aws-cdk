@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "testCases": {
     "iam-token-authorizer/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "iam-token-authorizer/DefaultTest/DeployAssert",
       "assertionStackName": "iamtokenauthorizerDefaultTestDeployAssert87D47FBB"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

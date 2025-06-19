@@ -58,7 +58,7 @@ export interface JsonSchema {
 
   // Array
   readonly items?: JsonSchema | JsonSchema[];
-  readonly additionalItems?: JsonSchema[];
+  readonly additionalItems?: JsonSchema | boolean;
   readonly maxItems?: number;
   readonly minItems?: number;
   readonly uniqueItems?: boolean;

@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.201.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.200.2-alpha.0...v2.201.0-alpha.0) (2025-06-12)
+
+
+### Features
+
+* **amplify:** add skew protection feature for Amplify branches ([#34656](https://github.com/aws/aws-cdk/issues/34656)) ([8808998](https://github.com/aws/aws-cdk/commit/8808998d0ba6e5e22e36888c10474f9788a77454))
+* **bedrock:** adding bedrock l2 construct features ([#34065](https://github.com/aws/aws-cdk/issues/34065)) ([a028927](https://github.com/aws/aws-cdk/commit/a0289271aa9990f85c120d0549b878bd3c6ea484))
+* **ec2:** add interface VPC endpoint for DSQL ([#34487](https://github.com/aws/aws-cdk/issues/34487)) ([3e53c2c](https://github.com/aws/aws-cdk/commit/3e53c2c0449692e639779c4315a34bca3b778cf4))
+* **ec2:** support Firehose `IDeliveryStream` as flow log destination ([#34596](https://github.com/aws/aws-cdk/issues/34596)) ([cdfe6e7](https://github.com/aws/aws-cdk/commit/cdfe6e7e2946e80b3dffe9b23fd30659c0b88b99)), closes [#33883](https://github.com/aws/aws-cdk/issues/33883) [#33757](https://github.com/aws/aws-cdk/issues/33757)
+* **ec2:** volume initialization rate for EBS volume ([#34570](https://github.com/aws/aws-cdk/issues/34570)) ([527d483](https://github.com/aws/aws-cdk/commit/527d483a670042caed1ba8366de81f38dde12a51))
+
+
+### Reverts
+
+* **ec2:** support Firehose `IDeliveryStream` as flow log destination ([#34665](https://github.com/aws/aws-cdk/issues/34665)) ([b77bd0e](https://github.com/aws/aws-cdk/commit/b77bd0e0da635098ca951c7f8b030bcb3cb387dd)), closes [aws/aws-cdk#34596](https://github.com/aws/aws-cdk/issues/34596)
+
+## [2.200.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.200.1-alpha.0...v2.200.2-alpha.0) (2025-06-11)
+
+## [2.200.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.200.0-alpha.0...v2.200.1-alpha.0) (2025-06-03)
+
+## [2.200.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.199.0-alpha.0...v2.200.0-alpha.0) (2025-06-02)
+
+### Features
+* **msk:** support Kafka 4.0 ([#34501](https://github.com/aws/aws-cdk/issues/34501)) ([aa40e38](https://github.com/aws/aws-cdk/commit/aa40e382ddd585f027febcc994a8e32491bf37c1))
+
 ## [2.199.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.198.0-alpha.0...v2.199.0-alpha.0) (2025-05-27)
 
 
