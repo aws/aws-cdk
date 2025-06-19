@@ -524,6 +524,9 @@ export class Cluster extends ClusterBase {
       if (props.logging) {
         throw new core.ValidationError('`logging` is not supported when `express` is true.', this);
       }
+      if (subnetSelection.subnets.length < 3) {
+        throw new core.ValidationError(`Express cluster requires at least 3 subnets, got ${subnetSelection.subnets.length}`, this);
+      }
     }
 
     const instanceType = props.instanceType

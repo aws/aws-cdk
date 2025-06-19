@@ -1,0 +1,14 @@
+{
+  "enableLookups": true,
+  "version": "44.0.0",
+  "testCases": {
+    "MskExpressCluster/DefaultTest": {
+      "stacks": [
+        "aws-cdk-msk-express-integ"
+      ],
+      "assertionStack": "MskExpressCluster/DefaultTest/DeployAssert",
+      "assertionStackName": "MskExpressClusterDefaultTestDeployAssert83DE4F95"
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}
