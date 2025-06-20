@@ -13,7 +13,8 @@
     "test": "jest --passWithNoTests --updateSnapshot --coverage=false",
     "test:watch": "jest --watch",
     "watch": "tsc --build -w tsconfig.json",
-    "gen-snapshots": "yarn run build && node test/snapshots/generate.js"
+    "gen-snapshots": "yarn run build && node test/snapshots/generate.js",
+    "issue-sync-all": "yarn run build && node bin/issue-sync-all.js"
   },
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",

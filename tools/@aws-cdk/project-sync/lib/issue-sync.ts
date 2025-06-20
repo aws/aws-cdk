@@ -1,16 +1,8 @@
 import { Github } from './github.js';
-
-export const getGithubClient = () => {
-  if (!process.env.GITHUB_TOKEN) {
-    throw new Error('GITHUB_TOKEN is not set');
-  }
-  return new Github(process.env.GITHUB_TOKEN);
-};
-
-export const PROJECT_ID = process.env.PROJECT_ID || '302';
+import { PROJECT_NUMBER } from './config.js';
 
 export const syncIssue = async (issue: string) => {
-  const github = getGithubClient();
+  const github = Github.default();
 
   // 1. Fetch the issue details
   const issueData = await github.getIssue(issue) as Record<any, any>;
@@ -27,7 +19,7 @@ export const syncIssue = async (issue: string) => {
   let projectItemId = undefined;
   if (issueDetails.projectItems?.nodes) {
     for (const node of issueDetails.projectItems.nodes) {
-      if (`${node.project?.number}` === PROJECT_ID) {
+      if (`${node.project?.number}` === PROJECT_NUMBER) {
         projectItemId = node.id;
         break;
       }
@@ -39,7 +31,7 @@ export const syncIssue = async (issue: string) => {
     return;
   }
 
-  const projectInfo = await github.getProjectInfo(PROJECT_ID);
+  const projectInfo = await github.getProjectInfo(PROJECT_NUMBER);
   const projectId = projectInfo.data.repository.projectV2.id!;
 
   let creationFieldId = undefined;

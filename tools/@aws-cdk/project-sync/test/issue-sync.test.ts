@@ -1,6 +1,9 @@
 import { describe, test, expect, jest, beforeEach } from '@jest/globals';
 import * as issueSync from '../lib/issue-sync.js';
 import { GithubMock } from './github-mock.js';
+import { Github } from '../lib/github.js';
+
+jest.mock('../lib/github.js');
 
 describe('Issue Sync', () => {
   let mockGithub: GithubMock;
@@ -8,8 +11,7 @@ describe('Issue Sync', () => {
   beforeEach(() => {
     // Create a new instance of our mock GitHub client
     mockGithub = new GithubMock('fake-token');
-    const spy = jest.spyOn(issueSync, 'getGithubClient');
-    spy.mockReturnValue(mockGithub);
+    (Github.default as jest.Mock).mockReturnValue(mockGithub);
 
     // Spy on the setProjectItem method to verify calls
     jest.spyOn(mockGithub, 'setProjectItem');
