@@ -44,3 +44,9 @@ const fn = new lambda.Function(this, 'MyFunction', {
 
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(fn));
 ```
+
+You can also skip the creation of arranging permissions:
+
+```ts
+new s3n.LambdaDestination(fn, { addPermissions: false });
+```
