@@ -237,7 +237,12 @@ const cluster = new msk.Cluster(this, 'cluster', {
 You can create an MSK cluster with Express Brokers by setting the `express` property to `true`. Express Brokers are a low-cost option for development, testing, and workloads that don't require the high availability guarantees of standard MSK cluster.
 For more information, see [Amazon MSK Express Brokers](https://docs.aws.amazon.com/msk/latest/developerguide/msk-broker-types-express.html).
 
-**Note:** When using Express Brokers, you must specify the `instanceType`.
+**Note:** When using Express Brokers, the following constraints apply:
+- You must specify the `instanceType`
+- The VPC must have at least 3 subnets (across 3 AZs)
+- `ebsStorageInfo` is not supported
+- `storageMode` is not supported
+- `logging` is not supported
 
 ```ts
 declare const vpc: ec2.Vpc;

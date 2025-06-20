@@ -990,8 +990,8 @@ describe('MSK Cluster', () => {
       expressStack = new core.Stack(app, 'ExpressTestStack', {
         env: {
           region: 'us-east-1',
-          account: '123456789012'
-        }
+          account: '123456789012',
+        },
       });
       expressVpc = new ec2.Vpc(expressStack, 'ExpressVpc', {
         maxAzs: 3,
@@ -1005,7 +1005,7 @@ describe('MSK Cluster', () => {
         vpc: expressVpc,
         instanceType: ec2.InstanceType.of(
           ec2.InstanceClass.M7G,
-          ec2.InstanceSize.XLARGE
+          ec2.InstanceSize.XLARGE,
         ),
         express: true,
       });
@@ -1024,24 +1024,24 @@ describe('MSK Cluster', () => {
           express: true,
         });
       }).toThrow(
-        '`instanceType` must also be specified when `express` is true.'
+        '`instanceType` must also be specified when `express` is true.',
       );
     });
 
     test('fails when ebsStorageInfo is specified', () => {
       expect(() => {
-        new msk.Cluster(expressStack, "ExpressClusterWithStorage", {
-          clusterName: "express-cluster",
+        new msk.Cluster(expressStack, 'ExpressClusterWithStorage', {
+          clusterName: 'express-cluster',
           kafkaVersion: msk.KafkaVersion.V3_8_X,
           vpc: expressVpc,
           instanceType: ec2.InstanceType.of(
             ec2.InstanceClass.M7G,
-            ec2.InstanceSize.XLARGE
+            ec2.InstanceSize.XLARGE,
           ),
           express: true,
           ebsStorageInfo: { volumeSize: 100 },
         });
-      }).toThrow("`ebsStorageInfo` is not supported when `express` is true.");
+      }).toThrow('`ebsStorageInfo` is not supported when `express` is true.');
     });
 
     test('fails when express is true and storageMode is specified', () => {
@@ -1052,7 +1052,7 @@ describe('MSK Cluster', () => {
           vpc: expressVpc,
           instanceType: ec2.InstanceType.of(
             ec2.InstanceClass.M7G,
-            ec2.InstanceSize.XLARGE
+            ec2.InstanceSize.XLARGE,
           ),
           express: true,
           storageMode: msk.StorageMode.LOCAL,
@@ -1068,7 +1068,7 @@ describe('MSK Cluster', () => {
           vpc: expressVpc,
           instanceType: ec2.InstanceType.of(
             ec2.InstanceClass.M7G,
-            ec2.InstanceSize.XLARGE
+            ec2.InstanceSize.XLARGE,
           ),
           express: true,
           logging: {
@@ -1086,7 +1086,7 @@ describe('MSK Cluster', () => {
           vpc,
           instanceType: ec2.InstanceType.of(
             ec2.InstanceClass.M7G,
-            ec2.InstanceSize.XLARGE
+            ec2.InstanceSize.XLARGE,
           ),
           express: true,
         });
