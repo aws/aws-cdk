@@ -1,7 +1,8 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "files": {
-    "7730a7574bd54d8b8cc5ce3a8fc74a2b2cec7fa63897f605899d3a225bd67bda": {
+    "5aac1969a366ef841818ebd93e994351ea64c0b4f95dd2868dbc10e270294b1a": {
+      "displayName": "test-apigateway-restapi Template",
       "source": {
         "path": "test-apigateway-restapi.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7730a7574bd54d8b8cc5ce3a8fc74a2b2cec7fa63897f605899d3a225bd67bda.json",
+          "objectKey": "5aac1969a366ef841818ebd93e994351ea64c0b4f95dd2868dbc10e270294b1a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

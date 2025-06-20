@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "44.0.0",
   "testCases": {
     "Destinations/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "Destinations/DefaultTest/DeployAssert",
       "assertionStackName": "DestinationsDefaultTestDeployAssertCC49E667"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

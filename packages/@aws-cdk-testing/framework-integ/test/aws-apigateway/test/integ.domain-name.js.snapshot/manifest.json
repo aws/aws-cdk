@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "integ-apigw-domain-name-mapping.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-apigw-domain-name-mapping.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f7ccec973eed5f351a2c2a708c1b11dea556de0ef8c090253df193046ac05e30.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1ff5a1c1085cda75efc3c3916b53b9fcf8dc5522127561febbdf44f71f747a8d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,16 +34,68 @@
         "integ-apigw-domain-name-mapping.assets"
       ],
       "metadata": {
+        "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "endpointTypes": [
+                "REGIONAL"
+              ]
+            }
+          }
+        ],
         "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegApi1IntegApi2018FAD77E9"
           }
         ],
+        "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegApi1IntegApi201DeploymentF1012E35e3d8f8929b682e11ef294dd954cc0999"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/DeploymentStage.prod/Resource": [
@@ -57,10 +110,52 @@
             "data": "IntegApi1IntegApi201Endpoint361E7C32"
           }
         ],
+        "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/items": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
+          }
+        ],
         "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/items/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegApi1IntegApi201itemsE127EEB1"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/items/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "methodResponses": [
+                  {
+                    "statusCode": "*"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*"
+                }
+              ]
+            }
           }
         ],
         "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/items/GET/Resource": [
@@ -69,10 +164,47 @@
             "data": "IntegApi1IntegApi201itemsGET28ED9C03"
           }
         ],
+        "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "methodResponses": [
+                  {
+                    "statusCode": "*"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*"
+                }
+              ]
+            }
+          }
+        ],
         "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/GET/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegApi1IntegApi201GET725FD00E"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "endpointTypes": [
+                "REGIONAL"
+              ]
+            }
           }
         ],
         "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Resource": [
@@ -81,10 +213,52 @@
             "data": "IntegApi2IntegApi202F39817F4"
           }
         ],
+        "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegApi2IntegApi202Deployment16A1A56Af8137e7222475e5a9ac210201aa96737"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/DeploymentStage.prod/Resource": [
@@ -99,10 +273,52 @@
             "data": "IntegApi2IntegApi202Endpoint18343E9B"
           }
         ],
+        "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/items": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
+          }
+        ],
         "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/items/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegApi2IntegApi202items6625F7BA"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/items/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "methodResponses": [
+                  {
+                    "statusCode": "*"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*"
+                }
+              ]
+            }
           }
         ],
         "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/items/GET/Resource": [
@@ -111,10 +327,92 @@
             "data": "IntegApi2IntegApi202itemsGET3C1B2802"
           }
         ],
+        "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "methodResponses": [
+                  {
+                    "statusCode": "*"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*"
+                }
+              ]
+            }
+          }
+        ],
         "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/GET/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegApi2IntegApi202GETA6A9E1FD"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegDomain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "domainName": "*",
+              "securityPolicy": "TLS_1_2",
+              "certificate": "*",
+              "mapping": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addBasePathMapping": [
+                "*",
+                {
+                  "basePath": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addBasePathMapping": [
+                "*",
+                {
+                  "basePath": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addApiMapping": [
+                "*",
+                {
+                  "basePath": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addApiMapping": [
+                "*",
+                {
+                  "basePath": "*"
+                }
+              ]
+            }
           }
         ],
         "/integ-apigw-domain-name-mapping/IntegDomain/Resource": [
@@ -123,10 +421,30 @@
             "data": "IntegDomain624DF323"
           }
         ],
+        "/integ-apigw-domain-name-mapping/IntegDomain/Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "domainName": "*",
+              "restApi": "*",
+              "basePath": "*"
+            }
+          }
+        ],
         "/integ-apigw-domain-name-mapping/IntegDomain/Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegDomainMapintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3E86701596"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegDomain/Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "domainName": "*",
+              "restApi": "*",
+              "basePath": "*"
+            }
           }
         ],
         "/integ-apigw-domain-name-mapping/IntegDomain/Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E/Resource": [
@@ -153,10 +471,54 @@
             "data": "IntegDomainRecord"
           }
         ],
+        "/integ-apigw-domain-name-mapping/Integ2Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "domainName": "*",
+              "securityPolicy": "TLS_1_2",
+              "certificate": "*",
+              "mapping": "*",
+              "basePath": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addBasePathMapping": [
+                "*",
+                {
+                  "basePath": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addApiMapping": [
+                "*",
+                {
+                  "basePath": "*"
+                }
+              ]
+            }
+          }
+        ],
         "/integ-apigw-domain-name-mapping/Integ2Domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Integ2Domain70CCEA68"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/Integ2Domain/Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "domainName": "*",
+              "restApi": "*",
+              "basePath": "*"
+            }
           }
         ],
         "/integ-apigw-domain-name-mapping/Integ2Domain/Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E/Resource": [
@@ -177,16 +539,69 @@
             "data": "Integ2DomainRecord"
           }
         ],
+        "/integ-apigw-domain-name-mapping/Integ3Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "domainName": "*",
+              "securityPolicy": "TLS_1_2",
+              "certificate": "*",
+              "mapping": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addBasePathMapping": [
+                "*",
+                {
+                  "basePath": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addBasePathMapping": [
+                "*",
+                {
+                  "basePath": "*"
+                }
+              ]
+            }
+          }
+        ],
         "/integ-apigw-domain-name-mapping/Integ3Domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Integ3DomainE531FBAB"
           }
         ],
+        "/integ-apigw-domain-name-mapping/Integ3Domain/Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "domainName": "*",
+              "restApi": "*",
+              "basePath": "*"
+            }
+          }
+        ],
         "/integ-apigw-domain-name-mapping/Integ3Domain/Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Integ3DomainMapintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3EC2A223F3"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/Integ3Domain/Map:v2=>integapigwdomainnamemappingIntegApi2IntegApi20289438F2B": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "domainName": "*",
+              "restApi": "*",
+              "basePath": "*"
+            }
           }
         ],
         "/integ-apigw-domain-name-mapping/Integ3Domain/Map:v2=>integapigwdomainnamemappingIntegApi2IntegApi20289438F2B/Resource": [
@@ -241,10 +656,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "domainnamemappingtestDefaultTestDeployAssert4FFC8047.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a964cf65aae2e23802c1975a0c39add8b0c2e59296daad40cc71353166b3685f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2491c342e4b7745603588a9d152197ccc96ca2397cb1f4075944545dc1712785.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -261,6 +677,20 @@
         "domainnamemappingtestDefaultTestDeployAssert4FFC8047.assets"
       ],
       "metadata": {
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/HttpApiCall5c7406415c21459755238de5e3d1af86/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/domain-name-mapping-test/DefaultTest/DeployAssert/HttpApiCall5c7406415c21459755238de5e3d1af86/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -285,6 +715,26 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/HttpApiCall87249be5ff18205c5f4320c2baec9418/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/domain-name-mapping-test/DefaultTest/DeployAssert/HttpApiCall87249be5ff18205c5f4320c2baec9418/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -297,6 +747,20 @@
             "data": "AssertionResultsHttpApiCall87249be5ff18205c5f4320c2baec9418"
           }
         ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/HttpApiCall39df1b9413ee8ef1155877d35e1a132f/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/domain-name-mapping-test/DefaultTest/DeployAssert/HttpApiCall39df1b9413ee8ef1155877d35e1a132f/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -307,6 +771,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsHttpApiCall39df1b9413ee8ef1155877d35e1a132f"
+          }
+        ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/HttpApiCallbfb4c2986471eaae77943449a0ea25f6/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/domain-name-mapping-test/DefaultTest/DeployAssert/HttpApiCallbfb4c2986471eaae77943449a0ea25f6/Default/Default": [
@@ -342,5 +820,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

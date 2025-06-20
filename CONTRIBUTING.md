@@ -1465,6 +1465,17 @@ have to disable the built-in rebuild functionality of `lerna run test`:
 $ CDK_TEST_BUILD=false lr test
 ```
 
+#### The check-lfs Github action fails on my PR
+
+This happens if your PR has files that should have been a Git LFS pointer but were not. You should verify
+that you have Git LFS installed with `git lfs`, if not you can install it with `git lfs install`.
+Once Git LFS is installed, use the following command:
+
+```shell
+$ git lfs migrate import --no-rewrite <path to files that make the gh action fail>
+```
+This will create a new commit that you can push to your branch to make the Github action pass.
+
 ## Debugging
 
 ### Connecting the VS Code Debugger

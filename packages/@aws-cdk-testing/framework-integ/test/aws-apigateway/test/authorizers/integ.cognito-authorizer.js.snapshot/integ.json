@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "44.0.0",
   "testCases": {
     "cognito-authorizer/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "cognito-authorizer/DefaultTest/DeployAssert",
       "assertionStackName": "cognitoauthorizerDefaultTestDeployAssert4551574C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

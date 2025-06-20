@@ -1,7 +1,8 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "files": {
-    "963d95f2b946c101b476b2c2b3faa935244354f27c8cef2c0d0a8215cc5f816b": {
+    "2971ff35b309c85a20be3464f72007a0171b324dbdbe2aaa7a094100aacadb87": {
+      "displayName": "integtest-specrestapi-import-deployment-stage Template",
       "source": {
         "path": "integtest-specrestapi-import-deployment-stage.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "963d95f2b946c101b476b2c2b3faa935244354f27c8cef2c0d0a8215cc5f816b.json",
+          "objectKey": "2971ff35b309c85a20be3464f72007a0171b324dbdbe2aaa7a094100aacadb87.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

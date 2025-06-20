@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "cors-twitch-test.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3b86b43c1a293038e6b507b773f348d699167e46c088fe6ed4b1ae400ce17192.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ba277b03c66a6a15b04ba9f24700207b5966fce9d3b72131e097bc1a8559b6ab.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,48 @@
         "cors-twitch-test.assets"
       ],
       "metadata": {
+        "/cors-twitch-test/cors-api-test": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cloudWatchRole": true
+            }
+          }
+        ],
         "/cors-twitch-test/cors-api-test/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "corsapitest8682546E"
+          }
+        ],
+        "/cors-twitch-test/cors-api-test/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "retain"
+              ]
+            }
+          }
+        ],
+        "/cors-twitch-test/cors-api-test/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cors-twitch-test/cors-api-test/CloudWatchRole/Resource": [
@@ -52,10 +90,68 @@
             "data": "corsapitestAccount7D1D6854"
           }
         ],
+        "/cors-twitch-test/cors-api-test/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/cors-twitch-test/cors-api-test/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "corsapitestDeployment2BF1633A72d0197fd6797ee251232efbdce56b8a"
+          }
+        ],
+        "/cors-twitch-test/cors-api-test/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/cors-twitch-test/cors-api-test/DeploymentStage.prod/Resource": [
@@ -70,10 +166,36 @@
             "data": "corsapitestEndpointE63606AE"
           }
         ],
+        "/cors-twitch-test/cors-api-test/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cors-twitch-test/cors-api-test/Default/twitch": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
+          }
+        ],
         "/cors-twitch-test/cors-api-test/Default/twitch/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "corsapitesttwitch0E3D1559"
+          }
+        ],
+        "/cors-twitch-test/cors-api-test/Default/twitch/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/cors-twitch-test/cors-api-test/Default/twitch/GET/ApiPermission.corstwitchtestcorsapitest1E81FF74.GET..twitch": [
@@ -94,6 +216,17 @@
             "data": "corsapitesttwitchGET4270341B"
           }
         ],
+        "/cors-twitch-test/cors-api-test/Default/twitch/POST": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          }
+        ],
         "/cors-twitch-test/cors-api-test/Default/twitch/POST/ApiPermission.corstwitchtestcorsapitest1E81FF74.POST..twitch": [
           {
             "type": "aws:cdk:logicalId",
@@ -110,6 +243,17 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "corsapitesttwitchPOSTB52CFB02"
+          }
+        ],
+        "/cors-twitch-test/cors-api-test/Default/twitch/DELETE": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/cors-twitch-test/cors-api-test/Default/twitch/DELETE/ApiPermission.corstwitchtestcorsapitest1E81FF74.DELETE..twitch": [
@@ -130,10 +274,77 @@
             "data": "corsapitesttwitchDELETEB4C94228"
           }
         ],
+        "/cors-twitch-test/cors-api-test/Default/twitch/OPTIONS": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "authorizer": {
+                  "authorizerId": "*",
+                  "authorizationType": "*"
+                },
+                "apiKeyRequired": false,
+                "authorizationType": "*",
+                "methodResponses": [
+                  {
+                    "statusCode": "*",
+                    "responseParameters": "*"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*",
+                  "responseParameters": "*"
+                }
+              ]
+            }
+          }
+        ],
         "/cors-twitch-test/cors-api-test/Default/twitch/OPTIONS/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "corsapitesttwitchOPTIONSE5EEB527"
+          }
+        ],
+        "/cors-twitch-test/handler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/cors-twitch-test/handler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/cors-twitch-test/handler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cors-twitch-test/handler/ServiceRole/Resource": [
@@ -158,15 +369,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "corsapitestDeployment2BF1633Adc24ac182461aecc920a8724663ce2a1": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "corsapitestDeployment2BF1633Adc24ac182461aecc920a8724663ce2a1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
@@ -226,5 +428,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

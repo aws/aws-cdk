@@ -80,6 +80,12 @@
   "VPCEgressOnlyGWEIGW4D24FCEA": {
    "Type": "AWS::EC2::EgressOnlyInternetGateway",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "SharedRouteTableEgressOnlyIGW"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCB9E5F0B4",

@@ -1,7 +1,8 @@
 {
-  "version": "39.0.0",
+  "version": "44.0.0",
   "files": {
     "a37d3ef54c18e7738fe5dc008504591bd3b1f14c6a09ee91eac6d55f7ca5ba5f": {
+      "displayName": "MySnapStartLambda/Code",
       "source": {
         "path": "asset.a37d3ef54c18e7738fe5dc008504591bd3b1f14c6a09ee91eac6d55f7ca5ba5f.zip",
         "packaging": "file"
@@ -14,7 +15,8 @@
         }
       }
     },
-    "d5186e951f469ea8e615892ba5e275c8d10861c611945ad7f91447b00da5ad60": {
+    "7d0f1bc596706694a7e155bba219ee8d5af1ef6cde58f8572d0653bf6e9af53a": {
+      "displayName": "aws-cdk-lambda-1 Template",
       "source": {
         "path": "aws-cdk-lambda-1.template.json",
         "packaging": "file"
@@ -22,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d5186e951f469ea8e615892ba5e275c8d10861c611945ad7f91447b00da5ad60.json",
+          "objectKey": "7d0f1bc596706694a7e155bba219ee8d5af1ef6cde58f8572d0653bf6e9af53a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

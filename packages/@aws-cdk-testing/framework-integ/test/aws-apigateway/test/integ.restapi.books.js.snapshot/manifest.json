@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "restapi-books-example.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "restapi-books-example.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/db6fe81a141261c86ebe7bd39c5b1a6e3dd45e3a1d1d24d20dd5d48b7b5b76dd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e7edb67fd9f8c7a9df5e3a61e376666c4beb422be86fce67ebb02d7dcb1d2075.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,38 @@
         "restapi-books-example.assets"
       ],
       "metadata": {
+        "/restapi-books-example/BooksHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/restapi-books-example/BooksHandler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/restapi-books-example/BooksHandler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/restapi-books-example/BooksHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -43,6 +76,38 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "BooksHandler3EB83358"
+          }
+        ],
+        "/restapi-books-example/BookHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/restapi-books-example/BookHandler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/restapi-books-example/BookHandler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/restapi-books-example/BookHandler/ServiceRole/Resource": [
@@ -57,6 +122,38 @@
             "data": "BookHandlerF9638A7A"
           }
         ],
+        "/restapi-books-example/Hello": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/restapi-books-example/Hello/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/restapi-books-example/Hello/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/restapi-books-example/Hello/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -69,10 +166,48 @@
             "data": "Hello4A628BD4"
           }
         ],
+        "/restapi-books-example/books-api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cloudWatchRole": true
+            }
+          }
+        ],
         "/restapi-books-example/books-api/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "booksapiE1885304"
+          }
+        ],
+        "/restapi-books-example/books-api/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "retain"
+              ]
+            }
+          }
+        ],
+        "/restapi-books-example/books-api/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/restapi-books-example/books-api/CloudWatchRole/Resource": [
@@ -87,10 +222,84 @@
             "data": "booksapiAccountDBA98FB9"
           }
         ],
+        "/restapi-books-example/books-api/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/restapi-books-example/books-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "booksapiDeployment308B08F132cc25cf8168bd5e99b9e6d4915866b5"
+          }
+        ],
+        "/restapi-books-example/books-api/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/restapi-books-example/books-api/DeploymentStage.prod/Resource": [
@@ -103,6 +312,23 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "booksapiEndpointE230E8D5"
+          }
+        ],
+        "/restapi-books-example/books-api/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/ANY": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/restapi-books-example/books-api/Default/ANY/ApiPermission.restapibooksexamplebooksapi4538F335.ANY..": [
@@ -123,10 +349,34 @@
             "data": "booksapiANYF4F0CDEB"
           }
         ],
+        "/restapi-books-example/books-api/Default/books": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*",
+              "defaultIntegration": "*",
+              "defaultMethodOptions": {
+                "authorizationType": "*"
+              }
+            }
+          }
+        ],
         "/restapi-books-example/books-api/Default/books/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "booksapibooks97D84727"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/restapi-books-example/books-api/Default/books/GET/ApiPermission.restapibooksexamplebooksapi4538F335.GET..books": [
@@ -147,6 +397,17 @@
             "data": "booksapibooksGETA776447A"
           }
         ],
+        "/restapi-books-example/books-api/Default/books/POST": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          }
+        ],
         "/restapi-books-example/books-api/Default/books/POST/ApiPermission.restapibooksexamplebooksapi4538F335.POST..books": [
           {
             "type": "aws:cdk:logicalId",
@@ -165,10 +426,31 @@
             "data": "booksapibooksPOSTF6C6559D"
           }
         ],
+        "/restapi-books-example/books-api/Default/books/{book_id}": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*",
+              "defaultIntegration": "*"
+            }
+          }
+        ],
         "/restapi-books-example/books-api/Default/books/{book_id}/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "booksapibooksbookid5264BCA2"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/{book_id}/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/restapi-books-example/books-api/Default/books/{book_id}/GET/ApiPermission.restapibooksexamplebooksapi4538F335.GET..books.{book_id}": [
@@ -187,6 +469,17 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "booksapibooksbookidGETCCE21986"
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/{book_id}/DELETE": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/restapi-books-example/books-api/Default/books/{book_id}/DELETE/ApiPermission.restapibooksexamplebooksapi4538F335.DELETE..books.{book_id}": [
@@ -235,6 +528,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "restapibooksDefaultTestDeployAssert1D3FCB77.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -275,5 +569,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

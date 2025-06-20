@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-lambda-1.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-lambda-1.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/669e224258e7bbd01b117f2d2eb1059d8d6b1ba239210288523d574a6a800b0d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fd83d73105fee8797c2d9c01d3aa67c3ab27ade0c936414b74250acec05cbb8d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,38 @@
         "aws-cdk-lambda-1.assets"
       ],
       "metadata": {
+        "/aws-cdk-lambda-1/MyLambda": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/aws-cdk-lambda-1/MyLambda/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-lambda-1/MyLambda/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-lambda-1/MyLambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -45,16 +78,60 @@
             "data": "MyLambdaCCE802FB"
           }
         ],
+        "/aws-cdk-lambda-1/MyRestApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "defaultMethodOptions": {
+                "apiKeyRequired": true
+              }
+            }
+          }
+        ],
         "/aws-cdk-lambda-1/MyRestApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyRestApi2D1F47A9"
           }
         ],
+        "/aws-cdk-lambda-1/MyRestApi/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/aws-cdk-lambda-1/MyRestApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyRestApiDeploymentB555B582f86f07eb1bf053df446e77125b5ae767"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyRestApi/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/aws-cdk-lambda-1/MyRestApi/DeploymentStage.prod/Resource": [
@@ -67,6 +144,23 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyRestApiEndpoint4C55E4CB"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyRestApi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyRestApi/Default/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/aws-cdk-lambda-1/MyRestApi/Default/GET/ApiPermission.awscdklambda1MyRestApi20890E8F.GET..": [
@@ -85,6 +179,19 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyRestApiGETE3827D1C"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyRestApi/Default/POST": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "apiKeyRequired": false
+              }
+            }
           }
         ],
         "/aws-cdk-lambda-1/MyRestApi/Default/POST/ApiPermission.awscdklambda1MyRestApi20890E8F.POST..": [
@@ -133,6 +240,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "LambdaTestDefaultTestDeployAssert1AF2B360.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -173,5 +281,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

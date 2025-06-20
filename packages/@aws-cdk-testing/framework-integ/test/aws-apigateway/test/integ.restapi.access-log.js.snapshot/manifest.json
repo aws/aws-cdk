@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "44.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "test-apigateway-access-logs.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "test-apigateway-access-logs.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0605fe9fb02ad31c3236b358b7605999f20ba079969b6fad8e9cd3878d869ee6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d57c778c0e7dcd2363421806a4d1df676740c6be3ce0121e591650bbd6ab39f8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,16 +34,64 @@
         "test-apigateway-access-logs.assets"
       ],
       "metadata": {
+        "/test-apigateway-access-logs/MyLogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/test-apigateway-access-logs/MyLogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLogGroup5C0DAD85"
           }
         ],
+        "/test-apigateway-access-logs/MyApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cloudWatchRole": true,
+              "deployOptions": {
+                "accessLogDestination": "*",
+                "accessLogFormat": "*"
+              }
+            }
+          }
+        ],
         "/test-apigateway-access-logs/MyApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyApi49610EDF"
+          }
+        ],
+        "/test-apigateway-access-logs/MyApi/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "retain"
+              ]
+            }
+          }
+        ],
+        "/test-apigateway-access-logs/MyApi/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/test-apigateway-access-logs/MyApi/CloudWatchRole/Resource": [
@@ -63,10 +106,38 @@
             "data": "MyApiAccount13882D84"
           }
         ],
+        "/test-apigateway-access-logs/MyApi/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/test-apigateway-access-logs/MyApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyApiDeploymentECB0D05E81594d6748b4b291f993111a5070d710"
+          }
+        ],
+        "/test-apigateway-access-logs/MyApi/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*",
+              "accessLogDestination": "*",
+              "accessLogFormat": "*"
+            }
           }
         ],
         "/test-apigateway-access-logs/MyApi/DeploymentStage.prod/Resource": [
@@ -79,6 +150,23 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyApiEndpoint869ABE96"
+          }
+        ],
+        "/test-apigateway-access-logs/MyApi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/test-apigateway-access-logs/MyApi/Default/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/test-apigateway-access-logs/MyApi/Default/GET/Resource": [
@@ -115,6 +203,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "apigatewayaccesslogsDefaultTestDeployAssert751ACD40.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -148,6 +237,13 @@
         ]
       },
       "displayName": "apigateway-access-logs/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

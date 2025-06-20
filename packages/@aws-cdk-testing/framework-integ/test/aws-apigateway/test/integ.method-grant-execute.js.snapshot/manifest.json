@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "GrantExecute.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "GrantExecute.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/454874b4674a38a5eb7ede0bc79fe77dcbf5062acaeb3b4424c7919758ae5191.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f6cef410c480d8747a5f4a440011c5e4ccc1ec37b0c97998ff09ac60a585c54b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,10 +34,62 @@
         "GrantExecute.assets"
       ],
       "metadata": {
+        "/GrantExecute/user": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/GrantExecute/user/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "user2C2B57AE"
+          }
+        ],
+        "/GrantExecute/user/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToUser": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToUser": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/GrantExecute/user/DefaultPolicy/Resource": [
@@ -45,16 +98,56 @@
             "data": "userDefaultPolicy083DF682"
           }
         ],
+        "/GrantExecute/test-api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/GrantExecute/test-api/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "testapiD6451F70"
           }
         ],
+        "/GrantExecute/test-api/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/GrantExecute/test-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "testapiDeployment356D2C358af14d7f8fefbad1c57a65ea01cc6136"
+          }
+        ],
+        "/GrantExecute/test-api/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/GrantExecute/test-api/DeploymentStage.prod/Resource": [
@@ -69,10 +162,44 @@
             "data": "testapiEndpoint4AE34D29"
           }
         ],
+        "/GrantExecute/test-api/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/GrantExecute/test-api/Default/pets": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
+          }
+        ],
         "/GrantExecute/test-api/Default/pets/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "testapipets981F319E"
+          }
+        ],
+        "/GrantExecute/test-api/Default/pets/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grantExecute": [
+                "*"
+              ]
+            }
           }
         ],
         "/GrantExecute/test-api/Default/pets/GET/Resource": [
@@ -109,6 +236,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "GrantExecuteTestDefaultTestDeployAssertA66B6F20.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -149,5 +277,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
