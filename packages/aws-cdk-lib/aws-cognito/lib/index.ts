@@ -9,3 +9,4 @@ export * from './user-pool-group';
 export * from './user-pool-idp';
 export * from './user-pool-idps';
 export * from './user-pool-resource-server';
+export * from './managed-login-branding';
