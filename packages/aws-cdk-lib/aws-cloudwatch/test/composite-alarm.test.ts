@@ -59,6 +59,14 @@ describe('CompositeAlarm', () => {
       alarmRule,
     });
 
+    new CompositeAlarm(stack, 'EmptyAnyOf', {
+      alarmRule: AlarmRule.anyOf(),
+    });
+
+    new CompositeAlarm(stack, 'EmptyAllOf', {
+      alarmRule: AlarmRule.allOf(),
+    });
+
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::CompositeAlarm', {
       AlarmName: 'CompositeAlarm',
       AlarmRule: {
@@ -104,6 +112,16 @@ describe('CompositeAlarm', () => {
           ],
         ],
       },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::CompositeAlarm', {
+      AlarmName: 'EmptyAnyOf',
+      AlarmRule: 'FALSE',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::CompositeAlarm', {
+      AlarmName: 'EmptyAllOf',
+      AlarmRule: 'FALSE',
     });
   });
 
