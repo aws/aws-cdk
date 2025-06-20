@@ -556,12 +556,13 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       readAttributes: props.readAttributes?.attributes(),
       writeAttributes: props.writeAttributes?.attributes(),
       enableTokenRevocation: props.enableTokenRevocation,
-      refreshTokenRotation: props.refreshTokenRotation ? {
-        feature: props.refreshTokenRotation.feature && props.refreshTokenRotation.retryGracePeriodSeconds && props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() > 0 ? 'ENABLED' :
-          'DISABLED',
+      refreshTokenRotation: props.refreshTokenRotation 
+        ? {
+        feature: props.refreshTokenRotation.feature && props.refreshTokenRotation.retryGracePeriodSeconds && props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() > 0 ? 
+          'ENABLED' : 'DISABLED',
         retryGracePeriodSeconds: props.refreshTokenRotation.retryGracePeriodSeconds ?
           props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() : 0,
-      } : undefined,
+        } : undefined,
       enablePropagateAdditionalUserContextData: props.enablePropagateAdditionalUserContextData,
       analyticsConfiguration: props.analytics ? this.configureAnalytics(props.analytics) : undefined,
     });

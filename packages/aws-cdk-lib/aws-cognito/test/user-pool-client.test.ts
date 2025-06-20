@@ -1763,7 +1763,7 @@ describe('User Pool Client', () => {
       const pool = new UserPool(stack, 'Pool');
 
       // WHEN
-      pool.addClient('Client1', {
+      pool.addClient('Client', {
         refreshTokenRotation: {
           feature: true,
         },
