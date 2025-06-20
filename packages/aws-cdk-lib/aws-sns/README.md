@@ -127,9 +127,9 @@ myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
     background: sns.FilterOrPolicy.policy({
       color: sns.FilterOrPolicy.filter(sns.SubscriptionFilter.stringFilter({
         allowlist: ['red', 'orange'],
-        store: sns.SubscriptionFilter.notExistsFilter(),
       })),
     }),
+    store: sns.SubscriptionFilter.notExistsFilter(),
   },
 }));
 ```
