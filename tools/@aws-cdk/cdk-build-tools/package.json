@@ -70,7 +70,7 @@
     "markdownlint-cli": "^0.45.0",
     "nyc": "^15.1.0",
     "semver": "^7.7.2",
-    "ts-jest": "^29.3.4",
+    "ts-jest": "^29.4.0",
     "p-limit": "^3.1.0",
     "typescript": "~5.5.4",
     "yargs": "^16.2.0"
