@@ -2,20 +2,42 @@ import { IEventSourceMapping } from './event-source-mapping';
 import { IFunction } from './function-base';
 
 /**
- * The format target function should recieve record in.
+ * Specifies the format in which Kafka message data should be delivered to Lambda after deserialization.
+ * 
+ * When using Schema Registry integration, this enum determines how the deserialized data 
+ * is formatted before being passed to your Lambda function.
+ * 
+ * @example
+ * ```ts
+ * schemaRegistryConfig: new ConfluentSchemaRegistry({
+ *   // ...
+ *   eventRecordFormat: lambda.EventRecordFormat.JSON,
+ * }),
+ * ```
  */
 export class EventRecordFormat {
   /**
-   * The target function will recieve records as json objects.
+   * The target function will receive records as JSON objects.
+   * 
+   * This format is ideal for general-purpose processing where your Lambda function
+   * needs to access the data in a flexible, language-agnostic format.
    */
   public static readonly JSON = new EventRecordFormat('JSON');
 
   /**
-   * The target function will recieve records in same format as the schema source.
+   * The target function will receive records in the same format as the schema source,
+   * with schema metadata removed.
+   * 
+   * This format is recommended when using Avro or ProtoBuf generated classes to handle the data,
+   * as it makes it easier to construct language-specific objects.
    */
   public static readonly SOURCE = new EventRecordFormat('SOURCE');
 
-  /** A custom event record format */
+  /** 
+   * Define a custom event record format.
+   * 
+   * @param name - The name of the custom format 
+   */
   public static of(name: string): EventRecordFormat {
     return new EventRecordFormat(name);
   }
@@ -31,7 +53,19 @@ export class EventRecordFormat {
 }
 
 /**
- * The type of authentication protocol for your schema registry.
+ * Defines the authentication methods for accessing a Schema Registry.
+ * 
+ * Different Schema Registry providers and configurations require different authentication methods.
+ * This enum specifies the supported authentication types for Schema Registry integration.
+ * 
+ * @example
+ * ```ts
+ * schemaRegistryConfig: new ConfluentSchemaRegistry({
+ *   // ...
+ *   authenticationType: lambda.KafkaSchemaRegistryAccessConfigType.BASIC_AUTH,
+ *   secret: secret,
+ * }),
+ * ```
  */
 export class KafkaSchemaRegistryAccessConfigType {
   /**
@@ -89,12 +123,12 @@ export interface KafkaSchemaRegistryAccessConfig {
  */
 export class KafkaSchemaValidationAttribute {
   /**
-   * De-serialize the key field of the parload to target function.
+   * Deserialize the key field of the payload to target function.
    */
   public static readonly KEY = new KafkaSchemaValidationAttribute('KEY');
 
   /**
-   * De-serialize the value field of the parload to target function.
+   * Deserialize the value field of the payload to target function.
    */
   public static readonly VALUE = new KafkaSchemaValidationAttribute('VALUE');
 
