@@ -44,12 +44,7 @@ class HelmChartLoggingStack extends Stack {
 
 // const app = new App();
 
-const app = new App({
-  postCliContext: {
-    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
-    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
-  },
-});
+const app = new App();
 
 const stack = new HelmChartLoggingStack(app, 'aws-cdk-eks-helm-logging-test');
 
