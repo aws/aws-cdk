@@ -143,6 +143,7 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
    * Constructs a new instance of the Ec2TaskDefinition class.
    */
   constructor(scope: Construct, id: string, props: Ec2TaskDefinitionProps = {}) {
+    // don't pass @deprecated inferenceAccelerators if not needed as this renders console warnings 
     if (props.inferenceAccelerators && props.inferenceAccelerators.length > 0) {
       super(scope, id, {
         ...props,
