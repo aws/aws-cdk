@@ -1340,6 +1340,14 @@
       "match_percentage": 1
     }
   },
+  "ses-actions": {
+    "EmailEncoding": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses-actions/lib/sns.ts",
+      "sdk_service": "ses",
+      "sdk_enum_name": "SnsNotificationEncoding",
+      "match_percentage": 1
+    }
+  },
   "ses": {
     "CloudWatchDimensionSource": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set-event-destination.ts",

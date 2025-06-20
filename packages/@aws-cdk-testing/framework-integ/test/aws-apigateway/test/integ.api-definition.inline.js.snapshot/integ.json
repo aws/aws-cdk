@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "44.0.0",
   "testCases": {
     "inline-api-definition/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "inline-api-definition/DefaultTest/DeployAssert",
       "assertionStackName": "inlineapidefinitionDefaultTestDeployAssert923CAC29"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

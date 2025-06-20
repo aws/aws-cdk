@@ -136,7 +136,10 @@
    "DependsOn": [
     "RandomApirandomGETA2A531BD",
     "RandomApirandom8E08461A"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "RandomApiDeploymentStageprodD971ED19": {
    "Type": "AWS::ApiGateway::Stage",

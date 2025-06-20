@@ -91,6 +91,7 @@ export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDef
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
 export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
+export const KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL = '@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal';
 export const EFS_DENY_ANONYMOUS_ACCESS = '@aws-cdk/aws-efs:denyAnonymousAccess';
 export const EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID = '@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId';
 export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE = '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
@@ -843,6 +844,20 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.83.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL]: {
+    type: FlagType.BugFix,
+    summary: 'Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition',
+    detailsMd: `
+      This flag enables the grant methods (grant, grantDecrypt, grantEncrypt, etc.) on Aliases imported
+      by name to grant permissions based on the 'kms:ResourceAliases' condition rather than no-op grants.
+      When disabled, grant calls on imported aliases will be dropped (no-op) to maintain compatibility.
+    `,
+    introducedIn: { v2: '2.202.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Remove calls to the grant* methods on the aliases referenced by name',
   },
 
   //////////////////////////////////////////////////////////////////////
