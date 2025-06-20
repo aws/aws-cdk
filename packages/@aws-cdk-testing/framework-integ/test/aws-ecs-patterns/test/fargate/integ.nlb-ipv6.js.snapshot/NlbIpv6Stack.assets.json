@@ -1,7 +1,8 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "files": {
-    "bbd872812279941a6fbd0b35eeec054df81f258c2687b1169749b72a981e815a": {
+    "e848602850edd6381300694772138ed1b84d53eba8d560395125b4a7e5acb49d": {
+      "displayName": "NlbIpv6Stack Template",
       "source": {
         "path": "NlbIpv6Stack.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "bbd872812279941a6fbd0b35eeec054df81f258c2687b1169749b72a981e815a.json",
+          "objectKey": "e848602850edd6381300694772138ed1b84d53eba8d560395125b4a7e5acb49d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

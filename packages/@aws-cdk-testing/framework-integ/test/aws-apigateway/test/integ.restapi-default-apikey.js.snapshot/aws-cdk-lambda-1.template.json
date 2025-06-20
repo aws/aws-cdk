@@ -67,7 +67,10 @@
    "DependsOn": [
     "MyRestApiGETE3827D1C",
     "MyRestApiPOST2EE84297"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "MyRestApiDeploymentStageprodC33B8E5F": {
    "Type": "AWS::ApiGateway::Stage",
