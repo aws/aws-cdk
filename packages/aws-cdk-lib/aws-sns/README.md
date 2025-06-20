@@ -121,7 +121,7 @@ declare const fn: lambda.Function;
 
 // Lambda should receive only message matching the following conditions on message body:
 // color: 'red' or 'orange'
-// store: attribute must not be present
+// store: property must not be present
 myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
   filterPolicyWithMessageBody: {
     background: sns.FilterOrPolicy.policy({
