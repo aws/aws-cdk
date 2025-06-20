@@ -13,6 +13,7 @@ new lambda.Function(stack, 'OneWeek', {
   handler: 'index.handler',
   runtime: STANDARD_NODEJS_RUNTIME,
   logRetention: logs.RetentionDays.ONE_WEEK,
+  logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 new lambda.Function(stack, 'OneMonth', {
@@ -20,6 +21,7 @@ new lambda.Function(stack, 'OneMonth', {
   handler: 'index.handler',
   runtime: STANDARD_NODEJS_RUNTIME,
   logRetention: logs.RetentionDays.ONE_MONTH,
+  logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 new lambda.Function(stack, 'OneYear', {
@@ -27,10 +29,19 @@ new lambda.Function(stack, 'OneYear', {
   handler: 'index.handler',
   runtime: STANDARD_NODEJS_RUNTIME,
   logRetention: logs.RetentionDays.ONE_YEAR,
+  logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
 });
+
+const infiniteLogRetentionFn = new lambda.Function(stack, 'Infinite', {
+  code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
+  handler: 'index.handler',
+  runtime: STANDARD_NODEJS_RUNTIME,
+  logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
+infiniteLogRetentionFn.logGroup;
 
 new IntegTest(app, 'LambdaLogRetentionInteg', {
   testCases: [stack],
   diffAssets: true,
 });
-app.synth();
