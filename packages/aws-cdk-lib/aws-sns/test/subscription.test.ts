@@ -259,6 +259,29 @@ describe('Subscription', () => {
     });
   });
 
+  test('with notExistsFilter', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      filterPolicy: {
+        size: sns.SubscriptionFilter.notExistsFilter(),
+      },
+      protocol: sns.SubscriptionProtocol.LAMBDA,
+      topic,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
+      FilterPolicy: {
+        size: [{ exists: false }],
+      },
+    });
+  });
+
   test('with delivery policy', () => {
     // GIVEN
     const stack = new cdk.Stack();
