@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "kms-alias-from-alias-name/DefaultTest": {
+      "stacks": [
+        "aws-cdk-kms"
+      ],
+      "assertionStack": "kms-alias-from-alias-name/DefaultTest/DeployAssert",
+      "assertionStackName": "kmsaliasfromaliasnameDefaultTestDeployAssertFD733AC7"
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

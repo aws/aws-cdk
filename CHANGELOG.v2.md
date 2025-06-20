@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.202.0](https://github.com/aws/aws-cdk/compare/v2.201.0...v2.202.0) (2025-06-20)
+
+
+### Features
+
+* **lambda:** support for schema registry for kafka ([#34746](https://github.com/aws/aws-cdk/issues/34746)) ([c6ea664](https://github.com/aws/aws-cdk/commit/c6ea66448e85639b79cc6cc35929708ab45915bc))
+* update L1 CloudFormation resource definitions ([#34730](https://github.com/aws/aws-cdk/issues/34730)) ([47a3ee3](https://github.com/aws/aws-cdk/commit/47a3ee3e7590fd085530cd16417fd506c5b9f4d7))
+* **cdk-pipeline:** add url and sns topic for manual approval in cdk pipeline (re-create PR since original is auto-closed) ([#34654](https://github.com/aws/aws-cdk/issues/34654)) ([39f1636](https://github.com/aws/aws-cdk/commit/39f163696935b34be6acdafa3f465b4f68ac7e08)), closes [#32809](https://github.com/aws/aws-cdk/issues/32809) [#12273](https://github.com/aws/aws-cdk/issues/12273) [#34227](https://github.com/aws/aws-cdk/issues/34227)
+* **eks:** support eks with k8s 1.33 ([#34602](https://github.com/aws/aws-cdk/issues/34602)) ([fc46733](https://github.com/aws/aws-cdk/commit/fc4673371b67c244262a863d975b11baddf6f597)), closes [#34520](https://github.com/aws/aws-cdk/issues/34520) [/github.com/aws/aws-cdk/pull/33339#issuecomment-2643498256](https://github.com/aws//github.com/aws/aws-cdk/pull/33339/issues/issuecomment-2643498256)
+* **kms:** implement .grant methods for Alias.fromAliasName (under feature flag) ([#34237](https://github.com/aws/aws-cdk/issues/34237)) ([8e19dd6](https://github.com/aws/aws-cdk/commit/8e19dd63f9f5de9b57d1964b4aac05748b72da87)), closes [#22697](https://github.com/aws/aws-cdk/issues/22697)
+* **opensearch:** add logic to only log specific field when less verbosity is needed for opensearch access policy custom resource ([#34701](https://github.com/aws/aws-cdk/issues/34701)) ([856e3b1](https://github.com/aws/aws-cdk/commit/856e3b185a794a58b2f1b0ddc01c6e2338fc35b8)), closes [#29093](https://github.com/aws/aws-cdk/issues/29093)
+* exclude `lambda.Version` and `apigateway.Deployment` from refactoring ([#34710](https://github.com/aws/aws-cdk/issues/34710)) ([dd14a17](https://github.com/aws/aws-cdk/commit/dd14a17500e0028e9544e33dbb9b7329ec1ae0d2))
+
+### Bug Fixes
+
+* **core:** splitting tree.json produces a lot of files ([#34718](https://github.com/aws/aws-cdk/issues/34718)) ([650134f](https://github.com/aws/aws-cdk/commit/650134fa95aafbfd6608eefda30415159a32da6d)), closes [#34478](https://github.com/aws/aws-cdk/issues/34478) [#34627](https://github.com/aws/aws-cdk/issues/34627)
+* **pipelines:** use display name for `Asset` actions when `publishAssetsInParallel` is false ([#34049](https://github.com/aws/aws-cdk/issues/34049)) ([754ad50](https://github.com/aws/aws-cdk/commit/754ad507548df813a2755bb0da78ea2fa9a573cb)), closes [#34042](https://github.com/aws/aws-cdk/issues/34042) [#33844](https://github.com/aws/aws-cdk/issues/33844)
+* **route53:** warn when ttl is provided with alias target in RecordSet ([#34526](https://github.com/aws/aws-cdk/issues/34526)) ([993d2fd](https://github.com/aws/aws-cdk/commit/993d2fdf8430b8c4d4167e6c125bcd15578bd150))
+* **test-app:** fix spelling error ([#34762](https://github.com/aws/aws-cdk/issues/34762)) ([1885062](https://github.com/aws/aws-cdk/commit/188506292cefb8da24dc8fd1dbfbeaf21c51fbc5))
+
 ## [2.201.0](https://github.com/aws/aws-cdk/compare/v2.200.2...v2.201.0) (2025-06-12)
 
 
@@ -24,10 +44,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* export errors to make it available in region-info/lib/fact.ts ([#34691](https://github.com/aws/aws-cdk/issues/34691)) ([5c8f50c](https://github.com/aws/aws-cdk/commit/5c8f50c904fee3033ecd2bc151324cd897f931da)), closes [#34690](https://github.com/aws/aws-cdk/issues/34690) [#34690](https://github.com/aws/aws-cdk/issues/34690) [#33384](https://github.com/aws/aws-cdk/issues/33384)
 * **apigateway:** correct `JsonSchema.additionalItems` property type ([#33879](https://github.com/aws/aws-cdk/issues/33879)) ([464d521](https://github.com/aws/aws-cdk/commit/464d52155f00ffa083cac7ba569a06640574cef1)), closes [#33878](https://github.com/aws/aws-cdk/issues/33878) [#33878](https://github.com/aws/aws-cdk/issues/33878)
 * **cloudfront:** use wildcard when grant some cloudfront permission ([#33802](https://github.com/aws/aws-cdk/issues/33802)) ([452a5e1](https://github.com/aws/aws-cdk/commit/452a5e13f73046d1e58e5a92d33ae1e896c3251b)), closes [#33249](https://github.com/aws/aws-cdk/issues/33249)
-* **lambda:** disable aws-lambda:useCdkManagedLogGroup feature flag when not set ([#34613](https://github.com/aws/aws-cdk/issues/34613)) ([d696688](https://github.com/aws/aws-cdk/commit/d6966888924e08e153297b9616ec6d4c15d92c73)), closes [#34612](https://github.com/aws/aws-cdk/issues/34612) [#34612](https://github.com/aws/aws-cdk/issues/34612)
 * **logs:** exposed metric from the metric filter will now include the dimension map ([#34648](https://github.com/aws/aws-cdk/issues/34648)) ([892b013](https://github.com/aws/aws-cdk/commit/892b013157fe4d3a8793a833cebf3e7bd4916348)), closes [#34643](https://github.com/aws/aws-cdk/issues/34643)
 * **opensearch:** opensearchservice: existing integ test is failing ([#34680](https://github.com/aws/aws-cdk/issues/34680)) ([be21625](https://github.com/aws/aws-cdk/commit/be216256072da04a9d08e2f833cffd9ff08334df)), closes [1#L59](https://github.com/aws/1/issues/L59)
 * typo in jsdoc of noncurrentVersionTransitions property ([#34620](https://github.com/aws/aws-cdk/issues/34620)) ([ed08f3f](https://github.com/aws/aws-cdk/commit/ed08f3f0b8ecd79a2fa5e804acc73a9ff23eab80))

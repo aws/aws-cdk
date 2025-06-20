@@ -57,6 +57,9 @@
     "FunctionName": {
      "Ref": "MyLambdaCCE802FB"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "Alias325C5727": {

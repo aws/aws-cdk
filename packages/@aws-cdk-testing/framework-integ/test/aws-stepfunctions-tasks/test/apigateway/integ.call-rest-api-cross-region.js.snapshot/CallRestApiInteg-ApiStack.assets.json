@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "bbfb567dc956ce71e67ac1f96589821990e2ca48307b93a577bbb345d2de441b": {
       "displayName": "CallRestApiInteg-ApiStack/Custom::CrossRegionExportWriterCustomResourceProvider Code",
@@ -16,7 +16,7 @@
         }
       }
     },
-    "cb8d055b5305e7ef3df410ee3d20ed69e14b2f7b1c02c8b702be20b5d12e3b6c": {
+    "5c1f78c55b9210d063edace24da5ce2f77ec7da1b7b27e73b38d497f1612ece4": {
       "displayName": "CallRestApiInteg-ApiStack Template",
       "source": {
         "path": "CallRestApiInteg-ApiStack.template.json",
@@ -25,7 +25,7 @@
       "destinations": {
         "current_account-us-west-2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "cb8d055b5305e7ef3df410ee3d20ed69e14b2f7b1c02c8b702be20b5d12e3b6c.json",
+          "objectKey": "5c1f78c55b9210d063edace24da5ce2f77ec7da1b7b27e73b38d497f1612ece4.json",
           "region": "us-west-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
         }

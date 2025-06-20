@@ -369,7 +369,10 @@
    "DependsOn": [
     "lambdarestapiproxyANYC900233F",
     "lambdarestapiANYB9BB3FB2"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "stage0661E4AC": {
    "Type": "AWS::ApiGateway::Stage",

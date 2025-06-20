@@ -204,7 +204,7 @@ export class MultipleFileAssetsApp extends Stage {
 
     const fileNames = ['test-file-asset.txt', 'test-file-asset-two.txt', 'test-file-asset-three.txt'];
     if (props.displayNames && props.displayNames.length !== props.n) {
-      throw new Error('Incorrect displayNames lenght');
+      throw new Error('Incorrect displayNames length');
     }
 
     for (let i = 0; i < props.n; i++) {

@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "44.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "test-apigateway-restapi-defaults.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "test-apigateway-restapi-defaults.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e844f3b4c9b696adb45b069b99230e7d794390a9c9847d246b0d6f2d06b6191c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/058b46715d5e5ca4843f4a15cae1cbe2fcb36388abc1d94d90b6e8e416bd88ec.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,10 +34,48 @@
         "test-apigateway-restapi-defaults.assets"
       ],
       "metadata": {
+        "/test-apigateway-restapi-defaults/my-api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cloudWatchRole": true
+            }
+          }
+        ],
         "/test-apigateway-restapi-defaults/my-api/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myapi4C7BF186"
+          }
+        ],
+        "/test-apigateway-restapi-defaults/my-api/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "retain"
+              ]
+            }
+          }
+        ],
+        "/test-apigateway-restapi-defaults/my-api/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/test-apigateway-restapi-defaults/my-api/CloudWatchRole/Resource": [
@@ -57,10 +90,36 @@
             "data": "myapiAccountEC421A0A"
           }
         ],
+        "/test-apigateway-restapi-defaults/my-api/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/test-apigateway-restapi-defaults/my-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a"
+          }
+        ],
+        "/test-apigateway-restapi-defaults/my-api/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/test-apigateway-restapi-defaults/my-api/DeploymentStage.prod/Resource": [
@@ -73,6 +132,23 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myapiEndpoint3628AFE3"
+          }
+        ],
+        "/test-apigateway-restapi-defaults/my-api/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/test-apigateway-restapi-defaults/my-api/Default/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/test-apigateway-restapi-defaults/my-api/Default/GET/Resource": [
@@ -109,6 +185,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "apigatewayrestapidefaultsDefaultTestDeployAssertF892D174.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -142,6 +219,13 @@
         ]
       },
       "displayName": "apigateway-restapi-defaults/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

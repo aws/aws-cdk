@@ -18,7 +18,10 @@
     "modelschemaapiPOST5FB5AEAA",
     "modelschemaapiTagsModelFCCA8255",
     "modelschemaapiTagsValidatorB38D3476"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "modelschemaapiDeploymentStageprodEF543582": {
    "Type": "AWS::ApiGateway::Stage",

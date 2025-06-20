@@ -17,7 +17,7 @@ describe('AccessEntry', () => {
     app = new App();
     stack = new Stack(app, 'test-stack');
     cluster = new Cluster(stack, 'Cluster', {
-      version: KubernetesVersion.V1_32,
+      version: KubernetesVersion.V1_33,
       authenticationMode: AuthenticationMode.API,
       kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });

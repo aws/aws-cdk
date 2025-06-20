@@ -18,7 +18,7 @@
 
 ## Overview
 
-This library is meant to be used in combination with the [integ-runner](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-runner) CLI
+This library is meant to be used in combination with the [integ-runner](https://github.com/aws/aws-cdk-cli/tree/main/packages/%40aws-cdk/integ-runner) CLI
 to enable users to write and execute integration tests for AWS CDK Constructs.
 
 An integration test should be defined as a CDK application, and

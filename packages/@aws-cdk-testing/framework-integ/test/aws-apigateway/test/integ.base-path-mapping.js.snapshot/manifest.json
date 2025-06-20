@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "44.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "test-stack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "test-stack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4328166cfc76604ab46a2a088da69e6631472872129e804d27c8b5336c842774.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3796b7d7782c837a1fd471a6a4b8a37b990add2b7d08eb6b8c1e3f59d74fbe1e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,16 +34,48 @@
         "test-stack.assets"
       ],
       "metadata": {
+        "/test-stack/Api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/test-stack/Api/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ApiF70053CD"
           }
         ],
+        "/test-stack/Api/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/test-stack/Api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ApiDeploymentB17BE62Df672ad8455f9678e4a3db5854bdb8d73"
+          }
+        ],
+        "/test-stack/Api/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/test-stack/Api/DeploymentStage.prod/Resource": [
@@ -63,10 +90,36 @@
             "data": "ApiEndpoint4F160690"
           }
         ],
+        "/test-stack/Api/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/test-stack/Api/Default/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          }
+        ],
         "/test-stack/Api/Default/GET/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ApiGET9257B917"
+          }
+        ],
+        "/test-stack/MappingOne": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "domainName": "*",
+              "restApi": "*"
+            }
           }
         ],
         "/test-stack/MappingOne/Resource": [
@@ -75,10 +128,32 @@
             "data": "MappingOneAB5D4FD4"
           }
         ],
+        "/test-stack/MappingTwo": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "domainName": "*",
+              "restApi": "*",
+              "basePath": "*",
+              "attachToStage": false
+            }
+          }
+        ],
         "/test-stack/MappingTwo/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MappingTwo551C79ED"
+          }
+        ],
+        "/test-stack/MappingThree": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "domainName": "*",
+              "restApi": "*",
+              "basePath": "*",
+              "attachToStage": false
+            }
           }
         ],
         "/test-stack/MappingThree/Resource": [
@@ -115,6 +190,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "basepathmappingDefaultTestDeployAssertDA82B6F0.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -148,6 +224,13 @@
         ]
       },
       "displayName": "base-path-mapping/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

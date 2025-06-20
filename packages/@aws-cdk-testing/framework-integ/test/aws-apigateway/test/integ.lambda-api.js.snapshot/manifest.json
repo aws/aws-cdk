@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "LambdaApiIntegrationOptionsStack.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "LambdaApiIntegrationOptionsStack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4db5712a4ffeeb138b865a31a6cce9ec7becd96318f72baeb40d48a8b0d2a334.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/08b2ea4f5a87be739f409635b4df96528bc5485aa9185545c6a2d3b1b6547311.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,38 @@
         "LambdaApiIntegrationOptionsStack.assets"
       ],
       "metadata": {
+        "/LambdaApiIntegrationOptionsStack/myfn": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "runtime": "*",
+              "handler": "*"
+            }
+          }
+        ],
+        "/LambdaApiIntegrationOptionsStack/myfn/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/LambdaApiIntegrationOptionsStack/myfn/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/LambdaApiIntegrationOptionsStack/myfn/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -45,10 +78,63 @@
             "data": "myfn8C66D016"
           }
         ],
+        "/LambdaApiIntegrationOptionsStack/lambdarestapi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "defaultIntegration": "*",
+              "handler": "*",
+              "cloudWatchRole": true,
+              "integrationOptions": {
+                "timeout": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "handler": "*",
+              "cloudWatchRole": true,
+              "integrationOptions": {
+                "timeout": "*"
+              }
+            }
+          }
+        ],
         "/LambdaApiIntegrationOptionsStack/lambdarestapi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "lambdarestapiF559E4F2"
+          }
+        ],
+        "/LambdaApiIntegrationOptionsStack/lambdarestapi/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "retain"
+              ]
+            }
+          }
+        ],
+        "/LambdaApiIntegrationOptionsStack/lambdarestapi/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/LambdaApiIntegrationOptionsStack/lambdarestapi/CloudWatchRole/Resource": [
@@ -63,10 +149,52 @@
             "data": "lambdarestapiAccount856938D8"
           }
         ],
+        "/LambdaApiIntegrationOptionsStack/lambdarestapi/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/LambdaApiIntegrationOptionsStack/lambdarestapi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "lambdarestapiDeployment2E401BD85ca559db3bb9b4a52bf7250ba64df032"
+          }
+        ],
+        "/LambdaApiIntegrationOptionsStack/lambdarestapi/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/LambdaApiIntegrationOptionsStack/lambdarestapi/DeploymentStage.prod/Resource": [
@@ -81,10 +209,51 @@
             "data": "lambdarestapiEndpoint4A61B166"
           }
         ],
+        "/LambdaApiIntegrationOptionsStack/lambdarestapi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/LambdaApiIntegrationOptionsStack/lambdarestapi/Default/{proxy+}": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "defaultIntegration": "*",
+              "defaultMethodOptions": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethod": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/LambdaApiIntegrationOptionsStack/lambdarestapi/Default/{proxy+}/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "lambdarestapiproxyB0E963B7"
+          }
+        ],
+        "/LambdaApiIntegrationOptionsStack/lambdarestapi/Default/{proxy+}/ANY": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/LambdaApiIntegrationOptionsStack/lambdarestapi/Default/{proxy+}/ANY/ApiPermission.LambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BD.ANY..{proxy+}": [
@@ -103,6 +272,17 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "lambdarestapiproxyANYC900233F"
+          }
+        ],
+        "/LambdaApiIntegrationOptionsStack/lambdarestapi/Default/ANY": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/LambdaApiIntegrationOptionsStack/lambdarestapi/Default/ANY/ApiPermission.LambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BD.ANY..": [
@@ -163,10 +343,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "lambdaintegrationDefaultTestDeployAssertAC2ED705.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/04f640bbe2d03b033525be6dbfd8cf75729dbf9720bc91e37045a300847a8104.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1e0569bb4888bb400bb3101a71be86fd9810185b3f39568b4e567dc387bb0f2f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -183,6 +364,20 @@
         "lambdaintegrationDefaultTestDeployAssertAC2ED705.assets"
       ],
       "metadata": {
+        "/lambda-integration/DefaultTest/DeployAssert/HttpApiCallc5e2beec0ed716e95fd6628a8bb7c2f1/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/lambda-integration/DefaultTest/DeployAssert/HttpApiCallc5e2beec0ed716e95fd6628a8bb7c2f1/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -207,6 +402,12 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
+        "/lambda-integration/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/lambda-integration/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -228,5 +429,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

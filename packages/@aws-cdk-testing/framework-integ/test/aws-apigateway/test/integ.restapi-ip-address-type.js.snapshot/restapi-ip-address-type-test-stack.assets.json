@@ -1,7 +1,7 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
-    "0986b8dec07b02e274b566c21876b97c85b2f3cbe4cbc753c3727758393abf93": {
+    "4d9df072142679300639ac5675b246f613313e96e6bfb34de658382f7228b838": {
       "displayName": "restapi-ip-address-type-test-stack Template",
       "source": {
         "path": "restapi-ip-address-type-test-stack.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0986b8dec07b02e274b566c21876b97c85b2f3cbe4cbc753c3727758393abf93.json",
+          "objectKey": "4d9df072142679300639ac5675b246f613313e96e6bfb34de658382f7228b838.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

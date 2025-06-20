@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "appsync-eventapi-Http-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "appsync-eventapi-Http-test/DefaultTest/DeployAssert",
       "assertionStackName": "appsynceventapiHttptestDefaultTestDeployAssertC3EF071C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

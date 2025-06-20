@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-codedeploy-lambda.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-codedeploy-lambda.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/65305c61e1aca727f106c284b6b259b0d7cab3627a034743bf5a33934707247f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/38788bf5689ae1e5f4ef55f8cda9588aae002341ccc2522c1ea6a21ac58b4a1c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,38 @@
         "aws-cdk-codedeploy-lambda.assets"
       ],
       "metadata": {
+        "/aws-cdk-codedeploy-lambda/Handler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/Handler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/Handler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-codedeploy-lambda/Handler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -45,10 +78,38 @@
             "data": "Handler886CB40B"
           }
         ],
+        "/aws-cdk-codedeploy-lambda/Handler/CurrentVersion": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "lambda": "*"
+            }
+          }
+        ],
         "/aws-cdk-codedeploy-lambda/Handler/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HandlerCurrentVersion93FB80BF7274e06dc68914926264fc8b4f358f0a"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/Alias": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "aliasName": "*",
+              "version": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "metric": [
+                "*",
+                {
+                  "statistic": "*"
+                }
+              ]
+            }
           }
         ],
         "/aws-cdk-codedeploy-lambda/Alias/Resource": [
@@ -57,10 +118,102 @@
             "data": "Alias325C5727"
           }
         ],
+        "/aws-cdk-codedeploy-lambda/Alias/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/PreHook": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/PreHook/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/PreHook/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-codedeploy-lambda/PreHook/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PreHookServiceRoleC724B9BA"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/PreHook/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-codedeploy-lambda/PreHook/ServiceRole/DefaultPolicy/Resource": [
@@ -75,10 +228,96 @@
             "data": "PreHook8B53F672"
           }
         ],
+        "/aws-cdk-codedeploy-lambda/PostHook": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/PostHook/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/PostHook/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-codedeploy-lambda/PostHook/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PostHookServiceRoleE8A6AAC2"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/PostHook/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-codedeploy-lambda/PostHook/ServiceRole/DefaultPolicy/Resource": [
@@ -93,10 +332,108 @@
             "data": "PostHookF2E49B30"
           }
         ],
+        "/aws-cdk-codedeploy-lambda/BlueGreenErrors": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "comparisonOperator": "*",
+              "threshold": "*",
+              "evaluationPeriods": "*",
+              "metric": {
+                "warnings": "*"
+              }
+            }
+          }
+        ],
         "/aws-cdk-codedeploy-lambda/BlueGreenErrors/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BlueGreenErrors60C27452"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/BlueGreenDeployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/BlueGreenDeployment/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/BlueGreenDeployment/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-codedeploy-lambda/BlueGreenDeployment/ServiceRole/Resource": [
@@ -105,10 +442,54 @@
             "data": "BlueGreenDeploymentServiceRole225851FB"
           }
         ],
+        "/aws-cdk-codedeploy-lambda/BlueGreenDeployment/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
         "/aws-cdk-codedeploy-lambda/BlueGreenDeployment/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BlueGreenDeploymentServiceRoleDefaultPolicy7008FB0A"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/BlueGreenDeployment/Application": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-codedeploy-lambda/BlueGreenDeployment/Application/Resource": [
@@ -123,16 +504,74 @@
             "data": "BlueGreenDeployment5C188134"
           }
         ],
+        "/aws-cdk-codedeploy-lambda/SecondAlias": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "aliasName": "*",
+              "version": "*"
+            }
+          }
+        ],
         "/aws-cdk-codedeploy-lambda/SecondAlias/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SecondAlias33D63566"
           }
         ],
+        "/aws-cdk-codedeploy-lambda/SecondAlias/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/SecondDeployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/SecondDeployment/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/SecondDeployment/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-codedeploy-lambda/SecondDeployment/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SecondDeploymentServiceRoleAFF1ECD5"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/SecondDeployment/Application": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-codedeploy-lambda/SecondDeployment/Application/Resource": [
@@ -158,15 +597,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "HandlerCurrentVersion93FB80BF0f5df27a50bce6b85c420e4972b73360": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HandlerCurrentVersion93FB80BF0f5df27a50bce6b85c420e4972b73360",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-cdk-codedeploy-lambda"
@@ -177,5 +607,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "44.0.0",
   "testCases": {
     "apigateway-access-logs/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "apigateway-access-logs/DefaultTest/DeployAssert",
       "assertionStackName": "apigatewayaccesslogsDefaultTestDeployAssert751ACD40"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

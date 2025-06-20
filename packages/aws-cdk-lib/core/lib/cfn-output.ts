@@ -48,7 +48,7 @@ export class CfnOutput extends CfnElement {
   private _exportName?: string;
 
   /**
-   * Creates an CfnOutput value for this stack.
+   * Creates a CfnOutput value for this stack.
    * @param scope The parent construct.
    * @param props CfnOutput properties.
    */
