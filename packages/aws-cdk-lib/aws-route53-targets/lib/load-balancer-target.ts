@@ -34,15 +34,16 @@ export class LoadBalancerTarget implements route53.IAliasRecordTarget {
   }
 
   private isNetworkLoadBalancer(): boolean {
-    // Check if it's a Network Load Balancer by constructor name or ARN pattern
-    const constructorName = this.loadBalancer.constructor.name;
-    const hasNetworkInName = constructorName.includes('NetworkLoadBalancer');
+    // Type-safe detection using INetworkLoadBalancer interface
+    return this.isInstanceOfNetworkLoadBalancer(this.loadBalancer);
+  }
 
-    // For imported load balancers, check if they have loadBalancerArn property
-    const lb = this.loadBalancer as any;
-    const hasNetworkArn = lb.loadBalancerArn && typeof lb.loadBalancerArn === 'string' &&
-                         lb.loadBalancerArn.includes(':loadbalancer/net/');
-
-    return hasNetworkInName || hasNetworkArn;
+  private isInstanceOfNetworkLoadBalancer(lb: elbv2.ILoadBalancerV2): lb is elbv2.INetworkLoadBalancer {
+    // Check for NLB-specific properties that ALBs don't have
+    // NLBs have securityGroups property (string[] | undefined), ALBs don't
+    const nlb = lb as any;
+    return 'addListener' in lb &&
+           'securityGroups' in lb &&
+           typeof nlb.addListener === 'function';
   }
 }
