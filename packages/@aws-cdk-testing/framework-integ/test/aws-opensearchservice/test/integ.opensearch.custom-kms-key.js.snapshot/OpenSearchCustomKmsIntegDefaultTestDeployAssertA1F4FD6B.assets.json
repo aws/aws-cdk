@@ -23,7 +23,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b8d10553ddd29270a5b2de4ab90b3dc1ead2bbe400a17402331059a087276758.json",
+          "objectKey": "0d3aa2f88d3550c5aa5fd619b463bbc4f21bfe3edb84a70e334252a83978b098.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
