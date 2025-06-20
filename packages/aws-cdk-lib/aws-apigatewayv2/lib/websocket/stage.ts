@@ -1,8 +1,9 @@
 import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
 import { CfnStage } from '.././index';
-import { Grant, IGrantable } from '../../../aws-iam';
-import { Stack } from '../../../core';
+import { AccessLogField, AccessLogFormat, CfnAccount } from '../../../aws-apigateway';
+import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '../../../aws-iam';
+import { RemovalPolicy, Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -40,6 +41,22 @@ export interface WebSocketStageProps extends StageOptions {
    * The name of the stage.
    */
   readonly stageName: string;
+
+  /**
+   * Automatically configure an AWS CloudWatch role for API Gateway.
+   *
+   * @default - false
+   */
+  readonly cloudWatchRole?: boolean;
+
+  /**
+   * The removal policy applied to the AWS CloudWatch role when this resource
+   * is removed from the application.
+   * Requires `cloudWatchRole` to be enabled.
+   *
+   * @default - RemovalPolicy.RETAIN
+   */
+  readonly cloudWatchRoleRemovalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -77,6 +94,20 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       get callbackUrl(): string {
         throw new ValidationError('callback url is not available for imported stages.', scope);
       }
+
+      /**
+       * CLF Log format for WebSocket API Stage.
+       *
+       * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-logging.html
+       */
+      defaultAccessLogFormat(): AccessLogFormat {
+        const requester = [AccessLogField.contextIdentitySourceIp(), AccessLogField.contextIdentityCaller(), AccessLogField.contextIdentityUser()].join(' ');
+        const requestTime = AccessLogField.contextRequestTime();
+        const request = [AccessLogField.contextEventType(), AccessLogField.contextRouteKey(), AccessLogField.contextConnectionId()].join(' ');
+        const status = [AccessLogField.contextStatus(), AccessLogField.contextRequestId()].join(' ');
+
+        return new AccessLogFormat(`${requester} [${requestTime}] "${request}" ${status}`);
+      }
     }
     return new Import(scope, id);
   }
@@ -96,7 +127,7 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
     this.api = props.webSocketApi;
     this.stageName = this.physicalName;
 
-    new CfnStage(this, 'Resource', {
+    const resource = new CfnStage(this, 'Resource', {
       apiId: props.webSocketApi.apiId,
       stageName: this.physicalName,
       autoDeploy: props.autoDeploy,
@@ -106,11 +137,14 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
         detailedMetricsEnabled: props.detailedMetricsEnabled,
       } : undefined,
       description: props.description,
+      accessLogSettings: this._validateAccessLogSettings(props.accessLogSettings),
     });
 
     if (props.domainMapping) {
       this._addDomainMapping(props.domainMapping);
     }
+
+    this._configureCloudWatchRole(resource, props.cloudWatchRole, props.cloudWatchRoleRemovalPolicy);
   }
 
   /**
@@ -149,5 +183,50 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       actions: ['execute-api:ManageConnections'],
       resourceArns: [`${arn}/${this.stageName}/*/@connections/*`],
     });
+  }
+
+  /**
+   * CLF Log format for WebSocket API Stage.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-logging.html
+   */
+  defaultAccessLogFormat(): AccessLogFormat {
+    const requester = [AccessLogField.contextIdentitySourceIp(), AccessLogField.contextIdentityCaller(), AccessLogField.contextIdentityUser()].join(' ');
+    const requestTime = AccessLogField.contextRequestTime();
+    const request = [AccessLogField.contextEventType(), AccessLogField.contextRouteKey(), AccessLogField.contextConnectionId()].join(' ');
+    const status = [AccessLogField.contextStatus(), AccessLogField.contextRequestId()].join(' ');
+
+    return new AccessLogFormat(`${requester} [${requestTime}] "${request}" ${status}`);
+  }
+
+  /**
+   * @internal
+   */
+  protected _configureCloudWatchRole(
+    stageResource: CfnStage,
+    cloudWatchRole?: boolean,
+    cloudWatchRoleRemovalPolicy?: RemovalPolicy,
+  ) {
+    if (!cloudWatchRole) {
+      if (cloudWatchRoleRemovalPolicy) {
+        throw new ValidationError('\'cloudWatchRole\' must be enabled for \'cloudWatchRoleRemovalPolicy\' to be applied.', this);
+      }
+      return;
+    }
+
+    cloudWatchRoleRemovalPolicy = cloudWatchRoleRemovalPolicy ?? RemovalPolicy.RETAIN;
+
+    const role = new Role(this, 'CloudWatchRole', {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+      managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')],
+    });
+    role.applyRemovalPolicy(cloudWatchRoleRemovalPolicy);
+
+    const cloudWatchAccount = new CfnAccount(this, 'Account', {
+      cloudWatchRoleArn: role.roleArn,
+    });
+    cloudWatchAccount.applyRemovalPolicy(cloudWatchRoleRemovalPolicy);
+
+    stageResource.addDependency(cloudWatchAccount);
   }
 }

@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-aws-apigatewayv2-websocket-stage.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f395ca0d527831a9bb9efb9f8596f28402b0cdf892c286ff1597977eb5faf167.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5143fdb4a56c6d3c4e27a48578fa6607e9c2d78ce829da7dfaeb560962a83a7a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,20 @@
         "aws-cdk-aws-apigatewayv2-websocket-stage.assets"
       ],
       "metadata": {
+        "/aws-cdk-aws-apigatewayv2-websocket-stage/MyLogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage/MyLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLogGroup5C0DAD85"
+          }
+        ],
         "/aws-cdk-aws-apigatewayv2-websocket-stage/WebSocketApi": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -58,6 +72,48 @@
             "data": "WebSocketStageC46B7E43"
           }
         ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage/WebSocketStage/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "destroy"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage/WebSocketStage/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage/WebSocketStage/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebSocketStageCloudWatchRole3A30BFD9"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage/WebSocketStage/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebSocketStageAccount45840150"
+          }
+        ],
         "/aws-cdk-aws-apigatewayv2-websocket-stage/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -73,11 +129,60 @@
       },
       "displayName": "aws-cdk-aws-apigatewayv2-websocket-stage"
     },
+    "awscdkawsapigatewayv2websocketstagetestDefaultTestDeployAssert19BC2E43.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "awscdkawsapigatewayv2websocketstagetestDefaultTestDeployAssert19BC2E43.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "awscdkawsapigatewayv2websocketstagetestDefaultTestDeployAssert19BC2E43": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awscdkawsapigatewayv2websocketstagetestDefaultTestDeployAssert19BC2E43.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "awscdkawsapigatewayv2websocketstagetestDefaultTestDeployAssert19BC2E43.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "awscdkawsapigatewayv2websocketstagetestDefaultTestDeployAssert19BC2E43.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-websocket-stage-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-aws-apigatewayv2-websocket-stage-test/DefaultTest/DeployAssert"
+    },
     "Tree": {
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
