@@ -787,6 +787,12 @@
   "Ipv6ProtocolVpcEIGW603A60DAA": {
    "Type": "AWS::EC2::EgressOnlyInternetGateway",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "Ipv6Vpc/Ipv6ProtocolVpc"
+     }
+    ],
     "VpcId": {
      "Ref": "Ipv6ProtocolVpc49F5F0A0"
     }

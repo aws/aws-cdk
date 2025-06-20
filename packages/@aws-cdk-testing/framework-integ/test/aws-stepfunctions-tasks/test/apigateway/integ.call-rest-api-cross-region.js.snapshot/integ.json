@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "call-rest-api-cross-region/DefaultTest": {
       "stacks": [
@@ -10,5 +10,5 @@
       "assertionStackName": "callrestapicrossregionDefaultTestDeployAssert2A1021D3"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1018.0"
 }

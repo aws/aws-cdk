@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "testCases": {
     "cors/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "cors/DefaultTest/DeployAssert",
       "assertionStackName": "corsDefaultTestDeployAssert5CF8F851"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
