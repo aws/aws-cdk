@@ -1591,4 +1591,191 @@ describe('User Pool Client', () => {
       ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `application` must be specified.');
     });
   });
+
+  describe('refresh token rotation', () => {
+    test('undefined by default', () => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client', {
+        userPoolClientName: 'Client',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client',
+        refreshTokenRotation: Match.absent(),
+      });
+    });
+
+    test('validate grace period original refresh token', () => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client1', {
+        userPoolClientName: 'Client1',
+        refreshTokenRotation: {
+          feature: true,
+          retryGracePeriodSeconds: Duration.seconds(5),
+        },
+      });
+      pool.addClient('Client2', {
+        userPoolClientName: 'Client2',
+        refreshTokenRotation: {
+          feature: true,
+          retryGracePeriodSeconds: Duration.seconds(25),
+        },
+      });
+      pool.addClient('Client3', {
+        userPoolClientName: 'Client3',
+        refreshTokenRotation: {
+          feature: true,
+          retryGracePeriodSeconds: Duration.seconds(50),
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client1',
+        RefreshTokenRotation: {
+          Feature: 'ENABLED',
+          RetryGracePeriodSeconds: 5,
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client2',
+        RefreshTokenRotation: {
+          Feature: 'ENABLED',
+          RetryGracePeriodSeconds: 25,
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client3',
+        RefreshTokenRotation: {
+          Feature: 'ENABLED',
+          RetryGracePeriodSeconds: 50,
+        },
+      });
+    });
+
+    test('error when exceeding max retryGracePeriod', () => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      expect(() =>pool.addClient('Client1', {
+        refreshTokenRotation: {
+          feature: true,
+          retryGracePeriodSeconds: Duration.seconds(80),
+        },
+      })).toThrow('retryGracePeriodSeconds for refresh token rotation should be between 0 and 60 seconds.');
+    });
+
+    test('explicitAuthFlows refresh token false if refresh token rotation is enabled', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client', {
+        authFlows: {
+          adminUserPassword: true,
+          custom: true,
+          userPassword: true,
+          userSrp: true,
+          user: true,
+        },
+        refreshTokenRotation: {
+          feature: true,
+          retryGracePeriodSeconds: Duration.seconds(40),
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ExplicitAuthFlows: [
+          'ALLOW_USER_PASSWORD_AUTH',
+          'ALLOW_ADMIN_USER_PASSWORD_AUTH',
+          'ALLOW_CUSTOM_AUTH',
+          'ALLOW_USER_SRP_AUTH',
+          'ALLOW_USER_AUTH',
+        ],
+      });
+    });
+
+    test('explicitAuthFlows refresh token true if refresh token rotation is disabled', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client', {
+        authFlows: {
+          adminUserPassword: true,
+          custom: true,
+          userPassword: true,
+          userSrp: true,
+          user: true,
+        },
+        refreshTokenRotation: {
+          feature: false,
+          retryGracePeriodSeconds: Duration.seconds(50),
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ExplicitAuthFlows: [
+          'ALLOW_USER_PASSWORD_AUTH',
+          'ALLOW_ADMIN_USER_PASSWORD_AUTH',
+          'ALLOW_CUSTOM_AUTH',
+          'ALLOW_USER_SRP_AUTH',
+          'ALLOW_USER_AUTH',
+          'ALLOW_REFRESH_TOKEN_AUTH',
+        ],
+      });
+    });
+
+    test('refreshTokenRotation set to disabled if retryGracePeriod is 0', () => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client1', {
+        refreshTokenRotation: {
+          feature: true,
+          retryGracePeriodSeconds: Duration.seconds(0),
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        RefreshTokenRotation: {
+          Feature: 'DISABLED',
+          RetryGracePeriodSeconds: 0,
+        },
+      });
+    });
+
+    test('refreshTokenRotation set to disabled and retryGracePeriod to 0 if retryGracePeriod is undefined', () => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client', {
+        refreshTokenRotation: {
+          feature: true,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        RefreshTokenRotation: {
+          Feature: 'DISABLED',
+          RetryGracePeriodSeconds: 0,
+        },
+      });
+    });
+  });
 });
