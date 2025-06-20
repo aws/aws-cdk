@@ -1636,7 +1636,6 @@ describe('User Pool Client', () => {
         },
       });
 
-
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client1',
@@ -1746,7 +1745,7 @@ describe('User Pool Client', () => {
       pool.addClient('Client1', {
         refreshTokenRotation: {
           feature: true,
-          retryGracePeriodSeconds: Duration.seconds(0)
+          retryGracePeriodSeconds: Duration.seconds(0),
         },
       });
 
