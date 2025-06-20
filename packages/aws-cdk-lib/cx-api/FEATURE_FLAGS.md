@@ -104,6 +104,7 @@ Flags come in three types:
 | [@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway](#aws-cdkaws-ec2requireprivatesubnetsforegressonlyinternetgateway) | When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC. | 2.196.0 | fix |
 | [@aws-cdk/aws-s3:publicAccessBlockedByDefault](#aws-cdkaws-s3publicaccessblockedbydefault) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | 2.196.0 | fix |
 | [@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal](#aws-cdkaws-kmsapplyimportedaliaspermissionstoprincipal) | Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition | V2NEXT | fix |
+| [@aws-cdk/aws-route53-targets:nlbUsePlainDnsName](#aws-cdkaws-route53-targetsnlbuseplaindnsname) | Use plain DNS names for Network Load Balancers in Route53 alias records | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -191,7 +192,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
-    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true
+    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
+    "@aws-cdk/aws-route53-targets:nlbUsePlainDnsName": true
   }
 }
 ```
@@ -2176,7 +2178,6 @@ The new behavior from this feature will allow a user, for example, to set 1 of t
 | (not in v1) |  |  |
 | 2.196.0 | `false` | `true` |
 
-
 ### @aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal
 
 *Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition*
@@ -2195,5 +2196,31 @@ When disabled, grant calls on imported aliases will be dropped (no-op) to mainta
 
 **Compatibility with old behavior:** Remove calls to the grant* methods on the aliases referenced by name
 
+### @aws-cdk/aws-route53-targets:nlbUsePlainDnsName
+
+*Use plain DNS names for Network Load Balancers in Route53 alias records*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, LoadBalancerTarget will use plain DNS names for 
+Network Load Balancers instead of adding the dualstack prefix, matching AWS Route53 
+console behavior.
+
+The previous behavior unconditionally added the dualstack prefix to all load balancer 
+DNS names, but AWS Route53 console shows that only ALBs and CLBs should use the 
+dualstack prefix, while NLBs should use plain DNS names.
+
+When this flag is enabled:
+- Network Load Balancers (NLB): Use plain DNS name (matches Route53 console behavior)
+- Application Load Balancers (ALB): Use dualstack prefix (existing correct behavior)
+- Classic Load Balancers (CLB): Use dualstack prefix (existing correct behavior)
+
+When this flag is disabled:
+- All load balancers get dualstack prefix added (legacy incorrect behavior for NLBs)
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 <!-- END details -->
