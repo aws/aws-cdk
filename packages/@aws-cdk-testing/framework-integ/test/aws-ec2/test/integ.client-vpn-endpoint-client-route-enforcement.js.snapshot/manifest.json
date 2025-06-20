@@ -1,0 +1,388 @@
+{
+  "version": "43.0.0",
+  "artifacts": {
+    "client-vpn-endpoint-stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "client-vpn-endpoint-stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "client-vpn-endpoint-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "client-vpn-endpoint-stack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f18c1da5a428e21a49373e9128df00577dd4a42020ac8690d02b3bb89ae15375.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "client-vpn-endpoint-stack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "client-vpn-endpoint-stack.assets"
+      ],
+      "metadata": {
+        "/client-vpn-endpoint-stack/Certificate": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Certificate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Certificate4E7ABB08"
+          }
+        ],
+        "/client-vpn-endpoint-stack/ClientCertificate": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/client-vpn-endpoint-stack/ClientCertificate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientCertificateF2C90FA6"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/IsolatedSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/IsolatedSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet1SubnetE48C5737"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/IsolatedSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet1RouteTable4771E3E5"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/IsolatedSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/IsolatedSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/IsolatedSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet2Subnet16364B91"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/IsolatedSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet2RouteTable1D30AF7D"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/IsolatedSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/Endpoint": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/Endpoint/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/Endpoint/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcEndpointSecurityGroup7B25EFDC"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/Endpoint/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcEndpoint6FF034F6"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/Endpoint/Association0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcEndpointAssociation06B066321"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/Endpoint/Association1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcEndpointAssociation12B51A67F"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/Endpoint/AuthorizeAll": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Vpc/Endpoint/AuthorizeAll/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcEndpointAuthorizeAll70F0E613"
+          }
+        ],
+        "/client-vpn-endpoint-stack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/client-vpn-endpoint-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/client-vpn-endpoint-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/client-vpn-endpoint-stack/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/client-vpn-endpoint-stack/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogGroupF5B46931"
+          }
+        ],
+        "/client-vpn-endpoint-stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/client-vpn-endpoint-stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "client-vpn-endpoint-stack"
+    },
+    "clientvpnendpointintegDefaultTestDeployAssert7B9D072C.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "clientvpnendpointintegDefaultTestDeployAssert7B9D072C.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "clientvpnendpointintegDefaultTestDeployAssert7B9D072C": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "clientvpnendpointintegDefaultTestDeployAssert7B9D072C.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "clientvpnendpointintegDefaultTestDeployAssert7B9D072C.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "clientvpnendpointintegDefaultTestDeployAssert7B9D072C.assets"
+      ],
+      "metadata": {
+        "/client-vpn-endpoint-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/client-vpn-endpoint-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "client-vpn-endpoint-integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1015.0"
+}
