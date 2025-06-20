@@ -534,7 +534,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     if (props.refreshTokenRotation && props.refreshTokenRotation.retryGracePeriodSeconds) {
       if (props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() < 0 || props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() > 60) {
         throw new ValidationError('retryGracePeriodSeconds for refresh token rotation should be between 0 and 60 seconds.', this);
-      } 
+      }
     }
 
     this._generateSecret = props.generateSecret;
@@ -557,8 +557,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       writeAttributes: props.writeAttributes?.attributes(),
       enableTokenRevocation: props.enableTokenRevocation,
       refreshTokenRotation: props.refreshTokenRotation ? {
-        feature: props.refreshTokenRotation.feature && props.refreshTokenRotation.retryGracePeriodSeconds && props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() > 0 ? 'ENABLED' : 'DISABLED',
-        retryGracePeriodSeconds: props.refreshTokenRotation.retryGracePeriodSeconds ? props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() : 0,
+        feature: props.refreshTokenRotation.feature && props.refreshTokenRotation.retryGracePeriodSeconds && props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() > 0 ? 'ENABLED' :
+          'DISABLED',
+        retryGracePeriodSeconds: props.refreshTokenRotation.retryGracePeriodSeconds ?
+          props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() : 0,
       } : undefined,
       enablePropagateAdditionalUserContextData: props.enablePropagateAdditionalUserContextData,
       analyticsConfiguration: props.analytics ? this.configureAnalytics(props.analytics) : undefined,
