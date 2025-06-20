@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "DualStackVpc/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "b0aa4dc1d72923268e2ef80e145718d57fa31bb68940cd4167e756a10d8c28d4": {
+    "72219c8a1e3d7fddb34939ac10e251e34b6069576418b598d1e3c61bfc37dcbd": {
       "displayName": "DualStackVpc Template",
       "source": {
         "path": "DualStackVpc.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b0aa4dc1d72923268e2ef80e145718d57fa31bb68940cd4167e756a10d8c28d4.json",
+          "objectKey": "72219c8a1e3d7fddb34939ac10e251e34b6069576418b598d1e3c61bfc37dcbd.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
