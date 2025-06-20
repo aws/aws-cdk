@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.202.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.201.0-alpha.0...v2.202.0-alpha.0) (2025-06-20)
+
+
+### Features
+
+* **amplify:** add compute role support for Amplify branches ([#34708](https://github.com/aws/aws-cdk/issues/34708)) ([817a21a](https://github.com/aws/aws-cdk/commit/817a21a782da035f7878facf8cc4d938250b70e0))
+* **amplify:** add skew protection feature for Amplify branches ([#34656](https://github.com/aws/aws-cdk/issues/34656)) ([8808998](https://github.com/aws/aws-cdk/commit/8808998d0ba6e5e22e36888c10474f9788a77454))
+* **amplify-alpha:** support custom response headers in monorepo structures ([#31771](https://github.com/aws/aws-cdk/issues/31771)) ([aea1372](https://github.com/aws/aws-cdk/commit/aea1372ab7bc68c489cea5ee5e499233755910e8)), closes [#31758](https://github.com/aws/aws-cdk/issues/31758)
+* **bedrock:** adding bedrock l2 construct features ([#34065](https://github.com/aws/aws-cdk/issues/34065)) ([a028927](https://github.com/aws/aws-cdk/commit/a0289271aa9990f85c120d0549b878bd3c6ea484))
+* **ec2:** add interface VPC endpoint for DSQL ([#34487](https://github.com/aws/aws-cdk/issues/34487)) ([3e53c2c](https://github.com/aws/aws-cdk/commit/3e53c2c0449692e639779c4315a34bca3b778cf4))
+* **ec2:** support Firehose `IDeliveryStream` as flow log destination ([#34596](https://github.com/aws/aws-cdk/issues/34596)) ([cdfe6e7](https://github.com/aws/aws-cdk/commit/cdfe6e7e2946e80b3dffe9b23fd30659c0b88b99)), closes [#33883](https://github.com/aws/aws-cdk/issues/33883) [#33757](https://github.com/aws/aws-cdk/issues/33757)
+* **ec2:** volume initialization rate for EBS volume ([#34570](https://github.com/aws/aws-cdk/issues/34570)) ([527d483](https://github.com/aws/aws-cdk/commit/527d483a670042caed1ba8366de81f38dde12a51))
+
+
+### Reverts
+
+* **ec2:** support Firehose `IDeliveryStream` as flow log destination ([#34665](https://github.com/aws/aws-cdk/issues/34665)) ([b77bd0e](https://github.com/aws/aws-cdk/commit/b77bd0e0da635098ca951c7f8b030bcb3cb387dd)), closes [aws/aws-cdk#34596](https://github.com/aws/aws-cdk/issues/34596)
+
 ## [2.201.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.200.2-alpha.0...v2.201.0-alpha.0) (2025-06-12)
 
 
