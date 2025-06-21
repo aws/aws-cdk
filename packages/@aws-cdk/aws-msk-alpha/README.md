@@ -238,6 +238,7 @@ You can create an MSK cluster with Express Brokers by setting the `express` prop
 For more information, see [Amazon MSK Express Brokers](https://docs.aws.amazon.com/msk/latest/developerguide/msk-broker-types-express.html).
 
 **Note:** When using Express Brokers, the following constraints apply:
+
 - You must specify the `instanceType`
 - The VPC must have at least 3 subnets (across 3 AZs)
 - `ebsStorageInfo` is not supported
@@ -258,7 +259,6 @@ const expressCluster = new msk.Cluster(this, 'ExpressCluster', {
   ),
 });
 ```
-
 
 ## MSK Serverless
 
