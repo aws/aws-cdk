@@ -100,11 +100,11 @@ new eks.Cluster(this, 'hello-eks', {
 });
 ```
 
-## EKS Auto Mode
+### EKS Auto Mode
 
 [Amazon EKS Auto Mode](https://aws.amazon.com/eks/auto-mode/) extends AWS management of Kubernetes clusters beyond the cluster itself, allowing AWS to set up and manage the infrastructure that enables the smooth operation of your workloads.
 
-### Using Auto Mode
+#### Using Auto Mode
 
 While `aws-eks` uses `DefaultCapacityType.NODEGROUP` by default, `aws-eks-v2` uses `DefaultCapacityType.AUTOMODE` as the default capacity type.
 
@@ -127,7 +127,7 @@ const cluster = new eks.Cluster(this, 'EksAutoCluster', {
 });
 ```
 
-### Node Pools
+#### Node Pools
 
 When Auto Mode is enabled, the cluster comes with two default node pools:
 
@@ -148,7 +148,7 @@ const cluster = new eks.Cluster(this, 'EksAutoCluster', {
 
 For more information, see [Create a Node Pool for EKS Auto Mode](https://docs.aws.amazon.com/eks/latest/userguide/create-node-pool.html).
 
-### Disabling Default Node Pools
+#### Disabling Default Node Pools
 
 You can disable the default node pools entirely by setting an empty array for `nodePools`. This is useful when you want to use Auto Mode features but manage your compute resources separately:
 
