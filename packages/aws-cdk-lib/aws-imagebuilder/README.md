@@ -57,7 +57,7 @@ distribution_config = imagebuilder.CfnDistributionConfiguration(
 
 **✅ Correct approach (avoids validation warnings):**
 
-```python
+```python nofixture
 # Use raw JSON with PascalCase property names
 distribution_config = imagebuilder.CfnDistributionConfiguration(
     self, "DistConfig", 
@@ -82,7 +82,7 @@ distribution_config = imagebuilder.CfnDistributionConfiguration(
 
 **TypeScript example:**
 
-```typescript
+```typescript nofixture
 // Use raw JSON with PascalCase property names
 const distributionConfig = new imagebuilder.CfnDistributionConfiguration(this, 'DistConfig', {
   name: 'MyDistributionConfig',
