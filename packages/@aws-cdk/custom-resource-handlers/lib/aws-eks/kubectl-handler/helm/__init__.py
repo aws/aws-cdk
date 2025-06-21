@@ -96,7 +96,7 @@ def helm_handler(event, context):
         try:
             helm('uninstall', release, namespace=namespace, wait=wait, timeout=timeout)
         except Exception as e:
-            logger.info("delete error: %s" % e)
+            logger.error("Delete error: %s", str(e))
 
 
 def get_oci_cmd(repository, version):
@@ -141,9 +141,9 @@ def get_chart_from_oci(tmpdir, repository = None, version = None):
     retry = maxAttempts
     while retry > 0:
         try:
-            logger.info(cmnd)
+            logger.info("OCI command: %s", str(cmnd))
             output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=tmpdir, shell=True)
-            logger.info(output)
+            logger.info(output.decode('utf-8', errors='replace'))
 
             # effectively returns "$tmpDir/$lastPartOfOCIUrl", because this is how helm pull saves OCI artifact.
             # Eg. if we have oci://9999999999.dkr.ecr.us-east-1.amazonaws.com/foo/bar/pet-service repository, helm saves artifact under $tmpDir/pet-service
@@ -154,8 +154,11 @@ def get_chart_from_oci(tmpdir, repository = None, version = None):
                 retry = retry - 1
                 logger.info("Broken pipe, retries left: %s" % retry)
             else:
+                error_message = output.decode('utf-8', errors='replace')
+                logger.error("OCI command failed: %s", str(cmnd))
+                logger.error("Error output: %s", error_message)
                 raise Exception(output)
-    raise Exception(f'Operation failed after {maxAttempts} attempts: {output}')
+    raise Exception(f'Operation failed after {maxAttempts} attempts: {output.decode("utf-8", errors="replace")}')
 
 
 def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, timeout = None, create_namespace = None, skip_crds = False, atomic = False):
@@ -185,13 +188,16 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
     if atomic:
         cmnd.append('--atomic')    
     cmnd.extend(['--kubeconfig', kubeconfig])
+    
+    # Log the full helm command for better troubleshooting
+    logger.info("Running command: %s", cmnd)
 
     maxAttempts = 3
     retry = maxAttempts
     while retry > 0:
         try:
             output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=outdir)
-            logger.info(output)
+            logger.info(output.decode('utf-8', errors='replace'))
             return
         except subprocess.CalledProcessError as exc:
             output = exc.output
@@ -199,5 +205,8 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
                 retry = retry - 1
                 logger.info("Broken pipe, retries left: %s" % retry)
             else:
+                error_message = output.decode('utf-8', errors='replace')
+                logger.error("Command failed: %s", cmnd)
+                logger.error("Error output: %s", error_message)
                 raise Exception(output)
-    raise Exception(f'Operation failed after {maxAttempts} attempts: {output}')
+    raise Exception(f'Operation failed after {maxAttempts} attempts: {output.decode("utf-8", errors="replace")}')
