@@ -36,9 +36,9 @@ const env = {
   region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
 };
 
-const stack = new ExpressMskStack(app, 'aws-cdk-msk-express-integ', {env});
+const stack = new ExpressMskStack(app, 'aws-cdk-msk-express-integ', { env });
 
-new IntegTest(app, "MskExpressCluster", {
+new IntegTest(app, 'MskExpressCluster', {
   testCases: [stack],
   enableLookups: true,
 });
