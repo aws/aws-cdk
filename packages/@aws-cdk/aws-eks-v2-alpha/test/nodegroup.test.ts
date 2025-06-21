@@ -360,7 +360,7 @@ describe('node group', () => {
       },
       Taints: [
         {
-          Effect: 'NoSchedule',
+          Effect: 'NO_SCHEDULE',
           Key: 'os',
           Value: 'windows',
         },
@@ -417,7 +417,7 @@ describe('node group', () => {
       },
       Taints: [
         {
-          Effect: 'NoSchedule',
+          Effect: 'NO_SCHEDULE',
           Key: 'os',
           Value: 'windows',
         },
@@ -474,7 +474,7 @@ describe('node group', () => {
       },
       Taints: [
         {
-          Effect: 'NoSchedule',
+          Effect: 'NO_SCHEDULE',
           Key: 'os',
           Value: 'windows',
         },
@@ -531,7 +531,7 @@ describe('node group', () => {
       },
       Taints: [
         {
-          Effect: 'NoSchedule',
+          Effect: 'NO_SCHEDULE',
           Key: 'os',
           Value: 'windows',
         },
@@ -1360,7 +1360,7 @@ describe('node group', () => {
       },
       Taints: [
         {
-          Effect: 'NoSchedule',
+          Effect: 'NO_SCHEDULE',
           Key: 'foo',
           Value: 'bar',
         },

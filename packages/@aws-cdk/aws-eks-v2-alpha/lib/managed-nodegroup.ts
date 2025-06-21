@@ -161,15 +161,15 @@ export enum TaintEffect {
   /**
    * NoSchedule
    */
-  NO_SCHEDULE = 'NoSchedule',
+  NO_SCHEDULE = 'NO_SCHEDULE',
   /**
    * PreferNoSchedule
    */
-  PREFER_NO_SCHEDULE = 'PreferNoSchedule',
+  PREFER_NO_SCHEDULE = 'PREFER_NO_SCHEDULE',
   /**
    * NoExecute
    */
-  NO_EXECUTE = 'NoExecute',
+  NO_EXECUTE = 'NO_EXECUTE',
 }
 
 /**
