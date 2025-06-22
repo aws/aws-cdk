@@ -856,7 +856,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       by name to grant permissions based on the 'kms:ResourceAliases' condition rather than no-op grants.
       When disabled, grant calls on imported aliases will be dropped (no-op) to maintain compatibility.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.202.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Remove calls to the grant* methods on the aliases referenced by name',
   },

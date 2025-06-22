@@ -106,6 +106,7 @@ Flags come in three types:
 | [@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal](#aws-cdkaws-kmsapplyimportedaliaspermissionstoprincipal) | Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition | V2NEXT | fix |
 | [@aws-cdk/aws-route53-targets:nlbUsePlainDnsName](#aws-cdkaws-route53-targetsnlbuseplaindnsname) | Use plain DNS names for Network Load Balancers in Route53 alias records | V2NEXT | fix |
 
+
 <!-- END table -->
 
 ## Currently recommended cdk.json
@@ -2192,7 +2193,7 @@ When disabled, grant calls on imported aliases will be dropped (no-op) to mainta
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.202.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Remove calls to the grant* methods on the aliases referenced by name
 
