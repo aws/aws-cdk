@@ -183,6 +183,7 @@ export * as aws_mediapackagev2 from './aws-mediapackagev2';
 export * as aws_mediastore from './aws-mediastore';
 export * as aws_mediatailor from './aws-mediatailor';
 export * as aws_memorydb from './aws-memorydb';
+export * as aws_mpa from './aws-mpa';
 export * as aws_msk from './aws-msk';
 export * as aws_mwaa from './aws-mwaa';
 export * as aws_neptune from './aws-neptune';
