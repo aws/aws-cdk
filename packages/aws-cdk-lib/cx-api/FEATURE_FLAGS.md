@@ -18,6 +18,7 @@ Flags come in three types:
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
 | [@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration](#aws-cdkaws-ec2-alphauseresourceidforvpcv2migration) | When enabled, use resource IDs for VPC V2 migration | V2_NEXT | new default |
+| [@aws-cdk/aws-lambda:useCdkManagedLogGroup](#aws-cdkaws-lambdausecdkmanagedloggroup) | When enabled, CDK creates and manages loggroup for the lambda function | V2_NEXT | new default |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | fix |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | fix |
 | [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | 2.0.0 | fix |
@@ -102,6 +103,7 @@ Flags come in three types:
 | [@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions](#aws-cdks3-notificationsadds3trustkeypolicyforsnssubscriptions) | Add an S3 trust policy to a KMS key resource policy for SNS subscriptions. | 2.195.0 | fix |
 | [@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway](#aws-cdkaws-ec2requireprivatesubnetsforegressonlyinternetgateway) | When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC. | 2.196.0 | fix |
 | [@aws-cdk/aws-s3:publicAccessBlockedByDefault](#aws-cdkaws-s3publicaccessblockedbydefault) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | 2.196.0 | fix |
+| [@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal](#aws-cdkaws-kmsapplyimportedaliaspermissionstoprincipal) | Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition | 2.202.0 | fix |
 
 <!-- END table -->
 
@@ -145,6 +147,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
     "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
     "@aws-cdk/aws-kms:aliasNameRef": true,
+    "@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal": true,
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
     "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
     "@aws-cdk/aws-efs:denyAnonymousAccess": true,
@@ -187,7 +190,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
     "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
-    "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true
+    "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
+    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true
   }
 }
 ```
@@ -455,6 +459,37 @@ the two versions.
 | V2_NEXT | `false` | `false` |
 
 **Compatibility with old behavior:** Disable the feature flag to use getAtt references for VPC V2 migration
+
+
+### @aws-cdk/aws-lambda:useCdkManagedLogGroup
+
+*When enabled, CDK creates and manages loggroup for the lambda function*
+
+Flag type: New default behavior
+
+When this feature flag is enabled, CDK will create a loggroup for lambda function with default properties
+which supports CDK features Tag propagation, Property Injectors, Aspects
+if the cdk app doesnt pass a 'logRetention' or 'logGroup' explicitly. 
+LogGroups created via 'logRetention' do not support Tag propagation, Property Injectors, Aspects.
+LogGroups created via 'logGroup' created in CDK support Tag propagation, Property Injectors, Aspects.
+
+When this feature flag is disabled, a loggroup is created by Lambda service on first invocation 
+of the function (existing behavior). 
+LogGroups created in this way do not support Tag propagation, Property Injectors, Aspects.
+
+DO NOT ENABLE: If you have and existing app defining a lambda function and 
+have not supplied a logGroup or logRetention prop and your lambda function has 
+executed at least once, the logGroup has been already created with the same name 
+so your deployment will start failing.
+Refer aws-lambda/README.md for more details on Customizing Log Group creation.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2_NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention
 
 
 ### @aws-cdk/core:newStyleStackSynthesis
@@ -2140,6 +2175,25 @@ The new behavior from this feature will allow a user, for example, to set 1 of t
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.196.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal
+
+*Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition*
+
+Flag type: Backwards incompatible bugfix
+
+This flag enables the grant methods (grant, grantDecrypt, grantEncrypt, etc.) on Aliases imported
+by name to grant permissions based on the 'kms:ResourceAliases' condition rather than no-op grants.
+When disabled, grant calls on imported aliases will be dropped (no-op) to maintain compatibility.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.202.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Remove calls to the grant* methods on the aliases referenced by name
 
 
 <!-- END details -->

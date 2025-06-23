@@ -5,8 +5,12 @@ import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '
 import { LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT } from 'aws-cdk-lib/cx-api';
 import { Construct } from 'constructs';
 
-const app = new App({ postCliContext: { [LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT]: true } });
-
+const app = new App({
+  postCliContext: {
+    [LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT]: true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 class CreateParameterStack extends Stack {
   public readonly parameterName: string;
 

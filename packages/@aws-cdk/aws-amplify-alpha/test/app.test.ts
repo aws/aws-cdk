@@ -1,6 +1,7 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { SecretValue, Stack } from 'aws-cdk-lib';
 import * as amplify from '../lib';
 
@@ -443,6 +444,111 @@ test('with custom headers', () => {
   });
 });
 
+test('with custom headers in a monorepo structure', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.unsafePlainText('secret'),
+    }),
+    buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+      version: '1.0',
+      applications: [
+        {
+          appRoot: 'frontend',
+          frontend: {
+            phases: {
+              preBuild: {
+                commands: ['npm install'],
+              },
+              build: {
+                commands: ['npm run build'],
+              },
+            },
+          },
+        },
+        {
+          appRoot: 'backend',
+          backend: {
+            phases: {
+              preBuild: {
+                commands: ['npm install'],
+              },
+              build: {
+                commands: ['npm run build'],
+              },
+            },
+          },
+        },
+      ],
+    }),
+    customResponseHeaders: [
+      {
+        appRoot: 'frontend',
+        pattern: '*.json',
+        headers: {
+          'custom-header-name-1': 'custom-header-value-1',
+          'custom-header-name-2': 'custom-header-value-2',
+        },
+      },
+      {
+        appRoot: 'backend',
+        pattern: '/path/*',
+        headers: {
+          'custom-header-name-1': 'custom-header-value-2',
+          'x-aws-url-suffix': `this-is-the-suffix-${stack.urlSuffix}`,
+        },
+      },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    CustomHeaders: {
+      'Fn::Join': [
+        '',
+        [
+          'applications:\n  - appRoot: frontend\n    customHeaders:\n      - pattern: "*.json"\n        headers:\n          - key: "custom-header-name-1"\n            value: "custom-header-value-1"\n          - key: "custom-header-name-2"\n            value: "custom-header-value-2"\n  - appRoot: backend\n    customHeaders:\n      - pattern: "/path/*"\n        headers:\n          - key: "custom-header-name-1"\n            value: "custom-header-value-2"\n          - key: "x-aws-url-suffix"\n            value: "this-is-the-suffix-',
+          {
+            Ref: 'AWS::URLSuffix',
+          },
+          '"\n',
+        ],
+      ],
+    },
+  });
+});
+
+test('error with inconsistent appRoot in custom headers', () => {
+  // WHEN
+  expect(() => {
+    new amplify.App(stack, 'App', {
+      sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+        owner: 'aws',
+        repository: 'aws-cdk',
+        oauthToken: SecretValue.unsafePlainText('secret'),
+      }),
+      customResponseHeaders: [
+        {
+          pattern: '*.json',
+          headers: {
+            'custom-header-name-1': 'custom-header-value-1',
+            'custom-header-name-2': 'custom-header-value-2',
+          },
+        },
+        {
+          appRoot: 'backend',
+          pattern: '/path/*',
+          headers: {
+            'custom-header-name-1': 'custom-header-value-2',
+          },
+        },
+      ],
+    });
+  }).toThrow('appRoot must be either be present or absent across all custom response headers');
+});
+
 test('create a statically hosted app by default', () => {
   // WHEN
   new amplify.App(stack, 'App', {});
@@ -477,4 +583,53 @@ test.each([amplify.CacheConfigType.AMPLIFY_MANAGED, amplify.CacheConfigType.AMPL
       Type: cacheConfigType,
     },
   });
+});
+
+test('create a SSR app with auto-generate compute role', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    platform: amplify.Platform.WEB_COMPUTE,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    Platform: amplify.Platform.WEB_COMPUTE,
+    ComputeRoleArn: {
+      'Fn::GetAtt': ['AppComputeRole426920E4', 'Arn'],
+    },
+  });
+
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 2);
+});
+
+test('create a SSR app with compute role', () => {
+  // WHEN
+  const computeRole = new iam.Role(stack, 'ComputeRole', {
+    assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
+  });
+
+  new amplify.App(stack, 'App', {
+    platform: amplify.Platform.WEB_COMPUTE,
+    computeRole,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    Platform: amplify.Platform.WEB_COMPUTE,
+    ComputeRoleArn: stack.resolve(computeRole.roleArn),
+  });
+});
+
+test('throws when compute role is set with a non SSR app', () => {
+  // WHEN
+  const computeRole = new iam.Role(stack, 'ComputeRole', {
+    assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
+  });
+
+  expect(() => {
+    new amplify.App(stack, 'App', {
+      platform: amplify.Platform.WEB,
+      computeRole,
+    });
+  }).toThrow('`computeRole` can only be specified for `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.');
 });

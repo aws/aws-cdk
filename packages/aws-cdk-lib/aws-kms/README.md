@@ -91,9 +91,10 @@ const trail = new cloudtrail.Trail(this, 'myCloudTrail', {
 });
 ```
 
-Note that calls to `addToResourcePolicy` and `grant*` methods on `myKeyAlias` will be
-no-ops, and `addAlias` and `aliasTargetKey` will fail, as the imported alias does not
-have a reference to the underlying KMS Key.
+Note that calls to `addToResourcePolicy` method on `myKeyAlias` will be a no-op, `addAlias` and `aliasTargetKey` will fail.
+The `grant*` methods will not modify the key policy, as the imported alias does not have a reference to the underlying KMS Key.
+For the `grant*` methods to modify the principal's IAM policy, the feature flag `@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal`
+must be set to `true`. By default, this flag is `false` and `grant*` calls on an imported alias are a no-op.
 
 ### Lookup key by alias
 

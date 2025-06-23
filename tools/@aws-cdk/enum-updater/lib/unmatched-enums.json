@@ -399,6 +399,9 @@
   "s3tables": {
     "UnreferencedFileRemovalStatus": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.ts"
+    },
+    "TableBucketEncryption": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.ts"
     }
   },
   "sagemaker": {
@@ -1516,9 +1519,6 @@
     "LambdaInvocationType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses-actions/lib/lambda.ts"
     },
-    "EmailEncoding": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses-actions/lib/sns.ts"
-    },
     "BounceTemplate": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses-actions/lib/bounce.ts"
     }
@@ -1526,6 +1526,9 @@
   "ses": {
     "EmailSendingEvent": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set-event-destination.ts"
+    },
+    "HttpsPolicy": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set.ts"
     },
     "SuppressionReasons": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set.ts"
@@ -1591,6 +1594,9 @@
     },
     "EncryptionOption": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/athena/start-query-execution.ts"
+    },
+    "CustomizationType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/bedrock/create-model-customization-job.ts"
     },
     "DynamoMethod": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/dynamodb/private/utils.ts"
