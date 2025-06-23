@@ -4,6 +4,8 @@
 change-return-type:@aws-cdk/cloud-assembly-schema.Manifest.load
 
 # To deal with the same as the above: adding artifact properties weakens the ArtifactManifest type.
+# This is done on purpose though, and doesn't break a real type contract in practice because the type
+# of the `properties` field is already unreliable for exhaustive checking.
 weakened:aws-cdk-lib.cloud_assembly_schema.ArtifactManifest
 
 # Adding any new context queries will add to the ContextQueryProperties type,
