@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
-import type { BundleProps } from '@aws-cdk/node-bundle';
 
 const readdir = util.promisify(fs.readdir);
 const stat = util.promisify(fs.stat);
@@ -202,9 +201,11 @@ export interface CDKPackageOptions {
   post?: string[];
 
   /**
-   * Should this package be bundled. (and if so, how)
+   * We used to configure bundling here, but this is no longer supported.
+   *
+   * @deprecated Don't use this anymore
    */
-  bundle?: Omit<BundleProps, 'packageDir'>;
+  bundle?: unknown;
 
   /**
    * Also package private packages for local usage.
