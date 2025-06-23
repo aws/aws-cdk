@@ -212,26 +212,48 @@
        ],
        "Effect": "Allow",
        "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":role/cdk-dev-deploy-role-",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           "-us-east-1"
+        "AWS": [
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":iam::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":role/cdk-dev-deploy-role-",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            "-us-east-1"
+           ]
           ]
-         ]
-        }
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":iam::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":role/cdk-hnb659fds-deploy-role-",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            "-us-east-1"
+           ]
+          ]
+         }
+        ]
        },
        "Resource": [
         {
@@ -298,8 +320,6 @@
        ],
        "Effect": "Allow",
        "Resource": [
-        "arn:aws:s3:::pipeline-asset-stack-suppeplicationbucket8a287d3915971e8df7c1",
-        "arn:aws:s3:::pipeline-asset-stack-suppeplicationbucket8a287d3915971e8df7c1/*",
         {
          "Fn::GetAtt": [
           "PipelineArtifactsBucketAEA9A052",
@@ -374,7 +394,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           "-us-west-2"
+           "-us-east-1"
           ]
          ]
         }
@@ -394,24 +414,12 @@
   "Pipeline9850B417": {
    "Type": "AWS::CodePipeline::Pipeline",
    "Properties": {
-    "ArtifactStores": [
-     {
-      "ArtifactStore": {
-       "Location": "pipeline-asset-stack-suppeplicationbucket8a287d3915971e8df7c1",
-       "Type": "S3"
-      },
-      "Region": "us-west-2"
+    "ArtifactStore": {
+     "Location": {
+      "Ref": "PipelineArtifactsBucketAEA9A052"
      },
-     {
-      "ArtifactStore": {
-       "Location": {
-        "Ref": "PipelineArtifactsBucketAEA9A052"
-       },
-       "Type": "S3"
-      },
-      "Region": "us-east-1"
-     }
-    ],
+     "Type": "S3"
+    },
     "PipelineType": "V2",
     "RestartExecutionOnUpdate": true,
     "RoleArn": {
@@ -711,7 +719,7 @@
             {
              "Ref": "AWS::AccountId"
             },
-            "-us-west-2"
+            "-us-east-1"
            ]
           ]
          },
@@ -725,7 +733,6 @@
          }
         ],
         "Name": "Prepare",
-        "Region": "us-west-2",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -742,7 +749,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           "-us-west-2"
+           "-us-east-1"
           ]
          ]
         },
@@ -761,7 +768,6 @@
          "ChangeSetName": "PipelineChange"
         },
         "Name": "Deploy",
-        "Region": "us-west-2",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -778,7 +784,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           "-us-west-2"
+           "-us-east-1"
           ]
          ]
         },
@@ -1352,7 +1358,7 @@
          "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-dev-file-publishing-role-${AWS::AccountId}-us-east-1"
         },
         {
-         "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
+         "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
         }
        ]
       },
@@ -1452,7 +1458,7 @@
      ]
     },
     "Source": {
-     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets@latest\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-pipeline-asset-stack-Production/pipelineassetstackProductionprdlambdastack4E5ABBC0.assets.json\\\" --verbose publish \\\"a26bd817a0dac44954b5caf83f5880a96f831e43b56157224e073b49f236eb4e:current_account-us-west-2\\\"\"\n      ]\n    }\n  }\n}",
+     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets@latest\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-pipeline-asset-stack-Production/pipelineassetstackProductionprdlambdastack4E5ABBC0.assets.json\\\" --verbose publish \\\"a26bd817a0dac44954b5caf83f5880a96f831e43b56157224e073b49f236eb4e:current_account-us-east-1\\\"\"\n      ]\n    }\n  }\n}",
      "Type": "CODEPIPELINE"
     }
    }

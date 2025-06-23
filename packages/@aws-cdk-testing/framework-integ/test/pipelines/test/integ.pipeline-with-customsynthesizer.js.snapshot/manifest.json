@@ -32,7 +32,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/05ca1b94ed2241388e61695caec8d8e89ec6b77197c8778d2d462ac2cb387203.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/d1bdba9b10e9ff78a6560bde264d714c20075d24f3601f272a39e2bfa004fc12.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -45,7 +45,6 @@
         }
       },
       "dependencies": [
-        "cross-region-stack-123456789012_us-west-2",
         "pipeline-asset-stack.assets"
       ],
       "metadata": {
@@ -324,22 +323,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
           }
         ],
         "/pipeline-asset-stack/Pipeline/Pipeline/Role/ImportRole": [
@@ -372,22 +355,6 @@
             "data": {
               "attachToRole": [
                 "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
               ]
             }
           },
@@ -812,7 +779,7 @@
             "data": "*"
           }
         ],
-        "/pipeline-asset-stack/Pipeline/Pipeline/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2": [
+        "/pipeline-asset-stack/Pipeline/Pipeline/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -834,7 +801,7 @@
             "data": "*"
           }
         ],
-        "/pipeline-asset-stack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2": [
+        "/pipeline-asset-stack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -876,13 +843,13 @@
             "data": "*"
           }
         ],
-        "/pipeline-asset-stack/Pipeline/Pipeline/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2": [
+        "/pipeline-asset-stack/Pipeline/Pipeline/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/pipeline-asset-stack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2": [
+        "/pipeline-asset-stack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1694,53 +1661,6 @@
       "properties": {
         "file": "tree.json"
       }
-    },
-    "cross-region-stack-123456789012_us-west-2": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://123456789012/us-west-2",
-      "properties": {
-        "templateFile": "cross-region-stack-123456789012_us-west-2.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-east-1",
-        "stackName": "pipeline-asset-stack-support-us-west-2"
-      },
-      "metadata": {
-        "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucketName": "*",
-              "encryption": "KMS_MANAGED",
-              "encryptionKey": "*",
-              "enforceSSL": true,
-              "blockPublicAccess": "*"
-            }
-          }
-        ],
-        "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CrossRegionCodePipelineReplicationBucketFC3227F2"
-          }
-        ],
-        "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CrossRegionCodePipelineReplicationBucketPolicyB7BA2BCA"
-          }
-        ]
-      },
-      "displayName": "cross-region-stack-123456789012:us-west-2"
     }
   },
   "minimumCliVersion": "2.1018.0"
