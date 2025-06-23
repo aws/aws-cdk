@@ -1,4 +1,4 @@
-import { UnscopedValidationError } from '../../core';
+import { UnscopedValidationError } from '../../core/lib/errors';
 
 /**
  * InvalidCidrRangeError is thrown when attempting to perform operations on a CIDR
@@ -189,6 +189,15 @@ export class CidrBlock {
     return 2 ** (32 - mask);
   }
 
+  /**
+   * Validates if an IP address is properly aligned for the given prefix length
+   */
+  private static isCidrAligned(ipAddress: string, prefixLength: number): boolean {
+    const ip = NetworkUtils.ipToNum(ipAddress);
+    const networkSize = CidrBlock.calculateNetsize(prefixLength);
+    return ip % networkSize === 0;
+  }
+
   /*
    * The CIDR Block represented as a string e.g. '10.0.0.0/21'
    */
@@ -217,16 +226,31 @@ export class CidrBlock {
    * ipAddress expects a number
    * mask expects a number
    *
-   * If the given `cidr` or `ipAddress` is not the beginning of the block,
-   * then the next available block will be returned. For example, if
-   * `10.0.3.1/28` is given the returned block will represent `10.0.3.16/28`.
+   * Validates that CIDR blocks are properly aligned and throws an error
+   * if the base address is not aligned for the specified prefix length.
    */
   constructor(cidr: string)
   constructor(ipAddress: number, mask: number)
   constructor(ipAddressOrCidr: string | number, mask?: number) {
     if (typeof ipAddressOrCidr === 'string') {
       this.mask = parseInt(ipAddressOrCidr.split('/')[1], 10);
-      this.networkAddress = NetworkUtils.ipToNum(ipAddressOrCidr.split('/')[0]) +
+      const ipAddressStr = ipAddressOrCidr.split('/')[0];
+
+      // Validate CIDR alignment
+      if (!CidrBlock.isCidrAligned(ipAddressStr, this.mask)) {
+        const networkSize = CidrBlock.calculateNetsize(this.mask);
+        const ip = NetworkUtils.ipToNum(ipAddressStr);
+        const nextAlignedIp = NetworkUtils.numToIp(
+          ip + networkSize - (ip % networkSize),
+        );
+        throw new UnscopedValidationError(
+          `CIDR block '${ipAddressOrCidr}' has an invalid base address. ` +
+          'The base IP address must be aligned on the appropriate boundary for the prefix length. ' +
+          `The next valid CIDR block would be '${nextAlignedIp}/${this.mask}'.`,
+        );
+      }
+
+      this.networkAddress = NetworkUtils.ipToNum(ipAddressStr) +
         CidrBlock.calculateNetsize(this.mask) - 1;
     } else {
       if (typeof mask === 'number') {

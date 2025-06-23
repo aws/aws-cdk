@@ -1,3 +1,4 @@
+import { UnscopedValidationError } from '../../core/lib/errors';
 import {
   CidrBlock,
   InvalidCidrRangeError,
@@ -41,7 +42,7 @@ describe('network utils', () => {
   });
   describe('CidrBlock', () => {
     test('should return the next valid subnet from offset IP', () => {
-      const num = NetworkUtils.ipToNum('10.0.1.255');
+      const num = NetworkUtils.ipToNum('10.0.2.0');
       const newBlock = new CidrBlock(num, 24);
       expect(newBlock.cidr).toEqual('10.0.2.0/24');
     });
@@ -58,8 +59,8 @@ describe('network utils', () => {
     test('maxIp() should return the last usable IP from the CidrBlock', () => {
       const testValues = [
         ['10.0.3.0/28', '10.0.3.15'],
-        ['10.0.3.1/28', '10.0.3.31'],
-        ['10.0.2.254/28', '10.0.3.15'],
+        ['10.0.3.16/28', '10.0.3.31'],
+        ['10.0.3.0/28', '10.0.3.15'],
       ];
       for (const value of testValues) {
         const block = new CidrBlock(value[0]);
@@ -89,6 +90,65 @@ describe('network utils', () => {
     test('calculateNetmask returns the ip string mask', () => {
       const netmask = CidrBlock.calculateNetmask(27);
       expect(netmask).toEqual('255.255.255.224');
+    });
+
+    describe('CIDR validation', () => {
+      test('should throw error for misaligned CIDR blocks', () => {
+        const testCases = [
+          { cidr: '10.0.3.1/28', expectedNext: '10.0.3.16/28' },
+          { cidr: '192.168.1.5/24', expectedNext: '192.168.2.0/24' },
+          { cidr: '172.16.0.100/16', expectedNext: '172.17.0.0/16' },
+          { cidr: '10.0.0.15/28', expectedNext: '10.0.0.16/28' },
+        ];
+
+        for (const testCase of testCases) {
+          expect(() => {
+            new CidrBlock(testCase.cidr);
+          }).toThrow(UnscopedValidationError);
+
+          try {
+            new CidrBlock(testCase.cidr);
+            fail('Expected UnscopedValidationError to be thrown');
+          } catch (error: any) {
+            expect(error.message).toContain(`CIDR block '${testCase.cidr}' has an invalid base address`);
+            expect(error.message).toContain(`The next valid CIDR block would be '${testCase.expectedNext}'`);
+          }
+        }
+      });
+
+      test('should accept properly aligned CIDR blocks', () => {
+        const validCidrs = [
+          '10.0.0.0/28',
+          '192.168.1.0/24',
+          '172.16.0.0/16',
+          '10.0.3.16/28',
+          '192.168.0.0/18',
+        ];
+
+        for (const cidr of validCidrs) {
+          expect(() => {
+            new CidrBlock(cidr);
+          }).not.toThrow();
+
+          const block = new CidrBlock(cidr);
+          expect(block.cidr).toEqual(cidr);
+        }
+      });
+
+      test('should handle edge cases correctly', () => {
+        // Test /32 networks (single host)
+        expect(() => new CidrBlock('192.168.1.1/32')).not.toThrow();
+        expect(() => new CidrBlock('192.168.1.2/32')).not.toThrow();
+
+        // Test /31 networks (RFC 3021)
+        expect(() => new CidrBlock('192.168.1.0/31')).not.toThrow();
+        expect(() => new CidrBlock('192.168.1.1/31')).toThrow(UnscopedValidationError);
+
+        // Test /30 networks
+        expect(() => new CidrBlock('192.168.1.0/30')).not.toThrow();
+        expect(() => new CidrBlock('192.168.1.4/30')).not.toThrow();
+        expect(() => new CidrBlock('192.168.1.1/30')).toThrow(UnscopedValidationError);
+      });
     });
   });
   describe('NetworkBuilder', () => {
