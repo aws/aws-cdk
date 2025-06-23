@@ -6,7 +6,7 @@
     "Name": "my-rest-api"
    }
   },
-  "myrestapiDeployment010A9D4F284640fa221c0b7931c23aed241b95fc": {
+  "myrestapiDeployment010A9D4F12568fb696a861db4a2dc4685be33f8d": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -25,7 +25,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "myrestapiDeployment010A9D4F284640fa221c0b7931c23aed241b95fc"
+     "Ref": "myrestapiDeployment010A9D4F12568fb696a861db4a2dc4685be33f8d"
     },
     "RestApiId": {
      "Ref": "myrestapiBAC2BF45"
@@ -102,7 +102,7 @@
       },
       {
        "ResponseTemplates": {
-        "application/json": "\"error\": $input.path('$.error')"
+        "application/json": "{\n          \"error\": \"$input.path('$.error')\"\n        }"
        },
        "SelectionPattern": "5\\d{2}",
        "StatusCode": "500"
