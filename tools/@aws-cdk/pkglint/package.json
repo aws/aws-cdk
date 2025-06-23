@@ -61,7 +61,6 @@
     ]
   },
   "dependencies": {
-    "@aws-cdk/node-bundle": "0.0.0",
     "case": "^1.6.3",
     "chalk": "^4",
     "fs-extra": "^9.1.0",
