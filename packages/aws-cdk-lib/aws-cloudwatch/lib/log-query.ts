@@ -89,6 +89,16 @@ export interface LogQueryWidgetProps {
    * @default 6
    */
   readonly height?: number;
+
+  /**
+   * The account ID the log groups of this widget belong to
+   *
+   * Cross-account CloudWatch Logs queries require appropriate permissions to be set up.
+   *
+   * @default Current account
+   */
+  readonly accountId?: string;
+
 }
 
 /**
@@ -120,6 +130,7 @@ export class LogQueryWidget extends ConcreteWidget {
       view: this.props.view? this.props.view : LogQueryVisualizationType.TABLE,
       title: this.props.title,
       region: this.props.region || cdk.Aws.REGION,
+      accountId: this.props.accountId,
       query: `${sources} | ${query}`,
     };
 

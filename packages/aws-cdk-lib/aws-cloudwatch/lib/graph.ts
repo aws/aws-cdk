@@ -36,6 +36,13 @@ export interface MetricWidgetProps {
    *   3 for single value widgets where most recent value of a metric is displayed.
    */
   readonly height?: number;
+
+  /**
+   * Account ID for the metrics of this widget
+   *
+   * @default - If no accountId is specified, the current account is used as the default.
+   */
+  readonly accountId?: string;
 }
 
 /**
@@ -116,6 +123,7 @@ export class AlarmWidget extends ConcreteWidget {
         yAxis: {
           left: this.props.leftYAxis ?? undefined,
         },
+        accountId: this.props.accountId,
       },
     }];
   }
@@ -285,6 +293,7 @@ export class GaugeWidget extends ConcreteWidget {
         stat: this.props.statistic,
         start: this.props.start,
         end: this.props.end,
+        accountId: this.props.accountId,
       },
     }];
   }
@@ -511,6 +520,7 @@ export class GraphWidget extends ConcreteWidget {
         stat: this.props.statistic,
         start: this.props.start,
         end: this.props.end,
+        accountId: this.props.accountId,
       },
     }];
   }
@@ -806,6 +816,7 @@ export class TableWidget extends ConcreteWidget {
         stat: this.props.statistic,
         start: this.props.start,
         end: this.props.end,
+        accountId: this.props.accountId,
       },
     }];
   }
@@ -911,6 +922,7 @@ export class SingleValueWidget extends ConcreteWidget {
         period: this.props.period?.toSeconds(),
         start: this.props.start,
         end: this.props.end,
+        accountId: this.props.accountId,
       },
     }];
   }
