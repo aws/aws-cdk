@@ -411,7 +411,10 @@
    },
    "DependsOn": [
     "EdgeIpv4ApiGETFFC4D99B"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "EdgeIpv4ApiDeploymentStageprodD2CA6885": {
    "Type": "AWS::ApiGateway::Stage",
@@ -466,7 +469,10 @@
    },
    "DependsOn": [
     "EdgeDualStackApiGET6F5A20B5"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "EdgeDualStackApiDeploymentStageprodF8D00A4B": {
    "Type": "AWS::ApiGateway::Stage",
@@ -521,7 +527,10 @@
    },
    "DependsOn": [
     "RegionalIpv4ApiGET97CBC6B6"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "RegionalIpv4ApiDeploymentStageprod068741CD": {
    "Type": "AWS::ApiGateway::Stage",
@@ -576,7 +585,10 @@
    },
    "DependsOn": [
     "RegionalDualStackApiGET21115B38"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "RegionalDualStackApiDeploymentStageprod5DA52830": {
    "Type": "AWS::ApiGateway::Stage",
@@ -661,7 +673,10 @@
    },
    "DependsOn": [
     "PrivateDualStackApiGET41804A3C"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "PrivateDualStackApiDeploymentStageprod0A975547": {
    "Type": "AWS::ApiGateway::Stage",

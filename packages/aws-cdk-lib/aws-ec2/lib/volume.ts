@@ -351,7 +351,7 @@ export interface VolumeProps {
   /**
    * The value of the physicalName property of this resource.
    *
-   * @default The physical name will be allocated by CloudFormation at deployment time
+   * @default - The physical name will be allocated by CloudFormation at deployment time
    */
   readonly volumeName?: string;
 
@@ -365,14 +365,14 @@ export interface VolumeProps {
    * See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
    * for details on the allowable size for each type of volume.
    *
-   * @default If you're creating the volume from a snapshot and don't specify a volume size, the default is the snapshot size.
+   * @default - If you're creating the volume from a snapshot and don't specify a volume size, the default is the snapshot size.
    */
   readonly size?: Size;
 
   /**
    * The snapshot from which to create the volume. You must specify either a snapshot ID or a volume size.
    *
-   * @default The EBS volume is not created from a snapshot.
+   * @default - The EBS volume is not created from a snapshot.
    */
   readonly snapshotId?: string;
 
@@ -422,7 +422,7 @@ export interface VolumeProps {
    *       }
    *     }
    *
-   * @default The default KMS key for the account, region, and EC2 service is used.
+   * @default - The default KMS key for the account, region, and EC2 service is used.
    */
   readonly encryptionKey?: IKey;
 
@@ -468,6 +468,20 @@ export interface VolumeProps {
    * @default - 125 MiB/s. Only valid on gp3 volumes.
    */
   readonly throughput?: number;
+
+  /**
+   * Specifies the Amazon EBS Provisioned Rate for Volume Initialization (volume initialization rate),
+   * at which to download the snapshot blocks from Amazon S3 to the volume.
+   *
+   * Valid range is between 100 and 300 MiB/s.
+   *
+   * This parameter is supported only for volumes created from snapshots.
+   *
+   * @see https://docs.aws.amazon.com/ebs/latest/userguide/initalize-volume.html#volume-initialization-rate
+   *
+   * @default undefined - The volume initialization rate is not set.
+   */
+  readonly volumeInitializationRate?: Size;
 }
 
 /**
@@ -650,6 +664,7 @@ export class Volume extends VolumeBase {
       volumeType: props.volumeType ??
         (FeatureFlags.of(this).isEnabled(cxapi.EBS_DEFAULT_GP3) ?
           EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3 : EbsDeviceVolumeType.GENERAL_PURPOSE_SSD),
+      volumeInitializationRate: props.volumeInitializationRate?.toMebibytes(),
     });
     resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -798,6 +813,19 @@ export class Volume extends VolumeBase {
           `throughput property takes a minimum of ${Min} and a maximum of ${Max}`,
           this,
         );
+      }
+    }
+
+    if (props.volumeInitializationRate) {
+      if (!props.snapshotId) {
+        throw new ValidationError('volumeInitializationRate can only be specified when creating a volume from a snapshot.', this);
+      }
+
+      if (!props.volumeInitializationRate.isUnresolved()) {
+        const rateMiBs = props.volumeInitializationRate.toMebibytes({ rounding: SizeRoundingBehavior.NONE });
+        if (rateMiBs < 100 || rateMiBs > 300) {
+          throw new ValidationError(`volumeInitializationRate must be between 100 and 300 MiB/s, got: ${rateMiBs} MiB/s`, this);
+        }
       }
     }
   }

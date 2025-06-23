@@ -58,7 +58,8 @@
       "PHP_81",
       "PYTHON_3",
       "PYTHON_311",
-      "RUBY_31"
+      "RUBY_31",
+      "NODEJS_22"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/access-entry.ts": {
@@ -255,7 +256,8 @@
       "V3_8_X",
       "V3_8_X_KRAFT",
       "V3_9_X",
-      "V3_9_X_KRAFT"
+      "V3_9_X_KRAFT",
+      "V4_0_X_KRAFT"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-neptune-alpha/lib/cluster.ts": {
@@ -620,6 +622,7 @@
       "ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_51K",
       "ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_200K",
       "ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0",
+      "ANTHROPIC_CLAUDE_SONNET_4_20250514_V1_0",
       "ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0",
       "ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_48K",
       "ANTHROPIC_CLAUDE_3_5_HAIKU_20241022_V1_0",
@@ -628,6 +631,7 @@
       "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_12K",
       "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_28K",
       "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_200K",
+      "ANTHROPIC_CLAUDE_OPUS_4_20250514_V1_0",
       "ANTHROPIC_CLAUDE_INSTANT_V1",
       "ANTHROPIC_CLAUDE_INSTANT_V1_2_100K",
       "COHERE_COMMAND_V14",
@@ -1559,6 +1563,7 @@
       "DIRECTORY_SERVICE_DATA",
       "DYNAMODB",
       "DYNAMODB_FIPS",
+      "DYNAMODB_STREAMS",
       "EBS_DIRECT",
       "EC2",
       "EC2_MESSAGES",
@@ -2420,7 +2425,8 @@
       "VER_3_07_1",
       "VER_3_08_0",
       "VER_3_08_1",
-      "VER_3_08_2"
+      "VER_3_08_2",
+      "VER_3_09_0"
     ],
     "AuroraPostgresEngineVersion": [
       "VER_9_6_8",
@@ -2701,6 +2707,7 @@
       "VER_5_7_44_RDS_20240808",
       "VER_5_7_44_RDS_20250103",
       "VER_5_7_44_RDS_20250213",
+      "VER_5_7_44_RDS_20250508",
       "VER_8_0",
       "VER_8_0_11",
       "VER_8_0_13",

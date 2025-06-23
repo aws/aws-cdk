@@ -106,6 +106,8 @@ const puppeteer10 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_1
 
 const playwright10 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0);
 const playwright10_with_handler_name = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0, 'playwright/canary.handler');
+const playwright20 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0);
+const playwright20_with_handler_name = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0, 'playwright/canary.handler');
 
 const selenium21 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1);
 const selenium30 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_3_0);
@@ -113,6 +115,7 @@ const selenium40 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_4_0
 const selenium41 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_4_1);
 const selenium50 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_5_0);
 const selenium51 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1);
+const selenium60 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_6_0);
 
 const test = new IntegTest(app, 'IntegCanaryTest', {
   testCases: [stack],
@@ -133,12 +136,15 @@ const test = new IntegTest(app, 'IntegCanaryTest', {
   puppeteer10,
   playwright10,
   playwright10_with_handler_name,
+  playwright20,
+  playwright20_with_handler_name,
   selenium21,
   selenium30,
   selenium40,
   selenium41,
   selenium50,
   selenium51,
+  selenium60,
 ].forEach((canary) => test.assertions
   .awsApiCall('Synthetics', 'getCanaryRuns', {
     Name: canary.canaryName,
