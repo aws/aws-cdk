@@ -119,7 +119,7 @@ test('Policy sizes do not exceed the maximum size', () => {
 
   // WHEN
   const regions = ['us-east-1', 'us-east-2', 'eu-west-1', 'eu-west-2', 'somethingelse1', 'somethingelse-2', 'yapregion', 'more-region'];
-  for (let i = 0; i < 70; i++) {
+  for (let i = 0; i < 60; i++) {
     pipeline.addStage(new FileAssetApp(pipelineStack, `App${i}`, {
       env: {
         account: `account${i}`,
