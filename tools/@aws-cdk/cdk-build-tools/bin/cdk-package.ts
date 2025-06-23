@@ -57,11 +57,6 @@ async function main() {
     return;
   }
 
-  // If we need to shrinkwrap this, do so now.
-  if (options.shrinkWrap) {
-    throw new Error('cdk-package: shrinkwrapping is no longer supported');
-  }
-
   // if this is a jsii package, use jsii-packmak
   if (isJsii()) {
     const command = [args['jsii-pacmak'],
@@ -73,13 +68,9 @@ async function main() {
     const target = path.join(outdir, 'js');
     await fs.remove(target);
     await fs.mkdirp(target);
-    if (options.bundle) {
-      throw new Error('cdk-package: bundling is no longer supported');
-    } else {
-      // just "npm pack" and deploy to "outdir"
-      const tarball = (await shell(['npm', 'pack'], { timers })).trim();
-      await fs.move(tarball, path.join(target, path.basename(tarball)));
-    }
+    // just "npm pack" and deploy to "outdir"
+    const tarball = (await shell(['npm', 'pack'], { timers })).trim();
+    await fs.move(tarball, path.join(target, path.basename(tarball)));
   }
 
   if (options.post) {

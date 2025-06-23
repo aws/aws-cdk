@@ -186,11 +186,6 @@ export interface CDKBuildOptions {
 
 export interface CDKPackageOptions {
   /**
-   *  Should this package be shrinkwrap
-   */
-  shrinkWrap?: boolean;
-
-  /**
    * Optional commands (formatted as a list of strings, which will be joined together with the && operator) to run before packaging
    */
   pre?: string[];
@@ -199,13 +194,6 @@ export interface CDKPackageOptions {
    * Optional commands (formatted as a list of strings, which will be joined together with the && operator) to run after packaging
   */
   post?: string[];
-
-  /**
-   * We used to configure bundling here, but this is no longer supported.
-   *
-   * @deprecated Don't use this anymore
-   */
-  bundle?: unknown;
 
   /**
    * Also package private packages for local usage.
