@@ -3,6 +3,9 @@
 # and that won't typecheck if Manifest.load() adds a union arm and now returns A | B | C.
 change-return-type:@aws-cdk/cloud-assembly-schema.Manifest.load
 
+# To deal with the same as the above: adding artifact properties weakens the ArtifactManifest type.
+weakened:aws-cdk-lib.cloud_assembly_schema.ArtifactManifest
+
 # Adding any new context queries will add to the ContextQueryProperties type,
 # which changes the signature of MissingContext.
 weakened:@aws-cdk/cloud-assembly-schema.MissingContext
@@ -190,7 +193,7 @@ removed:aws-cdk-lib.aws_ec2.CfnNetworkInterface.enablePrimaryIpv6
 removed:aws-cdk-lib.aws_ec2.CfnNetworkInterfaceAttachment.attrId
 removed:aws-cdk-lib.aws_ec2.CfnNetworkInterfaceProps.enablePrimaryIpv6
 
-# Changed type from GraphqlApi to IGraphqlApi to support import from a different stack, should not matter. 
+# Changed type from GraphqlApi to IGraphqlApi to support import from a different stack, should not matter.
 weakened:aws-cdk-lib.aws_appsync.SourceApi
 
 # Due to https://github.com/aws/aws-cdk/issues/27259, none of these could have worked
