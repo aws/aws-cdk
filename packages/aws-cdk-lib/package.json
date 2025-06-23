@@ -121,7 +121,7 @@
   "dependencies": {
     "@aws-cdk/asset-awscli-v1": "2.2.240",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.0",
-    "@aws-cdk/cloud-assembly-schema": "^44.2.0",
+    "@aws-cdk/cloud-assembly-schema": "^44.7.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.3.0",
@@ -508,7 +508,6 @@
     "./core/lib/helpers-internal": "./core/lib/helpers-internal/index.js",
     "./core/lib/metadata-resource": "./core/lib/metadata-resource.js",
     "./core/lib/prop-injectable": "./core/lib/prop-injectable.js",
-    "./core/lib/errors": "./core/lib/errors.js",
     "./custom-resources": "./custom-resources/index.js",
     "./custom-resources/lib/helpers-internal": "./custom-resources/lib/helpers-internal/index.js",
     "./cx-api": "./cx-api/index.js",
