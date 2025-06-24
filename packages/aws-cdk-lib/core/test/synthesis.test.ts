@@ -25,7 +25,7 @@ describe('synthesis', () => {
     expect(app.synth()).toEqual(session); // same session if we synth() again
     expect(list(session.directory)).toEqual(['cdk.out', 'manifest.json', 'tree.json']);
     expect(readJson(session.directory, 'manifest.json').artifacts).toMatchObject({
-      Tree: {
+      'Tree': {
         type: 'cdk:tree',
         properties: { file: 'tree.json' },
       },

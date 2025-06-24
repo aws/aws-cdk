@@ -258,7 +258,7 @@ describe('stage', () => {
         properties: {
           directoryName: 'assembly-StageLevel1',
           displayName: 'StageLevel1',
-        },  
+        },
       },
       'feature flag report': {
         type: 'cdk:feature-flag-report',
@@ -284,7 +284,7 @@ describe('stage', () => {
           module: '@aws-cdk/core',
           flags: expect.any(Object),
         },
-      }
+      },
     });
 
     const assemblyLevel2 = assemblyLevel1.getNestedAssembly('assembly-StageLevel1-StageLevel2');
@@ -302,7 +302,7 @@ describe('stage', () => {
           module: '@aws-cdk/core',
           flags: expect.any(Object),
         },
-      }
+      },
     });
   });
 

@@ -68,7 +68,6 @@ describe('generate feature flag report', () => {
     expect(flags['@aws-cdk/aws-s3:grantWriteWithoutAcl']).toBeDefined();
     expect(flags['@aws-cdk/aws-s3:grantWriteWithoutAcl'].userValue).toBe(true);
   });
-
   test('defaults userValue to false when not set in context', () => {
     const app = new App();
     const builder = new cxapi.CloudAssemblyBuilder('/tmp/test');

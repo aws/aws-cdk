@@ -30,7 +30,7 @@ export function generateFeatureFlagReport(builder: CloudAssemblyBuilder, root: I
     for (const [flagName, flagInfo] of Object.entries(feats.FLAGS)) {
       featureFlags[flagName] = parseFeatureFlagInfo(flagName, flagInfo, root);
     }
-    
+
     builder.addArtifact('feature flag report', {
       type: ArtifactType.FEATURE_FLAG_REPORT,
       properties: {
