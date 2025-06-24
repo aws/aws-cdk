@@ -469,6 +469,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * In that case, use the normal date-based retention policy to age out your
    * logs.
    *
+   * @deprecated use `logGroup` instead
    * @default RemovalPolicy.Retain
    */
   readonly logRemovalPolicy?: RemovalPolicy;
@@ -1137,7 +1138,7 @@ export class Function extends FunctionBase {
       if (props.logGroup) {
         throw new ValidationError('Cannot use `logRemovalPolicy` and `logGroup`', this);
       } else if (FeatureFlags.of(this).isEnabled(USE_CDK_MANAGED_LAMBDA_LOGGROUP)) {
-        throw new ValidationError('Cannot use `logRemovalPolicy` and `@aws-cdk/aws-lambda:useCdkManagedLogGroup`', this);
+        throw new ValidationError('Cannot use `logRemovalPolicy` and `@aws-cdk/aws-lambda:useCdkManagedLogGroup` flag together. Please set the removal policy on the automatically created log group directly', this);
       }
     }
 
