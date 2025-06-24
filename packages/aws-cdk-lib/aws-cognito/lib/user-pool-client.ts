@@ -525,12 +525,6 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       throw new ValidationError('Cannot activate enablePropagateAdditionalUserContextData in an app client without a client secret.', this);
     }
 
-    if (props.refreshTokenRotation && props.refreshTokenRotation.retryGracePeriodSeconds) {
-      if (props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() < 0 || props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() > 60) {
-        throw new ValidationError('retryGracePeriodSeconds for refresh token rotation should be between 0 and 60 seconds.', this);
-      }
-    }
-
     this._generateSecret = props.generateSecret;
     this.userPool = props.userPool;
 

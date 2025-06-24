@@ -1665,7 +1665,7 @@ describe('User Pool Client', () => {
         refreshTokenRotation: {
           retryGracePeriodSeconds: Duration.seconds(80),
         },
-      })).toThrow('retryGracePeriodSeconds for refresh token rotation should be between 0 and 60 seconds.');
+      })).toThrow('retryGracePeriodSeconds: Must be a duration between 0 seconds and 1 minute (inclusive); received 1 minute 20 seconds.');
     });
 
     test('explicitAuthFlows refresh token excluded if refresh token rotation is enabled', () => {
