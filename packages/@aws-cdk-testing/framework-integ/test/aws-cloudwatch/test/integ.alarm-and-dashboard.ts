@@ -98,7 +98,7 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   view: cloudwatch.LogQueryVisualizationType.PIE,
   logGroupNames: ['my-log-group'],
   queryString: "SELECT count(*) as count FROM 'my-log-group'",
-  queryLanguage: 'SQL',
+  queryLanguage: cloudwatch.LogQueryLanguage.SQL,
 }));
 dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   title: 'Sent message size',

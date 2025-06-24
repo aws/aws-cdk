@@ -27,6 +27,15 @@ export enum LogQueryVisualizationType {
   PIE = 'pie',
 }
 
+export enum LogQueryLanguage {
+  /** Logs Insights QL */
+  LOGS_INSIGHTS = 'Logs',
+  /** OpenSearch SQL */
+  SQL = 'SQL',
+  /** OpenSearch PPL */
+  PPL = 'PPL',
+}
+
 /**
  * Properties for a Query widget
  */
@@ -64,10 +73,9 @@ export interface LogQueryWidgetProps {
 
   /**
    * The query language to use for the query.
-   * Supported values include: 'Logs', 'SQL', 'PPL'
-   * @default - Logs Insights Query Language (default CloudWatch Logs query language)
+   * @default LogQueryLanguage.LOGS_INSIGHTS
    */
-  readonly queryLanguage?: string;
+  readonly queryLanguage?: LogQueryLanguage;
 
   /**
    * The region the metrics of this widget should be taken from

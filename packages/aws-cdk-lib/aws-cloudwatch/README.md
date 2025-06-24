@@ -799,7 +799,7 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   logGroupNames: ['my-log-group'],
   view: cloudwatch.LogQueryVisualizationType.TABLE,
   queryString: "SELECT count(*) as count FROM 'my-log-group'",
-  queryLanguage: 'SQL',
+  queryLanguage: cloudwatch.LogQueryLanguage.SQL,
 }));
 ```
 

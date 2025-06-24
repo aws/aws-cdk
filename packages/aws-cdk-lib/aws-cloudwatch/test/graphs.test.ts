@@ -8,6 +8,7 @@ import {
   GraphWidget,
   GraphWidgetView,
   LegendPosition,
+  LogQueryLanguage,
   LogQueryVisualizationType,
   LogQueryWidget,
   Metric,
@@ -323,7 +324,7 @@ describe('Graphs', () => {
       logGroupNames: [logGroup.logGroupName],
       view: LogQueryVisualizationType.STACKEDAREA,
       queryString: "SELECT count(*) as count FROM 'my-log-group'",
-      queryLanguage: 'SQL',
+      queryLanguage: LogQueryLanguage.SQL,
     });
 
     // THEN
