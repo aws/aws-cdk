@@ -91,11 +91,16 @@ export interface LogQueryWidgetProps {
   readonly height?: number;
 
   /**
-   * The account ID the log groups of this widget belong to
+   * The AWS account ID where the log groups are located.
    *
-   * Cross-account CloudWatch Logs queries require appropriate permissions to be set up.
+   * This enables cross-account functionality for CloudWatch dashboards.
+   * Before using this feature, ensure that proper cross-account sharing is configured
+   * between the monitoring account and source account.
    *
-   * @default Current account
+   * For more information, see:
+   * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html
+   *
+   * @default - Current account
    */
   readonly accountId?: string;
 

@@ -38,9 +38,16 @@ export interface MetricWidgetProps {
   readonly height?: number;
 
   /**
-   * Account ID for the metrics of this widget
+   * The AWS account ID where the metrics are located.
    *
-   * @default - If no accountId is specified, the current account is used as the default.
+   * This enables cross-account functionality for CloudWatch dashboards.
+   * Before using this feature, ensure that proper cross-account sharing is configured
+   * between the monitoring account and source account.
+   *
+   * For more information, see:
+   * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html
+   *
+   * @default - Current account
    */
   readonly accountId?: string;
 }
