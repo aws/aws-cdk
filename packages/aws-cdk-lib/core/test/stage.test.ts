@@ -252,18 +252,25 @@ describe('stage', () => {
     const rootAssembly = app.synth();
 
     // THEN
-    expect(rootAssembly.manifest.artifacts).toEqual({
+    expect(rootAssembly.manifest.artifacts).toMatchObject({
       'assembly-StageLevel1': {
         type: 'cdk:cloud-assembly',
         properties: {
           directoryName: 'assembly-StageLevel1',
           displayName: 'StageLevel1',
+        },  
+      },
+      'feature flag report': {
+        type: 'cdk:feature-flag-report',
+        properties: {
+          module: '@aws-cdk/core',
+          flags: expect.any(Object),
         },
       },
     });
 
     const assemblyLevel1 = rootAssembly.getNestedAssembly('assembly-StageLevel1');
-    expect(assemblyLevel1.manifest.artifacts).toEqual({
+    expect(assemblyLevel1.manifest.artifacts).toMatchObject({
       'assembly-StageLevel1-StageLevel2': {
         type: 'cdk:cloud-assembly',
         properties: {
@@ -271,10 +278,17 @@ describe('stage', () => {
           displayName: 'StageLevel1/StageLevel2',
         },
       },
+      'feature flag report': {
+        type: 'cdk:feature-flag-report',
+        properties: {
+          module: '@aws-cdk/core',
+          flags: expect.any(Object),
+        },
+      }
     });
 
     const assemblyLevel2 = assemblyLevel1.getNestedAssembly('assembly-StageLevel1-StageLevel2');
-    expect(assemblyLevel2.manifest.artifacts).toEqual({
+    expect(assemblyLevel2.manifest.artifacts).toMatchObject({
       'assembly-StageLevel1-StageLevel2-StageLevel3': {
         type: 'cdk:cloud-assembly',
         properties: {
@@ -282,6 +296,13 @@ describe('stage', () => {
           displayName: 'StageLevel1/StageLevel2/StageLevel3',
         },
       },
+      'feature flag report': {
+        type: 'cdk:feature-flag-report',
+        properties: {
+          module: '@aws-cdk/core',
+          flags: expect.any(Object),
+        },
+      }
     });
   });
 
