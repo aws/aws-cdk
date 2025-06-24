@@ -283,13 +283,15 @@ cdk.Tags.of(fn).add('env', 'dev'); // the tag is also added to the log group
 
 ### Log removal policy
 
-Besides from specifying your own Log Group with `logGroup` property, all other methods of creating Log Group support configuring log removal policy:
-
+When using the deprecated `logRetention` property for creating a LogGroup, you can configuring log removal policy:
 ```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+
 const fn = new lambda.Function(this, 'MyFunctionWithFFTrue', {
   runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'handler.main',
   code: lambda.Code.fromAsset('lambda'),
+  logRetention: logs.RetentionDays.INFINITE,
   logRemovalPolicy: RemovalPolicy.RETAIN,
 });
 ```

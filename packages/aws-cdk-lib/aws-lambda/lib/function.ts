@@ -1136,7 +1136,7 @@ export class Function extends FunctionBase {
     // Log retention
     if (props.logRemovalPolicy) {
       if (props.logGroup) {
-        throw new ValidationError('Cannot use `logRemovalPolicy` and `logGroup`', this);
+        throw new ValidationError('Cannot use `logRemovalPolicy` and `logGroup` together. Please set the removal policy on the logGroup directly', this);
       } else if (FeatureFlags.of(this).isEnabled(USE_CDK_MANAGED_LAMBDA_LOGGROUP)) {
         throw new ValidationError('Cannot use `logRemovalPolicy` and `@aws-cdk/aws-lambda:useCdkManagedLogGroup` flag together. Please set the removal policy on the automatically created log group directly', this);
       }
