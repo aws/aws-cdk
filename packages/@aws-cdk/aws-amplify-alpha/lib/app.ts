@@ -184,6 +184,13 @@ export interface AppProps {
    * @default undefined - a new role is created when `platform` is `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`, otherwise no compute role
    */
   readonly computeRole?: iam.IRole;
+
+  /**
+   * Specifies the size of the build instance.
+   *
+   * @default undefined - Amplify default setting is `BuildComputeType.STANDARD_8GB`.
+   */
+  readonly buildComputeType?: BuildComputeType;
 }
 
 /**
@@ -311,6 +318,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
       repository: sourceCodeProviderOptions?.repository,
       customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders, this) : undefined,
       platform: appPlatform,
+      jobConfig: props.buildComputeType ? { buildComputeType: props.buildComputeType } : undefined,
     });
 
     this.appId = app.attrAppId;
@@ -647,4 +655,24 @@ export enum CacheConfigType {
    * except that it excludes all cookies from the cache key.
    */
   AMPLIFY_MANAGED_NO_COOKIES = 'AMPLIFY_MANAGED_NO_COOKIES',
+}
+
+/**
+ * Specifies the size of the build instance.
+ */
+export enum BuildComputeType {
+  /**
+   * vCPUs: 4, Memory: 8 GiB, Disk space: 128 GB
+   */
+  STANDARD_8GB = 'STANDARD_8GB',
+
+  /**
+   * vCPUs: 8, Memory: 16 GiB, Disk space: 128 GB
+   */
+  LARGE_16GB = 'LARGE_16GB',
+
+  /**
+   * vCPUs: 36, Memory: 72 GiB, Disk space: 128 GB
+   */
+  XLARGE_72GB = 'XLARGE_72GB',
 }
