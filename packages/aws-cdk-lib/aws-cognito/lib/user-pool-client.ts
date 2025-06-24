@@ -239,16 +239,10 @@ export class UserPoolClientIdentityProvider {
  */
 export interface RefreshTokenRotation {
   /**
-   * The state of refresh token rotation for the current app client.
-   * @default - undefined (CloudFormation defaults to DISABLED)
-   */
-  readonly feature?: boolean;
-
-  /**
    * Grace period for the original refresh token (0-60 seconds).
    * @default - undefined (CloudFormation defaults value)
    */
-  readonly retryGracePeriodSeconds?: Duration;
+  readonly retryGracePeriodSeconds: Duration;
 }
 
 /**
@@ -556,18 +550,12 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       readAttributes: props.readAttributes?.attributes(),
       writeAttributes: props.writeAttributes?.attributes(),
       enableTokenRevocation: props.enableTokenRevocation,
-      refreshTokenRotation: props.refreshTokenRotation
-        ? {
-          feature: props.refreshTokenRotation.feature && props.refreshTokenRotation.retryGracePeriodSeconds &&
-            props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() > 0 ? 'ENABLED' : 'DISABLED',
-          retryGracePeriodSeconds: props.refreshTokenRotation.retryGracePeriodSeconds ?
-            props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() : 0,
-        } : undefined,
       enablePropagateAdditionalUserContextData: props.enablePropagateAdditionalUserContextData,
       analyticsConfiguration: props.analytics ? this.configureAnalytics(props.analytics) : undefined,
     });
     this.configureAuthSessionValidity(resource, props);
     this.configureTokenValidity(resource, props);
+    this.configureRefreshTokenRotation(resource, props);
 
     this.userPoolClientId = resource.ref;
     this._userPoolClientName = props.userPoolClientName;
@@ -633,7 +621,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     if (props.authFlows.user) { authFlows.push('ALLOW_USER_AUTH'); }
 
     // refreshToken should only be allowed if authFlows are present and refreshTokenRotation is disabled
-    if (!props.refreshTokenRotation || !props.refreshTokenRotation.feature) {
+    if (!props.refreshTokenRotation || props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() === 0) {
       authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
     }
 
@@ -711,6 +699,17 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     resource.idTokenValidity = props.idTokenValidity ? props.idTokenValidity.toMinutes() : undefined;
     resource.refreshTokenValidity = props.refreshTokenValidity ? props.refreshTokenValidity.toMinutes() : undefined;
     resource.accessTokenValidity = props.accessTokenValidity ? props.accessTokenValidity.toMinutes() : undefined;
+  }
+
+  private configureRefreshTokenRotation(resource: CfnUserPoolClient, props: UserPoolClientProps) {
+    if (props.refreshTokenRotation) {
+      this.validateDuration('retryGracePeriodSeconds', Duration.seconds(0), Duration.minutes(1), props.refreshTokenRotation.retryGracePeriodSeconds);
+    }
+    resource.refreshTokenRotation = props.refreshTokenRotation
+        ? {
+          feature: props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() > 0 ? 'ENABLED' : 'DISABLED',
+          retryGracePeriodSeconds: props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds(),
+        } : undefined
   }
 
   private validateDuration(name: string, min: Duration, max: Duration, value?: Duration) {

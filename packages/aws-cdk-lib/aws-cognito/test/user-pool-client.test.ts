@@ -1617,21 +1617,18 @@ describe('User Pool Client', () => {
       pool.addClient('Client1', {
         userPoolClientName: 'Client1',
         refreshTokenRotation: {
-          feature: true,
           retryGracePeriodSeconds: Duration.seconds(5),
         },
       });
       pool.addClient('Client2', {
         userPoolClientName: 'Client2',
         refreshTokenRotation: {
-          feature: true,
           retryGracePeriodSeconds: Duration.seconds(25),
         },
       });
       pool.addClient('Client3', {
         userPoolClientName: 'Client3',
         refreshTokenRotation: {
-          feature: true,
           retryGracePeriodSeconds: Duration.seconds(50),
         },
       });
@@ -1666,13 +1663,12 @@ describe('User Pool Client', () => {
 
       expect(() =>pool.addClient('Client1', {
         refreshTokenRotation: {
-          feature: true,
           retryGracePeriodSeconds: Duration.seconds(80),
         },
       })).toThrow('retryGracePeriodSeconds for refresh token rotation should be between 0 and 60 seconds.');
     });
 
-    test('explicitAuthFlows refresh token false if refresh token rotation is enabled', () => {
+    test('explicitAuthFlows refresh token excluded if refresh token rotation is enabled', () => {
       // GIVEN
       const stack = new Stack();
       const pool = new UserPool(stack, 'Pool');
@@ -1687,7 +1683,6 @@ describe('User Pool Client', () => {
           user: true,
         },
         refreshTokenRotation: {
-          feature: true,
           retryGracePeriodSeconds: Duration.seconds(40),
         },
       });
@@ -1704,7 +1699,7 @@ describe('User Pool Client', () => {
       });
     });
 
-    test('explicitAuthFlows refresh token true if refresh token rotation is disabled', () => {
+    test('explicitAuthFlows refresh token included if refresh token rotation is disabled', () => {
       // GIVEN
       const stack = new Stack();
       const pool = new UserPool(stack, 'Pool');
@@ -1719,8 +1714,7 @@ describe('User Pool Client', () => {
           user: true,
         },
         refreshTokenRotation: {
-          feature: false,
-          retryGracePeriodSeconds: Duration.seconds(50),
+          retryGracePeriodSeconds: Duration.seconds(0),
         },
       });
 
@@ -1744,28 +1738,7 @@ describe('User Pool Client', () => {
       // WHEN
       pool.addClient('Client1', {
         refreshTokenRotation: {
-          feature: true,
           retryGracePeriodSeconds: Duration.seconds(0),
-        },
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
-        RefreshTokenRotation: {
-          Feature: 'DISABLED',
-          RetryGracePeriodSeconds: 0,
-        },
-      });
-    });
-
-    test('refreshTokenRotation set to disabled and retryGracePeriod to 0 if retryGracePeriod is undefined', () => {
-      const stack = new Stack();
-      const pool = new UserPool(stack, 'Pool');
-
-      // WHEN
-      pool.addClient('Client', {
-        refreshTokenRotation: {
-          feature: true,
         },
       });
 
