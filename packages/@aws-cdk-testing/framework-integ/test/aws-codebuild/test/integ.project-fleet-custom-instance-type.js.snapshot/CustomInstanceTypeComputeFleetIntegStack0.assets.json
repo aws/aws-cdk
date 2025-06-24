@@ -1,16 +1,16 @@
 {
   "version": "41.0.0",
   "files": {
-    "beb3ad666baa0d0d9864b95b16bb48cfad390464446b3f75af5528f2508815bc": {
-      "displayName": "AttributeBasedComputeFleetIntegStack1 Template",
+    "3ed7a6c9d307c6bf5f25efdc6d941a2eaa31744214cb980bb0dbc564770cef62": {
+      "displayName": "CustomInstanceTypeComputeFleetIntegStack0 Template",
       "source": {
-        "path": "AttributeBasedComputeFleetIntegStack1.template.json",
+        "path": "CustomInstanceTypeComputeFleetIntegStack0.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "beb3ad666baa0d0d9864b95b16bb48cfad390464446b3f75af5528f2508815bc.json",
+          "objectKey": "3ed7a6c9d307c6bf5f25efdc6d941a2eaa31744214cb980bb0dbc564770cef62.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
