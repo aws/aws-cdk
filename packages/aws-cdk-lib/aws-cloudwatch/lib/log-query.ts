@@ -98,7 +98,7 @@ export interface LogQueryWidgetProps {
    * between the monitoring account and source account.
    *
    * For more information, see:
-   * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html
+   * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html
    *
    * @default - Current account
    */
