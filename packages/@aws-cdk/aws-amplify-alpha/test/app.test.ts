@@ -633,3 +633,17 @@ test('throws when compute role is set with a non SSR app', () => {
     });
   }).toThrow('`computeRole` can only be specified for `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.');
 });
+
+test.each([amplify.BuildComputeType.STANDARD_8GB, amplify.BuildComputeType.LARGE_16GB, amplify.BuildComputeType.XLARGE_72GB])('create an app with buildComputeType is set to %s', (buildComputeType) => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    buildComputeType,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    JobConfig: {
+      BuildComputeType: buildComputeType,
+    },
+  });
+});

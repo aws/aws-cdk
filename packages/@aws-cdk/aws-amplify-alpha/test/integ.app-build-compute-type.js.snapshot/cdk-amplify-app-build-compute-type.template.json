@@ -1,0 +1,146 @@
+{
+ "Resources": {
+  "AppStandardRoleE2FE6E28": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "amplify.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AppStandard64C25109": {
+   "Type": "AWS::Amplify::App",
+   "Properties": {
+    "BasicAuthConfig": {
+     "EnableBasicAuth": false
+    },
+    "IAMServiceRole": {
+     "Fn::GetAtt": [
+      "AppStandardRoleE2FE6E28",
+      "Arn"
+     ]
+    },
+    "JobConfig": {
+     "BuildComputeType": "STANDARD_8GB"
+    },
+    "Name": "AppStandard",
+    "Platform": "WEB"
+   }
+  },
+  "AppLargeRoleF69E1D27": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "amplify.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AppLarge1965F25E": {
+   "Type": "AWS::Amplify::App",
+   "Properties": {
+    "BasicAuthConfig": {
+     "EnableBasicAuth": false
+    },
+    "IAMServiceRole": {
+     "Fn::GetAtt": [
+      "AppLargeRoleF69E1D27",
+      "Arn"
+     ]
+    },
+    "JobConfig": {
+     "BuildComputeType": "LARGE_16GB"
+    },
+    "Name": "AppLarge",
+    "Platform": "WEB"
+   }
+  },
+  "AppXLargeRoleF3215EF5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "amplify.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AppXLarge0552F577": {
+   "Type": "AWS::Amplify::App",
+   "Properties": {
+    "BasicAuthConfig": {
+     "EnableBasicAuth": false
+    },
+    "IAMServiceRole": {
+     "Fn::GetAtt": [
+      "AppXLargeRoleF3215EF5",
+      "Arn"
+     ]
+    },
+    "JobConfig": {
+     "BuildComputeType": "XLARGE_72GB"
+    },
+    "Name": "AppXLarge",
+    "Platform": "WEB"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

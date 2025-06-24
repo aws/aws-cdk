@@ -1,0 +1,14 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "cdk-amplify-app-build-compute-type-integ/DefaultTest": {
+      "stacks": [
+        "cdk-amplify-app-build-compute-type"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "cdk-amplify-app-build-compute-type-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkamplifyappbuildcomputetypeintegDefaultTestDeployAssert0B375296"
+    }
+  },
+  "minimumCliVersion": "2.1019.1"
+}

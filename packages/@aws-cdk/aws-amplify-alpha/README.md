@@ -353,6 +353,23 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
 });
 ```
 
+## Build Compute Type
+
+You can specify the build compute type by setting the `buildComputeType` property:
+
+```ts
+const amplifyApp = new amplify.App(this, 'MyApp', {
+  buildComputeType: amplify.BuildComputeType.LARGE_16GB,
+});
+```
+
+Available build compute types:
+- `STANDARD_8GB` - 4 vCPUs, 8 GiB Memory, 128 GB Disk space
+- `LARGE_16GB` - 8 vCPUs, 16 GiB Memory, 128 GB Disk space
+- `XLARGE_72GB` - 36 vCPUs, 72 GiB Memory, 128 GB Disk space
+
+For more information, see [Configuring the build instance for an Amplify application](https://docs.aws.amazon.com/amplify/latest/userguide/custom-build-instance.html).
+
 ## Deploying Assets
 
 `sourceCodeProvider` is optional; when this is not specified the Amplify app can be deployed to using `.zip` packages. The `asset` property can be used to deploy S3 assets to Amplify as part of the CDK:
