@@ -706,10 +706,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       this.validateDuration('retryGracePeriodSeconds', Duration.seconds(0), Duration.minutes(1), props.refreshTokenRotation.retryGracePeriodSeconds);
     }
     resource.refreshTokenRotation = props.refreshTokenRotation
-        ? {
-          feature: props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() > 0 ? 'ENABLED' : 'DISABLED',
-          retryGracePeriodSeconds: props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds(),
-        } : undefined
+      ? {
+        feature: props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() > 0 ? 'ENABLED' : 'DISABLED',
+        retryGracePeriodSeconds: props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds(),
+      } : undefined;
   }
 
   private validateDuration(name: string, min: Duration, max: Duration, value?: Duration) {
