@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6c49c89496c15eaeddfc6a1a22b8bfab90150b5c9dd799e02e48da90ce016b57.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/133c38799d0a08bd1627380433565c27872fad9920877ecab8bd450ac6664a71.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -955,6 +955,20 @@
             "data": "OnEventHandler42BEBAE0"
           }
         ],
+        "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnEventHandlerLogGroup54D03A56"
+          }
+        ],
         "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -1027,6 +1041,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "IsCompleteHandler7073F4DA"
+          }
+        ],
+        "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IsCompleteHandlerLogGroupC85FFE26"
           }
         ],
         "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent": [
@@ -1233,6 +1261,20 @@
             "data": "ProviderframeworkonEvent83C1D0A7"
           }
         ],
+        "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkonEventLogGroup683073A3"
+          }
+        ],
         "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -1412,6 +1454,20 @@
             "data": "ProviderframeworkisComplete26D7B0CB"
           }
         ],
+        "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkisCompleteLogGroupEB065F2D"
+          }
+        ],
         "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -1589,6 +1645,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonTimeout0B47CA38"
+          }
+        ],
+        "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkonTimeoutLogGroupE53BF187"
           }
         ],
         "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role": [
@@ -1810,6 +1880,20 @@
             "data": "Handler886CB40B"
           }
         ],
+        "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.KubectlProvider/Handler/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.KubectlProvider/Handler/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HandlerLogGroup50A7B41D"
+          }
+        ],
         "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -1970,6 +2054,20 @@
             "data": "ProviderframeworkonEvent83C1D0A7"
           }
         ],
+        "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkonEventLogGroup683073A3"
+          }
+        ],
         "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap": [
           {
             "type": "aws:cdk:logicalId",
@@ -2088,5 +2186,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1017.1"
+  "minimumCliVersion": "2.1019.2"
 }

@@ -50,6 +50,25 @@
     "AuthorizerFunctionServiceRole5B2A061B"
    ]
   },
+  "AuthorizerFunctionLogGroupB47801AB": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "AuthorizerFunctionB4DBAA43"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "AuthorizerFunctionapiappsync4E3369BF": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {

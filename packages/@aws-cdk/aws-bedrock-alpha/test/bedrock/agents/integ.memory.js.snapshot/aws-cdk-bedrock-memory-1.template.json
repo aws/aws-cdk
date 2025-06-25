@@ -50,6 +50,25 @@
     "DefaultMemoryFunctionServiceRoleD8C5CDAF"
    ]
   },
+  "DefaultMemoryFunctionLogGroupD9F7BD3F": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "DefaultMemoryFunctionAC6D5374"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "DefaultMemoryFunctionLambdaInvocationPolicyc809bacfbaa9d9a5AC2FFF6B": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
@@ -115,6 +134,25 @@
    "DependsOn": [
     "CustomMemoryFunctionServiceRoleA64B0AD5"
    ]
+  },
+  "CustomMemoryFunctionLogGroup61F2359A": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "CustomMemoryFunctionB4B5CB9A"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "CustomMemoryFunctionLambdaInvocationPolicyc8492664c8e1cb16AC1ED6E1": {
    "Type": "AWS::Lambda::Permission",

@@ -32,7 +32,7 @@
     "nx": "^20",
     "semver": "^7.7.2",
     "standard-version": "^9.5.0",
-    "ts-jest": "^29.3.4",
+    "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "typescript": "~5.5.4"
   },

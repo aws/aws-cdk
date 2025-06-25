@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "lambda-alarm-multiple-stepscalingpolicy.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/35a7a60080f6b049183fb91eb6885b7c36daec82adbe16993fe0b53cd1dbf531.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8f58059aa262b8169bdf010a365e2f180e7b9d788b28e3787133aeec977fffb5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -76,6 +76,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdaCCE802FB"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaLogGroup4018640B"
           }
         ],
         "/lambda-alarm-multiple-stepscalingpolicy/MyLambda/lambdaalarmmultiplestepscalingpolicyFleetMetricScale1LowerAlarm26FCB6BFAlarmPermission": [
@@ -144,6 +158,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambda2254B54D5"
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda2/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/lambda-alarm-multiple-stepscalingpolicy/MyLambda2/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambda2LogGroup1ADDC8C2"
           }
         ],
         "/lambda-alarm-multiple-stepscalingpolicy/MyLambda2/lambdaalarmmultiplestepscalingpolicyFleetMetricScale1LowerAlarm26FCB6BFAlarmPermission": [
@@ -809,5 +837,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1014.0"
+  "minimumCliVersion": "2.1019.2"
 }

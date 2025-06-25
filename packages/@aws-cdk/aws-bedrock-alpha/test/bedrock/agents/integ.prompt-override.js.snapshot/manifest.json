@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/965de1cced7bc670a8a398eec58c7e6bab6f5cac604e56e0b2acb86253126514.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/842cd91696a14485791485a2860d391519a0147353c86afefd4eeb551e511333.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -78,6 +78,20 @@
             "data": "PromptOverrideFunctionD82AB437"
           }
         ],
+        "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PromptOverrideFunctionLogGroupB1001805"
+          }
+        ],
         "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction/LambdaInvocationPolicy-c8b9aaceca433c55": [
           {
             "type": "aws:cdk:logicalId",
@@ -128,6 +142,20 @@
             "data": "CustomParserActionFunction3DAF0C7A"
           }
         ],
+        "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomParserActionFunctionLogGroupD54EA446"
+          }
+        ],
         "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction/LambdaInvocationPolicy-c8cded76e8ed1a75": [
           {
             "type": "aws:cdk:logicalId",
@@ -176,6 +204,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ParserFunctionE8A187F2"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/ParserFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/ParserFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParserFunctionLogGroup947036DC"
           }
         ],
         "/aws-cdk-bedrock-prompt-override-1/AgentWithPromptOverride/Role": [
@@ -460,5 +502,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1017.1"
+  "minimumCliVersion": "2.1019.2"
 }
