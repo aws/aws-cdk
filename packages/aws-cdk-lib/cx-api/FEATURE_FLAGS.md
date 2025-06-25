@@ -18,6 +18,7 @@ Flags come in three types:
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
 | [@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration](#aws-cdkaws-ec2-alphauseresourceidforvpcv2migration) | When enabled, use resource IDs for VPC V2 migration | V2_NEXT | new default |
+| [@aws-cdk/aws-ecr-assets:dockerIgnoreNestedExcludeFix](#aws-cdkaws-ecr-assetsdockerignorenestedexcludefix) | When enabled, fixes the bug concerning excluding nested file patterns | V2_NEXT | fix |
 | [@aws-cdk/aws-lambda:useCdkManagedLogGroup](#aws-cdkaws-lambdausecdkmanagedloggroup) | When enabled, CDK creates and manages loggroup for the lambda function | V2_NEXT | new default |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | fix |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | fix |
@@ -191,7 +192,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
-    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true
+    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
+    "@aws-cdk/aws-ecr-assets:dockerIgnoreNestedExcludeFix": true
   }
 }
 ```
@@ -459,6 +461,28 @@ the two versions.
 | V2_NEXT | `false` | `false` |
 
 **Compatibility with old behavior:** Disable the feature flag to use getAtt references for VPC V2 migration
+
+
+### @aws-cdk/aws-ecr-assets:dockerIgnoreNestedExcludeFix
+
+*When enabled, fixes the bug concerning excluding nested file patterns*
+
+Flag type: Backwards incompatible bugfix
+
+This feature flag fixes a bug where Docker assets does not correctly process exclude lines from the .dockerignore files. For example,
+if the line `!build/*.js` is written after the line `build` in .dockerignore, the Docker engine treats this as an override and includes any
+`!build/*.js`. CDK did not consider this behavior before and did not copy those nested files excluded from the ignore.
+
+This feature flag fixes that issue. This means that files that were incorrectly not copied to the docker asset will be included again, which may
+be a breaking change.
+
+This bug was reported in this issue: https://github.com/aws/aws-cdk/issues/13636
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2_NEXT | `false` | `true` |
 
 
 ### @aws-cdk/aws-lambda:useCdkManagedLogGroup
