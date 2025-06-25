@@ -50,6 +50,25 @@
     "ActionGroupFunctionServiceRole77660D62"
    ]
   },
+  "ActionGroupFunctionLogGroup05A58C56": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ActionGroupFunctionFE14D1CB"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "ActionGroupFunctionLambdaInvocationPolicyc855117c0e9b7e1e08A69654": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
