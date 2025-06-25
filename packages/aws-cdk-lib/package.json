@@ -525,7 +525,6 @@
     "./region-info": "./region-info/index.js",
     "./triggers": "./triggers/index.js"
   },
-  "preferredCdkCliVersion": "2",
   "publishConfig": {
     "tag": "latest"
   },
