@@ -283,7 +283,7 @@ cdk.Tags.of(fn).add('env', 'dev'); // the tag is also added to the log group
 
 ### Log removal policy
 
-When using the deprecated `logRetention` property for creating a LogGroup, you can configuring log removal policy:
+When using the deprecated `logRetention` property for creating a LogGroup, you can configure log removal policy:
 ```ts
 import * as logs from 'aws-cdk-lib/aws-logs';
 
