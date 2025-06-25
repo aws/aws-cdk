@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e8e95828b9fd0a1a052a7f37cffa2928e779a1d0b0f1c70b51c4ffd5cb261db9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0f4bbf0d98b4af12ad718ac093e4b2d47ebed9adc239e1b9c22ee2a0a9d1c6c8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -202,6 +202,20 @@
             "data": "GlueFunctionEB1182FC"
           }
         ],
+        "/lambda-event-source-glue-schema-registry/GlueFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/GlueFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GlueFunctionLogGroupEF019AD3"
+          }
+        ],
         "/lambda-event-source-glue-schema-registry/GlueFunction/KafkaEventSource:46eb851822d1a9f28d63dc4ec210952e:test-topic-smk-glue": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -293,24 +307,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "GlueFunctioninlinePolicyAddedToExecutionRole043C5A5B3": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GlueFunctioninlinePolicyAddedToExecutionRole043C5A5B3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "GlueFunctioninlinePolicyAddedToExecutionRole14519DF66": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GlueFunctioninlinePolicyAddedToExecutionRole14519DF66",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "lambda-event-source-glue-schema-registry"
@@ -332,7 +328,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/da9f0babd9a7dd86b158b5175c2006fd78e7a2f41f78006949658b482a4b865f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e6e72c2f1c71af118ab03cdf46019315073827f6005528ad5c5b0abdfc5a09fe.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -500,6 +496,20 @@
             "data": "ConfluentFunction5D29A9A6"
           }
         ],
+        "/lambda-event-source-confluent-schema-registry/ConfluentFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/lambda-event-source-confluent-schema-registry/ConfluentFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfluentFunctionLogGroupD5D16991"
+          }
+        ],
         "/lambda-event-source-confluent-schema-registry/ConfluentFunction/KafkaEventSource:46eb851822d1a9f28d63dc4ec210952e:test-topic-smk-confluent": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -644,5 +654,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1018.0"
+  "minimumCliVersion": "2.1019.2"
 }
