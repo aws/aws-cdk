@@ -468,40 +468,76 @@ describe('State Machine Resources', () => {
         Statement: Match.arrayWith([Match.objectLike({
           Action: 'states:RedriveExecution',
           Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':states:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':execution:',
-                {
-                  'Fn::Select': [
-                    6,
-                    {
-                      'Fn::Split': [
-                        ':',
-                        {
-                          Ref: 'StateMachine2E01A3A5',
-                        },
-                      ],
-                    },
-                  ],
-                },
-                ':*',
+          Resource: [
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':execution:',
+                  {
+                    'Fn::Select': [
+                      6,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'StateMachine2E01A3A5',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  ':*',
+                ],
               ],
-            ],
-          },
+            },
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':execution:',
+                  {
+                    'Fn::Select': [
+                      6,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'StateMachine2E01A3A5',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  '/*:*',
+                ],
+              ],
+            },
+          ],
         })]),
       },
     });
