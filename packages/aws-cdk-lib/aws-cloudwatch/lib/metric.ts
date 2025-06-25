@@ -105,6 +105,27 @@ export interface CommonMetricOptions {
   readonly color?: string;
 
   /**
+   * Unique identifier for this metric when used in dashboard widgets.
+   *
+   * The id can be used as a variable to represent this metric in math expressions.
+   * Valid characters are letters, numbers, and underscore. The first character
+   * must be a lowercase letter.
+   *
+   * @default - Auto-generated ID
+   */
+  readonly id?: string;
+
+  /**
+   * Whether this metric should be visible in dashboard graphs.
+   *
+   * Setting this to false is useful when you want to hide raw metrics
+   * that are used in math expressions, and show only the expression results.
+   *
+   * @default true
+   */
+  readonly visible?: boolean;
+
+  /**
    * Account which this metric comes from.
    *
    * @default - Deployment account.
@@ -340,6 +361,10 @@ export class Metric implements IMetric {
   public readonly label?: string;
   /** The hex color code used when this metric is rendered on a graph. */
   public readonly color?: string;
+  /** Unique identifier for this metric when used in dashboard widgets. */
+  public readonly id?: string;
+  /** Whether this metric should be visible in dashboard graphs. */
+  public readonly visible?: boolean;
 
   /** Unit of the metric. */
   public readonly unit?: Unit;
@@ -395,6 +420,8 @@ export class Metric implements IMetric {
 
     this.label = props.label;
     this.color = props.color;
+    this.id = props.id;
+    this.visible = props.visible;
     this.unit = props.unit;
     this.#accountOverride = props.account;
     this.#regionOverride = props.region;
@@ -417,6 +444,8 @@ export class Metric implements IMetric {
     // Short-circuit creating a new object if there would be no effective change
     if ((props.label === undefined || props.label === this.label)
       && (props.color === undefined || props.color === this.color)
+      && (props.id === undefined || props.id === this.id)
+      && (props.visible === undefined || props.visible === this.visible)
       && (props.statistic === undefined || props.statistic === this.statistic)
       && (props.unit === undefined || props.unit === this.unit)
       && (props.account === undefined || props.account === this.#accountOverride)
@@ -440,6 +469,8 @@ export class Metric implements IMetric {
       unit: ifUndefined(props.unit, this.unit),
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
+      id: ifUndefined(props.id, this.id),
+      visible: ifUndefined(props.visible, this.visible),
       account: ifUndefined(props.account, this.#accountOverride),
       region: ifUndefined(props.region, this.#regionOverride),
       stackAccount: ifUndefined(props.stackAccount, this.#stackAccount),
@@ -500,6 +531,8 @@ export class Metric implements IMetric {
       renderingProperties: {
         color: this.color,
         label: this.label,
+        id: this.id,
+        visible: this.visible,
       },
     };
   }
