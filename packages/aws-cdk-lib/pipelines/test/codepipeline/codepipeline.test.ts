@@ -277,6 +277,32 @@ test('CodeBuild asset role has the right Principal with the feature enabled', ()
   );
 });
 
+test.each([
+  [undefined, '2'],
+  ['9.9.9', '9.9.9'],
+])('When I request CLI version version %p I get %p', (requested, expected) => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipe = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    cliVersion: requested,
+  });
+
+  pipe.addStage(new FileAssetApp(pipelineStack, 'App', {}));
+
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Source: {
+      BuildSpec: Match.serializedJson(Match.objectLike({
+        phases: {
+          install: {
+            commands: [
+              `npm install -g aws-cdk@${expected}`,
+            ],
+          },
+        },
+      })),
+    },
+  });
+});
+
 test('CodeBuild asset role has the right Principal with the feature disabled', () => {
   const stack = new cdk.Stack();
   stack.node.setContext(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, false);
