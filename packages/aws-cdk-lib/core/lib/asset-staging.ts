@@ -5,6 +5,7 @@ import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
 import { BundlingFileAccess, BundlingOptions, BundlingOutput } from './bundling';
 import { AssumptionError, ValidationError } from './errors';
+import { FeatureFlags } from './feature-flags';
 import { FileSystem, FingerprintOptions } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
@@ -403,7 +404,12 @@ export class AssetStaging extends Construct {
       fs.copyFileSync(sourcePath, targetPath);
     } else if (this.sourceStats.isDirectory()) {
       fs.mkdirSync(targetPath);
-      FileSystem.copyDirectory(sourcePath, targetPath, this.fingerprintOptions);
+      FileSystem.copyDirectory(sourcePath, targetPath, {
+        ...this.fingerprintOptions,
+        dockerIgnoreOptions: {
+          copyNestedExcludes: FeatureFlags.of(this).isEnabled(cxapi.DOCKER_IGNORE_NESTED_EXCLUDE_FIX),
+        },
+      });
     } else {
       throw new ValidationError(`Unknown file type: ${sourcePath}`, this);
     }

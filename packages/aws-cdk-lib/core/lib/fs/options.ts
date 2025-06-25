@@ -58,6 +58,19 @@ export enum IgnoreMode {
   DOCKER = 'docker',
 }
 
+/**
+ * Extra options for docker ignore mode.
+ */
+export interface DockerIgnoreOptions {
+  /**
+   * If this is set to true, then when processing .dockerignore files, copy files that were excluded with a nested exclude pattern.
+   *
+   * @see {@link https://github.com/aws/aws-cdk/issues/13636} for more info on the bug this option fixes.
+   * @default true if the feature flag DOCKER_IGNORE_NESTED_EXCLUDE_FIX is set to true, otherwise false
+   */
+  readonly copyNestedExcludes?: boolean;
+}
+
 interface FileOptions {
   /**
    * File paths matching the patterns will be excluded. See `ignoreMode` to set the matching behavior.
@@ -85,6 +98,11 @@ export interface CopyOptions extends FileOptions {
    * @default SymlinkFollowMode.NEVER
    */
   readonly follow?: SymlinkFollowMode;
+
+  /**
+   * Extra options for docker ignore mode.
+   */
+  readonly dockerIgnoreOptions?: DockerIgnoreOptions;
 }
 
 /**

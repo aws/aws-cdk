@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { Construct } from 'constructs';
 import { copyDirectory } from './copy';
 import { fingerprint } from './fingerprint';
 import { CopyOptions, FingerprintOptions } from './options';
@@ -18,6 +19,7 @@ export class FileSystem {
    * @param destDir Destination directory
    * @param options options
    * @param rootDir Root directory to calculate exclusions from
+   * @param scope The construct that the function is called from, used to get feature flags
    */
   public static copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
     return copyDirectory(srcDir, destDir, options, rootDir);
