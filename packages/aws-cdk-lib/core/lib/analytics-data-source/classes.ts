@@ -4307,7 +4307,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prune': 'boolean'
       },
-      'preserveOnDelete': 'boolean'
+      'preserveOnDelete': 'boolean',
+      'configurationValues': '*'
     },
     'Cluster': {
       'compute': {
@@ -15187,7 +15188,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'prune': 'boolean',
         'authenticationMode': 'AuthenticationMode'
       },
-      'preserveOnDelete': 'boolean'
+      'preserveOnDelete': 'boolean',
+      'configurationValues': '*'
     },
     'Cluster': {
       'defaultCapacity': '*',
@@ -17036,6 +17038,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'node': '*'
         }
       ]
+    },
+    'OidcProviderNative': {
+      'oidcProviderName': '*',
+      'url': '*',
+      'clientIds': '*',
+      'thumbprints': '*'
     },
     'OpenIdConnectProvider': {
       'url': '*',

@@ -522,6 +522,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_5_27 = MariaDbEngineVersion.of('10.5.27', '10.5');
   /** Version "10.5.28". */
   public static readonly VER_10_5_28 = MariaDbEngineVersion.of('10.5.28', '10.5');
+  /** Version "10.5.29". */
+  public static readonly VER_10_5_29 = MariaDbEngineVersion.of('10.5.29', '10.5');
 
   /** Version "10.6" (only a major version, without a specific minor version). */
   public static readonly VER_10_6 = MariaDbEngineVersion.of('10.6', '10.6');
@@ -573,6 +575,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_6_20 = MariaDbEngineVersion.of('10.6.20', '10.6');
   /** Version "10.6.21". */
   public static readonly VER_10_6_21 = MariaDbEngineVersion.of('10.6.21', '10.6');
+  /** Version "10.6.22". */
+  public static readonly VER_10_6_22 = MariaDbEngineVersion.of('10.6.22', '10.6');
 
   /** Version "10.11" (only a major version, without a specific minor version). */
   public static readonly VER_10_11 = MariaDbEngineVersion.of('10.11', '10.11');
@@ -592,12 +596,16 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_11_10 = MariaDbEngineVersion.of('10.11.10', '10.11');
   /** Version "10.11.11". */
   public static readonly VER_10_11_11 = MariaDbEngineVersion.of('10.11.11', '10.11');
+  /** Version "10.11.13". */
+  public static readonly VER_10_11_13 = MariaDbEngineVersion.of('10.11.13', '10.11');
   /** Version "11.4.3". */
   public static readonly VER_11_4_3 = MariaDbEngineVersion.of('11.4.3', '11.4');
   /** Version "11.4.4". */
   public static readonly VER_11_4_4 = MariaDbEngineVersion.of('11.4.4', '11.4');
   /** Version "11.4.5". */
   public static readonly VER_11_4_5 = MariaDbEngineVersion.of('11.4.5', '11.4');
+  /** Version "11.4.7". */
+  public static readonly VER_11_4_7 = MariaDbEngineVersion.of('11.4.7', '11.4');
 
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
@@ -893,6 +901,8 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_44_RDS_20250103 = MysqlEngineVersion.of('5.7.44-rds.20250103', '5.7');
   /** Version "5.7.44-rds.20250213". */
   public static readonly VER_5_7_44_RDS_20250213 = MysqlEngineVersion.of('5.7.44-rds.20250213', '5.7');
+  /** Version "5.7.44-rds.20250508". */
+  public static readonly VER_5_7_44_RDS_20250508 = MysqlEngineVersion.of('5.7.44-rds.20250508', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
@@ -1521,6 +1531,10 @@ export class PostgresEngineVersion {
    * Version "11.22-RDS.20241121"
    */
   public static readonly VER_11_22_RDS_20241121 = PostgresEngineVersion.of('11.22-RDS.20241121', '11', { s3Import: true, s3Export: true });
+  /**
+   * Version "11.22-rds.20250508"
+   */
+  public static readonly VER_11_22_RDS_20250508 = PostgresEngineVersion.of('11.22-rds.20250508', '11', { s3Import: true, s3Export: true });
 
   /** Version "12" (only a major version, without a specific minor version). */
   public static readonly VER_12 = PostgresEngineVersion.of('12', '12', { s3Import: true });
@@ -1626,6 +1640,8 @@ export class PostgresEngineVersion {
   public static readonly VER_12_21 = PostgresEngineVersion.of('12.21', '12', { s3Import: true, s3Export: true });
   /** Version "12.22". */
   public static readonly VER_12_22 = PostgresEngineVersion.of('12.22', '12', { s3Import: true, s3Export: true });
+  /** Version "12.22-rds.20250508". */
+  public static readonly VER_12_22_RDS_20250508 = PostgresEngineVersion.of('12.22-rds.20250508', '12', { s3Import: true, s3Export: true });
 
   /** Version "13" (only a major version, without a specific minor version). */
   public static readonly VER_13 = PostgresEngineVersion.of('13', '13', { s3Import: true, s3Export: true });

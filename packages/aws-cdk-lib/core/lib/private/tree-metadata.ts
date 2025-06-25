@@ -9,6 +9,7 @@ import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers';
 import { IInspectable, TreeInspector } from '../tree';
 import { iterateBfs } from './construct-iteration';
+import { AssumptionError } from '../errors';
 
 const FILE_PATH = 'tree.json';
 
@@ -112,6 +113,11 @@ export interface TreeFile {
   tree: TreeNode;
 }
 
+export interface ForestFile {
+  version: 'forest-0.1';
+  forest: Record<string, TreeNode>;
+}
+
 type TreeNode = Node | SubTreeReference;
 
 /**
@@ -120,7 +126,15 @@ type TreeNode = Node | SubTreeReference;
 interface SubTreeReference {
   readonly id: string;
   readonly path: string;
-  readonly fileName: string;
+  fileName: string;
+
+  /**
+   * If set, indicates the subtree in the forest file
+   *
+   * If this is set then `fileName` must point to a ForestFile, and this indicates
+   * the tree inside the forest.
+   */
+  treeId?: string;
 }
 
 /**
@@ -143,11 +157,29 @@ interface SubTreeReference {
  *     leaves in-place to a different node type will (probably) minimally change
  *     the size of the tree, whereas adding C more children that will all become
  *     references to substrees will add an unpredictable size to the tree.
+ * - Because doing this will end up with a lot of subtrees (as many as there are leaf nodes
+ *   in the trees, which is degree ^ depth), writing those all to individual files creates
+ *   A LOT of files which is undesirable for people looking at the directory. We will
+ *   accumulate subtrees into "forest" files which each hold a set of trees, identified
+ *   by a filename and a tree ID. We allocate them by first building the individual trees,
+ *   then accumulating subtrees up to a node count into forests, and then writing the
+ *   name of the forest file and the tree ID into the node that points to the subtree.
  *
  * Here's a sense of the numbers: a project with 277k nodes leads to an 136M JSON
  * file (490 bytes/node). We'll estimate the size of a node to be 1000 bytes.
  */
 class FragmentedTreeWriter {
+  /**
+   * We only care about the identify of this object.
+   *
+   * Whatever tree in the forest is "pointed to" by this pointer is the main tree.
+   */
+  private readonly mainTreePointer: SubTreeReference = {
+    fileName: 'yyy',
+    id: 'id',
+    path: 'path',
+  };
+
   private readonly forest = new Array<Tree>();
 
   /**
@@ -167,8 +199,6 @@ class FragmentedTreeWriter {
 
   private readonly maxNodes: number;
 
-  private subtreeCtr = 1;
-
   constructor(private readonly outdir: string, private readonly rootFilename: string, options?: FragmentedTreeWriterOptions) {
     this.maxNodes = options?.maxNodesPerTree ?? 500_000;
   }
@@ -177,12 +207,57 @@ class FragmentedTreeWriter {
    * Write the forest to disk, return the root file name
    */
   public writeForest(): string {
-    for (const tree of this.forest) {
-      const treeFile: TreeFile = { version: 'tree-0.1', tree: tree.root };
-      fs.writeFileSync(path.join(this.outdir, tree.filename), JSON.stringify(treeFile), { encoding: 'utf-8' });
+    const forestFiles = this.allocateSubTreesToForestFiles();
+
+    // We can now write the forest files, and the main file.
+    const mainTree = this.forest.find(t => t.referencingNode === this.mainTreePointer);
+    if (mainTree) {
+      const treeFile: TreeFile = { version: 'tree-0.1', tree: mainTree.root };
+      fs.writeFileSync(path.join(this.outdir, this.rootFilename), JSON.stringify(treeFile), { encoding: 'utf-8' });
+    }
+
+    for (const forestFile of forestFiles) {
+      fs.writeFileSync(path.join(this.outdir, forestFile.fileName), JSON.stringify(forestFile.file), { encoding: 'utf-8' });
     }
 
     return this.rootFilename;
+  }
+
+  /**
+   * Find all non-main tree and combine them into forest files
+   *
+   * This will mutate the pointing nodes as a side effect.
+   */
+  private allocateSubTreesToForestFiles(): IncompleteForestFile[] {
+    // First, find all non-main trees and allocate them to forests.
+    const ret = new Array<IncompleteForestFile>();
+
+    for (const tree of this.forest) {
+      if (tree.referencingNode === this.mainTreePointer) {
+        // Main tree, not interesting for the purposes of allocating subtrees to forests
+        continue;
+      }
+
+      let targetForest: typeof ret[0];
+      if (ret.length === 0 || ret[ret.length - 1].nodeCount + tree.nodes > this.maxNodes) {
+        targetForest = {
+          fileName: `trees-${ret.length + 1}.json`,
+          file: { version: 'forest-0.1', forest: { } },
+          nodeCount: 0,
+        };
+        ret.push(targetForest);
+      } else {
+        targetForest = ret[ret.length - 1];
+      }
+
+      const treeId = `t${Object.keys(targetForest.file.forest).length}`;
+      targetForest.file.forest[treeId] = tree.root;
+      targetForest.nodeCount += tree.nodes;
+      tree.referencingNode.fileName = targetForest.fileName;
+      tree.referencingNode.treeId = treeId;
+    }
+
+    return ret;
   }
 
   public addNode(construct: IConstruct, parent: IConstruct | undefined, node: Node) {
@@ -191,10 +266,10 @@ class FragmentedTreeWriter {
 
     if (parent === undefined) {
       if (this.forest.length > 0) {
-        throw new Error('Can only add exactly one node without a parent');
+        throw new AssumptionError('Can only add exactly one node without a parent');
       }
 
-      this.addNewTree(node, this.rootFilename);
+      this.addNewTree(node, this.mainTreePointer);
     } else {
       // There was a provision in the old code for missing parents, so we're just going to ignore it
       // if we can't find a parent.
@@ -212,10 +287,10 @@ class FragmentedTreeWriter {
   /**
    * Add a new tree with the given Node as root
    */
-  private addNewTree(root: Node, filename: string): Tree {
+  private addNewTree(root: Node, referencingNode: SubTreeReference): Tree {
     const tree: Tree = {
       root,
-      filename,
+      referencingNode: referencingNode,
       nodes: nodeCount(root),
     };
 
@@ -236,16 +311,18 @@ class FragmentedTreeWriter {
       // parent node in the original tree to a subtreereference.
       const grandParent = this.parent.get(parent);
       if (!grandParent) {
-        throw new Error(`Could not find parent of ${JSON.stringify(parent)}`);
+        throw new AssumptionError(`Could not find parent of ${JSON.stringify(parent)}`);
       }
 
-      tree = this.addNewTree(parent, `tree-${this.subtreeCtr++}.json`);
-
-      setChild(grandParent, {
+      const subtreeReference: SubTreeReference = {
         id: parent.id,
         path: parent.path,
-        fileName: tree.filename,
-      } satisfies SubTreeReference);
+        fileName: 'xxx', // Will be replaced later
+      };
+
+      tree = this.addNewTree(parent, subtreeReference);
+
+      setChild(grandParent, subtreeReference);
 
       // To be strictly correct we should decrease the original tree's nodeCount here, because
       // we may have moved away any number of children as well. We don't do that; the tree
@@ -285,7 +362,7 @@ class FragmentedTreeWriter {
     if (tree) {
       return tree;
     }
-    throw new Error(`Could not find tree for node: ${JSON.stringify(node)}, tried ${tried}, ${Array.from(this.subtreeRoots).map(([k, v]) => `${k.path} => ${v.filename}`)}`);
+    throw new AssumptionError(`Could not find tree for node: ${JSON.stringify(node)}, tried ${tried}`);
   }
 }
 
@@ -328,15 +405,24 @@ interface Tree {
    * The root of this particular tree
    */
   root: Node;
+
   /**
-   * The filename that `root` will be serialized to
+   * The node that is pointing to this tree
+   *
+   * This may be "mainTreePointer", in which case this tree indicates the main tree.
    */
-  filename: string;
+  referencingNode: SubTreeReference;
 
   /**
    * How many nodes are in this tree already
    */
   nodes: number;
+}
+
+interface IncompleteForestFile {
+  fileName: string;
+  nodeCount: number;
+  file: ForestFile;
 }
 
 export function isSubtreeReference(x: TreeFile['tree']): x is Extract<TreeFile['tree'], { fileName: string }> {

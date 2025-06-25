@@ -91,6 +91,7 @@ export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDef
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
 export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
+export const KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL = '@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal';
 export const EFS_DENY_ANONYMOUS_ACCESS = '@aws-cdk/aws-efs:denyAnonymousAccess';
 export const EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID = '@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId';
 export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE = '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
@@ -140,6 +141,7 @@ export const S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS = '@aws-cdk/s3-notificati
 export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway';
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
+export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -842,6 +844,20 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.83.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL]: {
+    type: FlagType.BugFix,
+    summary: 'Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition',
+    detailsMd: `
+      This flag enables the grant methods (grant, grantDecrypt, grantEncrypt, etc.) on Aliases imported
+      by name to grant permissions based on the 'kms:ResourceAliases' condition rather than no-op grants.
+      When disabled, grant calls on imported aliases will be dropped (no-op) to maintain compatibility.
+    `,
+    introducedIn: { v2: '2.202.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Remove calls to the grant* methods on the aliases referenced by name',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -1616,6 +1632,33 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.196.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, CDK creates and manages loggroup for the lambda function',
+    detailsMd: `
+        When this feature flag is enabled, CDK will create a loggroup for lambda function with default properties
+        which supports CDK features Tag propagation, Property Injectors, Aspects
+        if the cdk app doesnt pass a 'logRetention' or 'logGroup' explicitly. 
+        LogGroups created via 'logRetention' do not support Tag propagation, Property Injectors, Aspects.
+        LogGroups created via 'logGroup' created in CDK support Tag propagation, Property Injectors, Aspects.
+        
+        When this feature flag is disabled, a loggroup is created by Lambda service on first invocation 
+        of the function (existing behavior). 
+        LogGroups created in this way do not support Tag propagation, Property Injectors, Aspects.
+
+        DO NOT ENABLE: If you have and existing app defining a lambda function and 
+        have not supplied a logGroup or logRetention prop and your lambda function has 
+        executed at least once, the logGroup has been already created with the same name 
+        so your deployment will start failing.
+        Refer aws-lambda/README.md for more details on Customizing Log Group creation.
+      `,
+    introducedIn: { v2: 'V2_NEXT' },
+    defaults: { v2: false },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
   },
 };
 

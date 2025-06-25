@@ -290,6 +290,9 @@
   "aws-evidently": [
     "AWS::Evidently"
   ],
+  "aws-evs": [
+    "AWS::EVS"
+  ],
   "aws-finspace": [
     "AWS::FinSpace"
   ],
@@ -491,6 +494,9 @@
   ],
   "aws-memorydb": [
     "AWS::MemoryDB"
+  ],
+  "aws-mpa": [
+    "AWS::MPA"
   ],
   "aws-msk": [
     "AWS::MSK"

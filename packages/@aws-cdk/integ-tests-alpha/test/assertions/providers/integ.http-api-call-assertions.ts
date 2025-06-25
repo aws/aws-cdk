@@ -4,7 +4,11 @@ import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': true,
+  },
+});
 const stack = new Stack(app, 'InvokeFunctionAssertions');
 const integ = new IntegTest(app, 'AssertionsTest', {
   testCases: [stack],
