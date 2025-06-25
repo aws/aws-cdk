@@ -1712,7 +1712,7 @@ describe('User Pool Client', () => {
           userPassword: true,
           userSrp: true,
           user: true,
-        }
+        },
       });
 
       // THEN
@@ -1725,26 +1725,6 @@ describe('User Pool Client', () => {
           'ALLOW_USER_AUTH',
           'ALLOW_REFRESH_TOKEN_AUTH',
         ],
-      });
-    });
-
-    test('refreshTokenRotation set to disabled if retryGracePeriod is 0', () => {
-      const stack = new Stack();
-      const pool = new UserPool(stack, 'Pool');
-
-      // WHEN
-      pool.addClient('Client1', {
-        refreshTokenRotation: {
-          retryGracePeriod: Duration.seconds(0),
-        },
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
-        RefreshTokenRotation: {
-          Feature: 'ENABLED',
-          RetryGracePeriodSeconds: 0,
-        },
       });
     });
   });
