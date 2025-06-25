@@ -9,6 +9,7 @@ import {
   Operation, OperationsMetricOptions, SystemErrorsForOperationsMetricOptions,
   Attribute, BillingMode, ProjectionType, ITable, SecondaryIndexProps, TableClass,
   LocalSecondaryIndexProps, TableEncryption, StreamViewType, WarmThroughput, PointInTimeRecoverySpecification,
+  ContributorInsightsSpecification,
 } from './shared';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -419,10 +420,16 @@ export interface TableOptions extends SchemaOptions {
 
   /**
    * Whether CloudWatch contributor insights is enabled.
-   *
+   * @deprecated use `contributorInsightsSpecification instead
    * @default false
    */
   readonly contributorInsightsEnabled?: boolean;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled and what mode is selected
+   * @default - contributor insights is not enabled
+   */
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
 
   /**
    * Enables deletion protection for the table.
@@ -520,10 +527,16 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOp
 
   /**
    * Whether CloudWatch contributor insights is enabled for the specified global secondary index.
-   *
+   * @deprecated use `contributorInsightsSpecification` instead
    * @default false
    */
   readonly contributorInsightsEnabled?: boolean;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled and what mode is selected
+   * @default - contributor insights is not enabled
+   */
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
 }
 
 /**
@@ -1214,6 +1227,8 @@ export class Table extends TableBase {
 
     const pointInTimeRecoverySpecification = this.validatePitr(props);
 
+    const contributorInsightsSpecification = this.validateCCI(props);
+
     let streamSpecification: CfnTable.StreamSpecificationProperty | undefined;
     if (props.replicationRegions) {
       if (props.stream && props.stream !== StreamViewType.NEW_AND_OLD_IMAGES) {
@@ -1260,7 +1275,7 @@ export class Table extends TableBase {
       streamSpecification,
       tableClass: props.tableClass,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
-      contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
+      contributorInsightsSpecification: contributorInsightsSpecification,
       kinesisStreamSpecification: kinesisStreamSpecification,
       deletionProtectionEnabled: props.deletionProtection,
       importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
@@ -1315,8 +1330,10 @@ export class Table extends TableBase {
     const gsiKeySchema = this.buildIndexKeySchema(props.partitionKey, props.sortKey);
     const gsiProjection = this.buildIndexProjection(props);
 
+    const contributorInsightsSpecification = this.validateCCI(props);
+
     this.globalSecondaryIndexes.push({
-      contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
+      contributorInsightsSpecification: contributorInsightsSpecification,
       indexName: props.indexName,
       keySchema: gsiKeySchema,
       projection: gsiProjection,
@@ -1583,6 +1600,17 @@ export class Table extends TableBase {
     return props.pointInTimeRecoverySpecification ??
       (props.pointInTimeRecovery !== undefined
         ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery }
+        : undefined);
+  }
+
+  private validateCCI (props: TableProps | GlobalSecondaryIndexProps): ContributorInsightsSpecification | undefined {
+    if (props.contributorInsightsSpecification !==undefined && props.contributorInsightsEnabled !== undefined) {
+      throw new ValidationError('`contributorInsightsSpecification` and `contributorInsightsEnabled` are set. Use `contributorInsightsSpecification` only.', this);
+    }
+
+    return props.contributorInsightsSpecification ??
+      (props.contributorInsightsEnabled !== undefined
+        ? { enabled: props.contributorInsightsEnabled }
         : undefined);
   }
 

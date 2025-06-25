@@ -16,6 +16,7 @@ import {
   TableClass,
   WarmThroughput,
   MultiRegionConsistency,
+  ContributorInsightsSpecification,
 } from './shared';
 import { ITableV2, TableBaseV2 } from './table-v2-base';
 import { PolicyDocument } from '../../aws-iam';
@@ -51,10 +52,17 @@ export interface ReplicaGlobalSecondaryIndexOptions {
   /**
    * Whether CloudWatch contributor insights is enabled for a specific global secondary
    * index on a replica table.
-   *
+   * @deprecated use `contributorInsightsSpecification` instead
    * @default - inherited from the primary table
    */
   readonly contributorInsights?: boolean;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled and what mode is selected
+   * for a specific global secondary index on a replica table.
+   * @default - contributor insights is not enabled
+   */
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
 
   /**
    * The read capacity for a specific global secondary index on a replica table.
@@ -141,10 +149,16 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
 export interface TableOptionsV2 {
   /**
    * Whether CloudWatch contributor insights is enabled.
-   *
+   * @deprecated use `contributorInsightsSpecification` instead
    * @default false
    */
   readonly contributorInsights?: boolean;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled and what mode is selected
+   * @default - contributor insights is not enabled
+   */
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
 
   /**
    * Whether deletion protection is enabled.
@@ -752,7 +766,7 @@ export class TableV2 extends TableBaseV2 {
   }
 
   private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
-    const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
+    const contributorInsightsSpecification = this.validateCCI(props);
 
     // Determine if Point-In-Time Recovery (PITR) is enabled based on the provided property or table options (deprecated options).
     const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
@@ -796,9 +810,7 @@ export class TableV2 extends TableBaseV2 {
       kinesisStreamSpecification: props.kinesisStream
         ? { streamArn: props.kinesisStream.streamArn }
         : undefined,
-      contributorInsightsSpecification: contributorInsights !== undefined
-        ? { enabled: contributorInsights }
-        : undefined,
+      contributorInsightsSpecification: contributorInsightsSpecification,
       pointInTimeRecoverySpecification: pointInTimeRecoverySpecification,
       readProvisionedThroughputSettings: props.readCapacity
         ? props.readCapacity._renderReadCapacity()
@@ -875,13 +887,14 @@ export class TableV2 extends TableBaseV2 {
         ? { maxReadRequestUnits: maxReadRequestUnits }
         : undefined;
 
+      const contributorInsightsSpecification = this.validateCCI(options[indexName]) ||
+        (contributorInsights !== undefined ? { enabled: contributorInsights } as ContributorInsightsSpecification : undefined);
+
       replicaGlobalSecondaryIndexes.push({
         indexName,
         readProvisionedThroughputSettings,
         readOnDemandThroughputSettings,
-        contributorInsightsSpecification: contributorInsights !== undefined
-          ? { enabled: contributorInsights }
-          : undefined,
+        contributorInsightsSpecification: contributorInsightsSpecification,
       });
     }
 
@@ -1133,5 +1146,21 @@ export class TableV2 extends TableBaseV2 {
         throw new ValidationError(`MRSC global table without witness region must have exactly 3 replicas (including primary), but found ${totalReplicas}. Current configuration: primary region '${primaryRegion}', replica regions [${replicaRegions.join(', ')}]`, this);
       }
     }
+  }
+
+  private validateCCI (props: TablePropsV2 | ReplicaTableProps | ReplicaGlobalSecondaryIndexOptions): ContributorInsightsSpecification | undefined {
+    const contributorInsights =
+    props?.contributorInsights ?? this.tableOptions?.contributorInsights;
+
+    const contributorInsightsSpecification = props?.contributorInsightsSpecification || this.tableOptions?.contributorInsightsSpecification;
+
+    if (contributorInsightsSpecification !== undefined && contributorInsights !== undefined) {
+      throw new ValidationError('`contributorInsightsSpecification` and `contributorInsights` are set. Use `contributorInsightsSpecification` only.', this);
+    }
+
+    return contributorInsightsSpecification ??
+      (contributorInsights !== undefined
+        ? { enabled: contributorInsights }
+        : undefined);
   }
 }

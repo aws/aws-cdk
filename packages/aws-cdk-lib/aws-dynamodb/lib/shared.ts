@@ -158,6 +158,38 @@ export enum BillingMode {
 }
 
 /**
+ * DynamoDB's Contributor Insights Mode
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-dynamodb-table-contributorinsightsspecification.html
+ */
+export enum ContributorInsightsMode {
+  /**
+   * Emits metrics for all read and write requests, whether successful or throttled.
+   */
+  ACCESSED_AND_THROTTLED_KEYS = 'ACCESSED_AND_THROTTLED_KEYS',
+
+  /**
+   * Emits metrics for read and write requests that were throttled.
+   */
+  THROTTLED_KEYS = 'THROTTLED_KEYS',
+}
+
+/**
+ * Reference to ContributorInsightsSpecification
+ */
+export interface ContributorInsightsSpecification {
+  /**
+   * Indicates whether contributor insights is enabled.
+   * @default false
+   */
+  readonly enabled: boolean;
+  /**
+   * Indicates the type of metrics captured by contributor insights.
+   * @default ACCESSED_AND_THROTTLED_KEYS
+   */
+  readonly contributorInsightsMode?: ContributorInsightsMode;
+}
+
+/**
  * The set of attributes that are projected into the index
  *
  * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Projection.html
