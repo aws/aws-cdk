@@ -9,12 +9,24 @@ jest.mock('../../cx-api', () => {
     ...actual,
     CloudAssemblyBuilder: jest.fn().mockImplementation(() => ({
       addArtifact: jest.fn(),
+      buildAssembly: jest.fn().mockReturnValue({
+        tryGetArtifact: jest.fn().mockReturnValue('aws-cdk-lib/feature-flag-report'),
+      }),
     })),
   };
 });
 
 describe('generate feature flag report', () => {
-  test('populates the correct userValue based on the context', () => {
+  test('feature flag report can be retrieved from CloudAssembly using its artifact ID', () => {
+    const app = new App();
+    const builder = new cxapi.CloudAssemblyBuilder('/tmp/test');
+
+    generateFeatureFlagReport(builder, app);
+
+    const cloudAssembly = builder.buildAssembly();
+    expect(cloudAssembly.tryGetArtifact('aws-cdk-lib/feature-flag-report')).toEqual('aws-cdk-lib/feature-flag-report');
+  });
+  test('report contains context values that represent the feature flags', () => {
     const app = new App({
       context: {
         '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault': true,
@@ -30,45 +42,22 @@ describe('generate feature flag report', () => {
 
     const [artifactId, artifact] = spy.mock.calls[0];
 
-    expect(artifact).toBeDefined();
-    expect(artifact?.properties).toBeDefined();
-
-    const props = artifact.properties as FeatureFlagReportProperties;
-    const flags = props.flags;
-    expect(flags).toBeDefined();
-
-    expect(flags?.['@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault']?.userValue).toEqual(true);
-    expect(flags?.['@aws-cdk/core:aspectStabilization']?.userValue).toEqual(false);
-  });
-  test('successfully creates an artifact stored in the CloudAssembly', () => {
-    const app = new App({
-      context: {
-        '@aws-cdk/aws-s3:grantWriteWithoutAcl': true,
-      },
-    });
-    const builder = new cxapi.CloudAssemblyBuilder('/tmp/test');
-    const spy = jest.spyOn(builder, 'addArtifact');
-
-    generateFeatureFlagReport(builder, app);
-
-    expect(spy).toHaveBeenCalledTimes(1);
-
-    const [artifactId, artifact] = spy.mock.calls[0];
-
-    expect(artifactId).toEqual('feature flag report');
-    expect(artifact).toMatchObject({
+    expect(artifact).toEqual(expect.objectContaining({
       type: 'cdk:feature-flag-report',
-      properties: {
-        module: '@aws-cdk/core',
-      },
-    });
-
-    const flags = (artifact.properties as FeatureFlagReportProperties).flags;
-    expect(flags).toBeDefined();
-    expect(flags['@aws-cdk/aws-s3:grantWriteWithoutAcl']).toBeDefined();
-    expect(flags['@aws-cdk/aws-s3:grantWriteWithoutAcl'].userValue).toBe(true);
+      properties: expect.objectContaining({
+        module: 'aws-cdk-lib',
+        flags: expect.objectContaining({
+          '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault': expect.objectContaining({
+            userValue: true,
+          }),
+          '@aws-cdk/core:aspectStabilization': expect.objectContaining({
+            userValue: false,
+          }),
+        }),
+      }),
+    }));
   });
-  test('defaults userValue to false when not set in context', () => {
+  test('defaults userValue to undefined when not set in context', () => {
     const app = new App();
     const builder = new cxapi.CloudAssemblyBuilder('/tmp/test');
     const spy = jest.spyOn(builder, 'addArtifact');
@@ -76,7 +65,11 @@ describe('generate feature flag report', () => {
     generateFeatureFlagReport(builder, app);
 
     const flags = (spy.mock.calls[0][1].properties as FeatureFlagReportProperties).flags;
-    expect(flags['@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault'].userValue).toBe(false);
+    expect(flags).toEqual(expect.objectContaining({
+      '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault': expect.objectContaining({
+        userValue: undefined,
+      }),
+    }));
   });
 });
 

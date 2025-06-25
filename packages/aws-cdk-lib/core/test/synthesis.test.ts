@@ -29,10 +29,10 @@ describe('synthesis', () => {
         type: 'cdk:tree',
         properties: { file: 'tree.json' },
       },
-      'feature flag report': {
+      'aws-cdk-lib/feature-flag-report': {
         type: 'cdk:feature-flag-report',
         properties: {
-          module: '@aws-cdk/core',
+          module: 'aws-cdk-lib',
           flags: expect.any(Object),
         },
       },

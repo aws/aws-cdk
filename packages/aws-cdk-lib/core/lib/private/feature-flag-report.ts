@@ -8,7 +8,7 @@ import { FlagInfo } from '../../../cx-api/lib/private/flag-modeling';
  * Creates a FeatureFlag object based on flag information given.
  */
 function parseFeatureFlagInfo(flagName: string, info: FlagInfo, root: IConstruct): FeatureFlag {
-  const userValue = root.node.tryGetContext(flagName) ?? false;
+  const userValue = root.node.tryGetContext(flagName) ?? undefined;
 
   let parsedFlag: FeatureFlag = {
     userValue: userValue,
@@ -24,21 +24,16 @@ function parseFeatureFlagInfo(flagName: string, info: FlagInfo, root: IConstruct
  * and create a Feature Flag report.
  */
 export function generateFeatureFlagReport(builder: CloudAssemblyBuilder, root: IConstruct): void {
-  try {
-    const featureFlags: Record<string, FeatureFlag> = {};
-
-    for (const [flagName, flagInfo] of Object.entries(feats.FLAGS)) {
-      featureFlags[flagName] = parseFeatureFlagInfo(flagName, flagInfo, root);
-    }
-
-    builder.addArtifact('feature flag report', {
-      type: ArtifactType.FEATURE_FLAG_REPORT,
-      properties: {
-        module: '@aws-cdk/core',
-        flags: featureFlags,
-      },
-    });
-  } catch (error) {
-    throw error;
+  const featureFlags: Record<string, FeatureFlag> = {};
+  for (const [flagName, flagInfo] of Object.entries(feats.FLAGS)) {
+    featureFlags[flagName] = parseFeatureFlagInfo(flagName, flagInfo, root);
   }
+
+  builder.addArtifact('aws-cdk-lib/feature-flag-report', {
+    type: ArtifactType.FEATURE_FLAG_REPORT,
+    properties: {
+      module: 'aws-cdk-lib',
+      flags: featureFlags,
+    },
+  });
 }

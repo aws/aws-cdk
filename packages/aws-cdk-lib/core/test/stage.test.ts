@@ -260,10 +260,10 @@ describe('stage', () => {
           displayName: 'StageLevel1',
         },
       },
-      'feature flag report': {
+      'aws-cdk-lib/feature-flag-report': {
         type: 'cdk:feature-flag-report',
         properties: {
-          module: '@aws-cdk/core',
+          module: 'aws-cdk-lib',
           flags: expect.any(Object),
         },
       },
@@ -278,10 +278,10 @@ describe('stage', () => {
           displayName: 'StageLevel1/StageLevel2',
         },
       },
-      'feature flag report': {
+      'aws-cdk-lib/feature-flag-report': {
         type: 'cdk:feature-flag-report',
         properties: {
-          module: '@aws-cdk/core',
+          module: 'aws-cdk-lib',
           flags: expect.any(Object),
         },
       },
@@ -296,10 +296,10 @@ describe('stage', () => {
           displayName: 'StageLevel1/StageLevel2/StageLevel3',
         },
       },
-      'feature flag report': {
+      'aws-cdk-lib/feature-flag-report': {
         type: 'cdk:feature-flag-report',
         properties: {
-          module: '@aws-cdk/core',
+          module: 'aws-cdk-lib',
           flags: expect.any(Object),
         },
       },
