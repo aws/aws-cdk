@@ -1,5 +1,6 @@
 import { Construct, IConstruct, Node } from 'constructs';
 import { InjectionContext, IPropertyInjector, PropertyInjectors } from './prop-injectors';
+import { Stack } from './stack';
 
 /**
  * This symbol is needed to identify PropertyInjectors.
@@ -19,6 +20,8 @@ export function applyInjectors(uniqueId: string, originalProps: any, context: In
     // no injector found
     return originalProps;
   }
+  const stack = Stack.of(context.scope);
+  stack.addMetadata('@amzn/aws-cdk-lib-blueprint', 'Y');
   return injector.inject(originalProps, {
     scope: context.scope,
     id: context.id,
