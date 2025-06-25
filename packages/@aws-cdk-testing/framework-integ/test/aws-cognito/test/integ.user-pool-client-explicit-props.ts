@@ -44,7 +44,7 @@ const client = userpool.addClient('myuserpoolclient', {
   preventUserExistenceErrors: true,
   authSessionValidity: Duration.minutes(3),
   refreshTokenRotation: {
-    retryGracePeriodSeconds: Duration.seconds(45),
+    retryGracePeriod: Duration.seconds(45),
   },
   writeAttributes: (new ClientAttributes()).withStandardAttributes(
     {

@@ -240,9 +240,8 @@ export class UserPoolClientIdentityProvider {
 export interface RefreshTokenRotation {
   /**
    * Grace period for the original refresh token (0-60 seconds).
-   * @default - undefined (CloudFormation defaults value)
    */
-  readonly retryGracePeriodSeconds: Duration;
+  readonly retryGracePeriod: Duration;
 }
 
 /**
@@ -615,7 +614,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     if (props.authFlows.user) { authFlows.push('ALLOW_USER_AUTH'); }
 
     // refreshToken should only be allowed if authFlows are present and refreshTokenRotation is disabled
-    if (!props.refreshTokenRotation || props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() === 0) {
+    if (!props.refreshTokenRotation) {
       authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
     }
 
@@ -697,12 +696,12 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
   private configureRefreshTokenRotation(resource: CfnUserPoolClient, props: UserPoolClientProps) {
     if (props.refreshTokenRotation) {
-      this.validateDuration('retryGracePeriodSeconds', Duration.seconds(0), Duration.minutes(1), props.refreshTokenRotation.retryGracePeriodSeconds);
+      this.validateDuration('retryGracePeriod', Duration.seconds(0), Duration.minutes(1), props.refreshTokenRotation.retryGracePeriod);
     }
     resource.refreshTokenRotation = props.refreshTokenRotation
       ? {
-        feature: props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds() > 0 ? 'ENABLED' : 'DISABLED',
-        retryGracePeriodSeconds: props.refreshTokenRotation.retryGracePeriodSeconds.toSeconds(),
+        feature: 'ENABLED',
+        retryGracePeriodSeconds: props.refreshTokenRotation.retryGracePeriod.toSeconds(),
       } : undefined;
   }
 

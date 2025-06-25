@@ -1617,19 +1617,19 @@ describe('User Pool Client', () => {
       pool.addClient('Client1', {
         userPoolClientName: 'Client1',
         refreshTokenRotation: {
-          retryGracePeriodSeconds: Duration.seconds(5),
+          retryGracePeriod: Duration.seconds(5),
         },
       });
       pool.addClient('Client2', {
         userPoolClientName: 'Client2',
         refreshTokenRotation: {
-          retryGracePeriodSeconds: Duration.seconds(25),
+          retryGracePeriod: Duration.seconds(25),
         },
       });
       pool.addClient('Client3', {
         userPoolClientName: 'Client3',
         refreshTokenRotation: {
-          retryGracePeriodSeconds: Duration.seconds(50),
+          retryGracePeriod: Duration.seconds(50),
         },
       });
 
@@ -1663,9 +1663,9 @@ describe('User Pool Client', () => {
 
       expect(() =>pool.addClient('Client1', {
         refreshTokenRotation: {
-          retryGracePeriodSeconds: Duration.seconds(80),
+          retryGracePeriod: Duration.seconds(80),
         },
-      })).toThrow('retryGracePeriodSeconds: Must be a duration between 0 seconds and 1 minute (inclusive); received 1 minute 20 seconds.');
+      })).toThrow('retryGracePeriod: Must be a duration between 0 seconds and 1 minute (inclusive); received 1 minute 20 seconds.');
     });
 
     test('explicitAuthFlows refresh token excluded if refresh token rotation is enabled', () => {
@@ -1683,7 +1683,7 @@ describe('User Pool Client', () => {
           user: true,
         },
         refreshTokenRotation: {
-          retryGracePeriodSeconds: Duration.seconds(40),
+          retryGracePeriod: Duration.seconds(40),
         },
       });
 
@@ -1712,10 +1712,7 @@ describe('User Pool Client', () => {
           userPassword: true,
           userSrp: true,
           user: true,
-        },
-        refreshTokenRotation: {
-          retryGracePeriodSeconds: Duration.seconds(0),
-        },
+        }
       });
 
       // THEN
@@ -1738,14 +1735,14 @@ describe('User Pool Client', () => {
       // WHEN
       pool.addClient('Client1', {
         refreshTokenRotation: {
-          retryGracePeriodSeconds: Duration.seconds(0),
+          retryGracePeriod: Duration.seconds(0),
         },
       });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         RefreshTokenRotation: {
-          Feature: 'DISABLED',
+          Feature: 'ENABLED',
           RetryGracePeriodSeconds: 0,
         },
       });

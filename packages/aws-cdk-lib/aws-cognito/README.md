@@ -1005,14 +1005,14 @@ const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
 ```
 
 [Refresh token rotation](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-refresh-token.html#using-the-refresh-token-rotation)
-can be configured to enable automatic rotation of refresh tokens. By default, refresh token rotation is disabled. When the RetryGracePeriodSeconds is 0, the grace period is disabled and a successful request immediately invalidates the submitted refresh token. 
+can be configured to enable automatic rotation of refresh tokens. By default, refresh token rotation is disabled. When the RetryGracePeriod is 0, the grace period is disabled and a successful request immediately invalidates the submitted refresh token. 
 
 ```ts
 const pool = new cognito.UserPool(this, 'Pool');
 pool.addClient('app-client', {
   // ...
   refreshTokenRotation: {
-    retryGracePeriodSeconds: Duration.seconds(40)
+    retryGracePeriod: Duration.seconds(40)
   },
 });
 ```
