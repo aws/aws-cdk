@@ -82,6 +82,25 @@
     "ConfluentFunctionServiceRole116DBB1D"
    ]
   },
+  "ConfluentFunctionLogGroupD5D16991": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ConfluentFunction5D29A9A6"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "ConfluentFunctionKafkaEventSource46eb851822d1a9f28d63dc4ec210952etesttopicsmkconfluent90EB60AA": {
    "Type": "AWS::Lambda::EventSourceMapping",
    "Properties": {
