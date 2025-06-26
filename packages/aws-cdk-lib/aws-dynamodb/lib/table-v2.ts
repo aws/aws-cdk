@@ -17,7 +17,6 @@ import {
   WarmThroughput,
   MultiRegionConsistency,
   ContributorInsightsSpecification,
-  ContributorInsightsSpecification,
 } from './shared';
 import { ITableV2, TableBaseV2 } from './table-v2-base';
 import { PolicyDocument } from '../../aws-iam';
@@ -154,12 +153,6 @@ export interface TableOptionsV2 {
    * @default false
    */
   readonly contributorInsights?: boolean;
-
-  /**
-   * Whether CloudWatch contributor insights is enabled and what mode is selected
-   * @default - contributor insights is not enabled
-   */
-  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
 
   /**
    * Whether CloudWatch contributor insights is enabled and what mode is selected

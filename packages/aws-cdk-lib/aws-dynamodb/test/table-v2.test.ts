@@ -3450,6 +3450,79 @@ test('Contributor Insights Specification - tableV2', () => {
   );
 });
 
+test('Contributor Insights Specification - index', () => {
+  const stack = new Stack(undefined, 'Stack', { env: { region: 'eu-west-1' } });
+
+  const table = new TableV2(stack, 'TableV2', {
+    partitionKey: { name: 'hashKey', type: AttributeType.STRING },
+    sortKey: { name: 'sortKey', type: AttributeType.NUMBER },
+    globalSecondaryIndexes: [
+      {
+        indexName: 'gsi1',
+        partitionKey: { name: 'gsiHashKey', type: AttributeType.STRING },
+      },
+    ],
+    contributorInsightsSpecification: {
+      enabled: true,
+      contributorInsightsMode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+    },
+    replicas: [
+      {
+        region: 'eu-west-2',
+        contributorInsightsSpecification: {
+          enabled: false,
+        },
+        globalSecondaryIndexOptions: {
+          gsi1: {
+            contributorInsightsSpecification: {
+              enabled: true,
+              contributorInsightsMode: ContributorInsightsMode.THROTTLED_KEYS,
+            },
+          },
+        },
+      },
+    ],
+  });
+
+  Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', {
+    Properties: Match.objectLike({
+      Replicas: Match.arrayWith([
+        Match.objectLike({
+          Region: 'eu-west-2',
+          ContributorInsightsSpecification: {
+            Enabled: false,
+          },
+          GlobalSecondaryIndexes: Match.arrayWith([
+            Match.objectLike({
+              IndexName: 'gsi1',
+              ContributorInsightsSpecification: {
+                Enabled: true,
+                ContributorInsightsMode: 'THROTTLED_KEYS',
+              },
+            }),
+          ]),
+        }),
+        Match.objectLike({
+          Region: 'eu-west-1',
+          ContributorInsightsSpecification: {
+            Enabled: true,
+            ContributorInsightsMode: 'ACCESSED_AND_THROTTLED_KEYS',
+          },
+          GlobalSecondaryIndexes: Match.arrayWith([
+            Match.objectLike({
+              IndexName: 'gsi1',
+              ContributorInsightsSpecification: {
+                Enabled: true,
+                ContributorInsightsMode: 'ACCESSED_AND_THROTTLED_KEYS',
+              },
+            }),
+          ]),
+        }),
+      ]),
+    }),
+  });
+});
+
 test('ContributorInsightsSpecification && ContributorInsights - v2', () => {
   const stack = new Stack();
 
