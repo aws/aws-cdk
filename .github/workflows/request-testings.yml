@@ -1,6 +1,6 @@
 # Request a deployment to the test pipeline
 
-name: request-any-integ-test
+name: request-any-integ-tests
 on:
   pull_request_target: {}
 
