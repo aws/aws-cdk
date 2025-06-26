@@ -1190,3 +1190,25 @@ describe('artifact encryption test', () => {
     }).toThrow('Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later and the Playwright runtime, got syn-python-selenium-3.0.');
   });
 });
+
+test('can configure resourcesToReplicateTags', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    canaryName: 'mycanary',
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
+    resourcesToReplicateTags: ['lambda-function'],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    Name: 'mycanary',
+    ResourcesToReplicateTags: ['lambda-function'],
+  });
+});
