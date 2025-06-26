@@ -50,6 +50,25 @@
     "PromptOverrideFunctionServiceRoleB1ACDEAD"
    ]
   },
+  "PromptOverrideFunctionLogGroupB1001805": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "PromptOverrideFunctionD82AB437"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "PromptOverrideFunctionLambdaInvocationPolicyc8b9aaceca433c559F5E0C1B": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
@@ -116,6 +135,25 @@
     "CustomParserActionFunctionServiceRoleEE676A1C"
    ]
   },
+  "CustomParserActionFunctionLogGroupD54EA446": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "CustomParserActionFunction3DAF0C7A"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "CustomParserActionFunctionLambdaInvocationPolicyc8cded76e8ed1a7503EDC886": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
@@ -181,6 +219,25 @@
    "DependsOn": [
     "ParserFunctionServiceRole59DD83FB"
    ]
+  },
+  "ParserFunctionLogGroup947036DC": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ParserFunctionE8A187F2"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "AgentWithPromptOverrideRoleA0EB6013": {
    "Type": "AWS::IAM::Role",
