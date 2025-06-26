@@ -1,6 +1,7 @@
 import { URL } from 'url';
 
 import { Construct } from 'constructs';
+import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import { OpenSearchAccessPolicy } from './opensearch-access-policy';
 import { CfnDomain } from './opensearchservice.generated';
 import * as perms from './perms';
@@ -1875,7 +1876,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       };
     }
 
-    let logGroupResourcePolicy: logs.ResourcePolicy | null = null;
+    let logGroupResourcePolicy: LogGroupResourcePolicy | logs.ResourcePolicy | null = null;
     if (logGroups.length > 0 && !props.suppressLogsResourcePolicy) {
       const logPolicyStatement = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
@@ -1884,11 +1885,18 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         principals: [new iam.ServicePrincipal('es.amazonaws.com')],
       });
 
-      logGroupResourcePolicy = new logs.ResourcePolicy(this, `ESLogGroupPolicy${this.node.addr}`, {
-        // create a cloudwatch logs resource policy name that is unique to this domain instance
-        resourcePolicyName: `ESLogPolicy${this.node.addr}`,
-        policyStatements: [logPolicyStatement],
-      });
+      if (cdk.FeatureFlags.of(this).isEnabled(cxapi.OPENSEARCHSERVICE_LOG_GROUP_RESOURCE_POLICY_WITHOUT_CUSTOM_RESOURCE)) {
+        logGroupResourcePolicy = new logs.ResourcePolicy(this, `ESLogGroupPolicy${this.node.addr}`, {
+          // create a cloudwatch logs resource policy name that is unique to this domain instance
+          resourcePolicyName: `ESLogPolicy${this.node.addr}`,
+          policyStatements: [logPolicyStatement],
+        });
+      } else {
+        logGroupResourcePolicy = new LogGroupResourcePolicy(this, `ESLogGroupPolicy${this.node.addr}`, {
+          policyName: `ESLogPolicy${this.node.addr}`,
+          policyStatements: [logPolicyStatement],
+        });
+      }
     }
 
     let customEndpointCertificate: acm.ICertificate | undefined;
