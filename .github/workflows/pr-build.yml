@@ -1,0 +1,52 @@
+name: PR Build
+
+on:
+  pull_request:
+    branches:
+      - main
+      - v2-release
+
+jobs:
+  build:
+    runs-on: aws-cdk_ubuntu-latest_16-core
+
+    env:
+      PR_BUILD: true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: "yarn"
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      # @TODO
+      # - name: Start ECR proxy
+      #   run: /root/ecr-proxy/start.sh
+
+      - name: Cache build artifacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.s3buildcache
+          key: ${{ runner.os }}-${{ github.event.pull_request.base.ref }}-s3buildcache
+
+      - name: Configure system settings
+        run: |
+          (command -v sysctl || sudo apt-get update && sudo apt-get install -y procps) && \
+          sudo sysctl -w vm.max_map_count=2251954
+
+      - name: Build
+        run: /bin/bash ./build.sh --ci
+
+      - name: Run Rosetta
+        run: /bin/bash ./scripts/run-rosetta.sh
+
+      - name: Check for uncommitted changes
+        run: git diff-index --exit-code --ignore-space-at-eol --stat HEAD
