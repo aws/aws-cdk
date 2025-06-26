@@ -15,7 +15,7 @@ jobs:
       PR_BUILD: true
 
     steps:
-      - name: Checkout code
+      - name: Checkout code1
         uses: actions/checkout@v4
 
       - name: Setup Node.js
