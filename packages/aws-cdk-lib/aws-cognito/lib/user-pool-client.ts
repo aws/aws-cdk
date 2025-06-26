@@ -697,12 +697,11 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   private configureRefreshTokenRotation(resource: CfnUserPoolClient, props: UserPoolClientProps) {
     if (props.refreshTokenRotation) {
       this.validateDuration('retryGracePeriod', Duration.seconds(0), Duration.minutes(1), props.refreshTokenRotation.retryGracePeriod);
-    }
-    resource.refreshTokenRotation = props.refreshTokenRotation
-      ? {
+      resource.refreshTokenRotation = {
         feature: 'ENABLED',
         retryGracePeriodSeconds: props.refreshTokenRotation.retryGracePeriod.toSeconds(),
-      } : undefined;
+      };
+    }
   }
 
   private validateDuration(name: string, min: Duration, max: Duration, value?: Duration) {
