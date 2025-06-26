@@ -309,7 +309,7 @@ export interface CanaryProps {
    *
    * If set to true, CDK will execute a dry run to validate the changes before applying them to the canary.
    * If the dry run succeeds, the canary will be updated with the changes.
-   * If the dry run fails, the CloudFormation deployment will fail with the dry run’s failure reason.
+   * If the dry run fails, the CloudFormation deployment will fail with the dry run's failure reason.
    *
    * If set to false or omitted, the canary will be updated directly without first performing a dry run.
    *
@@ -318,6 +318,19 @@ export interface CanaryProps {
    * @default undefined - AWS CloudWatch default is false
    */
   readonly dryRunAndUpdate?: boolean;
+
+  /**
+   * Specifies which resources should have their tags replicated to this canary.
+   *
+   * To have the tags that you apply to this canary also be applied to the Lambda
+   * function that the canary uses, specify this property with the value
+   * 'lambda-function'. If you do this, CloudWatch Synthetics will keep the tags of the canary and the
+   * Lambda function synchronized. Any future changes you make to the canary's tags
+   * will also be applied to the function.
+   *
+   * @default - No resources will have their tags replicated to this canary
+   */
+  readonly resourcesToReplicateTags?: string[];
 }
 
 /**
@@ -433,6 +446,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
           : 'OFF'
         : undefined,
       dryRunAndUpdate: props.dryRunAndUpdate,
+      resourcesToReplicateTags: props.resourcesToReplicateTags,
     });
     this._resource = resource;
 
