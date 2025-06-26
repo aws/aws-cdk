@@ -281,5 +281,28 @@ describe('helm chart', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Repository: 'oci://012345678.dkr.ecr.us-east-1.amazonaws.com/private-repo' });
     });
+
+    test('should enable takeOwnership operations when specified', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyOwnershipChart', { cluster, chart: 'chart', takeOwnership: true });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { TakeOwnership: true });
+    });
+
+    test('should disable takeOwnership operations by default', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyOwnershipChart', { cluster, chart: 'chart' });
+
+      // THEN
+      const charts = Template.fromStack(stack).findResources(eks.HelmChart.RESOURCE_TYPE, { TakeOwnership: true });
+      expect(Object.keys(charts).length).toEqual(0);
+    });
   });
 });

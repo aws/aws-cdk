@@ -125,6 +125,18 @@ class EksClusterStack extends Stack {
       namespace: 'ack-system',
       createNamespace: true,
     });
+
+    // testing installation with --take-ownership flag set to true
+    // https://gallery.ecr.aws/aws-controllers-k8s/sqs-chart
+    this.cluster.addHelmChart('test-take-ownership-installation', {
+      chart: 'sqs-chart',
+      release: 'sqs-chart-release',
+      repository: 'oci://public.ecr.aws/aws-controllers-k8s/sqs-chart',
+      version: '1.1.12',
+      namespace: 'ask-system',
+      createNamespace: true,
+      takeOwnership: true,
+    });
   }
 }
 
