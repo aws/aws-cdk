@@ -32,10 +32,6 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
-      # @TODO
-      # - name: Start ECR proxy
-      #   run: /root/ecr-proxy/start.sh
-
       - name: Load Docker images
         id: docker-cache
         uses: actions/cache/restore@v4
