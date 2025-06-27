@@ -89,7 +89,7 @@ function flagsDetails() {
     dedent(flag.detailsMd),
     '',
     renderTable([
-      ['Since', 'Recommended value', 'Unset behaves like'],
+      ['Since', 'Unset behaves like', 'Recommended value'],
 
       // V1
       flag.introducedIn.v1
