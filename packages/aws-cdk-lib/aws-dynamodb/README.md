@@ -626,7 +626,7 @@ const table = new dynamodb.TableV2(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
   contributorInsightsSpecification: {
     enabled: true,
-    contributorInsightsMode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+    contributorInsightsMode: dynamodb.ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
   },
 });
 ```
@@ -638,7 +638,7 @@ const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
   contributorInsightsSpecification: { // for a table
     enabled: true,
-    contributorInsightsMode: ContributorInsightsMode.THROTTLED_KEYS, // only emit throttling events
+    contributorInsightsMode: dynamodb.ContributorInsightsMode.THROTTLED_KEYS, // only emit throttling events
   },
 });
 
