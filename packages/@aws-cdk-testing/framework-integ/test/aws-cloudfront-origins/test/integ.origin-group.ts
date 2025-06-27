@@ -13,6 +13,7 @@ const bucket = new s3.Bucket(stack, 'Bucket', {
 const originGroup = new origins.OriginGroup({
   primaryOrigin: new origins.S3Origin(bucket),
   fallbackOrigin: new origins.HttpOrigin('www.example.com'),
+  originId: 'CustomGroupId',
 });
 
 new cloudfront.Distribution(stack, 'Distribution', {
