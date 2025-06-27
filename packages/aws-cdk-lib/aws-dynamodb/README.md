@@ -624,7 +624,7 @@ Enabling `contributorInsightSpecification` for `TableV2` will provide informatio
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  contributorInsightsSpecfication: {
+  contributorInsightsSpecification: {
     enabled: true,
     contributorInsightsMode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
   },
@@ -636,14 +636,14 @@ When you use `Table`, you can enable contributor insights for a table or specifi
 ```ts
 const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  contributorInsightsSpecfication: { // for a table
+  contributorInsightsSpecification: { // for a table
     enabled: true,
     contributorInsightsMode: ContributorInsightsMode.THROTTLED_KEYS, // only emit throttling events
   },
 });
 
 table.addGlobalSecondaryIndex({
-  contributorInsightsSpecfication: { // for a specific global secondary index
+  contributorInsightsSpecification: { // for a specific global secondary index
     enabled: true,
   },
   indexName: 'gsi',
