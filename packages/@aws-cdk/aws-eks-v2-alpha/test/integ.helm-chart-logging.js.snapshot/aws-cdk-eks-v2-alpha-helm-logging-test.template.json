@@ -821,6 +821,31 @@
     "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ]
   },
+  "ClusterKubectlProviderHandlerLogGroup3ECFC1AD": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ClusterKubectlProviderHandler2E05C68A"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "DependsOn": [
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "ClusterKubectlProviderAwsCliLayer24064B0B": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
@@ -1004,6 +1029,31 @@
     "VpcPrivateSubnet2DefaultRoute060D2087",
     "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ]
+  },
+  "ClusterKubectlProviderframeworkonEventLogGroup6586722A": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ClusterKubectlProviderframeworkonEvent68E0CF80"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "DependsOn": [
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "ClusterClusterAdminRoleAccessF2BFF759": {
    "Type": "AWS::EKS::AccessEntry",
