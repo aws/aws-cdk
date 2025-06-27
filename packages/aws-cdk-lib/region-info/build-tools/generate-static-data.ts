@@ -10,6 +10,7 @@ import {
   ROUTE_53_BUCKET_WEBSITE_ZONE_IDS,
   EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS,
   ADOT_LAMBDA_LAYER_ARNS,
+  ADOT_LAMBDA_LAYER_NEW_ARNS,
   PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS,
   APPCONFIG_LAMBDA_LAYER_ARNS,
   PARTITION_SAML_SIGN_ON_URL,
@@ -120,6 +121,18 @@ export async function main(): Promise<void> {
       }
     }
 
+    for (const type in ADOT_LAMBDA_LAYER_NEW_ARNS) {
+      for (const version in ADOT_LAMBDA_LAYER_NEW_ARNS[type]) {
+        for (const arch in ADOT_LAMBDA_LAYER_NEW_ARNS[type][version]) {
+          registerFact(
+            region,
+            ['adotLambdaLayer', type, version, arch],
+            ADOT_LAMBDA_LAYER_NEW_ARNS[type][version][arch][region],
+          );
+        }
+      }
+    }
+
     for (const version in PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS) {
       for (const arch in PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS[version]) {
         registerFact(region, ['paramsAndSecretsLambdaLayer', version, arch], PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS[version][arch][region]);
@@ -185,6 +198,34 @@ function before(region: string, ruleOrRegion: string | symbol) {
   }
   const regionIx = AWS_REGIONS_AND_RULES.indexOf(region);
   return regionIx === -1 ? false : regionIx < ruleIx;
+}
+
+export function generateAdotArn (region: string, arch: string, layerName: string, adotVersion: string, layerVersion: string): string {
+  const archPrefix = arch === 'x86_64' ? 'amd64' : 'arm64';
+  const fullLayerName = `${layerName}-${archPrefix}-ver-${adotVersion}`;
+  // eslint-disable-next-line @cdklabs/no-literal-partition
+  const layer = `arn:aws:lambda:${region}:901920570463:layer:${fullLayerName}:${layerVersion}`;
+  return layer;
+}
+
+export function generateAdotArnMap(layerName: string, versions: [string, string, string][], regions: string[]): { [key: string]: any } {
+  const result: { [key: string]: any } = {};
+
+  versions.forEach(([version, adotVersion, layerVersion]) => {
+    result[version] = {
+      x86_64: {},
+      arm64: {},
+    };
+
+    ['x86_64', 'arm64'].forEach(arch => {
+      regions.forEach(region => {
+        result[version][arch][region] = generateAdotArn(region, arch, layerName, adotVersion, layerVersion);
+      },
+      );
+    });
+  });
+
+  return result;
 }
 
 main().catch(e => {
