@@ -1,4 +1,4 @@
-import { FlagInfo, FlagType } from './private/flag-modeling';
+import { FlagInfo, FlagType, MAGIC_V2NEXT } from './private/flag-modeling';
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -1614,7 +1614,7 @@ export const FLAGS: Record<string, FlagInfo> = {
         for migrating resources from VPC V1 to VPC V2. This helps ensure a smoother migration path between
         the two versions.
       `,
-    introducedIn: { v2: 'V2_NEXT' },
+    introducedIn: { v2: '2.196.0' },
     recommendedValue: false,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to use getAtt references for VPC V2 migration',
@@ -1655,7 +1655,7 @@ export const FLAGS: Record<string, FlagInfo> = {
         so your deployment will start failing.
         Refer aws-lambda/README.md for more details on Customizing Log Group creation.
       `,
-    introducedIn: { v2: 'V2_NEXT' },
+    introducedIn: { v2: '2.200.0' },
     unconfiguredBehavesLike: { v2: false },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
@@ -1663,6 +1663,13 @@ export const FLAGS: Record<string, FlagInfo> = {
 };
 
 const CURRENT_MV = 'v2';
+
+for (const [flagName, flag] of Object.entries(FLAGS)) {
+  if (!/^[0-9.]+$/.test(flag.introducedIn[CURRENT_MV] ?? '') && flag.introducedIn[CURRENT_MV] != MAGIC_V2NEXT) {
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
+    throw new Error(`Flag '${flagName}' is not a valid version or the magic string. Did you misspell the magic string?`);
+  }
+}
 
 /**
  * The list of future flags that are now expired. This is going to be used to identify
