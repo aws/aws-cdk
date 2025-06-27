@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 python:3
+FROM --platform=linux/amd64 public.ecr.aws/docker/library/python:3
 
 # The following label allows this image to deployed within an inference pipeline
 LABEL com.amazonaws.sagemaker.capabilities.accept-bind-to-port=true
