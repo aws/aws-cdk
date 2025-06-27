@@ -1,0 +1,13 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "aws-cdk-lambda-dlq-integ-test/DefaultTest": {
+      "stacks": [
+        "LambdaWithDlqStack"
+      ],
+      "assertionStack": "aws-cdk-lambda-dlq-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdklambdadlqintegtestDefaultTestDeployAssertBAD26879"
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}
