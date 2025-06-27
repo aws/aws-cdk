@@ -1,6 +1,12 @@
 name: PR Build
 
 on:
+  workflow_dispatch: {}
+  merge_group: {}
+  push:
+    branches:
+      - main
+      - v2-release
   pull_request:
     branches:
       - main
@@ -8,7 +14,7 @@ on:
 
 jobs:
   build:
-    runs-on: aws-cdk_ubuntu-latest_16-core
+    runs-on: aws-cdk_ubuntu-latest_32-core
 
     env:
       PR_BUILD: true
@@ -18,7 +24,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "18"
           cache: "yarn"
@@ -31,7 +37,7 @@ jobs:
       #   run: /root/ecr-proxy/start.sh
 
       - name: Cache build artifacts
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.s3buildcache
