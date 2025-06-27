@@ -37,10 +37,10 @@ export interface FlagInfoBase {
   readonly detailsMd: string;
   /** Version number the flag was introduced in each version line. `undefined` means flag does not exist in that line. */
   readonly introducedIn: { v1?: string; v2?: string };
-  /** Default value, if flag is unset by user. Adding a flag with a default may not change behavior after GA! */
-  readonly defaults?: { v1?: any; v2?: any };
-  /** Default in new projects */
+  /** What you would like new users to set this flag to (default in new projects) */
   readonly recommendedValue: any;
+  /** If this flag is not set, it behaves as if the flag was set to <this>. if flag is unset by user. Adding a flag with a default may not change behavior after GA! */
+  readonly unconfiguredBehavesLike?: { v1?: any; v2?: any };
 }
 
 /** Flag information, adding required fields if present */
