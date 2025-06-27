@@ -332,9 +332,12 @@ export class PipelineGraph {
   private publishAsset(stackAsset: StackAsset): AGraphNode {
     const assetsGraph = this.topLevelGraph('Assets');
 
-    let assetNode = this.assetNodes.get(stackAsset.assetId);
+    // Create a unique key that includes both asset ID and destination information
+    // This ensures assets with the same hash but different destinations are published separately
+    const assetKey = `${stackAsset.assetId}:${stackAsset.assetPublishingRoleArn || 'default'}`;
+    let assetNode = this.assetNodes.get(assetKey);
     if (assetNode) {
-      // If there's already a node publishing this asset, add as a new publishing
+      // If there's already a node publishing this asset to the same destination, add as a new publishing
       // destination to the same node.
     } else if (this.singlePublisher && this.assetNodesByType.has(stackAsset.assetType)) {
       // If we're doing a single node per type, lookup by that
@@ -353,7 +356,7 @@ export class PipelineGraph {
       assetNode.dependOn(this.lastPreparationNode);
 
       this.assetNodesByType.set(stackAsset.assetType, assetNode);
-      this.assetNodes.set(stackAsset.assetId, assetNode);
+      this.assetNodes.set(assetKey, assetNode);
     }
 
     const data = assetNode.data;
