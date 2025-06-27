@@ -6,7 +6,7 @@ import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
-import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
+import { Credentials, EngineLifecycleSupport, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -809,6 +809,16 @@ export interface DatabaseInstanceNewProps {
    * @default - Changes will be applied immediately
    */
   readonly applyImmediately?: boolean;
+
+  /**
+   * The life cycle type for this DB instance.
+   * This setting applies only to RDS for MySQL and RDS for PostgreSQL.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support.html
+   *
+   * @default undefined - AWS RDS default setting is `EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT`
+   */
+  readonly engineLifecycleSupport?: EngineLifecycleSupport;
 }
 
 /**
@@ -975,6 +985,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       networkType: props.networkType,
       caCertificateIdentifier: props.caCertificate ? props.caCertificate.toString() : undefined,
       applyImmediately: props.applyImmediately,
+      engineLifecycleSupport: props.engineLifecycleSupport,
     };
   }
 
@@ -1079,6 +1090,11 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     this.engine = props.engine;
 
     const engineType = props.engine.engineType;
+
+    if (props.engineLifecycleSupport && !['mysql', 'postgres'].includes(engineType)) {
+      throw new ValidationError(`'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
+    }
+
     // only Oracle and SQL Server require the import and export Roles to be the same
     const combineRoles = engineType.startsWith('oracle-') || engineType.startsWith('sqlserver-');
     let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, combineRoles);
@@ -1492,6 +1508,11 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       throw new ValidationError(`Cannot set 'backupRetention', as engine '${engineDescription(props.sourceDatabaseInstance.engine)}' does not support automatic backups for read replicas`, this);
     }
 
+    const engineType = props.sourceDatabaseInstance.engine?.engineType;
+    if (engineType && props.engineLifecycleSupport && !['mysql', 'postgres'].includes(engineType)) {
+      throw new ValidationError(`'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
+    }
+
     // The read replica instance always uses the same engine as the source instance
     // but some CF validations require the engine to be explicitly passed when some
     // properties are specified.
@@ -1503,7 +1524,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       sourceDbInstanceIdentifier: props.sourceDatabaseInstance.instanceArn,
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
-      engine: shouldPassEngine ? props.sourceDatabaseInstance.engine?.engineType : undefined,
+      engine: shouldPassEngine ? engineType : undefined,
       allocatedStorage: props.allocatedStorage?.toString(),
     });
 
