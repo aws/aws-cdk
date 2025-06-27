@@ -85,6 +85,14 @@ export interface CopyOptions extends FileOptions {
    * @default SymlinkFollowMode.NEVER
    */
   readonly follow?: SymlinkFollowMode;
+
+  /**
+   * If this is set to true, then when processing .dockerignore files, respect nested exclude patterns.
+   *
+   * @see {@link https://github.com/aws/aws-cdk/issues/13636} for more info on the bug this option fixes.
+   * @default true if the feature flag DOCKER_IGNORE_NESTED_EXCLUDE_FIX is set to true, otherwise false
+   */
+  readonly dockerIgnoreRespectNestedExcludes?: boolean;
 }
 
 /**

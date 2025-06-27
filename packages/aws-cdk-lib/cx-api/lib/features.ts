@@ -142,6 +142,7 @@ export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-c
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
+export const DOCKER_IGNORE_NESTED_EXCLUDE_FIX = '@aws-cdk/aws-ecr-assets:dockerIgnoreNestedExcludeFix';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1659,6 +1660,23 @@ export const FLAGS: Record<string, FlagInfo> = {
     defaults: { v2: false },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
+  },
+
+  [DOCKER_IGNORE_NESTED_EXCLUDE_FIX]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, fixes the bug concerning excluding nested file patterns',
+    detailsMd: `
+      This feature flag fixes a bug where Docker assets does not correctly process exclude lines from the .dockerignore files. For example,
+      if the line \`!build/*.js\` is written after the line \`build\` in .dockerignore, the Docker engine treats this as an override and includes any
+      \`!build/*.js\`. CDK did not consider this behavior before and did not copy those nested files excluded from the ignore.
+      
+      This feature flag fixes that issue. This means that files that were incorrectly not copied to the docker asset will be included again, which may
+      be a breaking change.
+
+      This bug was reported in this issue: https://github.com/aws/aws-cdk/issues/13636
+    `,
+    introducedIn: { v2: 'V2_NEXT' },
+    recommendedValue: true,
   },
 };
 
