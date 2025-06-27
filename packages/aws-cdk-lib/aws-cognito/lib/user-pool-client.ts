@@ -235,6 +235,16 @@ export class UserPoolClientIdentityProvider {
 }
 
 /**
+ * The configuration of your app client for refresh token rotation.
+ */
+export interface RefreshTokenRotation {
+  /**
+   * Grace period for the original refresh token (0-60 seconds).
+   */
+  readonly retryGracePeriod: Duration;
+}
+
+/**
  * Options to create a UserPoolClient
  */
 export interface UserPoolClientOptions {
@@ -320,6 +330,13 @@ export interface UserPoolClientOptions {
    * @default Duration.minutes(60)
    */
   readonly accessTokenValidity?: Duration;
+
+  /**
+   * Configuration for refresh token rotation
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-refresh-token.html#using-the-refresh-token-rotation
+   * @default - undefined (refresh token rotation is disabled)
+   */
+  readonly refreshTokenRotation?: RefreshTokenRotation;
 
   /**
    * The set of attributes this client will be able to read.
@@ -531,6 +548,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     });
     this.configureAuthSessionValidity(resource, props);
     this.configureTokenValidity(resource, props);
+    this.configureRefreshTokenRotation(resource, props);
 
     this.userPoolClientId = resource.ref;
     this._userPoolClientName = props.userPoolClientName;
@@ -595,8 +613,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     if (props.authFlows.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
     if (props.authFlows.user) { authFlows.push('ALLOW_USER_AUTH'); }
 
-    // refreshToken should always be allowed if authFlows are present
-    authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
+    // refreshToken should only be allowed if authFlows are present and refreshTokenRotation is disabled
+    if (!props.refreshTokenRotation) {
+      authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
+    }
 
     return authFlows;
   }
@@ -672,6 +692,16 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     resource.idTokenValidity = props.idTokenValidity ? props.idTokenValidity.toMinutes() : undefined;
     resource.refreshTokenValidity = props.refreshTokenValidity ? props.refreshTokenValidity.toMinutes() : undefined;
     resource.accessTokenValidity = props.accessTokenValidity ? props.accessTokenValidity.toMinutes() : undefined;
+  }
+
+  private configureRefreshTokenRotation(resource: CfnUserPoolClient, props: UserPoolClientProps) {
+    if (props.refreshTokenRotation) {
+      this.validateDuration('retryGracePeriod', Duration.seconds(0), Duration.minutes(1), props.refreshTokenRotation.retryGracePeriod);
+      resource.refreshTokenRotation = {
+        feature: 'ENABLED',
+        retryGracePeriodSeconds: props.refreshTokenRotation.retryGracePeriod.toSeconds(),
+      };
+    }
   }
 
   private validateDuration(name: string, min: Duration, max: Duration, value?: Duration) {
