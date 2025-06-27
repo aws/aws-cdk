@@ -49,7 +49,7 @@ function removedFlags() {
 }
 
 function changedFlags() {
-  const changedInV2 = flags(flag => !!flag.defaults?.v2 && !!flag.introducedIn.v2);
+  const changedInV2 = flags(flag => !!flag.unconfiguredBehavesLike?.v2 && !!flag.introducedIn.v2);
 
   return renderTable([
     ['Flag', 'Summary', 'Type', 'Since', 'v1 default', 'v2 default'],
@@ -59,13 +59,13 @@ function changedFlags() {
       renderType(flag.type, 'short'),
       flag.introducedIn.v1 ?? '',
       renderValue(false),
-      renderValue(flag.defaults?.v2),
+      renderValue(flag.unconfiguredBehavesLike?.v2),
     ]),
   ]);
 }
 
 function migrateJson() {
-  const changedInV2 = flags(flag => !!flag.defaults?.v2 && !!flag.introducedIn.v2 && !!flag.introducedIn.v1);
+  const changedInV2 = flags(flag => !!flag.unconfiguredBehavesLike?.v2 && !!flag.introducedIn.v2 && !!flag.introducedIn.v1);
 
   const context = Object.fromEntries(changedInV2.map(([name, _]) => [name, false]));
 
@@ -89,7 +89,7 @@ function flagsDetails() {
     dedent(flag.detailsMd),
     '',
     renderTable([
-      ['Since', 'Default', 'Recommended'],
+      ['Since', 'Recommended value', 'Unset behaves like'],
 
       // V1
       flag.introducedIn.v1
@@ -98,9 +98,9 @@ function flagsDetails() {
 
       // V2
       flag.introducedIn.v2
-        ? [flag.introducedIn.v2, renderValue(flag.defaults?.v2 ?? false), renderValue(flag.recommendedValue)]
-        : flag.defaults?.v2 !== undefined
-          ? ['(default in v2)', renderValue(flag.defaults?.v2), '']
+        ? [flag.introducedIn.v2, renderValue(flag.unconfiguredBehavesLike?.v2 ?? false), renderValue(flag.recommendedValue)]
+        : flag.unconfiguredBehavesLike?.v2 !== undefined
+          ? ['(default in v2)', renderValue(flag.unconfiguredBehavesLike?.v2), '']
           : ['(not in v2)', '', ''],
     ]),
     ...oldBehavior(flag) ? [
