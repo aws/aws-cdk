@@ -1,0 +1,685 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "LoadBalancerTypesAliasTargetStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "LoadBalancerTypesAliasTargetStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "LoadBalancerTypesAliasTargetStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "LoadBalancerTypesAliasTargetStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/923601e418309ef59f353eb81e313dbc7accb7989cdec45f816161ad4bb5d5b3.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "LoadBalancerTypesAliasTargetStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "LoadBalancerTypesAliasTargetStack.assets"
+      ],
+      "metadata": {
+        "/LoadBalancerTypesAliasTargetStack/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*",
+              "enableDnsHostnames": true,
+              "enableDnsSupport": true,
+              "subnetConfiguration": [
+                {
+                  "name": "*",
+                  "subnetType": "Public",
+                  "cidrMask": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/VPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1SubnetB4246D30"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2Subnet74179F39"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/VPC/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/Ipv6CidrBlock": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv6CidrBlock"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/SubnetIpv6CidrBlock0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetIpv6CidrBlock0"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/SubnetIpv6CidrBlock1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubnetIpv6CidrBlock1"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/HostedZone": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/HostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDB99F866"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/CLB-IPv4": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "internetFacing": true,
+              "listeners": [
+                {
+                  "externalPort": "*",
+                  "internalPort": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addListener": [
+                {
+                  "externalPort": "*",
+                  "internalPort": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/CLB-IPv4/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": false
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/CLB-IPv4/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CLBIPv4SecurityGroup8512B841"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/CLB-IPv4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CLBIPv4BF878D66"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/CLB-IPv4-ARecord": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/CLB-IPv4-ARecord/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CLBIPv4ARecordB33F25AE"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ALB-IPv4": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ALB-IPv4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBIPv4C2295E12"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ALB-IPv4/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*",
+              "allowAllOutbound": false
+            }
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ALB-IPv4/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBIPv4SecurityGroupB3E168B5"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ALB-IPv4-ARecord": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ALB-IPv4-ARecord/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBIPv4ARecord53405067"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/NLB-IPv4": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/NLB-IPv4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBIPv4C1144075"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/NLB-IPv4-ARecord": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/NLB-IPv4-ARecord/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBIPv4ARecord98F33220"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ALB-DualStack": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ALB-DualStack/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBDualStack16B98E1D"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ALB-DualStack/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*",
+              "allowAllOutbound": false
+            }
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ALB-DualStack/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBDualStackSecurityGroupADDCB1B5"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ALB-DualStack-ARecord": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ALB-DualStack-ARecord/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBDualStackARecord06F1EBD1"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ALB-DualStack-AAAARecord": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ALB-DualStack-AAAARecord/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBDualStackAAAARecordAC654A99"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/NLB-DualStack": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/NLB-DualStack/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBDualStack44ADB8BC"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/NLB-DualStack-ARecord": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/NLB-DualStack-ARecord/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBDualStackARecordC076A207"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/NLB-DualStack-AAAARecord": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/NLB-DualStack-AAAARecord/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBDualStackAAAARecord35728D6F"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ImportedNLB-ARecord": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ImportedNLB-ARecord/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedNLBARecord61025853"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ImportedALB": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ImportedALB-ARecord": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/ImportedALB-ARecord/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedALBARecord12AE4220"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "LoadBalancerTypesAliasTargetStack"
+    },
+    "LoadBalancerTypesAliasTargetTestDefaultTestDeployAssert1A1E2A2E.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "LoadBalancerTypesAliasTargetTestDefaultTestDeployAssert1A1E2A2E.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "LoadBalancerTypesAliasTargetTestDefaultTestDeployAssert1A1E2A2E": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "LoadBalancerTypesAliasTargetTestDefaultTestDeployAssert1A1E2A2E.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "LoadBalancerTypesAliasTargetTestDefaultTestDeployAssert1A1E2A2E.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "LoadBalancerTypesAliasTargetTestDefaultTestDeployAssert1A1E2A2E.assets"
+      ],
+      "metadata": {
+        "/LoadBalancerTypesAliasTargetTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/LoadBalancerTypesAliasTargetTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "LoadBalancerTypesAliasTargetTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}
