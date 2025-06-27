@@ -78,7 +78,7 @@ export abstract class StageBase extends Resource implements IStage {
 
     return {
       destinationArn: props.destination.bind(this).destinationArn,
-      format: format ? format.toString() : AccessLogFormat.clf().toString(),
+      format: format ? format.toString() : this.defaultAccessLogFormat().toString(),
     };
   }
 
@@ -87,4 +87,6 @@ export abstract class StageBase extends Resource implements IStage {
       dimensionsMap: { ApiId: this.baseApi.apiId, Stage: this.stageName },
     }).attachTo(this);
   }
+
+  abstract defaultAccessLogFormat(): AccessLogFormat;
 }
