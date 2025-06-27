@@ -675,7 +675,7 @@
          "ECRRepositoryName": {
           "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
          },
-         "ImageTag": "30a26f3582aa60a33d76db3f126e70a08bcfd5d4af185230cbb2a37db272ab4e",
+         "ImageTag": "27f275db75ac03bdc330dbcf7088081a073cf2e4126ccbf4d9b2726213619891",
          "CriticalThreshold": 5,
          "HighThreshold": 5,
          "MediumThreshold": 5,
