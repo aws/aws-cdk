@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.202.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.202.0-alpha.0...v2.202.1-alpha.0) (2025-06-27)
+
 ## [2.202.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.201.0-alpha.0...v2.202.0-alpha.0) (2025-06-20)
 
 
