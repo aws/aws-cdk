@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: aws-cdk_ubuntu-latest_16-core
+    runs-on: aws-cdk_ubuntu-latest_32-core
 
     env:
       PR_BUILD: true
