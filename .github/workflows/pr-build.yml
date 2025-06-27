@@ -12,6 +12,12 @@ on:
       - main
       - v2-release
 
+# For every PR, cancel any previous builds in progress
+# ... but for all other builds we keep them running
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: aws-cdk_ubuntu-latest_32-core
