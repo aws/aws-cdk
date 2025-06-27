@@ -1,4 +1,4 @@
-import { FlagInfo, FlagType, MAGIC_V2NEXT } from './private/flag-modeling';
+import { FlagInfo, FlagType } from './private/flag-modeling';
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -1662,14 +1662,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 };
 
-const CURRENT_MV = 'v2';
-
-for (const [flagName, flag] of Object.entries(FLAGS)) {
-  if (!/^[0-9.]+$/.test(flag.introducedIn[CURRENT_MV] ?? '') && flag.introducedIn[CURRENT_MV] != MAGIC_V2NEXT) {
-    // eslint-disable-next-line @cdklabs/no-throw-default-error
-    throw new Error(`Flag '${flagName}' is not a valid version or the magic string. Did you misspell the magic string?`);
-  }
-}
+export const CURRENT_MV = 'v2';
 
 /**
  * The list of future flags that are now expired. This is going to be used to identify
