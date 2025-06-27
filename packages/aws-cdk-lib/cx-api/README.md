@@ -761,3 +761,21 @@ _cdk.json_
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true
   }
 }
+```
+
+* `@aws-cdk/aws-opensearchservice:logGroupResourcePolicyWithoutCustomResource`
+
+
+When this feature flag is enabled, AWS::Logs::ResourcePolicy will be used to create log group resource policy instead of creating  a custom resource internally.
+
+If the flag is set to false then a custom resource will be created when `logging` property is specified in `Domain`.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-opensearchservice:logGroupResourcePolicyWithoutCustomResource": true
+  }
+}
+```
