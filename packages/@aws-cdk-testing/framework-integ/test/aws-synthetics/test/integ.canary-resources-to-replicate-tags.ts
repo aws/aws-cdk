@@ -19,7 +19,7 @@ class TestStack extends Stack {
       }),
       memory: Size.mebibytes(1024),
       timeout: Duration.minutes(3),
-      resourcesToReplicateTags: ['lambda-function'],
+      resourcesToReplicateTags: [synthetics.ResourceToReplicateTags.LAMBDA_FUNCTION],
     });
 
     Tags.of(this.canary).add('Environment', 'test');
