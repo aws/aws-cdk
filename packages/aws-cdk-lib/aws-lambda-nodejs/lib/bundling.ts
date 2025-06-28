@@ -184,6 +184,7 @@ export class Bundling implements cdk.BundlingOptions {
           ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_DEFAULT_VERSION,
         },
         platform: props.architecture.dockerPlatform,
+        network: props.network,
       })
       : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
 
