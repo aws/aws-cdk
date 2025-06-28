@@ -402,9 +402,9 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
     handler: 'index.handler',
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
-  resourcesToReplicateTags: ['lambda-function'],
+  resourcesToReplicateTags: [synthetics.ResourceToReplicateTags.LAMBDA_FUNCTION],
 });
 ```
 
-When you specify `'lambda-function'` in the `resourcesToReplicateTags` property, CloudWatch Synthetics will keep the tags of the canary and the Lambda function synchronized. Any future changes you make to the canary's tags will also be applied to the function.
+When you specify `ResourceToReplicateTags.LAMBDA_FUNCTION` in the `resourcesToReplicateTags` property, CloudWatch Synthetics will keep the tags of the canary and the Lambda function synchronized. Any future changes you make to the canary's tags will also be applied to the function.
 
