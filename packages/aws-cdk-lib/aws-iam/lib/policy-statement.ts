@@ -92,6 +92,7 @@ export class PolicyStatement {
 
   constructor(props: PolicyStatementProps = {}) {
     this._sid = props.sid;
+    this.validateStatementId(this._sid);
     this._effect = props.effect || Effect.ALLOW;
 
     this.addActions(...props.actions || []);
@@ -117,6 +118,7 @@ export class PolicyStatement {
    */
   public set sid(sid: string | undefined) {
     this.assertNotFrozen('sid');
+    this.validateStatementId(sid);
     this._sid = sid;
   }
 
@@ -229,6 +231,12 @@ export class PolicyStatement {
       const fragment = notPrincipal.policyFragment;
       mergePrincipal(this._notPrincipal, fragment.principalJson);
       this.addPrincipalConditions(fragment.conditions);
+    }
+  }
+
+  private validateStatementId(sid?: string) {
+    if (sid !== undefined && !cdk.Token.isUnresolved(sid) && !/^[0-9A-Za-z]*$/.test(sid)) {
+      throw new UnscopedValidationError(`Statement ID (sid) must be alphanumeric. Got '${sid}'. The Sid element supports ASCII uppercase letters (A-Z), lowercase letters (a-z), and numbers (0-9).`);
     }
   }
 
