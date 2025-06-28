@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "CompositeAlarmIntegrationTest.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "CompositeAlarmIntegrationTest.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/de5a3d0e66f4d4eab13b64e32203fdcae3b36670c889c72a3b4b752e6a5d0fc2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9692b93f67daca0626127b387d63c4da0bac88c928ae3aa37e3077972be581e2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,10 +34,34 @@
         "CompositeAlarmIntegrationTest.assets"
       ],
       "metadata": {
+        "/CompositeAlarmIntegrationTest/Alarm1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "metric": {
+                "warnings": "*"
+              },
+              "threshold": "*",
+              "evaluationPeriods": "*"
+            }
+          }
+        ],
         "/CompositeAlarmIntegrationTest/Alarm1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Alarm1F9009D71"
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/Alarm2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "metric": {
+                "warnings": "*"
+              },
+              "threshold": "*",
+              "evaluationPeriods": "*"
+            }
           }
         ],
         "/CompositeAlarmIntegrationTest/Alarm2/Resource": [
@@ -45,10 +70,34 @@
             "data": "Alarm2A7122E13"
           }
         ],
+        "/CompositeAlarmIntegrationTest/Alarm3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "metric": {
+                "warnings": "*"
+              },
+              "threshold": "*",
+              "evaluationPeriods": "*"
+            }
+          }
+        ],
         "/CompositeAlarmIntegrationTest/Alarm3/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Alarm32341D8D9"
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/Alarm4": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "metric": {
+                "warnings": "*"
+              },
+              "threshold": "*",
+              "evaluationPeriods": "*"
+            }
           }
         ],
         "/CompositeAlarmIntegrationTest/Alarm4/Resource": [
@@ -57,16 +106,66 @@
             "data": "Alarm4671832C8"
           }
         ],
+        "/CompositeAlarmIntegrationTest/Alarm5": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "alarmName": "*",
+              "metric": {
+                "warnings": "*"
+              },
+              "threshold": "*",
+              "evaluationPeriods": "*"
+            }
+          }
+        ],
         "/CompositeAlarmIntegrationTest/Alarm5/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Alarm548383B2F"
           }
         ],
+        "/CompositeAlarmIntegrationTest/CompositeAlarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "alarmRule": "*",
+              "actionsSuppressor": "*"
+            }
+          }
+        ],
         "/CompositeAlarmIntegrationTest/CompositeAlarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CompositeAlarmF4C3D082"
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/EmptyAnyOf": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "alarmRule": "*"
+            }
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/EmptyAnyOf/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmptyAnyOf31086C89"
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/EmptyAllOf": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "alarmRule": "*"
+            }
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/EmptyAllOf/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmptyAllOfB3D3F8E7"
           }
         ],
         "/CompositeAlarmIntegrationTest/BootstrapVersion": [
@@ -97,6 +196,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "CompositeAlarmImportIntegrationTest.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -156,6 +256,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdkintegcompositealarmDefaultTestDeployAssertF4EF969E.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -196,5 +297,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
