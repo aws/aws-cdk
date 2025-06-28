@@ -1203,7 +1203,7 @@ test('can configure resourcesToReplicateTags', () => {
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
-    resourcesToReplicateTags: ['lambda-function'],
+    resourcesToReplicateTags: [synthetics.ResourceToReplicateTags.LAMBDA_FUNCTION],
   });
 
   // THEN

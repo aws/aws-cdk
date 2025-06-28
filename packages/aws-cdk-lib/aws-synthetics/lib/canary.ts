@@ -78,6 +78,20 @@ export enum Cleanup {
 }
 
 /**
+ * Resources that tags applied to a canary should be replicated to.
+ */
+export enum ResourceToReplicateTags {
+  /**
+   * Replicate canary tags to the Lambda function.
+   *
+   * When specified, CloudWatch Synthetics will keep the tags of the canary
+   * and the Lambda function synchronized. Any future changes made to the
+   * canary's tags will also be applied to the function.
+   */
+  LAMBDA_FUNCTION = 'lambda-function',
+}
+
+/**
  * Options for specifying the s3 location that stores the data of each canary run. The artifacts bucket location **cannot**
  * be updated once the canary is created.
  */
@@ -314,13 +328,13 @@ export interface CanaryProps {
    *
    * To have the tags that you apply to this canary also be applied to the Lambda
    * function that the canary uses, specify this property with the value
-   * 'lambda-function'. If you do this, CloudWatch Synthetics will keep the tags of the canary and the
+   * ResourceToReplicateTags.LAMBDA_FUNCTION. If you do this, CloudWatch Synthetics will keep the tags of the canary and the
    * Lambda function synchronized. Any future changes you make to the canary's tags
    * will also be applied to the function.
    *
    * @default - No resources will have their tags replicated to this canary
    */
-  readonly resourcesToReplicateTags?: string[];
+  readonly resourcesToReplicateTags?: ResourceToReplicateTags[];
 }
 
 /**
