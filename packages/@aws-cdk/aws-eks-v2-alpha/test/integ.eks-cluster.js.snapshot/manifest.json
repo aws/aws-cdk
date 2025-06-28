@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/5382945f79f4f018d293a6bc66b9c80ab36f28f170e36bf451d456847a5cf20c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/629a02dd153b8567d97c14727fe095d6bbeaf7e928b161aaaf98eb34ab75aa12.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -340,6 +340,22 @@
         "/aws-cdk-eks-cluster/Cluster": [
           {
             "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
             "data": "*"
           },
           {
@@ -1378,8 +1394,6 @@
             "type": "aws:cdk:analytics:method",
             "data": {
               "addUserData": [
-                "*",
-                "*",
                 "*"
               ]
             }
@@ -1694,12 +1708,25 @@
             "data": "ClusterNodesInstanceRoleARN4BC4C7FB"
           }
         ],
+        "/aws-cdk-eks-cluster/Cluster/x86Access": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/x86Access/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Clusterx86Access1B39AB74"
+          }
+        ],
         "/aws-cdk-eks-cluster/Cluster/NodesArm": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "instanceType": "*",
               "minCapacity": "*",
+              "ssmSessionPermissions": true,
               "vpc": "*",
               "machineImage": "*"
             }
@@ -1716,8 +1743,6 @@
             "type": "aws:cdk:analytics:method",
             "data": {
               "addUserData": [
-                "*",
-                "*",
                 "*"
               ]
             }
@@ -1969,6 +1994,16 @@
                 }
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/NodesArm/InstanceRole/ImportInstanceRole": [
@@ -2030,6 +2065,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterNodesArmInstanceRoleARN3F8D982E"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/ArmAccess": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/ArmAccess/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterArmAccess24FF282A"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/BottlerocketNodes": [
@@ -2371,6 +2418,18 @@
             "data": "ClusterBottlerocketNodesInstanceRoleARNDDB5891D"
           }
         ],
+        "/aws-cdk-eks-cluster/Cluster/BottleRocketAccess": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/BottleRocketAccess/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterBottleRocketAccess0FA043D0"
+          }
+        ],
         "/aws-cdk-eks-cluster/Cluster/spot": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -2394,8 +2453,6 @@
             "type": "aws:cdk:analytics:method",
             "data": {
               "addUserData": [
-                "*",
-                "*",
                 "*"
               ]
             }
@@ -2710,6 +2767,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterspotInstanceRoleARNF818CC0A"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/SpotAccess": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/SpotAccess/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSpotAccess0767D563"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng": [
@@ -3249,28 +3318,22 @@
             "data": "ClusterMyExtendedServiceAccountmanifestMyExtendedServiceAccountServiceAccountResource90162712"
           }
         ],
-        "/aws-cdk-eks-cluster/SsmParameterValue:--aws--service--eks--optimized-ami--1.32--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-eks-cluster/SsmParameterValue:--aws--service--eks--optimized-ami--1.33--amazon-linux-2023--x86_64--standard--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsserviceeksoptimizedami133amazonlinux2023x8664standardrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-cdk-eks-cluster/SsmParameterValue:--aws--service--eks--optimized-ami--1.32--amazon-linux-2-arm64--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-eks-cluster/SsmParameterValue:--aws--service--eks--optimized-ami--1.33--amazon-linux-2023--arm64--standard--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsserviceeksoptimizedami133amazonlinux2023arm64standardrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-cdk-eks-cluster/SsmParameterValue:--aws--service--bottlerocket--aws-k8s-1.32--x86_64--latest--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-eks-cluster/SsmParameterValue:--aws--service--bottlerocket--aws-k8s-1.33--x86_64--latest--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsservicebottlerocketawsk8s132x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-          }
-        ],
-        "/aws-cdk-eks-cluster/SsmParameterValue:--aws--service--eks--optimized-ami--1.25--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceeksoptimizedami125amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsservicebottlerocketawsk8s133x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/aws-cdk-eks-cluster/LaunchTemplate": [
@@ -3439,5 +3502,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1015.0"
+  "minimumCliVersion": "2.1018.0"
 }
