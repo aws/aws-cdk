@@ -1,6 +1,5 @@
-import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
-import { ContextProvider, Stack } from '../../core';
+import { CfnParameter, ContextProvider, Stack } from '../../core';
 import * as rds from '../lib';
 
 /* eslint-disable */
@@ -138,3 +137,15 @@ describe('DatabaseCluster from lookup with security groups', () => {
   });
 });
 /* eslint-enable */
+
+describe('Validation test', () => {
+  test('throw error if cluster identifier is a token', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+    const tokenClusterIdentifier = new CfnParameter(stack, 'ClusterIdentifier');
+
+    expect(() => rds.DatabaseCluster.fromLookup(stack, 'MyCluster', {
+      clusterIdentifier: tokenClusterIdentifier.valueAsString,
+    })).toThrow('Cannot look up a cluster with a tokenized cluster identifier.');
+  });
+});

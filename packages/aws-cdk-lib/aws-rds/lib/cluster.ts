@@ -22,7 +22,7 @@ import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cxschema from '../../cloud-assembly-schema';
 import { Annotations, ArnFormat, ContextProvider, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '../../core';
-import { ValidationError } from '../../core/lib/errors';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -1365,6 +1365,9 @@ export class DatabaseCluster extends DatabaseClusterNew {
    * Lookup an existing DatabaseCluster using clusterIdentifier.
    */
   public static fromLookup(scope: Construct, id: string, options: DatabaseClusterLookupOptions): IDatabaseCluster {
+    if (Token.isUnresolved(options.clusterIdentifier)) {
+      throw new UnscopedValidationError('Cannot look up a cluster with a tokenized cluster identifier.');
+    }
     const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.CC_API_PROVIDER,
       props: {
