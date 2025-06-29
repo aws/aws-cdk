@@ -1606,7 +1606,7 @@ Here's how `DatabaseCluster.fromLookup()` can be used:
 ```ts
 declare const myUserRole: iam.Role;
 
-const clusterFromLookup = rds.DatabaseCluster.fromLookup(this, 'clusterFromLookup', {
+const clusterFromLookup = rds.DatabaseCluster.fromLookup(this, 'ClusterFromLookup', {
   clusterIdentifier: 'my-cluster-id',
 });
 
