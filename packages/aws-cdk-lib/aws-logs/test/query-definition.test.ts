@@ -63,6 +63,7 @@ describe('query definition', () => {
         fields: ['@timestamp', '@message'],
         parse: '@message "[*] *" as loggingType, loggingMessage',
         filter: 'loggingType = "ERROR"',
+        stats: 'count(loggingMessage) as loggingErrors',
         sort: '@timestamp desc',
         limit: 20,
         display: 'loggingMessage',
@@ -73,7 +74,7 @@ describe('query definition', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::QueryDefinition', {
       Name: 'MyQuery',
-      QueryString: 'fields @timestamp, @message\n| parse @message "[*] *" as loggingType, loggingMessage\n| filter loggingType = "ERROR"\n| sort @timestamp desc\n| limit 20\n| display loggingMessage',
+      QueryString: 'fields @timestamp, @message\n| parse @message "[*] *" as loggingType, loggingMessage\n| filter loggingType = "ERROR"\n| stats count(loggingMessage) as loggingErrors\n| sort @timestamp desc\n| limit 20\n| display loggingMessage',
     });
   });
 
@@ -94,6 +95,10 @@ describe('query definition', () => {
           'loggingType = "ERROR"',
           'loggingMessage = "A very strange error occurred!"',
         ],
+        statsStatements: [
+          'count(loggingMessage) as loggingErrors',
+          'count(differentLoggingMessage) as differentLoggingErrors',
+        ],
         sort: '@timestamp desc',
         limit: 20,
       }),
@@ -102,7 +107,7 @@ describe('query definition', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::QueryDefinition', {
       Name: 'MyQuery',
-      QueryString: 'fields @timestamp, @message\n| parse @message "[*] *" as loggingType, loggingMessage\n| parse @message "<*>: *" as differentLoggingType, differentLoggingMessage\n| filter loggingType = "ERROR"\n| filter loggingMessage = "A very strange error occurred!"\n| sort @timestamp desc\n| limit 20',
+      QueryString: 'fields @timestamp, @message\n| parse @message "[*] *" as loggingType, loggingMessage\n| parse @message "<*>: *" as differentLoggingType, differentLoggingMessage\n| filter loggingType = "ERROR"\n| filter loggingMessage = "A very strange error occurred!"\n| stats count(loggingMessage) as loggingErrors\n| stats count(differentLoggingMessage) as differentLoggingErrors\n| sort @timestamp desc\n| limit 20',
     });
   });
 
