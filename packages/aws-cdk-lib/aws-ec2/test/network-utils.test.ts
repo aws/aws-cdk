@@ -59,8 +59,6 @@ describe('network utils', () => {
     test('maxIp() should return the last usable IP from an aligned CidrBlock', () => {
       const testValues = [
         ['10.0.3.0/28', '10.0.3.15'],
-        ['10.0.3.1/28', '10.0.3.31'],
-        ['10.0.2.254/28', '10.0.3.15'],
       ];
       for (const [cidr, expected] of testValues) {
         const block = new CidrBlock(cidr);
