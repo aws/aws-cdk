@@ -1,5 +1,5 @@
-import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import { CommonPromptVariantProps, PromptTemplateType, IPromptVariant } from './prompt-variant';
+import { PromptInferenceConfiguration } from './prompt-inference-configuration';
 
 /**
  * Properties for creating a text prompt variant.
@@ -10,7 +10,7 @@ export interface TextPromptVariantProps extends CommonPromptVariantProps {
    *
    * @default - No inference configuration provided.
    */
-  readonly inferenceConfiguration?: bedrock.CfnPrompt.PromptModelInferenceConfigurationProperty;
+  readonly inferenceConfiguration?: PromptInferenceConfiguration;
 
   /**
    * The text prompt. Variables are used by enclosing its name with double curly braces
@@ -31,11 +31,11 @@ export function createTextPromptVariant(props: TextPromptVariantProps): IPromptV
     templateType: PromptTemplateType.TEXT,
     modelId: props.model.invokableArn,
     inferenceConfiguration: {
-      text: props.inferenceConfiguration ? { ...props.inferenceConfiguration } : {},
+      text: props.inferenceConfiguration ? props.inferenceConfiguration._render() : {},
     },
     templateConfiguration: {
       text: {
-        inputVariables: props.promptVariables?.flatMap((variable: string) => {
+        inputVariables: props.promptVariables?.map((variable: string) => {
           return { name: variable };
         }),
         text: props.promptText,

@@ -142,7 +142,7 @@ describe('PromptVersion', () => {
       });
 
       // Create version using the prompt's method
-      const versionString = prompt.createVersion('Created via prompt method');
+      const promptVersion = prompt.createVersion('Created via prompt method');
 
       // Also create a standalone version
       const standaloneVersion = new bedrock.PromptVersion(stack, 'StandaloneVersion', {
@@ -150,7 +150,10 @@ describe('PromptVersion', () => {
         description: 'Created as standalone construct',
       });
 
-      expect(versionString).toBeDefined();
+      expect(promptVersion).toBeDefined();
+      expect(promptVersion.version).toBeDefined();
+      expect(promptVersion.versionArn).toBeDefined();
+      expect(promptVersion.prompt).toBe(prompt);
       expect(standaloneVersion.version).toBeDefined();
 
       Template.fromStack(stack).resourceCountIs('AWS::Bedrock::PromptVersion', 2);
@@ -242,21 +245,36 @@ describe('PromptVersion', () => {
       });
     });
 
-    test('handles very long description', () => {
-      const longDescription = 'A'.repeat(1000);
+    test('throws error for description longer than 200 characters', () => {
+      const longDescription = 'A'.repeat(201);
+      const prompt = new bedrock.Prompt(stack, 'TestPrompt', {
+        promptName: 'test-prompt',
+      });
+
+      expect(() => {
+        new bedrock.PromptVersion(stack, 'TestPromptVersion', {
+          prompt,
+          description: longDescription,
+        });
+      }).toThrow('Description must be 200 characters or less, got 201 characters.');
+    });
+
+    test('accepts description with exactly 200 characters', () => {
+      const maxDescription = 'A'.repeat(200);
       const prompt = new bedrock.Prompt(stack, 'TestPrompt', {
         promptName: 'test-prompt',
       });
 
       const promptVersion = new bedrock.PromptVersion(stack, 'TestPromptVersion', {
         prompt,
-        description: longDescription,
+        description: maxDescription,
       });
 
       expect(promptVersion.prompt).toBe(prompt);
+      expect(promptVersion.description).toBe(maxDescription);
 
       Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::PromptVersion', {
-        Description: longDescription,
+        Description: maxDescription,
       });
     });
 

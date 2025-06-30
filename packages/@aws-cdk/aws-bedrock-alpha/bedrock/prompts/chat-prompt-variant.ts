@@ -1,7 +1,7 @@
-import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import { CfnPrompt } from 'aws-cdk-lib/aws-bedrock';
 import { CommonPromptVariantProps, PromptTemplateType, IPromptVariant } from './prompt-variant';
 import { ToolConfiguration } from './tool-choice';
+import { PromptInferenceConfiguration } from './prompt-inference-configuration';
 
 /**
  * Properties for creating a chat prompt variant.
@@ -33,7 +33,7 @@ export interface ChatPromptVariantProps extends CommonPromptVariantProps {
    *
    * @default - No inference configuration provided.
    */
-  readonly inferenceConfiguration?: bedrock.CfnPrompt.PromptModelInferenceConfigurationProperty;
+  readonly inferenceConfiguration?: PromptInferenceConfiguration;
 }
 
 /**
@@ -123,11 +123,11 @@ export function createChatPromptVariant(props: ChatPromptVariantProps): IPromptV
     templateType: PromptTemplateType.CHAT,
     modelId: props.model.invokableArn,
     inferenceConfiguration: {
-      text: { ...props.inferenceConfiguration },
+      text: props.inferenceConfiguration ? props.inferenceConfiguration._render() : {},
     },
     templateConfiguration: {
       chat: {
-        inputVariables: props.promptVariables?.flatMap((variable: string) => {
+        inputVariables: props.promptVariables?.map((variable: string) => {
           return { name: variable };
         }),
         messages: props.messages?.flatMap(m => m._render()),

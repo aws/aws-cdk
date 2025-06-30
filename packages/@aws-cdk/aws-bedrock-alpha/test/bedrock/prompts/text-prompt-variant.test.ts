@@ -34,11 +34,11 @@ describe('TextPromptVariant', () => {
     });
 
     test('creates text prompt variant with all properties', () => {
-      const inferenceConfig = {
+      const inferenceConfig = new bedrock.PromptInferenceConfiguration({
         maxTokens: 100,
         temperature: 0.7,
         topP: 0.9,
-      };
+      });
 
       const variant = bedrock.PromptVariant.text({
         variantName: 'advanced-variant',
@@ -52,7 +52,11 @@ describe('TextPromptVariant', () => {
       expect(variant.templateType).toBe(bedrock.PromptTemplateType.TEXT);
       expect(variant.modelId).toBe(foundationModel.invokableArn);
       expect(variant.inferenceConfiguration).toEqual({
-        text: inferenceConfig,
+        text: {
+          maxTokens: 100,
+          temperature: 0.7,
+          topP: 0.9,
+        },
       });
       expect(variant.templateConfiguration).toEqual({
         text: {
@@ -203,11 +207,13 @@ And includes {{variable}} placeholders.`;
     });
 
     test('handles empty inference configuration object', () => {
+      const inferenceConfig = new bedrock.PromptInferenceConfiguration({});
+
       const variant = bedrock.PromptVariant.text({
         variantName: 'empty-inference-variant',
         model: foundationModel,
         promptText: 'Empty inference config',
-        inferenceConfiguration: {},
+        inferenceConfiguration: inferenceConfig,
       });
 
       expect(variant.inferenceConfiguration).toEqual({
@@ -216,13 +222,12 @@ And includes {{variable}} placeholders.`;
     });
 
     test('preserves all inference configuration properties', () => {
-      const inferenceConfig = {
+      const inferenceConfig = new bedrock.PromptInferenceConfiguration({
         maxTokens: 500,
         temperature: 0.5,
         topP: 0.8,
-        topK: 50,
         stopSequences: ['END', 'STOP'],
-      };
+      });
 
       const variant = bedrock.PromptVariant.text({
         variantName: 'full-inference-variant',
@@ -232,7 +237,12 @@ And includes {{variable}} placeholders.`;
       });
 
       expect(variant.inferenceConfiguration).toEqual({
-        text: inferenceConfig,
+        text: {
+          maxTokens: 500,
+          temperature: 0.5,
+          topP: 0.8,
+          stopSequences: ['END', 'STOP'],
+        },
       });
     });
   });

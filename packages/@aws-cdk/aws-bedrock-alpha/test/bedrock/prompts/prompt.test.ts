@@ -92,7 +92,27 @@ describe('Prompt', () => {
       });
     });
 
-    test('creates prompt with multiple variants', () => {
+    test('creates prompt with single variant', () => {
+      const textVariant = bedrock.PromptVariant.text({
+        variantName: 'variant-1',
+        model: foundationModel,
+        promptText: 'Hello {{name}}!',
+        promptVariables: ['name'],
+      });
+
+      new bedrock.Prompt(stack, 'TestPrompt', {
+        promptName: 'test-prompt',
+        variants: [textVariant],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Prompt', {
+        Variants: Match.arrayWith([
+          Match.objectLike({ Name: 'variant-1' }),
+        ]),
+      });
+    });
+
+    test('throws error when creating prompt with multiple variants', () => {
       const textVariant1 = bedrock.PromptVariant.text({
         variantName: 'variant-1',
         model: foundationModel,
@@ -112,12 +132,10 @@ describe('Prompt', () => {
         variants: [textVariant1, textVariant2],
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Prompt', {
-        Variants: Match.arrayWith([
-          Match.objectLike({ Name: 'variant-1' }),
-          Match.objectLike({ Name: 'variant-2' }),
-        ]),
-      });
+      // The error should occur during synthesis, not construction
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow(/Too many variants specified. The maximum allowed is 1, but you have provided 2 variants/);
     });
   });
 
@@ -226,15 +244,15 @@ describe('Prompt', () => {
     });
 
     test('addVariant throws error when exceeding maximum variants', () => {
+      const existingVariant = bedrock.PromptVariant.text({
+        variantName: 'existing-variant',
+        model: foundationModel,
+        promptText: 'Existing text',
+      });
+
       const prompt = new bedrock.Prompt(stack, 'TestPrompt', {
         promptName: 'test-prompt',
-        variants: Array.from({ length: 3 }, (_, i) =>
-          bedrock.PromptVariant.text({
-            variantName: `variant-${i}`,
-            model: foundationModel,
-            promptText: `Text ${i}`,
-          }),
-        ),
+        variants: [existingVariant], // Already at max capacity (1 variant)
       });
 
       const newVariant = bedrock.PromptVariant.text({
@@ -245,7 +263,7 @@ describe('Prompt', () => {
 
       expect(() => {
         prompt.addVariant(newVariant);
-      }).toThrow(/Cannot add variant/);
+      }).toThrow(/Cannot add variant to prompt 'test-prompt'/);
     });
 
     test('addVariant throws error for duplicate variant name', () => {
@@ -286,6 +304,9 @@ describe('Prompt', () => {
       });
 
       expect(version).toBeDefined();
+      expect(version.version).toBeDefined();
+      expect(version.versionArn).toBeDefined();
+      expect(version.prompt).toBe(prompt);
     });
 
     test('grantGet grants correct permissions', () => {

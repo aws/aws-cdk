@@ -60,10 +60,10 @@ describe('PromptVariant', () => {
     });
 
     test('creates text prompt variant with all properties', () => {
-      const inferenceConfig = {
+      const inferenceConfig = new bedrock.PromptInferenceConfiguration({
         maxTokens: 100,
         temperature: 0.7,
-      };
+      });
 
       const variant = bedrock.PromptVariant.text({
         variantName: 'advanced-text-variant',
@@ -77,7 +77,10 @@ describe('PromptVariant', () => {
       expect(variant.templateType).toBe(bedrock.PromptTemplateType.TEXT);
       expect(variant.modelId).toBe(foundationModel.invokableArn);
       expect(variant.inferenceConfiguration).toEqual({
-        text: inferenceConfig,
+        text: {
+          maxTokens: 100,
+          temperature: 0.7,
+        },
       });
     });
   });
@@ -106,10 +109,10 @@ describe('PromptVariant', () => {
         bedrock.ChatMessage.assistant('Let me help you with that.'),
       ];
 
-      const inferenceConfig = {
+      const inferenceConfig = new bedrock.PromptInferenceConfiguration({
         maxTokens: 200,
         temperature: 0.8,
-      };
+      });
 
       const variant = bedrock.PromptVariant.chat({
         variantName: 'advanced-chat-variant',
@@ -124,7 +127,10 @@ describe('PromptVariant', () => {
       expect(variant.templateType).toBe(bedrock.PromptTemplateType.CHAT);
       expect(variant.modelId).toBe(foundationModel.invokableArn);
       expect(variant.inferenceConfiguration).toEqual({
-        text: inferenceConfig,
+        text: {
+          maxTokens: 200,
+          temperature: 0.8,
+        },
       });
     });
   });
@@ -244,7 +250,7 @@ describe('PromptVariant', () => {
     });
 
     test('text and chat variants have inference configuration, agent variants do not', () => {
-      const inferenceConfig = { maxTokens: 100 };
+      const inferenceConfig = new bedrock.PromptInferenceConfiguration({ maxTokens: 100 });
 
       const textVariant = bedrock.PromptVariant.text({
         variantName: 'text-variant',

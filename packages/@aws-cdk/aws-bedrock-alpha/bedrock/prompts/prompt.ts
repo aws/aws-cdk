@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 // Internal Libs
 import { IPromptVariant } from './prompt-variant';
+import { PromptVersion } from './prompt-version';
 import * as validation from '../agents/validation-helpers';
 
 /******************************************************************************
@@ -89,6 +90,7 @@ export interface PromptProps {
   /**
    * The name of the prompt.
    * This will be used as the physical name of the prompt.
+   * Allowed Pattern: ^([0-9a-zA-Z][_-]?){1,100}$
    */
   readonly promptName: string;
 
@@ -96,7 +98,7 @@ export interface PromptProps {
    * A description of what the prompt does.
    *
    * @default - No description provided.
-   * Length Maximum: 250
+   * Maximum Length: 200
    */
   readonly description?: string;
 
@@ -117,7 +119,7 @@ export interface PromptProps {
   /**
    * The variants of your prompt. Variants can use different messages, models,
    * or configurations so that you can compare their outputs to decide the best
-   * variant for your use case. Maximum of 3 variants.
+   * variant for your use case. Maximum of 1 variants.
    *
    * @default - No additional variants provided.
    */
@@ -164,7 +166,7 @@ export interface PromptAttributes {
 /**
  * Class to create (or import) a Prompt with CDK.
  *
- * Prompts are a specific set of inputs that guide FMs on Amazon Bedrock to
+ * Prompts are a specific set of inputs that guide Foundation Models (FMs) on Amazon Bedrock to
  * generate an appropriate response or output for a given task or instruction.
  * You can optimize the prompt for specific use cases and models.
  *
@@ -201,7 +203,7 @@ export class Prompt extends PromptBase implements IPrompt {
    * The maximum number of variants allowed for a prompt.
    * @internal
    */
-  private static readonly MAX_VARIANTS = 3;
+  private static readonly MAX_VARIANTS = 1;
 
   /**
    * The name of the prompt.
@@ -354,9 +356,9 @@ export class Prompt extends PromptBase implements IPrompt {
   private validateDescription(): string[] {
     const errors: string[] = [];
 
-    if (this.description && this.description.length > 250) {
+    if (this.description && this.description.length > 200) {
       errors.push(
-        `Description must be 250 characters or less, got ${this.description.length} characters.`,
+        `Description must be 200 characters or less, got ${this.description.length} characters.`,
       );
     }
 
@@ -391,16 +393,13 @@ export class Prompt extends PromptBase implements IPrompt {
    *
    * @param description - Optional description for the version
    * @default - No description provided
-   * @returns The version string of the created prompt version
+   * @returns A PromptVersion object containing the version details including ARN and version string
    */
-  public createVersion(description?: string): string {
-    const version = new bedrock.CfnPromptVersion(this, `PromptVersion-${this._hash}`, {
-      promptArn: this.promptArn,
+  public createVersion(description?: string): PromptVersion {
+    return new PromptVersion(this, `PromptVersion-${this._hash}`, {
+      prompt: this,
       description,
     });
-
-    // Note: We don't update this.promptVersion here as it represents the current construct's version
-    return version.attrVersion;
   }
 
   /**
@@ -425,7 +424,7 @@ export class Prompt extends PromptBase implements IPrompt {
     // Check if adding this variant would exceed the maximum
     if (this.variants.length >= Prompt.MAX_VARIANTS) {
       errors.push(
-        `Cannot add variant. Maximum of ${Prompt.MAX_VARIANTS} variants allowed, currently have ${this.variants.length}.`,
+        `Cannot add variant to prompt '${this.promptName}'. Maximum of ${Prompt.MAX_VARIANTS} variants allowed, currently have ${this.variants.length}.`,
       );
     }
 

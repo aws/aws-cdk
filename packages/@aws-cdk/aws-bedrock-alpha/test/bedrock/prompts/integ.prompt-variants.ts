@@ -35,12 +35,12 @@ const configuredTextVariant = bedrock.PromptVariant.text({
   model: titanModel,
   promptText: 'Configured text prompt with inference settings for {{topic}}.',
   promptVariables: ['topic'],
-  inferenceConfiguration: {
+  inferenceConfiguration: new bedrock.PromptInferenceConfiguration({
     maxTokens: 150,
     temperature: 0.5,
     topP: 0.8,
     stopSequences: ['END', 'STOP'],
-  },
+  }),
 });
 
 // Test Chat Prompt Variants
@@ -95,10 +95,10 @@ const toolChatVariant = bedrock.PromptVariant.chat({
       },
     ],
   },
-  inferenceConfiguration: {
+  inferenceConfiguration: new bedrock.PromptInferenceConfiguration({
     maxTokens: 400,
     temperature: 0.7,
-  },
+  }),
 });
 
 const specificToolChatVariant = bedrock.PromptVariant.chat({
@@ -242,10 +242,10 @@ new bedrock.Prompt(stack, 'LowTempPrompt', {
       model: anthropicModel,
       promptText: 'Low temperature variant for {{query}}',
       promptVariables: ['query'],
-      inferenceConfiguration: {
+      inferenceConfiguration: new bedrock.PromptInferenceConfiguration({
         temperature: 0.1,
         maxTokens: 100,
-      },
+      }),
     }),
   ],
 });
@@ -259,11 +259,11 @@ new bedrock.Prompt(stack, 'HighTempPrompt', {
       model: anthropicModel,
       promptText: 'High temperature variant for {{query}}',
       promptVariables: ['query'],
-      inferenceConfiguration: {
+      inferenceConfiguration: new bedrock.PromptInferenceConfiguration({
         temperature: 0.9,
         maxTokens: 200,
         topP: 0.95,
-      },
+      }),
     }),
   ],
 });
@@ -279,12 +279,12 @@ new bedrock.Prompt(stack, 'ChatConfigPrompt', {
         bedrock.ChatMessage.user('Chat with custom config for {{query}}'),
       ],
       promptVariables: ['query'],
-      inferenceConfiguration: {
+      inferenceConfiguration: new bedrock.PromptInferenceConfiguration({
         temperature: 0.6,
         maxTokens: 300,
         topP: 0.8,
         stopSequences: ['Human:', 'Assistant:'],
-      },
+      }),
     }),
   ],
 });

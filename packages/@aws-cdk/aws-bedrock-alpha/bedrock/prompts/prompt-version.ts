@@ -2,6 +2,7 @@ import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import { Construct } from 'constructs';
 // Internal Libs
 import { IPrompt } from './prompt';
+import * as validation from '../agents/validation-helpers';
 
 /******************************************************************************
  *                        PROPS FOR NEW CONSTRUCT
@@ -19,6 +20,7 @@ export interface PromptVersionProps {
    * The description of the prompt version.
    *
    * @default - No description provided.
+   * Maximum length: 200
    */
   readonly description?: string;
 }
@@ -59,6 +61,11 @@ export class PromptVersion extends Construct {
    */
   public readonly version: string;
 
+  /**
+   * The description of the prompt version.
+   */
+  public readonly description?: string;
+
   /******************************************************************************
    *                            INTERNAL ONLY
    *****************************************************************************/
@@ -76,6 +83,21 @@ export class PromptVersion extends Construct {
 
     this.prompt = props.prompt;
 
+    // Store description for validation
+    this.description = props.description;
+
+    // ------------------------------------------------------
+    // Immediate Validation (throws error at construction time)
+    // ------------------------------------------------------
+    if (props.description) {
+      validation.throwIfInvalid(this.validateDescriptionImmediate, props.description);
+    }
+
+    // ------------------------------------------------------
+    // Synthesis-time Validation
+    // ------------------------------------------------------
+    this.node.addValidation({ validate: () => this.validateDescription() });
+
     // ------------------------------------------------------
     // L1 Instantiation
     // ------------------------------------------------------
@@ -86,5 +108,41 @@ export class PromptVersion extends Construct {
 
     this.versionArn = this.__resource.attrArn;
     this.version = this.__resource.attrVersion;
+  }
+
+  /******************************************************************************
+   *                            VALIDATION METHODS
+   *****************************************************************************/
+  /**
+   * Validates whether the description length is within the allowed limit (immediate validation).
+   * @param description - The description to validate
+   * @returns Array of validation error messages, empty if valid
+   */
+  private validateDescriptionImmediate = (description: string): string[] => {
+    const errors: string[] = [];
+
+    if (description && description.length > 200) {
+      errors.push(
+        `Description must be 200 characters or less, got ${description.length} characters.`,
+      );
+    }
+
+    return errors;
+  };
+
+  /**
+   * Validates whether the description length is within the allowed limit.
+   * @returns Array of validation error messages, empty if valid
+   */
+  private validateDescription(): string[] {
+    const errors: string[] = [];
+
+    if (this.description && this.description.length > 200) {
+      errors.push(
+        `Description must be 200 characters or less, got ${this.description.length} characters.`,
+      );
+    }
+
+    return errors;
   }
 }

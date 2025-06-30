@@ -23,6 +23,7 @@ export * from './prompts/tool-choice';
 export * from './prompts/text-prompt-variant';
 export * from './prompts/chat-prompt-variant';
 export * from './prompts/agent-prompt-variant';
+export * from './prompts/prompt-inference-configuration';
 
 // ===================================
 // Models

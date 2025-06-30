@@ -85,10 +85,10 @@ describe('ChatPromptVariant', () => {
         bedrock.ChatMessage.user('Tell me about {{city}}'),
       ];
 
-      const inferenceConfig = {
+      const inferenceConfig = new bedrock.PromptInferenceConfiguration({
         maxTokens: 200,
         temperature: 0.8,
-      };
+      });
 
       const variant = bedrock.PromptVariant.chat({
         variantName: 'advanced-chat-variant',
@@ -103,7 +103,10 @@ describe('ChatPromptVariant', () => {
       expect(variant.templateType).toBe(bedrock.PromptTemplateType.CHAT);
       expect(variant.modelId).toBe(foundationModel.invokableArn);
       expect(variant.inferenceConfiguration).toEqual({
-        text: inferenceConfig,
+        text: {
+          maxTokens: 200,
+          temperature: 0.8,
+        },
       });
       expect((variant.templateConfiguration.chat as any)?.messages).toHaveLength(3);
       expect((variant.templateConfiguration.chat as any)?.system).toEqual([{ text: 'You are a helpful weather assistant.' }]);
@@ -379,11 +382,13 @@ And includes {{variable}} placeholders.`;
     });
 
     test('handles empty inference configuration object', () => {
+      const inferenceConfig = new bedrock.PromptInferenceConfiguration({});
+
       const variant = bedrock.PromptVariant.chat({
         variantName: 'empty-inference-chat-variant',
         model: foundationModel,
         messages: [bedrock.ChatMessage.user('Hello')],
-        inferenceConfiguration: {},
+        inferenceConfiguration: inferenceConfig,
       });
 
       expect(variant.inferenceConfiguration).toEqual({
@@ -392,13 +397,12 @@ And includes {{variable}} placeholders.`;
     });
 
     test('preserves all inference configuration properties', () => {
-      const inferenceConfig = {
+      const inferenceConfig = new bedrock.PromptInferenceConfiguration({
         maxTokens: 500,
         temperature: 0.5,
         topP: 0.8,
-        topK: 50,
         stopSequences: ['END', 'STOP'],
-      };
+      });
 
       const variant = bedrock.PromptVariant.chat({
         variantName: 'full-inference-chat-variant',
@@ -408,7 +412,12 @@ And includes {{variable}} placeholders.`;
       });
 
       expect(variant.inferenceConfiguration).toEqual({
-        text: inferenceConfig,
+        text: {
+          maxTokens: 500,
+          temperature: 0.5,
+          topP: 0.8,
+          stopSequences: ['END', 'STOP'],
+        },
       });
     });
   });

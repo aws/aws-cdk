@@ -25,10 +25,10 @@ const basePrompt = new bedrock.Prompt(stack, 'BasePrompt', {
       model: foundationModel,
       promptText: 'Base version of the prompt for {{use_case}}.',
       promptVariables: ['use_case'],
-      inferenceConfiguration: {
+      inferenceConfiguration: new bedrock.PromptInferenceConfiguration({
         maxTokens: 200,
         temperature: 0.7,
-      },
+      }),
     }),
   ],
 });
@@ -59,11 +59,11 @@ const textPrompt = new bedrock.Prompt(stack, 'TextPrompt', {
       model: foundationModel,
       promptText: 'Text variant for {{scenario}} with {{parameters}}.',
       promptVariables: ['scenario', 'parameters'],
-      inferenceConfiguration: {
+      inferenceConfiguration: new bedrock.PromptInferenceConfiguration({
         maxTokens: 300,
         temperature: 0.6,
         topP: 0.9,
-      },
+      }),
     }),
   ],
 });
@@ -83,10 +83,10 @@ const chatPrompt = new bedrock.Prompt(stack, 'ChatPrompt', {
       ],
       system: 'You are an expert assistant specializing in complex scenario analysis.',
       promptVariables: ['scenario', 'parameters'],
-      inferenceConfiguration: {
+      inferenceConfiguration: new bedrock.PromptInferenceConfiguration({
         maxTokens: 400,
         temperature: 0.8,
-      },
+      }),
     }),
   ],
 });
@@ -205,10 +205,10 @@ const toolPrompt = new bedrock.Prompt(stack, 'ToolPrompt', {
           },
         ],
       },
-      inferenceConfiguration: {
+      inferenceConfiguration: new bedrock.PromptInferenceConfiguration({
         maxTokens: 500,
         temperature: 0.7,
-      },
+      }),
     }),
   ],
 });

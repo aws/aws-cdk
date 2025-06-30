@@ -27,11 +27,11 @@ const textVariant = bedrock.PromptVariant.text({
   model: foundationModel,
   promptText: 'Hello {{name}}, how can I help you with {{topic}} today?',
   promptVariables: ['name', 'topic'],
-  inferenceConfiguration: {
+  inferenceConfiguration: new bedrock.PromptInferenceConfiguration({
     maxTokens: 200,
     temperature: 0.7,
     topP: 0.9,
-  },
+  }),
 });
 
 // Create a chat variant
@@ -45,10 +45,10 @@ const chatVariant = bedrock.PromptVariant.chat({
   ],
   system: 'You are a helpful assistant that explains complex topics in simple, easy-to-understand language.',
   promptVariables: ['topic', 'concept'],
-  inferenceConfiguration: {
+  inferenceConfiguration: new bedrock.PromptInferenceConfiguration({
     maxTokens: 300,
     temperature: 0.8,
-  },
+  }),
 });
 
 // Create separate prompts for text and chat variants (only 1 variant supported currently)
@@ -163,10 +163,10 @@ const chatWithToolsVariant = bedrock.PromptVariant.chat({
   system: 'You are a helpful assistant with access to weather and calculator tools. Use them when appropriate to help users.',
   promptVariables: ['request'],
   toolConfiguration: toolConfig,
-  inferenceConfiguration: {
+  inferenceConfiguration: new bedrock.PromptInferenceConfiguration({
     maxTokens: 500,
     temperature: 0.6,
-  },
+  }),
 });
 
 new bedrock.Prompt(stack, 'ToolPrompt', {

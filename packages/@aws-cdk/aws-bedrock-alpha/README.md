@@ -790,12 +790,13 @@ const prompt1 = new bedrock.Prompt(this, 'prompt1', {
   kmsKey: cmk,
 });
 
-new bedrock.PromptVersion(this, 'MyPromptVersion', {
+const promptVersion = new bedrock.PromptVersion(this, 'MyPromptVersion', {
   prompt: prompt1,
   description: 'my first version',
 });
 //or alternatively:
-// prompt1.createVersion('my first version');
+// const promptVersion = prompt1.createVersion('my first version');
+const versionString = promptVersion.version;
 
 ```
 

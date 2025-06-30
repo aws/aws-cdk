@@ -34,7 +34,7 @@ export function createAgentPromptVariant(props: AgentPromptVariantProps): IPromp
     },
     templateConfiguration: {
       text: {
-        inputVariables: props.promptVariables?.flatMap((variable: string) => {
+        inputVariables: props.promptVariables?.map((variable: string) => {
           return { name: variable };
         }),
         text: props.promptText,
