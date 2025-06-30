@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import * as events from '../../aws-events';
-import { App, Duration, Stack } from '../../core';
+import { App, Duration, Stack, TimeZone } from '../../core';
 import { BackupPlan, BackupPlanRule, BackupVault } from '../lib';
 
 let stack: Stack;
@@ -25,6 +25,7 @@ test('create a plan and add rules', () => {
           hour: '3',
           minute: '30',
         }),
+        scheduleExpressionTimezone: TimeZone.ETC_UTC,
         moveToColdStorageAfter: Duration.days(30),
       }),
     ],
@@ -43,6 +44,7 @@ test('create a plan and add rules', () => {
           },
           RuleName: 'PlanRule0',
           ScheduleExpression: 'cron(30 3 15 * ? *)',
+          ScheduleExpressionTimezone: 'Etc/UTC',
           StartWindowMinutes: 60,
           TargetBackupVault: {
             'Fn::GetAtt': [
