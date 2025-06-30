@@ -289,6 +289,12 @@
   "VpcDisabledEIGW6B9DA8E59": {
    "Type": "AWS::EC2::EgressOnlyInternetGateway",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VpcMigrationFeatureFlagDisabledStack/VpcDisabled"
+     }
+    ],
     "VpcId": {
      "Ref": "VpcDisabled51C226D6"
     }

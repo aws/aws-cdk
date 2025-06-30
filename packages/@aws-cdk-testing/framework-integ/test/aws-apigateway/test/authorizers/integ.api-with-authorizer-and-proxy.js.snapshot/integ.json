@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "testCases": {
     "apigateway-with-authorizer-and-proxy/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "apigateway-with-authorizer-and-proxy/DefaultTest/DeployAssert",
       "assertionStackName": "apigatewaywithauthorizerandproxyDefaultTestDeployAssertDBEA1774"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

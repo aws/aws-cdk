@@ -1,4 +1,4 @@
-FROM  --platform=linux/amd64 node:18-alpine3.18
+FROM  --platform=linux/amd64 public.ecr.aws/docker/library/node:18-alpine3.18
 
 # Create app directory
 RUN mkdir -p /usr/src/app

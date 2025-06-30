@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "restapi-ip-address-type-test-integ/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "restapi-ip-address-type-test-integ/DefaultTest/DeployAssert",
       "assertionStackName": "restapiipaddresstypetestintegDefaultTestDeployAssertAA7C2A42"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

@@ -9,13 +9,14 @@ import {
   Duration,
   NestedStack,
   Stack,
+  ValidationError,
 } from 'aws-cdk-lib/core';
 import { Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { CfnBranch } from 'aws-cdk-lib/aws-amplify';
-import { IApp } from './app';
+import { App, IApp } from './app';
 import { BasicAuth } from './basic-auth';
-import { renderEnvironmentVariables } from './utils';
+import { renderEnvironmentVariables, isServerSideRendered } from './utils';
 import { AssetDeploymentIsCompleteFunction, AssetDeploymentOnEventFunction } from '../custom-resource-handlers/dist/aws-amplify-alpha/asset-deployment-provider.generated';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -125,6 +126,28 @@ export interface BranchOptions {
    * @default false
    */
   readonly performanceMode?: boolean;
+
+  /**
+   * Specifies whether the skew protection feature is enabled for the branch.
+   *
+   * Deployment skew protection is available to Amplify applications to eliminate version skew issues
+   * between client and servers in web applications.
+   * When you apply skew protection to a branch, you can ensure that your clients always interact
+   * with the correct version of server-side assets, regardless of when a deployment occurs.
+   *
+   * @default None - Default setting is no skew protection.
+   */
+  readonly skewProtection?: boolean;
+
+  /**
+   * The IAM role to assign to a branch of an SSR app.
+   * The SSR Compute role allows the Amplify Hosting compute service to securely access specific AWS resources based on the role's permissions.
+   *
+   * This role overrides the app-level compute role.
+   *
+   * @default undefined - No specific role for the branch. If the app has a compute role, it will be inherited.
+   */
+  readonly computeRole?: iam.IRole;
 }
 
 /**
@@ -171,6 +194,15 @@ export class Branch extends Resource implements IBranch {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    if (props.app instanceof App) {
+      const platform = props.app.platform;
+      const isSSR = isServerSideRendered(platform);
+
+      if (props.computeRole && !isSSR) {
+        throw new ValidationError('`computeRole` can only be specified for branches of apps with `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.', this);
+      }
+    }
+
     this.environmentVariables = props.environmentVariables || {};
 
     const branchName = props.branchName || id;
@@ -186,6 +218,8 @@ export class Branch extends Resource implements IBranch {
       pullRequestEnvironmentName: props.pullRequestEnvironmentName,
       stage: props.stage,
       enablePerformanceMode: props.performanceMode,
+      enableSkewProtection: props.skewProtection,
+      computeRoleArn: props.computeRole?.roleArn,
     });
 
     this.arn = branch.attrArn;

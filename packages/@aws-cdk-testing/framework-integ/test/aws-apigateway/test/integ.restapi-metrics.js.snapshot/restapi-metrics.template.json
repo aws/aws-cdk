@@ -58,23 +58,26 @@
   "ApiDeploymentB17BE62Df672ad8455f9678e4a3db5854bdb8d73": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "ApiF70053CD"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "ApiGET9257B917"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "ApiDeploymentStageprod3EB9684E": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "ApiF70053CD"
-    },
     "DeploymentId": {
      "Ref": "ApiDeploymentB17BE62Df672ad8455f9678e4a3db5854bdb8d73"
+    },
+    "RestApiId": {
+     "Ref": "ApiF70053CD"
     },
     "StageName": "prod"
    },
@@ -85,7 +88,11 @@
   "ApiGET9257B917": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
+    "AuthorizationType": "NONE",
     "HttpMethod": "GET",
+    "Integration": {
+     "Type": "MOCK"
+    },
     "ResourceId": {
      "Fn::GetAtt": [
       "ApiF70053CD",
@@ -94,10 +101,6 @@
     },
     "RestApiId": {
      "Ref": "ApiF70053CD"
-    },
-    "AuthorizationType": "NONE",
-    "Integration": {
-     "Type": "MOCK"
     }
    }
   },
@@ -105,13 +108,13 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 1,
     "Dimensions": [
      {
       "Name": "ApiName",
       "Value": "Api"
      }
     ],
+    "EvaluationPeriods": 1,
     "MetricName": "4XXError",
     "Namespace": "AWS/ApiGateway",
     "Period": 300,
@@ -123,7 +126,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 1,
     "Dimensions": [
      {
       "Name": "ApiName",
@@ -144,6 +146,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 1,
     "MetricName": "5XXError",
     "Namespace": "AWS/ApiGateway",
     "Period": 300,
@@ -155,7 +158,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 1,
     "Dimensions": [
      {
       "Name": "ApiName",
@@ -168,6 +170,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 1,
     "MetricName": "Count",
     "Namespace": "AWS/ApiGateway",
     "Period": 300,

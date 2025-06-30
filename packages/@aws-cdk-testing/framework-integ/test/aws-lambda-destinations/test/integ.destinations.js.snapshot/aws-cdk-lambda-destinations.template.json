@@ -128,6 +128,9 @@
     "FunctionName": {
      "Ref": "SnsSqsC4810B27"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "OnSuccesServiceRole75E399CF": {

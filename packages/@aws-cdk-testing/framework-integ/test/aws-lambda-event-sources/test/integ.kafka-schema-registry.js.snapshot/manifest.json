@@ -1,0 +1,658 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "lambda-event-source-glue-schema-registry.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambda-event-source-glue-schema-registry.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambda-event-source-glue-schema-registry": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-event-source-glue-schema-registry.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0f4bbf0d98b4af12ad718ac093e4b2d47ebed9adc239e1b9c22ee2a0a9d1c6c8.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambda-event-source-glue-schema-registry.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambda-event-source-glue-schema-registry.assets"
+      ],
+      "metadata": {
+        "/lambda-event-source-glue-schema-registry/GlueFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "handler": "*",
+              "code": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/GlueFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/GlueFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/GlueFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GlueFunctionServiceRoleD5EDDC4C"
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/GlueFunction/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/GlueFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GlueFunctionServiceRoleDefaultPolicy16E5B38F"
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/GlueFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GlueFunctionEB1182FC"
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/GlueFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/GlueFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GlueFunctionLogGroupEF019AD3"
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/GlueFunction/KafkaEventSource:46eb851822d1a9f28d63dc4ec210952e:test-topic-smk-glue": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "target": "*",
+              "filters": "*",
+              "filterEncryption": "*",
+              "kafkaBootstrapServers": "*",
+              "kafkaTopic": "*",
+              "kafkaConsumerGroupId": "*",
+              "startingPosition": "TRIM_HORIZON",
+              "startingPositionTimestamp": "*",
+              "sourceAccessConfigurations": [
+                {
+                  "type": "*",
+                  "uri": "*"
+                },
+                {
+                  "type": "*",
+                  "uri": "*"
+                }
+              ],
+              "onFailure": "*",
+              "supportS3OnFailureDestination": true,
+              "provisionedPollerConfig": {
+                "minimumPollers": "*",
+                "maximumPollers": "*"
+              },
+              "batchSize": "*",
+              "bisectBatchOnError": "*",
+              "reportBatchItemFailures": "*",
+              "maxBatchingWindow": "*",
+              "maxRecordAge": "*",
+              "retryAttempts": "*",
+              "parallelizationFactor": "*",
+              "tumblingWindow": "*",
+              "enabled": "*"
+            }
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/GlueFunction/KafkaEventSource:46eb851822d1a9f28d63dc4ec210952e:test-topic-smk-glue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GlueFunctionKafkaEventSource46eb851822d1a9f28d63dc4ec210952etesttopicsmkglueBB4DBE04"
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/GlueRootCASecret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secretObjectValue": "*"
+            }
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/GlueRootCASecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GlueRootCASecretBD1C20BD"
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/GlueClientCertSecret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secretObjectValue": "*"
+            }
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/GlueClientCertSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GlueClientCertSecret3C32AE8A"
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/SchemaRegistry": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaRegistry"
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-event-source-glue-schema-registry/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-event-source-glue-schema-registry"
+    },
+    "lambda-event-source-confluent-schema-registry.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambda-event-source-confluent-schema-registry.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambda-event-source-confluent-schema-registry": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-event-source-confluent-schema-registry.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e6e72c2f1c71af118ab03cdf46019315073827f6005528ad5c5b0abdfc5a09fe.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambda-event-source-confluent-schema-registry.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambda-event-source-confluent-schema-registry.assets"
+      ],
+      "metadata": {
+        "/lambda-event-source-confluent-schema-registry/ConfluentFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "handler": "*",
+              "code": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/lambda-event-source-confluent-schema-registry/ConfluentFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/lambda-event-source-confluent-schema-registry/ConfluentFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/lambda-event-source-confluent-schema-registry/ConfluentFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfluentFunctionServiceRole116DBB1D"
+          }
+        ],
+        "/lambda-event-source-confluent-schema-registry/ConfluentFunction/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/lambda-event-source-confluent-schema-registry/ConfluentFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfluentFunctionServiceRoleDefaultPolicy7BF57A6E"
+          }
+        ],
+        "/lambda-event-source-confluent-schema-registry/ConfluentFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfluentFunction5D29A9A6"
+          }
+        ],
+        "/lambda-event-source-confluent-schema-registry/ConfluentFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/lambda-event-source-confluent-schema-registry/ConfluentFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfluentFunctionLogGroupD5D16991"
+          }
+        ],
+        "/lambda-event-source-confluent-schema-registry/ConfluentFunction/KafkaEventSource:46eb851822d1a9f28d63dc4ec210952e:test-topic-smk-confluent": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "target": "*",
+              "filters": "*",
+              "filterEncryption": "*",
+              "kafkaBootstrapServers": "*",
+              "kafkaTopic": "*",
+              "kafkaConsumerGroupId": "*",
+              "startingPosition": "TRIM_HORIZON",
+              "startingPositionTimestamp": "*",
+              "sourceAccessConfigurations": [
+                {
+                  "type": "*",
+                  "uri": "*"
+                },
+                {
+                  "type": "*",
+                  "uri": "*"
+                }
+              ],
+              "onFailure": "*",
+              "supportS3OnFailureDestination": true,
+              "provisionedPollerConfig": {
+                "minimumPollers": "*",
+                "maximumPollers": "*"
+              },
+              "batchSize": "*",
+              "bisectBatchOnError": "*",
+              "reportBatchItemFailures": "*",
+              "maxBatchingWindow": "*",
+              "maxRecordAge": "*",
+              "retryAttempts": "*",
+              "parallelizationFactor": "*",
+              "tumblingWindow": "*",
+              "enabled": "*"
+            }
+          }
+        ],
+        "/lambda-event-source-confluent-schema-registry/ConfluentFunction/KafkaEventSource:46eb851822d1a9f28d63dc4ec210952e:test-topic-smk-confluent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfluentFunctionKafkaEventSource46eb851822d1a9f28d63dc4ec210952etesttopicsmkconfluent90EB60AA"
+          }
+        ],
+        "/lambda-event-source-confluent-schema-registry/ConfluentRootCASecret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secretObjectValue": "*"
+            }
+          }
+        ],
+        "/lambda-event-source-confluent-schema-registry/ConfluentRootCASecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfluentRootCASecret99CAE53B"
+          }
+        ],
+        "/lambda-event-source-confluent-schema-registry/ConfluentClientCertSecret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secretObjectValue": "*"
+            }
+          }
+        ],
+        "/lambda-event-source-confluent-schema-registry/ConfluentClientCertSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfluentClientCertSecret23688D94"
+          }
+        ],
+        "/lambda-event-source-confluent-schema-registry/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-event-source-confluent-schema-registry/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-event-source-confluent-schema-registry"
+    },
+    "SchemaRegistryIntegDefaultTestDeployAssertC190A9FD.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SchemaRegistryIntegDefaultTestDeployAssertC190A9FD.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SchemaRegistryIntegDefaultTestDeployAssertC190A9FD": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SchemaRegistryIntegDefaultTestDeployAssertC190A9FD.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SchemaRegistryIntegDefaultTestDeployAssertC190A9FD.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SchemaRegistryIntegDefaultTestDeployAssertC190A9FD.assets"
+      ],
+      "metadata": {
+        "/SchemaRegistryInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SchemaRegistryInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SchemaRegistryInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

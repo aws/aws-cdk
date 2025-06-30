@@ -1,7 +1,8 @@
 {
-  "version": "39.0.0",
+  "version": "44.0.0",
   "files": {
-    "1b148b048522faea9116e28bf6c625887d7ae4836fbed905f188803dfa95c70d": {
+    "dd4e174a5a76271c6cda2394f5411af43931b1a74fbfe04085767c3a0ea49173": {
+      "displayName": "ApiGatewayVpcEndpointTestStack Template",
       "source": {
         "path": "ApiGatewayVpcEndpointTestStack.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1b148b048522faea9116e28bf6c625887d7ae4836fbed905f188803dfa95c70d.json",
+          "objectKey": "dd4e174a5a76271c6cda2394f5411af43931b1a74fbfe04085767c3a0ea49173.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

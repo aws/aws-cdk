@@ -864,6 +864,12 @@
   "DualStackProtocolVpcEIGW64BED696A": {
    "Type": "AWS::EC2::EgressOnlyInternetGateway",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DualStackVpc/DualStackProtocolVpc"
+     }
+    ],
     "VpcId": {
      "Ref": "DualStackProtocolVpc85768F2C"
     }

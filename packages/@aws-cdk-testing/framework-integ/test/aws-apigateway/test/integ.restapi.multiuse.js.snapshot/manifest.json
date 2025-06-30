@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "restapi-multiuse-example.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "restapi-multiuse-example.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/232c50aeb634e5af383010ff723883de7c92ba01487db63ae5bafde6c8f38a57.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f64333abda7750d6d90e5c3d326ca7d62146f4e64b28ecd5cc40c6b462098f7a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,38 @@
         "restapi-multiuse-example.assets"
       ],
       "metadata": {
+        "/restapi-multiuse-example/Hello": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/restapi-multiuse-example/Hello/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/restapi-multiuse-example/Hello/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/restapi-multiuse-example/Hello/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -45,10 +78,48 @@
             "data": "Hello4A628BD4"
           }
         ],
+        "/restapi-multiuse-example/hello-api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cloudWatchRole": true
+            }
+          }
+        ],
         "/restapi-multiuse-example/hello-api/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "helloapi4446A35B"
+          }
+        ],
+        "/restapi-multiuse-example/hello-api/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "retain"
+              ]
+            }
+          }
+        ],
+        "/restapi-multiuse-example/hello-api/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/restapi-multiuse-example/hello-api/CloudWatchRole/Resource": [
@@ -63,10 +134,44 @@
             "data": "helloapiAccountD8C38BCE"
           }
         ],
+        "/restapi-multiuse-example/hello-api/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/restapi-multiuse-example/hello-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "helloapiDeploymentFA89AEEC3622d8c965f356a33fd95586d24bf138"
+          }
+        ],
+        "/restapi-multiuse-example/hello-api/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/restapi-multiuse-example/hello-api/DeploymentStage.prod/Resource": [
@@ -81,10 +186,36 @@
             "data": "helloapiEndpoint0E4D8D32"
           }
         ],
+        "/restapi-multiuse-example/hello-api/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/restapi-multiuse-example/hello-api/Default/hello": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
+          }
+        ],
         "/restapi-multiuse-example/hello-api/Default/hello/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "helloapihello4AA00177"
+          }
+        ],
+        "/restapi-multiuse-example/hello-api/Default/hello/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/restapi-multiuse-example/hello-api/Default/hello/GET/ApiPermission.restapimultiuseexamplehelloapi9FD0148D.GET..hello": [
@@ -105,10 +236,48 @@
             "data": "helloapihelloGETE6A58337"
           }
         ],
+        "/restapi-multiuse-example/second-api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cloudWatchRole": true
+            }
+          }
+        ],
         "/restapi-multiuse-example/second-api/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "secondapi730EF3C7"
+          }
+        ],
+        "/restapi-multiuse-example/second-api/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "retain"
+              ]
+            }
+          }
+        ],
+        "/restapi-multiuse-example/second-api/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/restapi-multiuse-example/second-api/CloudWatchRole/Resource": [
@@ -123,10 +292,44 @@
             "data": "secondapiAccountDF729874"
           }
         ],
+        "/restapi-multiuse-example/second-api/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/restapi-multiuse-example/second-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "secondapiDeployment20F2C70088fa5a027620045bea3e5043c6d31f5a"
+          }
+        ],
+        "/restapi-multiuse-example/second-api/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/restapi-multiuse-example/second-api/DeploymentStage.prod/Resource": [
@@ -141,10 +344,36 @@
             "data": "secondapiEndpoint89D0E02C"
           }
         ],
+        "/restapi-multiuse-example/second-api/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/restapi-multiuse-example/second-api/Default/hello": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
+          }
+        ],
         "/restapi-multiuse-example/second-api/Default/hello/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "secondapihello7264EB69"
+          }
+        ],
+        "/restapi-multiuse-example/second-api/Default/hello/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/restapi-multiuse-example/second-api/Default/hello/GET/ApiPermission.restapimultiuseexamplesecondapi5CB05B89.GET..hello": [
@@ -193,6 +422,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "restapimultiuseDefaultTestDeployAssert47DF66CC.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -233,5 +463,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

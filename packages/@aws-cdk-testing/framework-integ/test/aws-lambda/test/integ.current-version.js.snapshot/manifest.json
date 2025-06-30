@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "44.0.0",
   "artifacts": {
     "lambda-test-current-version.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "lambda-test-current-version.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6bffecb42665ae86387d9a6c2a7c2afbcd1304be43a8649a1fe8a3e4327031c1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/91285bb825b9d3c3559a07b29c0fb769ab85f9b51aa6d2e98941e2080483c937.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -35,6 +34,42 @@
         "lambda-test-current-version.assets"
       ],
       "metadata": {
+        "/lambda-test-current-version/MyLambda": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*",
+              "currentVersionOptions": {
+                "removalPolicy": "retain",
+                "retryAttempts": "*"
+              }
+            }
+          }
+        ],
+        "/lambda-test-current-version/MyLambda/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/lambda-test-current-version/MyLambda/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/lambda-test-current-version/MyLambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -47,25 +82,68 @@
             "data": "MyLambdaCCE802FB"
           }
         ],
+        "/lambda-test-current-version/MyLambda/CurrentVersion": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "lambda": "*",
+              "removalPolicy": "retain",
+              "retryAttempts": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlias": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/lambda-test-current-version/MyLambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdaCurrentVersionE7A382CC45f41452e4af8108d62930f8af7039ec"
           }
         ],
+        "/lambda-test-current-version/MyLambda/CurrentVersion/EventInvokeConfig": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "function": "*",
+              "qualifier": "*",
+              "onFailure": "*",
+              "onSuccess": "*",
+              "maxEventAge": "*",
+              "retryAttempts": "*"
+            }
+          }
+        ],
         "/lambda-test-current-version/MyLambda/CurrentVersion/EventInvokeConfig/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionEventInvokeConfigD120DC68",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyLambdaCurrentVersionEventInvokeConfigD120DC68"
+          }
+        ],
+        "/lambda-test-current-version/MyLambda/CurrentVersion/Aliaslive": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "aliasName": "*",
+              "version": "*"
+            }
           }
         ],
         "/lambda-test-current-version/MyLambda/CurrentVersion/Aliaslive/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdaCurrentVersionAliaslive9151E913"
+          }
+        ],
+        "/lambda-test-current-version/MyLambda/CurrentVersion/Aliaslive/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/lambda-test-current-version/BootstrapVersion": [
@@ -79,15 +157,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "MyLambdaCurrentVersionE7A382CC59bdb67fa1659795f5310ce1074a431e": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CC59bdb67fa1659795f5310ce1074a431e",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "lambda-test-current-version"
@@ -98,5 +167,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

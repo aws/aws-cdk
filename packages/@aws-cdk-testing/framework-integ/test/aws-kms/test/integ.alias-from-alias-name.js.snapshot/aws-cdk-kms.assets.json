@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "edb50c3173aa2deaf3ca8aba79303f3d0010212ca32f2ce63417113f2e0ec766": {
+      "displayName": "aws-cdk-kms Template",
+      "source": {
+        "path": "aws-cdk-kms.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "edb50c3173aa2deaf3ca8aba79303f3d0010212ca32f2ce63417113f2e0ec766.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

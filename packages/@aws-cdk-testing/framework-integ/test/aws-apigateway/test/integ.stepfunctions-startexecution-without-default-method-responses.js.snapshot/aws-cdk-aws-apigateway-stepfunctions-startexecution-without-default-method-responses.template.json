@@ -16,7 +16,10 @@
    },
    "DependsOn": [
     "myrestapiGET3A49A218"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "myrestapiDeploymentStageprod3140E1BE": {
    "Type": "AWS::ApiGateway::Stage",

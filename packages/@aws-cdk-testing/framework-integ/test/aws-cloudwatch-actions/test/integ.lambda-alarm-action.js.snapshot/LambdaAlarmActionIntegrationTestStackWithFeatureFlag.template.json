@@ -51,6 +51,25 @@
     "inAlarmLambdaFeatureServiceRoleA2CD21D1"
    ]
   },
+  "inAlarmLambdaFeatureLogGroupA38B15F5": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "inAlarmLambdaFeature6C78D351"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "Alarm7103F465": {
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
@@ -166,12 +185,34 @@
     "alarmLambdaFeatureServiceRole853A864D"
    ]
   },
+  "alarmLambdaFeatureLogGroup7E7A9C9E": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "alarmLambdaFeatureD560800F"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
      "Ref": "alarmLambdaFeatureD560800F"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "alarmLambdaFeatureCurrentVersionAlarmAlarmPermissionA0D80E66": {

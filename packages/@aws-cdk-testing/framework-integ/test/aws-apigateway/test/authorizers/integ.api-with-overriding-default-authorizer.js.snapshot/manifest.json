@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "integtest-restapi-with-overriding-default-authorizer.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d1b9f5b2f5a16dd3d551be97ea2814cf6d8f574c561523bdf07541d86d27934c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1de7c47244802deb53292c24a297c6eb3a101e913998b63b27196ee33a2b099f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,27 @@
         "integtest-restapi-with-overriding-default-authorizer.assets"
       ],
       "metadata": {
+        "/integtest-restapi-with-overriding-default-authorizer/UserPool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "selfSignUpEnabled": true,
+              "signInAliases": {
+                "email": true
+              }
+            }
+          }
+        ],
         "/integtest-restapi-with-overriding-default-authorizer/UserPool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "UserPool6BA7E5F2"
+          }
+        ],
+        "/integtest-restapi-with-overriding-default-authorizer/Authorizer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integtest-restapi-with-overriding-default-authorizer/Authorizer/Resource": [
@@ -46,16 +63,82 @@
             "data": "AuthorizerBD825682"
           }
         ],
+        "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "defaultCorsPreflightOptions": {
+                "allowOrigins": "*",
+                "maxAge": "*"
+              },
+              "defaultMethodOptions": {
+                "authorizer": "*",
+                "authorizationType": "*",
+                "authorizationScopes": "*"
+              }
+            }
+          }
+        ],
         "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ActionsApiGatewayF80386B7"
           }
         ],
+        "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ActionsApiGatewayDeployment50B6E6A66403e42852ae63ad13a2b7635300f8a9"
+          }
+        ],
+        "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/DeploymentStage.prod/Resource": [
@@ -70,10 +153,49 @@
             "data": "ActionsApiGatewayEndpoint261B645B"
           }
         ],
+        "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Default/OPTIONS": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "authorizer": {
+                  "authorizerId": "*",
+                  "authorizationType": "*"
+                },
+                "apiKeyRequired": false,
+                "authorizationType": "*",
+                "methodResponses": [
+                  {
+                    "statusCode": "*",
+                    "responseParameters": "*"
+                  }
+                ]
+              }
+            }
+          },
           {
             "type": "aws:cdk:warning",
             "data": "'AuthorizationScopes' can only be set when 'AuthorizationType' sets 'COGNITO_USER_POOLS'. Default to ignore the values set in 'AuthorizationScopes'. [ack: @aws-cdk/aws-apigateway:invalidAuthScope]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*",
+                  "responseParameters": "*"
+                }
+              ]
+            }
           }
         ],
         "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Default/OPTIONS/Resource": [
@@ -84,14 +206,67 @@
         ],
         "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Default/ANY": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "methodResponses": [
+                  {
+                    "statusCode": "*"
+                  }
+                ],
+                "authorizationType": "*"
+              }
+            }
+          },
+          {
             "type": "aws:cdk:warning",
             "data": "'AuthorizationScopes' can only be set when 'AuthorizationType' sets 'COGNITO_USER_POOLS'. Default to ignore the values set in 'AuthorizationScopes'. [ack: @aws-cdk/aws-apigateway:invalidAuthScope]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*"
+                }
+              ]
+            }
           }
         ],
         "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Default/ANY/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ActionsApiGatewayANY11FE5E47"
+          }
+        ],
+        "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Default/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "methodResponses": [
+                  {
+                    "statusCode": "*"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*"
+                }
+              ]
+            }
           }
         ],
         "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Default/GET/Resource": [
@@ -169,5 +344,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
