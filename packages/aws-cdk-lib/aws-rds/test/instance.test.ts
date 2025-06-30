@@ -2331,3 +2331,84 @@ describe('cross-account instance', () => {
     });
   });
 });
+
+describe('database insights for instance', () => {
+  test('instance with the advanced mode of database insights', () => {
+    // GIVEN
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13_7 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+      vpc,
+      databaseInsightsMode: rds.DatabaseInsightsMode.ADVANCED,
+      performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_15,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnablePerformanceInsights: true,
+      PerformanceInsightsRetentionPeriod: 465,
+      DatabaseInsightsMode: 'advanced',
+    });
+  });
+
+  test('instance with the standard mode of database insights', () => {
+    // GIVEN
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13_7 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+      vpc,
+      enablePerformanceInsights: true,
+      databaseInsightsMode: rds.DatabaseInsightsMode.STANDARD,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnablePerformanceInsights: true,
+      PerformanceInsightsRetentionPeriod: 7,
+      DatabaseInsightsMode: 'standard',
+    });
+  });
+
+  test('throw if performance insights is disabled and the advanced mode of database insights is set', () => {
+    // GIVEN
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_17_5 }),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+        vpc,
+        enablePerformanceInsights: false,
+        databaseInsightsMode: rds.DatabaseInsightsMode.ADVANCED,
+        performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_15,
+      });
+    }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set, or `databaseInsightsMode` was set to '\${DatabaseInsightsMode.ADVANCED}'/);
+  });
+
+  test('throw if the advanced mode of database insights is set and any retention other than MONTHS_15 is set for performanceInsightRetention', () => {
+    // GIVEN
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_17_5 }),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+        vpc,
+        performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
+        databaseInsightsMode: rds.DatabaseInsightsMode.ADVANCED,
+      });
+    }).toThrow(/`performanceInsightRetention` must be set to '\${PerformanceInsightRetention.MONTHS_15}' when `databaseInsightsMode` is set to '\${DatabaseInsightsMode.ADVANCED}'/);
+  });
+});
