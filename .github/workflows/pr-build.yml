@@ -1,14 +1,26 @@
 name: PR Build
 
 on:
+  workflow_dispatch: {}
+  merge_group: {}
+  push:
+    branches:
+      - main
+      - v2-release
   pull_request:
     branches:
       - main
       - v2-release
 
+# For every PR, cancel any previous builds in progress
+# ... but for all other builds we keep them running
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   build:
-    runs-on: aws-cdk_ubuntu-latest_16-core
+    runs-on: aws-cdk_ubuntu-latest_32-core
 
     env:
       PR_BUILD: true
@@ -18,7 +30,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "18"
           cache: "yarn"
@@ -26,16 +38,24 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
-      # @TODO
-      # - name: Start ECR proxy
-      #   run: /root/ecr-proxy/start.sh
+      - name: Load Docker images
+        id: docker-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.docker-images.tar
+          key: docker-cache-${{ runner.os }}
+
+      - name: Restore Docker images
+        if: ${{ steps.docker-cache.outputs.cache-hit }}
+        run: docker image load --input ~/.docker-images.tar
 
       - name: Cache build artifacts
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.s3buildcache
-          key: ${{ runner.os }}-${{ github.event.pull_request.base.ref }}-s3buildcache
+          key: s3buildcache-${{ runner.os }}
 
       - name: Configure system settings
         run: |
@@ -50,3 +70,15 @@ jobs:
 
       - name: Check for uncommitted changes
         run: git diff-index --exit-code --ignore-space-at-eol --stat HEAD
+
+      - name: Export Docker images
+        if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+        run: docker image save --output ~/.docker-images.tar $(docker image list --format '{{ if ne .Repository "<none>" }}{{ .Repository }}{{ if ne .Tag "<none>" }}:{{ .Tag }}{{ end }}{{ else }}{{ .ID }}{{ end }}')
+
+      - name: Cache Docker images
+        if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.docker-images.tar
+          key: docker-cache-${{ runner.os }}
