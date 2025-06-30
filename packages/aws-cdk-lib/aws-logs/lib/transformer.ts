@@ -148,6 +148,24 @@ export enum ParserProcessorType {
 }
 
 /**
+ * Types of event sources supported to convert to OCSF format.
+ */
+export enum OCSFSourceType {
+  CLOUD_TRAIL = 'CloudTrail',
+  ROUTE53_RESOLVER = 'Route53Resolver',
+  VPC_FLOW = 'VPCFlow',
+  EKS_AUDIT = 'EKSAudit',
+  AWS_WAF = 'AWSWAF',
+}
+
+/**
+ * OCSF Schema versions supported by transformers.
+ */
+export enum OCSFVersion {
+  V1_1 = 'V1.1',
+}
+
+/**
  * Types of AWS vended logs with built-in parsers.
  * AWS provides specialized parsers for common log formats produced by various AWS services.
  */
@@ -162,6 +180,8 @@ export enum VendedLogType {
   ROUTE53,
   /** Parse PostgreSQL logs */
   POSTGRES,
+  /** Parse logs to OCSF format */
+  OCSF,
 }
 
 /**
@@ -209,6 +229,24 @@ export enum DataConverterType {
   TYPE_CONVERTER,
   /** Convert datetime formats */
   DATETIME_CONVERTER,
+}
+
+export interface ProcessorParseToOCSFProperty {
+  /**
+   * Path to the field in the log event that will be parsed. Use dot notation to access child fields.
+   * @default '@message'
+   */
+  readonly source?: string;
+
+  /**
+   * Type of input log event source to convert to OCSF format.
+   */
+  readonly eventSource: OCSFSourceType;
+
+  /**
+   * Version of OCSF schema to convert to.
+   */
+  readonly ocsfVersion: OCSFVersion;
 }
 
 /**
@@ -550,6 +588,12 @@ export interface VendedLogParserProps extends BaseProcessorProps {
    * @default @message
    */
   readonly source?: string;
+
+  /**
+   * Options for ParseToOCSF parser. Required when type is set to OCSF
+   * @default - no OCSF parser is created.
+   */
+  readonly parseToOCSFOptions?: ProcessorParseToOCSFProperty;
 }
 
 /** Properties for creating string mutator processors */
@@ -937,6 +981,8 @@ export class ParserProcessor extends BaseProcessor {
 export class VendedLogParser extends BaseProcessor {
   /** The type of AWS vended log */
   logType: VendedLogType;
+  /** Options for OCSF parser */
+  parseToOCSFOptions?: ProcessorParseToOCSFProperty;
   /** The construct scope */
   private readonly scope: Construct;
 
@@ -945,6 +991,15 @@ export class VendedLogParser extends BaseProcessor {
     super();
     this.scope = scope;
     this.logType = props.logType;
+    if (this.logType == VendedLogType.OCSF){
+      if (!props.parseToOCSFOptions) {
+        throw new ValidationError('parseToOCSFOptions must be provided for type OCSF', scope);
+      }
+      this.parseToOCSFOptions = {
+        source: '@message',
+        ... props.parseToOCSFOptions
+      }
+    }
   }
 
   /**
@@ -963,6 +1018,8 @@ export class VendedLogParser extends BaseProcessor {
         return { parseRoute53: { } };
       case VendedLogType.POSTGRES:
         return { parsePostgres: { } };
+      case VendedLogType.OCSF:
+        return {parseToOcsf: this.parseToOCSFOptions}
       default:
         throw new ValidationError(`Unsupported vended log type: ${this.logType}`, this.scope);
     }

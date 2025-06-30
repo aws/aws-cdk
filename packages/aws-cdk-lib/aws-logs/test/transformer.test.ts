@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import { Stack } from '../../core';
-import { LogGroup, Transformer, BaseProcessor, ParserProcessorType, JsonMutatorType, StringMutatorType, DelimiterCharacter, DataConverterType, TypeConverterType, QuoteCharacter, VendedLogType } from '../lib';
+import { LogGroup, Transformer, BaseProcessor, ParserProcessorType, JsonMutatorType, StringMutatorType, DelimiterCharacter, DataConverterType, TypeConverterType, QuoteCharacter, VendedLogType, OCSFSourceType, OCSFVersion } from '../lib';
 
 describe('transformer', () => {
   // Parser Processor tests
@@ -251,6 +251,40 @@ describe('transformer', () => {
       LogGroupIdentifier: { Ref: 'awscdktestloggroup30AE39AB' },
       TransformerConfig: [{
         ParsePostgres: { },
+      }],
+    });
+  });
+
+  test('create a OCSF parser transformer against a log group', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
+
+    const ocsfParser = BaseProcessor.createVendedLogParser(stack, 'OCSF', {
+      logType: VendedLogType.OCSF,
+      parseToOCSFOptions: {
+        eventSource: OCSFSourceType.CLOUD_TRAIL,
+        ocsfVersion: OCSFVersion.V1_1
+      }
+    });
+
+    new Transformer(stack, 'Transformer', {
+      transformerName: 'MyTransformer',
+      logGroup: logGroup,
+      transformerConfig: [ocsfParser],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Transformer', {
+      LogGroupIdentifier: { Ref: 'awscdktestloggroup30AE39AB' },
+      TransformerConfig: [{
+        ParseToOCSF: { 
+          Source: "@message",
+          EventSource: "CloudTrail",
+          OcsfVersion: "V1.1"
+        },
       }],
     });
   });
