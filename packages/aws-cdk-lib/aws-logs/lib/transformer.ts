@@ -151,10 +151,15 @@ export enum ParserProcessorType {
  * Types of event sources supported to convert to OCSF format.
  */
 export enum OCSFSourceType {
+  /** Log events from CloudTrail */
   CLOUD_TRAIL = 'CloudTrail',
+  /** Log events from Route53Resolver */
   ROUTE53_RESOLVER = 'Route53Resolver',
+  /** Log events from VPCFlow */
   VPC_FLOW = 'VPCFlow',
+  /** Log events from EKSAudit */
   EKS_AUDIT = 'EKSAudit',
+  /** Log events from AWSWAF */
   AWS_WAF = 'AWSWAF',
 }
 
@@ -162,6 +167,10 @@ export enum OCSFSourceType {
  * OCSF Schema versions supported by transformers.
  */
 export enum OCSFVersion {
+  /**
+   * OCSF schema version 1.1.
+   * @see https://schema.ocsf.io/1.1.0/
+   */
   V1_1 = 'V1.1',
 }
 
@@ -231,6 +240,9 @@ export enum DataConverterType {
   DATETIME_CONVERTER,
 }
 
+/**
+ * Processor to parse events from CloudTrail, Route53Resolver, VPCFlow, EKSAudit and AWSWAF into OCSF V1.1 format.
+ */
 export interface ProcessorParseToOCSFProperty {
   /**
    * Path to the field in the log event that will be parsed. Use dot notation to access child fields.
@@ -991,14 +1003,14 @@ export class VendedLogParser extends BaseProcessor {
     super();
     this.scope = scope;
     this.logType = props.logType;
-    if (this.logType == VendedLogType.OCSF){
+    if (this.logType == VendedLogType.OCSF) {
       if (!props.parseToOCSFOptions) {
         throw new ValidationError('parseToOCSFOptions must be provided for type OCSF', scope);
       }
       this.parseToOCSFOptions = {
         source: '@message',
-        ... props.parseToOCSFOptions
-      }
+        ... props.parseToOCSFOptions,
+      };
     }
   }
 
@@ -1019,7 +1031,7 @@ export class VendedLogParser extends BaseProcessor {
       case VendedLogType.POSTGRES:
         return { parsePostgres: { } };
       case VendedLogType.OCSF:
-        return {parseToOcsf: this.parseToOCSFOptions}
+        return { parseToOcsf: this.parseToOCSFOptions };
       default:
         throw new ValidationError(`Unsupported vended log type: ${this.logType}`, this.scope);
     }

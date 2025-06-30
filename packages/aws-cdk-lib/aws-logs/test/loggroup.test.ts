@@ -1005,54 +1005,54 @@ describe('subscription filter', () => {
 });
 
 test('create a Add Key transformer against a log group', () => {
-    // GIVEN
-    const stack = new Stack();
-    const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
+  // GIVEN
+  const stack = new Stack();
+  const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = BaseProcessor.createParserProcessor(stack, 'JsonParser', {
-      type: ParserProcessorType.JSON,
-    });
-
-    const addKeysProcesor = BaseProcessor.createJsonMutator(stack, 'AddKeys', {
-      type: JsonMutatorType.ADD_KEYS,
-      addKeysOptions: {
-        entries: [
-          { key: 'test_key1', value: 'test_value1', overwriteIfExists: true },
-          { key: 'test_key2', value: 'test_value2' },
-          { key: 'test_key3', value: 'test_value3', overwriteIfExists: false },
-        ],
-      },
-    });
-
-    // WHEN
-
-    logGroup.addTransformer(
-      'Transformer',
-      {
-        transformerName: 'MyTransformer',
-        transformerConfig: [jsonParser, addKeysProcesor],
-      }
-    )
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Transformer', {
-      LogGroupIdentifier: { Ref: 'awscdktestloggroup30AE39AB' },
-      TransformerConfig: [
-        {
-          ParseJSON: { Source: '@message' },
-        },
-        {
-          AddKeys: {
-            Entries: [
-              { Key: 'test_key1', Value: 'test_value1', OverwriteIfExists: true },
-              { Key: 'test_key2', Value: 'test_value2', OverwriteIfExists: false },
-              { Key: 'test_key3', Value: 'test_value3', OverwriteIfExists: false },
-            ],
-          },
-        },
-      ],
-    });
+  const jsonParser = BaseProcessor.createParserProcessor(stack, 'JsonParser', {
+    type: ParserProcessorType.JSON,
   });
+
+  const addKeysProcesor = BaseProcessor.createJsonMutator(stack, 'AddKeys', {
+    type: JsonMutatorType.ADD_KEYS,
+    addKeysOptions: {
+      entries: [
+        { key: 'test_key1', value: 'test_value1', overwriteIfExists: true },
+        { key: 'test_key2', value: 'test_value2' },
+        { key: 'test_key3', value: 'test_value3', overwriteIfExists: false },
+      ],
+    },
+  });
+
+  // WHEN
+
+  logGroup.addTransformer(
+    'Transformer',
+    {
+      transformerName: 'MyTransformer',
+      transformerConfig: [jsonParser, addKeysProcesor],
+    },
+  );
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::Transformer', {
+    LogGroupIdentifier: { Ref: 'awscdktestloggroup30AE39AB' },
+    TransformerConfig: [
+      {
+        ParseJSON: { Source: '@message' },
+      },
+      {
+        AddKeys: {
+          Entries: [
+            { Key: 'test_key1', Value: 'test_value1', OverwriteIfExists: true },
+            { Key: 'test_key2', Value: 'test_value2', OverwriteIfExists: false },
+            { Key: 'test_key3', Value: 'test_value3', OverwriteIfExists: false },
+          ],
+        },
+      },
+    ],
+  });
+});
 
 function dataDrivenTests(cases: string[], body: (suffix: string) => void): void {
   for (let i = 0; i < cases.length; i++) {

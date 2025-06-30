@@ -266,8 +266,8 @@ describe('transformer', () => {
       logType: VendedLogType.OCSF,
       parseToOCSFOptions: {
         eventSource: OCSFSourceType.CLOUD_TRAIL,
-        ocsfVersion: OCSFVersion.V1_1
-      }
+        ocsfVersion: OCSFVersion.V1_1,
+      },
     });
 
     new Transformer(stack, 'Transformer', {
@@ -280,10 +280,10 @@ describe('transformer', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Transformer', {
       LogGroupIdentifier: { Ref: 'awscdktestloggroup30AE39AB' },
       TransformerConfig: [{
-        ParseToOCSF: { 
-          Source: "@message",
-          EventSource: "CloudTrail",
-          OcsfVersion: "V1.1"
+        ParseToOCSF: {
+          Source: '@message',
+          EventSource: 'CloudTrail',
+          OcsfVersion: 'V1.1',
         },
       }],
     });

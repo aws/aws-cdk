@@ -7,13 +7,13 @@ import { MetricFilter } from './metric-filter';
 import { FilterPattern, IFilterPattern } from './pattern';
 import { ResourcePolicy } from './policy';
 import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
+import { IProcessor, Transformer } from './transformer';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Annotations, Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IProcessor, Transformer } from './transformer';
 
 export interface ILogGroup extends iam.IResourceWithPolicy {
   /**
@@ -806,10 +806,11 @@ export interface MetricFilterOptions {
   readonly filterName?: string;
 }
 
+/**
+ * Properties for Transformer created from LogGroup.
+ */
 export interface TransformerOptions {
-  /**
-   * Name of the transformer.
-   */
+  /** Name of the transformer. */
   readonly transformerName: string;
   /** List of processors in a transformer */
   readonly transformerConfig: Array<IProcessor>;
