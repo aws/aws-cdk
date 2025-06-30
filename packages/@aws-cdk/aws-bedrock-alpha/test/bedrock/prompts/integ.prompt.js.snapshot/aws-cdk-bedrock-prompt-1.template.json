@@ -64,7 +64,7 @@
     ]
    }
   },
-  "TextPromptPromptVersiona9d8ed0d16ecad41aa9a65941b3b315cF4F91A2D": {
+  "TextPromptPromptVersiona9d8ed0d16ecad41aa9a65941b3b315c349071D9": {
    "Type": "AWS::Bedrock::PromptVersion",
    "Properties": {
     "Description": "Version 1.1 created via prompt method",
@@ -161,7 +161,7 @@
     ]
    }
   },
-  "ChatPromptPromptVersiona6be9dc24f50fe69e0c02a396d5256e24E361D0D": {
+  "ChatPromptPromptVersiona6be9dc24f50fe69e0c02a396d5256e2AA9DDC0C": {
    "Type": "AWS::Bedrock::PromptVersion",
    "Properties": {
     "Description": "Version 1.1 created via prompt method",

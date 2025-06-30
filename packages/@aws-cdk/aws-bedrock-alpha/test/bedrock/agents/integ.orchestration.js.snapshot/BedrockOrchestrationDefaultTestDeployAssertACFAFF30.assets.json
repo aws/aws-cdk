@@ -1,16 +1,16 @@
 {
   "version": "44.0.0",
   "files": {
-    "29705a89bd00fae35dfc1ae65c79c868c909396f527d150e08a151310eced8f8": {
-      "displayName": "aws-cdk-bedrock-prompt-1 Template",
+    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+      "displayName": "BedrockOrchestrationDefaultTestDeployAssertACFAFF30 Template",
       "source": {
-        "path": "aws-cdk-bedrock-prompt-1.template.json",
+        "path": "BedrockOrchestrationDefaultTestDeployAssertACFAFF30.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "29705a89bd00fae35dfc1ae65c79c868c909396f527d150e08a151310eced8f8.json",
+          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
