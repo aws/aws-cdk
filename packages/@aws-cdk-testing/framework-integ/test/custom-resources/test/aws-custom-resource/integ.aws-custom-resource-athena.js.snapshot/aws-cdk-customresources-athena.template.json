@@ -144,11 +144,11 @@
        {
         "Ref": "AthenaResultBucketDF85B968"
        },
-       "\"},\"EngineVersion\":{\"SelectedEngineVersion\":\"PySpark engine version 3\"}}}}"
+       "\"},\"EngineVersion\":{\"SelectedEngineVersion\":\"PySpark engine version 3\"}}},\"logApiResponseData\":true}"
       ]
      ]
     },
-    "Delete": "{\"service\":\"Athena\",\"action\":\"deleteWorkGroup\",\"parameters\":{\"WorkGroup\":\"TestWG\"}}",
+    "Delete": "{\"service\":\"Athena\",\"action\":\"deleteWorkGroup\",\"parameters\":{\"WorkGroup\":\"TestWG\"},\"logApiResponseData\":true}",
     "InstallLatestAwsSdk": true
    },
    "UpdateReplacePolicy": "Delete",
@@ -195,9 +195,9 @@
       "Arn"
      ]
     },
-    "Create": "{\"service\":\"Athena\",\"action\":\"createNotebook\",\"physicalResourceId\":{\"responsePath\":\"NotebookId\"},\"parameters\":{\"WorkGroup\":\"TestWG\",\"Name\":\"MyNotebook1\"}}",
-    "Update": "{\"service\":\"Athena\",\"action\":\"updateNotebookMetadata\",\"parameters\":{\"Name\":\"MyNotebook1\",\"NotebookId\":\"PHYSICAL:RESOURCEID:\"}}",
-    "Delete": "{\"service\":\"Athena\",\"action\":\"deleteNotebook\",\"parameters\":{\"NotebookId\":\"PHYSICAL:RESOURCEID:\"}}",
+    "Create": "{\"service\":\"Athena\",\"action\":\"createNotebook\",\"physicalResourceId\":{\"responsePath\":\"NotebookId\"},\"parameters\":{\"WorkGroup\":\"TestWG\",\"Name\":\"MyNotebook1\"},\"logApiResponseData\":true}",
+    "Update": "{\"service\":\"Athena\",\"action\":\"updateNotebookMetadata\",\"parameters\":{\"Name\":\"MyNotebook1\",\"NotebookId\":\"PHYSICAL:RESOURCEID:\"},\"logApiResponseData\":true}",
+    "Delete": "{\"service\":\"Athena\",\"action\":\"deleteNotebook\",\"parameters\":{\"NotebookId\":\"PHYSICAL:RESOURCEID:\"},\"logApiResponseData\":true}",
     "InstallLatestAwsSdk": true
    },
    "DependsOn": [
@@ -288,6 +288,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

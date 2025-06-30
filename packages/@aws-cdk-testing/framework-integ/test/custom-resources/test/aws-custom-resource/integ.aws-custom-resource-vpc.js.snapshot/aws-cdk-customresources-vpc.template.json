@@ -412,7 +412,7 @@
        {
         "Ref": "Vpc8378EB38"
        },
-       "\"}}"
+       "\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -428,11 +428,11 @@
        {
         "Ref": "Vpc8378EB38"
        },
-       "\"}}"
+       "\"},\"logApiResponseData\":true}"
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "DescribeVpcAttributeCustomResourcePolicyAF7C66C1"
@@ -667,6 +667,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

@@ -562,11 +562,11 @@
        {
         "Ref": "CanaryRemoved24AD6309"
        },
-       "\"}}"
+       "\"},\"logApiResponseData\":true}"
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "DeleteCanaryCustomResourcePolicy98D0C78F"
@@ -739,6 +739,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {
