@@ -51,6 +51,7 @@ const dashboard = new cloudwatch.Dashboard(stack, 'Dash', {
 dashboard.addWidgets(new cloudwatch.AlarmWidget({
   title: 'Total messages in queue',
   alarm,
+  accountId: '123456789012',
 }));
 
 dashboard.addWidgets(new cloudwatch.GraphWidget({
@@ -58,18 +59,21 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
   left: [sumExpression],
   right: [metricA, metricB],
   leftAnnotations: [alarm.toAnnotation()],
+  accountId: '123456789012',
 }));
 
 dashboard.addWidgets(new cloudwatch.GraphWidget({
   title: 'Percentage of messages in each queue as pie chart',
   left: [metricA, metricB],
   view: cloudwatch.GraphWidgetView.PIE,
+  accountId: '123456789012',
   setPeriodToTimeRange: true,
 }));
 
 dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   title: 'Current total messages in queue',
   metrics: [sumExpression],
+  accountId: '123456789012',
 }));
 
 new IntegTest(app, 'cdk-integ-math-alarm-and-dashboard', {
