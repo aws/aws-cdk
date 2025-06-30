@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { CaCertificate } from './ca-certificate';
+import { DatabaseInsightsMode } from './database-insights-mode';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
@@ -10,6 +11,7 @@ import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, Rot
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import { validateDatabaseInstanceProps } from './validate-database-insights';
 import * as ec2 from '../../aws-ec2';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -604,6 +606,8 @@ export interface DatabaseInstanceNewProps {
   /**
    * The amount of time, in days, to retain Performance Insights data.
    *
+   * If you set `databaseInsightsMode` to `DatabaseInsightsMode.ADVANCED`, you must set this property to `PerformanceInsightRetention.MONTHS_15`.
+   *
    * @default 7 this is the free tier
    */
   readonly performanceInsightRetention?: PerformanceInsightRetention;
@@ -614,6 +618,13 @@ export interface DatabaseInstanceNewProps {
    * @default - default master key
    */
   readonly performanceInsightEncryptionKey?: kms.IKey;
+
+  /**
+   * The database insights mode.
+   *
+   * @default - DatabaseInsightsMode.STANDARD when performance insights are enabled, otherwise not set.
+   */
+  readonly databaseInsightsMode?: DatabaseInsightsMode;
 
   /**
    * The list of log types that need to be enabled for exporting to
@@ -907,10 +918,9 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     this.enableIamAuthentication = props.iamAuthentication;
 
     const enablePerformanceInsights = props.enablePerformanceInsights
-      || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
-    if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
-      throw new ValidationError('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set', this);
-    }
+      || props.performanceInsightRetention !== undefined
+      || props.performanceInsightEncryptionKey !== undefined
+      || props.databaseInsightsMode === DatabaseInsightsMode.ADVANCED;
 
     if (props.domain) {
       this.domainId = props.domain;
@@ -961,6 +971,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       performanceInsightsRetentionPeriod: enablePerformanceInsights
         ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
         : undefined,
+      databaseInsightsMode: props.databaseInsightsMode,
       port: props.port !== undefined ? Tokenization.stringifyNumber(props.port) : undefined,
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
@@ -1265,6 +1276,9 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    // Validate database instance props
+    validateDatabaseInstanceProps(this, props);
 
     const credentials = renderCredentials(this, props.engine, props.credentials);
     const secret = credentials.secret;
