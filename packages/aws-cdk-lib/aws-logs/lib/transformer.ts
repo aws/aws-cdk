@@ -14,34 +14,6 @@
  * Resource Structure:
  * - AWS::Logs::Transformer: Interface (ITransformer) directly implemented by concrete classes (Transformer)
  *   This follows a direct implementation pattern where concrete classes implement the interface directly without a shared base class.
- *
- * @example
- * import * as logs from 'aws-cdk-lib/aws-logs';
- *
- * // Create a log group
- * const logGroup = new logs.LogGroup(this, 'MyLogGroup');
- *
- * // Create a JSON parser processor
- * const jsonParser = logs.BaseProcessor.createParserProcessor(this, 'JsonParser', {
- *   type: logs.ParserProcessorType.JSON
- * });
- *
- * // Create a processor to add keys
- * const addKeysProcessor = logs.BaseProcessor.createJsonMutator(this, 'AddKeys', {
- *   type: logs.JsonMutatorType.ADD_KEYS,
- *   addKeysOptions: {
- *     entries: [{
- *       key: 'metadata.transformed_in',
- *       value: 'CloudWatchLogs'
- *     }]
- *   }
- * });
- *
- * // Create a transformer with these processors
- * new logs.Transformer(this, 'MyTransformer', {
- *   logGroup: logGroup,
- *   transformerConfig: [jsonParser, addKeysProcessor]
- * });
  */
 
 import { Construct } from 'constructs';
@@ -133,21 +105,6 @@ export enum KeyValueDelimiter {
 }
 
 /**
- * Types of configurable parser processors.
- * Defines the various parser types that can be used to process log events.
- */
-export enum ParserProcessorType {
-  /** Parse log entries as JSON */
-  JSON,
-  /** Parse log entries as key-value pairs */
-  KEY_VALUE,
-  /** Parse log entries in CSV format */
-  CSV,
-  /** Parse log entries using Grok patterns */
-  GROK,
-}
-
-/**
  * Types of event sources supported to convert to OCSF format.
  */
 export enum OCSFSourceType {
@@ -175,6 +132,23 @@ export enum OCSFVersion {
 }
 
 /**
+ * Types of configurable parser processors.
+ * Defines the various parser types that can be used to process log events.
+ */
+export enum ParserProcessorType {
+  /** Parse log entries as JSON */
+  JSON,
+  /** Parse log entries as key-value pairs */
+  KEY_VALUE,
+  /** Parse log entries in CSV format */
+  CSV,
+  /** Parse log entries using Grok patterns */
+  GROK,
+  /** Parse logs to OCSF format */
+  OCSF,
+}
+
+/**
  * Types of AWS vended logs with built-in parsers.
  * AWS provides specialized parsers for common log formats produced by various AWS services.
  */
@@ -189,8 +163,6 @@ export enum VendedLogType {
   ROUTE53,
   /** Parse PostgreSQL logs */
   POSTGRES,
-  /** Parse logs to OCSF format */
-  OCSF,
 }
 
 /**
@@ -589,6 +561,11 @@ export interface ParserProcessorProps extends BaseProcessorProps {
    * @default - No Grok parser is created if props not set
    */
   readonly grokOptions?: ProcessorGrokProperty;
+  /**
+   * Options for ParseToOCSF parser. Required when type is set to OCSF
+   * @default - no OCSF parser is created.
+   */
+  readonly parseToOCSFOptions?: ProcessorParseToOCSFProperty;
 }
 
 /** Properties for creating AWS vended log parsers */
@@ -600,12 +577,6 @@ export interface VendedLogParserProps extends BaseProcessorProps {
    * @default @message
    */
   readonly source?: string;
-
-  /**
-   * Options for ParseToOCSF parser. Required when type is set to OCSF
-   * @default - no OCSF parser is created.
-   */
-  readonly parseToOCSFOptions?: ProcessorParseToOCSFProperty;
 }
 
 /** Properties for creating string mutator processors */
@@ -914,6 +885,8 @@ export class ParserProcessor extends BaseProcessor {
   csvOptions?: ProcessorCsvProperty;
   /** Options for Grok parser */
   grokOptions?: ProcessorGrokProperty;
+  /** Options for OCSF parser */
+  parseToOCSFOptions?: ProcessorParseToOCSFProperty;
   /** The construct scope */
   private readonly scope: Construct;
 
@@ -964,6 +937,16 @@ export class ParserProcessor extends BaseProcessor {
         };
         break;
 
+      case ParserProcessorType.OCSF:
+        if (!props.parseToOCSFOptions) {
+          throw new ValidationError('parseToOCSFOptions must be provided for type OCSF', scope);
+        }
+        this.parseToOCSFOptions = {
+          source: '@message',
+          ... props.parseToOCSFOptions,
+        };
+        break;
+
       default:
         throw new ValidationError(`Unsupported parser processor type: ${this.type}`, this.scope);
     }
@@ -983,6 +966,8 @@ export class ParserProcessor extends BaseProcessor {
         return { csv: this.csvOptions };
       case ParserProcessorType.GROK:
         return { grok: this.grokOptions };
+      case ParserProcessorType.OCSF:
+        return { parseToOcsf: this.parseToOCSFOptions };
       default:
         throw new ValidationError(`Unsupported parser processor type: ${this.type}`, this.scope);
     }
@@ -993,8 +978,6 @@ export class ParserProcessor extends BaseProcessor {
 export class VendedLogParser extends BaseProcessor {
   /** The type of AWS vended log */
   logType: VendedLogType;
-  /** Options for OCSF parser */
-  parseToOCSFOptions?: ProcessorParseToOCSFProperty;
   /** The construct scope */
   private readonly scope: Construct;
 
@@ -1003,15 +986,6 @@ export class VendedLogParser extends BaseProcessor {
     super();
     this.scope = scope;
     this.logType = props.logType;
-    if (this.logType == VendedLogType.OCSF) {
-      if (!props.parseToOCSFOptions) {
-        throw new ValidationError('parseToOCSFOptions must be provided for type OCSF', scope);
-      }
-      this.parseToOCSFOptions = {
-        source: '@message',
-        ... props.parseToOCSFOptions,
-      };
-    }
   }
 
   /**
@@ -1030,8 +1004,6 @@ export class VendedLogParser extends BaseProcessor {
         return { parseRoute53: { } };
       case VendedLogType.POSTGRES:
         return { parsePostgres: { } };
-      case VendedLogType.OCSF:
-        return { parseToOcsf: this.parseToOCSFOptions };
       default:
         throw new ValidationError(`Unsupported vended log type: ${this.logType}`, this.scope);
     }
@@ -1434,6 +1406,20 @@ export class Transformer extends Resource implements ITransformer {
     );
     if (copyValueProcessors.length > 1) {
       throw new ValidationError('Only one copyValue processor is allowed in a transformer', this);
+    }
+
+    // Count occurrences of copyValue processors
+    const parseToOcsfProcessors = processors.filter(
+      p => p instanceof ParserProcessor && (p as ParserProcessor).type === ParserProcessorType.OCSF,
+    );
+    if (parseToOcsfProcessors.length > 1) {
+      throw new ValidationError('Only one parseToOCSF processor is allowed in a transformer', this);
+    }
+    if (parseToOcsfProcessors.length > 0) {
+      const parseToOcsfIndex = processors.findIndex(p => p instanceof ParserProcessor && (p as ParserProcessor).type === ParserProcessorType.OCSF);
+      if (parseToOcsfIndex != 0 ) {
+        throw new ValidationError('parseToOCSF processor must be the first processor in a transformer', this);
+      }
     }
   }
   /**

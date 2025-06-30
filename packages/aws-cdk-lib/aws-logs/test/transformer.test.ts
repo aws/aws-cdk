@@ -262,8 +262,8 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const ocsfParser = BaseProcessor.createVendedLogParser(stack, 'OCSF', {
-      logType: VendedLogType.OCSF,
+    const ocsfParser = BaseProcessor.createParserProcessor(stack, 'OCSF', {
+      type: ParserProcessorType.OCSF,
       parseToOCSFOptions: {
         eventSource: OCSFSourceType.CLOUD_TRAIL,
         ocsfVersion: OCSFVersion.V1_1,
@@ -1088,5 +1088,57 @@ describe('transformer', () => {
       },
       );
     }).toThrow('Only one copyValue processor is allowed in a transformer');
+  });
+
+  test('Transformer config with more than one parseToOcsf processor should fail', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
+
+    const ocsfParser = BaseProcessor.createParserProcessor(stack, 'OCSF', {
+      type: ParserProcessorType.OCSF,
+      parseToOCSFOptions: {
+        eventSource: OCSFSourceType.CLOUD_TRAIL,
+        ocsfVersion: OCSFVersion.V1_1,
+      },
+    });
+
+    // THEN
+    expect( () => {
+      new Transformer(stack, 'Transformer', {
+        transformerName: 'MyTransformer',
+        logGroup: logGroup,
+        transformerConfig: [ocsfParser, ocsfParser],
+      },
+      );
+    }).toThrow('Only one parseToOCSF processor is allowed in a transformer');
+  });
+
+  test('Transformer config with parseToOcsf not first should fail', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
+
+    const jsonParser = BaseProcessor.createParserProcessor(stack, 'JsonParser', {
+      type: ParserProcessorType.JSON,
+    });
+
+    const ocsfParser = BaseProcessor.createParserProcessor(stack, 'OCSF', {
+      type: ParserProcessorType.OCSF,
+      parseToOCSFOptions: {
+        eventSource: OCSFSourceType.CLOUD_TRAIL,
+        ocsfVersion: OCSFVersion.V1_1,
+      },
+    });
+
+    // THEN
+    expect( () => {
+      new Transformer(stack, 'Transformer', {
+        transformerName: 'MyTransformer',
+        logGroup: logGroup,
+        transformerConfig: [jsonParser, ocsfParser],
+      },
+      );
+    }).toThrow('parseToOCSF processor must be the first processor in a transformer');
   });
 });

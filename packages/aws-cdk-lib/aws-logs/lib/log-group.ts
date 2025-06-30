@@ -54,6 +54,14 @@ export interface ILogGroup extends iam.IResourceWithPolicy {
   addMetricFilter(id: string, props: MetricFilterOptions): MetricFilter;
 
   /**
+   * Create a new Transformer on this Log Group
+   *
+   * @param id Unique identifier for the construct in its parent
+   * @param props Properties for creating the Transformer
+   */
+  addTransformer(id: string, props: TransformerOptions): Transformer;
+
+  /**
    * Extract a metric from structured log events in the LogGroup
    *
    * Creates a MetricFilter on this LogGroup that will extract the value
