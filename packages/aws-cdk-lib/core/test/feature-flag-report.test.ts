@@ -3,28 +3,11 @@ import * as cxapi from '../../cx-api';
 import { App } from '../lib';
 import { generateFeatureFlagReport } from '../lib/private/feature-flag-report';
 
-jest.mock('../../cx-api', () => {
-  const actual = jest.requireActual('../../cx-api');
-  return {
-    ...actual,
-    CloudAssemblyBuilder: jest.fn().mockImplementation(() => ({
-      addArtifact: jest.fn(),
-      buildAssembly: jest.fn().mockReturnValue({
-        tryGetArtifact: jest.fn().mockReturnValue('aws-cdk-lib/feature-flag-report'),
-      }),
-    })),
-  };
-});
-
 describe('generate feature flag report', () => {
   test('feature flag report can be retrieved from CloudAssembly using its artifact ID', () => {
     const app = new App();
-    const builder = new cxapi.CloudAssemblyBuilder('/tmp/test');
-
-    generateFeatureFlagReport(builder, app);
-
-    const cloudAssembly = builder.buildAssembly();
-    expect(cloudAssembly.tryGetArtifact('aws-cdk-lib/feature-flag-report')).toEqual('aws-cdk-lib/feature-flag-report');
+    const assembly = app.synth();
+    expect(assembly.manifest.artifacts?.['aws-cdk-lib/feature-flag-report']).toBeDefined();
   });
   test('report contains context values that represent the feature flags', () => {
     const app = new App({
@@ -33,16 +16,9 @@ describe('generate feature flag report', () => {
         '@aws-cdk/core:aspectStabilization': false,
       },
     });
-    const builder = new cxapi.CloudAssemblyBuilder('/tmp/test');
-    const spy = jest.spyOn(builder, 'addArtifact');
-
-    generateFeatureFlagReport(builder, app);
-
-    expect(spy).toHaveBeenCalledTimes(1);
-
-    const [artifactId, artifact] = spy.mock.calls[0];
-
-    expect(artifact).toEqual(expect.objectContaining({
+    const assembly = app.synth();
+    const report = assembly.manifest.artifacts?.['aws-cdk-lib/feature-flag-report'];
+    expect(report).toEqual(expect.objectContaining({
       type: 'cdk:feature-flag-report',
       properties: expect.objectContaining({
         module: 'aws-cdk-lib',

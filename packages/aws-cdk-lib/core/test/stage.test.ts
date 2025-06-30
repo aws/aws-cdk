@@ -260,13 +260,6 @@ describe('stage', () => {
           displayName: 'StageLevel1',
         },
       },
-      'aws-cdk-lib/feature-flag-report': {
-        type: 'cdk:feature-flag-report',
-        properties: {
-          module: 'aws-cdk-lib',
-          flags: expect.any(Object),
-        },
-      },
     });
 
     const assemblyLevel1 = rootAssembly.getNestedAssembly('assembly-StageLevel1');
@@ -278,13 +271,6 @@ describe('stage', () => {
           displayName: 'StageLevel1/StageLevel2',
         },
       },
-      'aws-cdk-lib/feature-flag-report': {
-        type: 'cdk:feature-flag-report',
-        properties: {
-          module: 'aws-cdk-lib',
-          flags: expect.any(Object),
-        },
-      },
     });
 
     const assemblyLevel2 = assemblyLevel1.getNestedAssembly('assembly-StageLevel1-StageLevel2');
@@ -294,13 +280,6 @@ describe('stage', () => {
         properties: {
           directoryName: 'assembly-StageLevel1-StageLevel2-StageLevel3',
           displayName: 'StageLevel1/StageLevel2/StageLevel3',
-        },
-      },
-      'aws-cdk-lib/feature-flag-report': {
-        type: 'cdk:feature-flag-report',
-        properties: {
-          module: 'aws-cdk-lib',
-          flags: expect.any(Object),
         },
       },
     });

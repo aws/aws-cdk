@@ -25,16 +25,9 @@ describe('synthesis', () => {
     expect(app.synth()).toEqual(session); // same session if we synth() again
     expect(list(session.directory)).toEqual(['cdk.out', 'manifest.json', 'tree.json']);
     expect(readJson(session.directory, 'manifest.json').artifacts).toMatchObject({
-      'Tree': {
+      Tree: {
         type: 'cdk:tree',
         properties: { file: 'tree.json' },
-      },
-      'aws-cdk-lib/feature-flag-report': {
-        type: 'cdk:feature-flag-report',
-        properties: {
-          module: 'aws-cdk-lib',
-          flags: expect.any(Object),
-        },
       },
     });
     expect(readJson(session.directory, 'tree.json')).toEqual({
