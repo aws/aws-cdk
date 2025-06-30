@@ -215,7 +215,7 @@ export enum DataConverterType {
 /**
  * Processor to parse events from CloudTrail, Route53Resolver, VPCFlow, EKSAudit and AWSWAF into OCSF V1.1 format.
  */
-export interface ProcessorParseToOCSFProperty {
+export interface ParseToOCSFProperty {
   /**
    * Path to the field in the log event that will be parsed. Use dot notation to access child fields.
    * @default '@message'
@@ -240,7 +240,7 @@ export interface ProcessorParseToOCSFProperty {
  * processor for JSON-format logs, so that you can also apply other processors, such as mutate processors, to these logs.
  * For more information about this processor including examples, see parseJSON in the CloudWatch Logs User Guide.
  */
-export interface ProcessorParseJSONProperty {
+export interface ParseJSONProperty {
   /**
    * Path to the field in the log event that will be parsed. Use dot notation to access child fields.
    * @default '@message'
@@ -257,7 +257,7 @@ export interface ProcessorParseJSONProperty {
  * This processor parses a specified field in the original log event into key-value pairs.
  * For more information about this processor including examples, see parseKeyValue in the CloudWatch Logs User Guide.
  */
-export interface ProcessorParseKeyValueProperty {
+export interface ParseKeyValueProperty {
   /**
    * Path to the field in the log event that will be parsed. Use dot notation to access child fields.
    * @default '@message'
@@ -295,7 +295,13 @@ export interface ProcessorParseKeyValueProperty {
   readonly overwriteIfExists?: boolean;
 }
 
-export interface ProcessorCopyValueProperty {
+/**
+ * Copy Value processor, copies values from source to target for each entry.
+ */
+export interface CopyValueProperty {
+  /**
+   * List of sources and target to copy.
+   */
   readonly entries: Array<CopyValueEntryProperty>;
 }
 
@@ -303,7 +309,7 @@ export interface ProcessorCopyValueProperty {
  * The CSV processor parses comma-separated values (CSV) from the log events into columns.
  * For more information about this processor including examples, see csv in the CloudWatch Logs User Guide.
  */
-export interface ProcessorCsvProperty {
+export interface CsvProperty {
   /**
    * Character used as a text qualifier for a single column of data.
    * @default QuoteCharacter.DOUBLE_QUOTE
@@ -330,7 +336,7 @@ export interface ProcessorCsvProperty {
  * This processor converts a datetime string into a format that you specify.
  * For more information about this processor including examples, see datetimeConverter in the CloudWatch Logs User Guide.
  */
-export interface ProcessorDateTimeConverterProperty {
+export interface DateTimeConverterProperty {
   /**
    * The key to apply the date conversion to.
    */
@@ -374,7 +380,7 @@ export interface ProcessorDateTimeConverterProperty {
  * This processor uses pattern matching to parse and structure unstructured data. This processor can also extract fields from log messages.
  * For more information about this processor including examples, see grok in the CloudWatch Logs User Guide.
  */
-export interface ProcessorGrokProperty {
+export interface GrokProperty {
   /**
    * The path to the field in the log event that you want to parse.
    * @default '@message'
@@ -392,7 +398,7 @@ export interface ProcessorGrokProperty {
  * This processor takes a list of objects that contain key fields, and converts them into a map of target keys.
  * For more information about this processor including examples, see listToMap in the CloudWatch Logs User Guide.
  */
-export interface ProcessorListToMapProperty {
+export interface ListToMapProperty {
   /**
    * The key in the log event that has a list of objects that will be converted to a map.
    */
@@ -434,7 +440,7 @@ export interface ProcessorListToMapProperty {
  * This processor adds new key-value pairs to the log event.
  * For more information about this processor including examples, see addKeys in the CloudWatch Logs User Guide.
  */
-export interface ProcessorAddKeysProperty {
+export interface AddKeysProperty {
   /**
    * An array of objects, where each object contains information about one key to add to the log event.
    */
@@ -457,7 +463,7 @@ export interface ProcessorDeleteKeysProperty {
  * You can also use this processor to add metadata to log events by copying values from metadata keys.
  * For more information about this processor including examples, see copyValue in the CloudWatch Logs User Guide.
  */
-export interface ProcessorCopyValueProperty {
+export interface CopyValueProperty {
   /**
    * An array of CopyValueEntry objects, where each object contains information about one field value to copy.
    */
@@ -468,7 +474,7 @@ export interface ProcessorCopyValueProperty {
  * This processor moves a key from one field to another. The original key is deleted.
  * For more information about this processor including examples, see moveKeys in the CloudWatch Logs User Guide.
  */
-export interface ProcessorMoveKeysProperty {
+export interface MoveKeysProperty {
   /**
    * An array of objects, where each object contains information about one key to move.
    */
@@ -479,7 +485,7 @@ export interface ProcessorMoveKeysProperty {
  * Use this processor to rename keys in a log event.
  * For more information about this processor including examples, see renameKeys in the CloudWatch Logs User Guide.
  */
-export interface ProcessorRenameKeysProperty {
+export interface RenameKeysProperty {
   /**
    * An array of RenameKeyEntry objects, where each object contains information about one key to rename.
    */
@@ -490,7 +496,7 @@ export interface ProcessorRenameKeysProperty {
  * Use this processor to split a field into an array of strings using a delimiting character.
  * For more information about this processor including examples, see splitString in the CloudWatch Logs User Guide.
  */
-export interface ProcessorSplitStringProperty {
+export interface SplitStringProperty {
   /**
    * An array of SplitStringEntry objects, where each object contains information about one field to split.
    */
@@ -501,7 +507,7 @@ export interface ProcessorSplitStringProperty {
  * This processor matches a key's value against a regular expression and replaces all matches with a replacement string.
  * For more information about this processor including examples, see substituteString in the CloudWatch Logs User Guide.
  */
-export interface ProcessorSubstituteStringProperty {
+export interface SubstituteStringProperty {
   /**
    * An array of objects, where each object contains information about one key to match and replace.
    */
@@ -513,7 +519,7 @@ export interface ProcessorSubstituteStringProperty {
  * It's a casting processor that changes the types of the specified fields.
  * For more information about this processor including examples, see typeConverter in the CloudWatch Logs User Guide.
  */
-export interface ProcessorTypeConverterProperty {
+export interface TypeConverterProperty {
   /**
    * An array of TypeConverterEntry objects, where each object contains information about one field to change the type of.
    */
@@ -545,27 +551,27 @@ export interface ParserProcessorProps extends BaseProcessorProps {
    * Options for JSON parser. Required when type is JSON.
    * @default - No JSON parser is created if props not set
    */
-  readonly jsonOptions?: ProcessorParseJSONProperty;
+  readonly jsonOptions?: ParseJSONProperty;
   /**
    * Options for key-value parser. Required when type is KEY_VALUE.
    * @default - No key-value parser is created if props not set
    */
-  readonly keyValueOptions?: ProcessorParseKeyValueProperty;
+  readonly keyValueOptions?: ParseKeyValueProperty;
   /**
    * Options for CSV parser. Required when type is CSV.
    * @default - No CSV parser is created if props not set
    */
-  readonly csvOptions?: ProcessorCsvProperty;
+  readonly csvOptions?: CsvProperty;
   /**
    * Options for Grok parser. Required when type is GROK.
    * @default - No Grok parser is created if props not set
    */
-  readonly grokOptions?: ProcessorGrokProperty;
+  readonly grokOptions?: GrokProperty;
   /**
    * Options for ParseToOCSF parser. Required when type is set to OCSF
    * @default - no OCSF parser is created.
    */
-  readonly parseToOCSFOptions?: ProcessorParseToOCSFProperty;
+  readonly parseToOCSFOptions?: ParseToOCSFProperty;
 }
 
 /** Properties for creating AWS vended log parsers */
@@ -602,12 +608,12 @@ export interface StringMutatorProps extends BaseProcessorProps {
    * Options for string splitting. Required when type is SPLIT.
    * @default - No string splitting processor is created if props not set
    */
-  readonly splitOptions?: ProcessorSplitStringProperty;
+  readonly splitOptions?: SplitStringProperty;
   /**
    * Options for string substitution. Required when type is SUBSTITUTE.
    * @default - No string substitution processor is created if props not set
    */
-  readonly substituteOptions?: ProcessorSubstituteStringProperty;
+  readonly substituteOptions?: SubstituteStringProperty;
 }
 
 /** Properties for creating JSON mutator processors */
@@ -618,7 +624,7 @@ export interface JsonMutatorProps extends BaseProcessorProps {
    * Options for adding keys. Required when type is ADD_KEYS.
    * @default - No adding keys processor is created if props not set
    */
-  readonly addKeysOptions?: ProcessorAddKeysProperty;
+  readonly addKeysOptions?: AddKeysProperty;
   /**
    * Keys to delete. Required when type is DELETE_KEYS.
    * @default - No delete key processor is created if props not set
@@ -628,22 +634,22 @@ export interface JsonMutatorProps extends BaseProcessorProps {
    * Options for moving keys. Required when type is MOVE_KEYS.
    * @default - No move key processor is created if props not set
    */
-  readonly moveKeysOptions?: ProcessorMoveKeysProperty;
+  readonly moveKeysOptions?: MoveKeysProperty;
   /**
    * Options for renaming keys. Required when type is RENAME_KEYS.
    * @default - No rename key processor is created if props not set
    */
-  readonly renameKeysOptions?: ProcessorRenameKeysProperty;
+  readonly renameKeysOptions?: RenameKeysProperty;
   /**
    * Options for copying values. Required when type is COPY_VALUE.
    * @default - No copy value processor is created if props not set
    */
-  readonly copyValueOptions?: ProcessorCopyValueProperty;
+  readonly copyValueOptions?: CopyValueProperty;
   /**
    * Options for converting lists to maps. Required when type is LIST_TO_MAP.
    * @default - No list-to-map processor is created if props not set
    */
-  readonly listToMapOptions?: ProcessorListToMapProperty;
+  readonly listToMapOptions?: ListToMapProperty;
 }
 
 /** Properties for creating data converter processors */
@@ -654,12 +660,12 @@ export interface DataConverterProps extends BaseProcessorProps {
    * Options for type conversion. Required when type is TYPE_CONVERTER.
    * @default - No type convertor processor is created if not set
    */
-  readonly typeConverterOptions?: ProcessorTypeConverterProperty;
+  readonly typeConverterOptions?: TypeConverterProperty;
   /**
    * Options for datetime conversion. Required when type is DATETIME_CONVERTER.
    * @default - No date time converter processor is created if not set
    */
-  readonly dateTimeConverterOptions?: ProcessorDateTimeConverterProperty;
+  readonly dateTimeConverterOptions?: DateTimeConverterProperty;
 }
 
 /**
@@ -823,23 +829,6 @@ export interface ITransformer extends IResource {
   readonly transformerConfig: Array<IProcessor>;
 }
 
-/**
- * Implementation of an imported transformer
- * @internal
- */
-class ImportedTransformer extends Resource implements ITransformer {
-  /** List of processors in a transformer */
-  public readonly transformerConfig: Array<IProcessor> = [];
-
-  constructor(
-    scope: Construct,
-    id: string,
-    public readonly logGroup: ILogGroup,
-  ) {
-    super(scope, id);
-  }
-}
-
 /** Base class for all log event processor implementations */
 export abstract class BaseProcessor implements IProcessor {
   /** Creates a parser processor for common data formats */
@@ -878,15 +867,15 @@ export class ParserProcessor extends BaseProcessor {
   /** The type of parser */
   type: ParserProcessorType;
   /** Options for JSON parser */
-  jsonOptions?: ProcessorParseJSONProperty;
+  jsonOptions?: ParseJSONProperty;
   /** Options for key-value parser */
-  keyValueOptions?: ProcessorParseKeyValueProperty;
+  keyValueOptions?: ParseKeyValueProperty;
   /** Options for CSV parser */
-  csvOptions?: ProcessorCsvProperty;
+  csvOptions?: CsvProperty;
   /** Options for Grok parser */
-  grokOptions?: ProcessorGrokProperty;
+  grokOptions?: GrokProperty;
   /** Options for OCSF parser */
-  parseToOCSFOptions?: ProcessorParseToOCSFProperty;
+  parseToOCSFOptions?: ParseToOCSFProperty;
   /** The construct scope */
   private readonly scope: Construct;
 
@@ -1021,9 +1010,9 @@ export class StringMutatorProcessor extends BaseProcessor {
   /** Keys for strings to trim */
   trimKeys?: Array<string>;
   /** Options for string splitting */
-  splitOptions?: ProcessorSplitStringProperty;
+  splitOptions?: SplitStringProperty;
   /** Options for string substitution */
-  substituteOptions?: ProcessorSubstituteStringProperty;
+  substituteOptions?: SubstituteStringProperty;
   /** The construct scope */
   private readonly scope: Construct;
 
@@ -1101,17 +1090,17 @@ export class JsonMutatorProcessor extends BaseProcessor {
   /** The type of JSON mutation operation */
   type: JsonMutatorType;
   /** Options for adding keys */
-  addKeysOptions?: ProcessorAddKeysProperty;
+  addKeysOptions?: AddKeysProperty;
   /** Keys to delete */
   deleteKeysOptions?: ProcessorDeleteKeysProperty;
   /** Options for moving keys */
-  moveKeysOptions?: ProcessorMoveKeysProperty;
+  moveKeysOptions?: MoveKeysProperty;
   /** Options for renaming keys */
-  renameKeysOptions?: ProcessorRenameKeysProperty;
+  renameKeysOptions?: RenameKeysProperty;
   /** Options for copying values */
-  copyValueOptions?: ProcessorCopyValueProperty;
+  copyValueOptions?: CopyValueProperty;
   /** Options for converting lists to maps */
-  listToMapOptions?: ProcessorListToMapProperty;
+  listToMapOptions?: ListToMapProperty;
   /** The construct scope */
   private readonly scope: Construct;
 
@@ -1212,9 +1201,9 @@ export class DataConverterProcessor extends BaseProcessor {
   /** The type of data conversion operation */
   type: DataConverterType;
   /** Options for type conversion */
-  typeConverterOptions?: ProcessorTypeConverterProperty;
+  typeConverterOptions?: TypeConverterProperty;
   /** Options for datetime conversion */
-  dateTimeConverterOptions?: ProcessorDateTimeConverterProperty;
+  dateTimeConverterOptions?: DateTimeConverterProperty;
   /** The construct scope */
   private readonly scope: Construct;
 
@@ -1274,19 +1263,6 @@ export class Transformer extends Resource implements ITransformer {
    * Used by the CDK frameworks for managing resource lifecycle.
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-logs.Transformer';
-
-  /** Import an existing Transformer given its associated log group */
-  static fromLogGroup(scope: Construct, id: string, logGroup: ILogGroup): ITransformer {
-    if (!logGroup) {
-      throw new ValidationError('logGroup must be specified', scope);
-    }
-
-    return new ImportedTransformer(scope, id, logGroup);
-  }
-  /** Import an existing Transformer given its attributes */
-  static fromTransformerAttributes(scope: Construct, id: string, attrs: TransformerAttributes): ITransformer {
-    return Transformer.fromLogGroup(scope, id, attrs.logGroup);
-  }
 
   /** Existing log group that you want to associate with this transformer. */
   readonly logGroup: ILogGroup;
