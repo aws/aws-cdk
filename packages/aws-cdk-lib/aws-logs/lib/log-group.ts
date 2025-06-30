@@ -13,6 +13,7 @@ import * as kms from '../../aws-kms';
 import { Annotations, Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IProcessor, Transformer } from './transformer';
 
 export interface ILogGroup extends iam.IResourceWithPolicy {
   /**
@@ -165,6 +166,19 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    */
   public addMetricFilter(id: string, props: MetricFilterOptions): MetricFilter {
     return new MetricFilter(this, id, {
+      logGroup: this,
+      ...props,
+    });
+  }
+
+  /**
+   * Create a new Transformer on this Log Group
+   *
+   * @param id Unique identifier for the construct in its parent
+   * @param props Properties for creating the Transformer
+   */
+  public addTransformer(id: string, props: TransformerOptions): Transformer {
+    return new Transformer(this, id, {
       logGroup: this,
       ...props,
     });
@@ -790,4 +804,13 @@ export interface MetricFilterOptions {
    * @default - Cloudformation generated name.
    */
   readonly filterName?: string;
+}
+
+export interface TransformerOptions {
+  /**
+   * Name of the transformer.
+   */
+  readonly transformerName: string;
+  /** List of processors in a transformer */
+  readonly transformerConfig: Array<IProcessor>;
 }

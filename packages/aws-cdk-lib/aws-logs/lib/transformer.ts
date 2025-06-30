@@ -812,7 +812,7 @@ export interface TypeConverterEntryProperty {
  */
 export interface TransformerProps {
   /**
-   * Name of the query definition.
+   * Name of the transformer.
    */
   readonly transformerName: string;
   /** Existing log group that you want to associate with this transformer. */
@@ -1324,7 +1324,7 @@ export class Transformer extends Resource implements ITransformer {
     this.validateLogGroupClass(props.logGroup);
 
     // Map the transformer configuration to the L1 CloudFormation resource
-    new CfnTransformer(scope, 'Resource', {
+    new CfnTransformer(scope, 'ResourceTransformer', {
       logGroupIdentifier: this.logGroup.logGroupName,
       transformerConfig: this.transformerConfig.map(processor => processor._bind()),
     });
