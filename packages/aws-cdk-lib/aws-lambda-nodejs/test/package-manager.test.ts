@@ -50,7 +50,17 @@ test('from a pnpm-lock.yaml with LogLevel.ERROR', () => {
 
 test('from a bun.lockb', () => {
   const packageManager = PackageManager.fromLockFile('/path/to/bun.lockb');
-  expect(packageManager.lockFile).toEqual(LockFile.BUN);
+  expect(packageManager.lockFile).toEqual(LockFile.BUN_LOCKB);
+  expect(packageManager.argsSeparator).toBeUndefined();
+  expect(packageManager.installCommand).toEqual(['bun', 'install', '--backend', 'copyfile']);
+  expect(packageManager.runCommand).toEqual(['bun', 'run']);
+
+  expect(packageManager.runBinCommand('my-bin')).toBe('bun run my-bin');
+});
+
+test('from a bun.lock', () => {
+  const packageManager = PackageManager.fromLockFile('/path/to/bun.lock');
+  expect(packageManager.lockFile).toEqual(LockFile.BUN_LOCK);
   expect(packageManager.argsSeparator).toBeUndefined();
   expect(packageManager.installCommand).toEqual(['bun', 'install', '--backend', 'copyfile']);
   expect(packageManager.runCommand).toEqual(['bun', 'run']);
@@ -60,6 +70,11 @@ test('from a bun.lockb', () => {
 
 test('from a bun.lockb with LogLevel.ERROR', () => {
   const packageManager = PackageManager.fromLockFile('/path/to/bun.lockb', LogLevel.ERROR);
+  expect(packageManager.installCommand).toEqual(['bun', 'install', '--backend', 'copyfile', '--silent']);
+});
+
+test('from a bun.lock with LogLevel.ERROR', () => {
+  const packageManager = PackageManager.fromLockFile('/path/to/bun.lock', LogLevel.ERROR);
   expect(packageManager.installCommand).toEqual(['bun', 'install', '--backend', 'copyfile', '--silent']);
 });
 
