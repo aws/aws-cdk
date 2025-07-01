@@ -62,6 +62,66 @@
       "NODEJS_22"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/action-group.ts": {
+    "ParentActionGroupSignature": [
+      "USER_INPUT",
+      "CODE_INTERPRETER"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/api-executor.ts": {
+    "ActionGroupExecutor": [
+      "RETURN_CONTROL"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/memory.ts": {
+    "Memory": [
+      "SESSION_SUMMARY"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts": {
+    "BedrockFoundationModel": [
+      "AI21_JAMBA_1_5_LARGE_V1",
+      "AI21_JAMBA_1_5_MINI_V1",
+      "AI21_JAMBA_INSTRUCT_V1",
+      "AMAZON_TITAN_TEXT_EXPRESS_V1",
+      "AMAZON_TITAN_PREMIER_V1_0",
+      "AMAZON_NOVA_MICRO_V1",
+      "AMAZON_NOVA_LITE_V1",
+      "AMAZON_NOVA_PRO_V1",
+      "AMAZON_NOVA_PREMIER_V1",
+      "TITAN_EMBED_TEXT_V1",
+      "TITAN_EMBED_TEXT_V2_1024",
+      "TITAN_EMBED_TEXT_V2_512",
+      "TITAN_EMBED_TEXT_V2_256",
+      "ANTHROPIC_CLAUDE_3_7_SONNET_V1_0",
+      "ANTHROPIC_CLAUDE_3_5_SONNET_V2_0",
+      "ANTHROPIC_CLAUDE_3_5_SONNET_V1_0",
+      "ANTHROPIC_CLAUDE_3_5_HAIKU_V1_0",
+      "ANTHROPIC_CLAUDE_OPUS_V1_0",
+      "ANTHROPIC_CLAUDE_SONNET_V1_0",
+      "ANTHROPIC_CLAUDE_HAIKU_V1_0",
+      "ANTHROPIC_CLAUDE_V2_1",
+      "ANTHROPIC_CLAUDE_V2",
+      "ANTHROPIC_CLAUDE_INSTANT_V1_2",
+      "COHERE_EMBED_ENGLISH_V3",
+      "COHERE_EMBED_MULTILINGUAL_V3",
+      "DEEPSEEK_R1_V1",
+      "META_LLAMA_3_1_8B_INSTRUCT_V1",
+      "META_LLAMA_3_1_70B_INSTRUCT_V1",
+      "META_LLAMA_3_2_11B_INSTRUCT_V1",
+      "META_LLAMA_3_2_3B_INSTRUCT_V1",
+      "META_LLAMA_3_2_1B_INSTRUCT_V1",
+      "META_LLAMA_3_3_70B_INSTRUCT_V1",
+      "META_LLAMA_4_MAVERICK_17B_INSTRUCT_V1",
+      "META_LLAMA_4_SCOUT_17B_INSTRUCT_V1",
+      "MISTRAL_7B_INSTRUCT_V0",
+      "MISTRAL_MIXTRAL_8X7B_INSTRUCT_V0",
+      "MISTRAL_SMALL_2402_V1",
+      "MISTRAL_LARGE_2402_V1",
+      "MISTRAL_LARGE_2407_V1",
+      "MISTRAL_PIXTRAL_LARGE_2502_V1"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/access-entry.ts": {
     "AccessPolicyArn": [
       "AMAZON_EKS_ADMIN_POLICY",
@@ -1561,6 +1621,7 @@
       "DEVOPS_GURU",
       "DIRECTORY_SERVICE",
       "DIRECTORY_SERVICE_DATA",
+      "DSQL_MANAGEMENT",
       "DYNAMODB",
       "DYNAMODB_FIPS",
       "DYNAMODB_STREAMS",
@@ -1788,10 +1849,13 @@
       "SERVER_MIGRATION_SERVICE_AWSCONNECTOR",
       "SERVERLESS_APPLICATION_REPOSITORY",
       "SES",
+      "SHIELD",
+      "SHIELD_FIPS",
       "SIMSPACE_WEAVER",
       "SNOW_DEVICE_MANAGEMENT",
       "SNS",
       "SQS",
+      "SQS_FIPS",
       "SSM",
       "SSM_FIPS",
       "SSM_MESSAGES",
@@ -1802,6 +1866,7 @@
       "STEP_FUNCTIONS_SYNC",
       "STORAGE_GATEWAY",
       "STS",
+      "STS_FIPS",
       "SUPPLY_CHAIN",
       "SWF",
       "SWF_FIPS",
@@ -1985,7 +2050,8 @@
       "V1_29",
       "V1_30",
       "V1_31",
-      "V1_32"
+      "V1_32",
+      "V1_33"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-elasticsearch/lib/domain.ts": {
@@ -2164,6 +2230,21 @@
       "PROVIDED_AL2",
       "PROVIDED_AL2023",
       "FROM_IMAGE"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/schema-registry.ts": {
+    "EventRecordFormat": [
+      "JSON",
+      "SOURCE"
+    ],
+    "KafkaSchemaRegistryAccessConfigType": [
+      "BASIC_AUTH",
+      "CLIENT_CERTIFICATE_TLS_AUTH",
+      "SERVER_ROOT_CA_CERTIFICATE"
+    ],
+    "KafkaSchemaValidationAttribute": [
+      "KEY",
+      "VALUE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/snapstart-config.ts": {
@@ -2627,6 +2708,7 @@
       "VER_10_5_26",
       "VER_10_5_27",
       "VER_10_5_28",
+      "VER_10_5_29",
       "VER_10_6",
       "VER_10_6_5",
       "VER_10_6_7",
@@ -2643,6 +2725,7 @@
       "VER_10_6_19",
       "VER_10_6_20",
       "VER_10_6_21",
+      "VER_10_6_22",
       "VER_10_11",
       "VER_10_11_4",
       "VER_10_11_5",
@@ -2652,9 +2735,11 @@
       "VER_10_11_9",
       "VER_10_11_10",
       "VER_10_11_11",
+      "VER_10_11_13",
       "VER_11_4_3",
       "VER_11_4_4",
-      "VER_11_4_5"
+      "VER_11_4_5",
+      "VER_11_4_7"
     ],
     "MysqlEngineVersion": [
       "VER_5_5",
@@ -2830,6 +2915,7 @@
       "VER_11_22_RDS_20240509",
       "VER_11_22_RDS_20240808",
       "VER_11_22_RDS_20241121",
+      "VER_11_22_RDS_20250508",
       "VER_12",
       "VER_12_2",
       "VER_12_3",
@@ -2852,6 +2938,7 @@
       "VER_12_20",
       "VER_12_21",
       "VER_12_22",
+      "VER_12_22_RDS_20250508",
       "VER_13",
       "VER_13_1",
       "VER_13_2",
@@ -3282,6 +3369,7 @@
       "SYNTHETICS_NODEJS_PUPPETEER_9_0",
       "SYNTHETICS_NODEJS_PUPPETEER_9_1",
       "SYNTHETICS_NODEJS_PLAYWRIGHT_1_0",
+      "SYNTHETICS_NODEJS_PLAYWRIGHT_2_0",
       "SYNTHETICS_PYTHON_SELENIUM_1_0",
       "SYNTHETICS_PYTHON_SELENIUM_1_1",
       "SYNTHETICS_PYTHON_SELENIUM_1_2",
@@ -3292,7 +3380,8 @@
       "SYNTHETICS_PYTHON_SELENIUM_4_0",
       "SYNTHETICS_PYTHON_SELENIUM_4_1",
       "SYNTHETICS_PYTHON_SELENIUM_5_0",
-      "SYNTHETICS_PYTHON_SELENIUM_5_1"
+      "SYNTHETICS_PYTHON_SELENIUM_5_1",
+      "SYNTHETICS_PYTHON_SELENIUM_6_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/cfn-pseudo.ts": {
