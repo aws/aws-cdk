@@ -25,6 +25,7 @@ class RedshiftEnv extends Stack {
       },
       defaultDatabaseName: 'database',
       subnetGroup,
+      nodeType: redshift.NodeType.RA3_LARGE,
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
