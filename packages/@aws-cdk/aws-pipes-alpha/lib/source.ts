@@ -1,7 +1,7 @@
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
-import { ITopic, Topic } from 'aws-cdk-lib/aws-sns';
-import { IQueue, Queue } from 'aws-cdk-lib/aws-sqs';
+import { ITopic } from 'aws-cdk-lib/aws-sns';
+import { IQueue } from 'aws-cdk-lib/aws-sqs';
 import { IPipe } from './pipe';
 
 /**
@@ -135,9 +135,9 @@ export abstract class SourceWithDeadLetterTarget implements ISource {
    * Grants the pipe role permission to publish to the dead-letter target.
    */
   public grantPush(grantee: IRole, deadLetterTarget?: IQueue | ITopic) {
-    if (deadLetterTarget instanceof Queue) {
+    if (this.isIQueue(deadLetterTarget)) {
       deadLetterTarget.grantSendMessages(grantee);
-    } else if (deadLetterTarget instanceof Topic) {
+    } else if (this.isITopic(deadLetterTarget)) {
       deadLetterTarget.grantPublish(grantee);
     }
   }
@@ -146,11 +146,19 @@ export abstract class SourceWithDeadLetterTarget implements ISource {
    * Retrieves the ARN from the dead-letter SQS queue or SNS topic.
    */
   protected getDeadLetterTargetArn(deadLetterTarget?: IQueue | ITopic): string | undefined {
-    if (deadLetterTarget instanceof Queue) {
+    if (this.isIQueue(deadLetterTarget)) {
       return deadLetterTarget.queueArn;
-    } else if (deadLetterTarget instanceof Topic) {
+    } else if (this.isITopic(deadLetterTarget)) {
       return deadLetterTarget.topicArn;
     }
     return undefined;
+  }
+
+  private isIQueue(x: any): x is IQueue {
+    return x && (x as IQueue).queueArn !== undefined;
+  }
+
+  private isITopic(x: any): x is ITopic {
+    return x && (x as ITopic).topicArn !== undefined;
   }
 }
