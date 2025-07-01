@@ -796,7 +796,22 @@ export interface TypeConverterEntryProperty {
 }
 
 /**
- * The available CloudFormation resource properties on the AWS::Logs::Transformer resource. Following CDK conventions, this
+ * The Resource properties for AWS::Logs::Transformer resource. This
+ * interface defines all configuration options for the CfnTransformer construct.
+ */
+export interface TransformerAttributes {
+  /**
+   * Name of the transformer.
+   */
+  readonly transformerName: string;
+  /** Existing log group that you want to associate with this transformer. */
+  readonly logGroup: ILogGroup;
+  /** List of processors in a transformer */
+  readonly transformerConfig: Array<IProcessor>;
+}
+
+/**
+ * The Resource properties for AWS::Logs::Transformer resource. This
  * interface defines all configuration options for the CfnTransformer construct.
  */
 export interface TransformerProps {
@@ -808,12 +823,6 @@ export interface TransformerProps {
   readonly logGroup: ILogGroup;
   /** List of processors in a transformer */
   readonly transformerConfig: Array<IProcessor>;
-}
-
-/** Properties needed to import an existing Transformer */
-export interface TransformerAttributes {
-  /** The log group associated with the transformer */
-  readonly logGroup: ILogGroup;
 }
 
 /** Interface for the L2 Transformer construct that represents AWS::Logs::Transformer CFN resource. */
@@ -830,7 +839,7 @@ export interface ITransformer extends IResource {
 }
 
 /** Base class for all log event processor implementations */
-export abstract class BaseProcessor implements IProcessor {
+export abstract class ProcessorFactory {
   /** Creates a parser processor for common data formats */
   static createParserProcessor(scope: Construct, id: string, props: ParserProcessorProps): IProcessor {
     return new ParserProcessor(scope, id, props);
@@ -855,15 +864,10 @@ export abstract class BaseProcessor implements IProcessor {
   static createDataConverter(scope: Construct, id: string, props: DataConverterProps): IProcessor {
     return new DataConverterProcessor(scope, id, props);
   }
-
-  /**
-   * @internal
-   */
-  abstract _bind(): any;
 }
 
 /** Parser processor for common data formats */
-export class ParserProcessor extends BaseProcessor {
+export class ParserProcessor implements IProcessor {
   /** The type of parser */
   type: ParserProcessorType;
   /** Options for JSON parser */
@@ -881,7 +885,6 @@ export class ParserProcessor extends BaseProcessor {
 
   /** Creates a new parser processor */
   constructor(scope: Construct, _id: string, props: ParserProcessorProps) {
-    super();
     this.scope = scope;
     this.type = props.type;
 
@@ -964,7 +967,7 @@ export class ParserProcessor extends BaseProcessor {
 }
 
 /** Parser processor for AWS vended logs */
-export class VendedLogParser extends BaseProcessor {
+export class VendedLogParser implements IProcessor {
   /** The type of AWS vended log */
   logType: VendedLogType;
   /** The construct scope */
@@ -972,7 +975,6 @@ export class VendedLogParser extends BaseProcessor {
 
   /** Creates a new vended log parser processor */
   constructor(scope: Construct, _id: string, props: VendedLogParserProps) {
-    super();
     this.scope = scope;
     this.logType = props.logType;
   }
@@ -1000,7 +1002,7 @@ export class VendedLogParser extends BaseProcessor {
 }
 
 /** Processor for string mutation operations */
-export class StringMutatorProcessor extends BaseProcessor {
+export class StringMutatorProcessor implements IProcessor {
   /** The type of string mutation operation */
   type: StringMutatorType;
   /** Keys for strings to convert to lowercase */
@@ -1018,7 +1020,6 @@ export class StringMutatorProcessor extends BaseProcessor {
 
   /** Creates a new string mutator processor */
   constructor(scope: Construct, _id: string, props: StringMutatorProps) {
-    super();
     this.scope = scope;
     this.type = props.type;
 
@@ -1086,7 +1087,7 @@ export class StringMutatorProcessor extends BaseProcessor {
 }
 
 /** Processor for JSON mutation operations */
-export class JsonMutatorProcessor extends BaseProcessor {
+export class JsonMutatorProcessor implements IProcessor {
   /** The type of JSON mutation operation */
   type: JsonMutatorType;
   /** Options for adding keys */
@@ -1106,7 +1107,6 @@ export class JsonMutatorProcessor extends BaseProcessor {
 
   /** Creates a new JSON mutator processor */
   constructor(scope: Construct, _id: string, props: JsonMutatorProps) {
-    super();
     this.scope = scope;
     this.type = props.type;
 
@@ -1197,7 +1197,7 @@ export class JsonMutatorProcessor extends BaseProcessor {
 }
 
 /** Processor for data conversion operations */
-export class DataConverterProcessor extends BaseProcessor {
+export class DataConverterProcessor implements IProcessor {
   /** The type of data conversion operation */
   type: DataConverterType;
   /** Options for type conversion */
@@ -1209,7 +1209,6 @@ export class DataConverterProcessor extends BaseProcessor {
 
   /** Creates a new data converter processor */
   constructor(scope: Construct, _id: string, props: DataConverterProps) {
-    super();
     this.scope = scope;
     this.type = props.type;
 
@@ -1263,6 +1262,13 @@ export class Transformer extends Resource implements ITransformer {
    * Used by the CDK frameworks for managing resource lifecycle.
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-logs.Transformer';
+
+  /**
+   * Static factory to create a Transformer.
+   */
+  public static fromTransformerAttributes(scope: Construct, id: string, attrs: TransformerAttributes): ITransformer {
+    return new Transformer(scope, id, attrs);
+  }
 
   /** Existing log group that you want to associate with this transformer. */
   readonly logGroup: ILogGroup;

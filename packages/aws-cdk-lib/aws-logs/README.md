@@ -490,35 +490,35 @@ that contain relevant, source-specific information. Transformations are performe
 ### Main Classes
 
 - **Transformer**: The main construct that associates log transformations with a log group.
-- **BaseProcessor**: Factory class with static methods for creating different processor types.
+- **ProcessorFactory**: Factory class with static methods for creating different processor types.
 - **IProcessor**: Interface representing a single processor in a transformer pipeline.
 
 ### Processor Types
 
 CloudWatch Logs provides several processor types that can be combined in a transformer pipeline:
 
-1. **Parser Processors**: Parse string log events into structured log events. These are configurable parsers created using `BaseProcessor.createParserProcessor()`. Refer https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html#CloudWatch-Logs-Transformation-Configurable
+1. **Parser Processors**: Parse string log events into structured log events. These are configurable parsers created using `ProcessorFactory.createParserProcessor()`. Refer https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html#CloudWatch-Logs-Transformation-Configurable
     - `ParserProcessorType.JSON`: JSON parser
     - `ParserProcessorType.KEY_VALUE`: Key-Value parser
     - `ParserProcessorType.CSV`: CSV parser
     - `ParserProcessorType.GROK`: Grok parser
     - `ParserProcessorType.OCSF`: OCSF parser
 
-2. **Vended Log Parsers**: Parse log events from vended sources into structured log events. These are created using `BaseProcessor.createVendedLogParser()`. Refer https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html#CloudWatch-Logs-Transformation-BuiltIn
+2. **Vended Log Parsers**: Parse log events from vended sources into structured log events. These are created using `ProcessorFactory.createVendedLogParser()`. Refer https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html#CloudWatch-Logs-Transformation-BuiltIn
     - `VendedLogType.CLOUDFRONT`: CloudFront logs
     - `VendedLogType.VPC`: VPC Flow logs
     - `VendedLogType.WAF`: WAF logs
     - `VendedLogType.ROUTE53`: Route53 logs
     - `VendedLogType.POSTGRES`: PostgreSQL logs
 
-3. **String Mutators**: Perform operations on string values and are created using `BaseProcessor.createStringMutator()`. Refer https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html#CloudWatch-Logs-Transformation-StringMutate
+3. **String Mutators**: Perform operations on string values and are created using `ProcessorFactory.createStringMutator()`. Refer https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html#CloudWatch-Logs-Transformation-StringMutate
     - `StringMutatorType.LOWER_CASE`: Lowercase conversion
     - `StringMutatorType.UPPER_CASE`: Uppercase conversion
     - `StringMutatorType.TRIM`: Trim whitespace
     - `StringMutatorType.SPLIT`: Split strings
     - `StringMutatorType.SUBSTITUTE`: Substitute substrings
 
-4. **JSON Mutators**: Perform operation on JSON log events and are created using `BaseProcessor.createJsonMutator()`. Refer https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html#CloudWatch-Logs-Transformation-JSONMutate
+4. **JSON Mutators**: Perform operation on JSON log events and are created using `ProcessorFactory.createJsonMutator()`. Refer https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html#CloudWatch-Logs-Transformation-JSONMutate
     - `JsonMutatorType.ADD_KEYS`: Add new keys
     - `JsonMutatorType.DELETE_KEYS`: Delete keys
     - `JsonMutatorType.MOVE_KEYS`: Move keys
@@ -526,7 +526,7 @@ CloudWatch Logs provides several processor types that can be combined in a trans
     - `JsonMutatorType.COPY_VALUE`: Copy values
     - `JsonMutatorType.LIST_TO_MAP`: Convert lists to maps
 
-5. **Data Converters**: Convert the data into different formats and are created using `BaseProcessor.createDataConverter()`. Refer https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html#CloudWatch-Logs-Transformation-Datatype
+5. **Data Converters**: Convert the data into different formats and are created using `ProcessorFactory.createDataConverter()`. Refer https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html#CloudWatch-Logs-Transformation-Datatype
     - `DataConverterType.TYPE_CONVERTER`: Type conversion
     - `DataConverterType.DATETIME_CONVERTER`: DateTime conversion
 
@@ -547,12 +547,12 @@ Example:
 const logGroup = new logs.LogGroup(this, 'MyLogGroup');
 
 // Create a JSON parser processor
-const jsonParser = logs.BaseProcessor.createParserProcessor(this, 'JsonParser', {
+const jsonParser = logs.ProcessorFactory.createParserProcessor(this, 'JsonParser', {
   type: logs.ParserProcessorType.JSON
 });
 
 // Create a processor to add keys
-const addKeysProcessor = logs.BaseProcessor.createJsonMutator(this, 'AddKeys', {
+const addKeysProcessor = logs.ProcessorFactory.createJsonMutator(this, 'AddKeys', {
   type: logs.JsonMutatorType.ADD_KEYS,
   addKeysOptions: {
     entries: [{

@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
 import { App, CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
-import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern, FieldIndexPolicy, BaseProcessor, ParserProcessorType, JsonMutatorType, Transformer } from '../lib';
+import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern, FieldIndexPolicy, ProcessorFactory, ParserProcessorType, JsonMutatorType, Transformer } from '../lib';
 
 describe('log group', () => {
   test('set kms key when provided', () => {
@@ -1009,11 +1009,11 @@ test('create a Add Key transformer against a log group', () => {
   const stack = new Stack();
   const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-  const jsonParser = BaseProcessor.createParserProcessor(stack, 'JsonParser', {
+  const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
     type: ParserProcessorType.JSON,
   });
 
-  const addKeysProcesor = BaseProcessor.createJsonMutator(stack, 'AddKeys', {
+  const addKeysProcesor = ProcessorFactory.createJsonMutator(stack, 'AddKeys', {
     type: JsonMutatorType.ADD_KEYS,
     addKeysOptions: {
       entries: [
