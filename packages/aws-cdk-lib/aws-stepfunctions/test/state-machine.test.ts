@@ -151,20 +151,34 @@ describe('State Machine', () => {
     // WHEN
     const map = new sfn.DistributedMap(stack, 'Map State');
     map.itemProcessor(new sfn.Pass(stack, 'Pass'));
-    new sfn.StateMachine(stack, 'MyStateMachine', {
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
       stateMachineName: 'MyStateMachine',
-      definition: map,
+      definitionBody: sfn.DefinitionBody.fromChainable(map),
     });
+    const stateMachineLogicalId = stack.getLogicalId(stateMachine.node.defaultChild as sfn.CfnStateMachine);
+    const stateMachineRoleLogicalId = stack.getLogicalId(stateMachine.role.node.defaultChild as iam.CfnRole);
+    const stateMachineNameTemplate = {
+      'Fn::Select': [
+        6,
+        {
+          'Fn::Split': [
+            ':',
+            {
+              Ref: stateMachineLogicalId,
+            },
+          ],
+        },
+      ],
+    };
 
     // THEN
-    stack;
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'states:StartExecution',
             Effect: 'Allow',
-            Resource: { Ref: 'MyStateMachine6C968CA5' },
+            Resource: { Ref: stateMachineLogicalId },
           },
           {
             Action: [
@@ -173,16 +187,27 @@ describe('State Machine', () => {
             ],
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', [{ Ref: 'MyStateMachine6C968CA5' }, ':*']],
+              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, ':*'])],
             },
+          },
+          {
+            Action: 'states:RedriveExecution',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, ':*'])],
+              },
+              {
+                'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/*:*'])],
+              },
+            ],
           },
         ],
         Version: '2012-10-17',
       },
-      PolicyName: 'MyStateMachineDistributedMapPolicy11E47E72',
       Roles: [
         {
-          Ref: 'MyStateMachineRoleD59FFEBC',
+          Ref: stateMachineRoleLogicalId,
         },
       ],
     });
