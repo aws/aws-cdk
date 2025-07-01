@@ -1,0 +1,55 @@
+{
+ "Resources": {
+  "DashCCD7F836": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Metrics with id and visible properties\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"CDK/Test\",\"Metric1\",{\"label\":\"Visible metric with custom ID\",\"id\":\"custom_metric_id\",\"visible\":true}],[\"CDK/Test\",\"Metric2\",{\"label\":\"Hidden metric for calculations\",\"id\":\"hidden_metric_id\",\"visible\":false}],[\"CDK/Test\",\"Metric3\",{\"label\":\"Metric with only ID\",\"id\":\"id_only_metric\"}],[\"CDK/Test\",\"Metric4\",{\"label\":\"Metric with only visible\",\"visible\":true}],[\"CDK/Test\",\"Metric5\",{\"label\":\"Right side hidden metric\",\"id\":\"right_hidden_id\",\"visible\":false,\"yAxis\":\"right\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
