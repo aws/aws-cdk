@@ -672,7 +672,7 @@ describe('assets with same hash but different destinations', () => {
       // Enable cross-account keys for cross-account asset publishing
       crossAccountKeys: true,
     });
-
+    
     // Add the same file asset app to two different environments
     // This simulates the scenario where the same asset needs to be published to different destinations
     pipeline.addStage(new FileAssetApp(app, 'App1', {
@@ -681,10 +681,10 @@ describe('assets with same hash but different destinations', () => {
         region: 'us-east-1',
       },
     }));
-
+    
     pipeline.addStage(new FileAssetApp(app, 'App2', {
       env: {
-        account: '222222222222',
+        account: '222222222222', 
         region: 'us-west-2',
       },
     }));
@@ -697,11 +697,11 @@ describe('assets with same hash but different destinations', () => {
         Name: 'Assets',
         Actions: [
           // Should have multiple asset publishing actions for different destinations
-          Match.objectLike({
+          Match.objectLike({ 
             RunOrder: 1,
             Name: Match.stringLikeRegexp('.*Asset.*'),
           }),
-          Match.objectLike({
+          Match.objectLike({ 
             RunOrder: 1,
             Name: Match.stringLikeRegexp('.*Asset.*'),
           }),
