@@ -19,12 +19,12 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 export class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
-
+    
     const bucket = new s3.Bucket(this, 'assetsBucket', {
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
     });
-
+    
     const pipeline = new pipelines.CodePipeline(
       this,
       'Pipeline', {
