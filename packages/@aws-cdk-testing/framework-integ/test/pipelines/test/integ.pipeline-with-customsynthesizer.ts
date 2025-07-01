@@ -47,7 +47,7 @@ export class PipelineStack extends Stack {
     const productionStage = new DeploymentStage(
       this, 'Production', {
         environmentAbbreviation: 'prd',
-        region: 'us-east-1',
+        region: 'us-west-2',
       });
     pipeline.addStage(productionStage);
   }

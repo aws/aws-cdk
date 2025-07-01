@@ -36,7 +36,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2"
      },
      "S3Key": "a26bd817a0dac44954b5caf83f5880a96f831e43b56157224e073b49f236eb4e.zip"
     },
