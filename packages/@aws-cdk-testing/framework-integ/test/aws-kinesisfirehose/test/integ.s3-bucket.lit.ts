@@ -56,6 +56,7 @@ const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
     dataOutputPrefix: 'regularPrefix',
     errorOutputPrefix: 'errorPrefix',
     fileExtension: '.log.gz',
+    timeZone: cdk.TimeZone.ASIA_TOKYO,
     bufferingInterval: cdk.Duration.seconds(60),
     bufferingSize: cdk.Size.mebibytes(1),
     encryptionKey: key,
