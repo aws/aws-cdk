@@ -137,6 +137,7 @@ export * as aws_inspectorv2 from './aws-inspectorv2';
 export * as aws_internetmonitor from './aws-internetmonitor';
 export * as aws_invoicing from './aws-invoicing';
 export * as aws_iot from './aws-iot';
+export * as aws_iot1click from './aws-iot1click';
 export * as aws_iotanalytics from './aws-iotanalytics';
 export * as aws_iotcoredeviceadvisor from './aws-iotcoredeviceadvisor';
 export * as aws_iotevents from './aws-iotevents';

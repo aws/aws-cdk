@@ -8,12 +8,10 @@ import { IFunction } from './function-base';
  * is formatted before being passed to your Lambda function.
  * 
  * @example
- * ```ts
  * schemaRegistryConfig: new ConfluentSchemaRegistry({
  *   // ...
  *   eventRecordFormat: lambda.EventRecordFormat.JSON,
  * }),
- * ```
  */
 export class EventRecordFormat {
   /**
@@ -59,13 +57,11 @@ export class EventRecordFormat {
  * This enum specifies the supported authentication types for Schema Registry integration.
  * 
  * @example
- * ```ts
  * schemaRegistryConfig: new ConfluentSchemaRegistry({
  *   // ...
  *   authenticationType: lambda.KafkaSchemaRegistryAccessConfigType.BASIC_AUTH,
  *   secret: secret,
  * }),
- * ```
  */
 export class KafkaSchemaRegistryAccessConfigType {
   /**

@@ -368,6 +368,9 @@
   "aws-iot": [
     "AWS::IoT"
   ],
+  "aws-iot1click": [
+    "AWS::IoT1Click"
+  ],
   "aws-iotanalytics": [
     "AWS::IoTAnalytics"
   ],
