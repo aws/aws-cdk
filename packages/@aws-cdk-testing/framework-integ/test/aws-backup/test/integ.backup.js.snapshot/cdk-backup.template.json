@@ -142,6 +142,17 @@
          "BackupVaultName"
         ]
        }
+      },
+      {
+       "RuleName": "PlanRule4",
+       "ScheduleExpression": "cron(30 3 15 * ? *)",
+       "ScheduleExpressionTimezone": "Etc/UTC",
+       "TargetBackupVault": {
+        "Fn::GetAtt": [
+         "Vault23237E5B",
+         "BackupVaultName"
+        ]
+       }
       }
      ]
     }

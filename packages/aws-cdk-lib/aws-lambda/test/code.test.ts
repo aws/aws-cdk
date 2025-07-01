@@ -1,7 +1,8 @@
 import * as child_process from 'child_process';
 import * as path from 'path';
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as ecr from '../../aws-ecr';
+import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
@@ -613,6 +614,96 @@ describe('code', () => {
 
       // then
       expect(cpMock).toHaveBeenCalledWith('/my/image/path/.', undefined);
+    });
+  });
+
+  describe('lambda.Code.fromBucket', () => {
+    test('fromBucket warns when no objectVersion is set', () => {
+      // given
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromBucket(bucket, 'Object'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      // then
+      Annotations.fromStack(stack).hasWarning(
+        '/Stack/Bucket',
+        'objectVersion is not defined for S3Code.fromBucket(). The lambda will not be updated automatically if the code in the bucket is updated. ' +
+        'This is because CDK/Cloudformation does not track changes on the source S3 Bucket. It is recommended to either use S3Code.fromAsset() instead or set objectVersion. ' +
+        '[ack: @aws-cdk/aws-lambda:codeFromBucketObjectVersionNotSpecified]',
+      );
+    });
+
+    test('fromBucket does not warn when an objectVersion is set', () => {
+      // given
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromBucket(bucket, 'Object', 'v1'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      // then
+      Annotations.fromStack(stack).hasNoWarning(
+        '/Stack/Bucket',
+        'objectVersion is not defined for S3Code.fromBucket(). The lambda will not be updated automatically if the code in the bucket is updated. ' +
+        'This is because CDK/Cloudformation does not track changes on the source S3 Bucket. It is recommended to either use S3Code.fromAsset() instead or set objectVersion. ' +
+        '[ack: @aws-cdk/aws-lambda:codeFromBucketObjectVersionNotSpecified]',
+      );
+    });
+
+    test('fromBucketV2 warns when no objectVersion is set', () => {
+      // given
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromBucketV2(bucket, 'Object'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      // then
+      Annotations.fromStack(stack).hasWarning(
+        '/Stack/Bucket',
+        'options.objectVersion is not defined for S3Code.fromBucketV2(). The lambda will not be updated automatically if the code in the bucket is updated. ' +
+        'This is because CDK/Cloudformation does not track changes on the source S3 Bucket. It is recommended to either use S3Code.fromAsset() instead or set options.objectVersion. ' +
+        '[ack: @aws-cdk/aws-lambda:codeFromBucketObjectVersionNotSpecified]',
+      );
+    });
+
+    test('fromBucketV2 does not warn when an objectVersion is set', () => {
+      // given
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromBucketV2(bucket, 'Object', { objectVersion: 'v1' }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      // then
+      Annotations.fromStack(stack).hasNoWarning(
+        '/Stack/Bucket',
+        'options.objectVersion is not defined for S3Code.fromBucketV2(). The lambda will not be updated automatically if the code in the bucket is updated. ' +
+        'This is because CDK/Cloudformation does not track changes on the source S3 Bucket. It is recommended to either use S3Code.fromAsset() instead or set options.objectVersion. ' +
+        '[ack: @aws-cdk/aws-lambda:codeFromBucketObjectVersionNotSpecified]',
+      );
     });
   });
 });

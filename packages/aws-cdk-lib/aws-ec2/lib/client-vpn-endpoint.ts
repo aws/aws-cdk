@@ -14,6 +14,17 @@ import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-re
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
+ * Options for Client Route Enforcement
+ */
+export interface ClientRouteEnforcementOptions {
+  /**
+   * Enable or disable Client Route Enforcement.
+   * The state can either be true (enabled) or false (disabled).
+   */
+  readonly enforced: boolean;
+}
+
+/**
  * Options for a client VPN endpoint
  */
 export interface ClientVpnEndpointOptions {
@@ -169,6 +180,18 @@ export interface ClientVpnEndpointOptions {
    * @default - no banner is presented to the client
    */
   readonly clientLoginBanner?: string;
+
+  /**
+   * Options for Client Route Enforcement.
+   *
+   * Client Route Enforcement is a feature of Client VPN that helps enforce administrator defined routes on devices connected through the VPN.
+   * This feature helps improve your security posture by ensuring that network traffic originating from a connected client is not inadvertently sent outside the VPN tunnel.
+   *
+   * @see https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-cre.html
+   *
+   * @default undefined - AWS Client VPN default setting is disable client route enforcement
+   */
+  readonly clientRouteEnforcementOptions?: ClientRouteEnforcementOptions;
 }
 
 /**
@@ -331,6 +354,13 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       throw new ValidationError(`The maximum length for the client login banner is 1400, got ${props.clientLoginBanner.length}`, this);
     }
 
+    if (props.clientRouteEnforcementOptions?.enforced && props.splitTunnel) {
+      throw new ValidationError(
+        'Client Route Enforcement cannot be enabled when splitTunnel is true.',
+        this,
+      );
+    }
+
     const logging = props.logging ?? true;
     const logGroup = logging
       ? props.logGroup ?? new logs.LogGroup(this, 'LogGroup')
@@ -357,6 +387,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       },
       description: props.description,
       dnsServers: props.dnsServers,
+      clientRouteEnforcementOptions: props.clientRouteEnforcementOptions,
       securityGroupIds: securityGroups.map(s => s.securityGroupId),
       selfServicePortal: booleanToEnabledDisabled(props.selfServicePortal),
       serverCertificateArn: props.serverCertificateArn,

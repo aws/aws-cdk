@@ -2254,6 +2254,198 @@ describe('instance', () => {
       storageThroughput: 2500,
     })).toThrow(/maximum ratio of storage throughput to IOPS is 0.25/);
   });
+
+  test.each([
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+  ])('DatabaseInstance can specify engine lifecycle support %s', (engineLifecycleSupport) => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+      vpc,
+      engineLifecycleSupport,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EngineLifecycleSupport: engineLifecycleSupport,
+    });
+  });
+
+  test.each([
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+  ])('DatabaseInstanceFromSnapshot can specify engine lifecycle support %s', (engineLifecycleSupport) => {
+    // WHEN
+    new rds.DatabaseInstanceFromSnapshot(stack, 'Database', {
+      snapshotIdentifier: 'my-snapshot',
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+      vpc,
+      engineLifecycleSupport,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EngineLifecycleSupport: engineLifecycleSupport,
+    });
+  });
+
+  test.each([
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
+    rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+  ])('DatabaseInstanceReadReplica can specify engine lifecycle support %s', (engineLifecycleSupport) => {
+    // GIVEN
+    const sourceInstance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+      sourceDatabaseInstance: sourceInstance,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      engineLifecycleSupport,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      SourceDBInstanceIdentifier: {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':rds:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':db:',
+          { Ref: 'DatabaseB269D8BB' },
+        ]],
+      },
+      EngineLifecycleSupport: engineLifecycleSupport,
+    });
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.oracleEe({ version: rds.OracleEngineVersion.VER_19 }),
+    rds.DatabaseInstanceEngine.mariaDb({ version: rds.MariaDbEngineVersion.VER_10_6 }),
+    rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_16_00_4185_3_V1 }),
+  ])('DatabaseInstance cannot specify engine lifecycle support for engine %s', (engine) => {
+    expect(() => new rds.DatabaseInstance(stack, 'Database', {
+      engine,
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    })).toThrow(/'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL/);
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.oracleEe({ version: rds.OracleEngineVersion.VER_19 }),
+    rds.DatabaseInstanceEngine.mariaDb({ version: rds.MariaDbEngineVersion.VER_10_6 }),
+    rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_16_00_4185_3_V1 }),
+  ])('DatabaseInstanceFromSnapshot cannot specify engine lifecycle support for engine %s', (engine) => {
+    expect(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Database', {
+      snapshotIdentifier: 'my-snapshot',
+      engine,
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    })).toThrow(/'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL/);
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.oracleEe({ version: rds.OracleEngineVersion.VER_19 }),
+    rds.DatabaseInstanceEngine.mariaDb({ version: rds.MariaDbEngineVersion.VER_10_6 }),
+    rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_16_00_4185_3_V1 }),
+  ])('DatabaseInstanceReadReplica cannot specify engine lifecycle support for engine %s', (engine) => {
+    // GIVEN
+    const sourceInstance = new rds.DatabaseInstance(stack, 'Database', {
+      engine,
+      vpc,
+    });
+
+    expect(() => new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+      sourceDatabaseInstance: sourceInstance,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    })).toThrow(/'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL/);
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_5_7 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15 }),
+  ])('DatabaseInstance can specify engine lifecycle support for engine %s', (engine) => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine,
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EngineLifecycleSupport: 'open-source-rds-extended-support-disabled',
+    });
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_5_7 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15 }),
+  ])('DatabaseInstanceFromSnapshot can specify engine lifecycle support for engine %s', (engine) => {
+    // WHEN
+    new rds.DatabaseInstanceFromSnapshot(stack, 'Database', {
+      snapshotIdentifier: 'my-snapshot',
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EngineLifecycleSupport: 'open-source-rds-extended-support-disabled',
+    });
+  });
+
+  test.each([
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_4_5 }),
+    rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_5_7 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+    rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15 }),
+  ])('DatabaseInstanceReadReplica can specify engine lifecycle support for engine %s', (engine) => {
+    // GIVEN
+    const sourceInstance = new rds.DatabaseInstance(stack, 'Database', {
+      engine,
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+      sourceDatabaseInstance: sourceInstance,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      SourceDBInstanceIdentifier: {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':rds:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':db:',
+          { Ref: 'DatabaseB269D8BB' },
+        ]],
+      },
+      EngineLifecycleSupport: 'open-source-rds-extended-support-disabled',
+    });
+  });
 });
 
 test.each([

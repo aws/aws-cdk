@@ -1,7 +1,8 @@
 {
-  "version": "38.0.1",
+  "version": "44.0.0",
   "files": {
-    "88f8b6f143ea53b46d93da4b1faa520ca524dd12b86713226337cbcf866bcae6": {
+    "9e940a849c907d4a0ad3d9f249828c1fd08e1bd84721d1aa7957cc917ad213e9": {
+      "displayName": "aws-graphql-lambda-permissions Template",
       "source": {
         "path": "aws-graphql-lambda-permissions.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "88f8b6f143ea53b46d93da4b1faa520ca524dd12b86713226337cbcf866bcae6.json",
+          "objectKey": "9e940a849c907d4a0ad3d9f249828c1fd08e1bd84721d1aa7957cc917ad213e9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

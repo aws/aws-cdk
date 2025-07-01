@@ -9,8 +9,8 @@ Shout out to our top contributors!
 - [jogold](https://github.com/jogold)
 - [iliapolo](https://github.com/iliapolo)
 - [corymhall](https://github.com/corymhall)
-- [shivlaks](https://github.com/shivlaks)
 - [mrgrain](https://github.com/mrgrain)
+- [shivlaks](https://github.com/shivlaks)
 - [otaviomacedo](https://github.com/otaviomacedo)
 - [mazyu36](https://github.com/mazyu36)
 - [pahud](https://github.com/pahud)
@@ -29,4 +29,4 @@ Shout out to our top contributors!
 - [colifran](https://github.com/colifran)
 
 
-_Last updated: Sun, 01 Jun 25 00:16:05 +0000_
+_Last updated: Tue, 01 Jul 25 00:15:11 +0000_

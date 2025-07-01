@@ -50,6 +50,25 @@
     "OrchestrationFunctionServiceRole12D0673A"
    ]
   },
+  "OrchestrationFunctionLogGroup07F3FD44": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "OrchestrationFunction2F3851C6"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "OrchestrationFunctionOrchestrationLambdaInvocationPolicyc8f49862985034a7EC14F6D5": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
