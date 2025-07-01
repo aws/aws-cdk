@@ -112,6 +112,25 @@
     "GlueFunctionServiceRoleD5EDDC4C"
    ]
   },
+  "GlueFunctionLogGroupEF019AD3": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "GlueFunctionEB1182FC"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "GlueFunctionKafkaEventSource46eb851822d1a9f28d63dc4ec210952etesttopicsmkglueBB4DBE04": {
    "Type": "AWS::Lambda::EventSourceMapping",
    "Properties": {
