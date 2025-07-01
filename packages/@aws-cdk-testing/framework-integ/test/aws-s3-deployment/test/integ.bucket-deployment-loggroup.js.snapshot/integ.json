@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "41.0.0",
   "testCases": {
     "integ-test-bucket-deployment-loggroup/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "integ-test-bucket-deployment-loggroup/DefaultTest/DeployAssert",
       "assertionStackName": "integtestbucketdeploymentloggroupDefaultTestDeployAssertB356FD0A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

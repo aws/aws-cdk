@@ -35,6 +35,10 @@
         "namespace": "Amazon.CDK.AppStagingSynthesizer.Alpha",
         "packageId": "Amazon.CDK.AppStagingSynthesizer.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "appstagingsynthesizeralpha"
       }
     }
   },
@@ -48,7 +52,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "integ-runner --language javascript",
+    "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -85,7 +89,7 @@
   },
   "devDependencies": {
     "aws-cdk-lib": "0.0.0",
-    "@aws-cdk/integ-runner": "2.184.1-alpha.0",
+    "@aws-cdk/integ-runner": "^2.188.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "constructs": "^10.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",

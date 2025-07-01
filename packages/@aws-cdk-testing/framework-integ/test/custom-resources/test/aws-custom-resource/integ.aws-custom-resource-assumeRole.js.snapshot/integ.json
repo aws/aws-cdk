@@ -1,0 +1,13 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "AwsCustomResourceAssumeRoleTest/DefaultTest": {
+      "stacks": [
+        "aws-custom-resource-assume-role"
+      ],
+      "assertionStack": "AwsCustomResourceAssumeRoleTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AwsCustomResourceAssumeRoleTestDefaultTestDeployAssert9FD5C886"
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}

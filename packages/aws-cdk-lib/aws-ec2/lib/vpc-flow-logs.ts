@@ -4,8 +4,9 @@ import { ISubnet, IVpc } from './vpc';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
-import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, Tags, CfnResource } from '../../core';
+import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, Tags, CfnResource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
 
 /**
@@ -438,9 +439,9 @@ class KinesisDataFirehoseDestination extends FlowLogDestination {
     super();
   }
 
-  public bind(_scope: Construct, _flowLog: FlowLog): FlowLogDestinationConfig {
+  public bind(scope: Construct, _flowLog: FlowLog): FlowLogDestinationConfig {
     if (this.props.deliveryStreamArn === undefined) {
-      throw new Error('deliveryStreamArn is required');
+      throw new ValidationError('deliveryStreamArn is required', scope);
     }
     const deliveryStreamArn = this.props.deliveryStreamArn;
 
@@ -809,7 +810,11 @@ abstract class FlowLogBase extends Resource implements IFlowLog {
  * A VPC flow log.
  * @resource AWS::EC2::FlowLog
  */
+@propertyInjectable
 export class FlowLog extends FlowLogBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.FlowLog';
+
   /**
    * Import a Flow Log by it's Id
    */
@@ -886,10 +891,10 @@ export class FlowLog extends FlowLogBase {
     let trafficType: FlowLogTrafficType | undefined = props.trafficType ?? FlowLogTrafficType.ALL;
     if (props.resourceType.resourceType === 'TransitGateway' || props.resourceType.resourceType === 'TransitGatewayAttachment') {
       if (props.trafficType) {
-        throw new Error('trafficType is not supported for Transit Gateway and Transit Gateway Attachment');
+        throw new ValidationError('trafficType is not supported for Transit Gateway and Transit Gateway Attachment', this);
       }
       if (props.maxAggregationInterval && props.maxAggregationInterval !== FlowLogMaxAggregationInterval.ONE_MINUTE) {
-        throw new Error('maxAggregationInterval must be set to ONE_MINUTE for Transit Gateway and Transit Gateway Attachment');
+        throw new ValidationError('maxAggregationInterval must be set to ONE_MINUTE for Transit Gateway and Transit Gateway Attachment', this);
       }
       trafficType = undefined;
     }

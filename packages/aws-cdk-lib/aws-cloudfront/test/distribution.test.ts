@@ -6,7 +6,7 @@ import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { App, Aws, Duration, Stack } from '../../core';
+import { App, Aws, Duration, Stack, Token } from '../../core';
 import {
   AllowedMethods,
   CfnDistribution,
@@ -1113,11 +1113,118 @@ test('grants custom actions', () => {
   const role = new iam.Role(stack, 'Role', {
     assumedBy: new iam.AccountRootPrincipal(),
   });
-  distribution.grant(role, 'cloudfront:ListInvalidations', 'cloudfront:GetInvalidation');
+  distribution.grant(
+    role,
+    'cloudfront:ListInvalidations',
+    'cloudfront:GetInvalidation',
+    'cloudfront:CreateFieldLevelEncryptionConfig',
+    'cloudfront:CreateFieldLevelEncryptionProfile',
+    'cloudfront:CreateKeyGroup',
+    'cloudfront:CreateMonitoringSubscription',
+    'cloudfront:CreateOriginAccessControl',
+    'cloudfront:CreatePublicKey',
+    'cloudfront:CreateSavingsPlan',
+    'cloudfront:DeleteKeyGroup',
+    'cloudfront:DeleteMonitoringSubscription',
+    'cloudfront:DeletePublicKey',
+    'cloudfront:GetKeyGroup',
+    'cloudfront:GetKeyGroupConfig',
+    'cloudfront:GetMonitoringSubscription',
+    'cloudfront:GetPublicKey',
+    'cloudfront:GetPublicKeyConfig',
+    'cloudfront:GetSavingsPlan',
+    'cloudfront:ListAnycastIpLists',
+    'cloudfront:ListCachePolicies',
+    'cloudfront:ListCloudFrontOriginAccessIdentities',
+    'cloudfront:ListContinuousDeploymentPolicies',
+    'cloudfront:ListDistributions',
+    'cloudfront:ListDistributionsByAnycastIpListId',
+    'cloudfront:ListDistributionsByCachePolicyId',
+    'cloudfront:ListDistributionsByKeyGroup',
+    'cloudfront:ListDistributionsByLambdaFunction',
+    'cloudfront:ListDistributionsByOriginRequestPolicyId',
+    'cloudfront:ListDistributionsByRealtimeLogConfig',
+    'cloudfront:ListDistributionsByResponseHeadersPolicyId',
+    'cloudfront:ListDistributionsByVpcOriginId',
+    'cloudfront:ListDistributionsByWebACLId',
+    'cloudfront:ListFieldLevelEncryptionConfigs',
+    'cloudfront:ListFieldLevelEncryptionProfiles',
+    'cloudfront:ListFunctions',
+    'cloudfront:ListKeyGroups',
+    'cloudfront:ListKeyValueStores',
+    'cloudfront:ListOriginAccessControls',
+    'cloudfront:ListOriginRequestPolicies',
+    'cloudfront:ListPublicKeys',
+    'cloudfront:ListRateCards',
+    'cloudfront:ListRealtimeLogConfigs',
+    'cloudfront:ListResponseHeadersPolicies',
+    'cloudfront:ListSavingsPlans',
+    'cloudfront:ListStreamingDistributions',
+    'cloudfront:ListUsages',
+    'cloudfront:ListVpcOrigins',
+    'cloudfront:UpdateFieldLevelEncryptionConfig',
+    'cloudfront:UpdateKeyGroup',
+    'cloudfront:UpdatePublicKey',
+    'cloudfront:UpdateSavingsPlan',
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
+        {
+          Action: [
+            'cloudfront:CreateFieldLevelEncryptionConfig',
+            'cloudfront:CreateFieldLevelEncryptionProfile',
+            'cloudfront:CreateKeyGroup',
+            'cloudfront:CreateMonitoringSubscription',
+            'cloudfront:CreateOriginAccessControl',
+            'cloudfront:CreatePublicKey',
+            'cloudfront:CreateSavingsPlan',
+            'cloudfront:DeleteKeyGroup',
+            'cloudfront:DeleteMonitoringSubscription',
+            'cloudfront:DeletePublicKey',
+            'cloudfront:GetKeyGroup',
+            'cloudfront:GetKeyGroupConfig',
+            'cloudfront:GetMonitoringSubscription',
+            'cloudfront:GetPublicKey',
+            'cloudfront:GetPublicKeyConfig',
+            'cloudfront:GetSavingsPlan',
+            'cloudfront:ListAnycastIpLists',
+            'cloudfront:ListCachePolicies',
+            'cloudfront:ListCloudFrontOriginAccessIdentities',
+            'cloudfront:ListContinuousDeploymentPolicies',
+            'cloudfront:ListDistributions',
+            'cloudfront:ListDistributionsByAnycastIpListId',
+            'cloudfront:ListDistributionsByCachePolicyId',
+            'cloudfront:ListDistributionsByKeyGroup',
+            'cloudfront:ListDistributionsByLambdaFunction',
+            'cloudfront:ListDistributionsByOriginRequestPolicyId',
+            'cloudfront:ListDistributionsByRealtimeLogConfig',
+            'cloudfront:ListDistributionsByResponseHeadersPolicyId',
+            'cloudfront:ListDistributionsByVpcOriginId',
+            'cloudfront:ListDistributionsByWebACLId',
+            'cloudfront:ListFieldLevelEncryptionConfigs',
+            'cloudfront:ListFieldLevelEncryptionProfiles',
+            'cloudfront:ListFunctions',
+            'cloudfront:ListKeyGroups',
+            'cloudfront:ListKeyValueStores',
+            'cloudfront:ListOriginAccessControls',
+            'cloudfront:ListOriginRequestPolicies',
+            'cloudfront:ListPublicKeys',
+            'cloudfront:ListRateCards',
+            'cloudfront:ListRealtimeLogConfigs',
+            'cloudfront:ListResponseHeadersPolicies',
+            'cloudfront:ListSavingsPlans',
+            'cloudfront:ListStreamingDistributions',
+            'cloudfront:ListUsages',
+            'cloudfront:ListVpcOrigins',
+            'cloudfront:UpdateFieldLevelEncryptionConfig',
+            'cloudfront:UpdateKeyGroup',
+            'cloudfront:UpdatePublicKey',
+            'cloudfront:UpdateSavingsPlan',
+          ],
+          Resource: '*',
+        },
         {
           Action: [
             'cloudfront:ListInvalidations',
@@ -1431,6 +1538,18 @@ describe('attachWebAclId', () => {
           webAclId: 'arn:aws:wafv2:ap-northeast-1:123456789012:global/web-acl/MyWebAcl/473e64fd-f30b-4765-81a0-62ad96dd167a',
         });
       }).toThrow(/WebACL for CloudFront distributions must be created in the us-east-1 region; received ap-northeast-1/);
+    });
+
+    test('does not validate unresolved token webAclId', () => {
+      const origin = defaultOrigin();
+
+      const distribution = new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin },
+        webAclId: Token.asString({ Ref: 'SomeWebAcl' }), // unresolved token
+      });
+
+      // Should synthesize without error
+      Template.fromStack(stack);
     });
   });
 });

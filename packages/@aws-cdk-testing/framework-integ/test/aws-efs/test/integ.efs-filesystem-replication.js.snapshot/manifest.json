@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "efsReplication.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/17d7cd0c7fd2587589117fc2c149e8d1411c463d6163f3417e21aaa6bd10175e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ccac6d495cad99844a1be19dc7ca8602254d1f59bb89fda909ace3f71b44a052.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,46 @@
         "efsReplication.assets"
       ],
       "metadata": {
+        "/efsReplication/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "natGateways": "*"
+            }
+          }
+        ],
         "/efsReplication/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
+          }
+        ],
+        "/efsReplication/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/efsReplication/Vpc/PublicSubnet1/Subnet": [
@@ -64,6 +100,34 @@
             "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
+        "/efsReplication/Vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/efsReplication/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -88,6 +152,30 @@
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
+        "/efsReplication/Vpc/IsolatedSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          }
+        ],
         "/efsReplication/Vpc/IsolatedSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -104,6 +192,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB"
+          }
+        ],
+        "/efsReplication/Vpc/IsolatedSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           }
         ],
         "/efsReplication/Vpc/IsolatedSubnet2/Subnet": [
@@ -136,6 +248,12 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
+        "/efsReplication/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/efsReplication/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -146,6 +264,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/efsReplication/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/efsReplication/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
@@ -160,16 +284,42 @@
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
+        "/efsReplication/Key": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/efsReplication/Key/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Key961B73FD"
           }
         ],
+        "/efsReplication/oneZoneReplicationFileSystem": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "removalPolicy": "destroy",
+              "replicationConfiguration": "*"
+            }
+          }
+        ],
         "/efsReplication/oneZoneReplicationFileSystem/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "oneZoneReplicationFileSystem0A6BB0D2"
+          }
+        ],
+        "/efsReplication/oneZoneReplicationFileSystem/EfsSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
           }
         ],
         "/efsReplication/oneZoneReplicationFileSystem/EfsSecurityGroup/Resource": [
@@ -190,10 +340,28 @@
             "data": "oneZoneReplicationFileSystemEfsMountTargetIsolatedSubnet2B23FA1A8"
           }
         ],
+        "/efsReplication/destinationFileSystem": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "removalPolicy": "destroy",
+              "replicationOverwriteProtection": "DISABLED"
+            }
+          }
+        ],
         "/efsReplication/destinationFileSystem/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "destinationFileSystem0FAD62DA"
+          }
+        ],
+        "/efsReplication/destinationFileSystem/EfsSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
           }
         ],
         "/efsReplication/destinationFileSystem/EfsSecurityGroup/Resource": [
@@ -214,10 +382,28 @@
             "data": "destinationFileSystemEfsMountTargetIsolatedSubnet20E3F4B46"
           }
         ],
+        "/efsReplication/existFileSystemReplication": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "removalPolicy": "destroy",
+              "replicationConfiguration": "*"
+            }
+          }
+        ],
         "/efsReplication/existFileSystemReplication/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "existFileSystemReplication3C6768D0"
+          }
+        ],
+        "/efsReplication/existFileSystemReplication/EfsSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
           }
         ],
         "/efsReplication/existFileSystemReplication/EfsSecurityGroup/Resource": [
@@ -307,5 +493,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

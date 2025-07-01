@@ -2,7 +2,7 @@ import { IndentationText, Project, PropertyDeclaration, QuoteKind, Scope, Syntax
 import * as path from "path";
 import * as fs from "fs";
 import * as tmp from 'tmp';
-import { CDK_ENUMS, CdkEnums, normalizeEnumValues, normalizeValue, SDK_ENUMS, SdkEnums, STATIC_MAPPING, StaticMapping } from "./static-enum-mapping-updater";
+import { CDK_ENUMS, CdkEnums, downloadGithubRawFile, ENUM_LIKE_CLASSES_URL, ENUMS_URL, normalizeEnumValues, normalizeValue, processCdkEnums, SDK_ENUMS, SdkEnums, STATIC_MAPPING, StaticMapping } from "./static-enum-mapping-updater";
 
 const DIRECTORIES_TO_SKIP = [
   "node_modules",
@@ -12,6 +12,9 @@ const DIRECTORIES_TO_SKIP = [
   "awslint",
   "test",
 ];
+
+const EXCLUDE_FILE = "exclude-values.json";
+export const EXCLUDE_ENUMS = path.join(__dirname, EXCLUDE_FILE);
 
 interface MissingValuesEntry {
   cdk_path: string;
@@ -89,7 +92,8 @@ export class MissingEnumsUpdater {
   private async findMissingValues(
     staticMapping: StaticMapping,
     cdkEnums: CdkEnums,
-    sdkEnums: SdkEnums
+    sdkEnums: SdkEnums,
+    exclusions: Record<string, any>
   ): Promise<MissingValues> {
     const missingValues: MissingValues = {};
   
@@ -97,6 +101,15 @@ export class MissingEnumsUpdater {
       for (const [enumName, mapping] of Object.entries(enums)) {
         const cdkValues = cdkEnums[module][enumName].values;
         const sdkValues = sdkEnums[mapping.sdk_service][mapping.sdk_enum_name];
+
+        let exclusion = new Set();
+        if (exclusions[module] && exclusions[module][enumName]) {
+          const exclusionDict = exclusions[module][enumName];
+          if (!exclusionDict["values"]) {
+            continue;
+          }
+          exclusion = normalizeEnumValues(exclusionDict["values"]);
+        }
         
         // Get normalized sets of values
         const normalizedCdkValues = normalizeEnumValues(cdkValues);
@@ -104,7 +117,7 @@ export class MissingEnumsUpdater {
         
         // Find missing values using normalized comparison
         const missingNormalized = [...normalizedSdkValues].filter(sdkValue => 
-          !normalizedCdkValues.has(sdkValue)
+          !normalizedCdkValues.has(sdkValue) && !exclusion.has(sdkValue)
         );
         
         if (missingNormalized.length > 0) {
@@ -125,13 +138,12 @@ export class MissingEnumsUpdater {
       }
     }
   
-  
-    const totalEnumsWithMissing = Object.values(missingValues).reduce((sum, moduleEnums) => 
-      sum + Object.keys(moduleEnums).length, 0);
+    const totalEnumsWithMissing = Object.keys(missingValues).reduce((sum, module) => 
+      sum + Object.keys(missingValues[module]).length, 0);
     
-    const totalMissingValues = Object.values(missingValues).reduce((sum, moduleEnums) => 
-      sum + Object.values(moduleEnums).reduce((moduleSum, enumData) => 
-        moduleSum + enumData.missing_values.length, 0), 0);
+    const totalMissingValues = Object.keys(missingValues).reduce((sum, module) => 
+      sum + Object.keys(missingValues[module]).reduce((moduleSum, enumName) => 
+        moduleSum + missingValues[module][enumName].missing_values.length, 0), 0);
   
     console.log(`Enums with missing values: ${totalEnumsWithMissing}`);
     console.log(`Total missing values found: ${totalMissingValues}`);
@@ -145,10 +157,11 @@ export class MissingEnumsUpdater {
   private async saveMissingValues(
     staticMapping: StaticMapping,
     cdkEnums: CdkEnums,
-    sdkEnums: SdkEnums
+    sdkEnums: SdkEnums,
+    exclusions: Record<string, any>
   ): Promise<string> {
     try {
-      const missingValues = await this.findMissingValues(staticMapping, cdkEnums, sdkEnums);
+      const missingValues = await this.findMissingValues(staticMapping, cdkEnums, sdkEnums, exclusions);
       
       const tmpFile = tmp.fileSync({ postfix: '.json' });
       fs.writeFileSync(tmpFile.name, JSON.stringify(missingValues, null, 2));
@@ -168,8 +181,9 @@ export class MissingEnumsUpdater {
       const staticMapping: StaticMapping = JSON.parse(fs.readFileSync(STATIC_MAPPING, 'utf8'));
       const cdkEnums: CdkEnums = JSON.parse(fs.readFileSync(CDK_ENUMS, 'utf8'));
       const sdkEnums: SdkEnums = JSON.parse(fs.readFileSync(SDK_ENUMS, 'utf8'));
+      const exclusions: Record<string, any> = JSON.parse(fs.readFileSync(EXCLUDE_ENUMS, 'utf8'));
   
-      const missingValuesPath = await this.saveMissingValues(staticMapping, cdkEnums, sdkEnums);
+      const missingValuesPath = await this.saveMissingValues(staticMapping, cdkEnums, sdkEnums, exclusions);
       
       const totalMappings = Object.values(staticMapping)
         .reduce((sum, moduleEnums) => sum + Object.keys(moduleEnums).length, 0);
@@ -311,10 +325,12 @@ export class MissingEnumsUpdater {
     let textToInsert = hasDoubleLineBreaks ? '\n' : '';
 
     newEnumValues.forEach((enumVal: string, index: number) => {
-      const enumConstantName = enumVal.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/_+$/, '');
+      // Make sure enumValue is a string
+      const enumValue = enumVal.toString();
+      const enumConstantName = enumValue.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/_+$/, '');
       
       textToInsert += `  /**\n   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT\n   */\n`;
-      textToInsert += `  ${enumConstantName} = '${enumVal}'`;
+      textToInsert += `  ${enumConstantName} = '${enumValue}'`;
       
       // Add a comma and appropriate newlines after each member
       textToInsert += ',';
@@ -496,6 +512,17 @@ export class MissingEnumsUpdater {
   }
 
   public async execute() {
+    const downloadedCdkEnumsPath = await downloadGithubRawFile(ENUMS_URL);
+    const downloadedCdkEnumsLikePath = await downloadGithubRawFile(ENUM_LIKE_CLASSES_URL);
+
+    if (!downloadedCdkEnumsPath.path || !downloadedCdkEnumsLikePath.path) {
+      console.error("Error: Missing required files.");
+      return;
+    }
+
+    console.log("CDK enums downloaded successfully.");
+    await processCdkEnums(downloadedCdkEnumsPath.path, downloadedCdkEnumsLikePath.path);
+
     const missingValuesPath = await this.analyzeMissingEnumValues()
     this.updateEnumLikeValues(missingValuesPath);
     this.updateEnumValues(missingValuesPath);

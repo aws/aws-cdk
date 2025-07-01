@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "4d9df072142679300639ac5675b246f613313e96e6bfb34de658382f7228b838": {
+      "displayName": "restapi-ip-address-type-test-stack Template",
+      "source": {
+        "path": "restapi-ip-address-type-test-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4d9df072142679300639ac5675b246f613313e96e6bfb34de658382f7228b838.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

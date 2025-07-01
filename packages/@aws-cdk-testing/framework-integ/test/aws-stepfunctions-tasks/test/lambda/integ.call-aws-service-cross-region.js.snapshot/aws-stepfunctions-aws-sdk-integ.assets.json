@@ -1,7 +1,8 @@
 {
-  "version": "39.0.0",
+  "version": "41.0.0",
   "files": {
     "ea123b4e391a9f352cc5dadc2250aab676981408fc6ccb0efb0d106bbd933ae3": {
+      "displayName": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/Code",
       "source": {
         "path": "asset.ea123b4e391a9f352cc5dadc2250aab676981408fc6ccb0efb0d106bbd933ae3",
         "packaging": "zip"
@@ -14,7 +15,8 @@
         }
       }
     },
-    "678250a6a580b74c771ae418fefe85176164bbfc45316dec6602ced9012736f2": {
+    "5fbc67b3d377a3275ec885afd27104212c3849b6b13610bdba6429116cb27b5a": {
+      "displayName": "aws-stepfunctions-aws-sdk-integ Template",
       "source": {
         "path": "aws-stepfunctions-aws-sdk-integ.template.json",
         "packaging": "file"
@@ -22,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "678250a6a580b74c771ae418fefe85176164bbfc45316dec6602ced9012736f2.json",
+          "objectKey": "5fbc67b3d377a3275ec885afd27104212c3849b6b13610bdba6429116cb27b5a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

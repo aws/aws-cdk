@@ -116,7 +116,8 @@ export class ClusterResourceHandler extends ResourceHandler {
     // if there is an update that requires replacement, go ahead and just create
     // a new cluster with the new config. The old cluster will automatically be
     // deleted by cloudformation upon success.
-    if (updates.replaceName || updates.replaceRole || updates.updateBootstrapClusterCreatorAdminPermissions ) {
+    if (updates.replaceName || updates.replaceRole ||
+          updates.updateBootstrapClusterCreatorAdminPermissions || updates.updateBootstrapSelfManagedAddons) {
       // if we are replacing this cluster and the cluster has an explicit
       // physical name, the creation of the new cluster will fail with "there is
       // already a cluster with that name". this is a common behavior for
@@ -128,21 +129,14 @@ export class ClusterResourceHandler extends ResourceHandler {
       return this.onCreate();
     }
 
-    // We can only update one type of the UpdateTypes:
-    type UpdateTypes = {
-      updateLogging: boolean;
-      updateAccess: boolean;
-      updateVpc: boolean;
-      updateAuthMode: boolean;
-    };
     // validate updates
-    const updateTypes = Object.keys(updates) as (keyof UpdateTypes)[];
+    const updateTypes = Object.keys(updates).filter(type => type !== 'updateTags') as (keyof UpdateMap)[];
     const enabledUpdateTypes = updateTypes.filter((type) => updates[type]);
     console.log(enabledUpdateTypes);
 
     if (enabledUpdateTypes.length > 1) {
       throw new Error(
-        'Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed',
+        `Only one type of update - ${updateTypes.join(', ')} can be allowed`,
       );
     }
 
@@ -407,6 +401,18 @@ function parseProps(props: any): EKS.CreateClusterCommandInput {
     parsed.logging.clusterLogging[0].enabled = parsed.logging.clusterLogging[0].enabled === 'true';
   }
 
+  if (parsed.bootstrapSelfManagedAddons) {
+    if (typeof (parsed.bootstrapSelfManagedAddons) === 'string') {
+      parsed.bootstrapSelfManagedAddons = parsed.bootstrapSelfManagedAddons === 'true';
+    }
+  }
+
+  if (parsed.accessConfig?.bootstrapClusterCreatorAdminPermissions) {
+    if (typeof (parsed.accessConfig.bootstrapClusterCreatorAdminPermissions) === 'string') {
+      parsed.accessConfig.bootstrapClusterCreatorAdminPermissions = parsed.accessConfig.bootstrapClusterCreatorAdminPermissions === 'true';
+    }
+  }
+
   return parsed;
 }
 
@@ -422,6 +428,7 @@ interface UpdateMap {
   updateBootstrapClusterCreatorAdminPermissions: boolean; // accessConfig.bootstrapClusterCreatorAdminPermissions
   updateVpc: boolean; // resourcesVpcConfig.subnetIds and securityGroupIds
   updateTags: boolean; // tags
+  updateBootstrapSelfManagedAddons: boolean; // cluster with default networking add-ons
 }
 
 function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProps: EKS.CreateClusterCommandInput): UpdateMap {
@@ -438,6 +445,11 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
   const newAccessConfig = newProps.accessConfig || {};
   const oldAccessConfig = oldProps.accessConfig || {};
 
+  // Helper function to compare values where undefined and true are considered equal
+  const compareUndefinedOrTrue = (val1: boolean | undefined, val2: boolean | undefined): boolean => {
+    return (val1 ?? true) === (val2 ?? true);
+  };
+
   return {
     replaceName: newProps.name !== oldProps.name,
     updateVpc:
@@ -452,9 +464,15 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
     updateEncryption: JSON.stringify(newEnc) !== JSON.stringify(oldEnc),
     updateLogging: JSON.stringify(newProps.logging) !== JSON.stringify(oldProps.logging),
     updateAuthMode: JSON.stringify(newAccessConfig.authenticationMode) !== JSON.stringify(oldAccessConfig.authenticationMode),
-    updateBootstrapClusterCreatorAdminPermissions: JSON.stringify(newAccessConfig.bootstrapClusterCreatorAdminPermissions) !==
-      JSON.stringify(oldAccessConfig.bootstrapClusterCreatorAdminPermissions),
+    updateBootstrapClusterCreatorAdminPermissions: !compareUndefinedOrTrue(
+      newAccessConfig.bootstrapClusterCreatorAdminPermissions,
+      oldAccessConfig.bootstrapClusterCreatorAdminPermissions,
+    ),
     updateTags: JSON.stringify(newProps.tags) !== JSON.stringify(oldProps.tags),
+    updateBootstrapSelfManagedAddons: !compareUndefinedOrTrue(
+      newProps.bootstrapSelfManagedAddons,
+      oldProps.bootstrapSelfManagedAddons,
+    ),
   };
 }
 

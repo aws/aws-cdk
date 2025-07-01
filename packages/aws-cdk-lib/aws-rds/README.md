@@ -147,6 +147,19 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
 });
 ```
 
+To configure [the life cycle type of the cluster](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/extended-support.html), use the `engineLifecycleSupport` property:
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_0 }),
+  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
+  vpc,
+  engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
+});
+```
+
 ### Updating the database instances in a cluster
 
 Database cluster instances may be updated in bulk or on a rolling basis.
@@ -267,8 +280,19 @@ things.
 > *Info* More complete details can be found [in the docs](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2-examples-setting-capacity-range-for-cluster)
 
 You can also set minimum capacity to zero ACUs and automatically pause,
-if they don't have any connections initiated by user activity within a specified time period.
+if they don't have any connections initiated by user activity within a time period specified by `serverlessV2AutoPauseDuration` (300 seconds by default).
 For more information, see [Scaling to Zero ACUs with automatic pause and resume for Aurora Serverless v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html).
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_08_0 }),
+  writer: rds.ClusterInstance.serverlessV2('writer'),
+  serverlessV2MinCapacity: 0,
+  serverlessV2AutoPauseDuration: Duration.hours(1),
+  vpc,
+});
+```
 
 Another way that you control the capacity/scaling of your serverless v2 reader
 instances is based on the [promotion tier](https://aws.amazon.com/blogs/aws/additional-failover-control-for-amazon-aurora/)
@@ -571,6 +595,18 @@ declare const sourceInstance: rds.DatabaseInstance;
 new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
   sourceDatabaseInstance: sourceInstance,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+  vpc,
+});
+```
+
+Or you can [restore a DB instance from a Multi-AZ DB cluster snapshot](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromMultiAZDBClusterSnapshot.html)
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new rds.DatabaseInstanceFromSnapshot(this, 'Instance', {
+  clusterSnapshotIdentifier: 'my-cluster-snapshot',
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
   vpc,
 });
 ```
@@ -948,7 +984,7 @@ proxy.grantConnect(role, 'admin'); // Grant the role connection access to the DB
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html> for setup instructions.
 
 To specify the details of authentication used by a proxy to log in as a specific database
-user use the `clientPasswordAuthType` property:
+user use the `clientPasswordAuthType` property:
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -1538,6 +1574,25 @@ new rds.DatabaseCluster(this, 'Cluster', {
   monitoringInterval: Duration.seconds(5),
   monitoringRole,
 });
+```
+
+## Importing existing DatabaseInstance
+
+### Lookup DatabaseInstance by instanceIdentifier
+
+You can lookup an existing DatabaseInstance by its instanceIdentifier using `DatabaseInstance.fromLookup()`.  This method returns an `IDatabaseInstance`.
+
+Here's how `DatabaseInstance.fromLookup()` can be used:
+
+```ts
+declare const myUserRole: iam.Role;
+
+const dbFromLookup = rds.DatabaseInstance.fromLookup(this, 'dbFromLookup', {
+  instanceIdentifier: 'instanceId',
+});
+
+// Grant a connection
+dbFromLookup.grantConnect(myUserRole, 'my-user-id');
 ```
 
 ## Limitless Database Cluster

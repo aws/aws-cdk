@@ -1,7 +1,8 @@
 {
-  "version": "30.0.0",
+  "version": "44.0.0",
   "files": {
-    "3601b785219c22585d4d73c03522e2370fb59de8b92f71e943a0a23904539e1d": {
+    "bbbfac99e5d1cea5a8ef3f3b261a3a46868091c2b35f89b2cd2b6aebefa9dd6f": {
+      "displayName": "aws-cdk-cloudwatch Template",
       "source": {
         "path": "aws-cdk-cloudwatch.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "3601b785219c22585d4d73c03522e2370fb59de8b92f71e943a0a23904539e1d.json",
+          "objectKey": "bbbfac99e5d1cea5a8ef3f3b261a3a46868091c2b35f89b2cd2b6aebefa9dd6f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

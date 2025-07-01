@@ -1,5 +1,5 @@
 {
-  "version": "30.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-cloudwatch.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-cloudwatch.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3601b785219c22585d4d73c03522e2370fb59de8b92f71e943a0a23904539e1d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bbbfac99e5d1cea5a8ef3f3b261a3a46868091c2b35f89b2cd2b6aebefa9dd6f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,10 +40,104 @@
             "data": "queue"
           }
         ],
+        "/aws-cdk-cloudwatch/Alarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "metric": {
+                "warnings": "*",
+                "warningsV2": "*"
+              },
+              "alarmName": "*",
+              "alarmDescription": "*",
+              "comparisonOperator": "*",
+              "datapointsToAlarm": "*",
+              "threshold": "*",
+              "evaluationPeriods": "*",
+              "evaluateLowSampleCountPercentile": "*",
+              "treatMissingData": "*",
+              "actionsEnabled": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Periods of metrics in 'usingMetrics' for Math expression 'm1+m2' have been overridden to 60 seconds. [ack: CloudWatch:Math:MetricsPeriodsOverridden]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "toAnnotation": []
+            }
+          }
+        ],
         "/aws-cdk-cloudwatch/Alarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Alarm7103F465"
+          }
+        ],
+        "/aws-cdk-cloudwatch/Dash": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "dashboardName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addWidgets": [
+                {
+                  "warnings": "*",
+                  "warningsV2": "*",
+                  "width": "*",
+                  "height": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addWidgets": [
+                {
+                  "warnings": "*",
+                  "warningsV2": "*",
+                  "width": "*",
+                  "height": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Periods of metrics in 'usingMetrics' for Math expression 'm1+m2' have been overridden to 60 seconds. [ack: CloudWatch:Math:MetricsPeriodsOverridden]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addWidgets": [
+                {
+                  "warnings": "*",
+                  "warningsV2": "*",
+                  "width": "*",
+                  "height": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addWidgets": [
+                {
+                  "warnings": "*",
+                  "warningsV2": "*",
+                  "width": "*",
+                  "height": "*"
+                }
+              ]
+            }
           }
         ],
         "/aws-cdk-cloudwatch/Dash/Resource": [
@@ -79,6 +174,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdkintegmathalarmanddashboardDefaultTestDeployAssertE31ECF03.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -119,5 +215,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

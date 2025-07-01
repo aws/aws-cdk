@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "44.0.0",
   "testCases": {
     "OpenSearchUnsignedBasicAuthInteg/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "OpenSearchUnsignedBasicAuthInteg/DefaultTest/DeployAssert",
       "assertionStackName": "OpenSearchUnsignedBasicAuthIntegDefaultTestDeployAssert833213F2"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
-import { Stack } from '../../../core';
+import { Stack, ValidationError } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,
@@ -85,7 +86,13 @@ export interface Ec2TaskDefinitionAttributes extends CommonTaskDefinitionAttribu
  *
  * @resource AWS::ECS::TaskDefinition
  */
+@propertyInjectable
 export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinition {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.Ec2TaskDefinition';
+
   /**
    * Imports a task definition from the specified task definition ARN.
    */
@@ -116,7 +123,7 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
    * Validates the placement constraints to make sure they are supported.
    * Currently, only 'memberOf' is a valid constraint for an Ec2TaskDefinition.
    */
-  private static validatePlacementConstraints(constraints?: PlacementConstraint[]) {
+  private static validatePlacementConstraints(scope: Construct, constraints?: PlacementConstraint[]) {
     // List of valid constraints https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-taskdefinitionplacementconstraint.html#cfn-ecs-taskdefinition-taskdefinitionplacementconstraint-type
     const validConstraints = new Set(['memberOf']);
 
@@ -128,7 +135,7 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
     if (invalidConstraints.length > 0) {
       const invalidConstraintTypes = invalidConstraints.map(
         constraint => constraint.toJson().map(constraintProperty => constraintProperty.type)).flat();
-      throw new Error(`Invalid placement constraint(s): ${invalidConstraintTypes.join(', ')}. Only 'memberOf' is currently supported in the Ec2TaskDefinition class.`);
+      throw new ValidationError(`Invalid placement constraint(s): ${invalidConstraintTypes.join(', ')}. Only 'memberOf' is currently supported in the Ec2TaskDefinition class.`, scope);
     }
   }
 
@@ -136,19 +143,31 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
    * Constructs a new instance of the Ec2TaskDefinition class.
    */
   constructor(scope: Construct, id: string, props: Ec2TaskDefinitionProps = {}) {
-    super(scope, id, {
-      ...props,
-      compatibility: Compatibility.EC2,
-      placementConstraints: props.placementConstraints,
-      ipcMode: props.ipcMode,
-      pidMode: props.pidMode,
-      inferenceAccelerators: props.inferenceAccelerators,
-    });
+    // don't pass @deprecated inferenceAccelerators if not needed as this renders console warnings
+    if (props.inferenceAccelerators) {
+      super(scope, id, {
+        ...props,
+        compatibility: Compatibility.EC2,
+        placementConstraints: props.placementConstraints,
+        ipcMode: props.ipcMode,
+        pidMode: props.pidMode,
+        inferenceAccelerators: props.inferenceAccelerators,
+      });
+    } else {
+      super(scope, id, {
+        ...props,
+        compatibility: Compatibility.EC2,
+        placementConstraints: props.placementConstraints,
+        ipcMode: props.ipcMode,
+        pidMode: props.pidMode,
+      });
+    }
+
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     // Validate the placement constraints
-    Ec2TaskDefinition.validatePlacementConstraints(props.placementConstraints ?? []);
+    Ec2TaskDefinition.validatePlacementConstraints(scope, props.placementConstraints ?? []);
   }
 
   /**

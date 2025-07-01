@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "43.0.0",
   "artifacts": {
     "aws-cdk-pipes-targets-sagemaker.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "aws-cdk-pipes-targets-sagemaker.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6c0d926007197ae048daf15220158964d23e8a0f9c9953256cbe8c799027145f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5677f59a2a92ffe23fb580469278dc81fc6228aa4332b0d22105ec4ad423689a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -35,10 +34,25 @@
         "aws-cdk-pipes-targets-sagemaker.assets"
       ],
       "metadata": {
+        "/aws-cdk-pipes-targets-sagemaker/SourceQueue": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-pipes-targets-sagemaker/SourceQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SourceQueue6E809DF0"
+          }
+        ],
+        "/aws-cdk-pipes-targets-sagemaker/Pipeline/SourceBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
           }
         ],
         "/aws-cdk-pipes-targets-sagemaker/Pipeline/SourceBucket/Resource": [
@@ -47,10 +61,24 @@
             "data": "PipelineSourceBucket23FDFC28"
           }
         ],
+        "/aws-cdk-pipes-targets-sagemaker/Pipeline/SourceBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/aws-cdk-pipes-targets-sagemaker/Pipeline/SourceBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineSourceBucketPolicy017B174D"
+          }
+        ],
+        "/aws-cdk-pipes-targets-sagemaker/Pipeline/SourceBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-pipes-targets-sagemaker/Pipeline/SourceBucket/AutoDeleteObjectsCustomResource/Default": [
@@ -59,10 +87,27 @@
             "data": "PipelineSourceBucketAutoDeleteObjectsCustomResource041F2E1E"
           }
         ],
+        "/aws-cdk-pipes-targets-sagemaker/Pipeline/OutputBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
+          }
+        ],
         "/aws-cdk-pipes-targets-sagemaker/Pipeline/OutputBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineOutputBucket98EA5F71"
+          }
+        ],
+        "/aws-cdk-pipes-targets-sagemaker/Pipeline/OutputBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
           }
         ],
         "/aws-cdk-pipes-targets-sagemaker/Pipeline/OutputBucket/Policy/Resource": [
@@ -71,10 +116,43 @@
             "data": "PipelineOutputBucketPolicy4566E5A8"
           }
         ],
+        "/aws-cdk-pipes-targets-sagemaker/Pipeline/OutputBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-pipes-targets-sagemaker/Pipeline/OutputBucket/AutoDeleteObjectsCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineOutputBucketAutoDeleteObjectsCustomResource0CB6E67C"
+          }
+        ],
+        "/aws-cdk-pipes-targets-sagemaker/Pipeline/SageMakerPipelineRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-sagemaker/Pipeline/SageMakerPipelineRole/ImportSageMakerPipelineRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-pipes-targets-sagemaker/Pipeline/SageMakerPipelineRole/Resource": [
@@ -113,10 +191,103 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
+        "/aws-cdk-pipes-targets-sagemaker/Pipe": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-pipes-targets-sagemaker/Pipe/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-sagemaker/Pipe/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-pipes-targets-sagemaker/Pipe/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipeRole7D4AFC73"
+          }
+        ],
+        "/aws-cdk-pipes-targets-sagemaker/Pipe/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-pipes-targets-sagemaker/Pipe/Role/DefaultPolicy/Resource": [
@@ -167,10 +338,9 @@
         "templateFile": "integtestpipetargetsagemakerDefaultTestDeployAssert7D2ED3D4.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/24d15767d64d4ef9665872369e00fb09628afc3c520088f3e8f5ad27a78f9415.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c8329f9749b4a2638e2abbab698aa16f19ace29500e3277ab5353e9e9b4cdf84.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -187,6 +357,12 @@
         "integtestpipetargetsagemakerDefaultTestDeployAssert7D2ED3D4.assets"
       ],
       "metadata": {
+        "/integtest-pipe-target-sagemaker/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagece34a187bbbeaff4047b3759d5ddf254/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integtest-pipe-target-sagemaker/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagece34a187bbbeaff4047b3759d5ddf254/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -209,6 +385,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integtest-pipe-target-sagemaker/DefaultTest/DeployAssert/AwsApiCallSageMakerListPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integtest-pipe-target-sagemaker/DefaultTest/DeployAssert/AwsApiCallSageMakerListPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8/Default/Default": [
@@ -292,5 +482,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

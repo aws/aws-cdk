@@ -169,6 +169,22 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+To customize the cache key, use the `additionalCacheKey` parameter.
+This allows you to have multiple lookups with the same parameters
+cache their values separately. This can be useful if you want to
+scope the context variable to a construct (ie, using `additionalCacheKey: this.node.path`),
+so that if the value in the cache needs to be updated, it does not need to be updated
+for all constructs at the same time.
+
+```ts
+declare const vpc: ec2.Vpc;
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  machineImage: ecs.EcsOptimizedImage.amazonLinux({ cachedInContext: true, additionalCacheKey: this.node.path }),
+  vpc,
+  instanceType: new ec2.InstanceType('t2.micro'),
+});
+```
+
 To use `LaunchTemplate` with `AsgCapacityProvider`, make sure to specify the `userData` in the `LaunchTemplate`:
 
 ```ts
@@ -529,7 +545,7 @@ To grant a principal permission to run your `TaskDefinition`, you can use the `T
 ```ts
 declare const role: iam.IGrantable;
 const taskDef = new ecs.TaskDefinition(this, 'TaskDef', {
-  cpu: '256',
+  cpu: '512',
   memoryMiB: '512',
   compatibility: ecs.Compatibility.EC2_AND_FARGATE,
 });

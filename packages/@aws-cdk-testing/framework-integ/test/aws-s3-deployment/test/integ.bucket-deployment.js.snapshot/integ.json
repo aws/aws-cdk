@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "44.0.0",
   "testCases": {
     "integ-test-bucket-deployments/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "integ-test-bucket-deployments/DefaultTest/DeployAssert",
       "assertionStackName": "integtestbucketdeploymentsDefaultTestDeployAssertCF25A2DF"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.1"
 }

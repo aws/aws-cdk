@@ -6,6 +6,7 @@ import { Aws } from './cfn-pseudo';
 import { CfnResource } from './cfn-resource';
 import { CfnStack } from './cloudformation.generated';
 import { Duration } from './duration';
+import { UnscopedValidationError } from './errors';
 import { Lazy } from './lazy';
 import { Names } from './names';
 import { RemovalPolicy } from './removal-policy';
@@ -226,6 +227,8 @@ export class NestedStack extends Stack {
       packaging: FileAssetPackaging.FILE,
       sourceHash: templateHash,
       fileName: this.templateFile,
+      // this.stackName is a Token for nested stacks, so use something else
+      displayName: `${Names.stackRelativeConstructPath(this)} Nested Stack Template`,
     });
 
     this.addResourceMetadata(this.resource, 'TemplateURL');
@@ -266,12 +269,12 @@ export class NestedStack extends Stack {
  */
 function findParentStack(scope: Construct): Stack {
   if (!scope) {
-    throw new Error('Nested stacks cannot be defined as a root construct');
+    throw new UnscopedValidationError('Nested stacks cannot be defined as a root construct');
   }
 
   const parentStack = Node.of(scope).scopes.reverse().find(p => Stack.isStack(p));
   if (!parentStack) {
-    throw new Error('Nested stacks must be defined within scope of another non-nested stack');
+    throw new UnscopedValidationError('Nested stacks must be defined within scope of another non-nested stack');
   }
 
   return parentStack as Stack;

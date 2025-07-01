@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "44.0.0",
   "testCases": {
     "aws-cdk-eks-cluster-tags-integ/DefaultTest": {
       "stacks": [
@@ -16,5 +16,6 @@
       "assertionStack": "aws-cdk-eks-cluster-tags-integ/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksclustertagsintegDefaultTestDeployAssert544E1FC8"
     }
-  }
+  },
+  "minimumCliVersion": "2.1017.1"
 }
