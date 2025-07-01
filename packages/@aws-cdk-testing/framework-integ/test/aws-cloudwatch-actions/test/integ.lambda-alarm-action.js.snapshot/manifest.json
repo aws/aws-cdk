@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/528ab13296e3b851585a0c6d995a2d684b70b4d0a3f37b52fcdc83d165341462.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1ab68b72a6c4afce954013ac66437a6e3ab8228725d0969f1d4998781129fb1e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -77,6 +77,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "inAlarmLambdaFeature6C78D351"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/inAlarmLambdaFeature/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/inAlarmLambdaFeature/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "inAlarmLambdaFeatureLogGroupA38B15F5"
           }
         ],
         "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/Alarm": [
@@ -179,6 +193,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "alarmLambdaFeatureD560800F"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "alarmLambdaFeatureLogGroup7E7A9C9E"
           }
         ],
         "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/CurrentVersion": [
@@ -367,5 +395,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1018.0"
+  "minimumCliVersion": "2.1019.2"
 }
