@@ -6,7 +6,11 @@ import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import * as lambda from '../lib';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'integ-lambda-python-uv');
 
 const functionNames = [];
