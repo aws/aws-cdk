@@ -89,6 +89,21 @@ export interface LogQueryWidgetProps {
    * @default 6
    */
   readonly height?: number;
+
+  /**
+   * The AWS account ID where the log groups are located.
+   *
+   * This enables cross-account functionality for CloudWatch dashboards.
+   * Before using this feature, ensure that proper cross-account sharing is configured
+   * between the monitoring account and source account.
+   *
+   * For more information, see:
+   * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html
+   *
+   * @default - Current account
+   */
+  readonly accountId?: string;
+
 }
 
 /**
@@ -120,6 +135,7 @@ export class LogQueryWidget extends ConcreteWidget {
       view: this.props.view? this.props.view : LogQueryVisualizationType.TABLE,
       title: this.props.title,
       region: this.props.region || cdk.Aws.REGION,
+      accountId: this.props.accountId,
       query: `${sources} | ${query}`,
     };
 
