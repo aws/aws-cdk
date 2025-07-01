@@ -401,7 +401,7 @@ describe('Metrics', () => {
   });
 
   test('metric stores id and visible properties correctly', () => {
-    const metricWithBothProp = new Metric({
+    const metricWithBothProps = new Metric({
       namespace: 'Test',
       metricName: 'TestMetric',
       id: 'custom_metric_id',

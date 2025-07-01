@@ -111,7 +111,7 @@ export interface CommonMetricOptions {
    * Valid characters are letters, numbers, and underscore. The first character
    * must be a lowercase letter.
    *
-   * @default - Auto-generated ID
+   * @default - No ID
    */
   readonly id?: string;
 
