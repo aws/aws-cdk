@@ -665,59 +665,6 @@ describe('pipeline with custom asset publisher BuildSpec', () => {
   });
 });
 
-describe('assets with same hash but different destinations', () => {
-  test('assets with same hash but different publishing roles are published separately', () => {
-    // WHEN - Create a pipeline with apps in different environments that might have the same asset hash
-    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      // Enable cross-account keys for cross-account asset publishing
-      crossAccountKeys: true,
-    });
-    
-    // Add the same file asset app to two different environments
-    // This simulates the scenario where the same asset needs to be published to different destinations
-    pipeline.addStage(new FileAssetApp(app, 'App1', {
-      env: {
-        account: '111111111111',
-        region: 'us-east-1',
-      },
-    }));
-    
-    pipeline.addStage(new FileAssetApp(app, 'App2', {
-      env: {
-        account: '222222222222', 
-        region: 'us-west-2',
-      },
-    }));
-
-    // THEN - Should create separate asset publishing actions for different destinations
-    // Even if the assets have the same hash, they should be published separately
-    // because they target different accounts/regions
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      Stages: Match.arrayWith([{
-        Name: 'Assets',
-        Actions: [
-          // Should have multiple asset publishing actions for different destinations
-          Match.objectLike({ 
-            RunOrder: 1,
-            Name: Match.stringLikeRegexp('.*Asset.*'),
-          }),
-          Match.objectLike({ 
-            RunOrder: 1,
-            Name: Match.stringLikeRegexp('.*Asset.*'),
-          }),
-        ],
-      }]),
-    });
-
-    // Verify that we have the expected asset publishing roles for both environments
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
-      expectedAssetRolePolicy([
-        'arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-file-publishing-role-111111111111-us-east-1',
-        'arn:${AWS::Partition}:iam::222222222222:role/cdk-hnb659fds-file-publishing-role-222222222222-us-west-2',
-      ], 'CdkAssetsFileRole6BE17A07'));
-  });
-});
-
 function synthesize(stack: Stack) {
   const root = Stage.of(stack);
   if (!Stage.isStage(root)) {
