@@ -1,0 +1,213 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "cdk-amplify-app-build-compute-type.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-amplify-app-build-compute-type.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-amplify-app-build-compute-type": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-amplify-app-build-compute-type.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c501bee85d1ec995708d396056bd7f82e2323ab5736cba69a929e3ed760aed70.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-amplify-app-build-compute-type.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-amplify-app-build-compute-type.assets"
+      ],
+      "metadata": {
+        "/cdk-amplify-app-build-compute-type/AppStandard": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cdk-amplify-app-build-compute-type/AppStandard/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/cdk-amplify-app-build-compute-type/AppStandard/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cdk-amplify-app-build-compute-type/AppStandard/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppStandardRoleE2FE6E28"
+          }
+        ],
+        "/cdk-amplify-app-build-compute-type/AppStandard/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppStandard64C25109"
+          }
+        ],
+        "/cdk-amplify-app-build-compute-type/AppLarge": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cdk-amplify-app-build-compute-type/AppLarge/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/cdk-amplify-app-build-compute-type/AppLarge/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cdk-amplify-app-build-compute-type/AppLarge/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppLargeRoleF69E1D27"
+          }
+        ],
+        "/cdk-amplify-app-build-compute-type/AppLarge/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppLarge1965F25E"
+          }
+        ],
+        "/cdk-amplify-app-build-compute-type/AppXLarge": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cdk-amplify-app-build-compute-type/AppXLarge/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/cdk-amplify-app-build-compute-type/AppXLarge/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cdk-amplify-app-build-compute-type/AppXLarge/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppXLargeRoleF3215EF5"
+          }
+        ],
+        "/cdk-amplify-app-build-compute-type/AppXLarge/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppXLarge0552F577"
+          }
+        ],
+        "/cdk-amplify-app-build-compute-type/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-amplify-app-build-compute-type/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-amplify-app-build-compute-type"
+    },
+    "cdkamplifyappbuildcomputetypeintegDefaultTestDeployAssert0B375296.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdkamplifyappbuildcomputetypeintegDefaultTestDeployAssert0B375296.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdkamplifyappbuildcomputetypeintegDefaultTestDeployAssert0B375296": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdkamplifyappbuildcomputetypeintegDefaultTestDeployAssert0B375296.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdkamplifyappbuildcomputetypeintegDefaultTestDeployAssert0B375296.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdkamplifyappbuildcomputetypeintegDefaultTestDeployAssert0B375296.assets"
+      ],
+      "metadata": {
+        "/cdk-amplify-app-build-compute-type-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-amplify-app-build-compute-type-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-amplify-app-build-compute-type-integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}
