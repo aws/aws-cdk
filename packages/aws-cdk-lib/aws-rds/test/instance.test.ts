@@ -2355,24 +2355,23 @@ describe('database insights for instance', () => {
     });
   });
 
-  test('instance with the standard mode of database insights', () => {
+  test.each([true, false])('instance with the standard mode of database insights when enablePerformanceInsights is %s', (enablePerformanceInsights) => {
     // GIVEN
     stack = new cdk.Stack();
     vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     new rds.DatabaseInstance(stack, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13_7 }),
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_17_5 }),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
       vpc,
-      enablePerformanceInsights: true,
+      enablePerformanceInsights,
       databaseInsightsMode: rds.DatabaseInsightsMode.STANDARD,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
-      EnablePerformanceInsights: true,
-      PerformanceInsightsRetentionPeriod: 7,
+      EnablePerformanceInsights: enablePerformanceInsights,
       DatabaseInsightsMode: 'standard',
     });
   });
