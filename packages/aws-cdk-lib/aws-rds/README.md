@@ -147,19 +147,6 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
 });
 ```
 
-To configure [the life cycle type of the cluster](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/extended-support.html), use the `engineLifecycleSupport` property:
-
-```ts
-declare const vpc: ec2.IVpc;
-
-new rds.DatabaseCluster(this, 'DatabaseCluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_0 }),
-  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
-  vpc,
-  engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
-});
-```
-
 ### Updating the database instances in a cluster
 
 Database cluster instances may be updated in bulk or on a rolling basis.
@@ -1586,6 +1573,29 @@ new rds.DatabaseCluster(this, 'Cluster', {
   vpc,
   monitoringInterval: Duration.seconds(5),
   monitoringRole,
+});
+```
+
+## Extended Support
+
+With Amazon RDS Extended Support, you can continue running your database on a major engine version past the RDS end of
+standard support date for an additional cost. To configure the life cycle type, use the `engineLifecycleSupport` property:
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_0 }),
+  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
+  vpc,
+  engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
+});
+
+new rds.DatabaseInstance(this, 'DatabaseInstance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+  vpc,
+  engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
 });
 ```
 
