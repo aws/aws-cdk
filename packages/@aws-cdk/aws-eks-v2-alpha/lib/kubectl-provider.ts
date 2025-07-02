@@ -216,7 +216,7 @@ export class KubectlProvider extends Construct implements IKubectlProvider {
 
     const provider = new cr.Provider(this, 'Provider', {
       onEventHandler: handler,
-      vpc: props.cluster.vpc,
+      vpc: vpc,
       vpcSubnets: privateSubnets,
       securityGroups,
     });
