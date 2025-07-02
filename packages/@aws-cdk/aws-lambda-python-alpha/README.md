@@ -65,22 +65,23 @@ new python.PythonFunction(this, 'MyFunction', {
 
 ## Packaging
 
-If `requirements.txt`, `Pipfile` or `poetry.lock` exists at the entry path, the construct will handle installing all required modules in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-python3.7) according to the `runtime` and with the Docker platform based on the target architecture of the Lambda function.
+If `requirements.txt`, `Pipfile`, `uv.lock` or `poetry.lock` exists at the entry path, the construct will handle installing all required modules in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-python3.13) according to the `runtime` and with the Docker platform based on the target architecture of the Lambda function.
 
 Python bundles are only recreated and published when a file in a source directory has changed.
 Therefore (and as a general best-practice), it is highly recommended to commit a lockfile with a
 list of all transitive dependencies and their exact versions. This will ensure that when any dependency version is updated, the bundle asset is recreated and uploaded.
 
-To that end, we recommend using [`pipenv`] or [`poetry`] which have lockfile support.
+To that end, we recommend using [`pipenv`], [`uv`] or [`poetry`] which have lockfile support.
 
 - [`pipenv`](https://pipenv-fork.readthedocs.io/en/latest/basics.html#example-pipfile-lock)
 - [`poetry`](https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control)
+- [`uv`](https://docs.astral.sh/uv/concepts/projects/sync/#exporting-the-lockfile)
 
 Packaging is executed using the `Packaging` class, which:
 
 1. Infers the packaging type based on the files present.
-2. If it sees a `Pipfile` or a `poetry.lock` file, it exports it to a compatible `requirements.txt` file with credentials (if they're available in the source files or in the bundling container).
-3. Installs dependencies using `pip`.
+2. If it sees a `Pipfile`, `uv.lock` or a `poetry.lock` file, it exports it to a compatible `requirements.txt` file with credentials (if they're available in the source files or in the bundling container).
+3. Installs dependencies using `pip` or `uv`.
 4. Copies the dependencies into an asset that is bundled for the Lambda package.
 
 **Lambda with a requirements.txt**
@@ -107,6 +108,18 @@ Packaging is executed using the `Packaging` class, which:
 ├── lambda_function.py # exports a function named 'handler'
 ├── pyproject.toml # your poetry project definition
 ├── poetry.lock # your poetry lock file has to be present at the entry path
+```
+
+**Lambda with a uv.lock**
+
+Reference: https://docs.astral.sh/uv/concepts/projects/layout/
+
+```plaintext
+.
+├── lambda_function.py # exports a function named 'handler'
+├── pyproject.toml # your poetry project definition
+├── uv.lock # your uv lock file has to be present at the entry path
+├── .python-version # this file is ignored, python version is configured via Runtime
 ```
 
 **Excluding source files**
