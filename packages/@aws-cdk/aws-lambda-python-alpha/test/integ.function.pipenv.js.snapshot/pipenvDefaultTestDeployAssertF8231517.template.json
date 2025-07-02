@@ -14,11 +14,20 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerinline53D120C7B0898676"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerinline53D120C7B0898676"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676321224706"
+    "salt": "1742704374104"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -137,7 +146,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython384D62BBB58AA8B940"
+              "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython3109CF78D6A07113D1F"
              }
             ]
            ]
@@ -177,7 +186,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython37C34039A7BB71D94D"
+              "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython311FA85D4467031FBCF"
              }
             ]
            ]
@@ -257,7 +266,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython38excludes1CEDD61508A85D35"
+              "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython310excludesB5721574A64D7E23"
              }
             ]
            ]
@@ -297,7 +306,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython37excludes977F9CDF40301DA3"
+              "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython311excludesEBA2ED311D092320"
              }
             ]
            ]
@@ -313,12 +322,20 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "73c20a669c041469f7fc3fc03d574b093b5b97e7c716f76c1e8117e6163e4dc4.zip"
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -330,7 +347,7 @@
     }
    }
   },
-  "LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292": {
+  "LambdaInvoke3b8213cb5b666fef975a9e9797adfb12": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -344,21 +361,30 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython384D62BBB58AA8B940"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython3109CF78D6A07113D1F"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676321224707"
+    "salt": "1742704374106"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292InvokeFD76DE7B": {
+  "LambdaInvoke3b8213cb5b666fef975a9e9797adfb12InvokeB39BE3A1": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython384D62BBB58AA8B940"
+     "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython3109CF78D6A07113D1F"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -368,7 +394,7 @@
     }
    }
   },
-  "LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75": {
+  "LambdaInvoke8bc0d57b9728c7cb409cb1d4a6ec16fd": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -382,21 +408,30 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython37C34039A7BB71D94D"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython311FA85D4467031FBCF"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676321224707"
+    "salt": "1742704374106"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75Invoke11F9A252": {
+  "LambdaInvoke8bc0d57b9728c7cb409cb1d4a6ec16fdInvoke349AC0C8": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython37C34039A7BB71D94D"
+     "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython311FA85D4467031FBCF"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -420,11 +455,20 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerinlineexcludes9ACF1422FA94AAF9"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerinlineexcludes9ACF1422FA94AAF9"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676321224708"
+    "salt": "1742704374107"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -444,7 +488,7 @@
     }
    }
   },
-  "LambdaInvokefbdb1fc975f2f372fd64335aa07b46b7": {
+  "LambdaInvoke264214b12fa508316ae58deaebea7214": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -458,21 +502,30 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython38excludes1CEDD61508A85D35"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython310excludesB5721574A64D7E23"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676321224708"
+    "salt": "1742704374107"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvokefbdb1fc975f2f372fd64335aa07b46b7Invoke1AF08F67": {
+  "LambdaInvoke264214b12fa508316ae58deaebea7214Invoke79625C91": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython38excludes1CEDD61508A85D35"
+     "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython310excludesB5721574A64D7E23"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -482,7 +535,7 @@
     }
    }
   },
-  "LambdaInvoke26ce5a20d1ffee210d056cd2aa005172": {
+  "LambdaInvoke700f840f3dc2f0057ac7162a03084b93": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -496,21 +549,30 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython37excludes977F9CDF40301DA3"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython311excludesEBA2ED311D092320"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676321224708"
+    "salt": "1742704374107"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke26ce5a20d1ffee210d056cd2aa005172Invoke5D442C14": {
+  "LambdaInvoke700f840f3dc2f0057ac7162a03084b93InvokeABD90EB6": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython37excludes977F9CDF40301DA3"
+     "Fn::ImportValue": "integ-lambda-python-pipenv:ExportsOutputRefmyhandlerpython311excludesEBA2ED311D092320"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -530,18 +592,18 @@
     ]
    }
   },
-  "AssertionResultsLambdaInvoke9a0beb4ea6cc38db92e9ff664c085292": {
+  "AssertionResultsLambdaInvoke3b8213cb5b666fef975a9e9797adfb12": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292",
+     "LambdaInvoke3b8213cb5b666fef975a9e9797adfb12",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75": {
+  "AssertionResultsLambdaInvoke8bc0d57b9728c7cb409cb1d4a6ec16fd": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75",
+     "LambdaInvoke8bc0d57b9728c7cb409cb1d4a6ec16fd",
      "assertion"
     ]
    }
@@ -554,20 +616,144 @@
     ]
    }
   },
-  "AssertionResultsLambdaInvokefbdb1fc975f2f372fd64335aa07b46b7": {
+  "AssertionResultsLambdaInvoke264214b12fa508316ae58deaebea7214": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvokefbdb1fc975f2f372fd64335aa07b46b7",
+     "LambdaInvoke264214b12fa508316ae58deaebea7214",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke26ce5a20d1ffee210d056cd2aa005172": {
+  "AssertionResultsLambdaInvoke700f840f3dc2f0057ac7162a03084b93": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke26ce5a20d1ffee210d056cd2aa005172",
+     "LambdaInvoke700f840f3dc2f0057ac7162a03084b93",
      "assertion"
     ]
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
    }
   }
  },
