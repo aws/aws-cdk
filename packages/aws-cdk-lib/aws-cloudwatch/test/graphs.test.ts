@@ -371,7 +371,7 @@ describe('Graphs', () => {
         stacked: true,
         region: { Ref: 'AWS::Region' },
         query: "SOURCE 'my-log-group' | fields `@message`\ | sort - `@timestamp`",
-        queryLanguage: 'SQL',
+        queryLanguage: 'PPL',
       },
     }]);
   });
