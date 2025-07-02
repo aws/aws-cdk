@@ -2,9 +2,9 @@
   "version": "44.0.0",
   "files": {
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
-      "displayName": "ClusterSnapshotIntegDefaultTestDeployAssert647D4685 Template",
+      "displayName": "cdkinstanceenginelifecyclesupporttestDefaultTestDeployAssert3026BBCC Template",
       "source": {
-        "path": "ClusterSnapshotIntegDefaultTestDeployAssert647D4685.template.json",
+        "path": "cdkinstanceenginelifecyclesupporttestDefaultTestDeployAssert3026BBCC.template.json",
         "packaging": "file"
       },
       "destinations": {
