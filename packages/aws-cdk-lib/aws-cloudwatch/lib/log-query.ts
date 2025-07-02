@@ -27,7 +27,7 @@ export enum LogQueryVisualizationType {
   PIE = 'pie',
 }
 /**
- * Los Query Language
+ * Logs Query Language
  */
 export enum LogQueryLanguage {
   /** Logs Insights QL */

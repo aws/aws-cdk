@@ -348,6 +348,34 @@ describe('Graphs', () => {
     }]);
   });
 
+  test('query result widget - ppl', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = { logGroupName: 'my-log-group' };
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      view: LogQueryVisualizationType.STACKEDAREA,
+      queryString: 'fields `@message`\ | sort - `@timestamp`',
+      queryLanguage: LogQueryLanguage.PPL,
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        stacked: true,
+        region: { Ref: 'AWS::Region' },
+        query: "SOURCE 'my-log-group' | fields `@message`\ | sort - `@timestamp`",
+        queryLanguage: 'SQL',
+      },
+    }]);
+  });
+
   test('alarm widget', () => {
     // GIVEN
     const stack = new Stack();
