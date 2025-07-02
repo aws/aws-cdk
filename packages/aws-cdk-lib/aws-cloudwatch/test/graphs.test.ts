@@ -108,7 +108,7 @@ describe('Graphs', () => {
     // WHEN
     const stack = new Stack();
     const widget = new GraphWidget({
-      left: [new Metric({ namespace: 'CDK', metricName: 'Test', label: 'MyMetric', color: '000000', id: 'custom_id', visible: false})],
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test', label: 'MyMetric', color: '000000', id: 'custom_id', visible: false })],
     });
 
     // THEN
