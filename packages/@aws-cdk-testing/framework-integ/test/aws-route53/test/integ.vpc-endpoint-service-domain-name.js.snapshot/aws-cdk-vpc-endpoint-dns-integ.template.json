@@ -438,7 +438,7 @@
        {
         "Ref": "VPCES3AE7D565"
        },
-       "\",\"PrivateDnsName\":\"my-stuff.aws-cdk.dev\"},\"physicalResourceId\":{\"id\":\"awscdkvpcendpointdnsintegVPCES2D7BC258\"},\"logApiResponseData\":true}"
+       "\",\"PrivateDnsName\":\"my-stuff.aws-cdk.dev\"},\"physicalResourceId\":{\"id\":\"awscdkvpcendpointdnsintegVPCES2D7BC258\"}}"
       ]
      ]
     },
@@ -450,7 +450,7 @@
        {
         "Ref": "VPCES3AE7D565"
        },
-       "\",\"PrivateDnsName\":\"my-stuff.aws-cdk.dev\"},\"physicalResourceId\":{\"id\":\"awscdkvpcendpointdnsintegVPCES2D7BC258\"},\"logApiResponseData\":true}"
+       "\",\"PrivateDnsName\":\"my-stuff.aws-cdk.dev\"},\"physicalResourceId\":{\"id\":\"awscdkvpcendpointdnsintegVPCES2D7BC258\"}}"
       ]
      ]
     },
@@ -462,7 +462,7 @@
        {
         "Ref": "VPCES3AE7D565"
        },
-       "\",\"RemovePrivateDnsName\":true},\"logApiResponseData\":true}"
+       "\",\"RemovePrivateDnsName\":true}}"
       ]
      ]
     },
@@ -544,7 +544,7 @@
        {
         "Ref": "VPCES3AE7D565"
        },
-       "\"]},\"physicalResourceId\":{\"id\":\"0b26ca4969ad06c279e229b1b55b9bc2\"},\"logApiResponseData\":true}"
+       "\"]},\"physicalResourceId\":{\"id\":\"0b26ca4969ad06c279e229b1b55b9bc2\"}}"
       ]
      ]
     },
@@ -556,7 +556,7 @@
        {
         "Ref": "VPCES3AE7D565"
        },
-       "\"]},\"physicalResourceId\":{\"id\":\"0b26ca4969ad06c279e229b1b55b9bc2\"},\"logApiResponseData\":true}"
+       "\"]},\"physicalResourceId\":{\"id\":\"0b26ca4969ad06c279e229b1b55b9bc2\"}}"
       ]
      ]
     },
@@ -678,7 +678,7 @@
          ]
         ]
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },
@@ -710,7 +710,7 @@
          ]
         ]
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },
@@ -921,9 +921,6 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
-    "value": "nodejs22.x"
-   },
-   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {
