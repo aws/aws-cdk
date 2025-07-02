@@ -53,6 +53,39 @@ const metric = new cloudwatch.Metric({
 });
 ```
 
+### Metric ID
+
+Metrics can be assigned a unique identifier using the `id` property. This is
+useful when referencing metrics in math expressions:
+
+```ts
+const metric = new cloudwatch.Metric({
+  namespace: 'AWS/Lambda',
+  metricName: 'Invocations',
+  dimensionsMap: {
+    FunctionName: 'MyFunction'
+  },
+  id: 'invocations'
+});
+```
+
+The `id` must start with a lowercase letter and can only contain letters, numbers, and underscores.
+
+### Metric Visible
+Metrics can be hidden from dashboard graphs using the `visible` property:
+
+```ts
+declare const fn: lambda.Function;
+
+const metric = fn.metricErrors({
+  visible: false
+});
+```
+
+By default, all metrics are visible (`visible: true`). Setting `visible: false`
+hides the metric from dashboard visualizations while still allowing it to be
+used in math expressions given that it has an `id` set to it.
+
 ### Metric Math
 
 Math expressions are supported by instantiating the `MathExpression` class.
