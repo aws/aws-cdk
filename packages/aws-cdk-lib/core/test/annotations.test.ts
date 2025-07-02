@@ -10,7 +10,6 @@ describe('annotations', () => {
     process.env.CDK_BLOCK_DEPRECATIONS = restore; // restore to the original value
   });
 
-
   test('addDeprecation() annotates the usage of a deprecated API', () => {
     // GIVEN
     const app = new App();
@@ -236,13 +235,13 @@ describe('annotations', () => {
       {
         path: '/S1/C1',
         message: 'This is a message [ack: message1]',
-      }
+      },
     ]);
     expect(getInfos(app.synth())).toEqual([
       {
         path: '/S1/C1',
         message: 'This is another message [ack: message1]',
-      }
+      },
     ]);
   });
 });
