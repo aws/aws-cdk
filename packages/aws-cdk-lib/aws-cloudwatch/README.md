@@ -972,3 +972,35 @@ const dashboard = new cw.Dashboard(this, 'Dash', {
 ```
 
 You can add a variable after object instantiation with the method `dashboard.addVariable()`.
+
+### Cross-Account Visibility
+
+Both Log and Metric Widget objects support cross-account visibility by allowing you to specify the AWS Account ID that the data (logs or metrics) originates from.
+
+**Prerequisites:**
+1. The monitoring account must be set up as a monitoring account
+2. The source account must grant permissions to the monitoring account
+3. Appropriate IAM roles and policies must be configured
+
+For detailed setup instructions, see [Cross-Account Cross-Region CloudWatch Console](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html).
+
+
+To use this feature, you can set the `accountId` property on `LogQueryWidget`, `GraphWidget`, `AlarmWidget`, `SingleValueWidget`, and `GaugeWidget` constructs:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
+  // ...
+  accountId: '123456789012',
+}));
+
+dashboard.addWidgets(new cloudwatch.LogQueryWidget({
+  logGroupNames: ['my-log-group'],
+  // ...
+  accountId: '123456789012',
+  queryLines: [
+    'fields @message',
+  ],
+}));
+```
