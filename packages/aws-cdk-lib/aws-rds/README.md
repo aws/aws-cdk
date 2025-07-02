@@ -1536,7 +1536,8 @@ new rds.DatabaseInstance(this, 'PostgresInstance', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
   vpc,
   // If you enable the advanced mode of Database Insights,
-  // Performance Insights is enabled and you must set the `performanceInsightRetention` to 465(15 months).  databaseInsightsMode: rds.DatabaseInsightsMode.ADVANCED,
+  // Performance Insights is enabled and you must set the `performanceInsightRetention` to 465(15 months).
+  // databaseInsightsMode: rds.DatabaseInsightsMode.ADVANCED,
   performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_15,
 });
 ```
