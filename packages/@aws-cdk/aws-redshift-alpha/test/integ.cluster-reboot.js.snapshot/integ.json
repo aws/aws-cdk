@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "aws-cdk-redshift-reboot-test/DefaultTest": {
       "stacks": [
@@ -12,5 +12,5 @@
       "assertionStackName": "awscdkredshiftreboottestDefaultTestDeployAssert1AE11B34"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1019.2"
 }

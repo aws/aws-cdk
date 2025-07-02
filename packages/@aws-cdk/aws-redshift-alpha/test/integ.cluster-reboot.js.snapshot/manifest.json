@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-redshift-cluster-create.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2bf50a3ccd17c78e0ad29625b791e454ef8904859e7b48737f4a67e0f232ea4b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/880f6574b37c2658646469d18b9e01d22e6e6632ed71cf92ad860d666b6f3bc2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -525,33 +525,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "ClusterRedshiftClusterRebooterFunctioninlinePolicyAddedToExecutionRole0D490C9BC": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterRedshiftClusterRebooterFunctioninlinePolicyAddedToExecutionRole0D490C9BC",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterRedshiftClusterRebooterFunctioninlinePolicyAddedToExecutionRole1F50EA7FB": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterRedshiftClusterRebooterFunctioninlinePolicyAddedToExecutionRole1F50EA7FB",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterResourceProviderframeworkonEventinlinePolicyAddedToExecutionRole0F6158EFC": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterResourceProviderframeworkonEventinlinePolicyAddedToExecutionRole0F6158EFC",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-cdk-redshift-cluster-create"
@@ -573,7 +546,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b36f94cf36cdd3ab20827da1b6553d541b6bed0b78e6b89cab08cdd2a90bf16d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d22e4b1716ffe2e45bf295683edcecabc86a400bbb529798dd9e67de1edab4ca.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1093,33 +1066,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "ClusterRedshiftClusterRebooterFunctioninlinePolicyAddedToExecutionRole0D490C9BC": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterRedshiftClusterRebooterFunctioninlinePolicyAddedToExecutionRole0D490C9BC",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterRedshiftClusterRebooterFunctioninlinePolicyAddedToExecutionRole1F50EA7FB": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterRedshiftClusterRebooterFunctioninlinePolicyAddedToExecutionRole1F50EA7FB",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterResourceProviderframeworkonEventinlinePolicyAddedToExecutionRole0F6158EFC": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterResourceProviderframeworkonEventinlinePolicyAddedToExecutionRole0F6158EFC",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-cdk-redshift-cluster-update"
@@ -1141,7 +1087,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/af38aa661ec457f79fe643c448b91e56f1bca8c8b90aa04818ed24680bb219f0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5200d1ae11409e15f880808f3ba3cbd8967e21110c0f5b8ef45e418c2ebae746.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1276,5 +1222,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1015.0"
+  "minimumCliVersion": "2.1019.2"
 }

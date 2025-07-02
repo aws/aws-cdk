@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "ebde893ec0ac87a1d4c0c89f80b8c9815e9bd3a1f95630de2cfb96ff1198f390": {
       "displayName": "SingletonLambda511e207f13df4b8bb632c32b30b65ac2/Code",
@@ -29,7 +29,7 @@
         }
       }
     },
-    "b36f94cf36cdd3ab20827da1b6553d541b6bed0b78e6b89cab08cdd2a90bf16d": {
+    "d22e4b1716ffe2e45bf295683edcecabc86a400bbb529798dd9e67de1edab4ca": {
       "displayName": "aws-cdk-redshift-cluster-reboot-integ Template",
       "source": {
         "path": "aws-cdk-redshift-cluster-update.template.json",
@@ -38,7 +38,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b36f94cf36cdd3ab20827da1b6553d541b6bed0b78e6b89cab08cdd2a90bf16d.json",
+          "objectKey": "d22e4b1716ffe2e45bf295683edcecabc86a400bbb529798dd9e67de1edab4ca.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

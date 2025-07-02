@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "RedshiftMaintenanceTrackNameIntegStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -43,7 +43,7 @@
         }
       }
     },
-    "6aa12f510d7846ad5fb4e787c043f97ea9d451a4f3efdfcfcc6055b6d8cd1970": {
+    "10a59670094310ec9fdd09c611822ba37e9cd2c2ae9dd00d245066b7a2046302": {
       "displayName": "RedshiftMaintenanceTrackNameIntegStack Template",
       "source": {
         "path": "RedshiftMaintenanceTrackNameIntegStack.template.json",
@@ -52,7 +52,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6aa12f510d7846ad5fb4e787c043f97ea9d451a4f3efdfcfcc6055b6d8cd1970.json",
+          "objectKey": "10a59670094310ec9fdd09c611822ba37e9cd2c2ae9dd00d245066b7a2046302.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

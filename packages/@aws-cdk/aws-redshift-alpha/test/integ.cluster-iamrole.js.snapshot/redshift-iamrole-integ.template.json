@@ -531,7 +531,7 @@
       ]
      ]
     },
-    "NodeType": "dc2.large",
+    "NodeType": "ra3.large",
     "NumberOfNodes": 2,
     "PubliclyAccessible": false,
     "VpcSecurityGroupIds": [

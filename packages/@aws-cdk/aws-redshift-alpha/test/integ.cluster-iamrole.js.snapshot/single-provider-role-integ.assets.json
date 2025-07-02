@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "60d6644ca7559903aa3a4516f84720a5f2cc1310aa4f456b1aad45a0c1e28046": {
       "displayName": "Query Redshift Database3de5bea727da479686625efb56431b5f/Code",
@@ -29,7 +29,7 @@
         }
       }
     },
-    "58456e6f2b6b6544cdabb7d8e056b6ac7fb61bbb2a0fcdc98efbacaec341570c": {
+    "85e31cae2c0d975032f5e1394f9e1b5364afc4aff0c64f0000fa727e7efc2df9": {
       "displayName": "single-provider-role-integ Template",
       "source": {
         "path": "single-provider-role-integ.template.json",
@@ -38,7 +38,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "58456e6f2b6b6544cdabb7d8e056b6ac7fb61bbb2a0fcdc98efbacaec341570c.json",
+          "objectKey": "85e31cae2c0d975032f5e1394f9e1b5364afc4aff0c64f0000fa727e7efc2df9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
