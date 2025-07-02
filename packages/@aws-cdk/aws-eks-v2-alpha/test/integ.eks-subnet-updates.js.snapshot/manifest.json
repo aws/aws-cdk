@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/adc00a7fa0f629ed4512775d7dfdb1473bce77e8fdf1ddf1af1d7963adf07e0d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0bca6a0f3e772619c12a9797febf9a3981aca7bb0ba76c6e10e8666187e4b4ad.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -615,9 +615,6 @@
               "managedPolicies": [
                 {
                   "managedPolicyArn": "*"
-                },
-                {
-                  "managedPolicyArn": "*"
                 }
               ]
             }
@@ -711,23 +708,6 @@
             "data": "ClusterKubectlProviderframeworkonEventServiceRoleDefaultPolicyA4F24629"
           }
         ],
-        "/aws-cdk-eks-cluster-stack/Cluster/KubectlProvider/Provider/framework-onEvent/SecurityGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "description": "*",
-              "allowAllOutbound": "*",
-              "allowAllIpv6Outbound": "*"
-            }
-          }
-        ],
-        "/aws-cdk-eks-cluster-stack/Cluster/KubectlProvider/Provider/framework-onEvent/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterKubectlProviderframeworkonEventSecurityGroupE2538617"
-          }
-        ],
         "/aws-cdk-eks-cluster-stack/Cluster/KubectlProvider/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -794,6 +774,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ClusterKubectlProviderframeworkonEventSecurityGroupE2538617": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlProviderframeworkonEventSecurityGroupE2538617",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -1062,7 +1051,6 @@
             "explanation": "KMS Alias name and keyArn will have implicit reference to KMS Key"
           },
           "@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition"
           },

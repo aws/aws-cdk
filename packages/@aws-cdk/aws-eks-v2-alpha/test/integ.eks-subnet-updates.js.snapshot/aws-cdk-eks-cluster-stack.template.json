@@ -805,27 +805,9 @@
         ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
        ]
       ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-       ]
-      ]
      }
     ]
-   },
-   "DependsOn": [
-    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
-    "VpcPrivateSubnet2DefaultRoute060D2087",
-    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
-   ]
+   }
   },
   "ClusterKubectlProviderframeworkonEventServiceRoleDefaultPolicyA4F24629": {
    "Type": "AWS::IAM::Policy",
@@ -867,35 +849,7 @@
       "Ref": "ClusterKubectlProviderframeworkonEventServiceRoleFD0BA8C5"
      }
     ]
-   },
-   "DependsOn": [
-    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
-    "VpcPrivateSubnet2DefaultRoute060D2087",
-    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
-   ]
-  },
-  "ClusterKubectlProviderframeworkonEventSecurityGroupE2538617": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "Automatic security group for Lambda Function awscdkeksclusterstackClusterKubectlProviderframeworkonEventC550C962",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   },
-   "DependsOn": [
-    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
-    "VpcPrivateSubnet2DefaultRoute060D2087",
-    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
-   ]
+   }
   },
   "ClusterKubectlProviderframeworkonEvent68E0CF80": {
    "Type": "AWS::Lambda::Function",
@@ -937,33 +891,11 @@
       "value"
      ]
     },
-    "Timeout": 900,
-    "VpcConfig": {
-     "SecurityGroupIds": [
-      {
-       "Fn::GetAtt": [
-        "ClusterKubectlProviderframeworkonEventSecurityGroupE2538617",
-        "GroupId"
-       ]
-      }
-     ],
-     "SubnetIds": [
-      {
-       "Ref": "VpcPrivateSubnet1Subnet536B997A"
-      },
-      {
-       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-      }
-     ]
-    }
+    "Timeout": 900
    },
    "DependsOn": [
     "ClusterKubectlProviderframeworkonEventServiceRoleDefaultPolicyA4F24629",
-    "ClusterKubectlProviderframeworkonEventServiceRoleFD0BA8C5",
-    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
-    "VpcPrivateSubnet2DefaultRoute060D2087",
-    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+    "ClusterKubectlProviderframeworkonEventServiceRoleFD0BA8C5"
    ]
   },
   "ClusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole081AD342A": {
@@ -990,13 +922,7 @@
       "Ref": "ClusterKubectlProviderframeworkonEventServiceRoleFD0BA8C5"
      }
     ]
-   },
-   "DependsOn": [
-    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
-    "VpcPrivateSubnet2DefaultRoute060D2087",
-    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
-   ]
+   }
   },
   "ClusterClusterAdminRoleAccessF2BFF759": {
    "Type": "AWS::EKS::AccessEntry",
