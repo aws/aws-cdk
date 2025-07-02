@@ -1,0 +1,25 @@
+name: Comments & Build Failures Only
+on:
+  issue_comment:
+    types: [created]
+  status: {}
+
+jobs:
+  notify:
+    if: |
+      github.event_name == 'issue_comment' ||
+      (github.event_name == 'status' && github.event.state == 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slack Notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          channel: '#github-integ-test'
+          custom_payload: |
+            {
+              "text": "${{ github.event_name == 'issue_comment' && '💬 New comment' || '❌ Build failed' }}"
+            }
+        env:
+          #SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_URL: "https://hooks.slack.com/triggers/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"
