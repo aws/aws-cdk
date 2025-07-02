@@ -1814,7 +1814,7 @@ describe('cluster', () => {
 
       // we don't attach vpc config in case endpoint is public only, regardless of whether
       // the vpc has private subnets or not.
-      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack).allResourcesProperties('AWS::Lambda::Function', {
         VpcConfig: Match.absent(),
       });
     });
@@ -1832,7 +1832,7 @@ describe('cluster', () => {
 
       // we don't attach vpc config in case endpoint is public only, regardless of whether
       // the vpc has private subnets or not.
-      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack).allResourcesProperties('AWS::Lambda::Function', {
         VpcConfig: Match.absent(),
       });
     });
@@ -1882,7 +1882,7 @@ describe('cluster', () => {
 
       // we don't have private subnets, but we don't need them since public access
       // is not restricted.
-      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack).allResourcesProperties('AWS::Lambda::Function', {
         VpcConfig: Match.absent(),
       });
     });
