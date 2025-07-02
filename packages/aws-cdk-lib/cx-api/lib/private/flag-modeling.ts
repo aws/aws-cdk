@@ -35,12 +35,30 @@ export interface FlagInfoBase {
   readonly summary: string;
   /** Detailed description for the flag (Markdown) */
   readonly detailsMd: string;
-  /** Version number the flag was introduced in each version line. `undefined` means flag does not exist in that line. */
+  /**
+   * Version number the flag was introduced in each version line.
+   *
+   * `undefined` means flag is not configurable in that line; but if
+   * `unconfiguredBehavesLike` is set for that line, we will document the default
+   * behavior (even though it's not configurable).
+   */
   readonly introducedIn: { v1?: string; v2?: string };
-  /** Default value, if flag is unset by user. Adding a flag with a default may not change behavior after GA! */
-  readonly defaults?: { v1?: any; v2?: any };
-  /** Default in new projects */
+  /** What you would like new users to set this flag to (default in new projects) */
   readonly recommendedValue: any;
+  /**
+   * If this flag is not set, the CLI library will behave as if the flag was set to <this>.
+   *
+   * If this flag is not set, we will assume you meant `false`, and the `recommendedValue` is `true`.
+   *
+   * This value is most useful for flags that allow opting out of undesirable behavior. To avoid having
+   * to word our flag name like `skipUndesirableBehavior` and people having to do boolean gymnastics in
+   * their head, we will name the flag `doUndesirableBehavior`, set
+   * `unconfiguredBehavesLike: true`, and `recommendedValue: false`.
+   *
+   * Again: the value you put here should describe whatever value gets us the
+   * legacy behavior, from before this flag was introduced.
+   */
+  readonly unconfiguredBehavesLike?: { v1?: any; v2?: any };
 }
 
 /** Flag information, adding required fields if present */
